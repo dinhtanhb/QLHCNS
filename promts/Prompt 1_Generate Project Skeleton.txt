@@ -1,0 +1,507 @@
+# ROLE
+
+Bạn là Senior Django Solution Architect, Senior Python Developer và Enterprise Software Architect.
+
+Nhiệm vụ:
+
+Tạo PROJECT SKELETON V2 cho hệ thống IHRMS.
+
+Lưu ý:
+
+KHÔNG sinh nghiệp vụ.
+
+KHÔNG sinh Employee.
+
+KHÔNG sinh Recruitment.
+
+KHÔNG sinh Attendance.
+
+KHÔNG sinh Payroll.
+
+KHÔNG sinh Dashboard.
+
+Chỉ tạo nền móng kỹ thuật chuẩn để toàn bộ dự án phát triển trên đó.
+
+==================================================
+MỤC TIÊU
+==================================================
+
+Tạo skeleton production-ready.
+
+Code phải chạy được.
+
+Không được tạo class rỗng bằng:
+
+pass
+
+Không được tạo pseudo-code.
+
+Mọi class phải có nội dung thực tế.
+
+==================================================
+TECH STACK KHÓA CỨNG
+==================================================
+
+Python 3.12
+
+Django 5.0.14
+
+Django REST Framework
+
+SQL Server
+
+mssql-django
+
+Bootstrap 5
+
+AdminLTE 3
+
+SimpleJWT
+
+Microsoft Entra ID (Placeholder)
+
+Windows Server
+
+IIS
+
+==================================================
+KIẾN TRÚC KHÓA CỨNG
+==================================================
+
+Architecture:
+
+Modular Monolith
+
+Layers:
+
+Presentation
+
+↓
+
+API
+
+↓
+
+Service
+
+↓
+
+Repository
+
+↓
+
+Database
+
+==================================================
+PROJECT STRUCTURE
+==================================================
+
+Sinh đầy đủ cấu trúc:
+
+src/
+
+├── manage.py
+│
+├── config/
+│   ├── __init__.py
+│   ├── urls.py
+│   ├── asgi.py
+│   ├── wsgi.py
+│   └── settings/
+│       ├── __init__.py
+│       ├── base.py
+│       ├── development.py
+│       ├── testing.py
+│       └── production.py
+│
+├── apps/
+│
+│   ├── common/
+│   ├── audit/
+│   ├── security/
+│   ├── organization/
+│   ├── hrm/
+│   ├── recruitment/
+│   ├── attendance/
+│   ├── leave/
+│   ├── payroll/
+│   ├── contracts/
+│   ├── documents/
+│   ├── tasks/
+│   ├── kpi/
+│   ├── assets/
+│   ├── procurement/
+│   ├── dashboard/
+│   ├── notifications/
+│   └── m365/
+│
+├── static/
+├── media/
+├── templates/
+└── logs/
+
+==================================================
+SETTINGS
+==================================================
+
+Sinh code thật.
+
+Không dùng hardcode.
+
+Phải đọc từ:
+
+.env
+
+Dùng:
+
+python-dotenv
+
+Ví dụ:
+
+SECRET_KEY
+
+DEBUG
+
+DATABASE
+
+JWT
+
+M365
+
+EMAIL
+
+Tất cả đọc bằng:
+
+os.getenv()
+
+==================================================
+INSTALLED_APPS
+==================================================
+
+Sinh đầy đủ:
+
+django apps
+
+rest_framework
+
+rest_framework_simplejwt
+
+drf_spectacular
+
+django_filters
+
+corsheaders
+
+và app nội bộ.
+
+==================================================
+DATABASE CONFIG
+==================================================
+
+Sinh cấu hình SQL Server đúng chuẩn:
+
+ENGINE = "mssql"
+
+Không dùng:
+
+mssql+dj_django
+
+Không dùng:
+
+dsn
+
+Đọc:
+
+DB_NAME
+DB_HOST
+DB_PORT
+DB_USER
+DB_PASSWORD
+
+từ .env
+
+==================================================
+REST FRAMEWORK
+==================================================
+
+Sinh cấu hình chuẩn:
+
+JWT Authentication
+
+Page Number Pagination
+
+Default Page Size
+
+Filter Backend
+
+Ordering
+
+Schema
+
+==================================================
+SWAGGER
+==================================================
+
+Cấu hình:
+
+drf-spectacular
+
+Swagger UI
+
+Redoc
+
+URL routing
+
+==================================================
+COMMON MODULE
+==================================================
+
+Tạo code thật cho:
+
+apps/common/
+
+==================================================
+BASE MODEL
+==================================================
+
+BaseModel phải đầy đủ:
+
+created_by
+
+created_date
+
+modified_by
+
+modified_date
+
+deleted_by
+
+deleted_date
+
+is_deleted
+
+Meta abstract=True
+
+==================================================
+SOFT DELETE MIXIN
+==================================================
+
+Tạo code thật:
+
+soft_delete()
+
+restore()
+
+==================================================
+AUDIT MIXIN
+==================================================
+
+Tạo code thật:
+
+set_created()
+
+set_modified()
+
+set_deleted()
+
+==================================================
+BASE REPOSITORY
+==================================================
+
+Tạo class hoạt động thực tế:
+
+get_by_id()
+
+get_all()
+
+create()
+
+update()
+
+soft_delete()
+
+==================================================
+BASE SERVICE
+==================================================
+
+Tạo class thật.
+
+Có:
+
+transaction helper
+
+validation helper
+
+==================================================
+COMMON RESPONSE
+==================================================
+
+Tạo utility thật:
+
+success()
+
+error()
+
+paginated()
+
+Theo chuẩn:
+
+{
+  "success": true,
+  "message": "",
+  "data": {}
+}
+
+==================================================
+EXCEPTIONS
+==================================================
+
+Sinh code thật:
+
+CustomException
+
+ValidationException
+
+BusinessException
+
+PermissionException
+
+NotFoundException
+
+Không được để pass
+
+==================================================
+PERMISSIONS
+==================================================
+
+Sinh code thật:
+
+BasePermission
+
+RBACPermission
+
+OwnershipPermission
+
+DepartmentPermission
+
+==================================================
+LOGGING
+==================================================
+
+Sinh hoàn chỉnh:
+
+INFO
+
+WARNING
+
+ERROR
+
+CRITICAL
+
+Output:
+
+logs/application.log
+
+==================================================
+JWT
+==================================================
+
+Phải đúng theo tài liệu:
+
+Access Token:
+
+8 Hours
+
+Refresh Token:
+
+30 Days
+
+==================================================
+SECURITY
+==================================================
+
+Tạo app skeleton:
+
+security
+
+Bao gồm:
+
+permissions/
+
+services/
+
+api/
+
+serializers/
+
+validators/
+
+models/
+
+Không sinh business logic.
+
+==================================================
+AUDIT
+==================================================
+
+Tạo app skeleton:
+
+audit
+
+Bao gồm:
+
+AuditLog model placeholder
+
+AuditService skeleton
+
+AuditRepository skeleton
+
+==================================================
+OUTPUT YÊU CẦU
+==================================================
+
+Xuất theo thứ tự:
+
+1. Project Structure
+
+2. settings/base.py hoàn chỉnh
+
+3. settings/development.py
+
+4. settings/testing.py
+
+5. settings/production.py
+
+6. BaseModel
+
+7. SoftDeleteMixin
+
+8. AuditMixin
+
+9. BaseRepository
+
+10. BaseService
+
+11. CommonResponse
+
+12. Exceptions
+
+13. Permissions
+
+14. Logging
+
+15. JWT
+
+16. Swagger
+
+17. Common App Structure
+
+18. Audit App Structure
+
+19. Security App Structure
+
+20. Final Source Tree
+
+Chỉ tạo Skeleton.
+
+Không tạo bất kỳ nghiệp vụ nào.
