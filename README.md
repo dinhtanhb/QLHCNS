@@ -1,3 +1,14 @@
+# Bộ lệnh đầy đủ Push lên Github
+cd D:\QLHCNS
+
+git status
+
+git add .
+
+git commit -m "Update dashboard v2 and portal features"
+
+git push origin main
+
 # IHRMS
 
 Internal Administration & Human Resource Management System
