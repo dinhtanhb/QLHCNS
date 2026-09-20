@@ -1,36 +1,32 @@
+# Core Framework
 Django==5.0.14
 django-jazzmin>=3.0.0
 
+# REST API & Authentication
 djangorestframework==3.15.2
-
 djangorestframework-simplejwt==5.5.0
-
 django-filter==24.3
-
 drf-spectacular==0.28.0
-
 django-cors-headers==4.6.0
 
+# Environment & Settings
 python-dotenv==1.0.1
 
+# Database Drivers (SQL Server)
 pyodbc==5.2.0
-
 mssql-django==1.8.0
 
+# Integration & OAuth / Azure AD
 requests==2.32.3
-
 msal==1.31.0
 
+# Media & Document Processing
 Pillow==11.0.0
-
 openpyxl==3.1.5
-
 XlsxWriter==3.2.0
-
 reportlab==4.2.5
 
+# Testing & Code Coverage
 pytest==8.3.3
-
 pytest-django==4.9.0
-
 coverage==7.6.4

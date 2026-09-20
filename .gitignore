@@ -1,29 +1,32 @@
-venv/
-
-.env
-
+# Byte-compiled / optimized / DLL files
 __pycache__/
+*.py[cod]
+*$py.class
 
-*.pyc
+# Environment & Secret files
+.env
+.venv/
+venv/
+ENV/
 
-*.pyo
-
+# Database & Storage
 *.sqlite3
-
+db.sqlite3
 media/
+staticfiles/
 
+# Logs & Debug
+*.log
 logs/
 
-.idea/
-
-.vscode/
-
+# Testing & Coverage
 .coverage
-
 htmlcov/
+.pytest_cache/
 
-*.log
-
+# IDE / Editor Settings
+.vscode/
+.idea/
+*.swp
 *.bak
-
 *.tmp
