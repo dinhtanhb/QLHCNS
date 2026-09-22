@@ -1,198 +1,136 @@
-# Bộ lệnh đầy đủ Push lên Github
-cd D:\QLHCNS
+# QLHCNS — IHRMS
 
-git status
-
-git add .
-
-git commit -m "Update dashboard v2 and portal features"
-
-git push origin main
-
-# IHRMS
-
-Internal Administration & Human Resource Management System
-
-## Overview
-
-IHRMS là hệ thống quản lý nội bộ doanh nghiệp bao gồm:
-
-- Organization Management
-- Human Resource Management
-- Recruitment Management
-- Attendance Management
-- Leave Management
-- Payroll Management
-- Contract Management
-- Document Management
-- Task Management
-- KPI Management
-- Asset Management
-- Procurement Management
-- Dashboard & Reporting
-- Microsoft 365 Integration
+Hệ thống **Quản lý Hành chính & Nhân sự** nội bộ, xây dựng trên Django 5.0.
+Gồm hai phần: **Cổng thông tin nhân viên** (`/portal/`) và **Trang quản trị** (`/admin/`).
 
 ---
 
-## Technology Stack
+## 1. Yêu cầu máy cài đặt
 
-### Backend
+| Thành phần | Phiên bản |
+|---|---|
+| Python | 3.12 trở lên |
+| Hệ quản trị CSDL | SQLite (mặc định, không cần cài gì) hoặc SQL Server 2016+ |
+| Hệ điều hành | Windows 10/11 (đã chạy thực tế), Linux đều được |
 
-- Python 3.12
-- Django 5
-- Django REST Framework
+## 2. Cấu trúc thư mục
 
-### Frontend
-
-- Bootstrap 5
-- AdminLTE 3
-- JavaScript
-- jQuery
-
-### Database
-
-- Microsoft SQL Server
-
-### Authentication
-
-- JWT
-- Microsoft Entra ID
-
-### Storage
-
-- SharePoint
-- OneDrive
-
----
-
-## Environment
-
-### Development
-
-VS Code
-
-### Test
-
-SIT / UAT
-
-### Production
-
-Windows Server
-IIS
-SQL Server
-
----
-
-## Project Structure
-
-```text
-ihrms/
-
-config/
-
-apps/
-
-static/
-
-media/
-
-templates/
-
-logs/
+```
+D:\QLHCNS\
+├── .env                  <- Cấu hình bí mật (KHÔNG đưa lên Git)
+├── .gitignore
+├── requirements.txt
+├── README.md
+├── venv\                 <- Môi trường ảo Python
+└── SRC\
+    ├── manage.py
+    ├── db.sqlite3        <- CSDL (KHÔNG đưa lên Git)
+    ├── config\           <- settings.py, urls.py
+    ├── apps\             <- 20 phân hệ nghiệp vụ
+    ├── templates\        <- Giao diện dùng chung (base.html)
+    ├── static\
+    └── media\            <- File người dùng tải lên (KHÔNG đưa lên Git)
 ```
 
----
+## 3. Cài đặt lần đầu
 
-## Install
+Mở **Command Prompt** và chạy lần lượt:
 
-### Create Virtual Environment
-
-```bash
+```bat
+cd /d D:\QLHCNS
 python -m venv venv
-```
-
-### Activate
-
-```bash
 venv\Scripts\activate
-```
-
-### Install Package
-
-```bash
 pip install -r requirements.txt
 ```
 
-### Apply Migration
+Tạo file cấu hình: copy `.env.example` thành `.env` (đặt tại `D:\QLHCNS\.env`), mở bằng Notepad và điền `SECRET_KEY`.
+Tạo chuỗi bí mật mới:
 
-```bash
-python manage.py migrate
+```bat
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
-### Create Admin User
+Khởi tạo cơ sở dữ liệu và tài khoản quản trị:
 
-```bash
+```bat
+cd /d D:\QLHCNS\SRC
+python manage.py migrate
 python manage.py createsuperuser
 ```
 
-### Run Development Server
+## 4. Chạy hằng ngày
 
-```bash
+```bat
+cd /d D:\QLHCNS\SRC
+..\venv\Scripts\activate
 python manage.py runserver
 ```
 
----
+Mở trình duyệt:
+- Cổng nhân viên: http://127.0.0.1:8000/portal/
+- Trang quản trị: http://127.0.0.1:8000/admin/
+- Trung tâm báo cáo: http://127.0.0.1:8000/reports/
 
-## Modules
+Dừng server: nhấn `Ctrl + C`.
 
-### Phase 1
+## 5. Sau mỗi lần cập nhật mã nguồn
 
-- Organization
-- HRM
+```bat
+cd /d D:\QLHCNS\SRC
+..\venv\Scripts\activate
+pip install -r ..\requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
 
-### Phase 2
+## 6. Sao lưu
 
-- Recruitment
-- Attendance
-- Leave
+Chỉ cần sao chép 3 thứ:
+1. `D:\QLHCNS\SRC\db.sqlite3` — toàn bộ dữ liệu
+2. `D:\QLHCNS\SRC\media\` — file đính kèm
+3. `D:\QLHCNS\.env` — cấu hình
 
-### Phase 3
+## 7. Các phân hệ (`SRC\apps\`)
 
-- Payroll
-- Contracts
+| Thư mục | Chức năng |
+|---|---|
+| `common` | Tiện ích dùng chung, chuẩn hóa tên file tải lên |
+| `security` | Tài khoản, vai trò, **ma trận phân quyền** (`permissions.py`) |
+| `organization` | Cơ cấu tổ chức, phòng ban, chức danh |
+| `hrm` | Hồ sơ nhân viên |
+| `attendance` | Chấm công, lịch làm việc, ngày lễ |
+| `leave` | Nghỉ phép, quỹ phép, nghỉ bù |
+| `contract` | Hợp đồng lao động |
+| `payroll` | Bảng lương, bảo hiểm, thuế TNCN |
+| `portal` | Cổng thông tin nhân viên (giao diện chính) |
+| `task` | Giao việc, theo dõi công việc |
+| `kpi` | Chấm điểm KPI |
+| `document` | Tài liệu nội bộ, quy trình ban hành |
+| `office` | Công văn đến / công văn đi |
+| `asset` | Tài sản, kiểm kê, thanh lý |
+| `recruitment` | Tuyển dụng, hồ sơ ứng viên |
+| `procurement` | Mua sắm, văn phòng phẩm |
+| `project` | Dự án, chấm công theo dự án |
+| `planning` | Kế hoạch, lịch, sự kiện |
+| `notification` | Thông báo trong hệ thống |
+| `reporting` | Trung tâm báo cáo, xuất Excel |
 
-### Phase 4
+## 8. Phân quyền
 
-- Documents
-- Tasks
-- KPI
+Toàn bộ quyền được khai báo **duy nhất** tại `SRC\apps\security\permissions.py`, trong bảng `PERMISSION_MATRIX`.
+Muốn thay đổi ai được làm gì, chỉ sửa bảng đó — cả menu lẫn trang thực tế sẽ tự áp dụng theo.
 
-### Phase 5
+Các vai trò: `SUPER_ADMIN`, `SYS_ADMIN`, `DIRECTOR`, `HR_MANAGER`, `HR_OFFICER`, `DEPT_MANAGER`, `FINANCE_OFFICER`, `EMPLOYEE`.
 
-- Assets
-- Procurement
+> Lưu ý: cờ **Staff status** trong `/admin/` chỉ dùng để cho phép vào trang quản trị Django.
+> Tài khoản nhân viên thường **không** được tick ô này.
 
-### Phase 6
+## 9. Xử lý sự cố thường gặp
 
-- Dashboard
-- Microsoft 365 Integration
-
----
-
-## Documentation
-
-Refer to:
-
-- 00_Project_Charter.md
-- 01_BRD_MASTER.md
-- 02_Solution_Architecture.md
-- 03_Database_Design.md
-- 99_Architecture_Baseline.md
-
----
-
-## Status
-
-Architecture Locked
-
-Ready For Development
+| Hiện tượng | Cách xử lý |
+|---|---|
+| `ModuleNotFoundError` | Chưa kích hoạt venv → chạy `..\venv\Scripts\activate` |
+| `no such table` | Chưa chạy `python manage.py migrate` |
+| Giao diện sai/cũ | Nhấn `Ctrl + F5` trên trình duyệt để xóa cache |
+| `Conflicting migrations` | File migration bị đặt nhầm app → xóa file đặt sai chỗ |
+| `SECRET_KEY` cảnh báo | Thiếu file `.env` tại `D:\QLHCNS\.env` |

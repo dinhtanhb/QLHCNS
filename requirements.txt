@@ -1,32 +1,25 @@
-# Core Framework
+# ==========================================================
+# QLHCNS / IHRMS — Thư viện Python cần thiết
+# Cài đặt:  pip install -r requirements.txt
+# ==========================================================
+
+# Khung web chính
 Django==5.0.14
-django-jazzmin>=3.0.0
 
-# REST API & Authentication
-djangorestframework==3.15.2
-djangorestframework-simplejwt==5.5.0
-django-filter==24.3
-drf-spectacular==0.28.0
-django-cors-headers==4.6.0
-
-# Environment & Settings
+# Đọc tệp cấu hình .env
 python-dotenv==1.0.1
 
-# Database Drivers (SQL Server)
-pyodbc==5.2.0
-mssql-django==1.8.0
+# Giao diện trang quản trị /admin/ (AdminLTE)
+django-jazzmin==3.0.1
 
-# Integration & OAuth / Azure AD
-requests==2.32.3
-msal==1.31.0
-
-# Media & Document Processing
-Pillow==11.0.0
+# Xuất báo cáo ra file Excel (.xlsx)
 openpyxl==3.1.5
-XlsxWriter==3.2.0
-reportlab==4.2.5
 
-# Testing & Code Coverage
-pytest==8.3.3
-pytest-django==4.9.0
-coverage==7.6.4
+# ----------------------------------------------------------
+# CHỈ DÙNG KHI CHUYỂN SANG SQL SERVER (MSSQL)
+# Mặc định hệ thống chạy SQLite nên KHÔNG cần cài 2 dòng dưới.
+# Muốn dùng, xóa dấu # ở đầu dòng rồi cài lại.
+# Máy còn phải cài sẵn "ODBC Driver 17 for SQL Server".
+# ----------------------------------------------------------
+# mssql-django==1.5
+# pyodbc==5.1.0

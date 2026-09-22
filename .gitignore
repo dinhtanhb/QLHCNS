@@ -1,32 +1,55 @@
-# Byte-compiled / optimized / DLL files
+# ==========================================================
+# QLHCNS / IHRMS — Những thứ KHÔNG được đưa lên Git
+# ==========================================================
+
+# --- Bí mật: TUYỆT ĐỐI không đẩy lên ---
+.env
+.env.*
+!.env.example
+
+# --- Môi trường ảo Python ---
+venv/
+.venv/
+env/
+
+# --- File tạm của Python ---
 __pycache__/
 *.py[cod]
-*$py.class
+*.pyo
+*.egg-info/
+.Python
 
-# Environment & Secret files
-.env
-.venv/
-venv/
-ENV/
-
-# Database & Storage
-*.sqlite3
+# --- Cơ sở dữ liệu ---
 db.sqlite3
-media/
-staticfiles/
+db.sqlite3-journal
+*.db
+*.bak
 
-# Logs & Debug
+# --- File người dùng tải lên ---
+src/media/
+media/
+
+# --- File tĩnh do collectstatic sinh ra ---
+staticfiles/
+src/staticfiles/
+
+# --- Nhật ký & file tạm ---
 *.log
 logs/
+*.tmp
+~$*
 
-# Testing & Coverage
-.coverage
-htmlcov/
-.pytest_cache/
-
-# IDE / Editor Settings
+# --- Công cụ lập trình ---
 .vscode/
 .idea/
 *.swp
-*.bak
-*.tmp
+
+# --- Windows / macOS ---
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# --- Kiểm thử ---
+.pytest_cache/
+.coverage
+htmlcov/
