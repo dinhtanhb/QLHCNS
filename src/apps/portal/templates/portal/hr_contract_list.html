@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Hợp đồng lao động{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-lg font-bold text-gray-900">Hợp đồng lao động</h1>
+    {% if can_manage_hr %}<a href="{% url 'portal:hr_contract_create' %}" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Tạo hợp đồng</a>{% endif %}
+</div>
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <table class="w-full text-sm">
+        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Số HĐ</th><th class="py-2 pr-4">Nhân viên</th><th class="py-2 pr-4">Loại</th><th class="py-2 pr-4">Bắt đầu</th><th class="py-2 pr-4">Kết thúc</th><th class="py-2">Trạng thái</th></tr></thead>
+        <tbody class="divide-y divide-gray-100">
+        {% for c in contracts %}
+        <tr>
+            <td class="py-2 pr-4 text-gray-500">{{ c.contract_no }}</td>
+            <td class="py-2 pr-4"><a href="{% url 'portal:hr_employee_detail' c.employee.pk %}" class="text-blue-700 hover:underline">{{ c.employee }}</a></td>
+            <td class="py-2 pr-4">{{ c.contract_type }}</td>
+            <td class="py-2 pr-4">{{ c.start_date }}</td>
+            <td class="py-2 pr-4">{{ c.end_date|default:"Không xác định" }}</td>
+            <td class="py-2">{{ c.get_status_display }}</td>
+        </tr>
+        {% empty %}<tr><td colspan="6" class="py-6 text-center text-gray-400">Chưa có hợp đồng nào.</td></tr>{% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

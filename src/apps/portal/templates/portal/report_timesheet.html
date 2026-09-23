@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Báo cáo Chấm công{% endblock %}
+{% block content %}
+<style>
+    @media print { header, nav, .no-print { display: none !important; } main { max-width: 100% !important; padding: 0 !important; } }
+</style>
+<div class="flex items-center justify-between mb-4 no-print">
+    <h1 class="text-lg font-bold text-gray-900">Báo cáo Chấm công & Tồn phép</h1>
+    <div class="flex gap-3">
+        <form method="get" class="flex gap-2">
+            <select name="month" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
+                {% for m in months %}<option value="{{ m }}" {% if m == month %}selected{% endif %}>Tháng {{ m }}</option>{% endfor %}
+            </select>
+            <select name="year" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
+                {% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>{% endfor %}
+            </select>
+        </form>
+        <button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">🖨 In</button>
+    </div>
+</div>
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <h2 class="text-center font-bold mb-4">Báo cáo Chấm công tháng {{ month }}/{{ year }}</h2>
+    <div class="overflow-x-auto">
+    <table class="w-full text-sm border border-gray-300 border-collapse">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="border border-gray-300 px-2 py-1.5 text-left">Nhân viên</th>
+                <th class="border border-gray-300 px-2 py-1.5 text-left">Phòng ban</th>
+                <th class="border border-gray-300 px-2 py-1.5">Giờ đã làm</th>
+                <th class="border border-gray-300 px-2 py-1.5">Giờ cần làm</th>
+                <th class="border border-gray-300 px-2 py-1.5">Chênh lệch</th>
+                <th class="border border-gray-300 px-2 py-1.5">Phép còn lại (năm)</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for r in rows %}
+        <tr>
+            <td class="border border-gray-300 px-2 py-1.5">
+                {{ r.employee.employee_code }} - {{ r.employee.full_name }}
+                {% if r.has_pending_summary %}<span class="inline-block bg-amber-100 text-amber-700 text-xs font-medium px-1.5 py-0.5 rounded ml-1">chờ duyệt</span>{% endif %}
+            </td>
+            <td class="border border-gray-300 px-2 py-1.5">{{ r.employee.department }}</td>
+            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ r.total_hours }}</td>
+            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ r.required_hours }}</td>
+            <td class="border border-gray-300 px-2 py-1.5 text-center {% if r.diff_hours < 0 %}text-red-600{% else %}text-green-700{% endif %}">{{ r.diff_hours }}</td>
+            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ r.leave_remaining|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="py-6 text-center text-gray-400">Không có dữ liệu.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

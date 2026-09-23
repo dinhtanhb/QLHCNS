@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}{{ candidate.full_name }}{% endblock %}
+{% block content %}
+<h1 class="text-lg font-bold text-gray-900 mb-1">{{ candidate.full_name }} <span class="text-gray-400 font-normal text-sm">({{ candidate.candidate_code }})</span></h1>
+<p class="text-gray-500 text-sm mb-4">{{ candidate.phone_number }} · {{ candidate.email }} · Trạng thái: <strong>{{ candidate.get_status_display }}</strong></p>
+
+{% if candidate.status == "Hired" %}
+<div class="bg-green-50 border border-green-200 text-green-800 text-sm rounded-md px-4 py-3 mb-6">✅ Ứng viên đã trúng tuyển.</div>
+{% elif can_manage_hr %}
+<form method="post" action="{% url 'portal:hr_candidate_onboard' candidate.pk %}" class="mb-6" onsubmit="return confirm('Xác nhận ứng viên đã trúng tuyển và tạo hồ sơ nhân viên?')">
+    {% csrf_token %}
+    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md transition">🎉 Đánh dấu Trúng tuyển & Tạo hồ sơ nhân viên</button>
+</form>
+{% endif %}
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h2 class="text-sm font-bold text-gray-900 mb-3">Phỏng vấn</h2>
+        {% for i in interviews %}
+        <div class="border-b border-gray-50 py-2 text-sm">
+            <p>{{ i.interview_date|date:"d/m/Y H:i" }} — {{ i.interview_type }} — PV: {{ i.interviewer }}</p>
+            <p class="text-gray-500">Kết quả: {{ i.get_result_display }} {% if i.comments %}— {{ i.comments }}{% endif %}</p>
+            {% if can_manage_hr and i.result == "Pending" %}
+            <form method="post" action="{% url 'portal:hr_interview_result' i.pk %}" class="flex gap-2 mt-1">
+                {% csrf_token %}
+                <select name="result" class="rounded border border-gray-300 px-2 py-1 text-xs"><option value="Pass">Đạt</option><option value="Fail">Không đạt</option></select>
+                <input type="text" name="comments" placeholder="Nhận xét" class="rounded border border-gray-300 px-2 py-1 text-xs flex-1">
+                <button type="submit" class="bg-blue-700 text-white text-xs px-3 py-1 rounded">Lưu</button>
+            </form>
+            {% endif %}
+        </div>
+        {% empty %}<p class="text-gray-400 text-sm">Chưa có lịch phỏng vấn.</p>{% endfor %}
+
+        {% if can_manage_hr %}
+        <form method="post" action="{% url 'portal:hr_interview_create' candidate.pk %}" class="mt-3 space-y-2">
+            {% csrf_token %}
+            <input type="datetime-local" name="interview_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <select name="interview_type" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+                <option value="Trực tiếp">Trực tiếp</option>
+                <option value="Online">Online</option>
+                <option value="Qua điện thoại">Qua điện thoại</option>
+            </select>
+            <select name="interviewer" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+                {% for e in interviewers %}<option value="{{ e.id }}">{{ e.full_name }}</option>{% endfor %}
+            </select>
+            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Lên lịch phỏng vấn</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h2 class="text-sm font-bold text-gray-900 mb-3">Thư mời làm việc (Offer)</h2>
+        {% for o in offers %}
+        <div class="border-b border-gray-50 py-2 text-sm">
+            <p>Ngày gửi: {{ o.offer_date }} — Lương đề nghị: {{ o.salary_offer|floatformat:0 }} đ — Dự kiến vào làm: {{ o.expected_join_date }}</p>
+            <p class="text-gray-500">Trạng thái: {{ o.get_status_display }}</p>
+            {% if can_manage_hr and o.status == "Sent" %}
+            <form method="post" action="{% url 'portal:hr_offer_update_status' o.pk %}" class="flex gap-2 mt-1">
+                {% csrf_token %}
+                <select name="status" class="rounded border border-gray-300 px-2 py-1 text-xs"><option value="Accepted">Đã chấp nhận</option><option value="Declined">Đã từ chối</option></select>
+                <button type="submit" class="bg-blue-700 text-white text-xs px-3 py-1 rounded">Cập nhật</button>
+            </form>
+            {% endif %}
+        </div>
+        {% empty %}<p class="text-gray-400 text-sm">Chưa có offer.</p>{% endfor %}
+
+        {% if can_manage_hr %}
+        <form method="post" action="{% url 'portal:hr_offer_create' candidate.pk %}" class="mt-3 space-y-2">
+            {% csrf_token %}
+            <input type="date" name="offer_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <input type="date" name="expected_join_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <input type="number" name="salary_offer" placeholder="Mức lương đề nghị" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Tạo Offer</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

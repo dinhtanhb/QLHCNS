@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Quản lý Tài sản{% endblock %}
+{% block content %}
+<h1 class="text-lg font-bold text-gray-900 mb-4">Quản lý Tài sản</h1>
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+    <h2 class="text-sm font-bold text-gray-900 mb-3">Thêm tài sản mới</h2>
+    <form method="post" action="{% url 'portal:asset_admin_create' %}" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+        {% csrf_token %}
+        <input type="text" name="asset_code" placeholder="Mã số thiết bị" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="text" name="asset_name" placeholder="Tên thiết bị" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <select name="asset_type" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+            {% for t in asset_types %}<option value="{{ t.id }}">{{ t.get_asset_group_display }} — {{ t.asset_type_name }}</option>{% endfor %}
+        </select>
+        <input type="text" name="location" placeholder="Nơi sử dụng" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="text" name="brand" placeholder="Nhãn hiệu" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="text" name="serial_number" placeholder="Số Seri" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="text" name="funding_source" placeholder="Nguồn mua sắm" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="date" name="purchase_date" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="number" name="quantity" value="1" placeholder="Số lượng" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="text" name="unit" value="chiếc" placeholder="Đơn vị tính" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="number" name="purchase_value" placeholder="Giá trị (VNĐ)" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="text" name="note" placeholder="Ghi chú" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <button type="submit" class="md:col-span-4 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Thêm tài sản</button>
+    </form>
+</div>
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Mã số</th><th class="py-2 pr-4">Tên</th><th class="py-2 pr-4">Loại</th><th class="py-2 pr-4">Nơi SD</th><th class="py-2">Trạng thái</th></tr></thead>
+        <tbody class="divide-y divide-gray-100">
+        {% for a in assets %}
+        <tr><td class="py-2 pr-4 text-gray-500">{{ a.asset_code }}</td><td class="py-2 pr-4 font-medium">{{ a.asset_name }}</td><td class="py-2 pr-4">{{ a.asset_type }}</td><td class="py-2 pr-4">{{ a.location }}</td><td class="py-2">{{ a.get_status_display }}</td></tr>
+        {% empty %}<tr><td colspan="5" class="py-6 text-center text-gray-400">Chưa có tài sản nào.</td></tr>{% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

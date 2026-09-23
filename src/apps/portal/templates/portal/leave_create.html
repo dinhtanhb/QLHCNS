@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Tạo đơn xin nghỉ{% endblock %}
+{% block content %}
+<div class="max-w-lg bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <h1 class="text-lg font-bold text-gray-900 mb-4">Tạo đơn xin nghỉ phép</h1>
+    {% if balance %}
+    <div class="mb-4 rounded-lg bg-gray-50 border border-gray-200 p-3 text-sm">
+        <div class="flex flex-wrap gap-x-6 gap-y-1">
+            <span>Phép năm {{ current_year }} còn: <b class="text-blue-700">{{ balance.available_annual_days|floatformat:"-1" }}</b> ngày</span>
+            <span>Nghỉ bù còn: <b class="text-green-700">{{ balance.compensatory_remaining|floatformat:"-1" }}</b> ngày</span>
+        </div>
+        <div class="text-xs text-gray-500 mt-1.5">Số ngày nghỉ chỉ tính Thứ 2 – Thứ 6, không tính ngày lễ. Hệ thống tự tính, anh/chị không cần nhập.</div>
+    </div>
+    {% endif %}
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Loại nghỉ phép</label>
+            <select name="leave_type" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                {% for lt in leave_types %}
+                <option value="{{ lt.id }}">{{ lt.leave_type_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Từ ngày</label>
+                <input type="date" name="from_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Đến ngày</label>
+                <input type="date" name="to_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Lý do</label>
+            <textarea name="reason" rows="3" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+        <div class="flex gap-3 pt-2">
+            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-medium px-5 py-2.5 rounded-md transition">Gửi đơn</button>
+            <a href="{% url 'portal:leave_list' %}" class="text-gray-500 hover:text-gray-700 px-5 py-2.5">Hủy</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

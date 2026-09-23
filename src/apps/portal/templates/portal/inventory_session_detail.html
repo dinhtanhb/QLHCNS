@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}{{ session.session_name }}{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-lg font-bold text-gray-900">{{ session.session_name }}</h1>
+    <div class="flex gap-2">
+        <a href="{% url 'portal:inventory_session_print' session.pk %}" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Xem/In biên bản</a>
+        <a href="{% url 'portal:inventory_session_export_excel' session.pk %}" class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md transition">Xuất Excel</a>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+    <h2 class="text-sm font-bold text-gray-900 mb-3">Ban kiểm kê</h2>
+    <div class="flex flex-wrap gap-2 mb-3">
+        {% for m in members %}<span class="bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full">{{ m.employee.full_name }} — {{ m.get_role_display }}</span>{% endfor %}
+    </div>
+    {% if session.status != "Completed" %}
+    <form method="post" class="flex gap-2">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_member">
+        <select name="employee" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+            {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name }}</option>{% endfor %}
+        </select>
+        <select name="role" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <option value="Chairman">Trưởng ban kiểm kê</option>
+            <option value="Member">Thành viên kiểm kê</option>
+            <option value="Recorder">Người lập biên bản</option>
+        </select>
+        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Thêm</button>
+    </form>
+    {% endif %}
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+        <thead><tr class="text-left text-gray-500 border-b border-gray-200">
+            <th class="py-2 pr-4">Mã số</th><th class="py-2 pr-4">Tên thiết bị</th><th class="py-2 pr-4">Nơi SD</th><th class="py-2 pr-4">Đã kiểm</th><th class="py-2">Cập nhật tình trạng</th>
+        </tr></thead>
+        <tbody class="divide-y divide-gray-100">
+        {% for l in lines %}
+        <tr class="{% if l.is_counted %}bg-green-50{% endif %}">
+            <td class="py-2 pr-4 text-gray-500">{{ l.asset.asset_code }}</td>
+            <td class="py-2 pr-4 font-medium">{{ l.asset.asset_name }}</td>
+            <td class="py-2 pr-4">{{ l.asset.location }}</td>
+            <td class="py-2 pr-4">{% if l.is_counted %}✅{% else %}—{% endif %}</td>
+            <td class="py-2">
+                {% if session.status != "Completed" %}
+                <form method="post" action="{% url 'portal:inventory_line_update' l.pk %}" class="flex gap-1">
+                    {% csrf_token %}
+                    <select name="actual_condition" class="rounded border border-gray-300 px-1 py-0.5 text-xs">
+                        <option value="Normal" {% if l.actual_condition == "Normal" %}selected{% endif %}>Bình thường</option>
+                        <option value="Damaged" {% if l.actual_condition == "Damaged" %}selected{% endif %}>Hư hỏng</option>
+                        <option value="Lost" {% if l.actual_condition == "Lost" %}selected{% endif %}>Mất/Thất lạc</option>
+                    </select>
+                    <input type="text" name="note" value="{{ l.note|default:'' }}" placeholder="Ghi chú" class="rounded border border-gray-300 px-1 py-0.5 text-xs w-28">
+                    <button type="submit" class="bg-blue-700 text-white text-xs px-2 py-0.5 rounded">Xác nhận</button>
+                </form>
+                {% else %}{{ l.get_actual_condition_display }}{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+
+{% if session.status != "Completed" %}
+<form method="post" action="{% url 'portal:inventory_session_complete' session.pk %}" class="mt-6" onsubmit="return confirm('Hoàn tất đợt kiểm kê này?')">
+    {% csrf_token %}
+    {% if line_count == 0 %}
+    <p class="mb-2 text-sm text-red-700">Chưa có tài sản nào trong đợt kiểm kê.</p>
+    {% elif uncounted_lines %}
+    <p class="mb-2 text-sm text-amber-700">Còn {{ uncounted_lines }} tài sản chưa kiểm đếm.</p>
+    {% else %}
+    <p class="mb-2 text-sm text-green-700">Đã kiểm đếm đủ {{ line_count }} tài sản.</p>
+    {% endif %}
+    <textarea name="recommendation" placeholder="Kiến nghị (nếu có)" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm mb-2"></textarea>
+    <button type="submit" {% if uncounted_lines or not line_count %}disabled{% endif %} class="bg-green-600 hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50 text-white text-sm font-medium px-4 py-2 rounded-md transition">✅ Hoàn tất kiểm kê</button>
+</form>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ task.task_name }}{% endblock %}
+{% block content %}
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+    <div class="flex items-start justify-between mb-2">
+        <div>
+            <p class="text-xs text-gray-400">{{ task.task_code }}</p>
+            <h1 class="text-lg font-bold text-gray-900">{{ task.task_name }}</h1>
+        </div>
+        <span class="px-2.5 py-1 rounded-full text-xs font-medium
+            {% if task.status == 'Done' %}bg-green-100 text-green-700
+            {% elif task.status == 'InProgress' %}bg-blue-100 text-blue-700
+            {% elif task.status == 'Cancelled' %}bg-gray-100 text-gray-600
+            {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+            {{ task.get_status_display }}
+        </span>
+    </div>
+    <p class="text-gray-600 text-sm mb-4">{{ task.description|default:"Không có mô tả."|linebreaks }}</p>
+    <dl class="grid grid-cols-2 gap-y-2 text-sm text-gray-600 border-t border-gray-100 pt-4">
+        <div><dt class="inline text-gray-400">Người giao việc: </dt><dd class="inline font-medium">{{ task.assigned_by_employee }}</dd></div>
+        <div><dt class="inline text-gray-400">Người phụ trách: </dt><dd class="inline font-medium">{{ task.assigned_to_employee }}</dd></div>
+        <div><dt class="inline text-gray-400">Ngày bắt đầu: </dt><dd class="inline font-medium">{{ task.start_date|default:"—" }}</dd></div>
+        <div><dt class="inline text-gray-400">Hạn hoàn thành: </dt><dd class="inline font-medium">{{ task.due_date|default:"—" }}</dd></div>
+    </dl>
+
+    {% if is_owner %}
+    <form method="post" class="mt-4 flex items-center gap-3">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_status">
+        <label class="text-sm font-medium text-gray-700">Cập nhật trạng thái:</label>
+        <select name="status" class="rounded-md border border-gray-300 px-3 py-1.5 text-sm">
+            {% for value, label in task.STATUS_CHOICES %}
+            <option value="{{ value }}" {% if task.status == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-1.5 rounded-md transition">Lưu</button>
+    </form>
+    {% endif %}
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <h2 class="text-sm font-bold text-gray-900 mb-3">Bình luận</h2>
+    <div class="space-y-3 mb-4">
+        {% for c in comments %}
+        <div class="text-sm border-b border-gray-50 pb-2">
+            <span class="font-medium text-gray-800">{{ c.employee }}</span>
+            <span class="text-gray-400 text-xs">— {{ c.comment_date|date:"d/m/Y H:i" }}</span>
+            <p class="text-gray-600 mt-0.5">{{ c.comment_text }}</p>
+        </div>
+        {% empty %}
+        <p class="text-gray-400 text-sm">Chưa có bình luận nào.</p>
+        {% endfor %}
+    </div>
+    <form method="post" class="flex gap-2">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_comment">
+        <input type="text" name="comment_text" placeholder="Viết bình luận..." required
+            class="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Gửi</button>
+    </form>
+</div>
+{% endblock %}

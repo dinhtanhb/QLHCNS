@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Trung tâm Báo cáo & Thống kê{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">📊 Trung tâm Báo cáo & Xuất dữ liệu</h1>
+            <p class="text-sm text-gray-500 mt-1">Tổng hợp số liệu quản trị Hành chính - Nhân sự và kết xuất file Excel.</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="/admin/" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition">
+                ⚙️ Trang Quản trị
+            </a>
+            <a href="{% url 'portal:dashboard' %}" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition">
+                🏠 Cổng thông tin
+            </a>
+        </div>
+    </div>
+
+    <!-- Hàng thẻ thống kê nhanh -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Nhân sự chính thức</span>
+                <span class="p-2 rounded-lg bg-blue-50 text-blue-600 text-lg">👥</span>
+            </div>
+            <div class="mt-3 flex items-baseline gap-2">
+                <span class="text-2xl font-bold text-gray-900">{{ total_active }}</span>
+                <span class="text-xs text-gray-500">nhân viên</span>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">+ {{ total_probation }} đang thử việc</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">HĐ sắp hết hạn (30 ngày)</span>
+                <span class="p-2 rounded-lg bg-amber-50 text-amber-600 text-lg">📑</span>
+            </div>
+            <div class="mt-3 flex items-baseline gap-2">
+                <span class="text-2xl font-bold text-amber-600">{{ expiring_30_count }}</span>
+                <span class="text-xs text-gray-500">hợp đồng</span>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Trong 60 ngày tới: {{ expiring_60_count }} HĐ</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Công văn đang xử lý</span>
+                <span class="p-2 rounded-lg bg-indigo-50 text-indigo-600 text-lg">📨</span>
+            </div>
+            <div class="mt-3 flex items-baseline gap-2">
+                <span class="text-2xl font-bold text-indigo-600">{{ processing_dispatches }}</span>
+                <span class="text-xs text-gray-500">văn bản</span>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">{{ pending_dispatches }} văn bản chờ phân công</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Công văn quá hạn</span>
+                <span class="p-2 rounded-lg bg-red-50 text-red-600 text-lg">⚠️</span>
+            </div>
+            <div class="mt-3 flex items-baseline gap-2">
+                <span class="text-2xl font-bold text-red-600">{{ overdue_dispatches }}</span>
+                <span class="text-xs text-gray-500">cần xử lý gấp</span>
+            </div>
+            <p class="text-xs text-red-400 mt-1">Chưa hoàn thành đúng hạn</p>
+        </div>
+    </div>
+
+    <!-- Khối kết xuất báo cáo Excel -->
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+        <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span>📥</span> Xuất Báo Cáo & Sổ Sách Chuẩn Excel
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Báo cáo 1: Danh sách nhân sự -->
+            <div class="p-4 rounded-xl border border-gray-200 bg-gray-50/60 hover:bg-gray-50 transition flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 font-semibold text-gray-900 mb-1">
+                        <span class="text-green-600 font-bold">XLS</span> Danh Sách Nhân Sự
+                    </div>
+                    <p class="text-xs text-gray-500 mb-4">Danh sách toàn bộ cán bộ nhân viên, thông tin CCCD, ngày vào làm, chức vụ và phòng ban.</p>
+                </div>
+                <a href="{% url 'reporting:export_employees' %}" class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold transition">
+                    ⬇️ Tải file Excel (.xlsx)
+                </a>
+            </div>
+
+            <!-- Báo cáo 2: Hợp đồng sắp hết hạn -->
+            <div class="p-4 rounded-xl border border-gray-200 bg-gray-50/60 hover:bg-gray-50 transition flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 font-semibold text-gray-900 mb-1">
+                        <span class="text-green-600 font-bold">XLS</span> HĐ Sắp Hết Hạn
+                    </div>
+                    <p class="text-xs text-gray-500 mb-4">Danh sách hợp đồng lao động cần tái ký, gia hạn hoặc chuyển đổi loại hợp đồng.</p>
+                </div>
+                <div class="flex gap-2">
+                    <a href="{% url 'reporting:export_contracts' %}?days=30" class="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold transition">
+                        30 ngày
+                    </a>
+                    <a href="{% url 'reporting:export_contracts' %}?days=60" class="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold transition">
+                        60 ngày
+                    </a>
+                </div>
+            </div>
+
+            <!-- Báo cáo 3: Sổ công văn đến -->
+            <div class="p-4 rounded-xl border border-gray-200 bg-gray-50/60 hover:bg-gray-50 transition flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 font-semibold text-gray-900 mb-1">
+                        <span class="text-green-600 font-bold">XLS</span> Sổ Công Văn Đến
+                    </div>
+                    <p class="text-xs text-gray-500 mb-4">Sổ theo dõi văn bản đến theo chuẩn lưu trữ văn thư nhà nước và quản lý nội bộ.</p>
+                </div>
+                <a href="{% url 'reporting:export_dispatches' %}?type=Incoming" class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold transition">
+                    ⬇️ Tải Sổ Công Văn Đến
+                </a>
+            </div>
+
+            <!-- Báo cáo 4: Sổ công văn đi -->
+            <div class="p-4 rounded-xl border border-gray-200 bg-gray-50/60 hover:bg-gray-50 transition flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 font-semibold text-gray-900 mb-1">
+                        <span class="text-green-600 font-bold">XLS</span> Sổ Công Văn Đi
+                    </div>
+                    <p class="text-xs text-gray-500 mb-4">Sổ theo dõi văn bản phát hành, công văn gửi đi đối tác, cơ quan ban ngành.</p>
+                </div>
+                <a href="{% url 'reporting:export_dispatches' %}?type=Outgoing" class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold transition">
+                    ⬇️ Tải Sổ Công Văn Đi
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

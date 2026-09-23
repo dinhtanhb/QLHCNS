@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Công văn đi{% endblock %}
+{% block content %}
+<style>@media print { .no-print { display: none !important; } }</style>
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-lg font-bold text-gray-900">Sổ Công văn đi</h1>
+    <button type="button" onclick="window.print()" class="no-print rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">In sổ công văn</button>
+</div>
+
+{% if can_access_outgoing_document %}
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6 no-print">
+    <h2 class="text-sm font-bold text-gray-900 mb-3">Ghi nhận công văn đi mới</h2>
+    <form method="post" action="{% url 'portal:office_outgoing_create' %}" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {% csrf_token %}
+        <input type="text" name="outgoing_no" placeholder="Số công văn đi" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="date" name="outgoing_date" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="text" name="recipient" placeholder="Nơi nhận" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="text" name="subject" placeholder="Trích yếu / Nội dung" required class="rounded-md border border-gray-300 px-3 py-2 text-sm md:col-span-2">
+        <select name="signed_by" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <option value="">-- Chọn người ký (GĐ/PGĐ) --</option>
+            {% for d in directors %}<option value="{{ d.id }}">{{ d.full_name }}</option>{% endfor %}
+        </select>
+        <input type="file" name="attachment" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.webp,.txt,.csv,.zip,.rar,.7z" class="md:col-span-3 text-sm" title="Chấp nhận PDF, Word, Excel, PowerPoint, ảnh, txt, csv, zip. Tối đa 20 MB.">
+        <button type="submit" class="md:col-span-3 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Ghi nhận công văn đi</button>
+    </form>
+    {% if not directors %}
+    <p class="text-xs text-red-500 mt-2">Chưa có nhân viên nào giữ chức danh "Giám đốc" trong hệ thống — liên hệ IT/Nhân sự bổ sung trước khi tạo công văn đi.</p>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+        <thead><tr class="text-left text-gray-500 border-b border-gray-200">
+            <th class="py-2 pr-4">Số</th><th class="py-2 pr-4">Ngày</th><th class="py-2 pr-4">Nơi nhận</th><th class="py-2 pr-4">Trích yếu</th>
+            <th class="py-2 pr-4">Người soạn thảo</th><th class="py-2 pr-4">Người ký</th><th class="py-2">File</th>
+        </tr></thead>
+        <tbody class="divide-y divide-gray-100">
+        {% for d in docs %}
+        <tr>
+            <td class="py-2 pr-4 text-gray-500">{{ d.outgoing_no }}</td>
+            <td class="py-2 pr-4">{{ d.outgoing_date }}</td>
+            <td class="py-2 pr-4">{{ d.recipient }}</td>
+            <td class="py-2 pr-4 font-medium">{{ d.subject }}</td>
+            <td class="py-2 pr-4">{{ d.drafted_by }}</td>
+            <td class="py-2 pr-4">{{ d.signed_by }}</td>
+            <td class="py-2">{% if d.attachment %}<a href="{{ d.attachment.url }}" target="_blank" class="text-blue-700 hover:underline">Tải về</a>{% else %}—{% endif %}</td>
+        </tr>
+        {% empty %}<tr><td colspan="7" class="py-6 text-center text-gray-400">Chưa có công văn đi nào.</td></tr>{% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

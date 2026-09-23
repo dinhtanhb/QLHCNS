@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Đề nghị Văn phòng phẩm{% endblock %}
+{% block content %}
+<h1 class="text-lg font-bold text-gray-900 mb-4">Đề nghị cấp Văn phòng phẩm</h1>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+    <h2 class="text-sm font-bold text-gray-900 mb-3">Tạo đề nghị mới</h2>
+    <form method="post" action="{% url 'portal:supply_request_create' %}">
+        {% csrf_token %}
+        <div id="supply-lines" class="space-y-2 mb-3">
+            <div class="grid grid-cols-2 gap-3">
+                <select name="item" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+                    <option value="">-- Chọn vật tư --</option>
+                    {% for i in items %}<option value="{{ i.id }}">{{ i.item_name }} ({{ i.unit }})</option>{% endfor %}
+                </select>
+                <input type="number" name="quantity" min="1" placeholder="Số lượng" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <select name="item" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+                    <option value="">-- Chọn vật tư (dòng 2, tùy chọn) --</option>
+                    {% for i in items %}<option value="{{ i.id }}">{{ i.item_name }} ({{ i.unit }})</option>{% endfor %}
+                </select>
+                <input type="number" name="quantity" min="1" placeholder="Số lượng" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <select name="item" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+                    <option value="">-- Chọn vật tư (dòng 3, tùy chọn) --</option>
+                    {% for i in items %}<option value="{{ i.id }}">{{ i.item_name }} ({{ i.unit }})</option>{% endfor %}
+                </select>
+                <input type="number" name="quantity" min="1" placeholder="Số lượng" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+            </div>
+        </div>
+        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Gửi đề nghị</button>
+    </form>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <h2 class="text-sm font-bold text-gray-900 mb-3">Đề nghị của tôi</h2>
+    <table class="w-full text-sm">
+        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Số đề nghị</th><th class="py-2 pr-4">Ngày</th><th class="py-2 pr-4">Vật tư</th><th class="py-2">Trạng thái</th></tr></thead>
+        <tbody class="divide-y divide-gray-100">
+        {% for r in requests %}
+        <tr>
+            <td class="py-2 pr-4 text-gray-500">{{ r.request_no }}</td>
+            <td class="py-2 pr-4">{{ r.request_date }}</td>
+            <td class="py-2 pr-4">{% for line in r.items.all %}{{ line.item.item_name }} x{{ line.quantity_requested }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+            <td class="py-2">
+                <span class="px-2.5 py-1 rounded-full text-xs font-medium
+                    {% if r.status == 'Issued' %}bg-green-100 text-green-700
+                    {% elif r.status == 'Rejected' %}bg-red-100 text-red-700
+                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">{{ r.get_status_display }}</span>
+            </td>
+        </tr>
+        {% empty %}<tr><td colspan="4" class="py-6 text-center text-gray-400">Chưa có đề nghị nào.</td></tr>{% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

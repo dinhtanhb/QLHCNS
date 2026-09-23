@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Ứng viên{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-lg font-bold text-gray-900">Quản lý Ứng viên</h1>
+    {% if can_manage_hr %}<a href="{% url 'portal:hr_candidate_create' %}" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Thêm ứng viên</a>{% endif %}
+</div>
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <table class="w-full text-sm">
+        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Mã</th><th class="py-2 pr-4">Họ tên</th><th class="py-2 pr-4">SĐT</th><th class="py-2 pr-4">Nguồn</th><th class="py-2">Trạng thái</th></tr></thead>
+        <tbody class="divide-y divide-gray-100">
+        {% for c in candidates %}
+        <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{% url 'portal:hr_candidate_detail' c.pk %}'">
+            <td class="py-2 pr-4 text-gray-500">{{ c.candidate_code }}</td>
+            <td class="py-2 pr-4 font-medium text-blue-700">{{ c.full_name }}</td>
+            <td class="py-2 pr-4">{{ c.phone_number }}</td>
+            <td class="py-2 pr-4">{{ c.source|default:"—" }}</td>
+            <td class="py-2">{{ c.get_status_display }}</td>
+        </tr>
+        {% empty %}<tr><td colspan="5" class="py-6 text-center text-gray-400">Chưa có ứng viên nào.</td></tr>{% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

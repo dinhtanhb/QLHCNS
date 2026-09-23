@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Thêm ứng viên{% endblock %}
+{% block content %}
+<div class="max-w-lg bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <h1 class="text-lg font-bold text-gray-900 mb-4">Thêm ứng viên mới</h1>
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <input type="text" name="candidate_code" placeholder="Mã ứng viên" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="text" name="full_name" placeholder="Họ tên" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="text" name="phone_number" placeholder="Số điện thoại" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="email" name="email" placeholder="Email" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="text" name="current_address" placeholder="Địa chỉ hiện tại" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="text" name="source" placeholder="Nguồn ứng tuyển" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <div class="flex gap-3 pt-2">
+            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-medium px-5 py-2.5 rounded-md transition">Lưu</button>
+            <a href="{% url 'portal:hr_candidate_list' %}" class="text-gray-500 hover:text-gray-700 px-5 py-2.5">Hủy</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

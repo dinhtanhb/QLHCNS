@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Kiểm kê Tài sản{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-lg font-bold text-gray-900">Kiểm kê Tài sản</h1>
+</div>
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+    <h2 class="text-sm font-bold text-gray-900 mb-3">Tạo đợt kiểm kê mới</h2>
+    <form method="post" action="{% url 'portal:inventory_session_create' %}" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {% csrf_token %}
+        <input type="text" name="session_name" placeholder="Tên đợt (VD: Kiểm kê cuối năm 2026)" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="text" name="office_name" placeholder="Văn phòng / Bộ phận" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="datetime-local" name="inventory_datetime" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <button type="submit" class="md:col-span-3 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Tạo đợt kiểm kê (tự nạp toàn bộ tài sản)</button>
+    </form>
+</div>
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <table class="w-full text-sm">
+        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Tên đợt</th><th class="py-2 pr-4">Văn phòng</th><th class="py-2 pr-4">Thời điểm</th><th class="py-2">Trạng thái</th></tr></thead>
+        <tbody class="divide-y divide-gray-100">
+        {% for s in sessions %}
+        <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{% url 'portal:inventory_session_detail' s.pk %}'">
+            <td class="py-2 pr-4 font-medium text-blue-700">{{ s.session_name }}</td>
+            <td class="py-2 pr-4">{{ s.office_name }}</td>
+            <td class="py-2 pr-4">{{ s.inventory_datetime|date:"d/m/Y H:i" }}</td>
+            <td class="py-2">{{ s.get_status_display }}</td>
+        </tr>
+        {% empty %}<tr><td colspan="4" class="py-6 text-center text-gray-400">Chưa có đợt kiểm kê nào.</td></tr>{% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
