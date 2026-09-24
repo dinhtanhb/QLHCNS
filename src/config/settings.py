@@ -122,6 +122,7 @@ if DB_ENGINE == "django.db.backends.sqlite3":
         }
     }
 else:
+    DB_TRUSTED_CONNECTION = os.getenv("DB_TRUSTED_CONNECTION", "no")
     DATABASES = {
         "default": {
             "ENGINE": "mssql",
@@ -132,6 +133,7 @@ else:
             "PORT": os.getenv("DB_PORT", "1433"),
             "OPTIONS": {
                 "driver": "ODBC Driver 17 for SQL Server",
+                "trusted_connection": DB_TRUSTED_CONNECTION,
             },
         }
     }
