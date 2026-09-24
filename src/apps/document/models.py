@@ -1,6 +1,7 @@
 from django.db import models
 from apps.common.models import BaseAuditModel
 from apps.common.uploads import upload_to_dispatches, upload_to_documents, validate_upload
+from apps.m365.storage import get_storage
 
 
 class DocumentCategory(BaseAuditModel):
@@ -35,6 +36,7 @@ class Document(BaseAuditModel):
     uploaded_file = models.FileField(
         "Tệp đính kèm", upload_to=upload_to_documents,
         validators=[validate_upload], null=True, blank=True,
+        storage=get_storage("documents"),
     )
     document_url = models.CharField("Đường dẫn tài liệu", max_length=500, null=True, blank=True, db_column="DocumentUrl")
     status = models.CharField("Trạng thái", max_length=30, choices=STATUS_CHOICES, default="Draft", db_column="Status")
@@ -170,6 +172,7 @@ class OfficialDispatch(BaseAuditModel):
     attachment = models.FileField(
         "Tệp đính kèm scan", upload_to=upload_to_dispatches,
         validators=[validate_upload], null=True, blank=True,
+        storage=get_storage("dispatches"),
     )
     
     # Liên kết phúc đáp (Văn bản này trả lời cho văn bản nào)

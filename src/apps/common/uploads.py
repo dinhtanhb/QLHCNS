@@ -27,6 +27,12 @@ ALLOWED_EXTENSIONS = {
 MAX_UPLOAD_SIZE_MB = 20
 MAX_UPLOAD_SIZE = MAX_UPLOAD_SIZE_MB * 1024 * 1024
 
+# Định dạng riêng cho thư viện ảnh/video công ty (rộng hơn ALLOWED_EXTENSIONS
+# vì cần nhận thêm định dạng video). Dùng cho apps.m365.models.CompanyMedia.
+ALLOWED_MEDIA_EXTENSIONS = ALLOWED_EXTENSIONS | {".mp4", ".mov", ".avi", ".mkv", ".webm"}
+MAX_MEDIA_UPLOAD_SIZE_MB = 500
+MAX_MEDIA_UPLOAD_SIZE = MAX_MEDIA_UPLOAD_SIZE_MB * 1024 * 1024
+
 
 def slugify_filename(filename, max_length=80):
     """Bỏ dấu tiếng Việt và ký tự đặc biệt, giữ lại phần mở rộng."""
@@ -74,6 +80,14 @@ def upload_to_candidate_cv(instance, filename):
     return build_upload_path("candidates/cv", filename)
 
 
+def upload_to_leave_requests(instance, filename):
+    return build_upload_path("leave-requests", filename)
+
+
+def upload_to_company_media(instance, filename):
+    return build_upload_path("company-media", filename)
+
+
 def validate_upload(uploaded_file):
     """Kiểm tra định dạng và dung lượng tệp. Dùng làm validator cho FileField."""
     if not uploaded_file:
@@ -92,4 +106,27 @@ def validate_upload(uploaded_file):
     if size and size > MAX_UPLOAD_SIZE:
         raise ValidationError(
             f"Tệp nặng {size / 1024 / 1024:.1f} MB, vượt quá giới hạn {MAX_UPLOAD_SIZE_MB} MB."
+        )
+
+
+def validate_media_upload(uploaded_file):
+    """Giống validate_upload nhưng cho phép thêm định dạng video và dung
+    lượng lớn hơn — dùng cho thư viện ảnh/video công ty (CompanyMedia)."""
+    if not uploaded_file:
+        return
+
+    name = getattr(uploaded_file, "name", "") or ""
+    ext = os.path.splitext(name)[1].lower()
+    if ext not in ALLOWED_MEDIA_EXTENSIONS:
+        allowed = ", ".join(sorted(e.lstrip(".") for e in ALLOWED_MEDIA_EXTENSIONS))
+        raise ValidationError(
+            f'Định dạng tệp "{ext or "không xác định"}" không được phép. '
+            f"Chỉ nhận các định dạng: {allowed}."
+        )
+
+    size = getattr(uploaded_file, "size", None)
+    if size and size > MAX_MEDIA_UPLOAD_SIZE:
+        raise ValidationError(
+            f"Tệp nặng {size / 1024 / 1024:.1f} MB, vượt quá giới hạn "
+            f"{MAX_MEDIA_UPLOAD_SIZE_MB} MB."
         )
