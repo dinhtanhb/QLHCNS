@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Vào sổ công văn{% endblock %}
+{% block content %}
+<div class="max-w-2xl bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <h1 class="text-lg font-bold text-gray-900 mb-4">Vào sổ Công văn</h1>
+    <form method="post" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Loại văn bản</label>
+            <select name="dispatch_type" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+                <option value="Incoming">Công văn đến</option>
+                <option value="Outgoing">Công văn đi</option>
+                <option value="InternalDirective">Chỉ đạo nội bộ</option>
+            </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Số công văn</label>
+                <input type="text" name="dispatch_no" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Số hiệu gốc (nếu là CV đến)</label>
+                <input type="text" name="original_doc_no" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
+        </div>
+        <div><label class="block text-sm font-medium text-gray-700 mb-1">Trích yếu nội dung</label>
+            <input type="text" name="title" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
+        <div><label class="block text-sm font-medium text-gray-700 mb-1">Cơ quan / Đơn vị ban hành</label>
+            <input type="text" name="issuing_organization" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
+        <div class="grid grid-cols-2 gap-3">
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Ngày ban hành</label>
+                <input type="date" name="issue_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Ngày đến / Ngày gửi</label>
+                <input type="date" name="received_or_sent_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Độ khẩn</label>
+                <select name="urgency_level" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+                    <option value="Normal">Thường</option><option value="Urgent">Khẩn</option>
+                    <option value="VeryUrgent">Thượng khẩn</option><option value="TopUrgent">Hỏa tốc</option>
+                </select></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Độ mật</label>
+                <select name="security_level" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+                    <option value="Normal">Thường</option><option value="Confidential">Mật</option><option value="TopSecret">Tuyệt mật</option>
+                </select></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Phòng ban chủ trì</label>
+                <select name="department" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+                    <option value="">-- Chọn --</option>
+                    {% for d in departments %}<option value="{{ d.id }}">{{ d.department_name }}</option>{% endfor %}
+                </select></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Người phụ trách chính</label>
+                <select name="assigned_to" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+                    <option value="">-- Chọn --</option>
+                    {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name }}</option>{% endfor %}
+                </select></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Người ký phát hành (nếu CV đi)</label>
+                <select name="signer" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+                    <option value="">-- Chọn --</option>
+                    {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name }}</option>{% endfor %}
+                </select></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Hạn xử lý</label>
+                <input type="date" name="due_date" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
+        </div>
+        <div><label class="block text-sm font-medium text-gray-700 mb-1">Tệp đính kèm scan</label>
+            <input type="file" name="attachment" class="w-full text-sm"></div>
+        <div class="flex gap-3 pt-2">
+            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-medium px-5 py-2.5 rounded-md transition">Vào sổ</button>
+            <a href="{% url 'portal:dispatch_list' %}" class="text-gray-500 hover:text-gray-700 px-5 py-2.5">Hủy</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

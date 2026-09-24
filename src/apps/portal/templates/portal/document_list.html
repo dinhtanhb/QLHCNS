@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Thư viện tài liệu{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-lg font-bold text-gray-900">Thư viện tài liệu</h1>
+    {% if can_approve_document %}
+    <a href="{% url 'portal:document_approval_list' %}" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Duyệt tài liệu chờ xử lý</a>
+    {% endif %}
+</div>
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="text-left text-gray-500 border-b border-gray-200">
+                <th class="py-2 pr-4">Số hiệu</th><th class="py-2 pr-4">Tên tài liệu</th><th class="py-2 pr-4">Danh mục</th><th class="py-2 pr-4">Phiên bản</th><th class="py-2 pr-4">Hiệu lực</th><th class="py-2">Tải về</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+        {% for d in documents %}
+        <tr>
+            <td class="py-2.5 pr-4 text-gray-500">{{ d.document_no }}</td>
+            <td class="py-2.5 pr-4 font-medium">{{ d.document_name }}</td>
+            <td class="py-2.5 pr-4">{{ d.category }}</td>
+            <td class="py-2.5 pr-4">v{{ d.version_no }}</td>
+            <td class="py-2.5 pr-4">{{ d.effective_date|default:"—" }}</td>
+            <td class="py-2.5">
+                {% if d.document_url %}
+                <a href="{{ d.document_url }}" target="_blank" class="text-blue-700 hover:underline">Xem/Tải</a>
+                {% else %}
+                <span class="text-gray-400">—</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="py-6 text-center text-gray-400">Chưa có tài liệu nào được ban hành.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

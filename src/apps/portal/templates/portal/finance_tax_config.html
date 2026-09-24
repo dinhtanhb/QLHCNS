@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Cấu hình Thuế & Bảo hiểm{% endblock %}
+{% block content %}
+<h1 class="text-lg font-bold text-gray-900 mb-4">Cấu hình Tỷ lệ Bảo hiểm & Thuế TNCN</h1>
+<p class="text-xs text-gray-500 mb-4">Mỗi lần Nhà nước điều chỉnh tỷ lệ/biểu thuế, thêm 1 dòng cấu hình mới với "Hiệu lực từ" đúng ngày áp dụng — hệ thống tự dùng đúng số liệu theo từng kỳ lương, không ảnh hưởng lương các kỳ cũ đã chạy.</p>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h2 class="text-sm font-bold text-gray-900 mb-3">Thêm tỷ lệ Bảo hiểm</h2>
+        <form method="post" class="space-y-2 text-sm">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="insurance">
+            <label class="block text-xs text-gray-500">Hiệu lực từ</label>
+            <input type="date" name="effective_from" required class="w-full rounded-md border border-gray-300 px-3 py-2">
+            <div class="grid grid-cols-2 gap-2">
+                <div><label class="block text-xs text-gray-500">NLĐ - BHXH (%)</label><input type="number" step="0.01" name="employee_social_insurance_rate" required class="w-full rounded-md border border-gray-300 px-2 py-1.5"></div>
+                <div><label class="block text-xs text-gray-500">NLĐ - BHYT (%)</label><input type="number" step="0.01" name="employee_health_insurance_rate" required class="w-full rounded-md border border-gray-300 px-2 py-1.5"></div>
+                <div><label class="block text-xs text-gray-500">NLĐ - BHTN (%)</label><input type="number" step="0.01" name="employee_unemployment_insurance_rate" required class="w-full rounded-md border border-gray-300 px-2 py-1.5"></div>
+                <div><label class="block text-xs text-gray-500">DN - BHXH (%)</label><input type="number" step="0.01" name="employer_social_insurance_rate" required class="w-full rounded-md border border-gray-300 px-2 py-1.5"></div>
+                <div><label class="block text-xs text-gray-500">DN - BHYT (%)</label><input type="number" step="0.01" name="employer_health_insurance_rate" required class="w-full rounded-md border border-gray-300 px-2 py-1.5"></div>
+                <div><label class="block text-xs text-gray-500">DN - BHTN (%)</label><input type="number" step="0.01" name="employer_unemployment_insurance_rate" required class="w-full rounded-md border border-gray-300 px-2 py-1.5"></div>
+            </div>
+            <input type="text" name="legal_reference" placeholder="Căn cứ pháp lý" class="w-full rounded-md border border-gray-300 px-3 py-2">
+            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Thêm cấu hình</button>
+        </form>
+        <div class="mt-4 space-y-1 text-xs text-gray-500 border-t border-gray-100 pt-3">
+            {% for c in insurance_configs %}<p>Từ {{ c.effective_from }}: NLĐ {{ c.total_employee_rate }}%</p>{% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h2 class="text-sm font-bold text-gray-900 mb-3">Thêm Giảm trừ gia cảnh</h2>
+        <form method="post" class="space-y-2 text-sm">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="deduction">
+            <label class="block text-xs text-gray-500">Hiệu lực từ</label>
+            <input type="date" name="effective_from" required class="w-full rounded-md border border-gray-300 px-3 py-2">
+            <label class="block text-xs text-gray-500">Giảm trừ bản thân (đ/tháng)</label>
+            <input type="number" name="self_deduction_monthly" required class="w-full rounded-md border border-gray-300 px-3 py-2">
+            <label class="block text-xs text-gray-500">Giảm trừ mỗi người phụ thuộc (đ/tháng)</label>
+            <input type="number" name="dependent_deduction_monthly" required class="w-full rounded-md border border-gray-300 px-3 py-2">
+            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Thêm cấu hình</button>
+        </form>
+        <div class="mt-4 space-y-1 text-xs text-gray-500 border-t border-gray-100 pt-3">
+            {% for d in deduction_configs %}<p>Từ {{ d.effective_from }}: Bản thân {{ d.self_deduction_monthly|floatformat:0 }}đ / Phụ thuộc {{ d.dependent_deduction_monthly|floatformat:0 }}đ</p>{% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <h2 class="text-sm font-bold text-gray-900 mb-3">Biểu thuế TNCN lũy tiến</h2>
+    <form method="post" class="grid grid-cols-1 md:grid-cols-6 gap-2 text-sm mb-4">
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="bracket">
+        <input type="date" name="effective_from" required placeholder="Hiệu lực từ" class="rounded-md border border-gray-300 px-2 py-1.5">
+        <input type="number" name="bracket_no" placeholder="Bậc" required class="rounded-md border border-gray-300 px-2 py-1.5">
+        <input type="number" name="income_from_monthly" placeholder="Từ (đ)" required class="rounded-md border border-gray-300 px-2 py-1.5">
+        <input type="number" name="income_to_monthly" placeholder="Đến (đ, để trống nếu vô hạn)" class="rounded-md border border-gray-300 px-2 py-1.5">
+        <input type="number" step="0.01" name="tax_rate" placeholder="Thuế suất (%)" required class="rounded-md border border-gray-300 px-2 py-1.5">
+        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-medium px-4 py-1.5 rounded-md transition">+ Thêm bậc</button>
+    </form>
+    <table class="w-full text-sm">
+        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Hiệu lực từ</th><th class="py-2 pr-4">Bậc</th><th class="py-2 pr-4">Từ</th><th class="py-2 pr-4">Đến</th><th class="py-2">Thuế suất</th></tr></thead>
+        <tbody class="divide-y divide-gray-100">
+        {% for b in tax_brackets %}
+        <tr>
+            <td class="py-2 pr-4">{{ b.effective_from }}</td>
+            <td class="py-2 pr-4">{{ b.bracket_no }}</td>
+            <td class="py-2 pr-4">{{ b.income_from_monthly|floatformat:0 }}</td>
+            <td class="py-2 pr-4">{{ b.income_to_monthly|floatformat:0|default:"Trở lên" }}</td>
+            <td class="py-2">{{ b.tax_rate }}%</td>
+        </tr>
+        {% empty %}<tr><td colspan="5" class="py-6 text-center text-gray-400">Chưa có bậc thuế nào.</td></tr>{% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

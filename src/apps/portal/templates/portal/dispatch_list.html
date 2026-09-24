@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Quản lý Công văn & Văn bản Hành chính{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <span>📬</span> Công văn & Văn bản Hành chính
+            </h1>
+            <p class="text-xs text-gray-500 mt-1">Theo dõi, phân công và xử lý công văn đến, công văn đi và chỉ đạo điều hành.</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="{% url 'reporting:export_dispatches' %}?type=Incoming" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition">
+                📥 Xuất Sổ CV Đến (.xlsx)
+            </a>
+            <a href="{% url 'reporting:export_dispatches' %}?type=Outgoing" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition">
+                📤 Xuất Sổ CV Đi (.xlsx)
+            </a>
+            {% if is_management %}
+            <a href="{% url 'portal:dispatch_create' %}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-blue-700 text-white hover:bg-blue-800 transition">
+                + Tiếp nhận / Vào sổ công văn
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Bộ lọc tìm kiếm -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+        <form method="get" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Loại văn bản</label>
+                <select name="type" class="w-full text-xs rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <option value="">-- Tất cả loại --</option>
+                    <option value="Incoming" {% if selected_type == "Incoming" %}selected{% endif %}>Công văn đến</option>
+                    <option value="Outgoing" {% if selected_type == "Outgoing" %}selected{% endif %}>Công văn đi</option>
+                    <option value="InternalDirective" {% if selected_type == "InternalDirective" %}selected{% endif %}>Chỉ đạo nội bộ</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Trạng thái</label>
+                <select name="status" class="w-full text-xs rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <option value="">-- Tất cả trạng thái --</option>
+                    <option value="Pending" {% if selected_status == "Pending" %}selected{% endif %}>Chờ xử lý</option>
+                    <option value="Processing" {% if selected_status == "Processing" %}selected{% endif %}>Đang xử lý</option>
+                    <option value="Completed" {% if selected_status == "Completed" %}selected{% endif %}>Đã hoàn thành</option>
+                    <option value="Overdue" {% if selected_status == "Overdue" %}selected{% endif %}>Quá hạn</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Tìm kiếm từ khóa</label>
+                <input type="text" name="q" value="{{ search_query }}" placeholder="Số CV, trích yếu, cơ quan..." class="w-full text-xs rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+            <div class="flex items-end gap-2">
+                <button type="submit" class="w-full bg-gray-800 hover:bg-gray-900 text-white text-xs font-semibold py-2 px-4 rounded-lg transition">
+                    Lọc dữ liệu
+                </button>
+                {% if selected_type or selected_status or search_query %}
+                <a href="{% url 'portal:dispatch_list' %}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-semibold py-2 px-3 rounded-lg transition">
+                    Xóa lọc
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Bảng danh sách công văn -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-gray-600">
+                <thead class="bg-gray-50 border-b border-gray-200 text-gray-700 font-semibold uppercase tracking-wider">
+                    <tr>
+                        <th class="py-3 px-4">Số công văn</th>
+                        <th class="py-3 px-4">Loại</th>
+                        <th class="py-3 px-4">Trích yếu nội dung</th>
+                        <th class="py-3 px-4">Đơn vị gửi/nhận</th>
+                        <th class="py-3 px-4">Ngày đến/đi</th>
+                        <th class="py-3 px-4">Hạn xử lý</th>
+                        <th class="py-3 px-4">Độ khẩn</th>
+                        <th class="py-3 px-4">Trạng thái</th>
+                        <th class="py-3 px-4 text-center">Chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for d in dispatches %}
+                    <tr class="hover:bg-gray-50/80 transition">
+                        <td class="py-3 px-4 font-semibold text-gray-900 whitespace-nowrap">
+                            {{ d.dispatch_no }}
+                            {% if d.original_doc_no %}
+                            <div class="text-[10px] text-gray-400">Gốc: {{ d.original_doc_no }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4 whitespace-nowrap">
+                            {% if d.dispatch_type == 'Incoming' %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-700">Đến</span>
+                            {% elif d.dispatch_type == 'Outgoing' %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700">Đi</span>
+                            {% else %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-100 text-purple-700">Nội bộ</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4 max-w-xs font-medium text-gray-800">
+                            <a href="{% url 'portal:dispatch_detail' d.pk %}" class="hover:text-blue-600 line-clamp-2">
+                                {{ d.title }}
+                            </a>
+                        </td>
+                        <td class="py-3 px-4 whitespace-nowrap text-gray-700">
+                            {{ d.issuing_organization|truncatechars:25 }}
+                        </td>
+                        <td class="py-3 px-4 whitespace-nowrap text-gray-500">
+                            {{ d.received_or_sent_date|date:"d/m/Y" }}
+                        </td>
+                        <td class="py-3 px-4 whitespace-nowrap">
+                            {% if d.due_date %}
+                            <span class="{% if d.status != 'Completed' and d.due_date < today %}text-red-600 font-bold{% else %}text-gray-700{% endif %}">
+                                {{ d.due_date|date:"d/m/Y" }}
+                            </span>
+                            {% else %}
+                            <span class="text-gray-400">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4 whitespace-nowrap">
+                            {% if d.urgency_level == 'TopUrgent' %}
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 animate-pulse">HỎA TỐC</span>
+                            {% elif d.urgency_level == 'VeryUrgent' %}
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">THƯỢNG KHẨN</span>
+                            {% elif d.urgency_level == 'Urgent' %}
+                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-orange-100 text-orange-700">Khẩn</span>
+                            {% else %}
+                            <span class="text-gray-400">Thường</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4 whitespace-nowrap">
+                            {% if d.status == 'Completed' %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-green-100 text-green-700">Hoàn thành</span>
+                            {% elif d.status == 'Processing' %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-100 text-blue-700">Đang xử lý</span>
+                            {% elif d.status == 'Overdue' %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-100 text-red-700">Quá hạn</span>
+                            {% else %}
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 text-gray-600">Chờ xử lý</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4 text-center whitespace-nowrap">
+                            <a href="{% url 'portal:dispatch_detail' d.pk %}" class="text-blue-600 hover:text-blue-800 font-medium">
+                                Chi tiết →
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="py-8 text-center text-gray-400">
+                            Không có công văn / văn bản nào phù hợp.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

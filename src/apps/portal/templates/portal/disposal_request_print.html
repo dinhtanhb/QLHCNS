@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Đề nghị {{ req.get_disposal_type_display }}{% endblock %}
+{% block content %}
+<style>@media print { header, nav, .no-print { display: none !important; } main { max-width: 100% !important; padding: 0 !important; } }</style>
+<div class="no-print mb-4"><button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">🖨 In</button></div>
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+    <table class="w-full mb-6"><tr>
+        <td class="w-32"><img src="{% static 'img/logo.png' %}" style="height:60px; width:auto; max-width:none;" alt="Logo"></td>
+        <td class="text-center text-sm">
+            <p class="font-bold">LIÊN HIỆP CÁC HỘI KH & KT VIỆT NAM</p>
+            <p class="font-bold">TRUNG TÂM PHÁT TRIỂN SỨC KHỎE BỀN VỮNG</p>
+            <p>------------</p>
+            <p>Hà Nội, ngày {{ req.request_date|date:"d" }} tháng {{ req.request_date|date:"m" }} năm {{ req.request_date|date:"Y" }}</p>
+        </td>
+    </tr></table>
+
+    <h1 class="text-lg font-bold text-center mb-2">ĐỀ NGHỊ {{ req.get_disposal_type_display|upper }} TÀI SẢN</h1>
+    <p class="text-center mb-6">Kính gửi: Ban giám đốc Trung tâm Phát triển Sức khỏe Bền vững</p>
+    <p class="mb-2">Chúng tôi gồm:</p>
+    {% for m in members %}
+    <p class="mb-1">{{ m.employee.full_name }} — Chức vụ: {{ m.employee.position }} — Tham gia: {{ m.get_participation_display }}</p>
+    {% endfor %}
+    <p class="mt-4 mb-2">Ngày {{ req.request_date|date:"d/m/Y" }} tại {{ req.location_name }}, chúng tôi tiến hành kiểm tra xác định tình trạng hư hỏng tài sản, trang thiết bị văn phòng sau:</p>
+
+    <table class="w-full text-xs border border-gray-300 border-collapse my-4">
+        <thead><tr class="bg-gray-100">
+            <th class="border border-gray-300 px-2 py-1">STT</th><th class="border border-gray-300 px-2 py-1">Tên thiết bị</th>
+            <th class="border border-gray-300 px-2 py-1">Số lượng</th><th class="border border-gray-300 px-2 py-1">Mã TB</th>
+            <th class="border border-gray-300 px-2 py-1">Nhãn hiệu</th><th class="border border-gray-300 px-2 py-1">Tình trạng hư hỏng</th>
+        </tr></thead>
+        <tbody>
+        {% for it in items %}
+        <tr>
+            <td class="border border-gray-300 px-2 py-1 text-center">{{ forloop.counter }}</td>
+            <td class="border border-gray-300 px-2 py-1">{{ it.asset.asset_name }}</td>
+            <td class="border border-gray-300 px-2 py-1 text-center">{{ it.asset.quantity }}</td>
+            <td class="border border-gray-300 px-2 py-1">{{ it.asset.asset_code }}</td>
+            <td class="border border-gray-300 px-2 py-1">{{ it.asset.brand }}</td>
+            <td class="border border-gray-300 px-2 py-1">{{ it.damage_description }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <p class="mb-4">{{ req.reason }} Chúng tôi thống nhất đề nghị phương án xử lý là: {{ req.get_disposal_type_display }} các tài sản thiết bị nêu trên.</p>
+    <p class="mb-10">Kính đề nghị Ban giám đốc xem xét và phê duyệt phương án xử lý tài sản, thiết bị nêu trên.</p>
+
+    <div class="grid text-sm text-center" style="grid-template-columns: repeat({{ members|length|add:0 }}, 1fr);">
+        {% for m in members %}
+        <div><p class="font-semibold text-xs mb-14">{{ m.get_role_display }}</p><p class="font-medium">{{ m.employee.full_name }}</p></div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

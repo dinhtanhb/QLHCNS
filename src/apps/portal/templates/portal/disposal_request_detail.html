@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}{{ req.request_no }}{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-lg font-bold text-gray-900">{{ req.request_no }} <span class="text-sm font-normal text-gray-400">({{ req.get_status_display }})</span></h1>
+    <div class="flex gap-2">
+        <a href="{% url 'portal:disposal_request_print' req.pk %}" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Xem/In đề nghị</a>
+        {% if req.status == "Pending" and can_approve %}
+        <form method="post" onsubmit="return confirm('Duyệt đề nghị thanh lý này?')">
+            {% csrf_token %}<input type="hidden" name="action" value="approve">
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md transition">✅ Duyệt đề nghị</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h2 class="text-sm font-bold text-gray-900 mb-3">Thành viên kiểm tra</h2>
+        {% for m in members %}<p class="text-sm">{{ m.employee.full_name }} — {{ m.get_participation_display }}</p>{% endfor %}
+        <form method="post" class="flex flex-wrap gap-2 mt-3">
+            {% csrf_token %}<input type="hidden" name="action" value="add_member">
+            <select name="employee" required class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
+                {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name }}</option>{% endfor %}
+            </select>
+            <select name="role" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
+                <option value="DeptInCharge">Phụ trách bộ phận</option>
+                <option value="Chairman">Trưởng ban</option>
+                <option value="Member" selected>Thành viên</option>
+                <option value="Requester">Người đề nghị</option>
+            </select>
+            <select name="participation" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
+                <option value="Direct">Trực tiếp</option><option value="VideoCall">Video call</option>
+            </select>
+            <button type="submit" class="bg-blue-700 text-white text-xs px-3 py-1.5 rounded">+ Thêm</button>
+        </form>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h2 class="text-sm font-bold text-gray-900 mb-3">Thêm tài sản đề nghị thanh lý</h2>
+        <form method="post" class="space-y-2">
+            {% csrf_token %}<input type="hidden" name="action" value="add_item">
+            <select name="asset" required class="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm">
+                {% for a in assets %}<option value="{{ a.id }}">{{ a.asset_code }} - {{ a.asset_name }}</option>{% endfor %}
+            </select>
+            <input type="text" name="damage_description" placeholder="Tình trạng hư hỏng" required class="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm">
+            <button type="submit" class="bg-blue-700 text-white text-xs px-3 py-1.5 rounded">+ Thêm tài sản</button>
+        </form>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <h2 class="text-sm font-bold text-gray-900 mb-3">Danh sách tài sản đề nghị thanh lý</h2>
+    <table class="w-full text-sm">
+        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Tài sản</th><th class="py-2 pr-4">Tình trạng hư hỏng</th><th class="py-2">Biên bản thanh lý</th></tr></thead>
+        <tbody class="divide-y divide-gray-100">
+        {% for it in items %}
+        <tr>
+            <td class="py-2 pr-4 font-medium">{{ it.asset }}</td>
+            <td class="py-2 pr-4 text-gray-500">{{ it.damage_description }}</td>
+            <td class="py-2">
+                {% if it.minutes %}
+                <a href="{% url 'portal:disposal_minutes_print' it.minutes.pk %}" class="text-blue-700 hover:underline">Xem biên bản</a>
+                {% elif req.status == "Approved" %}
+                <details><summary class="text-blue-700 cursor-pointer text-xs">+ Lập biên bản thanh lý</summary>
+                <form method="post" action="{% url 'portal:disposal_minutes_create' it.pk %}" class="mt-2 grid grid-cols-2 gap-2 text-xs">
+                    {% csrf_token %}
+                    <input type="date" name="decision_date" required placeholder="Ngày lập BB" class="rounded border border-gray-300 px-2 py-1">
+                    <input type="text" name="origin_country" placeholder="Nước sản xuất" class="rounded border border-gray-300 px-2 py-1">
+                    <input type="number" name="manufacture_year" placeholder="Năm SX" class="rounded border border-gray-300 px-2 py-1">
+                    <input type="number" name="put_into_use_year" placeholder="Năm đưa vào SD" class="rounded border border-gray-300 px-2 py-1">
+                    <input type="number" name="original_value" placeholder="Nguyên giá" class="rounded border border-gray-300 px-2 py-1">
+                    <input type="number" name="depreciated_value" placeholder="Giá trị hao mòn" class="rounded border border-gray-300 px-2 py-1">
+                    <input type="number" name="disposal_cost" placeholder="Chi phí thanh lý" class="rounded border border-gray-300 px-2 py-1">
+                    <input type="number" name="recovery_value" placeholder="Giá trị thu hồi" class="rounded border border-gray-300 px-2 py-1">
+                    <textarea name="conclusion" placeholder="Kết luận của Ban thanh lý" required class="col-span-2 rounded border border-gray-300 px-2 py-1"></textarea>
+                    <button type="submit" class="col-span-2 bg-green-600 text-white text-xs px-3 py-1.5 rounded">Lập biên bản (chuyển tài sản sang 'Đã thanh lý')</button>
+                </form>
+                </details>
+                {% else %}<span class="text-gray-400 text-xs">Chờ duyệt đề nghị</span>{% endif %}
+            </td>
+        </tr>
+        {% empty %}<tr><td colspan="3" class="py-6 text-center text-gray-400">Chưa có tài sản nào.</td></tr>{% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if req.status == "Approved" %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h2 class="text-sm font-bold text-gray-900 mb-3">Ban hành Quyết định</h2>
+        {% if req.decision_no %}
+        <p class="text-sm mb-2">Số {{ req.decision_no }} ngày {{ req.decision_date }}</p>
+        <a href="{% url 'portal:disposal_decision_print' req.pk %}" class="text-blue-700 hover:underline text-sm">Xem/In Quyết định</a>
+        {% else %}
+        <form method="post" class="space-y-2">
+            {% csrf_token %}<input type="hidden" name="action" value="issue_decision">
+            <input type="text" name="decision_no" placeholder="Số Quyết định (VD: 01a-26/QĐ-VH)" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <input type="date" name="decision_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <input type="text" name="committee_decision_no" placeholder="Số QĐ thành lập Hội đồng (VD: 01b-26/QĐ-VH)" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <select name="decided_by" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+                <option value="">-- Người ký (GĐ/PGĐ) --</option>
+                {% for d in directors %}<option value="{{ d.id }}">{{ d.full_name }}</option>{% endfor %}
+            </select>
+            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Ban hành Quyết định</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h2 class="text-sm font-bold text-gray-900 mb-3">Ghi nhận thực hiện Tiêu hủy/Thanh lý (theo cả lô)</h2>
+        {% if req.status == "Completed" %}
+        <a href="{% url 'portal:disposal_execution_print' req.pk %}" class="text-blue-700 hover:underline text-sm">Xem/In Biên bản tiêu hủy</a>
+        {% else %}
+        <form method="post" class="space-y-2">
+            {% csrf_token %}<input type="hidden" name="action" value="record_execution">
+            <input type="datetime-local" name="execution_datetime" required placeholder="Thời điểm bắt đầu" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <input type="time" name="execution_end_time" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <input type="text" name="disposal_reason" value="{{ req.disposal_reason }}" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <input type="text" name="destroy_form" placeholder="Hình thức tiêu hủy (VD: Hủy đốt)" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <input type="text" name="handling_method" placeholder="Biện pháp xử lý sau (VD: Tập kết điểm thu gom rác)" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md transition">Xác nhận đã thực hiện</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

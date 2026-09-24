@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Lịch công tác{% endblock %}
+{% block content %}
+<h1 class="text-lg font-bold text-gray-900 mb-4">Lịch công tác / Sự kiện sắp tới</h1>
+
+{% if can_create_event %}
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+    <h2 class="text-sm font-bold text-gray-900 mb-3">Tạo sự kiện mới</h2>
+    <form method="post" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {% csrf_token %}
+        <input type="text" name="title" placeholder="Tiêu đề" required class="rounded-md border border-gray-300 px-3 py-2 text-sm md:col-span-2">
+        <select name="event_type" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <option value="Meeting">Họp</option><option value="Training">Đào tạo</option>
+            <option value="FieldTrip">Công tác</option><option value="Company">Sự kiện công ty</option><option value="Other">Khác</option>
+        </select>
+        <select name="department" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <option value="">-- Toàn công ty --</option>
+            {% for d in departments %}<option value="{{ d.id }}">{{ d.department_name }}</option>{% endfor %}
+        </select>
+        <input type="datetime-local" name="start_time" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="datetime-local" name="end_time" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="text" name="location" placeholder="Địa điểm" class="rounded-md border border-gray-300 px-3 py-2 text-sm md:col-span-2">
+        <input type="text" name="description" placeholder="Mô tả" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <button type="submit" class="md:col-span-3 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Tạo sự kiện</button>
+    </form>
+</div>
+{% endif %}
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 divide-y divide-gray-100">
+    {% for e in events %}
+    <div class="px-6 py-4">
+        <div class="flex items-center justify-between">
+            <p class="font-medium text-gray-900">{{ e.title }}</p>
+            <span class="text-xs text-gray-400">{{ e.get_event_type_display }}</span>
+        </div>
+        <p class="text-gray-500 text-sm">{{ e.start_time|date:"d/m/Y H:i" }} - {{ e.end_time|date:"H:i" }} {% if e.location %}· {{ e.location }}{% endif %} {% if e.department %}· {{ e.department }}{% endif %}</p>
+        {% if e.description %}<p class="text-gray-400 text-sm mt-1">{{ e.description }}</p>{% endif %}
+    </div>
+    {% empty %}
+    <p class="px-6 py-8 text-center text-gray-400">Không có sự kiện nào sắp tới.</p>
+    {% endfor %}
+</div>
+{% endblock %}

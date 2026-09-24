@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Tạo đề nghị thanh lý{% endblock %}
+{% block content %}
+<div class="max-w-lg bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <h1 class="text-lg font-bold text-gray-900 mb-4">Tạo Đề nghị Thanh lý Tài sản</h1>
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <input type="text" name="request_no" placeholder="Số đề nghị" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="date" name="request_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <input type="text" name="location_name" placeholder="Địa điểm kiểm tra (VD: Văn phòng Trung tâm)" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <select name="disposal_type" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <option value="Liquidate">Thanh lý</option>
+            <option value="Destroy">Tiêu hủy</option>
+        </select>
+        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-medium px-5 py-2.5 rounded-md transition">Tạo đề nghị</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Công việc{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-lg font-bold text-gray-900">Công việc của tôi</h1>
+    {% if can_assign_task %}
+    <a href="{% url 'portal:task_create' %}" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Giao việc mới</a>
+    {% endif %}
+</div>
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="text-left text-gray-500 border-b border-gray-200">
+                <th class="py-2 pr-4">Mã</th><th class="py-2 pr-4">Tên công việc</th><th class="py-2 pr-4">Ưu tiên</th><th class="py-2 pr-4">Hạn</th><th class="py-2">Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+        {% for t in tasks %}
+        <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{% url 'portal:task_detail' t.pk %}'">
+            <td class="py-2.5 pr-4 text-gray-500">{{ t.task_code }}</td>
+            <td class="py-2.5 pr-4 font-medium text-blue-700">{{ t.task_name }}</td>
+            <td class="py-2.5 pr-4">{{ t.get_priority_display }}</td>
+            <td class="py-2.5 pr-4">{{ t.due_date|default:"—" }}</td>
+            <td class="py-2.5">
+                <span class="px-2.5 py-1 rounded-full text-xs font-medium
+                    {% if t.status == 'Done' %}bg-green-100 text-green-700
+                    {% elif t.status == 'InProgress' %}bg-blue-100 text-blue-700
+                    {% elif t.status == 'Cancelled' %}bg-gray-100 text-gray-600
+                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                    {{ t.get_status_display }}
+                </span>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="py-6 text-center text-gray-400">Chưa có công việc nào được giao.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}

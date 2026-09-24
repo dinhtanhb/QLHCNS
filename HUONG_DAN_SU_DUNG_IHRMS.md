@@ -1,304 +1,145 @@
-# HƯỚNG DẪN SỬ DỤNG HỆ THỐNG QUẢN LÝ HÀNH CHÍNH – NHÂN SỰ (IHRMS)
+# CẨM NANG SỬ DỤNG IHRMS
 
-**Phiên bản:** 1.0
-**Đối tượng sử dụng:** Toàn thể cán bộ nhân viên công ty
+**Đối tượng:** nhân viên, quản lý, Nhân sự, Tài chính, quản trị hệ thống  
+**Phiên bản:** 1.0 — 24/09/2026  
+**Phạm vi:** thao tác theo giao diện hiện có. Quy định nội bộ về hạn xử lý, người thay thế và phê duyệt cần công ty ban hành riêng.
 
----
+## 1. Sau khóa học, bạn có thể
 
-## MỤC LỤC
+Đăng nhập an toàn; cập nhật/đối chiếu hồ sơ; ghi công và xin nghỉ; xử lý yêu cầu theo vai trò; tra cứu phiếu lương; báo sự cố mà không làm lộ mật khẩu hoặc dữ liệu nhân sự.
 
-1. [Đăng nhập hệ thống](#1-đăng-nhập-hệ-thống)
-2. [Trang chủ (Dashboard)](#2-trang-chủ-dashboard)
-3. [Hồ sơ cá nhân](#3-hồ-sơ-cá-nhân)
-4. [Bảng chấm công](#4-bảng-chấm-công)
-5. [Nghỉ phép](#5-nghỉ-phép)
-6. [Công việc](#6-công-việc)
-7. [KPI](#7-kpi)
-8. [Tài liệu](#8-tài-liệu)
-9. [Tài sản](#9-tài-sản)
-10. [Phiếu lương](#10-phiếu-lương)
-11. [Phòng họp](#11-phòng-họp)
-12. [Đặt xe](#12-đặt-xe)
-13. [Văn phòng phẩm (VPP)](#13-văn-phòng-phẩm-vpp)
-14. [Lịch công tác](#14-lịch-công-tác)
-15. [Đào tạo](#15-đào-tạo)
-16. [Tuyển dụng](#16-tuyển-dụng-dành-cho-trưởng-phòng--nhân-sự)
-17. [Duyệt nghỉ phép](#17-duyệt-nghỉ-phép-dành-cho-người-quản-lý)
-18. [Ngày lễ](#18-ngày-lễ-dành-cho-nhân-sự)
-19. [Báo cáo](#19-báo-cáo-dành-cho-nhân-sự--ban-giám-đốc)
-20. [Bảng phân quyền theo vai trò](#20-bảng-phân-quyền-theo-vai-trò)
-21. [Câu hỏi thường gặp](#21-câu-hỏi-thường-gặp)
+## 2. Vai trò
 
----
-
-## 1. ĐĂNG NHẬP HỆ THỐNG
-
-1. Mở trình duyệt, truy cập địa chỉ hệ thống do bộ phận IT cung cấp.
-2. Nhập **Tên đăng nhập** và **Mật khẩu** được Phòng Nhân sự / IT cấp.
-3. Bấm **Đăng nhập**.
-
-Sau khi đăng nhập, giao diện hiển thị:
-- **Thanh trên cùng**: tên công ty, chuông 🔔 thông báo, tên đăng nhập, nút **Đăng xuất**.
-- **Thanh menu**: các mục chức năng — menu hiển thị **khác nhau tùy vai trò** được cấp (xem mục 20).
-
-> **Lưu ý:** Nếu đăng nhập nhưng không thấy tên/phòng ban của mình ở Trang chủ, nghĩa là tài khoản chưa được Phòng Nhân sự gắn với hồ sơ nhân viên — liên hệ Phòng Nhân sự để được xử lý.
-
----
-
-## 2. TRANG CHỦ (DASHBOARD)
-
-Trang chủ hiển thị khác nhau tùy vai trò:
-
-- **Nhân viên thường**: 3 ô thông tin cá nhân — Đơn nghỉ đang chờ duyệt, Công việc chưa hoàn thành, Lương kỳ gần nhất.
-- **Trưởng phòng**: thêm khối "Tổng quan phòng ban" — số nhân viên trong phòng, đơn nghỉ chờ duyệt, công việc chưa hoàn thành, tài sản đang cấp phát của phòng.
-- **Ban Giám đốc / Trưởng phòng Nhân sự / Quản trị hệ thống**: thêm khối "Tổng quan công ty" — tổng nhân viên, đơn nghỉ/đề xuất tuyển dụng/tài liệu chờ duyệt, công việc đang mở, tài sản đang cấp phát toàn công ty, và biểu đồ nhân sự theo phòng ban.
-
-Góc trên bên phải có biểu tượng 🔔 — bấm vào để xem **Thông báo** (nhắc việc mới giao, đơn nghỉ được duyệt, tài liệu mới ban hành...).
-
----
-
-## 3. HỒ SƠ CÁ NHÂN
-
-Vào menu **Hồ sơ cá nhân** để xem:
-- Thông tin cơ bản: mã nhân viên, họ tên, ngày sinh, giới tính, email, điện thoại, phòng ban, vị trí, ngày vào làm, trạng thái làm việc.
-- Khối **"Quá trình công tác"** (nếu có): lịch sử điều chuyển phòng ban, bổ nhiệm/thăng chức, khen thưởng, kỷ luật.
-
-> Đây là màn hình chỉ xem — nếu thông tin sai, liên hệ Phòng Nhân sự để được cập nhật.
-
----
-
-## 4. BẢNG CHẤM CÔNG
-
-Đây là màn hình quan trọng nhất, thay thế file Excel Bảng chấm công (BCC) trước đây, **cần cập nhật hàng ngày/hàng tháng**.
-
-### 4.1. Ghi nhận giờ làm việc mỗi ngày
-
-1. Vào menu **Bảng công**.
-2. Ở khung "Ghi nhận giờ làm việc": chọn **Ngày**, chọn **Dự án** (nếu công việc thuộc 1 dự án cụ thể), nhập **Công việc thực hiện** và **Số giờ**.
-3. Bấm **"+ Thêm dòng chấm công"**.
-4. Có thể thêm nhiều dòng trong 1 ngày nếu làm nhiều đầu việc/nhiều dự án khác nhau.
-5. Để xóa 1 dòng đã nhập sai, bấm **Xóa** ngay cạnh dòng đó trong bảng.
-
-### 4.2. Đọc bảng chấm công
-
-- Các ô **tô xanh nhạt** = Thứ 7, Chủ nhật (không cần chấm công).
-- Các ô **tô vàng nhạt**, ghi "Nghỉ lễ: ..." = ngày lễ theo quy định công ty (0 giờ, không cần nhập).
-- Các ngày còn lại: hiển thị đúng nội dung công việc và số giờ đã chấm.
-
-### 4.3. Khai báo số ngày nghỉ trong tháng (bắt buộc mỗi tháng)
-
-Cuối trang có 5 ô cần điền **mỗi tháng** để hệ thống tính đúng "Tổng số giờ cần làm":
-- Số ngày nghỉ ốm
-- Số ngày thai sản
-- Số ngày nghỉ bù
-- Số ngày nghỉ phép
-- Số ngày nghỉ không lương
-
-Điền số ngày tương ứng đã nghỉ trong tháng đó → bấm **"Lưu số ngày nghỉ"**.
-
-> **Công thức tính "Tổng số giờ cần làm trong tháng":**
-> (Số ngày làm việc theo tuần trong tháng − Số ngày lễ) − Tổng số ngày nghỉ đã khai báo ở trên, rồi nhân với số giờ chuẩn/ngày (thường là 8h).
-> Ví dụ: Tháng có 21 ngày làm việc, nghỉ phép 1 ngày → (21 − 1) × 8h = 160h.
-
-### 4.4. In bảng công
-
-Bấm nút **"🖨 In bảng công"** ở góc trên — hệ thống tự ẩn menu/nút bấm, chỉ hiển thị đúng khung bảng công (giống mẫu giấy) để in hoặc lưu PDF từ trình duyệt.
-
-### 4.5. Số ngày phép năm còn lại
-
-Nếu Phòng Nhân sự đã cấp hạn mức phép năm, phần cuối trang hiển thị: Tổng ngày phép được cấp, Đã sử dụng (lũy kế cả năm), Còn lại.
-
----
-
-## 5. NGHỈ PHÉP
-
-### 5.1. Tạo đơn xin nghỉ
-
-1. Vào menu **Nghỉ phép** → bấm **"+ Tạo đơn mới"**.
-2. Chọn **Loại nghỉ phép** (phép năm, nghỉ ốm, nghỉ không lương, thai sản...), **Từ ngày**, **Đến ngày**, nhập **Lý do**.
-3. Bấm **Gửi đơn**. Hệ thống tự tính số ngày nghỉ.
-
-### 5.2. Theo dõi trạng thái đơn
-
-Danh sách đơn hiển thị trạng thái dạng nhãn màu:
-- 🟡 **Chờ duyệt**
-- 🟢 **Đã duyệt**
-- 🔴 **Từ chối**
-
-Khi đơn được duyệt/từ chối, sẽ có thông báo 🔔 báo ngay.
-
----
-
-## 6. CÔNG VIỆC
-
-### 6.1. Xem công việc được giao
-
-Vào menu **Công việc** để xem danh sách việc được giao cho mình, sắp xếp theo hạn hoàn thành. Bấm vào tên công việc để xem chi tiết.
-
-### 6.2. Cập nhật tiến độ
-
-Trong trang chi tiết công việc, chọn **Trạng thái** mới (Chưa bắt đầu / Đang thực hiện / Hoàn thành / Đã hủy) → bấm **Lưu**.
-
-### 6.3. Bình luận / trao đổi
-
-Cuối trang chi tiết công việc có khung **Bình luận** — dùng để trao đổi tiến độ, khó khăn với người giao việc, không cần nhắn qua kênh khác.
-
-### 6.4. Giao việc (dành cho Trưởng phòng / Trưởng phòng Nhân sự)
-
-Nếu tài khoản có quyền giao việc, menu **Công việc** sẽ có thêm nút **"+ Giao việc mới"** — điền tên công việc, chọn người phụ trách, độ ưu tiên, hạn hoàn thành → **Giao việc**.
-
----
-
-## 7. KPI
-
-Vào menu **KPI** để xem các chỉ số KPI được giao trong từng kỳ đánh giá: Chỉ tiêu, Thực tế, Tỷ lệ đạt (%), Điểm.
-
-**Trưởng phòng / Trưởng phòng Nhân sự** có thêm nút **"Chấm điểm KPI nhân viên"** để:
-- Tạo chỉ tiêu KPI mới cho nhân viên (chọn nhân viên, chỉ số KPI, kỳ đánh giá, nhập Chỉ tiêu).
-- Cập nhật số liệu **Thực tế** hàng kỳ — hệ thống tự tính Tỷ lệ đạt và Điểm.
-
----
-
-## 8. TÀI LIỆU
-
-Vào menu **Tài liệu** để xem **Thư viện tài liệu** — các quy chế, quy trình đã được ban hành chính thức, có thể bấm **"Xem/Tải"** để mở file.
-
-**Ban Giám đốc / Trưởng phòng Nhân sự** có thêm nút **"Duyệt tài liệu chờ xử lý"** để duyệt/từ chối tài liệu do Nhân sự soạn thảo trước khi ban hành.
-
----
-
-## 9. TÀI SẢN
-
-Vào menu **Tài sản** để xem danh sách tài sản công ty (máy tính, thiết bị...) hiện đang được cấp phát cho mình.
-
----
-
-## 10. PHIẾU LƯƠNG
-
-Vào menu **Phiếu lương** để xem lịch sử các kỳ lương: Tổng thu nhập (Gross), Bảo hiểm, Thuế TNCN, Thực lãnh (Net). Đây là màn hình chỉ xem, chỉ hiện đúng phiếu lương của bản thân.
-
----
-
-## 11. PHÒNG HỌP
-
-1. Vào menu **Phòng họp**.
-2. Chọn phòng, nhập mục đích họp, chọn giờ bắt đầu/kết thúc → bấm **"+ Đặt phòng"**.
-3. Hệ thống tự kiểm tra trùng lịch — nếu phòng đã có người đặt trùng giờ sẽ báo lỗi ngay.
-4. Xem lịch đặt phòng của mọi người ở bảng bên dưới; có thể **Hủy** lịch mình đã đặt.
-
----
-
-## 12. ĐẶT XE
-
-Tương tự Phòng họp — vào menu **Đặt xe**, chọn xe, điểm đến, mục đích, khung giờ → **"+ Đặt xe"**. Hệ thống tự kiểm tra trùng lịch.
-
----
-
-## 13. VĂN PHÒNG PHẨM (VPP)
-
-1. Vào menu **VPP**.
-2. Chọn vật tư cần (tối đa 3 dòng/lần), nhập số lượng → **Gửi đề nghị**.
-3. Theo dõi trạng thái: 🟡 Chờ duyệt → 🟢 Đã cấp phát (do bộ phận Hành chính xử lý).
-
----
-
-## 14. LỊCH CÔNG TÁC
-
-Vào menu **Lịch công tác** để xem các sự kiện/lịch công tác sắp tới của công ty hoặc phòng ban mình.
-
-**Trưởng phòng / Trưởng phòng Nhân sự** có thêm form tạo sự kiện mới: tiêu đề, loại sự kiện, phòng ban áp dụng (để trống = toàn công ty), thời gian, địa điểm.
-
----
-
-## 15. ĐÀO TẠO
-
-Vào menu **Đào tạo** để xem các khóa đào tạo mình đã đăng ký/được cử tham gia, trạng thái và kết quả/chứng chỉ (nếu có). Đây là màn hình chỉ xem — việc đăng ký do Phòng Nhân sự thực hiện.
-
----
-
-## 16. TUYỂN DỤNG (dành cho Trưởng phòng / Nhân sự)
-
-### 16.1. Đề xuất tuyển dụng (Trưởng phòng)
-
-Vào menu **Tuyển dụng** → **"+ Tạo đề xuất mới"** → điền phòng ban, vị trí cần tuyển, số lượng, ngày cần có người, lý do → **Gửi đề xuất**.
-
-### 16.2. Duyệt đề xuất (Trưởng phòng Nhân sự)
-
-Trong menu **Tuyển dụng**, các đề xuất "Chờ duyệt" có 2 nút **Duyệt** / **Từ chối** ngay trên danh sách.
-
-> Các bước sau (đăng tin, quản lý ứng viên, phỏng vấn, offer, tạo hồ sơ nhân viên khi trúng tuyển) hiện được Phòng Nhân sự thực hiện qua trang quản trị riêng — liên hệ Phòng Nhân sự nếu cần hỗ trợ.
-
----
-
-## 17. DUYỆT NGHỈ PHÉP (dành cho người quản lý)
-
-Nếu tài khoản có quyền duyệt (Trưởng phòng / Trưởng phòng Nhân sự / Ban Giám đốc), menu sẽ có thêm mục **Duyệt nghỉ phép**:
-1. Danh sách hiển thị các đơn "Chờ duyệt" của nhân viên thuộc quyền quản lý.
-2. Bấm **Duyệt** hoặc **Từ chối** ngay trên từng dòng.
-3. Nhân viên nộp đơn sẽ nhận được thông báo ngay sau khi xử lý.
-
----
-
-## 18. NGÀY LỄ (dành cho Nhân sự)
-
-Vào menu **Ngày lễ** (chỉ hiện với Trưởng phòng Nhân sự / Quản trị viên kỹ thuật):
-- Xem danh sách ngày lễ đã khai báo trong năm.
-- Thêm ngày lễ mới: nhập Mã, Tên ngày lễ, Ngày → **"+ Thêm"**.
-
-> **Quan trọng:** Đầu mỗi năm, Phòng Nhân sự cần khai báo đầy đủ lịch nghỉ lễ theo quy định Nhà nước công bố năm đó, để Bảng chấm công tự trừ đúng.
-
----
-
-## 19. BÁO CÁO (dành cho Nhân sự / Ban Giám đốc)
-
-Vào menu **Báo cáo** để chọn 1 trong 4 báo cáo:
-
-| Báo cáo | Nội dung |
+| Vai trò | Nghiệp vụ chính |
 |---|---|
-| 📊 Chấm công & Tồn phép | Giờ đã làm, giờ cần làm, chênh lệch, số ngày phép còn lại của toàn công ty theo tháng |
-| 🔄 Biến động nhân sự | Tuyển mới, nghỉ việc, điều chuyển, bổ nhiệm trong khoảng thời gian chọn |
-| 👥 Định biên nhân sự | So sánh định biên kế hoạch với số lượng thực tế theo phòng ban |
-| 💰 Ngân sách năm | Ngân sách được duyệt so với chi tiêu thực tế theo hạng mục |
+| Nhân viên | Hồ sơ cá nhân, bảng công, nghỉ phép, việc/KPI được giao, tài liệu, phiếu lương và dịch vụ văn phòng được cấp. |
+| Trưởng bộ phận | Nghiệp vụ cá nhân; duyệt nghỉ/chấm công trong phạm vi; giao việc/chấm KPI nếu được cấp quyền. |
+| Nhân sự | Hồ sơ, hợp đồng, tuyển dụng, lịch/ngày lễ và các báo cáo/phê duyệt được cấp. |
+| Tài chính | Kỳ lương, bảng lương, cấu hình lương/thuế/bảo hiểm và phát hành theo phân quyền. |
+| Quản trị hệ thống | Tài khoản, vai trò và thiết lập kỹ thuật. Không dùng tài khoản quản trị cho công việc thường ngày. |
+| Ban giám đốc | Báo cáo và phê duyệt theo vai trò được gán. |
 
-Mỗi báo cáo đều có nút **"🖨 In"** để in trực tiếp hoặc lưu PDF.
+Menu thay đổi theo quyền tài khoản. Cờ “Staff status” không thay thế vai trò nghiệp vụ. Không dùng chung tài khoản.
 
----
+## 3. Đăng nhập và điều hướng
 
-## 20. BẢNG PHÂN QUYỀN THEO VAI TRÒ
+1. Mở địa chỉ IHRMS do công ty cung cấp; kiểm tra đúng tên miền và HTTPS.
+2. Đăng nhập bằng tài khoản cá nhân. Nếu quên mật khẩu, liên hệ đầu mối được công ty chỉ định; không gửi mật khẩu qua chat/email.
+3. Trang chính là **Bảng điều khiển**. Menu bên trái có thể gồm **Hồ sơ cá nhân**, **Bảng công**, **Nghỉ phép**, **Công việc**, **KPI**, **Tài liệu**, **Tài sản**, **Phiếu lương**. Menu duyệt/quản lý chỉ hiện với người được cấp quyền.
+4. Chuông thông báo hiển thị thông tin được gửi tới bạn. Chọn tên tài khoản để xem lựa chọn tài khoản.
+5. Chọn **Đăng xuất** khi xong, nhất là trên máy dùng chung.
 
-| Vai trò | Menu thấy được (ngoài các mục chung: Trang chủ, Hồ sơ, Bảng công, Nghỉ phép, Công việc, KPI, Tài liệu, Tài sản, Phiếu lương, Phòng họp, Đặt xe, VPP, Lịch công tác, Đào tạo) |
+## 4. Nhân viên
+
+### 4.1 Đối chiếu hồ sơ
+
+Mở **Hồ sơ cá nhân**. Đối chiếu họ tên, ngày sinh, giới tính, email công ty, điện thoại, phòng ban, chức vụ, quản lý, ngày vào làm/trạng thái và thông tin hợp đồng/lịch sử nếu hiển thị. Nếu sai hoặc không sửa được, gửi yêu cầu cho Nhân sự; không tạo hồ sơ khác để thay thế.
+
+### 4.2 Ghi và kiểm tra công
+
+1. Mở **Bảng công**, chọn đúng tháng.
+2. Đọc tổng giờ theo ngày/tháng và giờ dự kiến. Nếu gắn giờ với dự án, chọn dự án phù hợp.
+3. Chọn **Ghi nhận giờ làm việc**, nhập ngày/giờ, dự án nếu có; thêm dòng khi cần và lưu.
+4. Kiểm tra tổng theo ngày/tháng và phân bổ dự án. Xem riêng nghỉ ốm, thai sản, nghỉ bù, phép năm, không lương nếu màn hình có hiển thị.
+5. Chọn **Lưu số ngày nghỉ** khi cần cập nhật ngày nghỉ. Đối chiếu phép còn lại.
+6. Theo dõi trạng thái duyệt. Sau khi tổng hợp được duyệt, dữ liệu có thể dùng cho báo cáo và lương; không tự sửa số đã duyệt. Sai sót cần được xử lý theo quy trình điều chỉnh.
+
+### 4.3 Xin nghỉ phép/nghỉ bù
+
+1. Mở **Nghỉ phép** → tạo đơn.
+2. Chọn loại nghỉ; nhập ngày bắt đầu/kết thúc và lý do rõ ràng.
+3. Đọc số ngày hệ thống tính. Quy tắc hiện tại tính ngày làm việc theo lịch cấu hình (thông thường thứ Hai–thứ Sáu), loại cuối tuần/ngày lễ; đơn qua năm có thể chia theo quỹ từng năm.
+4. Kiểm tra số dư. Hệ thống có thể chặn ngày trùng hoặc vượt quỹ.
+5. Gửi đơn và theo dõi trạng thái. Chỉ nghỉ sau khi được duyệt theo quy định công ty.
+6. Nếu cần sửa/hủy đơn đang chờ, báo người duyệt và làm theo quy trình nội bộ; tránh gửi đơn trùng.
+
+### 4.4 Công việc, KPI, tài liệu
+
+Mở **Công việc** hoặc **KPI**, đọc yêu cầu, hạn và trạng thái; cập nhật tiến độ/kết quả trong mục tương ứng rồi lưu. Thiếu thông tin hoặc hạn không khả thi thì trao đổi với người giao việc. Trong **Tài liệu**, mở đúng hồ sơ và theo dõi duyệt; không tải lên thông tin vượt mục đích.
+
+### 4.5 Phiếu lương
+
+Mở **Phiếu lương**, chọn kỳ, kiểm tra Gross (tổng thu nhập), bảo hiểm, thuế, Net (thực nhận); tải PDF nếu cần. Chỉ xem/chia sẻ phiếu của bản thân. Không thấy kỳ mới thì có thể kỳ chưa được phát hành; hỏi Tài chính/Nhân sự.
+
+### 4.6 Dịch vụ văn phòng
+
+Các mục có thể gồm đặt phòng, đặt xe, văn phòng phẩm, lịch công tác, đào tạo. Chọn đúng mục, điền thời gian/mục đích/nội dung, gửi và theo dõi trạng thái. “Chờ duyệt” chưa có nghĩa là được chấp thuận.
+
+## 5. Người duyệt
+
+### Duyệt nghỉ phép
+Mở **Duyệt nghỉ phép**; đọc nhân viên, loại/ngày/số ngày, lý do và số dư; kiểm tra lịch/phân công theo quy định. Chọn **Duyệt** hoặc **Từ chối** và ghi lý do từ chối. Chỉ xử lý trong phạm vi thẩm quyền.
+
+### Duyệt chấm công
+Mở **Duyệt chấm công**, chọn tháng/bộ phận. Đối chiếu giờ, phân bổ dự án, nghỉ và giải trình/chứng từ theo quy định. Yêu cầu bổ sung khi thiếu; chỉ duyệt khi đã kiểm tra. Tổng hợp sau duyệt có thể không sửa trực tiếp và có thể được dùng để tính lương. Điều chỉnh phải theo quy trình có lưu vết.
+
+### Duyệt tài liệu/yêu cầu
+Mở danh sách chờ duyệt tương ứng; đọc nội dung và tệp, kiểm tra đúng thẩm quyền, sau đó duyệt/từ chối kèm ghi chú. Không duyệt chỉ dựa trên tiêu đề khi có cam kết hoặc chi phí.
+
+## 6. Nhân sự
+
+### Tiếp nhận nhân viên mới
+1. Mở **NV & Hồ sơ**, thêm nhân viên.
+2. Nhập mã duy nhất; họ/tên; ngày sinh/giới tính; CCCD, mã số thuế, số BHXH khi có; email, điện thoại, địa chỉ; ngày vào/nghỉ; phòng ban, chức vụ, chức danh, quản lý, trạng thái.
+3. Kiểm tra mã, đơn vị, quản lý, ngày hiệu lực và căn cứ dữ liệu trước khi lưu.
+4. Tạo hợp đồng trong **Hợp đồng**: nhân viên, loại/số hợp đồng, ngày bắt đầu/kết thúc, lương cơ bản, trạng thái dự thảo/hiệu lực.
+5. Phối hợp quản trị tạo tài khoản và cấp đúng vai trò theo quy trình.
+
+### Thay đổi nhân sự, tuyển dụng, lịch
+Ghi ngày hiệu lực chính xác cho điều chuyển/thay đổi; không áp dụng thay đổi tương lai sớm và không sửa lịch sử tùy tiện. Theo dõi ứng viên, trạng thái và hồ sơ; đề xuất tuyển dụng phải được duyệt mới xem là nhu cầu được chấp thuận. Khi cập nhật ngày lễ/lịch, rà ảnh hưởng tới phép và công.
+
+## 7. Tài chính — chạy lương
+
+Chỉ người được giao nhiệm vụ mới chạy lương. Kỳ khóa là kỳ đã chốt; không thể coi như kỳ đang mở.
+
+### Trước khi chạy
+- Kiểm tra kỳ, nhân viên, hợp đồng/lương có hiệu lực.
+- Xác nhận công đã duyệt; đối soát tăng ca, phụ cấp, khấu trừ và dữ liệu liên quan.
+- Kiểm tra cấu hình thuế, giảm trừ, bảo hiểm, người phụ thuộc.
+- Có người kiểm tra độc lập theo quy trình công ty.
+
+### Trên màn hình
+1. Mở **Chạy lương hàng tháng** và chọn **Tạo kỳ lương**.
+2. Chọn đúng kỳ; lưu.
+3. Chọn **Tạo bảng lương cho nhân viên còn thiếu**.
+4. Đối chiếu **Lương CB**, **Lương đóng BH**, **Phụ cấp**, **Tăng ca**, **TC miễn thuế**, **Khấu trừ khác**.
+5. Chọn **Tính lương toàn bộ kỳ này**.
+6. Rà từng nhân viên và tổng kỳ: Gross, bảo hiểm, thuế, Net; so sánh bảng đối soát độc lập, xử lý sai lệch trước khi chốt.
+7. Người có thẩm quyền chọn **Khóa kỳ lương** sau khi hoàn tất kiểm tra/phê duyệt. Đọc lại kỳ trước khi bấm.
+8. Chọn **Phát hành phiếu lương PDF**; kiểm tra phát hành và xác nhận nhân viên xem được đúng phiếu của mình.
+
+Không đổi cấu hình có hiệu lực quá khứ để sửa nhanh kỳ đã chốt. Dùng cấu hình mới có ngày hiệu lực phù hợp và quy trình điều chỉnh được phê duyệt. Cấu hình thuế/bảo hiểm, lương cơ bản và người phụ thuộc ảnh hưởng trực tiếp kết quả; nhập theo căn cứ đã duyệt và nhờ người thứ hai rà soát.
+
+## 8. Công văn, tài sản, kiểm kê
+
+### Công văn
+Nhập loại, số/ký hiệu, trích yếu, cơ quan, ngày ban hành/nhận/gửi, khẩn/mật, đơn vị xử lý, người phụ trách, người ký, hạn và bản scan. Soát phân loại mật/người nhận trước khi lưu; cập nhật tiến độ tại chi tiết.
+
+### Kiểm kê và thanh lý
+Phiên kiểm kê liệt kê tài sản; kiểm đếm từng dòng, ghi tình trạng/vị trí và xử lý chênh lệch. Không hoàn tất nếu còn dòng chưa kiểm; phiên hoàn tất sẽ đóng chỉnh sửa. Thanh lý theo chuỗi đề nghị → phê duyệt → biên bản → quyết định → xác nhận thực hiện. Chỉ xác nhận sau khi thanh lý thực tế; bước cuối có thể đổi trạng thái tài sản.
+
+## 9. Báo cáo và bảo mật
+
+Báo cáo có thể gồm công/nghỉ, biến động nhân sự, số lượng nhân sự so kế hoạch, ngân sách so chi tiêu. Chọn đúng kỳ/bộ lọc và kiểm tra ngày cập nhật. Chỉ chia sẻ báo cáo nhân sự/lương cho người có thẩm quyền; lưu tệp xuất tại nơi công ty cho phép.
+
+## 10. Xử lý sự cố
+
+| Tình huống | Việc nên làm |
 |---|---|
-| **Nhân viên** | Không có thêm mục quản lý |
-| **Trưởng phòng ban** | + Duyệt nghỉ phép, Giao việc, Chấm điểm KPI, Tạo đề xuất tuyển dụng, Tạo sự kiện (phạm vi phòng mình) |
-| **Trưởng phòng Nhân sự** | + Toàn bộ quyền Trưởng phòng (phạm vi công ty) + Duyệt tuyển dụng, Duyệt tài liệu, Ngày lễ, Báo cáo |
-| **Kế toán** | + Chỉ thấy module Lương (Payroll) trên trang quản trị; Portal thấy các mục chung + Báo cáo Ngân sách |
-| **Ban Giám đốc** | + Duyệt tài liệu, Báo cáo (không có quyền chỉnh sửa/duyệt tác nghiệp hàng ngày) |
-| **Quản trị viên hệ thống / kỹ thuật** | Toàn quyền trên toàn hệ thống |
+| Không thấy menu | Yêu cầu kiểm tra vai trò; không mượn tài khoản. |
+| Bị từ chối truy cập | Ghi URL/thời điểm, báo quản trị; không sửa URL để vượt quyền. |
+| Đơn nghỉ không lưu | Kiểm tra ngày, trùng lặp và số dư; báo Nhân sự nếu dữ liệu nền sai. |
+| Công đã duyệt không sửa được | Yêu cầu quy trình điều chỉnh, không tạo dữ liệu thay thế gây lệch. |
+| Chưa có phiếu lương | Hỏi Tài chính kỳ đã phát hành chưa. Không chia sẻ bảng lương chung. |
+| Trang/PDF lỗi | Ghi màn hình, bước thao tác, thời gian và thông báo; che thông tin cá nhân khi chụp. |
+| Gửi IT | Ghi người báo/mã NV, thời điểm, URL, các bước, kết quả mong đợi/thực tế, mã lỗi, mức ảnh hưởng. Tuyệt đối không gửi mật khẩu, SECRET_KEY hay chuỗi kết nối. |
 
-> Một số nghiệp vụ chuyên sâu (khai báo danh mục ban đầu, quản lý tài khoản, cấu hình tỷ lệ bảo hiểm/thuế, quản lý Công văn đến/đi, Con dấu...) hiện được thực hiện qua **trang quản trị riêng** (`/admin/`) do Phòng Nhân sự / IT phụ trách, chưa đưa lên giao diện Portal chính.
+## 11. Tự kiểm tra
 
----
+- Tôi biết đăng xuất trên máy dùng chung.
+- Tôi biết gửi đơn nghỉ và kiểm tra trạng thái.
+- Tôi hiểu công đã duyệt cần quy trình điều chỉnh.
+- Tôi chỉ tải phiếu lương của bản thân.
+- Tôi biết báo lỗi mà không gửi bí mật.
 
-## 21. CÂU HỎI THƯỜNG GẶP
-
-**1. Tôi đăng nhập nhưng Trang chủ báo "chưa gắn hồ sơ nhân viên"?**
-→ Liên hệ Phòng Nhân sự để được gắn tài khoản với đúng hồ sơ nhân viên.
-
-**2. Tôi không thấy 1 mục nào đó trong menu mà đồng nghiệp có?**
-→ Menu hiển thị theo đúng vai trò được cấp (xem mục 20). Nếu thấy cần thêm quyền, liên hệ Phòng Nhân sự/IT.
-
-**3. Tôi nhập sai 1 dòng chấm công, sửa thế nào?**
-→ Bấm **Xóa** ở dòng đó trong Bảng công rồi nhập lại dòng đúng.
-
-**4. Cuối tháng tôi quên khai báo số ngày nghỉ, "Tổng số giờ cần làm" có tính sai không?**
-→ Có — công thức phụ thuộc vào 5 ô khai báo tay ở cuối Bảng công. Cần vào lại Bảng công đúng tháng đó, cập nhật số liệu rồi bấm **"Lưu số ngày nghỉ"**.
-
-**5. Đơn nghỉ phép của tôi gửi rồi mà mãi chưa thấy duyệt?**
-→ Kiểm tra tại mục 17, người có quyền duyệt (Trưởng phòng/HR) cần đăng nhập và xử lý. Có thể nhắc trực tiếp quản lý của bạn.
-
-**6. Tôi quên mật khẩu?**
-→ Liên hệ Phòng Nhân sự hoặc IT để được cấp lại.
-
----
-
-*Tài liệu này sẽ được cập nhật khi hệ thống bổ sung thêm chức năng mới.*
+**Tài liệu đi kèm:** [Giáo án và bài thực hành tập huấn](TAP_HUAN_IHRMS.md).

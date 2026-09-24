@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}{{ employee.full_name }}{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-lg font-bold text-gray-900">{{ employee.full_name }} <span class="text-gray-400 font-normal text-sm">({{ employee.employee_code }})</span></h1>
+    {% if can_manage_hr %}
+    <a href="{% url 'portal:hr_employee_edit' employee.pk %}" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Sửa hồ sơ</a>
+    {% endif %}
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+    <dl class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4 text-sm">
+        <div><dt class="text-gray-500 text-xs mb-0.5">Ngày sinh</dt><dd class="font-medium">{{ employee.date_of_birth }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Giới tính</dt><dd class="font-medium">{{ employee.get_gender_display }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Email công ty</dt><dd class="font-medium break-all">{{ employee.company_email }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Điện thoại</dt><dd class="font-medium">{{ employee.mobile_phone }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Phòng ban</dt><dd class="font-medium">{{ employee.department }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Vị trí</dt><dd class="font-medium">{{ employee.position }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Quản lý trực tiếp</dt><dd class="font-medium">{{ employee.manager|default:"—" }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Ngày vào làm</dt><dd class="font-medium">{{ employee.join_date }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Trạng thái</dt><dd class="font-medium">{{ employee.get_employment_status_display }}</dd></div>
+    </dl>
+</div>
+
+{% if can_manage_hr %}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6" id="dieuchuyen">
+        <h2 class="text-sm font-bold text-gray-900 mb-3">Điều chuyển phòng ban</h2>
+        <form method="post" action="{% url 'portal:hr_employee_history_create' employee.pk 'transfer' %}" class="space-y-2">
+            {% csrf_token %}
+            <select name="to_department" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+                {% for d in departments %}<option value="{{ d.id }}" {% if d.id == employee.department_id %}selected{% endif %}>{{ d.department_name }}</option>{% endfor %}
+            </select>
+            <input type="date" name="effective_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <input type="text" name="reason" placeholder="Lý do" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Ghi nhận điều chuyển</button>
+        </form>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6" id="bonhiem">
+        <h2 class="text-sm font-bold text-gray-900 mb-3">Bổ nhiệm / Thăng chức</h2>
+        <form method="post" action="{% url 'portal:hr_employee_history_create' employee.pk 'promotion' %}" class="space-y-2">
+            {% csrf_token %}
+            <select name="new_position" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+                {% for p in positions %}<option value="{{ p.id }}" {% if p.id == employee.position_id %}selected{% endif %}>{{ p.position_name }}</option>{% endfor %}
+            </select>
+            <input type="date" name="effective_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <input type="text" name="reason" placeholder="Lý do" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Ghi nhận bổ nhiệm</button>
+        </form>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h2 class="text-sm font-bold text-gray-900 mb-3">Khen thưởng</h2>
+        <form method="post" action="{% url 'portal:hr_employee_history_create' employee.pk 'reward' %}" class="space-y-2">
+            {% csrf_token %}
+            <input type="text" name="reward_type" placeholder="Loại khen thưởng" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <input type="date" name="reward_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <input type="number" name="amount" placeholder="Số tiền thưởng (nếu có)" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <input type="text" name="description" placeholder="Nội dung" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md transition">Ghi nhận khen thưởng</button>
+        </form>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h2 class="text-sm font-bold text-gray-900 mb-3">Kỷ luật</h2>
+        <form method="post" action="{% url 'portal:hr_employee_history_create' employee.pk 'discipline' %}" class="space-y-2">
+            {% csrf_token %}
+            <input type="text" name="discipline_type" placeholder="Hình thức kỷ luật" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <input type="date" name="discipline_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <input type="text" name="description" placeholder="Nội dung" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-md transition">Ghi nhận kỷ luật</button>
+        </form>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6" id="luong">
+        <h2 class="text-sm font-bold text-gray-900 mb-3">Nâng lương</h2>
+        <p class="text-xs text-gray-400 mb-2">
+            {% with latest=salaries.first %}
+            {% if latest %}Lương hiện tại: {{ latest.current_basic_salary|floatformat:0 }} đ (từ {{ latest.effective_date }}){% else %}Chưa có dữ liệu lương{% endif %}
+            {% endwith %}
+        </p>
+        <form method="post" action="{% url 'portal:hr_salary_create' employee.pk %}" class="space-y-2">
+            {% csrf_token %}
+            <input type="number" name="current_basic_salary" placeholder="Mức lương mới" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <input type="date" name="effective_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Ghi nhận nâng lương</button>
+        </form>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6" id="hopdong">
+        <h2 class="text-sm font-bold text-gray-900 mb-3">Gia hạn hợp đồng</h2>
+        <p class="text-xs text-gray-400 mb-2">
+            {% if current_contract %}Hợp đồng hiện tại: {{ current_contract.contract_no }} (hết hạn {{ current_contract.end_date|default:"Không xác định" }}){% else %}Chưa có hợp đồng nào{% endif %}
+        </p>
+        {% if current_contract %}
+        <form method="post" action="{% url 'portal:hr_contract_renew' employee.pk %}" class="space-y-2">
+            {% csrf_token %}
+            <input type="date" name="new_end_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Gia hạn hợp đồng</button>
+        </form>
+        {% else %}
+        <a href="{% url 'portal:hr_contract_create' %}" class="text-blue-700 text-sm hover:underline">+ Tạo hợp đồng mới</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <h2 class="text-sm font-bold text-gray-900 mb-3">Lịch sử & Hợp đồng</h2>
+    <div class="space-y-1 text-sm">
+        {% for c in contracts %}<div class="flex gap-2"><span class="text-gray-400 w-24">{{ c.start_date }}</span><span>Hợp đồng: {{ c.contract_no }} ({{ c.contract_type }})</span></div>{% endfor %}
+        {% for t in transfers %}<div class="flex gap-2"><span class="text-gray-400 w-24">{{ t.effective_date }}</span><span>Điều chuyển: {{ t.from_department }} → {{ t.to_department }}</span></div>{% endfor %}
+        {% for pr in promotions %}<div class="flex gap-2"><span class="text-gray-400 w-24">{{ pr.effective_date }}</span><span>Bổ nhiệm: {{ pr.old_position }} → {{ pr.new_position }}</span></div>{% endfor %}
+        {% for r in rewards %}<div class="flex gap-2"><span class="text-gray-400 w-24">{{ r.reward_date }}</span><span class="text-green-700">Khen thưởng: {{ r.reward_type }}</span></div>{% endfor %}
+        {% for d in disciplines %}<div class="flex gap-2"><span class="text-gray-400 w-24">{{ d.discipline_date }}</span><span class="text-red-700">Kỷ luật: {{ d.discipline_type }}</span></div>{% endfor %}
+    </div>
+</div>
+{% endblock %}

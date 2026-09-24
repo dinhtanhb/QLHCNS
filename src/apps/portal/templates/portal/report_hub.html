@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Báo cáo{% endblock %}
+{% block content %}
+<h1 class="text-lg font-bold text-gray-900 mb-4">Báo cáo</h1>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <a href="{% url 'portal:report_timesheet' %}" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:border-blue-300 transition">
+        <p class="font-bold text-gray-900 mb-1">📊 Chấm công & Tồn phép</p>
+        <p class="text-gray-500 text-sm">Tổng giờ làm, giờ cần làm, số ngày phép còn lại của toàn công ty theo tháng.</p>
+    </a>
+    <a href="{% url 'portal:report_personnel_changes' %}" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:border-blue-300 transition">
+        <p class="font-bold text-gray-900 mb-1">🔄 Biến động nhân sự</p>
+        <p class="text-gray-500 text-sm">Tuyển mới, nghỉ việc, điều chuyển, bổ nhiệm trong khoảng thời gian.</p>
+    </a>
+</div>
+    <a href="{% url 'portal:report_headcount' %}" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:border-blue-300 transition">
+        <p class="font-bold text-gray-900 mb-1">👥 Định biên nhân sự</p>
+        <p class="text-gray-500 text-sm">So sánh định biên kế hoạch với số lượng thực tế theo phòng ban.</p>
+    </a>
+    <a href="{% url 'portal:report_budget' %}" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:border-blue-300 transition">
+        <p class="font-bold text-gray-900 mb-1">💰 Ngân sách năm</p>
+        <p class="text-gray-500 text-sm">Ngân sách được duyệt so với chi tiêu thực tế theo hạng mục.</p>
+    </a>
+{% endblock %}

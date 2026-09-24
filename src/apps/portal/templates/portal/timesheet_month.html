@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block title %}Bảng chấm công{% endblock %}
+{% block content %}
+<style>
+    @media print {
+        header, nav, .no-print { display: none !important; }
+        main { max-width: 100% !important; padding: 0 !important; }
+        body { background: white !important; }
+    }
+</style>
+
+<div class="flex items-center justify-between mb-4 no-print">
+    <h1 class="text-lg font-bold text-gray-900">Bảng chấm công</h1>
+    <div class="flex items-center gap-3">
+        <form method="get" class="flex gap-2">
+            <select name="month" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
+                {% for m in months %}<option value="{{ m }}" {% if m == month %}selected{% endif %}>Tháng {{ m }}</option>{% endfor %}
+            </select>
+            <select name="year" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
+                {% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>{% endfor %}
+            </select>
+        </form>
+        <button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">🖨 In bảng công</button>
+    </div>
+</div>
+
+<!-- Form nhập nhanh giờ làm -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6 no-print">
+    <h2 class="text-sm font-bold text-gray-900 mb-3">Ghi nhận giờ làm việc</h2>
+    <form method="post" action="{% url 'portal:timesheet_entry_create' %}" class="grid grid-cols-1 md:grid-cols-5 gap-3">
+        {% csrf_token %}
+        <input type="date" name="work_date" required value="{{ year }}-{{ month|stringformat:'02d' }}-01"
+               min="{{ year }}-{{ month|stringformat:'02d' }}-01" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <select name="project" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <option value="">-- Không thuộc dự án --</option>
+            {% for p in projects %}<option value="{{ p.id }}">{{ p.project_name }}</option>{% endfor %}
+        </select>
+        <input type="text" name="task_description" placeholder="Công việc thực hiện" class="rounded-md border border-gray-300 px-3 py-2 text-sm md:col-span-2">
+        <input type="number" step="0.5" name="hours" placeholder="Số giờ" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <button type="submit" class="md:col-span-5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Thêm dòng chấm công</button>
+    </form>
+</div>
+
+<!-- KHUNG BẢNG CHẤM CÔNG — theo đúng layout mẫu -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-10">
+    <div class="text-center mb-6">
+        <h1 class="text-xl font-bold">BẢNG CHẤM CÔNG</h1>
+    </div>
+    <div class="text-sm mb-4 space-y-0.5">
+        <p><span class="font-semibold">Họ và tên:</span> {{ summary.employee.full_name }}</p>
+        <p><span class="font-semibold">Chức vụ:</span> {{ summary.employee.position }}</p>
+        <p><span class="font-semibold">Phòng/Ban:</span> {{ summary.employee.department }}</p>
+        <p><span class="font-semibold">Thời gian:</span> Tháng {{ month }} năm {{ year }}</p>
+    </div>
+
+    <table class="w-full text-sm border border-gray-300 border-collapse">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="border border-gray-300 px-2 py-1.5 w-24">Ngày</th>
+                <th class="border border-gray-300 px-2 py-1.5">Công việc</th>
+                <th class="border border-gray-300 px-2 py-1.5 w-28">Tổng giờ/ngày</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in day_rows %}
+            {% if row.is_weekend %}
+            <tr class="bg-blue-100">
+                <td class="border border-gray-300 px-2 py-1.5 text-center">{{ row.day }}</td>
+                <td class="border border-gray-300 px-2 py-1.5"></td>
+                <td class="border border-gray-300 px-2 py-1.5"></td>
+            </tr>
+            {% elif row.holiday %}
+            <tr class="bg-yellow-50">
+                <td class="border border-gray-300 px-2 py-1.5 text-center">{{ row.day }}</td>
+                <td class="border border-gray-300 px-2 py-1.5">+ Nghỉ lễ: {{ row.holiday.holiday_name }}</td>
+                <td class="border border-gray-300 px-2 py-1.5 text-center">0</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td class="border border-gray-300 px-2 py-1.5 text-center align-top">{{ row.day }}</td>
+                <td class="border border-gray-300 px-2 py-1.5">
+                    {% for e in row.entries %}
+                    <div class="flex items-center justify-between gap-2 {% if not forloop.last %}mb-1{% endif %}">
+                        <span>+ {% if e.project %}[{{ e.project.project_code }}] {% endif %}{{ e.task_description|default:"" }}</span>
+                        <form method="post" action="{% url 'portal:timesheet_entry_delete' e.pk %}" class="no-print" onsubmit="return confirm('Xóa dòng này?')">
+                            {% csrf_token %}
+                            <button type="submit" class="text-red-500 hover:text-red-700 text-xs">Xóa</button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </td>
+                <td class="border border-gray-300 px-2 py-1.5 text-center align-top">{{ row.day_total }}</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+        <tr class="font-semibold">
+            <td class="border border-gray-300 px-2 py-1.5" colspan="2">Tổng số giờ làm việc trong tháng</td>
+            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ total_hours }}</td>
+        </tr>
+        <tr class="font-semibold">
+            <td class="border border-gray-300 px-2 py-1.5" colspan="2">
+                Tổng số giờ cần làm trong tháng: {{ base_days }} ngày
+                {% if summary.total_leave_days %}- {{ summary.total_leave_days }} ngày nghỉ{% endif %}
+                = {{ required_days }} ngày × {{ hours_per_day }}h
+            </td>
+            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ required_hours }}</td>
+        </tr>
+                {% for a in allocations %}
+        <tr class="font-semibold">
+            <td class="border border-gray-300 px-2 py-1.5" colspan="2">Phân bổ thời gian ({{ a.project.project_code }}) (%)</td>
+            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ a.allocation_percent }}%</td>
+        </tr>
+        {% endfor %}
+        <tr class="font-semibold">
+            <td class="border border-gray-300 px-2 py-1.5" colspan="2">Số thời gian ngoài giờ</td>
+            <td class="border border-gray-300 px-2 py-1.5 text-center {% if diff_hours < 0 %}text-red-600{% else %}text-green-700{% endif %}">{{ diff_hours }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+        <!-- Tổng hợp + Chữ ký: 2 cột song song -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
+        <form method="post" action="{% url 'portal:timesheet_summary_update' %}" class="text-sm">
+            {% csrf_token %}
+            <input type="hidden" name="year" value="{{ year }}">
+            <input type="hidden" name="month" value="{{ month }}">
+            {% if summary.status == "Approved" %}
+            <span class="inline-block bg-green-100 text-green-700 text-xs font-medium px-2 py-0.5 rounded mb-2">Đã duyệt — không thể tự sửa</span>
+            {% else %}
+            <span class="inline-block bg-amber-100 text-amber-700 text-xs font-medium px-2 py-0.5 rounded mb-2">Chờ quản lý duyệt</span>
+            {% endif %}
+            <fieldset {% if summary.status == "Approved" %}disabled{% endif %}>
+            <div class="space-y-1">
+                <div class="flex items-center justify-between gap-3 py-0.5">
+                    <label class="text-gray-700">Số ngày nghỉ ốm trong tháng:</label>
+                    <input type="number" step="0.5" name="sick_days" value="{{ summary.sick_days }}" class="w-16 rounded border border-gray-300 px-2 py-0.5 text-right text-sm">
+                </div>
+                <div class="flex items-center justify-between gap-3 py-0.5">
+                    <label class="text-gray-700">Số ngày thai sản trong tháng:</label>
+                    <input type="number" step="0.5" name="maternity_days" value="{{ summary.maternity_days }}" class="w-16 rounded border border-gray-300 px-2 py-0.5 text-right text-sm">
+                </div>
+                <div class="flex items-center justify-between gap-3 py-0.5">
+                    <label class="text-gray-700">Số ngày nghỉ bù trong tháng:</label>
+                    <input type="number" step="0.5" name="compensatory_days" value="{{ summary.compensatory_days }}" class="w-16 rounded border border-gray-300 px-2 py-0.5 text-right text-sm">
+                </div>
+                <div class="flex items-center justify-between gap-3 py-0.5">
+                    <label class="text-gray-700">Số ngày nghỉ phép trong tháng:</label>
+                    <input type="number" step="0.5" name="annual_leave_days" value="{{ summary.annual_leave_days }}" class="w-16 rounded border border-gray-300 px-2 py-0.5 text-right text-sm">
+                </div>
+                <div class="flex items-center justify-between gap-3 py-0.5">
+                    <label class="text-gray-700">Số ngày nghỉ không lương trong tháng:</label>
+                    <input type="number" step="0.5" name="unpaid_leave_days" value="{{ summary.unpaid_leave_days }}" class="w-16 rounded border border-gray-300 px-2 py-0.5 text-right text-sm">
+                </div>
+                {% if balance %}
+                <div class="flex items-center justify-between gap-3 py-0.5 pt-2 border-t border-gray-100 mt-2">
+                    <label class="text-gray-700">Tổng ngày phép năm {{ year }}:</label>
+                    <span class="font-medium">{{ balance.allocated_days }}</span>
+                </div>
+                <div class="flex items-center justify-between gap-3 py-0.5">
+                    <label class="text-gray-700">Số ngày phép đã sử dụng (lũy kế):</label>
+                    <span class="font-medium">{{ balance.used_days }}</span>
+                </div>
+                <div class="flex items-center justify-between gap-3 py-0.5">
+                    <label class="text-gray-700">Số ngày phép còn lại:</label>
+                    <span class="font-bold text-green-700">{{ balance.remaining_days }}</span>
+                </div>
+                {% endif %}
+            </div>
+            <button type="submit" class="no-print bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition mt-3">Lưu số ngày nghỉ</button>
+            </fieldset>
+        </form>
+
+        <div class="grid grid-cols-2 gap-6 text-sm text-center self-start">
+            <div>
+                <p class="font-semibold mb-14">Quản lý trực tiếp</p>
+                <p>(Ký, họ tên)</p>
+                <p class="font-medium mt-1">{{ summary.employee.manager.full_name|default:"—" }}</p>
+            </div>
+            <div>
+                <p class="font-semibold mb-14">Chữ ký nhân viên</p>
+                <p>(Ký, họ tên)</p>
+                <p class="font-medium mt-1">{{ summary.employee.full_name }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
