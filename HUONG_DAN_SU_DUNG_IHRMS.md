@@ -1,134 +1,145 @@
-﻿# Hướng dẫn sử dụng IHRMS
+# CẨM NANG SỬ DỤNG IHRMS
 
-**Đối tượng:** nhân viên, quản lý bộ phận, Nhân sự, Kế toán và quản trị hệ thống tại công ty 30–50 người.  
-**Phiên bản tài liệu:** 23/09/2026. Tên menu có thể thay đổi nhẹ theo quyền tài khoản và bản phát hành.
+**Đối tượng:** nhân viên, quản lý, Nhân sự, Tài chính, quản trị hệ thống  
+**Phiên bản:** 1.0 — 24/09/2026  
+**Phạm vi:** thao tác theo giao diện hiện có. Quy định nội bộ về hạn xử lý, người thay thế và phê duyệt cần công ty ban hành riêng.
 
-## 1. IHRMS dùng để làm gì?
+## 1. Sau khóa học, bạn có thể
 
-IHRMS là cổng nội bộ để xem/cập nhật hồ sơ cá nhân, chấm công, xin nghỉ, theo dõi công việc và các dịch vụ nội bộ. Nhân sự và Kế toán có thêm màn hình nghiệp vụ được phân quyền. Quản trị hệ thống cấp tài khoản và cấu hình danh mục.
+Đăng nhập an toàn; cập nhật/đối chiếu hồ sơ; ghi công và xin nghỉ; xử lý yêu cầu theo vai trò; tra cứu phiếu lương; báo sự cố mà không làm lộ mật khẩu hoặc dữ liệu nhân sự.
 
-Hệ thống có hai địa chỉ:
+## 2. Vai trò
 
-- **Cổng nhân viên:** `/portal/` — dùng hàng ngày.
-- **Quản trị:** `/admin/` — dành cho người được giao nghiệp vụ quản trị; không chia sẻ tài khoản này cho nhân viên thông thường.
-
-Chỉ truy cập qua địa chỉ HTTPS nội bộ do IT cung cấp khi hệ thống đã triển khai chính thức. Địa chỉ `127.0.0.1:8000` trong tài liệu kỹ thuật chỉ dùng trên máy phát triển.
-
-## 2. Vai trò và trách nhiệm
-
-| Vai trò | Việc thường làm |
+| Vai trò | Nghiệp vụ chính |
 |---|---|
-| Nhân viên | Kiểm tra hồ sơ, nhập chấm công nếu được yêu cầu, gửi đơn nghỉ, cập nhật công việc, xem phiếu lương đã phát hành của mình. |
-| Trưởng bộ phận | Duyệt đơn nghỉ/chấm công trong phạm vi được giao; giao việc, cập nhật KPI hoặc gửi đề xuất tuyển dụng nếu chức năng được bật cho vai trò. |
-| HR Manager / HR Officer | Quản lý hồ sơ nhân sự, hợp đồng, ngày lễ, hạn mức nghỉ; xử lý nghiệp vụ và báo cáo theo quyền. HR Manager có quyền duyệt phạm vi công ty ở một số quy trình. |
-| Finance Officer | Quản lý dữ liệu lương được phép xem, lập/tính/đối soát kỳ lương và phát hành phiếu lương. |
-| Director | Xem báo cáo và duyệt một số quy trình được ma trận phân quyền cho phép. |
-| SYS_ADMIN / SUPER_ADMIN | Quản trị kỹ thuật, tài khoản, vai trò và cấu hình; chỉ cấp cho người phụ trách hệ thống. |
+| Nhân viên | Hồ sơ cá nhân, bảng công, nghỉ phép, việc/KPI được giao, tài liệu, phiếu lương và dịch vụ văn phòng được cấp. |
+| Trưởng bộ phận | Nghiệp vụ cá nhân; duyệt nghỉ/chấm công trong phạm vi; giao việc/chấm KPI nếu được cấp quyền. |
+| Nhân sự | Hồ sơ, hợp đồng, tuyển dụng, lịch/ngày lễ và các báo cáo/phê duyệt được cấp. |
+| Tài chính | Kỳ lương, bảng lương, cấu hình lương/thuế/bảo hiểm và phát hành theo phân quyền. |
+| Quản trị hệ thống | Tài khoản, vai trò và thiết lập kỹ thuật. Không dùng tài khoản quản trị cho công việc thường ngày. |
+| Ban giám đốc | Báo cáo và phê duyệt theo vai trò được gán. |
 
-Quyền thực tế do vai trò trên tài khoản quyết định. Không dùng cách bật `is_staff` hoặc chia sẻ tài khoản chung để cấp quyền nghiệp vụ.
+Menu thay đổi theo quyền tài khoản. Cờ “Staff status” không thay thế vai trò nghiệp vụ. Không dùng chung tài khoản.
 
-## 3. Đăng nhập và bảo vệ tài khoản
+## 3. Đăng nhập và điều hướng
 
-1. Mở đường dẫn IHRMS nội bộ, nhập tên đăng nhập và mật khẩu do HR/IT cấp.
-2. Khi đăng nhập lần đầu, đổi sang mật khẩu riêng theo chính sách công ty. Không gửi mật khẩu qua nhóm chat và không lưu trên máy dùng chung.
-3. Chọn **Đăng xuất** khi dùng xong, đặc biệt trên máy dùng chung.
-4. Nếu chưa liên kết được hồ sơ nhân viên, không tự tạo tài khoản khác; liên hệ HR/IT để gắn tài khoản đúng hồ sơ.
-5. Nếu quên mật khẩu hoặc nghi ngờ bị lộ, báo IT để khóa/đặt lại tài khoản.
+1. Mở địa chỉ IHRMS do công ty cung cấp; kiểm tra đúng tên miền và HTTPS.
+2. Đăng nhập bằng tài khoản cá nhân. Nếu quên mật khẩu, liên hệ đầu mối được công ty chỉ định; không gửi mật khẩu qua chat/email.
+3. Trang chính là **Bảng điều khiển**. Menu bên trái có thể gồm **Hồ sơ cá nhân**, **Bảng công**, **Nghỉ phép**, **Công việc**, **KPI**, **Tài liệu**, **Tài sản**, **Phiếu lương**. Menu duyệt/quản lý chỉ hiện với người được cấp quyền.
+4. Chuông thông báo hiển thị thông tin được gửi tới bạn. Chọn tên tài khoản để xem lựa chọn tài khoản.
+5. Chọn **Đăng xuất** khi xong, nhất là trên máy dùng chung.
 
-## 4. Công việc của nhân viên
+## 4. Nhân viên
 
-### Hồ sơ cá nhân
+### 4.1 Đối chiếu hồ sơ
 
-Vào **Hồ sơ** để kiểm tra thông tin cá nhân, liên hệ, phòng ban và chức danh. Báo HR khi thông tin pháp lý, tài khoản ngân hàng hoặc thông tin người phụ thuộc cần điều chỉnh. Không nhập dữ liệu nhạy cảm vào ghi chú không dành cho mục đó.
+Mở **Hồ sơ cá nhân**. Đối chiếu họ tên, ngày sinh, giới tính, email công ty, điện thoại, phòng ban, chức vụ, quản lý, ngày vào làm/trạng thái và thông tin hợp đồng/lịch sử nếu hiển thị. Nếu sai hoặc không sửa được, gửi yêu cầu cho Nhân sự; không tạo hồ sơ khác để thay thế.
 
-### Chấm công
+### 4.2 Ghi và kiểm tra công
 
-Vào **Bảng công**, chọn tháng cần xem. Nhập/sửa dòng công theo quy trình nội bộ; lưu ý thời gian, dự án và số giờ. Nếu đơn vị yêu cầu khai báo tổng hợp ngày nghỉ, nhập đúng số ngày theo từng loại và lưu. Gửi quản lý/HR xử lý tổng hợp trước hạn chốt công. Sau khi được duyệt, báo người có quyền nếu cần sửa sai; không tự gửi bản ghi thay thế để né bước duyệt.
+1. Mở **Bảng công**, chọn đúng tháng.
+2. Đọc tổng giờ theo ngày/tháng và giờ dự kiến. Nếu gắn giờ với dự án, chọn dự án phù hợp.
+3. Chọn **Ghi nhận giờ làm việc**, nhập ngày/giờ, dự án nếu có; thêm dòng khi cần và lưu.
+4. Kiểm tra tổng theo ngày/tháng và phân bổ dự án. Xem riêng nghỉ ốm, thai sản, nghỉ bù, phép năm, không lương nếu màn hình có hiển thị.
+5. Chọn **Lưu số ngày nghỉ** khi cần cập nhật ngày nghỉ. Đối chiếu phép còn lại.
+6. Theo dõi trạng thái duyệt. Sau khi tổng hợp được duyệt, dữ liệu có thể dùng cho báo cáo và lương; không tự sửa số đã duyệt. Sai sót cần được xử lý theo quy trình điều chỉnh.
 
-### Nghỉ phép
+### 4.3 Xin nghỉ phép/nghỉ bù
 
-1. Chọn **Nghỉ phép** → **Tạo đơn mới**.
-2. Chọn loại nghỉ, ngày bắt đầu/kết thúc và lý do ngắn gọn.
-3. Kiểm tra số ngày hệ thống tính, gửi đơn và theo dõi trạng thái.
-4. Chỉ nghỉ sau khi đơn được duyệt, trừ tình huống khẩn cấp theo quy định công ty; khi đó báo quản lý/HR theo kênh khẩn cấp.
-5. Nếu ngày nghỉ hoặc loại nghỉ sai, liên hệ người duyệt/HR để xử lý; không gửi đơn chồng lấn.
+1. Mở **Nghỉ phép** → tạo đơn.
+2. Chọn loại nghỉ; nhập ngày bắt đầu/kết thúc và lý do rõ ràng.
+3. Đọc số ngày hệ thống tính. Quy tắc hiện tại tính ngày làm việc theo lịch cấu hình (thông thường thứ Hai–thứ Sáu), loại cuối tuần/ngày lễ; đơn qua năm có thể chia theo quỹ từng năm.
+4. Kiểm tra số dư. Hệ thống có thể chặn ngày trùng hoặc vượt quỹ.
+5. Gửi đơn và theo dõi trạng thái. Chỉ nghỉ sau khi được duyệt theo quy định công ty.
+6. Nếu cần sửa/hủy đơn đang chờ, báo người duyệt và làm theo quy trình nội bộ; tránh gửi đơn trùng.
 
-### Công việc, KPI và dịch vụ văn phòng
+### 4.4 Công việc, KPI, tài liệu
 
-- **Công việc:** xem hạn hoàn thành, cập nhật trạng thái và trao đổi trong phần bình luận của công việc.
-- **KPI:** xem chỉ tiêu/kết quả được giao; chỉ người có quyền mới được chấm hoặc sửa.
-- **Phòng họp/Đặt xe/VPP:** gửi yêu cầu với thời gian, mục đích và số lượng chính xác; chờ xác nhận/cấp phát trước khi sử dụng.
-- **Tài liệu:** chỉ xem/tải tài liệu bạn được cấp quyền; không gửi file nội bộ cho bên ngoài nếu chưa được phê duyệt.
+Mở **Công việc** hoặc **KPI**, đọc yêu cầu, hạn và trạng thái; cập nhật tiến độ/kết quả trong mục tương ứng rồi lưu. Thiếu thông tin hoặc hạn không khả thi thì trao đổi với người giao việc. Trong **Tài liệu**, mở đúng hồ sơ và theo dõi duyệt; không tải lên thông tin vượt mục đích.
 
-### Phiếu lương PDF
+### 4.5 Phiếu lương
 
-Vào **Phiếu lương** để xem các kỳ đã được khóa và phát hành. Mở phiếu của đúng kỳ rồi tải PDF. Phiếu chỉ dành cho cá nhân đăng nhập; không tải hộ hoặc chuyển tiếp qua email cá nhân. Nếu kỳ chưa xuất hiện, hỏi Kế toán xem kỳ đã khóa/phát hành chưa.
+Mở **Phiếu lương**, chọn kỳ, kiểm tra Gross (tổng thu nhập), bảo hiểm, thuế, Net (thực nhận); tải PDF nếu cần. Chỉ xem/chia sẻ phiếu của bản thân. Không thấy kỳ mới thì có thể kỳ chưa được phát hành; hỏi Tài chính/Nhân sự.
 
-## 5. Công việc của quản lý bộ phận
+### 4.6 Dịch vụ văn phòng
 
-- Kiểm tra người gửi và phạm vi nhân viên trước khi duyệt nghỉ/chấm công.
-- Duyệt hoặc từ chối kèm lý do rõ ràng; xử lý đơn tồn trước hạn chốt công/lương.
-- Theo dõi công việc được giao; không dùng tài khoản nhân viên để tự duyệt.
-- Báo HR khi có điều chuyển/bổ nhiệm. Ngày hiệu lực trên quyết định cần chính xác; hệ thống áp dụng theo ngày đó.
-- Chỉ xem dữ liệu thuộc phạm vi quản lý được cấp.
+Các mục có thể gồm đặt phòng, đặt xe, văn phòng phẩm, lịch công tác, đào tạo. Chọn đúng mục, điền thời gian/mục đích/nội dung, gửi và theo dõi trạng thái. “Chờ duyệt” chưa có nghĩa là được chấp thuận.
 
-## 6. Quy trình Nhân sự
+## 5. Người duyệt
 
-### Nhận nhân viên mới
+### Duyệt nghỉ phép
+Mở **Duyệt nghỉ phép**; đọc nhân viên, loại/ngày/số ngày, lý do và số dư; kiểm tra lịch/phân công theo quy định. Chọn **Duyệt** hoặc **Từ chối** và ghi lý do từ chối. Chỉ xử lý trong phạm vi thẩm quyền.
 
-1. Tạo hồ sơ chính xác, kiểm tra mã nhân viên và thông tin bắt buộc.
-2. Tạo/cấp tài khoản riêng và gắn đúng hồ sơ nhân viên; cấp role tối thiểu cần thiết.
-3. Khai báo phòng ban, chức danh, ngày vào làm, hợp đồng và mức lương theo phân quyền.
-4. Cấp hạn mức nghỉ năm cho từng năm cần sử dụng; kiểm tra ngày lễ/lịch làm việc.
-5. Hướng dẫn nhân viên đăng nhập, chấm công, xin nghỉ và tải phiếu lương.
+### Duyệt chấm công
+Mở **Duyệt chấm công**, chọn tháng/bộ phận. Đối chiếu giờ, phân bổ dự án, nghỉ và giải trình/chứng từ theo quy định. Yêu cầu bổ sung khi thiếu; chỉ duyệt khi đã kiểm tra. Tổng hợp sau duyệt có thể không sửa trực tiếp và có thể được dùng để tính lương. Điều chỉnh phải theo quy trình có lưu vết.
 
-### Điều chuyển, bổ nhiệm, nghỉ việc
+### Duyệt tài liệu/yêu cầu
+Mở danh sách chờ duyệt tương ứng; đọc nội dung và tệp, kiểm tra đúng thẩm quyền, sau đó duyệt/từ chối kèm ghi chú. Không duyệt chỉ dựa trên tiêu đề khi có cam kết hoặc chi phí.
 
-Nhập sự kiện với ngày hiệu lực trên quyết định. Kiểm tra lại hồ sơ nhân viên sau khi đến ngày áp dụng. Khi nghỉ việc, khóa/thu hồi tài khoản đúng thời điểm, thu hồi thiết bị và rà soát quyền truy cập; không xóa hồ sơ lịch sử nếu cần bảo lưu theo chính sách công ty.
+## 6. Nhân sự
 
-### Kiểm tra định kỳ
+### Tiếp nhận nhân viên mới
+1. Mở **NV & Hồ sơ**, thêm nhân viên.
+2. Nhập mã duy nhất; họ/tên; ngày sinh/giới tính; CCCD, mã số thuế, số BHXH khi có; email, điện thoại, địa chỉ; ngày vào/nghỉ; phòng ban, chức vụ, chức danh, quản lý, trạng thái.
+3. Kiểm tra mã, đơn vị, quản lý, ngày hiệu lực và căn cứ dữ liệu trước khi lưu.
+4. Tạo hợp đồng trong **Hợp đồng**: nhân viên, loại/số hợp đồng, ngày bắt đầu/kết thúc, lương cơ bản, trạng thái dự thảo/hiệu lực.
+5. Phối hợp quản trị tạo tài khoản và cấp đúng vai trò theo quy trình.
 
-Đầu mỗi năm cập nhật ngày lễ, lịch làm việc và hạn mức phép; hàng tháng xử lý công/đơn nghỉ tồn; định kỳ rà soát tài khoản không còn sử dụng, role và hồ sơ thiếu dữ liệu.
+### Thay đổi nhân sự, tuyển dụng, lịch
+Ghi ngày hiệu lực chính xác cho điều chuyển/thay đổi; không áp dụng thay đổi tương lai sớm và không sửa lịch sử tùy tiện. Theo dõi ứng viên, trạng thái và hồ sơ; đề xuất tuyển dụng phải được duyệt mới xem là nhu cầu được chấp thuận. Khi cập nhật ngày lễ/lịch, rà ảnh hưởng tới phép và công.
 
-## 7. Quy trình Kế toán: chốt kỳ lương và phát hành phiếu
+## 7. Tài chính — chạy lương
 
-1. Kiểm tra dữ liệu công đã được duyệt, nhân viên đang làm, ngày hiệu lực lương, người phụ thuộc và cấu hình thuế/bảo hiểm của kỳ.
-2. Vào phần **Lương** → chọn kỳ đúng tháng/năm.
-3. Tạo các dòng nhân viên còn thiếu; kiểm tra không bỏ sót trường hợp đi làm/nghỉ giữa kỳ theo chính sách.
-4. Chạy **Tính lương toàn bộ kỳ**; rà soát gross, bảo hiểm, thuế, khấu trừ và net từng người.
-5. Đối chiếu báo cáo/tệp kiểm soát ngoài hệ thống và xin người có thẩm quyền kiểm tra trước khi khóa.
-6. Chỉ bấm **Khóa kỳ lương** sau khi được duyệt. Khóa kỳ không phải nút thử; dữ liệu khóa không chỉnh sửa theo luồng thông thường.
-7. Hệ thống tạo phiếu lương khi khóa kỳ. Nếu một kỳ đã khóa từ trước còn thiếu phiếu, dùng hành động phát hành PDF của kỳ đó sau khi xác minh danh sách.
-8. Nhân viên tải phiếu tại **Phiếu lương**. Xử lý sai lệch qua quy trình điều chỉnh có phê duyệt, không sửa trực tiếp PDF.
+Chỉ người được giao nhiệm vụ mới chạy lương. Kỳ khóa là kỳ đã chốt; không thể coi như kỳ đang mở.
 
-Công thức và mức thuế/bảo hiểm phải được Finance/đơn vị tư vấn xác nhận trước khi dùng trả lương thật.
+### Trước khi chạy
+- Kiểm tra kỳ, nhân viên, hợp đồng/lương có hiệu lực.
+- Xác nhận công đã duyệt; đối soát tăng ca, phụ cấp, khấu trừ và dữ liệu liên quan.
+- Kiểm tra cấu hình thuế, giảm trừ, bảo hiểm, người phụ thuộc.
+- Có người kiểm tra độc lập theo quy trình công ty.
 
-## 8. Quản trị tài khoản và dữ liệu
+### Trên màn hình
+1. Mở **Chạy lương hàng tháng** và chọn **Tạo kỳ lương**.
+2. Chọn đúng kỳ; lưu.
+3. Chọn **Tạo bảng lương cho nhân viên còn thiếu**.
+4. Đối chiếu **Lương CB**, **Lương đóng BH**, **Phụ cấp**, **Tăng ca**, **TC miễn thuế**, **Khấu trừ khác**.
+5. Chọn **Tính lương toàn bộ kỳ này**.
+6. Rà từng nhân viên và tổng kỳ: Gross, bảo hiểm, thuế, Net; so sánh bảng đối soát độc lập, xử lý sai lệch trước khi chốt.
+7. Người có thẩm quyền chọn **Khóa kỳ lương** sau khi hoàn tất kiểm tra/phê duyệt. Đọc lại kỳ trước khi bấm.
+8. Chọn **Phát hành phiếu lương PDF**; kiểm tra phát hành và xác nhận nhân viên xem được đúng phiếu của mình.
 
-- Mỗi người một tài khoản; không dùng tài khoản dùng chung.
-- Cấp role theo công việc, rà soát tối thiểu khi nhân viên chuyển bộ phận và khi nghỉ việc.
-- Tạo tài khoản: xác minh yêu cầu của HR, tạo user, gắn Employee, cấp role, thử đăng nhập bằng tài khoản người dùng.
-- Khóa tài khoản khi chấm dứt quan hệ lao động hoặc khi có sự cố; giữ hồ sơ theo chính sách lưu trữ.
-- Xóa mềm có thể ẩn bản ghi khỏi danh sách thường và có thể khôi phục qua Admin. Chỉ dùng hành động xóa sau khi xác minh; không dùng xóa vật lý cho dữ liệu nghiệp vụ.
-- Không xuất hoặc chia sẻ danh sách lương/hồ sơ ra ngoài nhóm được phép.
+Không đổi cấu hình có hiệu lực quá khứ để sửa nhanh kỳ đã chốt. Dùng cấu hình mới có ngày hiệu lực phù hợp và quy trình điều chỉnh được phê duyệt. Cấu hình thuế/bảo hiểm, lương cơ bản và người phụ thuộc ảnh hưởng trực tiếp kết quả; nhập theo căn cứ đã duyệt và nhờ người thứ hai rà soát.
 
-## 9. Sao lưu và khôi phục — dành cho IT
+## 8. Công văn, tài sản, kiểm kê
 
-Thực hiện theo lịch vận hành đã được duyệt: sao lưu database và thư mục file tải lên `media/` tới vị trí độc lập, giới hạn quyền và mã hóa theo chính sách. Theo dõi kết quả mỗi lần chạy. Định kỳ khôi phục **bản sao** lên SIT và kiểm tra đăng nhập, hồ sơ, file đính kèm, chấm công và phiếu lương. Không thử restore đè lên production. Ghi lại thời điểm, người thực hiện và kết quả.
+### Công văn
+Nhập loại, số/ký hiệu, trích yếu, cơ quan, ngày ban hành/nhận/gửi, khẩn/mật, đơn vị xử lý, người phụ trách, người ký, hạn và bản scan. Soát phân loại mật/người nhận trước khi lưu; cập nhật tiến độ tại chi tiết.
+
+### Kiểm kê và thanh lý
+Phiên kiểm kê liệt kê tài sản; kiểm đếm từng dòng, ghi tình trạng/vị trí và xử lý chênh lệch. Không hoàn tất nếu còn dòng chưa kiểm; phiên hoàn tất sẽ đóng chỉnh sửa. Thanh lý theo chuỗi đề nghị → phê duyệt → biên bản → quyết định → xác nhận thực hiện. Chỉ xác nhận sau khi thanh lý thực tế; bước cuối có thể đổi trạng thái tài sản.
+
+## 9. Báo cáo và bảo mật
+
+Báo cáo có thể gồm công/nghỉ, biến động nhân sự, số lượng nhân sự so kế hoạch, ngân sách so chi tiêu. Chọn đúng kỳ/bộ lọc và kiểm tra ngày cập nhật. Chỉ chia sẻ báo cáo nhân sự/lương cho người có thẩm quyền; lưu tệp xuất tại nơi công ty cho phép.
 
 ## 10. Xử lý sự cố
 
-| Hiện tượng | Việc cần làm |
+| Tình huống | Việc nên làm |
 |---|---|
-| Không đăng nhập được | Kiểm tra địa chỉ nội bộ/tài khoản; liên hệ IT nếu mật khẩu bị khóa hoặc quên. |
-| Không thấy menu | Role có thể không bao gồm chức năng; gửi HR/IT tên chức năng và công việc cần thực hiện. |
-| Sai hồ sơ, chấm công, nghỉ phép | Gửi mã nhân viên, kỳ/ngày và mô tả cho HR; không gửi dữ liệu lương vào nhóm chung. |
-| Kỳ lương sai hoặc PDF sai người | Báo ngay Finance và IT; tạm ngừng tải/chia sẻ các phiếu liên quan; không tự sửa dữ liệu đã khóa. |
-| Tệp tải lên lỗi | Kiểm tra dung lượng/định dạng và thử lại; nếu lỗi tiếp diễn, gửi tên module và thời điểm cho IT, không gửi file nhạy cảm qua kênh không an toàn. |
-| Hệ thống không truy cập được | Báo IT thời điểm, địa chỉ đã dùng và ảnh lỗi đã che dữ liệu cá nhân; không chạy lệnh server/database. |
+| Không thấy menu | Yêu cầu kiểm tra vai trò; không mượn tài khoản. |
+| Bị từ chối truy cập | Ghi URL/thời điểm, báo quản trị; không sửa URL để vượt quyền. |
+| Đơn nghỉ không lưu | Kiểm tra ngày, trùng lặp và số dư; báo Nhân sự nếu dữ liệu nền sai. |
+| Công đã duyệt không sửa được | Yêu cầu quy trình điều chỉnh, không tạo dữ liệu thay thế gây lệch. |
+| Chưa có phiếu lương | Hỏi Tài chính kỳ đã phát hành chưa. Không chia sẻ bảng lương chung. |
+| Trang/PDF lỗi | Ghi màn hình, bước thao tác, thời gian và thông báo; che thông tin cá nhân khi chụp. |
+| Gửi IT | Ghi người báo/mã NV, thời điểm, URL, các bước, kết quả mong đợi/thực tế, mã lỗi, mức ảnh hưởng. Tuyệt đối không gửi mật khẩu, SECRET_KEY hay chuỗi kết nối. |
 
-## 11. Hỗ trợ
+## 11. Tự kiểm tra
 
-Khi báo sự cố, cung cấp: tên tài khoản/mã nhân viên, module, ngày giờ, thao tác ngay trước lỗi và mã kỳ/đơn liên quan. Không gửi mật khẩu, SECRET_KEY, số định danh cá nhân đầy đủ hoặc phiếu lương vào ticket không bảo mật.
+- Tôi biết đăng xuất trên máy dùng chung.
+- Tôi biết gửi đơn nghỉ và kiểm tra trạng thái.
+- Tôi hiểu công đã duyệt cần quy trình điều chỉnh.
+- Tôi chỉ tải phiếu lương của bản thân.
+- Tôi biết báo lỗi mà không gửi bí mật.
 
-Tài liệu này mô tả chức năng hiện có trong bản IHRMS đã rà soát; tích hợp hoặc chức năng chưa được nghiệm thu ở công ty không nên coi là quy trình chính thức.
+**Tài liệu đi kèm:** [Giáo án và bài thực hành tập huấn](TAP_HUAN_IHRMS.md).
