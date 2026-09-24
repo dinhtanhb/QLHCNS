@@ -73,6 +73,7 @@ INSTALLED_APPS = (['jazzmin'] if HAS_JAZZMIN else []) + [
     'apps.reporting',
     'apps.office',
     'apps.planning',
+    'apps.m365',
 ]
 
 MIDDLEWARE = [
@@ -187,6 +188,50 @@ LOGIN_REDIRECT_URL = "portal:dashboard"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# ==========================================
+# TÍCH HỢP MICROSOFT 365 (SharePoint / OneDrive)
+# Xem docs/16_M365_Integration_Setup.md để lấy các giá trị bên dưới.
+# ==========================================
+M365_TENANT_ID = os.getenv("M365_TENANT_ID", "")
+M365_CLIENT_ID = os.getenv("M365_CLIENT_ID", "")
+M365_CLIENT_SECRET = os.getenv("M365_CLIENT_SECRET", "")
+
+# Site SharePoint sẽ dùng làm nơi lưu tài liệu, ví dụ:
+#   URL đầy đủ: https://congty.sharepoint.com/sites/IHRMS
+#   -> M365_SHAREPOINT_HOSTNAME=congty.sharepoint.com
+#   -> M365_SHAREPOINT_SITE_PATH=/sites/IHRMS
+M365_SHAREPOINT_HOSTNAME = os.getenv("M365_SHAREPOINT_HOSTNAME", "")
+M365_SHAREPOINT_SITE_PATH = os.getenv("M365_SHAREPOINT_SITE_PATH", "")
+
+# Bật lưu trữ qua SharePoint/OneDrive thay vì đĩa cục bộ. Mặc định TẮT để hệ
+# thống vẫn chạy bình thường (lưu vào MEDIA_ROOT) trong lúc chờ IT cấp đủ
+# Tenant ID / Client ID / Client Secret / site SharePoint ở trên.
+M365_STORAGE_ENABLED = os.getenv("M365_STORAGE_ENABLED", "False") == "True"
+
+# One SharePoint document library (a Graph drive) contains per-feature folders.
+# Legacy M365_LIBRARY_DOCUMENTS remains a fallback for the former library setting.
+M365_SHAREPOINT_LIBRARY = os.getenv(
+    "M365_SHAREPOINT_LIBRARY", os.getenv("M365_LIBRARY_DOCUMENTS", "Documents")
+)
+M365_FOLDER_MAP = {
+    "documents": os.getenv("M365_FOLDER_DOCUMENTS", ""),
+    "dispatches": os.getenv("M365_FOLDER_DISPATCHES", os.getenv("M365_LIBRARY_DISPATCHES", "CongVan")),
+    "incoming_docs": os.getenv("M365_FOLDER_INCOMING", os.getenv("M365_LIBRARY_INCOMING", "CongVanDen")),
+    "outgoing_docs": os.getenv("M365_FOLDER_OUTGOING", os.getenv("M365_LIBRARY_OUTGOING", "CongVanDi")),
+    "leave": os.getenv("M365_FOLDER_LEAVE", os.getenv("M365_LIBRARY_LEAVE", "DonNghiPhep")),
+    "recruitment_cv": os.getenv("M365_FOLDER_CV", os.getenv("M365_LIBRARY_CV", "HoSoUngVien")),
+    "assets": os.getenv("M365_FOLDER_ASSETS", os.getenv("M365_LIBRARY_ASSETS", "TaiSanHinhAnh")),
+}
+M365_UPLOAD_PREFIX_MAP = {
+    "documents": "documents",
+    "dispatches": "dispatches",
+    "incoming_docs": "incoming_docs",
+    "outgoing_docs": "outgoing_docs",
+    "leave": "leave-requests",
+    "recruitment_cv": "candidates/cv",
+    "assets": "company-media",
+}
 
 # ==========================================
 # CẤU HÌNH GIAO DIỆN QUẢN TRỊ ADMINLTE 3 (JAZZMIN)

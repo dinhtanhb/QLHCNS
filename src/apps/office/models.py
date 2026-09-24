@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from apps.common.models import BaseAuditModel
 from apps.common.uploads import upload_to_incoming_docs, upload_to_outgoing_docs, validate_upload
+from apps.m365.storage import get_storage
 
 
 # ============================================================
@@ -27,6 +28,7 @@ class IncomingDocument(BaseAuditModel):
     attachment = models.FileField(
         "Tệp đính kèm", upload_to=upload_to_incoming_docs,
         validators=[validate_upload], null=True, blank=True,
+        storage=get_storage("incoming_docs"),
     )
     status = models.CharField("Trạng thái", max_length=30, choices=STATUS_CHOICES, default="New", db_column="Status")
     note = models.CharField("Ghi chú", max_length=500, null=True, blank=True, db_column="Note")
@@ -60,6 +62,7 @@ class OutgoingDocument(BaseAuditModel):
     attachment = models.FileField(
         "Tệp đính kèm", upload_to=upload_to_outgoing_docs,
         validators=[validate_upload], null=True, blank=True,
+        storage=get_storage("outgoing_docs"),
     )
     note = models.CharField("Ghi chú", max_length=500, null=True, blank=True, db_column="Note")
 

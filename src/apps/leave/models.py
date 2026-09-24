@@ -4,6 +4,8 @@ from datetime import date as _date
 from django.core.exceptions import ValidationError
 from django.db import models
 from apps.common.models import BaseAuditModel
+from apps.common.uploads import upload_to_leave_requests, validate_upload
+from apps.m365.storage import get_storage
 
 # Mã loại nghỉ có kiểm soát hạn mức
 ANNUAL_LEAVE_CODE = "AL"          # Phép năm
@@ -67,6 +69,12 @@ class LeaveRequest(BaseAuditModel):
     to_date = models.DateField(db_column="ToDate")
     total_days = models.DecimalField(max_digits=4, decimal_places=1, default=0, db_column="TotalDays")
     reason = models.CharField(max_length=500, null=True, blank=True, db_column="Reason")
+    attachment = models.FileField(
+        "Tệp đính kèm (đơn xin nghỉ, giấy tờ liên quan)",
+        upload_to=upload_to_leave_requests,
+        validators=[validate_upload], null=True, blank=True,
+        storage=get_storage("leave"),
+    )
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default="Pending", db_column="Status")
 
     class Meta:

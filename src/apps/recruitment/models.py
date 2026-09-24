@@ -1,6 +1,7 @@
 from django.db import models
 from apps.common.models import BaseAuditModel
 from apps.common.uploads import upload_to_candidate_cv, validate_upload
+from apps.m365.storage import get_storage
 
 
 class RecruitmentRequest(BaseAuditModel):
@@ -74,6 +75,7 @@ class Candidate(BaseAuditModel):
     cv_file = models.FileField(
         "Hồ sơ CV", upload_to=upload_to_candidate_cv,
         validators=[validate_upload], null=True, blank=True,
+        storage=get_storage("recruitment_cv"),
     )
     status = models.CharField("Trạng thái", max_length=30, choices=STATUS_CHOICES, default="New", db_column="Status")
 
