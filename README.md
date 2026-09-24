@@ -1,5 +1,7 @@
 # QLHCNS — IHRMS
 
+> Nhật ký thay đổi lớn, kết quả kiểm tra và việc cần chủ dự án thực hiện được ghi tập trung tại [docs/PROJECT_WORK_LOG.md](docs/PROJECT_WORK_LOG.md). Quy tắc cập nhật nằm trong [AGENTS.md](AGENTS.md).
+
 Hệ thống **Quản lý Hành chính & Nhân sự** nội bộ, xây dựng trên Django 5.0.
 Gồm hai phần: **Cổng thông tin nhân viên** (`/portal/`) và **Trang quản trị** (`/admin/`).
 
