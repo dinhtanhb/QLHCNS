@@ -1,7 +1,9 @@
 # CẨM NANG SỬ DỤNG IHRMS
 
-**Đối tượng:** nhân viên, quản lý, Nhân sự, Tài chính, quản trị hệ thống  
-**Phiên bản:** 1.0 — 24/09/2026  
+**Đối tượng:** nhân viên, quản lý, Nhân sự, Tài chính, quản trị hệ thống
+
+**Phiên bản:** 1.1 — 24/09/2026
+
 **Phạm vi:** thao tác theo giao diện hiện có. Quy định nội bộ về hạn xử lý, người thay thế và phê duyệt cần công ty ban hành riêng.
 
 ## 1. Sau khóa học, bạn có thể
@@ -57,11 +59,22 @@ Mở **Hồ sơ cá nhân**. Đối chiếu họ tên, ngày sinh, giới tính,
 
 Mở **Công việc** hoặc **KPI**, đọc yêu cầu, hạn và trạng thái; cập nhật tiến độ/kết quả trong mục tương ứng rồi lưu. Thiếu thông tin hoặc hạn không khả thi thì trao đổi với người giao việc. Trong **Tài liệu**, mở đúng hồ sơ và theo dõi duyệt; không tải lên thông tin vượt mục đích.
 
-### 4.5 Phiếu lương
+### 4.5 Tệp đính kèm trên SharePoint
+
+Khi chức năng được cấu hình dùng SharePoint, người dùng vẫn đính kèm và mở tệp từ màn hình IHRMS như bình thường. IHRMS lưu tệp vào thư viện `Documents`, trong thư mục nghiệp vụ như `CongVanDen`, `CongVanDi`, `DonNghiPhep`, `HoSoUngVien` hoặc `TaiSanHinhAnh`; tên thư mục thực tế do IT cấu hình. Nhân viên không cần tự tải tệp lên thư viện SharePoint.
+
+1. Chỉ chọn tệp đúng hồ sơ và đúng mục đích; xem lại người có quyền xem trước khi lưu.
+2. Sau khi lưu, mở lại bản ghi và dùng liên kết tệp trong IHRMS để xác nhận xem/tải được đúng tệp.
+3. Nếu tải lên hoặc mở tệp báo lỗi, ghi lại mục IHRMS, thời gian và mã lỗi rồi báo IT. Không tải lặp nhiều lần hoặc xóa tệp trực tiếp trong SharePoint để tự khắc phục; IT cần kiểm tra bản ghi và vị trí lưu trước.
+4. Tệp nhân sự, ứng viên, nghỉ phép và công văn có thể chứa dữ liệu hạn chế. Không chia sẻ liên kết thư viện rộng hơn quyền nghiệp vụ và không gửi tệp qua nhóm chat không được công ty duyệt.
+
+Kết quả smoke test tải lên/đọc lại/xóa tệp thử đã được xác nhận trên SharePoint. Điều đó xác nhận lưu trữ cơ bản; không có nghĩa mọi tính năng Microsoft 365 như email, Teams, SSO hay đồng tác giả Office đã được bật.
+
+### 4.6 Phiếu lương
 
 Mở **Phiếu lương**, chọn kỳ, kiểm tra Gross (tổng thu nhập), bảo hiểm, thuế, Net (thực nhận); tải PDF nếu cần. Chỉ xem/chia sẻ phiếu của bản thân. Không thấy kỳ mới thì có thể kỳ chưa được phát hành; hỏi Tài chính/Nhân sự.
 
-### 4.6 Dịch vụ văn phòng
+### 4.7 Dịch vụ văn phòng
 
 Các mục có thể gồm đặt phòng, đặt xe, văn phòng phẩm, lịch công tác, đào tạo. Chọn đúng mục, điền thời gian/mục đích/nội dung, gửi và theo dõi trạng thái. “Chờ duyệt” chưa có nghĩa là được chấp thuận.
 
@@ -132,6 +145,7 @@ Báo cáo có thể gồm công/nghỉ, biến động nhân sự, số lượng
 | Công đã duyệt không sửa được | Yêu cầu quy trình điều chỉnh, không tạo dữ liệu thay thế gây lệch. |
 | Chưa có phiếu lương | Hỏi Tài chính kỳ đã phát hành chưa. Không chia sẻ bảng lương chung. |
 | Trang/PDF lỗi | Ghi màn hình, bước thao tác, thời gian và thông báo; che thông tin cá nhân khi chụp. |
+| Tệp đính kèm không tải/mở được | Không thử xóa ở SharePoint hoặc gửi bản sao qua kênh không duyệt. Ghi mục IHRMS, tên hồ sơ/mã bản ghi, thời gian và thông báo; báo IT kiểm tra quyền và trạng thái lưu. |
 | Gửi IT | Ghi người báo/mã NV, thời điểm, URL, các bước, kết quả mong đợi/thực tế, mã lỗi, mức ảnh hưởng. Tuyệt đối không gửi mật khẩu, SECRET_KEY hay chuỗi kết nối. |
 
 ## 11. Tự kiểm tra
@@ -142,4 +156,4 @@ Báo cáo có thể gồm công/nghỉ, biến động nhân sự, số lượng
 - Tôi chỉ tải phiếu lương của bản thân.
 - Tôi biết báo lỗi mà không gửi bí mật.
 
-**Tài liệu đi kèm:** [Giáo án và bài thực hành tập huấn](TAP_HUAN_IHRMS.md).
+**Tài liệu đi kèm:** [Giáo án và bài thực hành tập huấn](TAP_HUAN_IHRMS.md). Bản đánh giá triển khai hiện hành: [Production Readiness Review](docs/Production_Readiness_Review_2026-09-23.md). Bản review ngày 23/09 là snapshot lịch sử.

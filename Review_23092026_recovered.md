@@ -1,4 +1,4 @@
-> **CẬP NHẬT 23/09/2026:** Tài liệu dưới đây là snapshot đánh giá ban đầu ngày 23/09/2026, không phải trạng thái hiện hành. Các mục I1, I4, I5, I10, I11 đã được xử lý sau snapshot; tính năng khóa kỳ và phát hành phiếu lương PDF cũng đã được triển khai. Dùng báo cáo mới tại [docs/Production_Readiness_Review_2026-09-23.md](docs/Production_Readiness_Review_2026-09-23.md) để ra quyết định hiện tại. Nội dung cũ được giữ lại để lưu lịch sử phát hiện.
+> **CẬP NHẬT 24/09/2026:** Đây là snapshot lịch sử ngày 23/09, không phản ánh đầy đủ trạng thái hiện tại. Source đã được đưa vào GitHub và clone sạch; Django đã nâng lên 5.2.17; SQL Server đã kết nối/migrate tại môi trường kiểm tra; SharePoint đã qua smoke test upload, đọc/xem và xóa tệp thử. Xem [báo cáo readiness cập nhật](docs/Production_Readiness_Review_2026-09-23.md) để biết bằng chứng và các cổng còn lại trước production. Nội dung bên dưới được giữ nguyên làm lịch sử phát hiện.
 
 ---
 Đã kiểm tra lại toàn bộ 16 mục Important (I1–I16) + 4 mục Critical (C1–C4) + 4 mục Performance (P1–P4) trong báo cáo, so với code thực tế (không chỉ dựa vào comment). Kết quả:

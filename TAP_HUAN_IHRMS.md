@@ -1,7 +1,9 @@
 # GIÁO ÁN VÀ BÀI THỰC HÀNH TẬP HUẤN IHRMS
 
-**Dành cho:** người hướng dẫn nội bộ và đầu mối nghiệp vụ  
-**Phiên bản:** 1.0 — 24/09/2026  
+**Dành cho:** người hướng dẫn nội bộ và đầu mối nghiệp vụ
+
+**Phiên bản:** 1.1 — 24/09/2026
+
 **Thời lượng gợi ý:** 75 phút nhân viên; thêm 45 phút quản lý; 90 phút Nhân sự; 120 phút Tài chính; 60 phút quản trị.
 
 ## 1. Mục tiêu và nguyên tắc
@@ -27,8 +29,8 @@ Kết thúc buổi học, học viên tự đăng nhập, tìm đúng menu, hoà
 | 22–38 | Bảng công | Làm mẫu chọn tháng, ghi giờ, dự án, xem tổng và trạng thái. |
 | 38–52 | Nghỉ phép | Tạo đơn demo, xem số ngày/số dư/trạng thái. |
 | 52–62 | Phiếu lương và bảo mật | Trình diễn PDF bằng nhân vật demo, nhấn mạnh chỉ xem phiếu của mình. |
-| 62–70 | Bài thực hành cá nhân | Học viên thực hiện các tác vụ bên dưới. |
-| 70–75 | Kiểm tra nhanh, câu hỏi, kênh hỗ trợ | Dùng tiêu chí đạt ở mục 8. |
+| 62–70 | Tệp đính kèm và bài thực hành cá nhân | Làm thử với tệp giả trên hồ sơ đào tạo; mở lại tệp từ IHRMS. |
+| 70–75 | Kiểm tra nhanh, câu hỏi, kênh hỗ trợ | Dùng tiêu chí đạt ở mục 9. |
 
 ## 4. Thực hành nhân viên
 
@@ -39,9 +41,10 @@ Mỗi người dùng tài khoản demo riêng:
 3. Tạo đơn nghỉ demo trong khoảng ngày hợp lệ; nêu số ngày hệ thống tính; không gửi vào quy trình thật nếu môi trường không phải môi trường đào tạo.
 4. Tìm trạng thái đơn và thông báo.
 5. Mở phiếu lương demo và tải PDF. Xác nhận đây là dữ liệu demo; không gửi qua nhóm chat.
-6. Đăng xuất.
+6. Trên môi trường đào tạo, đính kèm tệp giả vào đơn nghỉ phép demo, lưu rồi mở lại để xác nhận đọc được. Không dùng hồ sơ thật hoặc tự xóa tệp trong SharePoint.
+7. Đăng xuất.
 
-**Đạt khi:** làm đúng ít nhất 5/6 bước; không chia sẻ thông tin xác thực; hiểu đơn đang chờ chưa phải đã duyệt.
+**Đạt khi:** làm đúng ít nhất 6/7 bước; không chia sẻ thông tin xác thực; hiểu đơn đang chờ chưa phải đã duyệt và biết báo IT nếu tệp không mở được.
 
 ## 5. Bổ sung cho quản lý — 45 phút
 
@@ -65,7 +68,20 @@ Mỗi người dùng tài khoản demo riêng:
 
 **Đạt khi:** không tạo trùng nhân viên; biết trường nào nhạy cảm; xử lý đúng ngày hiệu lực; biết không sửa lịch sử tùy tiện.
 
-## 7. Bổ sung cho Tài chính — 120 phút
+## 7. Thực hành hồ sơ có tệp đính kèm — 30 phút
+
+Dành cho Nhân sự, văn thư và người được giao quản lý hồ sơ. Chỉ dùng môi trường đào tạo cùng tài khoản demo; IT chuẩn bị một tệp giả không chứa dữ liệu thật.
+
+1. Tạo hoặc mở bản ghi công văn/đơn nghỉ phép demo theo vai trò được cấp.
+2. Đính kèm tệp giả từ màn hình IHRMS, lưu bản ghi và ghi nhận mã hồ sơ.
+3. Mở lại liên kết tệp từ bản ghi IHRMS; xác nhận đúng nội dung và có quyền truy cập.
+4. Người hướng dẫn/IT kiểm tra tệp nằm trong thư viện `Documents` và đúng thư mục nghiệp vụ đã cấu hình, ví dụ `CongVanDen`, `CongVanDi` hoặc `DonNghiPhep`.
+5. Thử bằng một tài khoản không được cấp quyền phù hợp nếu môi trường có sẵn; học viên phải dừng lại khi bị từ chối, không tìm cách mở trực tiếp bằng URL khác.
+6. Ghi cách báo lỗi nếu upload hoặc xem tệp thất bại. Không xóa tệp hồ sơ từ SharePoint; việc xóa/retention do người quản trị xử lý theo chính sách.
+
+**Đạt khi:** đính kèm được tệp demo, mở lại đúng tệp trong IHRMS, chỉ ra được kênh báo sự cố và không chia sẻ liên kết/tệp ra ngoài phạm vi.
+
+## 8. Bổ sung cho Tài chính — 120 phút
 
 Chỉ dùng kỳ và số liệu demo. Người hướng dẫn phải có người rà soát nghiệp vụ đồng hành.
 
@@ -79,7 +95,7 @@ Chỉ dùng kỳ và số liệu demo. Người hướng dẫn phải có ngư�
 
 **Điểm kiểm soát:** luôn rà soát độc lập trước khóa; xác minh đúng kỳ; chỉ người được ủy quyền khóa/phát hành. Quy tắc tính pháp lý cần được bộ phận chuyên môn xác nhận.
 
-## 8. Kiểm tra nhanh và tiêu chí hoàn thành
+## 9. Kiểm tra nhanh và tiêu chí hoàn thành
 
 Hỏi ngẫu nhiên:
 - Đơn nghỉ “chờ duyệt” có cho phép nghỉ ngay không?
@@ -87,8 +103,9 @@ Hỏi ngẫu nhiên:
 - Nhân viên có được xem phiếu lương đồng nghiệp không?
 - Trước khi khóa kỳ lương cần đối chiếu những gì?
 - IT cần thông tin nào để tái hiện lỗi; thông tin nào tuyệt đối không gửi?
+- Khi tệp SharePoint báo lỗi, người dùng nên tự xóa/thử gửi nhiều lần hay ghi mã hồ sơ và báo IT?
 
-**Hoàn thành:** học viên thực hiện đúng tác vụ cốt lõi theo vai trò, trả lời đúng ít nhất 4/5 câu, biết kênh hỗ trợ và không vi phạm bảo mật. Người chưa đạt được kèm 1:1 và thực hành lại; lưu kết quả theo quy trình đào tạo.
+**Hoàn thành:** học viên thực hiện đúng tác vụ cốt lõi theo vai trò, trả lời đúng ít nhất 4/6 câu, biết kênh hỗ trợ và không vi phạm bảo mật. Người chưa đạt được kèm 1:1 và thực hành lại; lưu kết quả theo quy trình đào tạo.
 
 ### Phiếu xác nhận
 
@@ -101,17 +118,17 @@ Hỏi ngẫu nhiên:
 | Nội dung cần đào tạo lại | |
 | Xác nhận học viên/người hướng dẫn | |
 
-## 9. Kịch bản hỗ trợ sau đào tạo
+## 10. Kịch bản hỗ trợ sau đào tạo
 
 Yêu cầu gửi: người báo/mã NV; thời điểm; menu/URL; bước thao tác; kết quả mong đợi và thực tế; thông báo lỗi; mức ảnh hưởng. Che dữ liệu cá nhân khi chụp ảnh. Không yêu cầu học viên gửi mật khẩu, SECRET_KEY, chuỗi kết nối hay bản PDF lương qua kênh chung.
 
-## 10. Danh sách trước khi đào tạo diện rộng
+## 11. Danh sách trước khi đào tạo diện rộng
 
 - [ ] Chủ quy trình đã xác nhận luồng và hạn xử lý.
 - [ ] Tài khoản và quyền từng nhóm đã được kiểm tra.
 - [ ] Dữ liệu demo không chứa dữ liệu thật.
 - [ ] Môi trường, PDF, thông báo và các luồng trình diễn hoạt động.
+- [ ] Tài khoản demo có quyền SharePoint phù hợp; thư mục upload đúng nghiệp vụ; tệp giả được chuẩn bị sẵn.
 - [ ] Người hỗ trợ nghiệp vụ và IT đã được phân công.
 - [ ] Cẩm nang, giáo án, phiếu điểm danh và phản hồi đã sẵn sàng.
 - [ ] Các nội dung chưa được quyết định đã được nêu rõ thay vì hướng dẫn như chính sách.
-
