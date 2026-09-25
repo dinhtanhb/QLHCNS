@@ -23,6 +23,8 @@ from apps.security.permissions import (
     HR_MANAGER,
     HR_OFFICER,
     PERMISSION_MATRIX,
+    PROJECT_COORDINATOR,
+    PROJECT_MANAGER,
     STAFF_ALSO_ALLOWED,
     SYS_ADMIN,
     has_permission,
@@ -37,8 +39,11 @@ class PermissionMatrixTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.roles = {
-            code: Role.objects.create(role_code=code, role_name=code)
-            for code in (EMPLOYEE, DEPT_MANAGER, HR_MANAGER, HR_OFFICER, DIRECTOR, FINANCE_OFFICER, SYS_ADMIN)
+            code: Role.objects.get_or_create(role_code=code, defaults={"role_name": code})[0]
+            for code in (
+                EMPLOYEE, DEPT_MANAGER, HR_MANAGER, HR_OFFICER, DIRECTOR,
+                FINANCE_OFFICER, SYS_ADMIN, PROJECT_MANAGER, PROJECT_COORDINATOR,
+            )
         }
         cls.users = {
             code: User.objects.create_user(username=f"u_{code}", password="x", role=role)
@@ -83,7 +88,10 @@ class PermissionMatrixTests(TestCase):
             self.assertFalse(has_permission(self.users[code], "manage_office"), code)
 
     def test_cong_van_di_moi_vai_tro_tru_nhan_vien(self):
-        for code in (DEPT_MANAGER, DIRECTOR, HR_MANAGER, HR_OFFICER, FINANCE_OFFICER, SYS_ADMIN):
+        for code in (
+            DEPT_MANAGER, DIRECTOR, HR_MANAGER, HR_OFFICER, FINANCE_OFFICER,
+            SYS_ADMIN, PROJECT_MANAGER, PROJECT_COORDINATOR,
+        ):
             self.assertTrue(has_permission(self.users[code], "access_outgoing_document"), code)
         self.assertFalse(has_permission(self.users[EMPLOYEE], "access_outgoing_document"))
 

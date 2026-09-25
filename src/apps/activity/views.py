@@ -2,13 +2,16 @@ from calendar import monthrange
 from datetime import date
 
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.db.models import Prefetch, Q
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from apps.activity.models import Activity
-from apps.activity.permissions import visible_activities_for
+from apps.activity.forms import ActivityForm
+from apps.activity.permissions import can_manage_activities, visible_activities_for
+from apps.activity.services import find_schedule_conflicts
 from apps.security.permissions import get_role_code, has_permission
 from apps.task.models import Task
 
@@ -62,5 +65,71 @@ def activity_dashboard(request):
         "report_missing_count": sum(bool(task and task.status != "Cancelled" and not task.report_file) for task in tasks),
         "without_task_count": sum(row["task"] is None for row in rows),
         "is_overview": get_role_code(request.user) != "CBDA",
+        "can_manage_activities": can_manage_activities(request.user),
     }
     return render(request, "activity/dashboard.html", context)
+
+
+def _warn_schedule_conflicts(request, activity):
+    conflicts = find_schedule_conflicts(
+        employee_id=activity.lead_cbda_id,
+        start_date=activity.start_date,
+        end_date=activity.end_date,
+        exclude_activity_id=activity.pk,
+    )
+    if conflicts:
+        names = ", ".join(item.activity_code for item in conflicts)
+        messages.warning(
+            request,
+            f"Lịch CBDA bị trùng với hoạt động {names}. Hoạt động đã được lưu; "
+            "vui lòng kiểm tra và điều phối.",
+        )
+
+
+@login_required
+def activity_create(request):
+    if not can_manage_activities(request.user):
+        raise PermissionDenied
+
+    form = ActivityForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        activity = form.save(commit=False)
+        activity.created_by = request.user
+        activity.modified_by = request.user
+        activity.save()
+        _warn_schedule_conflicts(request, activity)
+        messages.success(request, "Đã tạo hoạt động dự án.")
+        if activity.outgoing_document_id:
+            messages.info(request, "IHRMS đã tạo Task báo cáo theo công văn đi được liên kết.")
+        return redirect("portal:activity_dashboard")
+
+    return render(request, "activity/activity_form.html", {
+        "form": form,
+        "page_title": "Tạo hoạt động dự án",
+        "submit_label": "Tạo hoạt động",
+    })
+
+
+@login_required
+def activity_update(request, pk):
+    if not can_manage_activities(request.user):
+        raise PermissionDenied
+    activity = get_object_or_404(visible_activities_for(request.user), pk=pk)
+    had_tracking_task = activity.tasks.exists()
+    form = ActivityForm(request.POST or None, instance=activity)
+    if request.method == "POST" and form.is_valid():
+        activity = form.save(commit=False)
+        activity.modified_by = request.user
+        activity.save()
+        _warn_schedule_conflicts(request, activity)
+        messages.success(request, "Đã cập nhật hoạt động dự án.")
+        if activity.outgoing_document_id and not had_tracking_task and activity.tasks.exists():
+            messages.info(request, "IHRMS đã tạo Task báo cáo theo công văn đi được liên kết.")
+        return redirect("portal:activity_dashboard")
+
+    return render(request, "activity/activity_form.html", {
+        "form": form,
+        "activity": activity,
+        "page_title": "Cập nhật hoạt động dự án",
+        "submit_label": "Lưu thay đổi",
+    })

@@ -1,4 +1,4 @@
-from datetime import date, timedelta, timedelta
+from datetime import date, timedelta
 import tempfile
 
 from django.core.exceptions import ValidationError
@@ -15,7 +15,7 @@ from apps.activity.services import (
 from apps.attendance.models import Holiday
 from apps.hrm.models import Employee
 from apps.notification.models import Notification
-from apps.office.models import OutgoingDocument
+from apps.document.models import DispatchBook, OfficialDispatch
 from apps.organization.models import Department, Organization, Position
 from apps.project.models import Project
 from apps.security.models import Role, User
@@ -39,10 +39,15 @@ class ActivityTestDataMixin:
         self.project = Project.objects.create(
             project_code="PRJ-ACT", project_name="Dự án thử", department=self.department
         )
-        self.dispatch = OutgoingDocument.objects.create(
-            outgoing_no="CV-ACT-001", outgoing_date=date(2026, 9, 25),
-            recipient="Đối tác", subject="Kế hoạch hoạt động",
-            signed_by=self.coordinator,
+        self.dispatch_book = DispatchBook.objects.create(
+            book_code="BOOK-ACT-2026", book_name="Sổ công văn đi 2026",
+            book_type="Outgoing", year=2026,
+        )
+        self.dispatch = OfficialDispatch.objects.create(
+            dispatch_type="Outgoing", dispatch_book=self.dispatch_book,
+            dispatch_no="CV-ACT-001", title="Kế hoạch hoạt động",
+            issuing_organization="IHRMS", issue_date=date(2026, 9, 25),
+            received_or_sent_date=date(2026, 9, 25), signer=self.coordinator,
         )
 
     def make_employee(self, suffix):
@@ -123,6 +128,14 @@ class ActivityWorkflowTests(ActivityTestDataMixin, TestCase):
         task.report_file = SimpleUploadedFile("bao-cao.pdf", b"test report", content_type="application/pdf")
         task.full_clean()
 
+    def test_linked_dispatch_requires_task_assigner(self):
+        activity = self.make_activity(dispatch=self.dispatch)
+        activity.coordinator = None
+        self.dispatch.signer = None
+
+        with self.assertRaises(ValidationError):
+            activity.full_clean()
+
     def test_reminders_are_sent_once_per_workday_and_skipped_on_weekends(self):
         activity = self.make_activity(dispatch=self.dispatch)
         task = Task.objects.get(activity=activity)
@@ -175,6 +188,78 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.own_activity.activity_code)
         self.assertNotContains(response, self.other_activity.activity_code)
+
+    def test_coordinator_can_open_create_activity_form(self):
+        coordinator_role, _ = Role.objects.get_or_create(
+            role_code="PROJECT_COORDINATOR", defaults={"role_name": "Điều phối dự án"}
+        )
+        self.create_user("coordinator", self.coordinator, coordinator_role)
+        self.client.login(username="coordinator", password="test-password")
+
+        response = self.client.get(reverse("portal:activity_create"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Tạo hoạt động dự án")
+
+    def test_coordinator_creates_activity_linked_to_official_dispatch(self):
+        coordinator_role, _ = Role.objects.get_or_create(
+            role_code="PROJECT_COORDINATOR", defaults={"role_name": "Điều phối dự án"}
+        )
+        self.create_user("coordinator", self.coordinator, coordinator_role)
+        self.client.login(username="coordinator", password="test-password")
+
+        response = self.client.post(reverse("portal:activity_create"), {
+            "activity_code": "ACT-FORM-001",
+            "activity_name": "Tập huấn tại điểm A",
+            "project": self.project.pk,
+            "location": "Điểm A",
+            "participants": "Nhóm cộng đồng",
+            "purpose": "Tập huấn thử nghiệm",
+            "expected_output": "Một buổi tập huấn",
+            "start_date": "2026-10-01",
+            "end_date": "2026-10-01",
+            "lead_cbda": self.cbda.pk,
+            "coordinator": self.coordinator.pk,
+            "outgoing_document": self.dispatch.pk,
+            "status": "DispatchIssued",
+        })
+
+        self.assertRedirects(response, reverse("portal:activity_dashboard"))
+        activity = Activity.objects.get(activity_code="ACT-FORM-001")
+        task = Task.objects.get(activity=activity)
+        self.assertEqual(activity.outgoing_document, self.dispatch)
+        self.assertEqual(task.assigned_to_employee, self.cbda)
+        self.assertEqual(task.due_date, date(2026, 10, 9))
+
+    def test_activity_form_warns_about_overlap_but_keeps_the_activity(self):
+        coordinator_role, _ = Role.objects.get_or_create(
+            role_code="PROJECT_COORDINATOR", defaults={"role_name": "Điều phối dự án"}
+        )
+        self.create_user("coordinator_overlap", self.coordinator, coordinator_role)
+        self.client.login(username="coordinator_overlap", password="test-password")
+
+        response = self.client.post(reverse("portal:activity_create"), {
+            "activity_code": "ACT-OVERLAP-FORM",
+            "activity_name": "Hoạt động bị trùng lịch",
+            "project": self.project.pk,
+            "start_date": "2026-10-01",
+            "end_date": "2026-10-01",
+            "lead_cbda": self.cbda.pk,
+            "coordinator": self.coordinator.pk,
+            "status": "Planned",
+        }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Activity.objects.filter(activity_code="ACT-OVERLAP-FORM").exists())
+        self.assertContains(response, "Lịch CBDA bị trùng")
+
+    def test_cbda_cannot_create_activity(self):
+        self.create_user("cbda_create", self.cbda, self.cbda_role)
+        self.client.login(username="cbda_create", password="test-password")
+
+        response = self.client.get(reverse("portal:activity_create"))
+
+        self.assertEqual(response.status_code, 403)
 
     def test_cbda_cannot_open_another_employees_activity_task(self):
         task = Task.objects.create(

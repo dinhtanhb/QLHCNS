@@ -15,8 +15,7 @@ Khi một công văn đi đã phát hành được liên kết với Hoạt đ�
 - Task giao cho CBDA chính; điều phối viên (hoặc người ký công văn nếu thiếu điều phối viên) là người giao. CBDA chỉ xem hoạt động được giao/điều phối cho mình; Ban Giám đốc, quản lý dự án và điều phối viên xem toàn bộ.
 - Tệp báo cáo thuộc cấu hình SharePoint `activity_reports` (thư mục mặc định `BaoCaoHoatDong`). Nếu M365 bị tắt, cấu hình hiện tại dùng storage cục bộ theo thiết lập của ứng dụng.
 - Thông báo nhắc trong IHRMS được tạo trước hạn 3 ngày làm việc, 1 ngày làm việc, đúng ngày hạn và vào mỗi ngày làm việc quá hạn. Chạy lặp trong cùng ngày không gửi trùng. Đây là cấu hình mặc định của đợt đầu.
-- Hoạt động có khoảng ngày trùng với hoạt động khác của cùng CBDA chính bị kiểm tra/cảnh báo. Cần UAT hành vi nhập form trước khi dùng rộng rãi.
-- Cảnh báo trùng lịch trong trang quản trị không chặn lưu; điều phối viên xem xét và sắp xếp lại hoặc xác nhận phương án.
+- Hoạt động có khoảng ngày trùng với hoạt động khác của cùng CBDA chính hiển thị cảnh báo trên form; vẫn cho lưu để điều phối viên xử lý.
 
 ## Vai trò
 
@@ -27,8 +26,8 @@ Khi một công văn đi đã phát hành được liên kết với Hoạt đ�
 
 ## Cách sử dụng
 
-1. Tạo Hoạt động dự án, chọn dự án, CBDA chính, điều phối viên, khoảng ngày, mục đích/kết quả và thông tin cần thiết.
-2. Sau khi công văn đi đã được phát hành trong phân hệ Công văn đi, liên kết công văn đó với Hoạt động. Kiểm tra Task báo cáo đã xuất hiện trong danh sách giao việc, đúng người và đúng hạn.
+1. Người có vai trò Quản lý dự án/Điều phối viên mở **Hoạt động dự án → Tạo hoạt động**, chọn dự án, CBDA chính, điều phối viên, khoảng ngày, mục đích/kết quả và thông tin cần thiết.
+2. Chọn công văn đi đã phát hành trong sổ Công văn của IHRMS, hoặc bổ sung công văn khi cập nhật hoạt động sau. Liên kết công văn tạo Task báo cáo; kiểm tra Task xuất hiện trong danh sách giao việc, đúng người và đúng hạn.
 3. CBDA vào Giao việc của tôi, cập nhật tiến độ. Sau khi triển khai, tải báo cáo lên Task; mở tệp kiểm tra được rồi mới chuyển trạng thái Hoàn thành.
 4. Quản lý/điều phối viên mở mục **Hoạt động dự án**, chọn tháng để xem tổng số hoạt động, Task hoàn tất, quá hạn, thiếu báo cáo và hoạt động chưa có Task.
 
@@ -38,9 +37,11 @@ Mã nguồn có lệnh `python src/manage.py send_activity_report_reminders`. Đ
 
 Đề xuất cấu hình Scheduled Task: chạy mỗi ngày lúc 08:00; Action `powershell.exe -NoProfile -ExecutionPolicy Bypass -File "<đường-dẫn-dự-án>\ops\scheduler\Run-ActivityReportReminders.ps1"`; chạy bằng tài khoản dịch vụ có quyền đọc mã dự án, môi trường `.env` và kết nối SharePoint/SQL Server cần thiết. Sau khi tạo task, chạy thử thủ công một lần và xác nhận log cùng thông báo trong IHRMS. Script tự bỏ qua cuối tuần/ngày nghỉ.
 
-## Đã kiểm tra và còn mở
+## Trạng thái triển khai
 
-- 8 kiểm thử mới bao phủ hạn ngày làm việc/ngày lễ, sinh Task lặp an toàn, phân quyền CBDA, yêu cầu tải báo cáo, nhắc lặp trong ngày và dashboard.
-- Kiểm thử chạy trên SQLite test database tạm; không chạy migration lên SQL Server hiện hữu. Cần chạy UAT riêng trên SQL Server SIT sau khi IT xác nhận database thử nghiệm.
-- Trước khi vận hành: tạo lịch Windows Task Scheduler, xác nhận role người dùng, thực hiện thử với một công văn giả và một tệp báo cáo giả trên đúng thư viện SharePoint, kiểm tra quyền truy cập/dashboard, thống nhất ngày thứ Bảy nếu đơn vị làm việc thứ Bảy.
+- Các trang dashboard, tạo và chỉnh sửa hoạt động đã có trong cổng IHRMS. CBDA chỉ xem hoạt động của mình; vai trò Quản lý dự án/Điều phối viên có thể tạo và sửa.
+- Django migrations đã tạo bảng `tblActivity`, liên kết `tblTask.ActivityID` và cột tệp `tblTask.report_file` trong SQL Server database `qlhcns`. Liên kết công văn dùng `document.OfficialDispatch`.
+- 14 kiểm thử mới cùng toàn bộ bộ kiểm thử được chọn (100 test) đạt trên SQLite test database tạm. `manage.py check`, `makemigrations --check --dry-run` và kiểm tra migration SQL Server đều đạt.
+- Đã thử upload, đọc lại và xóa tệp giả qua cấu hình storage của `activity_reports`; SharePoint trả đúng thư mục `BaoCaoHoatDong`. Người dùng cần kiểm tra quy trình trên giao diện IHRMS với dữ liệu UAT.
+- Còn mở: gán vai trò cho người dùng; UAT tạo hoạt động, liên kết công văn, phân công và xem dashboard; chạy thử upload báo cáo từ trang Task; đăng ký Windows Task Scheduler khi đến giai đoạn vận hành; xác nhận quy tắc thứ Bảy nếu đơn vị làm việc ngày này.
 - Ghi lại kết quả và mọi thao tác tiếp theo tại [`PROJECT_WORK_LOG.md`](PROJECT_WORK_LOG.md).

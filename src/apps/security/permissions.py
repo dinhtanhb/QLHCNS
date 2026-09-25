@@ -67,7 +67,7 @@ PERMISSION_MATRIX = {
     # Sổ công văn đi — mọi vai trò TRỪ nhân viên thường
     "access_outgoing_document": (
         SUPER_ADMIN, SYS_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER,
-        DEPT_MANAGER, FINANCE_OFFICER,
+        DEPT_MANAGER, FINANCE_OFFICER, PROJECT_MANAGER, PROJECT_COORDINATOR,
     ),
     # Duyệt đặt phòng họp/đặt xe/đề nghị VPP — dùng chung quyền với "manage_office"
     "approve_office_request": (HR_MANAGER, HR_OFFICER, SYS_ADMIN),

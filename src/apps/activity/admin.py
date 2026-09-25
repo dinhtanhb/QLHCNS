@@ -20,7 +20,7 @@ class ActivityAdmin(BaseAuditAdmin):
     )
     list_filter = ("status", "project")
     search_fields = ("activity_code", "activity_name", "location")
-    autocomplete_fields = ("project",)
+    autocomplete_fields = ("project", "outgoing_document")
     actions = ["action_create_tracking_task"]
 
     def save_model(self, request, obj, form, change):

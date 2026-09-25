@@ -52,7 +52,7 @@ class Activity(BaseAuditModel):
     )
 
     outgoing_document = models.ForeignKey(
-        "office.OutgoingDocument", verbose_name="Công văn đi liên quan", null=True, blank=True,
+        "document.OfficialDispatch", verbose_name="Công văn đi liên quan", null=True, blank=True,
         on_delete=models.SET_NULL, db_column="OutgoingDocumentID", related_name="activities",
     )
 
@@ -71,3 +71,13 @@ class Activity(BaseAuditModel):
         super().clean()
         if self.start_date and self.end_date and self.end_date < self.start_date:
             raise ValidationError({"end_date": "Ngày kết thúc phải sau hoặc bằng ngày bắt đầu."})
+        if self.outgoing_document_id and self.outgoing_document.dispatch_type != "Outgoing":
+            raise ValidationError({"outgoing_document": "Chỉ liên kết Công văn đi đã phát hành."})
+        if (
+            self.outgoing_document_id
+            and not self.coordinator_id
+            and not self.outgoing_document.signer_id
+        ):
+            raise ValidationError({
+                "coordinator": "Chọn điều phối viên hoặc liên kết công văn có người ký để ghi nhận người giao Task."
+            })

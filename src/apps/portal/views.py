@@ -717,7 +717,9 @@ def _visible_dispatches(request):
     hở lỗ hổng: chỉ cần đổi số pk trên URL là đọc được công văn của phòng khác.
     """
     qs = OfficialDispatch.objects.select_related("department", "assigned_to", "dispatch_book")
-    if _can_approve(request) or request.user.is_staff:
+    if _role_code(request) in ("PROJECT_MANAGER", "PROJECT_COORDINATOR"):
+        return qs.filter(dispatch_type="Outgoing")
+    if has_permission(request.user, "access_outgoing_document") or request.user.is_staff:
         return qs
     employee = _get_employee(request)
     if not employee:

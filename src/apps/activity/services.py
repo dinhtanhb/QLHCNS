@@ -83,7 +83,7 @@ def find_schedule_conflicts(employee_id, start_date, end_date, exclude_activity_
 def create_task_for_activity(activity):
     """Create exactly one report task after an issued dispatch is linked.
 
-    An OutgoingDocument is the issued record in the current system. The
+    An OfficialDispatch of type Outgoing is the issued record in the current system. The
     activity's coordinator (or the dispatch signer) is the task assigner.
     """
     from apps.notification.services import notify
@@ -99,7 +99,10 @@ def create_task_for_activity(activity):
         return existing, False
 
     dispatch = activity.outgoing_document
-    due_date = add_company_workdays(dispatch.outgoing_date, ACTIVITY_REPORT_DEADLINE_WORKING_DAYS)
+    if dispatch.dispatch_type != "Outgoing":
+        raise ValueError("Chỉ có thể tạo Task từ Công văn đi.")
+    issued_date = dispatch.received_or_sent_date
+    due_date = add_company_workdays(issued_date, ACTIVITY_REPORT_DEADLINE_WORKING_DAYS)
     task_code = f"ACT-{activity.pk}-REPORT"
     task, created = Task.objects.get_or_create(
         task_code=task_code,
@@ -110,11 +113,11 @@ def create_task_for_activity(activity):
                 f"(mã {activity.activity_code}), dự án {activity.project.project_name}. "
                 f"Địa điểm: {activity.location or '(chưa ghi)'}."
             ),
-            "assigned_by_employee": activity.coordinator or dispatch.signed_by,
+            "assigned_by_employee": activity.coordinator or dispatch.signer,
             "assigned_to_employee": activity.lead_cbda,
             "department": activity.project.department,
             "priority": "High",
-            "start_date": dispatch.outgoing_date,
+            "start_date": issued_date,
             "due_date": due_date,
             "status": "Todo",
             "activity": activity,
