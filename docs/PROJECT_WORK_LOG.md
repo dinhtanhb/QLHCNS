@@ -187,25 +187,18 @@ Kết quả gồm `page-1.png`, `page-2.png`, ... và PDF trong `D:\QLHCNS-docx-
 **Nhánh/commit/push:** `chore/django-5.2-upgrade`; thay đổi đã được push lên GitHub.
 
 **Còn mở:** đăng nhập bằng CBDA và tài khoản quản lý để kiểm tra trực quan trên trình duyệt; cập nhật danh mục mã hoạt động đồng bộ khi danh sách nghiệp vụ thay đổi.
+## 2026-09-25 — Chuyển email xin duyệt hoạt động sang SMTP
 
+**Phạm vi:** Công ty nhận thư bằng POP3 và nhân viên dùng Microsoft Outlook; ứng dụng IHRMS gửi thư qua SMTP của nhà cung cấp email. Microsoft Graph tiếp tục được dùng riêng cho SharePoint.
 
-## 2026-09-25 ? H? s? ?? xu?t ho?t ??ng v? ph? duy?t qua email
+**Sao lưu trước thay đổi lớn:** `D:\QLHCNS-Backup-before-smtp-email-20260925`; đã tạo bản sao sạch, loại trừ `.git`, `.env`, database, virtualenv, media, log và thư mục backup.
 
-**Ph?m vi:** b? sung b??c chu?n b? h? s? tr??c ho?t ??ng v?o module Activity; kh?ng x?y d?ng t?nh to?n ng?n s?ch, h?ch to?n hay quy?t to?n. R? so?t repo kh?ng t?m th?y m?u Excel quy ??nh (.xlsx/.xls), v? v?y ??t n?y tri?n khai nh?n/l?u file theo m?u hi?n h?nh do CBDA t?i l?n, ch?a t? sinh bi?u m?u ho?c chuy?n ??i PDF.
+**Đã làm:** bổ sung hồ sơ đề xuất có phiên bản gắn với Activity, lưu cặp Excel/PDF cho đề xuất và dự trù kinh phí lên SharePoint; CBDA tải/cập nhật hồ sơ, ĐPV chọn Giám đốc và gửi hai PDF để xin duyệt, Giám đốc được chỉ định ghi nhận phê duyệt/yêu cầu chỉnh sửa trên IHRMS. Thay luồng gửi từ Microsoft Graph `sendMail` sang Django SMTP. Người nhận là email công ty của Giám đốc; From lấy từ `DEFAULT_FROM_EMAIL`/tài khoản SMTP và Reply-To là email công ty của ĐPV. Không sinh mẫu Excel/PDF tự động ở giai đoạn này. Cấu hình SMTP nằm trong `.env.example`; không lưu thông tin đăng nhập thật trong mã nguồn. POP3 không được dùng để gửi email. SharePoint vẫn dùng Graph.
 
-**Sao l?u tr??c thay ??i l?n:** `D:\QLHCNS-Backup-before-activity-proposal-approval-20260925`; lo?i tr? `.git`, `.env`, database c?c b?, virtualenv, media/log v? th? m?c backup.
+**Kiểm tra:** `manage.py check` đạt; `makemigrations --check --dry-run` báo `No changes detected`; 109 test của asset/common/hrm/leave/payroll/security/activity/m365 đạt trên SQLite test database tạm, bao gồm test SMTP giả lập xác nhận người gửi/người nhận/Reply-To và hai tệp PDF đính kèm. Không gửi email thật; chưa kiểm tra máy chủ SMTP của công ty vì chưa có thông số nhà cung cấp. Cảnh báo RequestsDependencyWarning vẫn xuất hiện nhưng không làm test thất bại.
 
-**?? l?m:** t?o h? s? c? phi?n b?n g?n v?i t?ng Activity, g?m ?? xu?t Excel/PDF v? D? tr? kinh ph? Excel/PDF; t?i l?n SharePoint c?ng th? vi?n IHRMS, th? m?c m?c ??nh `DeXuatHoatDong` (t? t?o n?u ch?a c?). CBDA ph? tr?ch t?i/c?p nh?t; ?PV ph? tr?ch ch?n t?i kho?n role DIRECTOR v? g?i email v?i hai PDF, email k?m ???ng d?n h? s? IHRMS; ch? t?i kho?n Gi?m ??c ???c ch? ??nh ???c ghi nh?n Ph? duy?t/Y?u c?u ch?nh s?a. Ghi tr?ng th?i, email nh?n, ng??i g?i, th?i ?i?m g?i, ng??i quy?t ??nh, th?i ?i?m v? ? ki?n; l?u l?ch s? phi?n b?n sau y?u c?u s?a. C? route t?i Excel/xem PDF ???c gi?i h?n theo quy?n xem Activity. Graph `sendMail` d?ng t?p PDF ??nh k?m; m?c ??nh ??a ch? g?i l?y t? email c?ng ty c?a ?PV, c? th? ghi ?? b?ng `M365_MAIL_SENDER`. Kh?ng g?i email th?t trong test.
+**Cấu hình còn cần từ IT/nhà cung cấp email:** SMTP host, port, phương thức mã hóa (STARTTLS hoặc SSL), tài khoản gửi được phép dùng và địa chỉ From được ủy quyền. Quản trị viên nhập các giá trị vào `D:\QLHCNS\.env`; không gửi mật khẩu qua chat. Sau đó cần kiểm thử gửi tới một địa chỉ nội bộ. POP3 không cần cấu hình cho chức năng gửi thư này.
 
-**Migration:** sinh `activity.0005_activityproposal` t?o b?ng `tblActivityProposal`; ch?a ch?y tr?n database SQL Server th?t.
+**Migration:** không có thay đổi schema; không chạy migration lên SQL Server.
 
-**Ki?m tra:** `manage.py check` ??t; `makemigrations --check --dry-run` ? No changes detected; 110 test c?a asset/common/hrm/leave/payroll/security/activity/m365 ??t tr?n SQLite test database t?m. `git diff --check` ??t. C?nh b?o RequestsDependencyWarning urllib3/chardet v?n c?n. Kh?ng ch?y migration l?n SQL Server v? kh?ng upload/t?i/x?a t?p SharePoint th?t trong ??t n?y.
-
-**T?i li?u k? thu?t:** Microsoft Graph `sendMail` cho ph?p ??nh k?m t?p trong JSON; application permission t?i thi?u l? `Mail.Send`, admin consent c?n do qu?n tr? vi?n Microsoft 365 th?c hi?n. HTTP 202 ngh?a l? Graph ?? nh?n y?u c?u, kh?ng x?c nh?n th? ?? t?i h?p th?.
-
-**C?n m? / vi?c ch? d? ?n c?n l?m:** cung c?p hai m?u Excel ???c ph? duy?t (kh?ng ch?a d? li?u nh?n s? th?t) ?? tri?n khai sinh file theo m?u v? ??nh gi? t? xu?t PDF; nh? qu?n tr? vi?n Entra c?p Application `Mail.Send` v? admin consent; x?c nh?n c?c t?i kho?n role DIRECTOR c? email c?ng ty ??ng. Sau commit, ng??i qu?n tr? tri?n khai migration theo quy tr?nh SIT/UAT v? ch?y th? v?i ??a ch? n?i b? tr??c khi d?ng.
-
-**Nh?nh/commit:** ghi nh?n sau khi t?o commit.
-
-
-**C?p nh?t quy?t ??nh nghi?p v? 2026-09-25:** Ch? d? ?n x?c nh?n CBDA t?m d?ng m?u Excel hi?n c?, t? xu?t PDF v? t?i b? Excel/PDF l?n IHRMS ?? xin duy?t; email ?PV v? Gi?m ??c ?? c? trong d? li?u nh?n s?. Kh?ng c?n sinh m?u Excel/PDF t? ??ng ? giai ?o?n n?y. M? g?i th? ?? ???c ?i?u ch?nh ?? m?c ??nh d?ng `Employee.company_email` c?a ?PV l?m From v? email c?ng ty c?a t?i kho?n DIRECTOR ???c ch?n l?m To; h?p th? chung `M365_MAIL_SENDER` ch? l? t?y ch?n ghi ??. V?n c?n quy?n Microsoft Graph `Mail.Send` v? admin consent.
+**Nhánh/commit/push:** `chore/django-5.2-upgrade`; commit `6512944` đã tạo, đang cập nhật nhật ký trước khi push.

@@ -5,6 +5,7 @@ from datetime import timedelta
 from pathlib import PurePosixPath
 
 from django.conf import settings
+from django.core.mail import EmailMessage
 from django.db import transaction
 from django.utils import timezone
 
@@ -226,13 +227,14 @@ def _user_email(user):
 
 
 def send_activity_proposal_for_approval(package, approver, sender, approval_url=""):
-    """Email the paired PDF files; report success only after Graph accepts the request."""
-    from apps.m365.graph_client import GraphNotConfigured, get_graph_client
-
-    mailbox = (getattr(settings, "M365_MAIL_SENDER", "") or _user_email(sender)).strip()
+    """Email the PDF pair through the configured company SMTP server."""
+    from_email = (
+        getattr(settings, "DEFAULT_FROM_EMAIL", "")
+        or getattr(settings, "EMAIL_HOST_USER", "")
+    ).strip()
     recipient = _user_email(approver)
-    if not mailbox:
-        raise GraphNotConfigured("Tài khoản ĐPV chưa có email công ty; hãy bổ sung email nhân sự hoặc cấu hình M365_MAIL_SENDER.")
+    if not getattr(settings, "EMAIL_HOST", "").strip() or not from_email:
+        raise ValueError("Chưa cấu hình SMTP_HOST và địa chỉ gửi DEFAULT_FROM_EMAIL trong .env.")
     if not recipient:
         raise ValueError("Tài khoản Giám đốc chưa có email công ty để nhận hồ sơ.")
     if not package.has_required_files():
@@ -249,9 +251,11 @@ def send_activity_proposal_for_approval(package, approver, sender, approval_url=
             "content_type": "application/pdf",
             "content": content,
         })
-    # Graph's simple JSON attachment endpoint is intended for small attachments.
-    if total_bytes > 2_500_000:
-        raise ValueError("Tổng dung lượng hai PDF vượt 2,5 MB; hãy nén PDF trước khi gửi.")
+    max_email_bytes = getattr(settings, "ACTIVITY_PROPOSAL_EMAIL_MAX_BYTES", 10 * 1024 * 1024)
+    if total_bytes > max_email_bytes:
+        raise ValueError(
+            f"Tổng dung lượng hai PDF vượt giới hạn gửi email {max_email_bytes / 1024 / 1024:.0f} MB; hãy nén PDF."
+        )
 
     activity = package.activity
     subject = f"Xin phê duyệt đề xuất hoạt động: {activity.activity_code} - {activity.activity_name}"
@@ -264,5 +268,15 @@ def send_activity_proposal_for_approval(package, approver, sender, approval_url=
         f"Mở hồ sơ và ghi nhận quyết định tại: {approval_url}\n\n"
         "Vui lòng phản hồi quyết định trên IHRMS."
     )
-    get_graph_client().send_mail(mailbox, recipient, subject, body, attachments)
+    message = EmailMessage(
+        subject=subject,
+        body=body,
+        from_email=from_email,
+        to=[recipient],
+        reply_to=[_user_email(sender)] if _user_email(sender) else None,
+    )
+    for attachment in attachments:
+        message.attach(attachment["name"], attachment["content"], attachment["content_type"])
+    if message.send(fail_silently=False) != 1:
+        raise RuntimeError("Máy chủ SMTP không xác nhận đã nhận thư.")
     return recipient

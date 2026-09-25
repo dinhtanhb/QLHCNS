@@ -3,6 +3,7 @@ import tempfile
 
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core import mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
@@ -222,38 +223,32 @@ class ActivityProposalWorkflowTests(ActivityTestDataMixin, TestCase):
         package.save()
         self.assertTrue(package.has_required_files())
 
-    @patch("apps.m365.graph_client.get_graph_client")
-    @override_settings(M365_MAIL_SENDER="ihrms@example.test")
-    def test_approval_email_attaches_the_two_pdf_files(self, get_client):
+    @override_settings(
+        EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+        EMAIL_HOST="smtp.example.test", DEFAULT_FROM_EMAIL="ihrms@example.test",
+    )
+    def test_approval_email_attaches_the_two_pdf_files(self):
         package = self.make_package()
         recipient = send_activity_proposal_for_approval(package, self.director, self.coordinator_user)
 
         self.assertEqual(recipient, self.director_employee.company_email)
-        get_client.return_value.send_mail.assert_called_once()
-        args = get_client.return_value.send_mail.call_args.args
-        self.assertEqual(args[0:2], ("ihrms@example.test", self.director_employee.company_email))
-        self.assertEqual([item["name"].split("-")[0] for item in args[4]], ["proposal", "budget"])
-        self.assertTrue(all(item["content_type"] == "application/pdf" for item in args[4]))
+        self.assertEqual(len(mail.outbox), 1)
+        sent = mail.outbox[0]
+        self.assertEqual(sent.from_email, "ihrms@example.test")
+        self.assertEqual(sent.to, [self.director_employee.company_email])
+        self.assertEqual(sent.reply_to, [self.coordinator.company_email])
+        self.assertEqual([item[0].split("-")[0] for item in sent.attachments], ["proposal", "budget"])
+        self.assertTrue(all(item[2] == "application/pdf" for item in sent.attachments))
 
-    @patch("apps.m365.graph_client.get_graph_client")
-    @override_settings(M365_MAIL_SENDER="")
-    def test_sender_defaults_to_coordinator_company_email(self, get_client):
+    @override_settings(
+        EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+        EMAIL_HOST="", DEFAULT_FROM_EMAIL="",
+    )
+    def test_missing_smtp_configuration_fails_before_sending(self):
         package = self.make_package()
-        send_activity_proposal_for_approval(package, self.director, self.coordinator_user)
-        args = get_client.return_value.send_mail.call_args.args
-        self.assertEqual(args[0], self.coordinator.company_email)
-        self.assertEqual(args[1], self.director_employee.company_email)
-
-    @patch("apps.m365.graph_client.get_graph_client")
-    @override_settings(M365_MAIL_SENDER="")
-    def test_missing_sender_and_recipient_emails_fail_without_sending(self, get_client):
-        self.coordinator_user.email = ""
-        self.coordinator_user.employee.company_email = ""
-        self.coordinator_user.employee.save(update_fields=("company_email",))
-        package = self.make_package()
-        with self.assertRaisesMessage(Exception, "bổ sung email nhân sự"):
+        with self.assertRaisesMessage(ValueError, "SMTP_HOST"):
             send_activity_proposal_for_approval(package, self.director, self.coordinator_user)
-        get_client.assert_not_called()
+        self.assertEqual(mail.outbox, [])
 
     def test_cbda_can_upload_files_for_own_activity(self):
         self.client.force_login(self.cbda_user)
