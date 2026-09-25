@@ -117,8 +117,6 @@
                     <a href="{% url 'portal:timesheet_month' %}" class="block px-4 py-2 hover:bg-gray-50">Bảng công</a>
                     <a href="{% url 'portal:leave_list' %}" class="block px-4 py-2 hover:bg-gray-50">Nghỉ phép</a>
                     <a href="{% url 'portal:task_list' %}" class="block px-4 py-2 hover:bg-gray-50">Công việc</a>
-                    {% if can_view_activity_dashboard %}<a href="{% url 'portal:activity_dashboard' %}" class="block px-4 py-2 hover:bg-gray-50">Hoạt động dự án</a>{% endif %}
-                    {% if can_view_activity_dashboard %}<a href="{% url 'portal:activity_calendar' %}" class="block px-4 py-2 hover:bg-gray-50">Lịch hoạt động dự án</a>{% endif %}
                     <a href="{% url 'portal:kpi_my_list' %}" class="block px-4 py-2 hover:bg-gray-50">KPI</a>
                     <a href="{% url 'portal:document_list' %}" class="block px-4 py-2 hover:bg-gray-50">Tài liệu</a>
                     <a href="{% url 'portal:asset_list' %}" class="block px-4 py-2 hover:bg-gray-50">Tài sản</a>
@@ -208,6 +206,18 @@
             {% if can_view_reports %}
             {% url 'portal:report_hub' as u_report %}
             <a href="{{ u_report }}" class="px-4 py-3 border-b-2 {% if u_report in request.path %}border-blue-700 text-blue-700{% else %}border-transparent text-gray-600 hover:text-blue-700{% endif %}">Báo cáo</a>
+            {% endif %}
+
+            {% if can_view_activity_dashboard %}
+            <div class="relative">
+                <button type="button" onclick="toggleMenu('menu-hoatdongduan')" class="px-4 py-3 flex items-center gap-1 text-gray-600 hover:text-blue-700">
+                    Hoạt động dự án <span class="text-xs">▾</span>
+                </button>
+                <div id="menu-hoatdongduan" class="hidden absolute right-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-56 py-1 z-30">
+                    <a href="{% url 'portal:activity_dashboard' %}" class="block px-4 py-2 hover:bg-gray-50">Theo dõi hoạt động</a>
+                    <a href="{% url 'portal:activity_calendar' %}" class="block px-4 py-2 hover:bg-gray-50">Lịch hoạt động</a>
+                </div>
+            </div>
             {% endif %}
         </div>
     </nav>
