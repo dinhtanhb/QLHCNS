@@ -153,4 +153,4 @@ class ActivityProposal(BaseAuditModel):
         return f"{self.activity.activity_code} - hồ sơ v{self.version}"
 
     def has_required_files(self):
-        return all((self.proposal_excel, self.proposal_pdf, self.budget_excel, self.budget_pdf))
+        return all((self.proposal_pdf, self.budget_pdf))

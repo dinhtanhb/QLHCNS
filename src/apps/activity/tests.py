@@ -207,21 +207,30 @@ class ActivityProposalWorkflowTests(ActivityTestDataMixin, TestCase):
     def make_package(self):
         return ActivityProposal.objects.create(
             activity=self.activity,
-            proposal_excel=SimpleUploadedFile("proposal.xlsx", b"XLSX"),
             proposal_pdf=SimpleUploadedFile("proposal.pdf", b"PROPOSAL PDF"),
-            budget_excel=SimpleUploadedFile("budget.xlsx", b"XLSX"),
             budget_pdf=SimpleUploadedFile("budget.pdf", b"BUDGET PDF"),
         )
 
-    def test_package_requires_all_four_template_exports_before_submission(self):
+    def test_package_requires_only_the_two_pdf_exports_before_submission(self):
         package = ActivityProposal.objects.create(activity=self.activity)
         self.assertFalse(package.has_required_files())
-        package.proposal_excel = SimpleUploadedFile("proposal.xlsx", b"XLSX")
         package.proposal_pdf = SimpleUploadedFile("proposal.pdf", b"PDF")
-        package.budget_excel = SimpleUploadedFile("budget.xlsx", b"XLSX")
         package.budget_pdf = SimpleUploadedFile("budget.pdf", b"PDF")
         package.save()
         self.assertTrue(package.has_required_files())
+
+    def test_coordinator_sees_send_action_with_only_two_pdf_files(self):
+        self.make_package()
+        self.client.force_login(self.coordinator_user)
+
+        response = self.client.get(reverse("portal:activity_proposal", args=(self.activity.pk,)))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Gửi email xin duyệt")
+        self.assertContains(response, 'name="proposal_pdf"')
+        self.assertContains(response, 'name="budget_pdf"')
+        self.assertNotContains(response, 'name="proposal_excel"')
+        self.assertNotContains(response, 'name="budget_excel"')
 
     @override_settings(
         EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
@@ -256,9 +265,7 @@ class ActivityProposalWorkflowTests(ActivityTestDataMixin, TestCase):
             reverse("portal:activity_proposal", args=(self.activity.pk,)),
             {
                 "action": "upload",
-                "proposal_excel": SimpleUploadedFile("proposal.xlsx", b"XLSX"),
                 "proposal_pdf": SimpleUploadedFile("proposal.pdf", b"PDF"),
-                "budget_excel": SimpleUploadedFile("budget.xlsx", b"XLSX"),
                 "budget_pdf": SimpleUploadedFile("budget.pdf", b"PDF"),
             },
         )
@@ -273,9 +280,7 @@ class ActivityProposalWorkflowTests(ActivityTestDataMixin, TestCase):
             reverse("portal:activity_proposal", args=(self.activity.pk,)),
             {
                 "action": "upload",
-                "proposal_excel": SimpleUploadedFile("proposal.xlsx", b"XLSX"),
                 "proposal_pdf": SimpleUploadedFile("proposal.txt", b"not a PDF"),
-                "budget_excel": SimpleUploadedFile("budget.xlsx", b"XLSX"),
                 "budget_pdf": SimpleUploadedFile("budget.pdf", b"PDF"),
             },
         )

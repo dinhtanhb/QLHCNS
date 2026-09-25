@@ -12,19 +12,15 @@ from apps.security.models import User
 class ActivityProposalUploadForm(forms.ModelForm):
     class Meta:
         model = ActivityProposal
-        fields = ("proposal_excel", "proposal_pdf", "budget_excel", "budget_pdf")
+        fields = ("proposal_pdf", "budget_pdf")
         widgets = {
-            "proposal_excel": forms.ClearableFileInput(attrs={"class": "block w-full rounded-lg border border-gray-400 bg-white px-3 py-2"}),
             "proposal_pdf": forms.ClearableFileInput(attrs={"class": "block w-full rounded-lg border border-gray-400 bg-white px-3 py-2"}),
-            "budget_excel": forms.ClearableFileInput(attrs={"class": "block w-full rounded-lg border border-gray-400 bg-white px-3 py-2"}),
             "budget_pdf": forms.ClearableFileInput(attrs={"class": "block w-full rounded-lg border border-gray-400 bg-white px-3 py-2"}),
         }
 
     def clean(self):
         cleaned = super().clean()
         expected = {
-            "proposal_excel": {".xlsx", ".xls"},
-            "budget_excel": {".xlsx", ".xls"},
             "proposal_pdf": {".pdf"},
             "budget_pdf": {".pdf"},
         }

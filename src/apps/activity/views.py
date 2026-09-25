@@ -237,7 +237,7 @@ def activity_proposal(request, activity_id):
             if package and package.status in ("Approved", "ChangesRequested"):
                 previous = package
                 package = ActivityProposal(activity=activity, version=previous.version + 1)
-                for field_name in ("proposal_excel", "proposal_pdf", "budget_excel", "budget_pdf"):
+                for field_name in ("proposal_pdf", "budget_pdf"):
                     prior_file = getattr(previous, field_name)
                     if prior_file:
                         setattr(package, field_name, prior_file.name)
@@ -251,7 +251,7 @@ def activity_proposal(request, activity_id):
                 raise PermissionDenied
             send_form = ActivityProposalSendForm(request.POST)
             if not package or not package.pk or not package.has_required_files():
-                messages.error(request, "Cần lưu đủ 2 tệp Excel và 2 tệp PDF trước khi gửi.")
+                messages.error(request, "Cần lưu đủ 2 tệp PDF: đề xuất hoạt động và dự trù kinh phí trước khi gửi.")
             elif send_form.is_valid():
                 approver = send_form.cleaned_data["approver"]
                 try:
@@ -269,7 +269,7 @@ def activity_proposal(request, activity_id):
                     package.submitted_at = timezone.now()
                     package.modified_by = request.user
                     package.save(update_fields=("status", "approver", "sent_to", "submitted_by", "submitted_at", "modified_by", "modified_date"))
-                    messages.success(request, "Microsoft 365 đã chấp nhận email gửi đi; hồ sơ đang chờ phê duyệt.")
+                    messages.success(request, "Máy chủ email đã nhận thư gửi đi; hồ sơ đang chờ phê duyệt.")
                     return redirect("portal:activity_proposal", activity_id=activity.pk)
         else:
             upload_form = ActivityProposalUploadForm(request.POST, request.FILES, instance=package)

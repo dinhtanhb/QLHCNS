@@ -238,7 +238,7 @@ def send_activity_proposal_for_approval(package, approver, sender, approval_url=
     if not recipient:
         raise ValueError("Tài khoản Giám đốc chưa có email công ty để nhận hồ sơ.")
     if not package.has_required_files():
-        raise ValueError("Cần tải đủ 2 tệp Excel và 2 tệp PDF trước khi gửi.")
+        raise ValueError("Cần tải đủ 2 tệp PDF: đề xuất hoạt động và dự trù kinh phí.")
 
     attachments = []
     total_bytes = 0
@@ -264,7 +264,7 @@ def send_activity_proposal_for_approval(package, approver, sender, approval_url=
         f"Điều phối viên {sender.get_full_name() or sender.username} gửi hồ sơ đề xuất hoạt động "
         f"{activity.activity_code} - {activity.activity_name}, dự án {activity.project.project_name}, "
         f"phiên bản {package.version}.\n"
-        "Hồ sơ gồm Đề xuất hoạt động và Dự trù kinh phí (PDF); các tệp Excel gốc được lưu trong IHRMS/SharePoint.\n"
+        "Hồ sơ đính kèm gồm Đề xuất hoạt động và Dự trù kinh phí (PDF).\n"
         f"Mở hồ sơ và ghi nhận quyết định tại: {approval_url}\n\n"
         "Vui lòng phản hồi quyết định trên IHRMS."
     )
