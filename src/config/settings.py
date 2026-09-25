@@ -22,10 +22,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ROOT_DIR = BASE_DIR.parent
 load_dotenv(ROOT_DIR / ".env")
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-
 # Secret Key & Debug
 SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
@@ -36,6 +32,40 @@ if not SECRET_KEY:
 DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "t")
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+
+# ==========================================
+# BẢO MẬT HTTPS / COOKIE
+# Theo docs/08_Deployment_Standards.md mục 32: SSL là bắt buộc trên môi
+# trường Production. Máy dev cục bộ (chạy `manage.py runserver` không có
+# HTTPS) sẽ KHÔNG bật các cờ này để không bị lỗi redirect vòng lặp / không
+# đăng nhập được. Chỉ bật khi ENABLE_HTTPS_ENFORCEMENT=True trong .env
+# (đặt True khi deploy thật, sau IIS/reverse proxy đã có chứng chỉ SSL).
+# ==========================================
+ENABLE_HTTPS_ENFORCEMENT = os.getenv("ENABLE_HTTPS_ENFORCEMENT", "False").lower() in ("true", "1", "t")
+
+if ENABLE_HTTPS_ENFORCEMENT:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    # IIS/reverse proxy chuyển tiếp thông tin HTTPS qua header này — nếu
+    # không khai báo, Django sẽ không biết request gốc là HTTPS và redirect
+    # lặp vô hạn.
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    # Bắt buộc trình duyệt luôn dùng HTTPS cho domain này trong 1 năm sau lần
+    # truy cập đầu, kể cả khi gõ http:// theo thói quen.
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+# Các cờ này an toàn để bật ở MỌI môi trường (không phụ thuộc HTTPS):
+SECURE_CONTENT_TYPE_NOSNIFF = True  # chặn trình duyệt tự đoán sai loại tệp, giảm rủi ro XSS qua upload
+X_FRAME_OPTIONS = "DENY"  # chặn nhúng trang vào iframe từ site khác (chống clickjacking)
+
+# Tự động đăng xuất sau 8 giờ không thao tác, hoặc khi đóng trình duyệt nếu
+# SESSION_EXPIRE_AT_BROWSER_CLOSE=True — hợp lý cho hệ thống HR có dữ liệu
+# lương/CCCD nhạy cảm.
+SESSION_COOKIE_AGE = 8 * 60 * 60
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 
 # Application definition
@@ -377,3 +407,69 @@ JAZZMIN_UI_TWEAKS = {
 
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# ==========================================
+# LOGGING
+# Theo docs/08_Deployment_Standards.md mục 27: log level Info/Warning/Error/
+# Critical, ghi vào thư mục /Logs. Tự xoay vòng file (5MB/file, giữ 30 file
+# gần nhất ~ tương đương chuẩn giữ log 30 ngày ở mục 19).
+# ==========================================
+LOG_DIR = ROOT_DIR / "Logs"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime}] {levelname} {name} - {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "app_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOG_DIR / "app.log",
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 30,
+            "formatter": "verbose",
+            "encoding": "utf-8",
+        },
+        "error_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOG_DIR / "error.log",
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 30,
+            "formatter": "verbose",
+            "level": "ERROR",
+            "encoding": "utf-8",
+        },
+    },
+    "root": {
+        "handlers": ["console", "app_file"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "app_file", "error_file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "django.request": {
+            "handlers": ["console", "error_file"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        "apps": {
+            # Namespace chung cho log nghiệp vụ tự viết trong code, dùng:
+            #   import logging; logger = logging.getLogger(__name__)
+            "handlers": ["console", "app_file", "error_file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}

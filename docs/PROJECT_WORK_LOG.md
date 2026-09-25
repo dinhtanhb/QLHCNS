@@ -131,6 +131,20 @@ Kết quả gồm `page-1.png`, `page-2.png`, ... và PDF trong `D:\QLHCNS-docx-
 
 **Nhánh/commit:** `chore/django-5.2-upgrade`, `02b58a3` (`feat: add project activity management screens`).
 
+## 2026-09-25 — Bảo mật ứng dụng, log và quy trình backup SQL Server
+
+**Phạm vi:** ghi nhận các thay đổi sẵn có trong workspace trước khi đẩy mã nguồn phân hệ Hoạt động dự án lên GitHub.
+
+**Sao lưu:** tạo `D:\QLHCNS-Backup-before-shared-dashboard-20260925` trước khi tiếp tục. Loại trừ `.git`, `.env`, database cục bộ, virtualenv, media, log và các thư mục backup.
+
+**Đã rà soát và đưa vào commit:** cấu hình HTTPS/cookie có bật theo biến `ENABLE_HTTPS_ENFORCEMENT`; logging có xoay vòng file; cập nhật ví dụ cấu hình, bản DOCX hướng dẫn và bộ script/checklist backup, backup transaction log, retention và diễn tập restore cho SQL Server Express. Không đưa thư mục backup thực tế `Backups/`, log backup, file rỗng `src/qlhcns` hoặc `.env` vào Git.
+
+**Kiểm tra:** `D:\QLHCNS\venv\Scripts\python.exe src\manage.py check` đạt; `makemigrations --check --dry-run` báo `No changes detected`. Có cảnh báo dependency `RequestsDependencyWarning`, không làm thất bại kiểm tra. Nhật ký hiện có trong `Backups/backup-log.txt` ghi nhận full backup và transaction-log backup đã chạy thành công; Codex chỉ đọc log, không chạy backup trong đợt này.
+
+**Nhánh/commit/push:** đang chuẩn bị commit các thay đổi được rà soát trên `chore/django-5.2-upgrade`; chưa push.
+
+**Còn mở:** sau khi push, tiếp tục bổ sung phần tổng quan Hoạt động dự án vào Dashboard chung theo quyền vai trò; Trưởng phòng chỉ thấy hoạt động thuộc phòng ban mình quản lý.
+
 
 ## 2026-09-24 — Đề xuất mở rộng IHRMS cho hoạt động dự án NGO/MEL
 
