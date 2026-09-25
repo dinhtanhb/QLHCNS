@@ -1,9 +1,9 @@
 from datetime import date, timedelta
 import tempfile
+from urllib.parse import parse_qs, urlsplit
 
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core import mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
@@ -11,9 +11,9 @@ from apps.activity.models import Activity, ActivityProposal
 from apps.activity.activity_codes import ACTIVITY_CODE_NAMES
 from apps.activity.services import (
     add_company_workdays,
+    build_activity_proposal_email_draft,
     find_schedule_conflicts,
     send_activity_report_reminders,
-    send_activity_proposal_for_approval,
 )
 from apps.attendance.models import Holiday
 from apps.hrm.models import Employee
@@ -226,38 +226,39 @@ class ActivityProposalWorkflowTests(ActivityTestDataMixin, TestCase):
         response = self.client.get(reverse("portal:activity_proposal", args=(self.activity.pk,)))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Gửi email xin duyệt")
+        self.assertContains(response, "Soạn thư trong Outlook")
         self.assertContains(response, 'name="proposal_pdf"')
         self.assertContains(response, 'name="budget_pdf"')
         self.assertNotContains(response, 'name="proposal_excel"')
         self.assertNotContains(response, 'name="budget_excel"')
 
-    @override_settings(
-        EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
-        EMAIL_HOST="smtp.example.test", DEFAULT_FROM_EMAIL="ihrms@example.test",
-    )
-    def test_approval_email_attaches_the_two_pdf_files(self):
+    def test_outlook_draft_prefills_recipient_subject_body_and_sender_hint(self):
         package = self.make_package()
-        recipient = send_activity_proposal_for_approval(package, self.director, self.coordinator_user)
+        draft = build_activity_proposal_email_draft(
+            package, self.director, self.coordinator_user, "https://ihrms.example.test/proposal/"
+        )
 
-        self.assertEqual(recipient, self.director_employee.company_email)
-        self.assertEqual(len(mail.outbox), 1)
-        sent = mail.outbox[0]
-        self.assertEqual(sent.from_email, "ihrms@example.test")
-        self.assertEqual(sent.to, [self.director_employee.company_email])
-        self.assertEqual(sent.reply_to, [self.coordinator.company_email])
-        self.assertEqual([item[0].split("-")[0] for item in sent.attachments], ["proposal", "budget"])
-        self.assertTrue(all(item[2] == "application/pdf" for item in sent.attachments))
+        parsed = urlsplit(draft["mailto_url"])
+        params = parse_qs(parsed.query)
+        self.assertEqual(parsed.scheme, "mailto")
+        self.assertEqual(parsed.path, self.director_employee.company_email)
+        self.assertEqual(draft["recipient"], self.director_employee.company_email)
+        self.assertEqual(draft["sender_email"], self.coordinator.company_email)
+        self.assertEqual(params["subject"][0], draft["subject"])
+        self.assertIn("https://ihrms.example.test/proposal/", params["body"][0])
 
-    @override_settings(
-        EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
-        EMAIL_HOST="", DEFAULT_FROM_EMAIL="",
-    )
-    def test_missing_smtp_configuration_fails_before_sending(self):
+    def test_pdf_attachment_link_can_download_file_for_outlook(self):
         package = self.make_package()
-        with self.assertRaisesMessage(ValueError, "SMTP_HOST"):
-            send_activity_proposal_for_approval(package, self.director, self.coordinator_user)
-        self.assertEqual(mail.outbox, [])
+        self.client.force_login(self.coordinator_user)
+
+        response = self.client.get(
+            reverse("portal:activity_proposal_file", args=(package.pk, "proposal_pdf")),
+            {"download": "1"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response["Content-Disposition"].startswith("attachment;"))
+        response.close()
 
     def test_cbda_can_upload_files_for_own_activity(self):
         self.client.force_login(self.cbda_user)
@@ -290,20 +291,40 @@ class ActivityProposalWorkflowTests(ActivityTestDataMixin, TestCase):
         self.assertIsNone(response.context["package"])
         self.assertFalse(ActivityProposal.objects.filter(activity=self.activity).exists())
 
-    @patch("apps.activity.views.send_activity_proposal_for_approval", return_value="director@example.test")
-    def test_coordinator_sends_to_selected_director_and_director_records_decision(self, send_mail):
+    def test_coordinator_prepares_outlook_draft_and_confirms_sent_before_director_decides(self):
         package = self.make_package()
         self.client.force_login(self.coordinator_user)
         response = self.client.post(
             reverse("portal:activity_proposal", args=(self.activity.pk,)),
-            {"action": "send", "approver": self.director.pk},
+            {"action": "prepare_email", "approver": self.director.pk},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "activity/proposal_email_draft.html")
+        self.assertContains(response, "mailto:director@example.test")
+        self.assertContains(response, "Tôi xác nhận đã tự bấm Gửi trong Outlook.")
+        self.assertEqual(len(response.context["pdf_files"]), 2)
+        self.assertIn("proposal_pdf/", response.context["pdf_files"][0]["url"])
+        self.assertIn("budget_pdf/", response.context["pdf_files"][1]["url"])
+        package.refresh_from_db()
+        self.assertEqual(package.status, "Draft")
+
+        response = self.client.post(
+            reverse("portal:activity_proposal", args=(self.activity.pk,)),
+            {"action": "confirm_sent", "approver": self.director.pk},
         )
         self.assertRedirects(response, reverse("portal:activity_proposal", args=(self.activity.pk,)))
-        send_mail.assert_called_once()
+        package.refresh_from_db()
+        self.assertEqual(package.status, "Draft")
+
+        response = self.client.post(
+            reverse("portal:activity_proposal", args=(self.activity.pk,)),
+            {"action": "confirm_sent", "approver": self.director.pk, "confirm_sent": "yes"},
+        )
+        self.assertRedirects(response, reverse("portal:activity_proposal", args=(self.activity.pk,)))
         package.refresh_from_db()
         self.assertEqual(package.status, "Submitted")
         self.assertEqual(package.approver, self.director)
-        self.assertEqual(package.sent_to, "director@example.test")
+        self.assertEqual(package.sent_to, self.director_employee.company_email)
 
         self.client.force_login(self.director)
         response = self.client.post(

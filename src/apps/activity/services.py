@@ -2,10 +2,8 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from pathlib import PurePosixPath
+from urllib.parse import quote, urlencode
 
-from django.conf import settings
-from django.core.mail import EmailMessage
 from django.db import transaction
 from django.utils import timezone
 
@@ -226,36 +224,13 @@ def _user_email(user):
     return (getattr(employee, "company_email", "") or getattr(user, "email", "") or "").strip()
 
 
-def send_activity_proposal_for_approval(package, approver, sender, approval_url=""):
-    """Email the PDF pair through the configured company SMTP server."""
-    from_email = (
-        getattr(settings, "DEFAULT_FROM_EMAIL", "")
-        or getattr(settings, "EMAIL_HOST_USER", "")
-    ).strip()
+def build_activity_proposal_email_draft(package, approver, sender, approval_url=""):
+    """Build a mailto draft for the coordinator to review and send in Outlook."""
     recipient = _user_email(approver)
-    if not getattr(settings, "EMAIL_HOST", "").strip() or not from_email:
-        raise ValueError("Chưa cấu hình SMTP_HOST và địa chỉ gửi DEFAULT_FROM_EMAIL trong .env.")
     if not recipient:
         raise ValueError("Tài khoản Giám đốc chưa có email công ty để nhận hồ sơ.")
     if not package.has_required_files():
         raise ValueError("Cần tải đủ 2 tệp PDF: đề xuất hoạt động và dự trù kinh phí.")
-
-    attachments = []
-    total_bytes = 0
-    for file_field in (package.proposal_pdf, package.budget_pdf):
-        with file_field.open("rb") as uploaded:
-            content = uploaded.read()
-        total_bytes += len(content)
-        attachments.append({
-            "name": PurePosixPath(file_field.name).name,
-            "content_type": "application/pdf",
-            "content": content,
-        })
-    max_email_bytes = getattr(settings, "ACTIVITY_PROPOSAL_EMAIL_MAX_BYTES", 10 * 1024 * 1024)
-    if total_bytes > max_email_bytes:
-        raise ValueError(
-            f"Tổng dung lượng hai PDF vượt giới hạn gửi email {max_email_bytes / 1024 / 1024:.0f} MB; hãy nén PDF."
-        )
 
     activity = package.activity
     subject = f"Xin phê duyệt đề xuất hoạt động: {activity.activity_code} - {activity.activity_name}"
@@ -264,19 +239,15 @@ def send_activity_proposal_for_approval(package, approver, sender, approval_url=
         f"Điều phối viên {sender.get_full_name() or sender.username} gửi hồ sơ đề xuất hoạt động "
         f"{activity.activity_code} - {activity.activity_name}, dự án {activity.project.project_name}, "
         f"phiên bản {package.version}.\n"
-        "Hồ sơ đính kèm gồm Đề xuất hoạt động và Dự trù kinh phí (PDF).\n"
+        "Hồ sơ gồm 2 tệp PDF: Đề xuất hoạt động và Dự trù kinh phí.\n"
         f"Mở hồ sơ và ghi nhận quyết định tại: {approval_url}\n\n"
-        "Vui lòng phản hồi quyết định trên IHRMS."
+        "Vui lòng xem xét và phản hồi quyết định trên IHRMS."
     )
-    message = EmailMessage(
-        subject=subject,
-        body=body,
-        from_email=from_email,
-        to=[recipient],
-        reply_to=[_user_email(sender)] if _user_email(sender) else None,
-    )
-    for attachment in attachments:
-        message.attach(attachment["name"], attachment["content"], attachment["content_type"])
-    if message.send(fail_silently=False) != 1:
-        raise RuntimeError("Máy chủ SMTP không xác nhận đã nhận thư.")
-    return recipient
+    mailto_query = urlencode({"subject": subject, "body": body}, quote_via=quote)
+    return {
+        "recipient": recipient,
+        "sender_email": _user_email(sender),
+        "subject": subject,
+        "body": body,
+        "mailto_url": f"mailto:{quote(recipient, safe='@.,+')}?{mailto_query}",
+    }

@@ -270,19 +270,6 @@ M365_UPLOAD_PREFIX_MAP = {
     "activity_proposals": "activity-proposals",
 }
 
-# Email for workflow notifications. The mail provider supplies SMTP details;
-# POP3 is for desktop mail retrieval and is not used by this web application.
-EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
-EMAIL_HOST = os.getenv("EMAIL_HOST", "").strip()
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "").strip()
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").strip().lower() in ("true", "1", "yes")
-EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "False").strip().lower() in ("true", "1", "yes")
-EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", "20"))
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER).strip()
-ACTIVITY_PROPOSAL_EMAIL_MAX_BYTES = int(os.getenv("ACTIVITY_PROPOSAL_EMAIL_MAX_BYTES", str(10 * 1024 * 1024)))
-
 # ==========================================
 # CẤU HÌNH GIAO DIỆN QUẢN TRỊ ADMINLTE 3 (JAZZMIN)
 # ==========================================

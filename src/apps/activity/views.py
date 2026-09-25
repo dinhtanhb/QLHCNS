@@ -20,7 +20,7 @@ from apps.activity.forms import (
     ActivityProposalUploadForm,
 )
 from apps.activity.permissions import can_manage_activities, visible_activities_for
-from apps.activity.services import find_schedule_conflicts, send_activity_proposal_for_approval
+from apps.activity.services import build_activity_proposal_email_draft, find_schedule_conflicts
 from apps.hrm.models import Employee
 from apps.security.permissions import get_role_code, has_permission
 from apps.task.models import Task
@@ -230,10 +230,80 @@ def activity_proposal(request, activity_id):
     if request.method == "POST":
         if not can_edit:
             raise PermissionDenied
+        action = request.POST.get("action")
         if package and package.status == "Submitted":
             messages.error(request, "Hồ sơ đang chờ Giám đốc duyệt nên không thể thay đổi.")
             return redirect("portal:activity_proposal", activity_id=activity.pk)
-        if request.POST.get("action") != "send":
+        if action in ("prepare_email", "confirm_sent"):
+            if not can_send:
+                raise PermissionDenied
+            send_form = ActivityProposalSendForm(request.POST)
+            if not package or not package.pk or not package.has_required_files():
+                messages.error(request, "Cần lưu đủ 2 tệp PDF trước khi soạn thư xin duyệt.")
+                return redirect("portal:activity_proposal", activity_id=activity.pk)
+            if not send_form.is_valid():
+                messages.error(request, "Vui lòng chọn Giám đốc nhận duyệt.")
+                return redirect("portal:activity_proposal", activity_id=activity.pk)
+
+            approver = send_form.cleaned_data["approver"]
+            if action == "prepare_email":
+                approval_url = request.build_absolute_uri(
+                    reverse("portal:activity_proposal", args=(activity.pk,))
+                )
+                try:
+                    draft = build_activity_proposal_email_draft(
+                        package, approver, request.user, approval_url
+                    )
+                except ValueError as exc:
+                    messages.error(request, str(exc))
+                    return redirect("portal:activity_proposal", activity_id=activity.pk)
+                pdf_files = [
+                    {
+                        "label": "Đề xuất hoạt động (PDF)",
+                        "url": reverse(
+                            "portal:activity_proposal_file",
+                            args=(package.pk, "proposal_pdf"),
+                        ) + "?download=1",
+                    },
+                    {
+                        "label": "Dự trù kinh phí (PDF)",
+                        "url": reverse(
+                            "portal:activity_proposal_file",
+                            args=(package.pk, "budget_pdf"),
+                        ) + "?download=1",
+                    },
+                ]
+                return render(request, "activity/proposal_email_draft.html", {
+                    "activity": activity,
+                    "package": package,
+                    "approver": approver,
+                    "draft": draft,
+                    "pdf_files": pdf_files,
+                })
+
+            if request.POST.get("confirm_sent") != "yes":
+                messages.error(request, "Đánh dấu đã gửi chỉ sau khi bạn đã bấm Gửi trong Outlook.")
+                return redirect("portal:activity_proposal", activity_id=activity.pk)
+            package.status = "Submitted"
+            package.approver = approver
+            package.sent_to = (
+                getattr(getattr(approver, "employee", None), "company_email", "")
+                or approver.email
+            ).strip()
+            package.submitted_by = request.user
+            package.submitted_at = timezone.now()
+            package.modified_by = request.user
+            package.save(update_fields=(
+                "status", "approver", "sent_to", "submitted_by", "submitted_at",
+                "modified_by", "modified_date",
+            ))
+            messages.success(
+                request,
+                "IHRMS đã ghi nhận xác nhận của bạn rằng email đã được gửi từ Outlook.",
+            )
+            return redirect("portal:activity_proposal", activity_id=activity.pk)
+
+        if action == "upload":
             if package and package.status in ("Approved", "ChangesRequested"):
                 previous = package
                 package = ActivityProposal(activity=activity, version=previous.version + 1)
@@ -245,33 +315,6 @@ def activity_proposal(request, activity_id):
             elif package is None:
                 package = ActivityProposal(activity=activity, version=1)
                 upload_form = ActivityProposalUploadForm(request.POST, request.FILES, instance=package)
-
-        if request.POST.get("action") == "send":
-            if not can_send:
-                raise PermissionDenied
-            send_form = ActivityProposalSendForm(request.POST)
-            if not package or not package.pk or not package.has_required_files():
-                messages.error(request, "Cần lưu đủ 2 tệp PDF: đề xuất hoạt động và dự trù kinh phí trước khi gửi.")
-            elif send_form.is_valid():
-                approver = send_form.cleaned_data["approver"]
-                try:
-                    approval_url = request.build_absolute_uri(
-                        reverse("portal:activity_proposal", args=(activity.pk,))
-                    )
-                    recipient = send_activity_proposal_for_approval(package, approver, request.user, approval_url)
-                except Exception as exc:
-                    messages.error(request, f"Email chưa được gửi: {exc}")
-                else:
-                    package.status = "Submitted"
-                    package.approver = approver
-                    package.sent_to = recipient
-                    package.submitted_by = request.user
-                    package.submitted_at = timezone.now()
-                    package.modified_by = request.user
-                    package.save(update_fields=("status", "approver", "sent_to", "submitted_by", "submitted_at", "modified_by", "modified_date"))
-                    messages.success(request, "Máy chủ email đã nhận thư gửi đi; hồ sơ đang chờ phê duyệt.")
-                    return redirect("portal:activity_proposal", activity_id=activity.pk)
-        else:
             upload_form = ActivityProposalUploadForm(request.POST, request.FILES, instance=package)
             if upload_form.is_valid():
                 package = upload_form.save(commit=False)
@@ -341,7 +384,7 @@ def activity_proposal_file(request, package_id, field_name):
     filename = stored_file.name.rsplit("/", 1)[-1]
     return FileResponse(
         stored_file.open("rb"),
-        as_attachment=not field_name.endswith("_pdf"),
+        as_attachment=(not field_name.endswith("_pdf") or request.GET.get("download") == "1"),
         filename=filename,
         content_type=content_type or "application/octet-stream",
     )
