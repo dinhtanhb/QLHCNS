@@ -159,3 +159,17 @@ Kết quả gồm `page-1.png`, `page-2.png`, ... và PDF trong `D:\QLHCNS-docx-
 **Kiểm tra phần hành chính–nhân sự (24/09/2026):** Codex chạy `python src/manage.py check` (đạt), `makemigrations --check --dry-run` (No changes detected), và 86 test trên SQLite test database tạm (đạt). Codex xác nhận kết nối cấu hình hiện tại tới SQL Server bằng `connection.vendor=microsoft` và `SELECT 1`; chưa chạy test suite SQL Server vì chưa xác minh đó là database SIT riêng, an toàn cho Django tạo/xóa test database. Người dùng trước đó báo các luồng nghiệp vụ chạy bình thường; báo cáo này chưa phải UAT ký nhận.
 
 **Còn mở:** Chưa đủ điều kiện go-live/pilot với dữ liệu thật. Cần test SQL Server SIT, `check --deploy` trên cấu hình máy chủ, UAT có biên bản, xác nhận backup/restore và quyền dữ liệu. Với phân hệ NGO, Ban Giám đốc cần phê duyệt mở rộng Charter; Chương trình/MEL/Tài chính/IT chốt RACI, SLA, xung đột lịch, tiền tệ, chứng từ, dữ liệu người tham gia và database SIT trước khi có schema/migration. Chủ dự án làm theo mục “Việc chủ dự án cần điều phối ở Cổng 0” trong roadmap; không gửi dữ liệu thụ hưởng định danh qua chat.
+
+## 2026-09-25 ? T?ng quan Ho?t ??ng d? ?n tr?n Dashboard chung
+
+**M?c ti?u/ph?m vi:** hi?n th? ti?n ?? d? ?n trong Dashboard trang ch? d?nh cho Ban Gi?m ??c, Qu?n l? d? ?n v? Tr??ng ph?ng; gi? dashboard ho?t ??ng chuy?n bi?t hi?n t?i.
+
+**Sao l?u tr??c thay ??i:** t?o `D:\QLHCNS-Backup-before-shared-dashboard-implementation-20260925`; kh?ng sao ch?p `.env`, database, virtualenv, media, log ho?c th? m?c backup.
+
+**?? l?m:** Dashboard chung c? s? ho?t ??ng trong th?ng, Task b?o c?o ho?n th?nh, Task qu? h?n, Task thi?u b?o c?o v? ho?t ??ng ch?a c? Task, k?m li?n k?t sang dashboard ho?t ??ng ??ng th?ng. B? sung quy?n xem dashboard ho?t ??ng cho `DEPT_MANAGER`; queryset c?a vai tr? n?y ch? g?m ho?t ??ng thu?c d? ?n c? ph?ng ban do nh?n vi?n ?? qu?n l?. Kh?ng thay ??i quy?n qu?n l?/t?o ho?t ??ng v? kh?ng s?a schema.
+
+**Ki?m tra:** `manage.py check` ??t; `makemigrations --check --dry-run` b?o `No changes detected`; `manage.py test apps.activity.tests apps.security.tests --verbosity 1` ??t: 34 test tr?n SQLite test database t?m. `RequestsDependencyWarning` v? urllib3/chardet v?n xu?t hi?n nh?ng kh?ng ?nh h??ng k?t qu?. Kh?ng ch?y migrate hay test database tr?n SQL Server.
+
+**Nh?nh/commit/push:** `chore/django-5.2-upgrade`; s? ghi m? commit sau khi ho?n t?t push.
+
+**C?n m?:** nghi?m thu tr?c quan b?ng c?c t?i kho?n Director, Project Manager v? Tr??ng ph?ng tr?n ?ng d?ng ?ang ch?y; x?c nh?n s? li?u kh?p v?i vai tr?/ph?ng ban th?c t?.

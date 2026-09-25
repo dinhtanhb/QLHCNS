@@ -38,7 +38,7 @@ PERMISSION_MATRIX = {
     "assign_task": (HR_MANAGER, DEPT_MANAGER),
     # Hoạt động dự án NGO: quyền riêng, không kế thừa KPI/HR permissions.
     "view_activity_dashboard": (
-        SUPER_ADMIN, DIRECTOR, PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA,
+        SUPER_ADMIN, DIRECTOR, PROJECT_MANAGER, PROJECT_COORDINATOR, DEPT_MANAGER, CBDA,
     ),
     "view_all_project_activities": (
         SUPER_ADMIN, DIRECTOR, PROJECT_MANAGER, PROJECT_COORDINATOR,

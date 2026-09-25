@@ -189,6 +189,69 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
         self.assertContains(response, self.own_activity.activity_code)
         self.assertNotContains(response, self.other_activity.activity_code)
 
+    def test_director_shared_dashboard_includes_monthly_project_activity_metrics(self):
+        today = date.today()
+        self.own_activity.start_date = today
+        self.own_activity.end_date = today
+        self.own_activity.save()
+        self.other_activity.start_date = today
+        self.other_activity.end_date = today
+        self.other_activity.save()
+        director_role, _ = Role.objects.get_or_create(
+            role_code="DIRECTOR", defaults={"role_name": "Giám đốc"}
+        )
+        self.create_user("director_home", self.coordinator, director_role)
+        self.client.login(username="director_home", password="test-password")
+
+        response = self.client.get(reverse("portal:dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["show_project_activity_summary"])
+        self.assertEqual(response.context["activity_total"], 2)
+        self.assertContains(response, "Tiến độ hoạt động dự án")
+        self.assertContains(response, "Mở Dashboard hoạt động")
+
+    def test_department_manager_sees_only_activities_in_managed_departments(self):
+        today = date.today()
+        self.own_activity.start_date = today
+        self.own_activity.end_date = today
+        self.own_activity.save()
+        other_department = Department.objects.create(
+            department_code="DEP-ACT-OTHER",
+            department_name="Phòng khác",
+            organization=self.organization,
+        )
+        other_project = Project.objects.create(
+            project_code="PRJ-ACT-OTHER",
+            project_name="Dự án phòng khác",
+            department=other_department,
+        )
+        other_department_activity = Activity.objects.create(
+            activity_code="ACT-OTHER-DEPT",
+            activity_name="Hoạt động phòng khác",
+            project=other_project,
+            start_date=today,
+            end_date=today,
+            lead_cbda=self.other_cbda,
+        )
+        self.department.manager = self.coordinator
+        self.department.save(update_fields=["manager"])
+        manager_role, _ = Role.objects.get_or_create(
+            role_code="DEPT_MANAGER", defaults={"role_name": "Trưởng phòng"}
+        )
+        self.create_user("department_manager_home", self.coordinator, manager_role)
+        self.client.login(username="department_manager_home", password="test-password")
+
+        home_response = self.client.get(reverse("portal:dashboard"))
+        activity_response = self.client.get(reverse("portal:activity_dashboard"))
+
+        self.assertEqual(home_response.status_code, 200)
+        self.assertEqual(home_response.context["activity_total"], 1)
+        self.assertTrue(home_response.context["show_project_activity_summary"])
+        self.assertEqual(activity_response.status_code, 200)
+        self.assertContains(activity_response, self.own_activity.activity_code)
+        self.assertNotContains(activity_response, other_department_activity.activity_code)
+
     def test_coordinator_can_open_create_activity_form(self):
         coordinator_role, _ = Role.objects.get_or_create(
             role_code="PROJECT_COORDINATOR", defaults={"role_name": "Điều phối dự án"}

@@ -1,5 +1,6 @@
 from apps.security.permissions import (
     CBDA,
+    DEPT_MANAGER,
     DIRECTOR,
     PROJECT_COORDINATOR,
     PROJECT_MANAGER,
@@ -23,6 +24,9 @@ def visible_activities_for(user, queryset=None):
         return qs
 
     employee = getattr(user, "employee", None)
+    if role_code == DEPT_MANAGER and employee:
+        department_ids = employee.managed_departments.values_list("pk", flat=True)
+        return qs.filter(project__department_id__in=department_ids)
     if role_code == CBDA and employee:
         return qs.filter(Q(lead_cbda=employee) | Q(coordinator=employee))
     return qs.none()

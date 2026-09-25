@@ -6,11 +6,11 @@ from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.views.decorators.http import require_POST
 from apps.security.permissions import get_role_code, has_permission
-from django.db.models import Count, Sum, Q
+from django.db.models import Count, Prefetch, Sum, Q
 from apps.recruitment.models import RecruitmentRequest
 from apps.document.models import Document, OfficialDispatch, DispatchTracking, DispatchBook
 from apps.task.models import Task
-from apps.activity.permissions import can_view_activity
+from apps.activity.permissions import can_view_activity, visible_activities_for
 from apps.common.uploads import validate_upload
 from apps.m365.graph_client import GraphAPIError
 from apps.hrm.models import Employee
@@ -150,6 +150,49 @@ def dashboard(request):
     role_code = _role_code(request)
     is_super = request.user.is_superuser
     context = {"employee": employee}
+
+    # Shared homepage: show the current month's project activity progress only
+    # to roles that can open the activity dashboard. The scoped queryset keeps
+    # department managers within their own departments.
+    if has_permission(request.user, "view_activity_dashboard"):
+        today = timezone.localdate()
+        month_start = datetime.date(today.year, today.month, 1)
+        month_end = datetime.date(
+            today.year, today.month,
+            calendar_module.monthrange(today.year, today.month)[1],
+        )
+        task_prefetch = Prefetch(
+            "tasks",
+            queryset=Task.objects.order_by("created_date"),
+            to_attr="dashboard_tracking_tasks",
+        )
+        activities = visible_activities_for(request.user).filter(
+            Q(start_date__lte=month_end, end_date__gte=month_start)
+            | Q(tasks__due_date__gte=month_start, tasks__due_date__lte=month_end)
+        ).exclude(status="Cancelled").prefetch_related(task_prefetch).distinct()
+
+        activity_rows = []
+        for activity in activities:
+            task = activity.dashboard_tracking_tasks[0] if activity.dashboard_tracking_tasks else None
+            overdue = bool(
+                task and task.status not in ("Done", "Cancelled")
+                and task.due_date and task.due_date < today
+            )
+            activity_rows.append((task, overdue))
+        tracked_tasks = [task for task, _ in activity_rows if task]
+        context.update({
+            "show_project_activity_summary": True,
+            "activity_month": month_start.strftime("%Y-%m"),
+            "activity_month_label": month_start.strftime("%m/%Y"),
+            "activity_total": len(activity_rows),
+            "activity_completed": sum(task.status == "Done" for task in tracked_tasks),
+            "activity_overdue": sum(overdue for _, overdue in activity_rows),
+            "activity_report_missing": sum(
+                task.status != "Cancelled" and not task.report_file
+                for task in tracked_tasks
+            ),
+            "activity_without_task": sum(task is None for task, _ in activity_rows),
+        })
 
     # Nhân viên thường: các con số cá nhân
     if employee:
