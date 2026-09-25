@@ -287,9 +287,12 @@ def activity_proposal(request, activity_id):
         and get_role_code(request.user) == "DIRECTOR"
         and package.approver_id == request.user.pk
     )
+    # An unsaved revision has no package ID yet. Do not expose it to the
+    # template's file links, which require a persisted package_id.
+    display_package = package if package and package.pk else None
     return render(request, "activity/proposal_detail.html", {
         "activity": activity,
-        "package": package,
+        "package": display_package,
         "package_history": package_history,
         "upload_form": upload_form,
         "send_form": send_form,

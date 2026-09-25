@@ -267,6 +267,24 @@ class ActivityProposalWorkflowTests(ActivityTestDataMixin, TestCase):
         self.assertTrue(package.has_required_files())
         self.assertEqual(package.created_by, self.cbda_user)
 
+    def test_invalid_upload_rerenders_without_reversing_unsaved_package_file_links(self):
+        self.client.force_login(self.cbda_user)
+        response = self.client.post(
+            reverse("portal:activity_proposal", args=(self.activity.pk,)),
+            {
+                "action": "upload",
+                "proposal_excel": SimpleUploadedFile("proposal.xlsx", b"XLSX"),
+                "proposal_pdf": SimpleUploadedFile("proposal.txt", b"not a PDF"),
+                "budget_excel": SimpleUploadedFile("budget.xlsx", b"XLSX"),
+                "budget_pdf": SimpleUploadedFile("budget.pdf", b"PDF"),
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Tệp không đúng định dạng")
+        self.assertIsNone(response.context["package"])
+        self.assertFalse(ActivityProposal.objects.filter(activity=self.activity).exists())
+
     @patch("apps.activity.views.send_activity_proposal_for_approval", return_value="director@example.test")
     def test_coordinator_sends_to_selected_director_and_director_records_decision(self, send_mail):
         package = self.make_package()
