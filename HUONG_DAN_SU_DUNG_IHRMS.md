@@ -2,7 +2,7 @@
 
 **Đối tượng:** nhân viên, quản lý, Nhân sự, Tài chính, quản trị hệ thống
 
-**Phiên bản:** 1.1 — 24/09/2026
+**Phiên bản:** 1.2 — 25/09/2026
 
 **Phạm vi:** thao tác theo giao diện hiện có. Quy định nội bộ về hạn xử lý, người thay thế và phê duyệt cần công ty ban hành riêng.
 
@@ -27,7 +27,7 @@ Menu thay đổi theo quyền tài khoản. Cờ “Staff status” không thay 
 
 1. Mở địa chỉ IHRMS do công ty cung cấp; kiểm tra đúng tên miền và HTTPS.
 2. Đăng nhập bằng tài khoản cá nhân. Nếu quên mật khẩu, liên hệ đầu mối được công ty chỉ định; không gửi mật khẩu qua chat/email.
-3. Trang chính là **Bảng điều khiển**. Menu bên trái có thể gồm **Hồ sơ cá nhân**, **Bảng công**, **Nghỉ phép**, **Công việc**, **KPI**, **Tài liệu**, **Tài sản**, **Phiếu lương**. Menu duyệt/quản lý chỉ hiện với người được cấp quyền.
+3. Trang chính là **Bảng điều khiển**. Menu thay đổi theo vai trò. **Hoạt động dự án** là menu riêng ở cuối thanh điều hướng, gồm **Theo dõi hoạt động** và **Lịch hoạt động**; chỉ tài khoản được cấp quyền mới thấy. Menu **Duyệt & Xử lý** dành cho các hàng chờ phê duyệt được cấp.
 4. Chuông thông báo hiển thị thông tin được gửi tới bạn. Chọn tên tài khoản để xem lựa chọn tài khoản.
 5. Chọn **Đăng xuất** khi xong, nhất là trên máy dùng chung.
 
@@ -88,6 +88,37 @@ Mở **Duyệt chấm công**, chọn tháng/bộ phận. Đối chiếu giờ, 
 
 ### Duyệt tài liệu/yêu cầu
 Mở danh sách chờ duyệt tương ứng; đọc nội dung và tệp, kiểm tra đúng thẩm quyền, sau đó duyệt/từ chối kèm ghi chú. Không duyệt chỉ dựa trên tiêu đề khi có cam kết hoặc chi phí.
+
+## Hoạt động dự án — lập hồ sơ và xin phê duyệt
+
+Phân hệ này theo dõi hoạt động, người phụ trách, Task báo cáo và hồ sơ đề xuất. Phần dự trù PDF là tài liệu xin duyệt; IHRMS hiện chưa quản lý ngân sách thực chi, chứng từ hay quyết toán.
+
+### CBDA chuẩn bị hồ sơ
+
+1. Mở menu **Hoạt động dự án** → **Theo dõi hoạt động**; chọn tháng hoặc mở **Lịch hoạt động** để tìm hoạt động được giao.
+2. Chọn **Đề xuất & dự trù** ở dòng hoạt động. Hoàn thiện biểu mẫu Excel theo mẫu công ty trên máy tính, xuất thành PDF.
+3. Tải lên hai tệp PDF: **Đề xuất hoạt động** và **Dự trù kinh phí**. Tệp Excel gốc không tải lên IHRMS. Sau khi lưu, mở liên kết PDF trong hồ sơ để kiểm tra.
+4. Báo Điều phối viên khi bộ hồ sơ đã sẵn sàng. Nếu trạng thái là **Yêu cầu chỉnh sửa**, đọc ý kiến Giám đốc ở dashboard hoặc chuông thông báo; cập nhật biểu mẫu, xuất PDF mới và tải thay thế/tạo phiên bản hồ sơ theo hướng dẫn trên trang.
+
+### Điều phối viên gửi xin duyệt qua Outlook
+
+1. Mở **Đề xuất & dự trù**, kiểm tra đủ hai PDF và chọn đúng tài khoản Giám đốc trong ô người duyệt.
+2. Chọn **Soạn thư trong Outlook**. IHRMS mở thư nháp để người gửi kiểm tra người nhận, nội dung và tài khoản gửi; tự thêm CC nếu cần.
+3. Tải hai PDF từ các liên kết trên màn hình và đính kèm vào thư Outlook. `mailto:` không tự đính kèm tệp và không tự chọn tài khoản gửi.
+4. Kiểm tra thư rồi tự bấm **Gửi** trong Outlook. Quay lại IHRMS và xác nhận đã gửi. Chỉ xác nhận sau khi Outlook đã gửi thư thật; IHRMS không tự kiểm tra hộp thư gửi.
+5. Giám đốc được thông báo trong chuông IHRMS và có thể mở hàng chờ từ **Duyệt & Xử lý** → **Duyệt đề xuất hoạt động**. Link email vẫn dùng được nhưng không phải cách duy nhất vào hồ sơ.
+
+### Giám đốc xem xét và phản hồi
+
+1. Mở **Duyệt & Xử lý** → **Duyệt đề xuất hoạt động**. Danh sách chỉ hiện hồ sơ đang chờ được gửi đích danh cho tài khoản Giám đốc đang đăng nhập.
+2. Chọn **Xem và xử lý**, xem hai PDF và kiểm tra thông tin hoạt động.
+3. Chọn **Phê duyệt** hoặc **Yêu cầu chỉnh sửa**; nhập nội dung cụ thể, lưu quyết định. Nếu yêu cầu sửa, ghi rõ phần cần bổ sung/thay đổi để người lập hồ sơ xử lý được.
+
+Khi yêu cầu chỉnh sửa, người gửi, người tạo hồ sơ, CBDA phụ trách và Điều phối viên nhận thông báo trong chuông/trang **Thông báo**; nếu một nhân viên đồng thời giữ nhiều vai trò thì chỉ nhận một thông báo. Dashboard hoạt động hiển thị trạng thái mới nhất và ý kiến Giám đốc ngay dưới tên hoạt động. Dashboard lọc theo tháng, vì vậy hãy chọn tháng có ngày hoạt động nếu không thấy dòng. Hồ sơ cũ được quyết định trước khi có thông báo trong hệ thống không được tạo thông báo ngược; trạng thái/lịch sử vẫn xem được trong hồ sơ.
+
+### Theo dõi hoạt động và Task báo cáo
+
+Dashboard **Theo dõi hoạt động** cho biết người phụ trách, thời gian, trạng thái Task, hạn báo cáo, tệp báo cáo và trạng thái hồ sơ đề xuất. Dùng bộ lọc tháng/CBDA; dùng **Lịch hoạt động** để xem ngày triển khai và hạn báo cáo. CBDA mở Task được giao, cập nhật tiến độ và tải báo cáo hoạt động lên SharePoint theo chỉ dẫn trong Task. Task chỉ hoàn thành khi đã có báo cáo. Nhắc hạn cần Windows Task Scheduler được IT cấu hình; không mặc định rằng lịch nhắc đã chạy tự động nếu chưa được kiểm tra.
 
 ## 6. Nhân sự
 

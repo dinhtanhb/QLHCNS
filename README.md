@@ -2,8 +2,12 @@
 
 > Nhật ký thay đổi lớn, kết quả kiểm tra và việc cần chủ dự án thực hiện được ghi tập trung tại [docs/PROJECT_WORK_LOG.md](docs/PROJECT_WORK_LOG.md). Quy tắc cập nhật nằm trong [AGENTS.md](AGENTS.md).
 
-Hệ thống **Quản lý Hành chính & Nhân sự** nội bộ, xây dựng trên Django 5.0.
-Gồm hai phần: **Cổng thông tin nhân viên** (`/portal/`) và **Trang quản trị** (`/admin/`).
+Hệ thống **Quản lý Hành chính & Nhân sự** nội bộ, xây dựng trên Django 5.2.
+Gồm **Cổng thông tin nhân viên** (`/portal/`), **Trang quản trị** (`/admin/`) và các phân hệ theo quyền.
+
+Tài liệu nghiệp vụ cho người dùng: [Cẩm nang sử dụng](HUONG_DAN_SU_DUNG_IHRMS.md), [Giáo án tập huấn](TAP_HUAN_IHRMS.md), [Lộ trình Hoạt động dự án NGO](docs/NGO_Activity_Planning_MEL_Roadmap.md). Hướng dẫn kỹ thuật/vận hành nằm trong `docs/` và `.agents/skills/`.
+
+Phân hệ **Hoạt động dự án** có menu riêng ở cuối thanh điều hướng; gồm dashboard tiến độ, lịch, Task báo cáo, hồ sơ đề xuất/dự trù PDF, hàng chờ Giám đốc và thông báo trong IHRMS. Việc gửi xin duyệt được người dùng thực hiện trong Outlook; hiện chưa có sổ ngân sách/chứng từ/quyết toán trong ứng dụng.
 
 ---
 
@@ -12,7 +16,7 @@ Gồm hai phần: **Cổng thông tin nhân viên** (`/portal/`) và **Trang qu�
 | Thành phần | Phiên bản |
 |---|---|
 | Python | 3.12 trở lên |
-| Hệ quản trị CSDL | SQLite (mặc định, không cần cài gì) hoặc SQL Server 2016+ |
+| Hệ quản trị CSDL | SQLite cho cài đặt mặc định/kiểm thử hoặc SQL Server qua cấu hình `DB_ENGINE` |
 | Hệ điều hành | Windows 10/11 (đã chạy thực tế), Linux đều được |
 
 ## 2. Cấu trúc thư mục
@@ -28,7 +32,7 @@ D:\QLHCNS\
     ├── manage.py
     ├── db.sqlite3        <- CSDL (KHÔNG đưa lên Git)
     ├── config\           <- settings.py, urls.py
-    ├── apps\             <- 20 phân hệ nghiệp vụ
+    ├── apps\             <- Các phân hệ nghiệp vụ, gồm hoạt động dự án (activity)
     ├── templates\        <- Giao diện dùng chung (base.html)
     ├── static\
     └── media\            <- File người dùng tải lên (KHÔNG đưa lên Git)

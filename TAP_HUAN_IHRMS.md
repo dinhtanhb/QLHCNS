@@ -2,7 +2,7 @@
 
 **Dành cho:** người hướng dẫn nội bộ và đầu mối nghiệp vụ
 
-**Phiên bản:** 1.1 — 24/09/2026
+**Phiên bản:** 1.2 — 25/09/2026
 
 **Thời lượng gợi ý:** 75 phút nhân viên; thêm 45 phút quản lý; 90 phút Nhân sự; 120 phút Tài chính; 60 phút quản trị.
 
@@ -55,6 +55,20 @@ Mỗi người dùng tài khoản demo riêng:
 5. Thực hành xử lý yêu cầu ngoài phạm vi: không cố duyệt, chuyển đúng người có thẩm quyền.
 
 **Thảo luận:** ai duyệt khi trưởng bộ phận vắng mặt? Hạn phản hồi là bao lâu? Chốt câu trả lời theo chính sách công ty, không suy ra từ phần mềm.
+
+## Thực hành bổ sung: Hoạt động dự án và hồ sơ xin duyệt — 45 phút
+
+**Đối tượng:** CBDA, Điều phối viên, Giám đốc dự án/quản lý có quyền duyệt. Dùng hoạt động demo và hai PDF giả; không đưa đề xuất/dự trù thật lên môi trường đào tạo.
+
+1. Học viên CBDA vào **Hoạt động dự án** → **Theo dõi hoạt động**, chọn một hoạt động demo, mở **Đề xuất & dự trù** và chỉ vị trí tải hai PDF. Nhắc lại Excel làm theo mẫu ngoại tuyến, chỉ hai PDF được tải lên hồ sơ IHRMS.
+2. Điều phối viên kiểm tra hồ sơ, chọn Giám đốc nhận duyệt, mở thư nháp Outlook, thêm CC thử, tải hai PDF và đính kèm. Trong buổi tập huấn không gửi thư ra ngoài; dừng trước nút Gửi hoặc dùng hộp thư demo nội bộ được IT duyệt. Không xác nhận đã gửi nếu thư chưa được gửi thật.
+3. Giám đốc vào **Duyệt & Xử lý** → **Duyệt đề xuất hoạt động**, mở hàng chờ của chính mình, xem PDF, chọn **Yêu cầu chỉnh sửa** và ghi ý kiến demo.
+4. CBDA và Điều phối viên mở chuông/trang **Thông báo**, kiểm tra có thông báo và nội dung phản hồi; mở liên kết tới hồ sơ. Trên dashboard hoạt động, tìm đúng tháng, xác nhận trạng thái **Yêu cầu chỉnh sửa** và ý kiến hiện dưới tên hoạt động.
+5. Thực hành luồng duyệt: Giám đốc phê duyệt một hồ sơ demo; các học viên tìm trạng thái mới trong dashboard.
+
+**Đạt khi:** mỗi vai trò tìm được menu đúng; người duyệt mở hồ sơ từ hàng chờ mà không cần email; CBDA/ĐPV tìm được thông báo và ý kiến; người học hiểu Outlook cần tự đính kèm PDF và xác nhận trong IHRMS chỉ sau khi gửi thật.
+
+**Lưu ý người hướng dẫn:** chỉ tài khoản được cấp quyền xem mới có menu Hoạt động dự án; hàng chờ duyệt chỉ hiện hồ sơ giao đúng Giám đốc. Nếu không thấy hoạt động trong dashboard, chọn đúng tháng. Quyết định cũ không được thông báo hồi tố.
 
 ## 6. Bổ sung cho Nhân sự — 90 phút
 
