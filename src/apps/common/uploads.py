@@ -87,6 +87,8 @@ def upload_to_leave_requests(instance, filename):
 def upload_to_company_media(instance, filename):
     return build_upload_path("company-media", filename)
 
+def upload_to_activity_reports(instance, filename):
+    return build_upload_path("activity-reports", filename)
 
 def validate_upload(uploaded_file):
     """Kiểm tra định dạng và dung lượng tệp. Dùng làm validator cho FileField."""

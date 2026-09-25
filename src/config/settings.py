@@ -74,6 +74,7 @@ INSTALLED_APPS = (['jazzmin'] if HAS_JAZZMIN else []) + [
     'apps.office',
     'apps.planning',
     'apps.m365',
+    'apps.activity',
 ]
 
 MIDDLEWARE = [
@@ -222,6 +223,9 @@ M365_FOLDER_MAP = {
     "leave": os.getenv("M365_FOLDER_LEAVE", os.getenv("M365_LIBRARY_LEAVE", "DonNghiPhep")),
     "recruitment_cv": os.getenv("M365_FOLDER_CV", os.getenv("M365_LIBRARY_CV", "HoSoUngVien")),
     "assets": os.getenv("M365_FOLDER_ASSETS", os.getenv("M365_LIBRARY_ASSETS", "TaiSanHinhAnh")),
+    "activity_reports": os.getenv(
+        "M365_FOLDER_ACTIVITY_REPORTS", os.getenv("M365_LIBRARY_ACTIVITY_REPORTS", "BaoCaoHoatDong")
+    ),
 }
 M365_UPLOAD_PREFIX_MAP = {
     "documents": "documents",
@@ -231,6 +235,7 @@ M365_UPLOAD_PREFIX_MAP = {
     "leave": "leave-requests",
     "recruitment_cv": "candidates/cv",
     "assets": "company-media",
+    "activity_reports": "activity-reports",
 }
 
 # ==========================================

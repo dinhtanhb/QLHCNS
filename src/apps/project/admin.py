@@ -6,5 +6,6 @@ from .models import Project
 @admin.register(Project)
 class ProjectAdmin(BaseAuditAdmin):
     list_display = ("project_code", "project_name", "department", "start_date", "end_date", "is_active")
+    search_fields = ("project_code", "project_name")
     view_roles = ("SUPER_ADMIN", "HR_MANAGER", "DEPT_MANAGER", "DIRECTOR", "FINANCE_OFFICER")
     edit_roles = ("SUPER_ADMIN", "HR_MANAGER")

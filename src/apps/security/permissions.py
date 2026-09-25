@@ -18,6 +18,9 @@ HR_OFFICER = "HR_OFFICER"
 DEPT_MANAGER = "DEPT_MANAGER"
 FINANCE_OFFICER = "FINANCE_OFFICER"
 EMPLOYEE = "EMPLOYEE"
+PROJECT_MANAGER = "PROJECT_MANAGER"
+PROJECT_COORDINATOR = "PROJECT_COORDINATOR"
+CBDA = "CBDA"
 
 # ------------------------------------------------------------------
 # AI ĐƯỢC LÀM GÌ — bảng duy nhất, sửa ở đây là áp dụng toàn hệ thống
@@ -33,6 +36,14 @@ PERMISSION_MATRIX = {
     "approve_timesheet_all_departments": (HR_MANAGER, DIRECTOR),
     # Công việc
     "assign_task": (HR_MANAGER, DEPT_MANAGER),
+    # Hoạt động dự án NGO: quyền riêng, không kế thừa KPI/HR permissions.
+    "view_activity_dashboard": (
+        SUPER_ADMIN, DIRECTOR, PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA,
+    ),
+    "view_all_project_activities": (
+        SUPER_ADMIN, DIRECTOR, PROJECT_MANAGER, PROJECT_COORDINATOR,
+    ),
+    "manage_project_activities": (SUPER_ADMIN, PROJECT_MANAGER, PROJECT_COORDINATOR),
     # KPI
     "score_kpi": (HR_MANAGER, DEPT_MANAGER),
     # Tài liệu & công văn

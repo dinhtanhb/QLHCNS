@@ -23,6 +23,25 @@
         <div><dt class="inline text-gray-400">Hạn hoàn thành: </dt><dd class="inline font-medium">{{ task.due_date|default:"—" }}</dd></div>
     </dl>
 
+    {% if task.activity_id %}
+    <div class="mt-4 rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm">
+        <p class="font-semibold text-blue-900">Báo cáo hoạt động</p>
+        {% if task.report_file %}
+        <p class="mt-1">Đã tải lên: <a class="text-blue-700 underline" href="{{ task.report_file.url }}" target="_blank" rel="noopener">Mở tệp báo cáo</a></p>
+        {% else %}
+        <p class="mt-1 text-blue-800">Cần tải báo cáo lên SharePoint trước khi đánh dấu công việc hoàn thành.</p>
+        {% endif %}
+        {% if is_owner %}
+        <form method="post" enctype="multipart/form-data" class="mt-3 flex flex-wrap items-center gap-3">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="upload_activity_report">
+            <input type="file" name="report_file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.txt,.csv,.zip" required class="text-sm">
+            <button type="submit" class="rounded-md bg-blue-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-800">Tải báo cáo lên SharePoint</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endif %}
+
     {% if is_owner %}
     <form method="post" class="mt-4 flex items-center gap-3">
         {% csrf_token %}

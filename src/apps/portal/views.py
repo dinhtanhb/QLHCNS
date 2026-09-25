@@ -10,6 +10,9 @@ from django.db.models import Count, Sum, Q
 from apps.recruitment.models import RecruitmentRequest
 from apps.document.models import Document, OfficialDispatch, DispatchTracking, DispatchBook
 from apps.task.models import Task
+from apps.activity.permissions import can_view_activity
+from apps.common.uploads import validate_upload
+from apps.m365.graph_client import GraphAPIError
 from apps.hrm.models import Employee
 from apps.asset.models import Asset
 from django.contrib.auth.decorators import login_required
@@ -412,7 +415,15 @@ def task_detail(request, pk):
     employee = _get_employee(request)
     is_owner = employee and task.assigned_to_employee_id == employee.id
 
-    if not is_owner and not request.user.is_superuser and _role_code(request) not in ("HR_MANAGER", "DEPT_MANAGER"):
+    if task.activity_id:
+        can_view = can_view_activity(request.user, task.activity)
+    else:
+        can_view = bool(
+            is_owner or request.user.is_superuser
+            or _role_code(request) in ("HR_MANAGER", "DEPT_MANAGER")
+        )
+
+    if not can_view:
         messages.error(request, "Anh/chị không có quyền xem công việc này.")
         return redirect("portal:task_list")
 
@@ -422,14 +433,31 @@ def task_detail(request, pk):
             new_status = request.POST.get("status")
             if new_status in dict(Task.STATUS_CHOICES):
                 task.status = new_status
-                task.save()
-                status_label = dict(Task.STATUS_CHOICES).get(new_status, new_status)
-                notify(
-                    task.assigned_by_employee, "task", "Công việc có cập nhật trạng thái",
-                    f"{task.task_name}: {status_label}.",
-                    link=f"/portal/tasks/{task.pk}/", created_by=request.user,
-                )
-                messages.success(request, "Đã cập nhật trạng thái công việc.")
+                try:
+                    task.clean()
+                    task.save()
+                    status_label = dict(Task.STATUS_CHOICES).get(new_status, new_status)
+                    notify(
+                        task.assigned_by_employee, "task", "Công việc có cập nhật trạng thái",
+                        f"{task.task_name}: {status_label}.",
+                        link=f"/portal/tasks/{task.pk}/", created_by=request.user,
+                    )
+                    messages.success(request, "Đã cập nhật trạng thái công việc.")
+                except ValidationError as exc:
+                    messages.error(request, "; ".join(exc.messages))
+        elif action == "upload_activity_report" and is_owner and task.activity_id:
+            uploaded = request.FILES.get("report_file")
+            if not uploaded:
+                messages.error(request, "Chọn tệp báo cáo trước khi tải lên.")
+            else:
+                try:
+                    validate_upload(uploaded)
+                    task.report_file = uploaded
+                    task.clean()
+                    task.save()
+                    messages.success(request, "Đã tải báo cáo hoạt động lên kho SharePoint.")
+                except (ValidationError, OSError, ValueError, GraphAPIError) as exc:
+                    _friendly_error(request, exc, "Không thể tải báo cáo lên kho tài liệu.")
         elif action == "add_comment" and employee:
             text = request.POST.get("comment_text", "").strip()
             if text:

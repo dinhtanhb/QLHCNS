@@ -158,3 +158,8 @@ class ConfiguredStorage(Storage):
 
     def get_modified_time(self, name):
         return self.backend.get_modified_time(name)
+
+
+# Keep this storage import stable for Django migrations. The backend remains
+# selected dynamically (local media or SharePoint) when a file is accessed.
+activity_reports_storage = get_storage("activity_reports")
