@@ -5,7 +5,7 @@ from apps.activity.views import (
     activity_calendar, activity_create, activity_dashboard, activity_proposal,
     activity_proposal_decide, activity_update,
 )
-from apps.activity.views import activity_proposal_file
+from apps.activity.views import activity_proposal_approval_list, activity_proposal_file
 
 app_name = "portal"
 
@@ -29,6 +29,7 @@ urlpatterns = [
     path("project-activities/create/", activity_create, name="activity_create"),
     path("project-activities/<int:pk>/edit/", activity_update, name="activity_update"),
     path("project-activities/<int:activity_id>/proposal/", activity_proposal, name="activity_proposal"),
+    path("project-activities/proposals/pending/", activity_proposal_approval_list, name="activity_proposal_approval_list"),
     path("project-activities/proposals/<int:package_id>/decision/", activity_proposal_decide, name="activity_proposal_decide"),
     path("project-activities/proposals/<int:package_id>/files/<str:field_name>/", activity_proposal_file, name="activity_proposal_file"),
     path("kpi/", views.kpi_my_list, name="kpi_my_list"),

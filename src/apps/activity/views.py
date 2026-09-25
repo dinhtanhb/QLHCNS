@@ -22,6 +22,7 @@ from apps.activity.forms import (
 from apps.activity.permissions import can_manage_activities, visible_activities_for
 from apps.activity.services import build_activity_proposal_email_draft, find_schedule_conflicts
 from apps.hrm.models import Employee
+from apps.notification.services import notify
 from apps.security.permissions import get_role_code, has_permission
 from apps.task.models import Task
 
@@ -297,6 +298,13 @@ def activity_proposal(request, activity_id):
                 "status", "approver", "sent_to", "submitted_by", "submitted_at",
                 "modified_by", "modified_date",
             ))
+            notify(
+                getattr(approver, "employee", None), "ActivityProposalSubmitted",
+                "Đề xuất hoạt động cần phê duyệt",
+                f"{activity.activity_code} — {activity.activity_name} đã được gửi để bạn xem xét.",
+                link=reverse("portal:activity_proposal", args=(activity.pk,)),
+                created_by=request.user,
+            )
             messages.success(
                 request,
                 "IHRMS đã ghi nhận xác nhận của bạn rằng email đã được gửi từ Outlook.",
@@ -365,10 +373,33 @@ def activity_proposal_decide(request, package_id):
         package.decision_at = timezone.now()
         package.modified_by = request.user
         package.save(update_fields=("status", "decision_comment", "decision_by", "decision_at", "modified_by", "modified_date"))
+        submitter_employee = getattr(package.submitted_by, "employee", None)
+        if submitter_employee:
+            is_changes_requested = package.status == "ChangesRequested"
+            notify(
+                submitter_employee,
+                "ActivityProposalChangesRequested" if is_changes_requested else "ActivityProposalApproved",
+                "Đề xuất hoạt động cần chỉnh sửa" if is_changes_requested else "Đề xuất hoạt động đã được duyệt",
+                f"{activity.activity_code} — {activity.activity_name}: {package.decision_comment or ('Vui lòng cập nhật hồ sơ.' if is_changes_requested else 'Hồ sơ đã được phê duyệt.')}",
+                link=reverse("portal:activity_proposal", args=(activity.pk,)),
+                created_by=request.user,
+            )
         messages.success(request, "Đã ghi nhận quyết định hồ sơ.")
     else:
         messages.error(request, "Thông tin quyết định chưa hợp lệ. Vui lòng kiểm tra lại.")
     return redirect("portal:activity_proposal", activity_id=activity.pk)
+
+
+@login_required
+def activity_proposal_approval_list(request):
+    if not has_permission(request.user, "approve_activity_proposals"):
+        raise PermissionDenied
+    packages = (
+        ActivityProposal.objects.filter(approver=request.user, status="Submitted")
+        .select_related("activity", "activity__project", "activity__lead_cbda", "activity__coordinator", "submitted_by")
+        .order_by("submitted_at", "pk")
+    )
+    return render(request, "activity/proposal_approval_list.html", {"packages": packages})
 
 
 @login_required

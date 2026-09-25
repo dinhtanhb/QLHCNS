@@ -127,7 +127,7 @@
             </div>
 
             <!-- DUYỆT & XỬ LÝ -->
-            {% if can_approve or can_approve_timesheet or can_manage_calendar or can_approve_document %}
+            {% if can_approve or can_approve_timesheet or can_manage_calendar or can_approve_document or can_approve_activity_proposals %}
             <div class="relative">
                 <button type="button" onclick="toggleMenu('menu-duyet')" class="px-4 py-3 flex items-center gap-1 text-gray-600 hover:text-blue-700">
                     Duyệt & Xử lý <span class="text-xs">▾</span>
@@ -136,6 +136,7 @@
                     {% if can_approve %}<a href="{% url 'portal:leave_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt nghỉ phép</a>{% endif %}
                     {% if can_approve_timesheet %}<a href="{% url 'portal:timesheet_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt chấm công</a>{% endif %}
                     {% if can_approve_document %}<a href="{% url 'portal:document_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt tài liệu</a>{% endif %}
+                    {% if can_approve_activity_proposals %}<a href="{% url 'portal:activity_proposal_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt đề xuất hoạt động{% if pending_activity_proposal_count %} <span class="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{{ pending_activity_proposal_count }}</span>{% endif %}</a>{% endif %}
                     {% if can_manage_calendar %}<a href="{% url 'portal:holiday_list' %}" class="block px-4 py-2 hover:bg-gray-50">Ngày lễ</a>{% endif %}
                 </div>
             </div>

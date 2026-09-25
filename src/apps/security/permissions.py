@@ -44,6 +44,7 @@ PERMISSION_MATRIX = {
         SUPER_ADMIN, DIRECTOR, PROJECT_MANAGER, PROJECT_COORDINATOR,
     ),
     "manage_project_activities": (SUPER_ADMIN, PROJECT_MANAGER, PROJECT_COORDINATOR),
+    "approve_activity_proposals": (DIRECTOR,),
     # KPI
     "score_kpi": (HR_MANAGER, DEPT_MANAGER),
     # Tài liệu & công văn

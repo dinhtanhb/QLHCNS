@@ -325,8 +325,17 @@ class ActivityProposalWorkflowTests(ActivityTestDataMixin, TestCase):
         self.assertEqual(package.status, "Submitted")
         self.assertEqual(package.approver, self.director)
         self.assertEqual(package.sent_to, self.director_employee.company_email)
+        director_notice = Notification.objects.get(
+            employee=self.director_employee, notification_type="ActivityProposalSubmitted"
+        )
+        self.assertIn("ACT-PROPOSAL-1", director_notice.message)
+        self.assertEqual(director_notice.link, reverse("portal:activity_proposal", args=(self.activity.pk,)))
 
         self.client.force_login(self.director)
+        inbox = self.client.get(reverse("portal:activity_proposal_approval_list"))
+        self.assertEqual(inbox.status_code, 200)
+        self.assertContains(inbox, "ACT-PROPOSAL-1")
+        self.assertContains(inbox, "Xem và xử lý")
         response = self.client.post(
             reverse("portal:activity_proposal_decide", args=(package.pk,)),
             {"decision": "ChangesRequested", "comment": "Vui lòng cập nhật mục tiêu."},
@@ -335,6 +344,16 @@ class ActivityProposalWorkflowTests(ActivityTestDataMixin, TestCase):
         package.refresh_from_db()
         self.assertEqual(package.status, "ChangesRequested")
         self.assertEqual(package.decision_by, self.director)
+        requester_notice = Notification.objects.get(
+            employee=self.coordinator, notification_type="ActivityProposalChangesRequested"
+        )
+        self.assertIn("Vui lòng cập nhật mục tiêu.", requester_notice.message)
+        self.assertEqual(requester_notice.link, reverse("portal:activity_proposal", args=(self.activity.pk,)))
+
+    def test_only_director_can_open_proposal_approval_inbox(self):
+        self.client.force_login(self.cbda_user)
+        response = self.client.get(reverse("portal:activity_proposal_approval_list"))
+        self.assertEqual(response.status_code, 403)
 
 class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
     def setUp(self):
