@@ -2,6 +2,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from apps.common.models import BaseAuditModel
+from apps.common.uploads import upload_to_activity_proposals, validate_upload
+from apps.m365.storage import get_storage
 
 
 class Activity(BaseAuditModel):
@@ -81,3 +83,74 @@ class Activity(BaseAuditModel):
             raise ValidationError({
                 "coordinator": "Chọn điều phối viên hoặc liên kết công văn có người ký để ghi nhận người giao Task."
             })
+
+
+class ActivityProposal(BaseAuditModel):
+    """Versioned proposal/budget package and project-director decision record."""
+
+    STATUS_CHOICES = [
+        ("Draft", "Bản nháp"),
+        ("Submitted", "Đã gửi xin phê duyệt"),
+        ("Approved", "Đã phê duyệt"),
+        ("ChangesRequested", "Yêu cầu chỉnh sửa"),
+    ]
+
+    activity = models.ForeignKey(
+        Activity, on_delete=models.CASCADE, related_name="proposal_packages",
+        db_column="ActivityID", verbose_name="Hoạt động",
+    )
+    version = models.PositiveSmallIntegerField("Phiên bản", default=1, db_column="Version")
+    status = models.CharField(
+        "Trạng thái hồ sơ", max_length=20, choices=STATUS_CHOICES, default="Draft", db_column="Status"
+    )
+    proposal_excel = models.FileField(
+        "Đề xuất hoạt động (Excel)", upload_to=upload_to_activity_proposals,
+        storage=get_storage("activity_proposals"), validators=[validate_upload],
+        null=True, blank=True, db_column="ProposalExcel",
+    )
+    proposal_pdf = models.FileField(
+        "Đề xuất hoạt động (PDF)", upload_to=upload_to_activity_proposals,
+        storage=get_storage("activity_proposals"), validators=[validate_upload],
+        null=True, blank=True, db_column="ProposalPdf",
+    )
+    budget_excel = models.FileField(
+        "Dự trù kinh phí (Excel)", upload_to=upload_to_activity_proposals,
+        storage=get_storage("activity_proposals"), validators=[validate_upload],
+        null=True, blank=True, db_column="BudgetExcel",
+    )
+    budget_pdf = models.FileField(
+        "Dự trù kinh phí (PDF)", upload_to=upload_to_activity_proposals,
+        storage=get_storage("activity_proposals"), validators=[validate_upload],
+        null=True, blank=True, db_column="BudgetPdf",
+    )
+    approver = models.ForeignKey(
+        "security.User", null=True, blank=True, on_delete=models.PROTECT,
+        related_name="activity_proposals_to_approve", db_column="ApproverID",
+    )
+    sent_to = models.EmailField("Email người nhận", max_length=254, blank=True, db_column="SentTo")
+    submitted_by = models.ForeignKey(
+        "security.User", null=True, blank=True, on_delete=models.PROTECT,
+        related_name="activity_proposals_submitted", db_column="SubmittedByID",
+    )
+    submitted_at = models.DateTimeField(null=True, blank=True, db_column="SubmittedAt")
+    decision_by = models.ForeignKey(
+        "security.User", null=True, blank=True, on_delete=models.PROTECT,
+        related_name="activity_proposal_decisions", db_column="DecisionByID",
+    )
+    decision_at = models.DateTimeField(null=True, blank=True, db_column="DecisionAt")
+    decision_comment = models.TextField("Ý kiến phê duyệt / yêu cầu chỉnh sửa", blank=True, db_column="DecisionComment")
+
+    class Meta:
+        db_table = "tblActivityProposal"
+        verbose_name = "Hồ sơ đề xuất hoạt động"
+        verbose_name_plural = "Hồ sơ đề xuất hoạt động"
+        ordering = ["activity_id", "-version"]
+        constraints = [
+            models.UniqueConstraint(fields=("activity", "version"), name="activity_proposal_version_uniq"),
+        ]
+
+    def __str__(self):
+        return f"{self.activity.activity_code} - hồ sơ v{self.version}"
+
+    def has_required_files(self):
+        return all((self.proposal_excel, self.proposal_pdf, self.budget_excel, self.budget_pdf))

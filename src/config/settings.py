@@ -256,6 +256,7 @@ M365_FOLDER_MAP = {
     "activity_reports": os.getenv(
         "M365_FOLDER_ACTIVITY_REPORTS", os.getenv("M365_LIBRARY_ACTIVITY_REPORTS", "BaoCaoHoatDong")
     ),
+    "activity_proposals": os.getenv("M365_FOLDER_ACTIVITY_PROPOSALS", "DeXuatHoatDong"),
 }
 M365_UPLOAD_PREFIX_MAP = {
     "documents": "documents",
@@ -266,7 +267,9 @@ M365_UPLOAD_PREFIX_MAP = {
     "recruitment_cv": "candidates/cv",
     "assets": "company-media",
     "activity_reports": "activity-reports",
+    "activity_proposals": "activity-proposals",
 }
+M365_MAIL_SENDER = os.getenv("M365_MAIL_SENDER", "").strip()
 
 # ==========================================
 # CẤU HÌNH GIAO DIỆN QUẢN TRỊ ADMINLTE 3 (JAZZMIN)

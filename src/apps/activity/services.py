@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from pathlib import PurePosixPath
 
 from django.conf import settings
 from django.db import transaction
@@ -217,3 +218,51 @@ def send_activity_report_reminders(today=None):
         )
         sent += 1
     return sent
+
+
+def _user_email(user):
+    employee = getattr(user, "employee", None)
+    return (getattr(employee, "company_email", "") or getattr(user, "email", "") or "").strip()
+
+
+def send_activity_proposal_for_approval(package, approver, sender, approval_url=""):
+    """Email the paired PDF files; report success only after Graph accepts the request."""
+    from apps.m365.graph_client import GraphNotConfigured, get_graph_client
+
+    mailbox = getattr(settings, "M365_MAIL_SENDER", "").strip()
+    recipient = _user_email(approver)
+    if not mailbox:
+        raise GraphNotConfigured("Thiếu M365_MAIL_SENDER trong .env; chưa gửi email.")
+    if not recipient:
+        raise ValueError("Tài khoản Giám đốc chưa có email công ty để nhận hồ sơ.")
+    if not package.has_required_files():
+        raise ValueError("Cần tải đủ 2 tệp Excel và 2 tệp PDF trước khi gửi.")
+
+    attachments = []
+    total_bytes = 0
+    for file_field in (package.proposal_pdf, package.budget_pdf):
+        with file_field.open("rb") as uploaded:
+            content = uploaded.read()
+        total_bytes += len(content)
+        attachments.append({
+            "name": PurePosixPath(file_field.name).name,
+            "content_type": "application/pdf",
+            "content": content,
+        })
+    # Graph's simple JSON attachment endpoint is intended for small attachments.
+    if total_bytes > 2_500_000:
+        raise ValueError("Tổng dung lượng hai PDF vượt 2,5 MB; hãy nén PDF trước khi gửi.")
+
+    activity = package.activity
+    subject = f"Xin phê duyệt đề xuất hoạt động: {activity.activity_code} - {activity.activity_name}"
+    body = (
+        f"Kính gửi Giám đốc dự án,\n\n"
+        f"Điều phối viên {sender.get_full_name() or sender.username} gửi hồ sơ đề xuất hoạt động "
+        f"{activity.activity_code} - {activity.activity_name}, dự án {activity.project.project_name}, "
+        f"phiên bản {package.version}.\n"
+        "Hồ sơ gồm Đề xuất hoạt động và Dự trù kinh phí (PDF); các tệp Excel gốc được lưu trong IHRMS/SharePoint.\n"
+        f"Mở hồ sơ và ghi nhận quyết định tại: {approval_url}\n\n"
+        "Vui lòng phản hồi quyết định trên IHRMS."
+    )
+    get_graph_client().send_mail(mailbox, recipient, subject, body, attachments)
+    return recipient

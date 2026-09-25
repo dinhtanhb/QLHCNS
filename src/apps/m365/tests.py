@@ -63,3 +63,20 @@ class GraphClientFolderTests(SimpleTestCase):
         self.assertTrue(calls[0][1].endswith("/root/children"))
         self.assertTrue(calls[1][1].endswith("/root:/CongVan:/children"))
         self.assertEqual(calls[2][2]["json"]["name"], "2026")
+
+    def test_send_mail_uses_graph_mailbox_endpoint_and_pdf_attachments(self):
+        client = GraphClient()
+        calls = []
+        client._request = lambda method, url, **kwargs: calls.append((method, url, kwargs))
+
+        client.send_mail(
+            "ihrms@example.org", "director@example.org", "Xin duyệt", "Nội dung",
+            [{"name": "proposal.pdf", "content_type": "application/pdf", "content": b"PDF"}],
+        )
+
+        method, url, kwargs = calls[0]
+        self.assertEqual(method, "POST")
+        self.assertTrue(url.endswith("/users/ihrms@example.org/sendMail"))
+        attachment = kwargs["json"]["message"]["attachments"][0]
+        self.assertEqual(attachment["name"], "proposal.pdf")
+        self.assertEqual(attachment["contentBytes"], "UERG")

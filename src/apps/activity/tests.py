@@ -6,12 +6,13 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from apps.activity.models import Activity
+from apps.activity.models import Activity, ActivityProposal
 from apps.activity.activity_codes import ACTIVITY_CODE_NAMES
 from apps.activity.services import (
     add_company_workdays,
     find_schedule_conflicts,
     send_activity_report_reminders,
+    send_activity_proposal_for_approval,
 )
 from apps.attendance.models import Holiday
 from apps.hrm.models import Employee
@@ -21,6 +22,7 @@ from apps.organization.models import Department, Organization, Position
 from apps.project.models import Project
 from apps.security.models import Role, User
 from apps.task.models import Task
+from unittest.mock import patch
 
 
 class ActivityTestDataMixin:
@@ -104,6 +106,7 @@ class ActivityWorkflowTests(ActivityTestDataMixin, TestCase):
         self.assertEqual(task.status, "Todo")
         self.assertEqual(Notification.objects.filter(employee=self.cbda).count(), 1)
 
+
         activity.purpose = "Cập nhật thông tin"
         activity.save()
         self.assertEqual(Task.objects.filter(activity=activity).count(), 1)
@@ -162,6 +165,125 @@ class ActivityWorkflowTests(ActivityTestDataMixin, TestCase):
             1,
         )
 
+
+
+
+class ActivityProposalWorkflowTests(ActivityTestDataMixin, TestCase):
+    def setUp(self):
+        super().setUp()
+        self.media = tempfile.TemporaryDirectory()
+        self.addCleanup(self.media.cleanup)
+        self.storage_settings = override_settings(
+            M365_STORAGE_ENABLED=False, MEDIA_ROOT=self.media.name,
+            M365_FOLDER_MAP={"activity_proposals": ""}, M365_UPLOAD_PREFIX_MAP={},
+        )
+        self.storage_settings.enable()
+        self.addCleanup(self.storage_settings.disable)
+        director_role, _ = Role.objects.get_or_create(
+            role_code="DIRECTOR", defaults={"role_name": "Giám đốc"}
+        )
+        coordinator_role, _ = Role.objects.get_or_create(
+            role_code="PROJECT_COORDINATOR", defaults={"role_name": "Điều phối viên"}
+        )
+        self.director_employee = self.make_employee("DIRECTOR")
+        self.director = User.objects.create_user(
+            username="activity-director", email=self.director_employee.company_email,
+            role=director_role, employee=self.director_employee,
+        )
+        self.coordinator_user = User.objects.create_user(
+            username="activity-coordinator", email=self.coordinator.company_email,
+            role=coordinator_role, employee=self.coordinator,
+        )
+        cbda_role, _ = Role.objects.get_or_create(
+            role_code="CBDA", defaults={"role_name": "Cán bộ dự án"}
+        )
+        self.cbda_user = User.objects.create_user(
+            username="activity-cbda", email=self.cbda.company_email,
+            role=cbda_role, employee=self.cbda,
+        )
+        self.activity = self.make_activity("ACT-PROPOSAL-1")
+
+    def make_package(self):
+        return ActivityProposal.objects.create(
+            activity=self.activity,
+            proposal_excel=SimpleUploadedFile("proposal.xlsx", b"XLSX"),
+            proposal_pdf=SimpleUploadedFile("proposal.pdf", b"PROPOSAL PDF"),
+            budget_excel=SimpleUploadedFile("budget.xlsx", b"XLSX"),
+            budget_pdf=SimpleUploadedFile("budget.pdf", b"BUDGET PDF"),
+        )
+
+    def test_package_requires_all_four_template_exports_before_submission(self):
+        package = ActivityProposal.objects.create(activity=self.activity)
+        self.assertFalse(package.has_required_files())
+        package.proposal_excel = SimpleUploadedFile("proposal.xlsx", b"XLSX")
+        package.proposal_pdf = SimpleUploadedFile("proposal.pdf", b"PDF")
+        package.budget_excel = SimpleUploadedFile("budget.xlsx", b"XLSX")
+        package.budget_pdf = SimpleUploadedFile("budget.pdf", b"PDF")
+        package.save()
+        self.assertTrue(package.has_required_files())
+
+    @patch("apps.m365.graph_client.get_graph_client")
+    @override_settings(M365_MAIL_SENDER="ihrms@example.test")
+    def test_approval_email_attaches_the_two_pdf_files(self, get_client):
+        package = self.make_package()
+        recipient = send_activity_proposal_for_approval(package, self.director, self.coordinator_user)
+
+        self.assertEqual(recipient, self.director_employee.company_email)
+        get_client.return_value.send_mail.assert_called_once()
+        args = get_client.return_value.send_mail.call_args.args
+        self.assertEqual(args[0:2], ("ihrms@example.test", self.director_employee.company_email))
+        self.assertEqual([item["name"].split("-")[0] for item in args[4]], ["proposal", "budget"])
+        self.assertTrue(all(item["content_type"] == "application/pdf" for item in args[4]))
+
+    @patch("apps.m365.graph_client.get_graph_client")
+    @override_settings(M365_MAIL_SENDER="")
+    def test_missing_mailbox_configuration_fails_without_sending(self, get_client):
+        package = self.make_package()
+        with self.assertRaisesMessage(Exception, "Thiếu M365_MAIL_SENDER"):
+            send_activity_proposal_for_approval(package, self.director, self.coordinator)
+        get_client.assert_not_called()
+
+    def test_cbda_can_upload_files_for_own_activity(self):
+        self.client.force_login(self.cbda_user)
+        response = self.client.post(
+            reverse("portal:activity_proposal", args=(self.activity.pk,)),
+            {
+                "action": "upload",
+                "proposal_excel": SimpleUploadedFile("proposal.xlsx", b"XLSX"),
+                "proposal_pdf": SimpleUploadedFile("proposal.pdf", b"PDF"),
+                "budget_excel": SimpleUploadedFile("budget.xlsx", b"XLSX"),
+                "budget_pdf": SimpleUploadedFile("budget.pdf", b"PDF"),
+            },
+        )
+        self.assertRedirects(response, reverse("portal:activity_proposal", args=(self.activity.pk,)))
+        package = ActivityProposal.objects.get(activity=self.activity)
+        self.assertTrue(package.has_required_files())
+        self.assertEqual(package.created_by, self.cbda_user)
+
+    @patch("apps.activity.views.send_activity_proposal_for_approval", return_value="director@example.test")
+    def test_coordinator_sends_to_selected_director_and_director_records_decision(self, send_mail):
+        package = self.make_package()
+        self.client.force_login(self.coordinator_user)
+        response = self.client.post(
+            reverse("portal:activity_proposal", args=(self.activity.pk,)),
+            {"action": "send", "approver": self.director.pk},
+        )
+        self.assertRedirects(response, reverse("portal:activity_proposal", args=(self.activity.pk,)))
+        send_mail.assert_called_once()
+        package.refresh_from_db()
+        self.assertEqual(package.status, "Submitted")
+        self.assertEqual(package.approver, self.director)
+        self.assertEqual(package.sent_to, "director@example.test")
+
+        self.client.force_login(self.director)
+        response = self.client.post(
+            reverse("portal:activity_proposal_decide", args=(package.pk,)),
+            {"decision": "ChangesRequested", "comment": "Vui lòng cập nhật mục tiêu."},
+        )
+        self.assertRedirects(response, reverse("portal:activity_proposal", args=(self.activity.pk,)))
+        package.refresh_from_db()
+        self.assertEqual(package.status, "ChangesRequested")
+        self.assertEqual(package.decision_by, self.director)
 
 class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
     def setUp(self):

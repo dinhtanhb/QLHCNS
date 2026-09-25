@@ -1,18 +1,26 @@
 from calendar import Calendar, monthrange
 from datetime import date, timedelta
+import mimetypes
 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import FileResponse
 from django.core.exceptions import PermissionDenied
 from django.db.models import Prefetch, Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 
-from apps.activity.models import Activity
+from apps.activity.models import Activity, ActivityProposal
 from apps.activity.activity_codes import ACTIVITY_CODE_NAMES
-from apps.activity.forms import ActivityForm
+from apps.activity.forms import (
+    ActivityForm,
+    ActivityProposalDecisionForm,
+    ActivityProposalSendForm,
+    ActivityProposalUploadForm,
+)
 from apps.activity.permissions import can_manage_activities, visible_activities_for
-from apps.activity.services import find_schedule_conflicts
+from apps.activity.services import find_schedule_conflicts, send_activity_proposal_for_approval
 from apps.hrm.models import Employee
 from apps.security.permissions import get_role_code, has_permission
 from apps.task.models import Task
@@ -198,3 +206,139 @@ def activity_update(request, pk):
         "page_title": "Cập nhật hoạt động dự án",
         "submit_label": "Lưu thay đổi",
     })
+
+
+def _can_coordinate_package(user, activity):
+    role = get_role_code(user)
+    if getattr(user, "is_superuser", False) or role in ("SUPER_ADMIN", "PROJECT_MANAGER"):
+        return True
+    return role == "PROJECT_COORDINATOR" and getattr(user, "employee_id", None) == activity.coordinator_id
+
+
+@login_required
+def activity_proposal(request, activity_id):
+    activity = get_object_or_404(visible_activities_for(request.user), pk=activity_id)
+    is_lead = get_role_code(request.user) == "CBDA" and getattr(request.user, "employee_id", None) == activity.lead_cbda_id
+    can_edit = is_lead or _can_coordinate_package(request.user, activity)
+    can_send = _can_coordinate_package(request.user, activity)
+    package = activity.proposal_packages.order_by("-version").first()
+    package_history = activity.proposal_packages.select_related("approver", "decision_by").order_by("-version")
+    upload_form = ActivityProposalUploadForm(instance=package) if package else ActivityProposalUploadForm()
+    send_form = ActivityProposalSendForm()
+    decision_form = ActivityProposalDecisionForm()
+
+    if request.method == "POST":
+        if not can_edit:
+            raise PermissionDenied
+        if package and package.status == "Submitted":
+            messages.error(request, "Hồ sơ đang chờ Giám đốc duyệt nên không thể thay đổi.")
+            return redirect("portal:activity_proposal", activity_id=activity.pk)
+        if request.POST.get("action") != "send":
+            if package and package.status in ("Approved", "ChangesRequested"):
+                previous = package
+                package = ActivityProposal(activity=activity, version=previous.version + 1)
+                for field_name in ("proposal_excel", "proposal_pdf", "budget_excel", "budget_pdf"):
+                    prior_file = getattr(previous, field_name)
+                    if prior_file:
+                        setattr(package, field_name, prior_file.name)
+                upload_form = ActivityProposalUploadForm(request.POST, request.FILES, instance=package)
+            elif package is None:
+                package = ActivityProposal(activity=activity, version=1)
+                upload_form = ActivityProposalUploadForm(request.POST, request.FILES, instance=package)
+
+        if request.POST.get("action") == "send":
+            if not can_send:
+                raise PermissionDenied
+            send_form = ActivityProposalSendForm(request.POST)
+            if not package or not package.pk or not package.has_required_files():
+                messages.error(request, "Cần lưu đủ 2 tệp Excel và 2 tệp PDF trước khi gửi.")
+            elif send_form.is_valid():
+                approver = send_form.cleaned_data["approver"]
+                try:
+                    approval_url = request.build_absolute_uri(
+                        reverse("portal:activity_proposal", args=(activity.pk,))
+                    )
+                    recipient = send_activity_proposal_for_approval(package, approver, request.user, approval_url)
+                except Exception as exc:
+                    messages.error(request, f"Email chưa được gửi: {exc}")
+                else:
+                    package.status = "Submitted"
+                    package.approver = approver
+                    package.sent_to = recipient
+                    package.submitted_by = request.user
+                    package.submitted_at = timezone.now()
+                    package.modified_by = request.user
+                    package.save(update_fields=("status", "approver", "sent_to", "submitted_by", "submitted_at", "modified_by", "modified_date"))
+                    messages.success(request, "Microsoft 365 đã chấp nhận email gửi đi; hồ sơ đang chờ phê duyệt.")
+                    return redirect("portal:activity_proposal", activity_id=activity.pk)
+        else:
+            upload_form = ActivityProposalUploadForm(request.POST, request.FILES, instance=package)
+            if upload_form.is_valid():
+                package = upload_form.save(commit=False)
+                package.activity = activity
+                package.created_by = package.created_by or request.user
+                package.modified_by = request.user
+                package.save()
+                messages.success(request, f"Đã lưu hồ sơ phiên bản {package.version}.")
+                return redirect("portal:activity_proposal", activity_id=activity.pk)
+
+    can_decide = bool(
+        package and package.status == "Submitted"
+        and get_role_code(request.user) == "DIRECTOR"
+        and package.approver_id == request.user.pk
+    )
+    return render(request, "activity/proposal_detail.html", {
+        "activity": activity,
+        "package": package,
+        "package_history": package_history,
+        "upload_form": upload_form,
+        "send_form": send_form,
+        "decision_form": decision_form,
+        "can_edit": can_edit and (not package or package.status in ("Draft", "ChangesRequested", "Approved")),
+        "can_send": can_send,
+        "can_decide": can_decide,
+    })
+
+
+@login_required
+def activity_proposal_decide(request, package_id):
+    package = get_object_or_404(ActivityProposal.objects.select_related("activity"), pk=package_id)
+    activity = get_object_or_404(visible_activities_for(request.user), pk=package.activity_id)
+    if (
+        request.method != "POST"
+        or get_role_code(request.user) != "DIRECTOR"
+        or package.approver_id != request.user.pk
+        or package.status != "Submitted"
+    ):
+        raise PermissionDenied
+    form = ActivityProposalDecisionForm(request.POST)
+    if form.is_valid():
+        package.status = form.cleaned_data["decision"]
+        package.decision_comment = form.cleaned_data["comment"].strip()
+        package.decision_by = request.user
+        package.decision_at = timezone.now()
+        package.modified_by = request.user
+        package.save(update_fields=("status", "decision_comment", "decision_by", "decision_at", "modified_by", "modified_date"))
+        messages.success(request, "Đã ghi nhận quyết định hồ sơ.")
+    else:
+        messages.error(request, "Thông tin quyết định chưa hợp lệ. Vui lòng kiểm tra lại.")
+    return redirect("portal:activity_proposal", activity_id=activity.pk)
+
+
+@login_required
+def activity_proposal_file(request, package_id, field_name):
+    package = get_object_or_404(ActivityProposal.objects.select_related("activity"), pk=package_id)
+    get_object_or_404(visible_activities_for(request.user), pk=package.activity_id)
+    if field_name not in {"proposal_excel", "proposal_pdf", "budget_excel", "budget_pdf"}:
+        raise PermissionDenied
+    stored_file = getattr(package, field_name)
+    if not stored_file:
+        raise PermissionDenied
+    content_type, _ = mimetypes.guess_type(stored_file.name)
+    filename = stored_file.name.rsplit("/", 1)[-1]
+    return FileResponse(
+        stored_file.open("rb"),
+        as_attachment=not field_name.endswith("_pdf"),
+        filename=filename,
+        content_type=content_type or "application/octet-stream",
+    )

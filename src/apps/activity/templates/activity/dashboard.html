@@ -64,6 +64,7 @@
                             <p class="mt-0.5 text-xs text-gray-500">{{ row.activity.activity_code }} · {{ row.activity.project.project_name }}</p>
                             {% if row.activity.outgoing_document %}<p class="mt-1 text-xs text-gray-500">Công văn: {{ row.activity.outgoing_document.dispatch_no }}</p>{% endif %}
                             {% if can_manage_activities %}<a href="{% url 'portal:activity_update' row.activity.pk %}" class="mt-2 inline-block text-xs font-semibold text-blue-700 hover:underline">Chỉnh sửa</a>{% endif %}
+                            <a href="{% url 'portal:activity_proposal' row.activity.pk %}" class="mt-2 ml-2 inline-block text-xs font-semibold text-indigo-700 hover:underline">Đề xuất &amp; dự trù</a>
                         </td>
                         <td class="px-4 py-3">{{ row.activity.lead_cbda.full_name }}</td>
                         <td class="whitespace-nowrap px-4 py-3">{{ row.activity.start_date|date:"d/m/Y" }}–{{ row.activity.end_date|date:"d/m/Y" }}</td>

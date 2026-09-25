@@ -1,7 +1,11 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from . import views
-from apps.activity.views import activity_calendar, activity_create, activity_dashboard, activity_update
+from apps.activity.views import (
+    activity_calendar, activity_create, activity_dashboard, activity_proposal,
+    activity_proposal_decide, activity_update,
+)
+from apps.activity.views import activity_proposal_file
 
 app_name = "portal"
 
@@ -24,6 +28,9 @@ urlpatterns = [
     path("project-activities/calendar/", activity_calendar, name="activity_calendar"),
     path("project-activities/create/", activity_create, name="activity_create"),
     path("project-activities/<int:pk>/edit/", activity_update, name="activity_update"),
+    path("project-activities/<int:activity_id>/proposal/", activity_proposal, name="activity_proposal"),
+    path("project-activities/proposals/<int:package_id>/decision/", activity_proposal_decide, name="activity_proposal_decide"),
+    path("project-activities/proposals/<int:package_id>/files/<str:field_name>/", activity_proposal_file, name="activity_proposal_file"),
     path("kpi/", views.kpi_my_list, name="kpi_my_list"),
     path("kpi/score/", views.kpi_score_list, name="kpi_score_list"),
     path("kpi/score/<int:pk>/update/", views.kpi_score_update, name="kpi_score_update"),

@@ -1,10 +1,64 @@
 from django import forms
+from pathlib import Path
 
-from apps.activity.models import Activity
+from apps.activity.models import Activity, ActivityProposal
 from apps.activity.activity_codes import ACTIVITY_CODE_NAMES
 from apps.document.models import OfficialDispatch
 from apps.hrm.models import Employee
 from apps.project.models import Project
+from apps.security.models import User
+
+
+class ActivityProposalUploadForm(forms.ModelForm):
+    class Meta:
+        model = ActivityProposal
+        fields = ("proposal_excel", "proposal_pdf", "budget_excel", "budget_pdf")
+        widgets = {
+            "proposal_excel": forms.ClearableFileInput(attrs={"class": "block w-full rounded-lg border border-gray-400 bg-white px-3 py-2"}),
+            "proposal_pdf": forms.ClearableFileInput(attrs={"class": "block w-full rounded-lg border border-gray-400 bg-white px-3 py-2"}),
+            "budget_excel": forms.ClearableFileInput(attrs={"class": "block w-full rounded-lg border border-gray-400 bg-white px-3 py-2"}),
+            "budget_pdf": forms.ClearableFileInput(attrs={"class": "block w-full rounded-lg border border-gray-400 bg-white px-3 py-2"}),
+        }
+
+    def clean(self):
+        cleaned = super().clean()
+        expected = {
+            "proposal_excel": {".xlsx", ".xls"},
+            "budget_excel": {".xlsx", ".xls"},
+            "proposal_pdf": {".pdf"},
+            "budget_pdf": {".pdf"},
+        }
+        for field, extensions in expected.items():
+            uploaded = cleaned.get(field)
+            if uploaded and Path(uploaded.name).suffix.lower() not in extensions:
+                self.add_error(field, "Tệp không đúng định dạng yêu cầu: " + ", ".join(sorted(extensions)))
+        return cleaned
+
+
+class ActivityProposalSendForm(forms.Form):
+    approver = forms.ModelChoiceField(
+        label="Giám đốc dự án nhận duyệt", queryset=User.objects.none(),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["approver"].queryset = User.objects.filter(
+            is_active=True, role__role_code="DIRECTOR",
+        ).select_related("employee", "role").order_by("last_name", "first_name", "username")
+        self.fields["approver"].widget.attrs["class"] = "mt-1 block w-full rounded-lg border border-gray-400 bg-white px-3 py-2"
+
+
+class ActivityProposalDecisionForm(forms.Form):
+    decision = forms.ChoiceField(
+        label="Quyết định", choices=(("Approved", "Phê duyệt"), ("ChangesRequested", "Yêu cầu chỉnh sửa")),
+    )
+    comment = forms.CharField(label="Ý kiến", required=False, widget=forms.Textarea(attrs={"rows": 4}))
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get("decision") == "ChangesRequested" and not cleaned.get("comment", "").strip():
+            self.add_error("comment", "Vui lòng nêu nội dung cần chỉnh sửa.")
+        return cleaned
 
 
 class ActivityForm(forms.ModelForm):

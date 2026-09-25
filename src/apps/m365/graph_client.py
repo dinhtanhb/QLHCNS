@@ -14,6 +14,7 @@ docs/16_M365_Integration_Setup.md.
 from __future__ import annotations
 
 import io
+import base64
 import posixpath
 import threading
 import time
@@ -122,6 +123,31 @@ class GraphClient:
                 f"Graph API {method} {url} lỗi {response.status_code}: {response.text[:500]}"
             )
         return response
+
+    def send_mail(self, sender: str, recipient: str, subject: str, body: str, attachments=None):
+        """Send one message through Graph using an application Mail.Send grant."""
+        if not sender or not recipient:
+            raise GraphNotConfigured("Cần cấu hình hộp thư gửi và địa chỉ người nhận email.")
+        file_attachments = []
+        for item in attachments or []:
+            file_attachments.append({
+                "@odata.type": "#microsoft.graph.fileAttachment",
+                "name": item["name"],
+                "contentType": item.get("content_type", "application/pdf"),
+                "contentBytes": base64.b64encode(item["content"]).decode("ascii"),
+            })
+        message = {
+            "subject": subject,
+            "body": {"contentType": "Text", "content": body},
+            "toRecipients": [{"emailAddress": {"address": recipient}}],
+        }
+        if file_attachments:
+            message["attachments"] = file_attachments
+        self._request(
+            "POST",
+            f"{GRAPH_BASE}/users/{requests.utils.quote(sender, safe='@.')}/sendMail",
+            json={"message": message, "saveToSentItems": True},
+        )
 
     # ------------------------------------------------------------------
     # Dò site_id / drive_id (cache lại vì hiếm khi đổi)
