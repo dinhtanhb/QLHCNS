@@ -4,6 +4,7 @@ from __future__ import annotations
 from datetime import timedelta
 from urllib.parse import quote, urlencode
 
+from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 

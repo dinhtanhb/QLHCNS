@@ -5,7 +5,7 @@
 Hệ thống **Quản lý Hành chính & Nhân sự** nội bộ, xây dựng trên Django 5.2.
 Gồm **Cổng thông tin nhân viên** (`/portal/`), **Trang quản trị** (`/admin/`) và các phân hệ theo quyền.
 
-Tài liệu nghiệp vụ cho người dùng: [Cẩm nang sử dụng](HUONG_DAN_SU_DUNG_IHRMS.md), [Giáo án tập huấn](TAP_HUAN_IHRMS.md), [Lộ trình Hoạt động dự án NGO](docs/NGO_Activity_Planning_MEL_Roadmap.md). Hướng dẫn kỹ thuật/vận hành nằm trong `docs/` và `.agents/skills/`.
+Tài liệu nghiệp vụ cho người dùng: [Cẩm nang sử dụng](HUONG_DAN_SU_DUNG_IHRMS.md), [Giáo án tập huấn](TAP_HUAN_IHRMS.md), [Lộ trình Hoạt động dự án NGO](docs/NGO_Activity_Planning_MEL_Roadmap.md). Kế hoạch các hạng mục HRMS tiếp theo nằm tại [docs/HRMS_Next_Features_Plan.md](docs/HRMS_Next_Features_Plan.md). Hướng dẫn kỹ thuật/vận hành nằm trong `docs/` và `.agents/skills/`.
 
 Phân hệ **Hoạt động dự án** có menu riêng ở cuối thanh điều hướng; gồm dashboard tiến độ, lịch, Task báo cáo, hồ sơ đề xuất/dự trù PDF, hàng chờ Giám đốc và thông báo trong IHRMS. Việc gửi xin duyệt được người dùng thực hiện trong Outlook; hiện chưa có sổ ngân sách/chứng từ/quyết toán trong ứng dụng.
 
