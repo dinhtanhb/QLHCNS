@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Cổng thông tin nhân viên{% endblock %} — IHRMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/ihrms.css' %}">
 </head>
 <body class="bg-gray-50 min-h-screen text-gray-800">
     <header class="bg-blue-700 text-white shadow">
@@ -117,6 +118,7 @@
                     <a href="{% url 'portal:leave_list' %}" class="block px-4 py-2 hover:bg-gray-50">Nghỉ phép</a>
                     <a href="{% url 'portal:task_list' %}" class="block px-4 py-2 hover:bg-gray-50">Công việc</a>
                     {% if can_view_activity_dashboard %}<a href="{% url 'portal:activity_dashboard' %}" class="block px-4 py-2 hover:bg-gray-50">Hoạt động dự án</a>{% endif %}
+                    {% if can_view_activity_dashboard %}<a href="{% url 'portal:activity_calendar' %}" class="block px-4 py-2 hover:bg-gray-50">Lịch hoạt động dự án</a>{% endif %}
                     <a href="{% url 'portal:kpi_my_list' %}" class="block px-4 py-2 hover:bg-gray-50">KPI</a>
                     <a href="{% url 'portal:document_list' %}" class="block px-4 py-2 hover:bg-gray-50">Tài liệu</a>
                     <a href="{% url 'portal:asset_list' %}" class="block px-4 py-2 hover:bg-gray-50">Tài sản</a>

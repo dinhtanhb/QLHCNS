@@ -7,6 +7,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from apps.activity.models import Activity
+from apps.activity.activity_codes import ACTIVITY_CODE_NAMES
 from apps.activity.services import (
     add_company_workdays,
     find_schedule_conflicts,
@@ -189,6 +190,36 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
         self.assertContains(response, self.own_activity.activity_code)
         self.assertNotContains(response, self.other_activity.activity_code)
 
+    def test_cbda_filter_limits_activity_dashboard_rows(self):
+        coordinator_role, _ = Role.objects.get_or_create(
+            role_code="PROJECT_COORDINATOR", defaults={"role_name": "Điều phối dự án"}
+        )
+        self.create_user("coordinator_filter", self.coordinator, coordinator_role)
+        self.client.login(username="coordinator_filter", password="test-password")
+
+        response = self.client.get(reverse("portal:activity_dashboard"), {
+            "month": "2026-10", "cbda": str(self.cbda.pk),
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.own_activity.activity_code)
+        self.assertNotContains(response, self.other_activity.activity_code)
+        self.assertEqual(response.context["selected_cbda"], str(self.cbda.pk))
+
+    def test_cbda_calendar_shows_assigned_activities_for_selected_month(self):
+        self.own_activity.outgoing_document = self.dispatch
+        self.own_activity.save()
+        self.create_user("cbda_calendar", self.cbda, self.cbda_role)
+        self.client.login(username="cbda_calendar", password="test-password")
+
+        response = self.client.get(reverse("portal:activity_calendar"), {"month": "2026-10"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Lịch hoạt động tháng 10/2026")
+        self.assertContains(response, self.own_activity.activity_code)
+        self.assertContains(response, "Hạn báo cáo")
+        self.assertNotContains(response, self.other_activity.activity_code)
+
     def test_director_shared_dashboard_includes_monthly_project_activity_metrics(self):
         today = date.today()
         self.own_activity.start_date = today
@@ -272,7 +303,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
         self.client.login(username="coordinator", password="test-password")
 
         response = self.client.post(reverse("portal:activity_create"), {
-            "activity_code": "ACT-FORM-001",
+            "activity_code": "46.9.1.1.2.1",
             "activity_name": "Tập huấn tại điểm A",
             "project": self.project.pk,
             "location": "Điểm A",
@@ -288,7 +319,8 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
         })
 
         self.assertRedirects(response, reverse("portal:activity_dashboard"))
-        activity = Activity.objects.get(activity_code="ACT-FORM-001")
+        activity = Activity.objects.get(activity_code="46.9.1.1.2.1")
+        self.assertEqual(activity.activity_name, ACTIVITY_CODE_NAMES[activity.activity_code])
         task = Task.objects.get(activity=activity)
         self.assertEqual(activity.outgoing_document, self.dispatch)
         self.assertEqual(task.assigned_to_employee, self.cbda)
@@ -302,7 +334,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
         self.client.login(username="coordinator_overlap", password="test-password")
 
         response = self.client.post(reverse("portal:activity_create"), {
-            "activity_code": "ACT-OVERLAP-FORM",
+            "activity_code": "46.9.1.1.2.2",
             "activity_name": "Hoạt động bị trùng lịch",
             "project": self.project.pk,
             "start_date": "2026-10-01",
@@ -313,7 +345,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
         }, follow=True)
 
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(Activity.objects.filter(activity_code="ACT-OVERLAP-FORM").exists())
+        self.assertTrue(Activity.objects.filter(activity_code="46.9.1.1.2.2").exists())
         self.assertContains(response, "Lịch CBDA bị trùng")
 
     def test_cbda_cannot_create_activity(self):

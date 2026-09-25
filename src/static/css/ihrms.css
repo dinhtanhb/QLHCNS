@@ -1,0 +1,43 @@
+/* Shared form controls: clear field edges and a consistent keyboard focus state. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]),
+select,
+textarea {
+    width: 100%;
+    min-height: 2.5rem;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    padding: 0.5rem 0.75rem;
+    color: #1f2937;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.06);
+}
+
+textarea {
+    min-height: 6rem;
+}
+
+input[type="file"] {
+    min-height: 2.5rem;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    padding: 0.4rem;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #2563eb !important;
+    outline: 2px solid transparent;
+    box-shadow: 0 0 0 3px rgb(37 99 235 / 0.18);
+}
+
+input[readonly] {
+    background-color: #f8fafc;
+    color: #475569;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    accent-color: #1d4ed8;
+}

@@ -12,10 +12,22 @@
         {% if can_manage_activities %}
             <a href="{% url 'portal:activity_create' %}" class="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800">+ Tạo hoạt động</a>
         {% endif %}
-        <form method="get" class="flex items-end gap-2">
-            <label class="text-sm text-gray-600">Chọn tháng
-                <input type="month" name="month" value="{{ month }}" class="mt-1 block rounded-md border-gray-300 text-sm shadow-sm">
+        <a href="{% url 'portal:activity_calendar' %}?month={{ month }}{% if selected_cbda %}&amp;cbda={{ selected_cbda }}{% endif %}"
+           class="rounded-md border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50">Xem lịch</a>
+        <form method="get" class="flex flex-wrap items-end gap-2">
+            <label class="text-sm text-gray-600">Tháng
+                <input type="month" name="month" value="{{ month }}" class="mt-1 block text-sm">
             </label>
+            {% if is_overview %}
+            <label class="text-sm text-gray-600">CBDA phụ trách
+                <select name="cbda" class="mt-1 block text-sm">
+                    <option value="">Tất cả CBDA</option>
+                    {% for cbda in cbda_choices %}
+                    <option value="{{ cbda.pk }}" {% if selected_cbda == cbda.pk|stringformat:'s' %}selected{% endif %}>{{ cbda.full_name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            {% endif %}
             <button class="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800">Xem</button>
         </form>
         </div>

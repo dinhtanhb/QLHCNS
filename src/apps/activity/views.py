@@ -1,5 +1,5 @@
-from calendar import monthrange
-from datetime import date
+from calendar import Calendar, monthrange
+from datetime import date, timedelta
 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -9,9 +9,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from apps.activity.models import Activity
+from apps.activity.activity_codes import ACTIVITY_CODE_NAMES
 from apps.activity.forms import ActivityForm
 from apps.activity.permissions import can_manage_activities, visible_activities_for
 from apps.activity.services import find_schedule_conflicts
+from apps.hrm.models import Employee
 from apps.security.permissions import get_role_code, has_permission
 from apps.task.models import Task
 
@@ -27,6 +29,31 @@ def _selected_month(value, today):
     return date(today.year, today.month, 1)
 
 
+def _monthly_activities(user, month_start, month_end):
+    task_prefetch = Prefetch(
+        "tasks",
+        queryset=Task.objects.order_by("created_date"),
+        to_attr="tracking_tasks",
+    )
+    return visible_activities_for(user).filter(
+        Q(start_date__lte=month_end, end_date__gte=month_start)
+        | Q(tasks__due_date__gte=month_start, tasks__due_date__lte=month_end)
+    ).exclude(status="Cancelled").select_related(
+        "project", "lead_cbda", "coordinator", "outgoing_document"
+    ).prefetch_related(task_prefetch).distinct()
+
+
+def _filter_monthly_activities(request, activities):
+    cbda_ids = list(activities.order_by().values_list("lead_cbda_id", flat=True).distinct())
+    cbda_choices = Employee.objects.filter(pk__in=cbda_ids).order_by("full_name")
+    selected_cbda = request.GET.get("cbda", "").strip()
+    if selected_cbda.isdigit() and int(selected_cbda) in cbda_ids:
+        activities = activities.filter(lead_cbda_id=int(selected_cbda))
+    else:
+        selected_cbda = ""
+    return activities, cbda_choices, selected_cbda
+
+
 @login_required
 def activity_dashboard(request):
     if not has_permission(request.user, "view_activity_dashboard"):
@@ -35,17 +62,9 @@ def activity_dashboard(request):
     today = timezone.localdate()
     month_start = _selected_month(request.GET.get("month"), today)
     month_end = date(month_start.year, month_start.month, monthrange(month_start.year, month_start.month)[1])
-    task_prefetch = Prefetch(
-        "tasks",
-        queryset=Task.objects.order_by("created_date"),
-        to_attr="tracking_tasks",
-    )
-    activities = visible_activities_for(request.user).filter(
-        Q(start_date__lte=month_end, end_date__gte=month_start)
-        | Q(tasks__due_date__gte=month_start, tasks__due_date__lte=month_end)
-    ).exclude(status="Cancelled").select_related(
-        "project", "lead_cbda", "coordinator", "outgoing_document"
-    ).prefetch_related(task_prefetch).distinct().order_by("start_date", "activity_code")
+    activities = _monthly_activities(request.user, month_start, month_end)
+    activities, cbda_choices, selected_cbda = _filter_monthly_activities(request, activities)
+    activities = activities.order_by("start_date", "activity_code")
 
     rows = []
     for activity in activities:
@@ -66,8 +85,52 @@ def activity_dashboard(request):
         "without_task_count": sum(row["task"] is None for row in rows),
         "is_overview": get_role_code(request.user) != "CBDA",
         "can_manage_activities": can_manage_activities(request.user),
+        "cbda_choices": cbda_choices,
+        "selected_cbda": selected_cbda,
     }
     return render(request, "activity/dashboard.html", context)
+
+
+@login_required
+def activity_calendar(request):
+    if not has_permission(request.user, "view_activity_dashboard"):
+        raise PermissionDenied
+
+    today = timezone.localdate()
+    month_start = _selected_month(request.GET.get("month"), today)
+    month_end = date(month_start.year, month_start.month, monthrange(month_start.year, month_start.month)[1])
+    activities, cbda_choices, selected_cbda = _filter_monthly_activities(
+        request, _monthly_activities(request.user, month_start, month_end)
+    )
+    activities = activities.order_by("start_date", "activity_code")
+
+    weeks = []
+    for week in Calendar(firstweekday=0).monthdatescalendar(month_start.year, month_start.month):
+        cells = []
+        for day in week:
+            cells.append({"date": day, "in_month": day.month == month_start.month, "items": []})
+        weeks.append(cells)
+    cells_by_date = {cell["date"]: cell for week in weeks for cell in week}
+
+    for activity in activities:
+        task = activity.tracking_tasks[0] if activity.tracking_tasks else None
+        current = max(activity.start_date, month_start)
+        final_day = min(activity.end_date, month_end)
+        while current <= final_day:
+            cells_by_date[current]["items"].append({"activity": activity})
+            current += timedelta(days=1)
+        if task and task.status != "Cancelled" and task.due_date in cells_by_date:
+            cells_by_date[task.due_date]["items"].append({"task": task, "activity": activity})
+
+    return render(request, "activity/calendar.html", {
+        "weeks": weeks,
+        "weekdays": ("Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"),
+        "month": month_start.strftime("%Y-%m"),
+        "month_label": month_start.strftime("%m/%Y"),
+        "cbda_choices": cbda_choices,
+        "selected_cbda": selected_cbda,
+        "is_overview": get_role_code(request.user) != "CBDA",
+    })
 
 
 def _warn_schedule_conflicts(request, activity):
@@ -105,6 +168,7 @@ def activity_create(request):
 
     return render(request, "activity/activity_form.html", {
         "form": form,
+        "activity_code_names": ACTIVITY_CODE_NAMES,
         "page_title": "Tạo hoạt động dự án",
         "submit_label": "Tạo hoạt động",
     })
@@ -129,6 +193,7 @@ def activity_update(request, pk):
 
     return render(request, "activity/activity_form.html", {
         "form": form,
+        "activity_code_names": ACTIVITY_CODE_NAMES,
         "activity": activity,
         "page_title": "Cập nhật hoạt động dự án",
         "submit_label": "Lưu thay đổi",

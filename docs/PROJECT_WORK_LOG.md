@@ -141,9 +141,9 @@ Kết quả gồm `page-1.png`, `page-2.png`, ... và PDF trong `D:\QLHCNS-docx-
 
 **Kiểm tra:** `D:\QLHCNS\venv\Scripts\python.exe src\manage.py check` đạt; `makemigrations --check --dry-run` báo `No changes detected`. Có cảnh báo dependency `RequestsDependencyWarning`, không làm thất bại kiểm tra. Nhật ký hiện có trong `Backups/backup-log.txt` ghi nhận full backup và transaction-log backup đã chạy thành công; Codex chỉ đọc log, không chạy backup trong đợt này.
 
-**Nhánh/commit/push:** đang chuẩn bị commit các thay đổi được rà soát trên `chore/django-5.2-upgrade`; chưa push.
+**Nhánh/commit/push:** nhánh `chore/django-5.2-upgrade` đã được push; commit `8605eb1`.
 
-**Còn mở:** sau khi push, tiếp tục bổ sung phần tổng quan Hoạt động dự án vào Dashboard chung theo quyền vai trò; Trưởng phòng chỉ thấy hoạt động thuộc phòng ban mình quản lý.
+**Đã hoàn tất:** phần Dashboard chung cho Hoạt động dự án được ghi ở mục nhật ký kế tiếp.
 
 
 ## 2026-09-24 — Đề xuất mở rộng IHRMS cho hoạt động dự án NGO/MEL
@@ -160,16 +160,30 @@ Kết quả gồm `page-1.png`, `page-2.png`, ... và PDF trong `D:\QLHCNS-docx-
 
 **Còn mở:** Chưa đủ điều kiện go-live/pilot với dữ liệu thật. Cần test SQL Server SIT, `check --deploy` trên cấu hình máy chủ, UAT có biên bản, xác nhận backup/restore và quyền dữ liệu. Với phân hệ NGO, Ban Giám đốc cần phê duyệt mở rộng Charter; Chương trình/MEL/Tài chính/IT chốt RACI, SLA, xung đột lịch, tiền tệ, chứng từ, dữ liệu người tham gia và database SIT trước khi có schema/migration. Chủ dự án làm theo mục “Việc chủ dự án cần điều phối ở Cổng 0” trong roadmap; không gửi dữ liệu thụ hưởng định danh qua chat.
 
-## 2026-09-25 ? T?ng quan Ho?t ??ng d? ?n tr?n Dashboard chung
+## 2026-09-25 — Tổng quan Hoạt động dự án trên Dashboard chung
 
-**M?c ti?u/ph?m vi:** hi?n th? ti?n ?? d? ?n trong Dashboard trang ch? d?nh cho Ban Gi?m ??c, Qu?n l? d? ?n v? Tr??ng ph?ng; gi? dashboard ho?t ??ng chuy?n bi?t hi?n t?i.
+**Mục tiêu/phạm vi:** hiển thị tiến độ dự án trong Dashboard trang chủ dành cho Ban Giám đốc, Quản lý dự án và Trưởng phòng; giữ dashboard hoạt động chuyên biệt hiện tại.
 
-**Sao l?u tr??c thay ??i:** t?o `D:\QLHCNS-Backup-before-shared-dashboard-implementation-20260925`; kh?ng sao ch?p `.env`, database, virtualenv, media, log ho?c th? m?c backup.
+**Sao lưu trước thay đổi:** tạo `D:\QLHCNS-Backup-before-shared-dashboard-implementation-20260925`; không sao chép `.env`, database, virtualenv, media, log hoặc thư mục backup.
 
-**?? l?m:** Dashboard chung c? s? ho?t ??ng trong th?ng, Task b?o c?o ho?n th?nh, Task qu? h?n, Task thi?u b?o c?o v? ho?t ??ng ch?a c? Task, k?m li?n k?t sang dashboard ho?t ??ng ??ng th?ng. B? sung quy?n xem dashboard ho?t ??ng cho `DEPT_MANAGER`; queryset c?a vai tr? n?y ch? g?m ho?t ??ng thu?c d? ?n c? ph?ng ban do nh?n vi?n ?? qu?n l?. Kh?ng thay ??i quy?n qu?n l?/t?o ho?t ??ng v? kh?ng s?a schema.
+**Đã làm:** Dashboard chung có số hoạt động trong tháng, Task báo cáo hoàn thành, Task quá hạn, Task thiếu báo cáo và hoạt động chưa có Task, kèm liên kết sang dashboard hoạt động đúng tháng. Bổ sung quyền xem dashboard hoạt động cho `DEPT_MANAGER`; queryset của vai trò này chỉ gồm hoạt động thuộc dự án có phòng ban do nhân viên đó quản lý. Không thay đổi quyền quản lý/tạo hoạt động và không sửa schema.
 
-**Ki?m tra:** `manage.py check` ??t; `makemigrations --check --dry-run` b?o `No changes detected`; `manage.py test apps.activity.tests apps.security.tests --verbosity 1` ??t: 34 test tr?n SQLite test database t?m. `RequestsDependencyWarning` v? urllib3/chardet v?n xu?t hi?n nh?ng kh?ng ?nh h??ng k?t qu?. Kh?ng ch?y migrate hay test database tr?n SQL Server.
+**Kiểm tra:** `manage.py check` đạt; `makemigrations --check --dry-run` báo `No changes detected`; `manage.py test apps.activity.tests apps.security.tests --verbosity 1` đạt: 34 test trên SQLite test database tạm. `RequestsDependencyWarning` về urllib3/chardet vẫn xuất hiện nhưng không ảnh hưởng kết quả. Không chạy migrate hay test database trên SQL Server.
 
-**Nh?nh/commit/push:** `chore/django-5.2-upgrade`; s? ghi m? commit sau khi ho?n t?t push.
+**Nhánh/commit/push:** `chore/django-5.2-upgrade`; commit `8312f09` đã push.
 
-**C?n m?:** nghi?m thu tr?c quan b?ng c?c t?i kho?n Director, Project Manager v? Tr??ng ph?ng tr?n ?ng d?ng ?ang ch?y; x?c nh?n s? li?u kh?p v?i vai tr?/ph?ng ban th?c t?.
+**Đã hoàn tất:** mục tổng quan hoạt động dự án đã được bổ sung vào Dashboard chung; phần giao diện/lịch mở rộng được ghi ở mục nhật ký kế tiếp.
+
+## 2026-09-25 — Đồng nhất biểu mẫu và lịch Hoạt động dự án
+
+**Mục tiêu/phạm vi:** làm rõ viền các ô nhập/chọn trên giao diện portal; dùng danh mục `docs/ActCode.md` cho Mã hoạt động; bổ sung lọc theo CBDA và trang lịch tháng.
+
+**Sao lưu trước thay đổi:** tạo `D:\QLHCNS-Backup-before-activity-ui-filters-calendar-20260925`, loại trừ `.git`, `.env`, database, virtualenv, media, log và các thư mục backup.
+
+**Đã làm:** thêm stylesheet dùng chung `src/static/css/ihrms.css` và nạp từ template gốc để chuẩn hóa viền, nền, bo góc và trạng thái focus cho input/select/textarea/file trên portal. Đưa danh mục 18 mã/tên từ `docs/ActCode.md` vào dropdown; tên tự điền và máy chủ xác định lại theo mã khi lưu. Dashboard Hoạt động có lọc CBDA; thêm lịch theo tháng hiển thị ngày diễn ra và hạn báo cáo, với cùng bộ lọc. CBDA chỉ thấy hoạt động được phân công theo quyền hiện tại. Thêm liên kết lịch vào điều hướng. Không sửa database/schema.
+
+**Kiểm tra:** `manage.py check` đạt; `makemigrations --check --dry-run` báo `No changes detected`; 36 test `apps.activity.tests` và `apps.security.tests` đạt trên SQLite test database tạm; chạy lại riêng test render form tạo hoạt động đạt. Có cảnh báo `RequestsDependencyWarning` urllib3/chardet, không làm test thất bại. `findstatic css/ihrms.css` tìm thấy stylesheet. Không chạy migration hay test lên SQL Server.
+
+**Nhánh/commit/push:** `chore/django-5.2-upgrade`; thay đổi đã được push lên GitHub.
+
+**Còn mở:** đăng nhập bằng CBDA và tài khoản quản lý để kiểm tra trực quan trên trình duyệt; cập nhật danh mục mã hoạt động đồng bộ khi danh sách nghiệp vụ thay đổi.
