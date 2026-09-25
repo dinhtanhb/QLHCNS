@@ -237,10 +237,22 @@ class ActivityProposalWorkflowTests(ActivityTestDataMixin, TestCase):
 
     @patch("apps.m365.graph_client.get_graph_client")
     @override_settings(M365_MAIL_SENDER="")
-    def test_missing_mailbox_configuration_fails_without_sending(self, get_client):
+    def test_sender_defaults_to_coordinator_company_email(self, get_client):
         package = self.make_package()
-        with self.assertRaisesMessage(Exception, "Thiếu M365_MAIL_SENDER"):
-            send_activity_proposal_for_approval(package, self.director, self.coordinator)
+        send_activity_proposal_for_approval(package, self.director, self.coordinator_user)
+        args = get_client.return_value.send_mail.call_args.args
+        self.assertEqual(args[0], self.coordinator.company_email)
+        self.assertEqual(args[1], self.director_employee.company_email)
+
+    @patch("apps.m365.graph_client.get_graph_client")
+    @override_settings(M365_MAIL_SENDER="")
+    def test_missing_sender_and_recipient_emails_fail_without_sending(self, get_client):
+        self.coordinator_user.email = ""
+        self.coordinator_user.employee.company_email = ""
+        self.coordinator_user.employee.save(update_fields=("company_email",))
+        package = self.make_package()
+        with self.assertRaisesMessage(Exception, "bổ sung email nhân sự"):
+            send_activity_proposal_for_approval(package, self.director, self.coordinator_user)
         get_client.assert_not_called()
 
     def test_cbda_can_upload_files_for_own_activity(self):

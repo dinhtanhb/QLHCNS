@@ -229,10 +229,10 @@ def send_activity_proposal_for_approval(package, approver, sender, approval_url=
     """Email the paired PDF files; report success only after Graph accepts the request."""
     from apps.m365.graph_client import GraphNotConfigured, get_graph_client
 
-    mailbox = getattr(settings, "M365_MAIL_SENDER", "").strip()
+    mailbox = (getattr(settings, "M365_MAIL_SENDER", "") or _user_email(sender)).strip()
     recipient = _user_email(approver)
     if not mailbox:
-        raise GraphNotConfigured("Thiếu M365_MAIL_SENDER trong .env; chưa gửi email.")
+        raise GraphNotConfigured("Tài khoản ĐPV chưa có email công ty; hãy bổ sung email nhân sự hoặc cấu hình M365_MAIL_SENDER.")
     if not recipient:
         raise ValueError("Tài khoản Giám đốc chưa có email công ty để nhận hồ sơ.")
     if not package.has_required_files():
