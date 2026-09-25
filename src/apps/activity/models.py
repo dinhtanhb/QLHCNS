@@ -71,19 +71,3 @@ class Activity(BaseAuditModel):
         super().clean()
         if self.start_date and self.end_date and self.end_date < self.start_date:
             raise ValidationError({"end_date": "Ngày kết thúc phải sau hoặc bằng ngày bắt đầu."})
-
-        if self.status != "Cancelled" and self.lead_cbda_id and self.start_date and self.end_date:
-            from apps.activity.services import find_schedule_conflicts
-
-            conflicts = find_schedule_conflicts(
-                employee_id=self.lead_cbda_id,
-                start_date=self.start_date,
-                end_date=self.end_date,
-                exclude_activity_id=self.pk,
-            )
-            if conflicts:
-                names = ", ".join(f"{a.activity_code} ({a.start_date}–{a.end_date})" for a in conflicts)
-                raise ValidationError(
-                    f"CBDA '{self.lead_cbda}' đã được phân công hoạt động khác trùng thời "
-                    f"gian: {names}. Kiểm tra lại ngày hoặc phân công người khác."
-                )

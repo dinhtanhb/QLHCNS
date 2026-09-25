@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 
 from apps.common.admin import BaseAuditAdmin
 from apps.activity.models import Activity
-from apps.activity.services import create_task_for_activity
+from apps.activity.services import create_task_for_activity, find_schedule_conflicts
 
 VIEW_ROLES = (
     "SUPER_ADMIN", "DIRECTOR", "PROJECT_MANAGER", "PROJECT_COORDINATOR", "CBDA",
@@ -22,6 +22,28 @@ class ActivityAdmin(BaseAuditAdmin):
     search_fields = ("activity_code", "activity_name", "location")
     autocomplete_fields = ("project",)
     actions = ["action_create_tracking_task"]
+
+    def save_model(self, request, obj, form, change):
+        conflicts = []
+        if obj.status != "Cancelled" and obj.lead_cbda_id and obj.start_date and obj.end_date:
+            conflicts = find_schedule_conflicts(
+                employee_id=obj.lead_cbda_id,
+                start_date=obj.start_date,
+                end_date=obj.end_date,
+                exclude_activity_id=obj.pk,
+            )
+        super().save_model(request, obj, form, change)
+        if conflicts:
+            names = ", ".join(
+                f"{activity.activity_code} ({activity.start_date}–{activity.end_date})"
+                for activity in conflicts
+            )
+            self.message_user(
+                request,
+                f"Lưu ý: CBDA {obj.lead_cbda} đang có lịch trùng với {names}. "
+                "Đã lưu hoạt động; vui lòng kiểm tra và điều phối.",
+                level=messages.WARNING,
+            )
 
     @admin.action(description="Kiểm tra/tạo lại Task báo cáo cho các hoạt động đã có công văn")
     def action_create_tracking_task(self, request, queryset):

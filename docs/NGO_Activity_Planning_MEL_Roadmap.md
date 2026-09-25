@@ -16,6 +16,7 @@ Khi một công văn đi đã phát hành được liên kết với Hoạt đ�
 - Tệp báo cáo thuộc cấu hình SharePoint `activity_reports` (thư mục mặc định `BaoCaoHoatDong`). Nếu M365 bị tắt, cấu hình hiện tại dùng storage cục bộ theo thiết lập của ứng dụng.
 - Thông báo nhắc trong IHRMS được tạo trước hạn 3 ngày làm việc, 1 ngày làm việc, đúng ngày hạn và vào mỗi ngày làm việc quá hạn. Chạy lặp trong cùng ngày không gửi trùng. Đây là cấu hình mặc định của đợt đầu.
 - Hoạt động có khoảng ngày trùng với hoạt động khác của cùng CBDA chính bị kiểm tra/cảnh báo. Cần UAT hành vi nhập form trước khi dùng rộng rãi.
+- Cảnh báo trùng lịch trong trang quản trị không chặn lưu; điều phối viên xem xét và sắp xếp lại hoặc xác nhận phương án.
 
 ## Vai trò
 

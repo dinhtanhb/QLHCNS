@@ -9,6 +9,7 @@ from django.urls import reverse
 from apps.activity.models import Activity
 from apps.activity.services import (
     add_company_workdays,
+    find_schedule_conflicts,
     send_activity_report_reminders,
 )
 from apps.attendance.models import Holiday
@@ -63,6 +64,17 @@ class ActivityTestDataMixin:
 
 
 class ActivityWorkflowTests(ActivityTestDataMixin, TestCase):
+    def test_overlapping_cbda_schedule_is_detected_but_can_be_reviewed(self):
+        first = self.make_activity("ACT-OVERLAP-1")
+        second = self.make_activity("ACT-OVERLAP-2")
+
+        second.full_clean()
+        conflicts = find_schedule_conflicts(
+            self.cbda.pk, second.start_date, second.end_date, exclude_activity_id=second.pk
+        )
+
+        self.assertEqual([activity.pk for activity in conflicts], [first.pk])
+
     def test_report_deadline_counts_company_workdays_and_holidays(self):
         Holiday.objects.create(
             holiday_code="HOL-ACT-01", holiday_name="Ngày nghỉ thử",
