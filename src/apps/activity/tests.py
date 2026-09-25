@@ -418,6 +418,8 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
         self.assertContains(response, "Lịch hoạt động tháng 10/2026")
         self.assertContains(response, self.own_activity.activity_code)
         self.assertContains(response, "Hạn báo cáo")
+        self.assertNotContains(response, "min-w-[980px]")
+        self.assertContains(response, "overflow-hidden rounded-xl")
         self.assertNotContains(response, self.other_activity.activity_code)
 
     def test_director_shared_dashboard_includes_monthly_project_activity_metrics(self):
