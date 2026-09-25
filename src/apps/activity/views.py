@@ -49,7 +49,14 @@ def _monthly_activities(user, month_start, month_end):
         | Q(tasks__due_date__gte=month_start, tasks__due_date__lte=month_end)
     ).exclude(status="Cancelled").select_related(
         "project", "lead_cbda", "coordinator", "outgoing_document"
-    ).prefetch_related(task_prefetch).distinct()
+    ).prefetch_related(
+        task_prefetch,
+        Prefetch(
+            "proposal_packages",
+            queryset=ActivityProposal.objects.order_by("-version"),
+            to_attr="proposal_history",
+        ),
+    ).distinct()
 
 
 def _filter_monthly_activities(request, activities):
@@ -78,8 +85,9 @@ def activity_dashboard(request):
     rows = []
     for activity in activities:
         task = activity.tracking_tasks[0] if activity.tracking_tasks else None
+        proposal = activity.proposal_history[0] if activity.proposal_history else None
         is_overdue = bool(task and task.status not in ("Done", "Cancelled") and task.due_date and task.due_date < today)
-        rows.append({"activity": activity, "task": task, "is_overdue": is_overdue})
+        rows.append({"activity": activity, "task": task, "proposal": proposal, "is_overdue": is_overdue})
 
     tasks = [row["task"] for row in rows if row["task"]]
     context = {
@@ -373,17 +381,37 @@ def activity_proposal_decide(request, package_id):
         package.decision_at = timezone.now()
         package.modified_by = request.user
         package.save(update_fields=("status", "decision_comment", "decision_by", "decision_at", "modified_by", "modified_date"))
-        submitter_employee = getattr(package.submitted_by, "employee", None)
-        if submitter_employee:
-            is_changes_requested = package.status == "ChangesRequested"
-            notify(
-                submitter_employee,
-                "ActivityProposalChangesRequested" if is_changes_requested else "ActivityProposalApproved",
-                "Đề xuất hoạt động cần chỉnh sửa" if is_changes_requested else "Đề xuất hoạt động đã được duyệt",
-                f"{activity.activity_code} — {activity.activity_name}: {package.decision_comment or ('Vui lòng cập nhật hồ sơ.' if is_changes_requested else 'Hồ sơ đã được phê duyệt.')}",
-                link=reverse("portal:activity_proposal", args=(activity.pk,)),
-                created_by=request.user,
-            )
+        is_changes_requested = package.status == "ChangesRequested"
+        if is_changes_requested:
+            recipients = [
+                getattr(package.submitted_by, "employee", None),
+                getattr(package.created_by, "employee", None),
+                activity.lead_cbda,
+                activity.coordinator,
+            ]
+            notified_employee_ids = set()
+            for recipient in recipients:
+                if not recipient or recipient.pk in notified_employee_ids:
+                    continue
+                notified_employee_ids.add(recipient.pk)
+                notify(
+                    recipient,
+                    "ActivityProposalChangesRequested",
+                    "Đề xuất hoạt động cần chỉnh sửa",
+                    f"{activity.activity_code} — {activity.activity_name}: {package.decision_comment or 'Vui lòng cập nhật hồ sơ.'}",
+                    link=reverse("portal:activity_proposal", args=(activity.pk,)),
+                    created_by=request.user,
+                )
+        else:
+            submitter_employee = getattr(package.submitted_by, "employee", None)
+            if submitter_employee:
+                notify(
+                    submitter_employee, "ActivityProposalApproved",
+                    "Đề xuất hoạt động đã được duyệt",
+                    f"{activity.activity_code} — {activity.activity_name}: {package.decision_comment or 'Hồ sơ đã được phê duyệt.'}",
+                    link=reverse("portal:activity_proposal", args=(activity.pk,)),
+                    created_by=request.user,
+                )
         messages.success(request, "Đã ghi nhận quyết định hồ sơ.")
     else:
         messages.error(request, "Thông tin quyết định chưa hợp lệ. Vui lòng kiểm tra lại.")

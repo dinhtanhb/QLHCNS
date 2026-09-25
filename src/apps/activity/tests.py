@@ -207,6 +207,7 @@ class ActivityProposalWorkflowTests(ActivityTestDataMixin, TestCase):
     def make_package(self):
         return ActivityProposal.objects.create(
             activity=self.activity,
+            created_by=self.cbda_user,
             proposal_pdf=SimpleUploadedFile("proposal.pdf", b"PROPOSAL PDF"),
             budget_pdf=SimpleUploadedFile("budget.pdf", b"BUDGET PDF"),
         )
@@ -349,6 +350,13 @@ class ActivityProposalWorkflowTests(ActivityTestDataMixin, TestCase):
         )
         self.assertIn("Vui lòng cập nhật mục tiêu.", requester_notice.message)
         self.assertEqual(requester_notice.link, reverse("portal:activity_proposal", args=(self.activity.pk,)))
+        cbda_notice = Notification.objects.get(
+            employee=self.cbda, notification_type="ActivityProposalChangesRequested"
+        )
+        self.assertIn("Vui lòng cập nhật mục tiêu.", cbda_notice.message)
+        dashboard = self.client.get(reverse("portal:activity_dashboard"), {"month": "2026-10"})
+        self.assertContains(dashboard, "Yêu cầu chỉnh sửa")
+        self.assertContains(dashboard, "Vui lòng cập nhật mục tiêu.")
 
     def test_only_director_can_open_proposal_approval_inbox(self):
         self.client.force_login(self.cbda_user)
