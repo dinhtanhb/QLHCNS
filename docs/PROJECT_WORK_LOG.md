@@ -201,4 +201,14 @@ Kết quả gồm `page-1.png`, `page-2.png`, ... và PDF trong `D:\QLHCNS-docx-
 
 **Migration:** không có thay đổi schema; không chạy migration lên SQL Server.
 
-**Nhánh/commit/push:** `chore/django-5.2-upgrade`; commit `6512944` đã tạo, đang cập nhật nhật ký trước khi push.
+**Nhánh/commit/push:** `chore/django-5.2-upgrade`; commit `4998a91` đã push.
+
+## 2026-09-25 — Áp dụng migration hồ sơ đề xuất trên SQL Server
+
+**Sự cố:** trang `/portal/project-activities/1/proposal/` báo SQL Server không tìm thấy `tblActivityProposal`.
+
+**Nguyên nhân và xử lý:** cấu hình ứng dụng đang kết nối SQL Server database `qlhcns`; migration `activity.0005_activityproposal` chưa được áp dụng. Kiểm tra `migrate activity --plan` chỉ định tạo bảng `ActivityProposal`, sau đó chạy `manage.py migrate activity`. Migration hoàn tất; `showmigrations activity` xác nhận `0005` đã áp dụng.
+
+**Xác minh:** truy vấn `ActivityProposal.objects.count()` chạy được trên SQL Server và hiện có 0 hồ sơ. Không sửa dữ liệu hiện có hoặc tạo migration mới. Cảnh báo RequestsDependencyWarning vẫn xuất hiện nhưng lệnh migration và truy vấn đều thành công.
+
+**Còn mở:** tải lại trang hồ sơ đề xuất để xác nhận giao diện hoạt động; các tệp đính kèm vẫn cần cấu hình SMTP trước khi gửi email thật.
