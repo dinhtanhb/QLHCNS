@@ -1,0 +1,10 @@
+<div class="border-l-2 border-blue-100 pl-4 py-1 {% if depth %}ml-3 sm:ml-6{% endif %}">
+  <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 max-w-xl">
+    <p class="font-semibold text-gray-900">{{ node.employee.full_name }}</p>
+    <p class="text-sm text-gray-600">{{ node.employee.position.position_name|default:"Chưa cập nhật chức vụ" }}</p>
+    <p class="text-xs text-gray-500 mt-1">{{ node.employee.department.department_name|default:"Chưa phân phòng ban" }}</p>
+  </div>
+  {% for child in node.children %}
+    {% include "portal/org_chart_node.html" with node=child depth=depth|add:1 %}
+  {% endfor %}
+</div>

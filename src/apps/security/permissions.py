@@ -61,6 +61,11 @@ PERMISSION_MATRIX = {
     # Nhân sự
     "manage_hr": (HR_MANAGER, HR_OFFICER),
     "view_all_employees": (HR_MANAGER, HR_OFFICER, DIRECTOR),
+    "submit_profile_change_request": (
+        EMPLOYEE, DEPT_MANAGER, HR_OFFICER, HR_MANAGER, DIRECTOR, FINANCE_OFFICER,
+        PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA, SYS_ADMIN,
+    ),
+    "approve_profile_change_request": (HR_OFFICER, HR_MANAGER),
     # Tài chính, bảng lương
     "manage_finance": (FINANCE_OFFICER,),
     # Văn thư: công văn đến, phân công xử lý — chỉ Nhân sự và Quản trị hệ thống

@@ -13,7 +13,7 @@ from apps.task.models import Task
 from apps.activity.permissions import can_view_activity, visible_activities_for
 from apps.common.uploads import validate_upload
 from apps.m365.graph_client import GraphAPIError
-from apps.hrm.models import Employee
+from apps.hrm.models import Employee, EmployeeProfileChangeRequest
 from apps.asset.models import Asset
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -26,7 +26,7 @@ from apps.notification.models import Notification, NotificationEmailOutbox
 from decimal import Decimal, InvalidOperation
 import calendar as calendar_module
 from django.db.models import Sum
-from django.http import HttpResponse, Http404, HttpResponseForbidden
+from django.http import HttpResponse, Http404, HttpResponseForbidden, FileResponse
 from django.views.decorators.http import require_GET
 from apps.project.models import Project
 from apps.attendance.models import TimesheetEntry, WorkingCalendar, Holiday, MonthlyAttendanceSummary
@@ -256,6 +256,143 @@ def profile(request):
             "current_contract": employee.contracts.order_by("-start_date").first(),
         })
     return render(request, "portal/profile.html", context)
+
+
+@login_required
+def org_chart(request):
+    employees = list(
+        Employee.objects.filter(employment_status="Active")
+        .select_related("department", "position")
+        .only("id", "full_name", "employee_code", "department__department_name",
+              "position__position_name", "manager_id")
+        .order_by("full_name", "id")
+    )
+    nodes = {employee.pk: {"employee": employee, "children": []} for employee in employees}
+    parents = {employee.pk: employee.manager_id for employee in employees}
+    roots = []
+    # Break any pre-existing manager cycle deterministically by making the
+    # employee whose manager edge closes the cycle a root.
+    for employee in employees:
+        parent_id = parents[employee.pk]
+        if parent_id not in nodes:
+            roots.append(nodes[employee.pk])
+            continue
+        cursor, visited = parent_id, {employee.pk}
+        while cursor in nodes and cursor not in visited:
+            visited.add(cursor)
+            cursor = parents.get(cursor)
+        if cursor in visited:
+            roots.append(nodes[employee.pk])
+        else:
+            nodes[parent_id]["children"].append(nodes[employee.pk])
+    return render(request, "portal/org_chart.html", {"roots": roots})
+
+
+@login_required
+def profile_change_request_list(request):
+    if not has_permission(request.user, "submit_profile_change_request"):
+        return HttpResponseForbidden()
+    employee = _get_employee(request)
+    if not employee:
+        return HttpResponseForbidden("Tài khoản chưa được gắn hồ sơ nhân viên.")
+    requests_qs = EmployeeProfileChangeRequest.objects.select_related("employee", "decided_by")
+    if has_permission(request.user, "approve_profile_change_request"):
+        pending = requests_qs.filter(status="Pending")
+        own = requests_qs.filter(employee=employee).exclude(status="Pending")
+        items = list(pending) + list(own)
+    else:
+        items = requests_qs.filter(employee=employee)
+    return render(request, "portal/profile_change_request_list.html", {"items": items})
+
+
+@login_required
+def profile_change_request_create(request):
+    if not has_permission(request.user, "submit_profile_change_request"):
+        return HttpResponseForbidden()
+    employee = _get_employee(request)
+    if not employee:
+        return HttpResponseForbidden("Tài khoản chưa được gắn hồ sơ nhân viên.")
+    if request.method == "POST":
+        field_name = request.POST.get("field_name", "")
+        if field_name not in EmployeeProfileChangeRequest.ALLOWED_FIELDS:
+            return HttpResponseForbidden("Trường hồ sơ không được phép cập nhật.")
+        new_value = request.POST.get("new_value", "").strip()
+        if field_name == "mobile_phone" and not new_value:
+            messages.error(request, "Số điện thoại không được để trống.")
+            return redirect("portal:profile_change_request_create")
+        item = EmployeeProfileChangeRequest(
+            employee=employee,
+            field_name=field_name,
+            old_value=str(getattr(employee, field_name) or ""),
+            submitted_snapshot=str(getattr(employee, field_name) or ""),
+            new_value=new_value,
+            reason=request.POST.get("reason", "").strip(),
+            attachment=request.FILES.get("attachment"),
+            created_by=request.user,
+        )
+        try:
+            item.full_clean()
+            item.save()
+        except ValidationError as exc:
+            messages.error(request, "; ".join(exc.messages))
+            return redirect("portal:profile_change_request_create")
+        messages.success(request, "Đã gửi yêu cầu cập nhật hồ sơ đến Nhân sự.")
+        return redirect("portal:profile_change_request_list")
+    return render(request, "portal/profile_change_request_form.html", {"employee": employee})
+
+
+@login_required
+@require_POST
+def profile_change_request_decide(request, pk):
+    if not has_permission(request.user, "approve_profile_change_request"):
+        return HttpResponseForbidden()
+    decision = request.POST.get("decision")
+    status = {"approve": "Approved", "reject": "Rejected", "more_info": "NeedsMoreInfo"}.get(decision)
+    if not status:
+        return HttpResponseForbidden("Quyết định không hợp lệ.")
+    with transaction.atomic():
+        try:
+            item = EmployeeProfileChangeRequest.objects.select_for_update().select_related("employee").get(
+                pk=pk, status="Pending"
+            )
+        except EmployeeProfileChangeRequest.DoesNotExist:
+            raise Http404
+        employee = Employee.objects.select_for_update().get(pk=item.employee_id)
+        if str(getattr(employee, item.field_name) or "") != item.submitted_snapshot:
+            messages.error(request, "Giá trị hồ sơ đã thay đổi sau khi gửi. Không thể duyệt yêu cầu cũ; vui lòng yêu cầu nhân viên gửi lại.")
+            return redirect("portal:profile_change_request_list")
+        if status == "Approved":
+            setattr(employee, item.field_name, item.new_value)
+            employee.modified_by = request.user
+            employee.save(update_fields=[item.field_name, "modified_by", "modified_date"])
+        item.status = status
+        item.decided_by = request.user
+        item.decided_at = timezone.now()
+        item.decision_note = request.POST.get("note", "").strip()[:500]
+        item.modified_by = request.user
+        item.save(update_fields=["status", "decided_by", "decided_at", "decision_note", "modified_by", "modified_date"])
+        labels = {"Approved": "đã được duyệt", "Rejected": "bị từ chối", "NeedsMoreInfo": "cần bổ sung thông tin"}
+        notify(employee, "profile-change", "Yêu cầu cập nhật hồ sơ đã được xử lý",
+               f"Yêu cầu thay đổi hồ sơ của bạn {labels[status]}. Vui lòng xem chi tiết trong IHRMS.",
+               link="/portal/profile/requests/", created_by=request.user)
+    messages.success(request, "Đã ghi nhận quyết định xử lý yêu cầu.")
+    return redirect("portal:profile_change_request_list")
+
+
+@login_required
+def profile_change_request_attachment(request, pk):
+    employee = _get_employee(request)
+    if not (employee and has_permission(request.user, "approve_profile_change_request")):
+        if not employee:
+            return HttpResponseForbidden()
+        item = get_object_or_404(EmployeeProfileChangeRequest, pk=pk, employee=employee)
+    else:
+        item = get_object_or_404(EmployeeProfileChangeRequest, pk=pk)
+    if not item.attachment:
+        raise Http404
+    response = FileResponse(item.attachment.open("rb"), as_attachment=True, filename=item.attachment.name.rsplit("/", 1)[-1])
+    response["X-Content-Type-Options"] = "nosniff"
+    return response
 
 
 @login_required

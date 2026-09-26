@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Yêu cầu cập nhật hồ sơ{% endblock %}
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-5">
+  <div class="bg-white border border-gray-200 rounded-xl p-6 flex flex-wrap items-center justify-between gap-3">
+    <div><h1 class="text-2xl font-bold text-gray-900">Yêu cầu cập nhật hồ sơ</h1><p class="text-sm text-gray-600 mt-1">Thông tin cá nhân chỉ được cập nhật sau quyết định của Nhân sự.</p></div>
+    <a href="{% url 'portal:profile_change_request_create' %}" class="rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white">Tạo yêu cầu</a>
+  </div>
+  <div class="space-y-3">
+    {% for item in items %}
+    <article class="bg-white border border-gray-200 rounded-xl p-5">
+      <div class="flex flex-wrap justify-between gap-2">
+        <div><h2 class="font-semibold text-gray-900">{{ item.get_field_name_display|default:item.field_name }}</h2><p class="text-sm text-gray-600">{{ item.employee.full_name }} · {{ item.employee.employee_code }}</p></div>
+        <span class="rounded-full bg-blue-50 px-3 py-1 text-sm text-blue-800">{{ item.get_status_display }}</span>
+      </div>
+      <dl class="grid gap-3 sm:grid-cols-2 mt-4 text-sm"><div><dt class="text-gray-500">Giá trị cũ</dt><dd class="break-words">{{ item.old_value|default:"(trống)" }}</dd></div><div><dt class="text-gray-500">Giá trị đề nghị</dt><dd class="break-words">{{ item.new_value }}</dd></div></dl>
+      {% if item.reason %}<p class="mt-3 text-sm"><span class="text-gray-500">Lý do:</span> {{ item.reason }}</p>{% endif %}
+      {% if item.attachment %}<a class="mt-3 inline-block text-sm text-blue-700 underline" href="{% url 'portal:profile_change_request_attachment' item.pk %}">Tải chứng từ</a>{% endif %}
+      {% if item.decision_note %}<p class="mt-3 text-sm text-gray-700"><span class="text-gray-500">Ý kiến Nhân sự:</span> {{ item.decision_note }}</p>{% endif %}
+      {% if item.status == "Pending" and can_approve_profile_change_request %}
+      <form method="post" action="{% url 'portal:profile_change_request_decide' item.pk %}" class="mt-4 border-t border-gray-100 pt-4 space-y-3">{% csrf_token %}
+        <label class="block text-sm font-medium text-gray-800" for="note-{{ item.pk }}">Ý kiến xử lý</label><textarea id="note-{{ item.pk }}" name="note" maxlength="500" rows="2" class="w-full rounded-lg border border-gray-400 px-3 py-2"></textarea>
+        <div class="flex flex-wrap gap-2"><button name="decision" value="approve" class="rounded-lg bg-green-700 px-3 py-2 text-sm font-semibold text-white">Duyệt cập nhật</button><button name="decision" value="more_info" class="rounded-lg border border-amber-500 px-3 py-2 text-sm font-semibold text-amber-800">Yêu cầu bổ sung</button><button name="decision" value="reject" class="rounded-lg border border-red-300 px-3 py-2 text-sm font-semibold text-red-700">Từ chối</button></div>
+      </form>
+      {% endif %}
+    </article>
+    {% empty %}<p class="bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-500">Chưa có yêu cầu cập nhật hồ sơ.</p>{% endfor %}
+  </div>
+</div>
+{% endblock %}
