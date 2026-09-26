@@ -81,7 +81,7 @@ class LifecycleWorkflowTests(TestCase):
         self.assertEqual(EmployeeLifecycleCase.objects.filter(employee=employee).count(), 1)
         self.assertEqual(LifecycleChecklistItem.objects.filter(case=first).count(), 1)
 
-    def test_assigned_user_can_complete_only_own_item_and_not_other_case(self):
+    def test_non_hr_user_cannot_access_assigned_hr_checklist(self):
         employee = self.make_employee("OWNER")
         other_employee = self.make_employee("OTHER")
         assignee = self.make_user(self.make_employee("ASSIGNEE"), "EMPLOYEE", "lifecycle-assignee")
@@ -94,19 +94,21 @@ class LifecycleWorkflowTests(TestCase):
         other_case, _ = open_onboarding_case(other_employee, other_template)
         self.client.force_login(assignee)
 
+        listing = self.client.get(reverse("portal:lifecycle_case_list"))
         own_detail = self.client.get(reverse("portal:lifecycle_case_detail", args=(case.pk,)))
         forbidden = self.client.get(reverse("portal:lifecycle_case_detail", args=(other_case.pk,)))
         completed = self.client.post(reverse("portal:lifecycle_item_update", args=(item.pk,)), {"action": "done"})
 
         item.refresh_from_db()
         case.refresh_from_db()
-        self.assertEqual(own_detail.status_code, 200)
+        self.assertEqual(listing.status_code, 403)
+        self.assertEqual(own_detail.status_code, 403)
         self.assertEqual(forbidden.status_code, 403)
-        self.assertEqual(completed.status_code, 302)
-        self.assertEqual(item.status, "Done")
-        self.assertEqual(case.status, "Completed")
+        self.assertEqual(completed.status_code, 403)
+        self.assertEqual(item.status, "Pending")
+        self.assertEqual(case.status, "Open")
 
-    def test_project_coordinator_can_open_assigned_checklist_from_personal_menu(self):
+    def test_project_roles_cannot_access_assigned_hr_checklists(self):
         case_employee = self.make_employee("COORD-TGT")
         coordinator_employee = self.make_employee("COORD-ASG")
         coordinator = self.make_user(
@@ -124,17 +126,13 @@ class LifecycleWorkflowTests(TestCase):
         self.client.force_login(coordinator)
         listing = self.client.get(reverse("portal:lifecycle_case_list"))
         detail = self.client.get(reverse("portal:lifecycle_case_detail", args=(case.pk,)))
-        self.assertEqual(listing.status_code, 200)
-        self.assertContains(listing, "việc được giao", html=False)
-        self.assertContains(listing, case_employee.full_name)
-        self.assertEqual(detail.status_code, 200)
-        self.assertContains(detail, "Hoàn tất")
+        self.assertEqual(listing.status_code, 403)
+        self.assertEqual(detail.status_code, 403)
 
         self.client.force_login(unrelated)
         unrelated_listing = self.client.get(reverse("portal:lifecycle_case_list"))
         unrelated_detail = self.client.get(reverse("portal:lifecycle_case_detail", args=(case.pk,)))
-        self.assertEqual(unrelated_listing.status_code, 200)
-        self.assertNotContains(unrelated_listing, case_employee.full_name)
+        self.assertEqual(unrelated_listing.status_code, 403)
         self.assertEqual(unrelated_detail.status_code, 403)
 
     def test_hr_can_link_existing_asset_return_without_deleting_allocation_history(self):
@@ -160,9 +158,28 @@ class LifecycleWorkflowTests(TestCase):
         self.assertEqual(item.asset_allocation_id, allocation.pk)
         self.assertTrue(AssetAllocation.objects.filter(pk=allocation.pk).exists())
 
+    def test_hr_cannot_assign_checklist_step_to_non_hr_user(self):
+        employee = self.make_employee("ASG-T")
+        template, _ = self.make_template(code="ASSIGN-EMPLOYEE-TPL", role_code="EMPLOYEE")
+        case, _ = open_onboarding_case(employee, template)
+        item = case.items.get()
+        non_hr = self.make_user(self.make_employee("ASG-N"), "EMPLOYEE", "lifecycle-non-hr")
+        hr_user = self.make_user(self.make_employee("ASG-H"), "HR_OFFICER", "lifecycle-hr-assign")
+        self.client.force_login(hr_user)
+
+        response = self.client.post(
+            reverse("portal:lifecycle_item_assign", args=(item.pk,)),
+            {"assigned_to_user_id": non_hr.pk},
+        )
+
+        item.refresh_from_db()
+        self.assertEqual(response.status_code, 404)
+        self.assertIsNone(item.assigned_to_user_id)
+
     def test_overdue_reminder_is_deduplicated_each_day_and_shows_on_dashboard(self):
         employee = self.make_employee("REMIND")
-        assignee = self.make_user(employee, "EMPLOYEE", "lifecycle-remind")
+        hr_employee = self.make_employee("REMIND-HR")
+        assignee = self.make_user(hr_employee, "HR_OFFICER", "lifecycle-remind")
         template, _ = self.make_template(code="REMINDER-TPL")
         case, _ = open_onboarding_case(employee, template)
         item = case.items.get()
@@ -176,7 +193,7 @@ class LifecycleWorkflowTests(TestCase):
         dashboard = self.client.get(reverse("portal:dashboard"))
 
         self.assertEqual((first, duplicate, next_day), (1, 0, 1))
-        self.assertEqual(Notification.objects.filter(employee=employee, notification_type="LifecycleOverdue").count(), 2)
+        self.assertEqual(Notification.objects.filter(employee=hr_employee, notification_type="LifecycleOverdue").count(), 2)
         self.assertEqual(dashboard.status_code, 302)  # Anonymous users must sign in.
         self.client.force_login(assignee)
         dashboard = self.client.get(reverse("portal:dashboard"))

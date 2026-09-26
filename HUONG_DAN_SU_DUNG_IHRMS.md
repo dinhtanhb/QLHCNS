@@ -2,7 +2,7 @@
 
 **Đối tượng:** nhân viên, quản lý, Nhân sự, Tài chính, quản trị hệ thống
 
-**Phiên bản:** 1.2 — 25/09/2026
+**Phiên bản:** 1.3 — 26/09/2026
 
 **Phạm vi:** thao tác theo giao diện hiện có. Quy định nội bộ về hạn xử lý, người thay thế và phê duyệt cần công ty ban hành riêng.
 
@@ -36,6 +36,10 @@ Menu thay đổi theo quyền tài khoản. Cờ “Staff status” không thay 
 ### 4.1 Đối chiếu hồ sơ
 
 Mở **Hồ sơ cá nhân**. Đối chiếu họ tên, ngày sinh, giới tính, email công ty, điện thoại, phòng ban, chức vụ, quản lý, ngày vào làm/trạng thái và thông tin hợp đồng/lịch sử nếu hiển thị. Nếu sai hoặc không sửa được, gửi yêu cầu cho Nhân sự; không tạo hồ sơ khác để thay thế.
+
+Muốn đổi **email cá nhân, số điện thoại hoặc địa chỉ**, mở **Cá nhân → Yêu cầu cập nhật hồ sơ → Tạo yêu cầu**. Chọn đúng trường, nhập giá trị mới, lý do và chứng từ nếu cần rồi gửi. Thay đổi chỉ có hiệu lực sau khi Nhân sự duyệt. Theo dõi trạng thái và ý kiến xử lý ở cùng danh sách; nếu Nhân sự yêu cầu bổ sung, tạo yêu cầu mới với thông tin đã sửa. Không gửi CCCD, mã số thuế, tài khoản ngân hàng hoặc thông tin lương qua biểu mẫu này.
+
+Mở **Cá nhân → Sơ đồ tổ chức** để xem nhân viên đang làm việc theo quản lý trực tiếp. Trang chỉ hiện họ tên, chức vụ và phòng ban; không phải danh bạ liên hệ.
 
 ### 4.2 Ghi và kiểm tra công
 
@@ -78,6 +82,12 @@ Mở **Phiếu lương**, chọn kỳ, kiểm tra Gross (tổng thu nhập), b�
 
 Các mục có thể gồm đặt phòng, đặt xe, văn phòng phẩm, lịch công tác, đào tạo. Chọn đúng mục, điền thời gian/mục đích/nội dung, gửi và theo dõi trạng thái. “Chờ duyệt” chưa có nghĩa là được chấp thuận.
 
+### 4.8 Thông báo và bản nháp Outlook
+
+Mở chuông hoặc **Thông báo** để xem cập nhật IHRMS. Với một số sự kiện — quyết định đơn nghỉ, duyệt/từ chối tài liệu hoặc khóa kỳ lương — trang có thể hiện **Mở thư nháp trong Outlook**. Chọn để mở thư, kiểm tra tài khoản gửi, người nhận và nội dung, bổ sung CC nếu cần, rồi tự gửi trong Outlook. IHRMS không gửi thư thay bạn. Chỉ chọn **Đã gửi qua Outlook** sau khi Outlook xác nhận gửi thành công. Nếu liên kết không mở Outlook, báo IT kiểm tra ứng dụng mặc định xử lý liên kết email của Windows.
+
+Thông báo về yêu cầu cập nhật hồ sơ và nhắc checklist hiện nằm trong IHRMS; không mặc định sẽ có email cho các thông báo đó.
+
 ## 5. Người duyệt
 
 ### Duyệt nghỉ phép
@@ -88,6 +98,9 @@ Mở **Duyệt chấm công**, chọn tháng/bộ phận. Đối chiếu giờ, 
 
 ### Duyệt tài liệu/yêu cầu
 Mở danh sách chờ duyệt tương ứng; đọc nội dung và tệp, kiểm tra đúng thẩm quyền, sau đó duyệt/từ chối kèm ghi chú. Không duyệt chỉ dựa trên tiêu đề khi có cam kết hoặc chi phí.
+
+### Duyệt yêu cầu cập nhật hồ sơ
+Người có quyền Nhân sự mở **Nhân sự → Duyệt cập nhật hồ sơ** hoặc **Cá nhân → Yêu cầu cập nhật hồ sơ**. Kiểm tra nhân viên, trường, giá trị đề nghị, lý do và chứng từ; chọn **Duyệt cập nhật**, **Yêu cầu bổ sung** hoặc **Từ chối**, ghi ý kiến cụ thể. Khi duyệt, hệ thống kiểm tra giá trị gốc chưa bị HR thay đổi trong lúc chờ; nếu đã đổi, yêu cầu không được áp dụng và nhân viên cần gửi lại. Giá trị email/địa chỉ/số điện thoại chỉ xem trong phạm vi chủ hồ sơ và Nhân sự.
 
 ## Hoạt động dự án — lập hồ sơ và xin phê duyệt
 
@@ -132,6 +145,16 @@ Dashboard **Theo dõi hoạt động** cho biết người phụ trách, thời 
 ### Thay đổi nhân sự, tuyển dụng, lịch
 Ghi ngày hiệu lực chính xác cho điều chuyển/thay đổi; không áp dụng thay đổi tương lai sớm và không sửa lịch sử tùy tiện. Theo dõi ứng viên, trạng thái và hồ sơ; đề xuất tuyển dụng phải được duyệt mới xem là nhu cầu được chấp thuận. Khi cập nhật ngày lễ/lịch, rà ảnh hưởng tới phép và công.
 
+### Mở và theo dõi checklist tiếp nhận/nghỉ việc
+
+Checklist nhân sự là công cụ riêng của Phòng HCNS để theo dõi giấy tờ và thủ tục tiếp nhận/nghỉ việc; không dùng cho giao việc chung hoặc hoạt động dự án. Chỉ `HR_OFFICER`/`HR_MANAGER` truy cập qua **Nhân sự → Quản lý checklist onboarding/offboarding**. Mục này không nằm trong menu Cá nhân. HR chọn **Mở checklist**, nhân viên, loại hồ sơ và mẫu đang hoạt động đúng loại; với Offboarding nhập ngày nghỉ việc hiệu lực. Việc thêm/sửa hồ sơ nhân viên không tự mở checklist. Nếu mở lại cùng nhân viên/sự kiện, hệ thống không tạo hồ sơ trùng.
+
+Trong chi tiết checklist, HR giao từng đầu việc cho tài khoản HCNS đang hoạt động có đúng vai trò ghi trên mẫu (`HR_OFFICER` hoặc `HR_MANAGER`) và HCNS cập nhật **Hoàn tất**; chọn **Bỏ qua** phải ghi lý do. Nếu mục yêu cầu bàn giao/thu hồi tài sản, liên kết bản ghi cấp phát/thu hồi đã có của đúng nhân viên. Không tạo/xóa lịch sử cấp phát tài sản từ checklist. Hồ sơ tự hoàn tất khi mọi mục đã Hoàn tất hoặc Bỏ qua.
+
+Mẫu được cấu hình trong Django Admin bởi tài khoản có quyền truy cập Admin. Tạo ít nhất một mẫu Onboarding và một mẫu Offboarding, có các dòng công việc, vai trò và số ngày lệch hạn đã được HR thống nhất. Mỗi hồ sơ giữ bản chụp mẫu lúc mở; sửa mẫu không đổi hồ sơ cũ. Chưa có mẫu checklist chuẩn của công ty được nạp sẵn.
+
+Đầu việc quá hạn hiện tạo thông báo khi lệnh nhắc được chạy. IT có thể chạy thủ công từ thư mục gốc dự án: `python src\manage.py send_lifecycle_reminders`. Windows Task Scheduler chưa được cấu hình; không coi nhắc việc là tự động cho đến khi IT kiểm tra lịch chạy.
+
 ## 7. Tài chính — chạy lương
 
 Chỉ người được giao nhiệm vụ mới chạy lương. Kỳ khóa là kỳ đã chốt; không thể coi như kỳ đang mở.
@@ -164,7 +187,9 @@ Phiên kiểm kê liệt kê tài sản; kiểm đếm từng dòng, ghi tình t
 
 ## 9. Báo cáo và bảo mật
 
-Báo cáo có thể gồm công/nghỉ, biến động nhân sự, số lượng nhân sự so kế hoạch, ngân sách so chi tiêu. Chọn đúng kỳ/bộ lọc và kiểm tra ngày cập nhật. Chỉ chia sẻ báo cáo nhân sự/lương cho người có thẩm quyền; lưu tệp xuất tại nơi công ty cho phép.
+Báo cáo hiện có thể gồm công/nghỉ, biến động nhân sự, số lượng nhân sự so kế hoạch, ngân sách so chi tiêu. Chọn đúng kỳ/bộ lọc và kiểm tra ngày cập nhật. Chỉ chia sẻ báo cáo nhân sự/lương cho người có thẩm quyền; lưu tệp xuất tại nơi công ty cho phép.
+
+Các báo cáo BHXH, quyết toán PIT và chi phí lương theo phòng ban **chưa được bật và chưa xuất được từ IHRMS**. Chờ Kế toán xác nhận biểu mẫu/phiên bản áp dụng và quy tắc phân bổ trước khi sử dụng báo cáo chính thức. Không xem khung kỹ thuật trong hệ thống là biểu mẫu đã được Kế toán phê duyệt.
 
 ## 10. Xử lý sự cố
 
@@ -185,6 +210,8 @@ Báo cáo có thể gồm công/nghỉ, biến động nhân sự, số lượng
 - Tôi biết gửi đơn nghỉ và kiểm tra trạng thái.
 - Tôi hiểu công đã duyệt cần quy trình điều chỉnh.
 - Tôi chỉ tải phiếu lương của bản thân.
+- Tôi biết yêu cầu thay đổi hồ sơ phải được Nhân sự duyệt mới có hiệu lực.
+- Tôi biết checklist quá hạn chỉ được nhắc tự động khi IT đã cấu hình lịch chạy.
 - Tôi biết báo lỗi mà không gửi bí mật.
 
 **Tài liệu đi kèm:** [Giáo án và bài thực hành tập huấn](TAP_HUAN_IHRMS.md). Bản đánh giá triển khai hiện hành: [Production Readiness Review](docs/Production_Readiness_Review_2026-09-23.md). Bản review ngày 23/09 là snapshot lịch sử.

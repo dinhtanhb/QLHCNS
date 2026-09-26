@@ -188,18 +188,49 @@ class PortalSensitiveWorkflowTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'id="org-chart-search"')
+        self.assertContains(response, 'id="org-chart-zoom-in"')
+        self.assertContains(response, 'id="org-chart-zoom-out"')
+        self.assertContains(response, 'id="org-chart-fit"')
         self.assertContains(response, "Báo cáo cho:")
         self.assertContains(response, manager.full_name)
         self.assertContains(response, report.full_name)
         self.assertEqual(response.context["employee_count"], 2)
 
-    def test_task_menu_is_explicitly_listed_under_planning(self):
+    def test_project_task_menu_is_listed_under_project_activities(self):
         employee = self.make_employee("PORTAL-TASK-MENU")
-        user = self.make_user("EMPLOYEE", employee, "portal-task-menu")
+        user = self.make_user("CBDA", employee, "portal-task-menu")
         self.client.force_login(user)
 
         response = self.client.get(reverse("portal:dashboard"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, reverse("portal:task_list"))
+        task_link = f'href="{reverse("portal:task_list")}"'
+        html = response.content.decode()
+        self.assertEqual(html.count(task_link), 1)
+        self.assertGreater(html.index(task_link), html.index('id="menu-hoatdongduan"'))
         self.assertContains(response, "Giao việc &amp; hoàn tất")
+        self.assertNotContains(response, "Quản lý checklist onboarding/offboarding")
+        self.assertNotContains(response, "Checklist &amp; việc được giao")
+
+    def test_hr_checklist_menu_appears_only_under_hr_menu(self):
+        employee = self.make_employee("PORTAL-HR-MENU")
+        user = self.make_user("HR_OFFICER", employee, "portal-hr-menu")
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("portal:dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Quản lý checklist onboarding/offboarding")
+        self.assertNotContains(response, "Checklist &amp; việc được giao")
+
+    def test_employee_action_menu_has_working_native_dropdown_markup(self):
+        employee = self.make_employee("PORTAL-ACTION-MENU")
+        user = self.make_user("HR_OFFICER", employee, "portal-action-menu")
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("portal:hr_employee_list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<details class=\"hr-action-menu relative inline-block\">")
+        self.assertContains(response, reverse("portal:hr_employee_edit", args=(employee.pk,)))
+        self.assertNotContains(response, "toggleMenu(")

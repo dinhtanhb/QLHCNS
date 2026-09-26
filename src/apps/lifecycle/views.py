@@ -81,7 +81,11 @@ def lifecycle_case_detail(request, pk):
     if not _can_view_case(request.user, case):
         return HttpResponseForbidden()
     items = case.items.select_related("assigned_to_user", "template_item", "asset_allocation__asset")
-    users = User.objects.filter(is_active=True, employee__employment_status="Active").select_related("role", "employee")
+    users = User.objects.filter(
+        is_active=True,
+        employee__employment_status="Active",
+        role__role_code__in=("HR_OFFICER", "HR_MANAGER"),
+    ).select_related("role", "employee")
     allocations = AssetAllocation.objects.filter(employee=case.employee).select_related("asset").order_by("-assigned_date")
     return render(request, "lifecycle/case_detail.html", {
         "case": case, "items": items, "users": users, "allocations": allocations,
@@ -99,6 +103,7 @@ def lifecycle_item_assign(request, pk):
     user = get_object_or_404(
         User.objects.select_related("role", "employee").filter(
             is_active=True, employee__employment_status="Active",
+            role__role_code__in=("HR_OFFICER", "HR_MANAGER"),
             role__role_code=item.responsible_role_code,
         ), pk=user_id,
     )

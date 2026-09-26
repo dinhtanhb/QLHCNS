@@ -58,7 +58,7 @@ class PermissionMatrixTests(TestCase):
         user = self.users[EMPLOYEE]
         for permission in PERMISSION_MATRIX:
             expected_self_service = permission in {
-                "submit_profile_change_request", "view_own_lifecycle_items",
+                "submit_profile_change_request",
             }
             self.assertEqual(
                 has_permission(user, permission), expected_self_service,
@@ -109,10 +109,14 @@ class PermissionMatrixTests(TestCase):
         self.assertFalse(has_permission(self.users[DEPT_MANAGER], "approve_leave_all_departments"))
         self.assertFalse(has_permission(self.users[EMPLOYEE], "approve_leave"))
 
-    def test_project_roles_can_view_only_their_lifecycle_checklists(self):
+    def test_lifecycle_checklists_are_limited_to_hr_and_system_admin(self):
         for code in (DIRECTOR, PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA):
-            self.assertTrue(has_permission(self.users[code], "view_own_lifecycle_items"), code)
+            self.assertFalse(has_permission(self.users[code], "view_own_lifecycle_items"), code)
             self.assertFalse(has_permission(self.users[code], "manage_lifecycle_case"), code)
+        for code in (HR_OFFICER, HR_MANAGER):
+            self.assertTrue(has_permission(self.users[code], "view_own_lifecycle_items"), code)
+        for code in (EMPLOYEE, SYS_ADMIN):
+            self.assertFalse(has_permission(self.users[code], "view_own_lifecycle_items"), code)
 
     # ---------- Superuser ----------
     def test_superuser_co_moi_quyen(self):
@@ -123,7 +127,7 @@ class PermissionMatrixTests(TestCase):
         flags = permission_flags(self.users[EMPLOYEE])
         self.assertEqual(set(flags), {f"can_{name}" for name in PERMISSION_MATRIX})
         enabled = {name for name, allowed in flags.items() if allowed}
-        self.assertEqual(enabled, {"can_submit_profile_change_request", "can_view_own_lifecycle_items"})
+        self.assertEqual(enabled, {"can_submit_profile_change_request"})
 
 
 # ==================================================================

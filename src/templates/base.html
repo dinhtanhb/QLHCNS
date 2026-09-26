@@ -116,7 +116,6 @@
                     <a href="{% url 'portal:profile' %}" class="block px-4 py-2 hover:bg-gray-50">Hồ sơ cá nhân</a>
                     <a href="{% url 'portal:profile_change_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">Yêu cầu cập nhật hồ sơ</a>
                     <a href="{% url 'portal:org_chart' %}" class="block px-4 py-2 hover:bg-gray-50">Sơ đồ tổ chức</a>
-                    {% if can_view_own_lifecycle_items or can_manage_lifecycle_case %}<a href="{% url 'portal:lifecycle_case_list' %}" class="block px-4 py-2 hover:bg-gray-50">Checklist &amp; việc được giao</a>{% endif %}
                     <a href="{% url 'portal:timesheet_month' %}" class="block px-4 py-2 hover:bg-gray-50">Bảng công</a>
                     <a href="{% url 'portal:leave_list' %}" class="block px-4 py-2 hover:bg-gray-50">Nghỉ phép</a>
                     <a href="{% url 'portal:kpi_my_list' %}" class="block px-4 py-2 hover:bg-gray-50">KPI</a>
@@ -202,7 +201,6 @@
                     Kế hoạch <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-kh" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
-                    <a href="{% url 'portal:task_list' %}" class="block px-4 py-2 hover:bg-gray-50">Giao việc &amp; hoàn tất</a>
                     <a href="{% url 'portal:event_list' %}" class="block px-4 py-2 hover:bg-gray-50">Lịch công tác</a>
                     <a href="{% url 'portal:training_my_list' %}" class="block px-4 py-2 hover:bg-gray-50">Đào tạo</a>
                 </div>
@@ -221,6 +219,7 @@
                 <div id="menu-hoatdongduan" class="hidden absolute right-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-56 py-1 z-30">
                     <a href="{% url 'portal:activity_dashboard' %}" class="block px-4 py-2 hover:bg-gray-50">Theo dõi hoạt động</a>
                     <a href="{% url 'portal:activity_calendar' %}" class="block px-4 py-2 hover:bg-gray-50">Lịch hoạt động</a>
+                    <a href="{% url 'portal:task_list' %}" class="block px-4 py-2 hover:bg-gray-50">Giao việc &amp; hoàn tất</a>
                 </div>
             </div>
             {% endif %}
@@ -265,7 +264,7 @@
     </script>
     {% endif %}
 
-    <main class="max-w-5xl mx-auto px-6 py-8">
+    <main class="{% block main_container_class %}max-w-5xl{% endblock %} mx-auto px-6 py-8">
         {% if messages %}
             {% for message in messages %}
                 <div class="mb-4 px-4 py-3 rounded-md text-sm font-medium

@@ -104,6 +104,20 @@ input[type="radio"] {
     overscroll-behavior-inline: contain;
 }
 
+.org-chart-stage {
+    width: max-content;
+    min-width: 100%;
+    margin-inline: auto;
+}
+
+.org-chart-stage > .org-chart-roots {
+    width: max-content;
+}
+
+.hr-action-menu summary::-webkit-details-marker {
+    display: none;
+}
+
 .org-chart-roots {
     display: flex;
     align-items: flex-start;
