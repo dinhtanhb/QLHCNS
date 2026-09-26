@@ -34,6 +34,9 @@ class Task(BaseAuditModel):
     start_date = models.DateField("Ngày bắt đầu", null=True, blank=True, db_column="StartDate")
     due_date = models.DateField("Hạn hoàn thành", null=True, blank=True, db_column="DueDate")
     status = models.CharField("Trạng thái", max_length=30, choices=STATUS_CHOICES, default="Todo", db_column="Status")
+    completed_date = models.DateField(
+        "Ngày hoàn thành thực tế", null=True, blank=True, db_column="CompletedDate",
+    )
 
     # Liên kết tới apps.activity.Activity khi Task này là "công việc theo dõi
     # báo cáo" tự động sinh ra cho 1 Hoạt động dự án. Để trống với Task hành

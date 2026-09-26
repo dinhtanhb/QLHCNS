@@ -12,6 +12,7 @@ from apps.leave.models import LeaveApproval, LeaveRequest, LeaveType
 from apps.organization.models import Department, Organization, Position
 from apps.payroll.models import Payroll, PayrollPeriod, Payslip
 from apps.security.models import Role, User
+from apps.task.models import Task
 
 
 class PortalSensitiveWorkflowTests(TestCase):
@@ -245,3 +246,57 @@ class PortalSensitiveWorkflowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'name="employee_code"')
         self.assertContains(response, employee.employee_code)
+
+    def test_task_completed_on_start_day_displays_actual_completion_date(self):
+        employee = self.make_employee("PORTAL-TASK-SAME-DAY")
+        user = self.make_user("EMPLOYEE", employee, "portal-task-same-day")
+        work_date = date(2026, 9, 26)
+        task = Task.objects.create(
+            task_code="PORTAL-TASK-SAME-DAY",
+            task_name="Công việc hoàn thành trong ngày",
+            assigned_by_employee=employee,
+            assigned_to_employee=employee,
+            start_date=work_date,
+            due_date=work_date,
+            status="Todo",
+            created_by=user,
+        )
+        self.client.force_login(user)
+
+        with patch("apps.portal.views.timezone.localdate", return_value=work_date):
+            response = self.client.post(
+                reverse("portal:task_detail", args=(task.pk,)),
+                {"action": "update_status", "status": "Done"},
+            )
+
+        task.refresh_from_db()
+        self.assertRedirects(response, reverse("portal:task_detail", args=(task.pk,)))
+        self.assertEqual(task.start_date, work_date)
+        self.assertEqual(task.due_date, work_date)
+        self.assertEqual(task.completed_date, work_date)
+
+        detail = self.client.get(reverse("portal:task_detail", args=(task.pk,)))
+        self.assertContains(detail, "Ngày bắt đầu:")
+        self.assertContains(detail, "Ngày hoàn thành thực tế:")
+        self.assertContains(detail, "26/09/2026")
+        listing = self.client.get(reverse("portal:task_list"))
+        self.assertContains(listing, "26/09/2026")
+
+        with patch("apps.portal.views.timezone.localdate", return_value=date(2026, 9, 27)):
+            self.client.post(
+                reverse("portal:task_detail", args=(task.pk,)),
+                {"action": "update_status", "status": "InProgress"},
+            )
+        task.refresh_from_db()
+        self.assertIsNone(task.completed_date)
+
+    def test_task_start_date_defaults_to_today(self):
+        employee = self.make_employee("PORTAL-TASK-DEFAULT")
+        user = self.make_user("HR_MANAGER", employee, "portal-task-default")
+        self.client.force_login(user)
+
+        with patch("apps.portal.views.timezone.localdate", return_value=date(2026, 9, 26)):
+            response = self.client.get(reverse("portal:task_create"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'name="start_date" value="2026-09-26"')

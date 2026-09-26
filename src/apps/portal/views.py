@@ -648,6 +648,7 @@ def task_detail(request, pk):
             new_status = request.POST.get("status")
             if new_status in dict(Task.STATUS_CHOICES):
                 task.status = new_status
+                task.completed_date = timezone.localdate() if new_status == "Done" else None
                 try:
                     task.clean()
                     task.save()
@@ -716,7 +717,7 @@ def task_create(request):
                 assigned_to_employee_id=request.POST.get("assigned_to_employee"),
                 department_id=request.POST.get("department") or None,
                 priority=request.POST.get("priority", "Normal"),
-                start_date=request.POST.get("start_date") or None,
+                start_date=request.POST.get("start_date") or timezone.localdate(),
                 due_date=request.POST.get("due_date") or None,
                 created_by=request.user,
             )
@@ -733,7 +734,10 @@ def task_create(request):
         except Exception as e:
             _friendly_error(request, e, "Không thể tạo công việc.")
 
-    return render(request, "portal/task_create.html", {"candidates": candidates})
+    return render(request, "portal/task_create.html", {
+        "candidates": candidates,
+        "today": timezone.localdate(),
+    })
 
 #=============================================
 #KPI

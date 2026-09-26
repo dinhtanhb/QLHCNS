@@ -19,8 +19,9 @@
     <dl class="grid grid-cols-2 gap-y-2 text-sm text-gray-600 border-t border-gray-100 pt-4">
         <div><dt class="inline text-gray-400">Người giao việc: </dt><dd class="inline font-medium">{{ task.assigned_by_employee }}</dd></div>
         <div><dt class="inline text-gray-400">Người phụ trách: </dt><dd class="inline font-medium">{{ task.assigned_to_employee }}</dd></div>
-        <div><dt class="inline text-gray-400">Ngày bắt đầu: </dt><dd class="inline font-medium">{{ task.start_date|default:"—" }}</dd></div>
-        <div><dt class="inline text-gray-400">Hạn hoàn thành: </dt><dd class="inline font-medium">{{ task.due_date|default:"—" }}</dd></div>
+        <div><dt class="inline text-gray-400">Ngày bắt đầu: </dt><dd class="inline font-medium">{{ task.start_date|date:"d/m/Y"|default:"—" }}</dd></div>
+        <div><dt class="inline text-gray-400">Hạn hoàn thành: </dt><dd class="inline font-medium">{{ task.due_date|date:"d/m/Y"|default:"—" }}</dd></div>
+        <div><dt class="inline text-gray-400">Ngày hoàn thành thực tế: </dt><dd class="inline font-medium">{{ task.completed_date|date:"d/m/Y"|default:"Chưa hoàn thành" }}</dd></div>
     </dl>
 
     {% if task.activity_id %}
