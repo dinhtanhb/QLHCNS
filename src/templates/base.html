@@ -102,14 +102,14 @@
     </header>
 
     {% if user.is_authenticated %}
-    <nav class="bg-white border-b border-gray-200 relative z-20">
-        <div class="max-w-5xl mx-auto px-6 flex gap-1 text-sm font-medium">
+    <nav class="portal-nav bg-white border-b border-gray-200 relative z-20" aria-label="Điều hướng chính">
+        <div class="portal-nav-inner text-sm font-medium">
             {% url 'portal:dashboard' as u_dash %}
-            <a href="{{ u_dash }}" class="px-4 py-3 border-b-2 {% if request.path == u_dash %}border-blue-700 text-blue-700{% else %}border-transparent text-gray-600 hover:text-blue-700{% endif %}">Trang chủ</a>
+            <a href="{{ u_dash }}" class="portal-nav-link border-b-2 {% if request.path == u_dash %}border-blue-700 text-blue-700{% else %}border-transparent text-gray-600 hover:text-blue-700{% endif %}">Trang chủ</a>
 
             <!-- CÁ NHÂN -->
-            <div class="relative">
-                <button type="button" onclick="toggleMenu('menu-canhan')" class="px-4 py-3 flex items-center gap-1 text-gray-600 hover:text-blue-700">
+            <div class="portal-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-canhan" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
                     Cá nhân <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-canhan" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
@@ -126,8 +126,8 @@
 
             <!-- DUYỆT & XỬ LÝ -->
             {% if can_approve or can_approve_timesheet or can_manage_calendar or can_approve_document or can_approve_activity_proposals %}
-            <div class="relative">
-                <button type="button" onclick="toggleMenu('menu-duyet')" class="px-4 py-3 flex items-center gap-1 text-gray-600 hover:text-blue-700">
+            <div class="portal-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-duyet" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
                     Duyệt & Xử lý <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-duyet" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
@@ -142,8 +142,8 @@
 
             <!-- NHÂN SỰ -->
             {% if can_manage_hr or can_request_recruitment or can_approve_recruitment %}
-            <div class="relative">
-                <button type="button" onclick="toggleMenu('menu-nhansu')" class="px-4 py-3 flex items-center gap-1 text-gray-600 hover:text-blue-700">
+            <div class="portal-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-nhansu" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
                     Nhân sự <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-nhansu" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
@@ -160,8 +160,8 @@
             {% endif %}
 
             {% if can_manage_finance %}
-            <div class="relative">
-                <button type="button" onclick="toggleMenu('menu-ketoan')" class="px-4 py-3 flex items-center gap-1 text-gray-600 hover:text-blue-700">
+            <div class="portal-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-ketoan" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
                     Kế toán <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-ketoan" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
@@ -174,8 +174,8 @@
             {% endif %}
 
             <!-- HÀNH CHÍNH -->
-            <div class="relative">
-                <button type="button" onclick="toggleMenu('menu-hc')" class="px-4 py-3 flex items-center gap-1 text-gray-600 hover:text-blue-700">
+            <div class="portal-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-hc" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
                     Hành chính <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-hc" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
@@ -193,8 +193,8 @@
             </div>
 
             <!-- KẾ HOẠCH -->
-            <div class="relative">
-                <button type="button" onclick="toggleMenu('menu-kh')" class="px-4 py-3 flex items-center gap-1 text-gray-600 hover:text-blue-700">
+            <div class="portal-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-kh" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
                     Kế hoạch <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-kh" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
@@ -205,12 +205,12 @@
 
             {% if can_view_reports %}
             {% url 'portal:report_hub' as u_report %}
-            <a href="{{ u_report }}" class="px-4 py-3 border-b-2 {% if u_report in request.path %}border-blue-700 text-blue-700{% else %}border-transparent text-gray-600 hover:text-blue-700{% endif %}">Báo cáo</a>
+            <a href="{{ u_report }}" class="portal-nav-link border-b-2 {% if u_report in request.path %}border-blue-700 text-blue-700{% else %}border-transparent text-gray-600 hover:text-blue-700{% endif %}">Báo cáo</a>
             {% endif %}
 
             {% if can_view_activity_dashboard %}
-            <div class="relative">
-                <button type="button" onclick="toggleMenu('menu-hoatdongduan')" class="px-4 py-3 flex items-center gap-1 text-gray-600 hover:text-blue-700">
+            <div class="portal-nav-group portal-nav-group--right">
+                <button type="button" data-menu-trigger aria-controls="menu-hoatdongduan" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
                     Hoạt động dự án <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-hoatdongduan" class="hidden absolute right-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-56 py-1 z-30">
@@ -223,17 +223,40 @@
     </nav>
 
     <script>
-    function toggleMenu(id) {
-        document.querySelectorAll('[id^="menu-"]').forEach(function (el) {
-            if (el.id !== id) el.classList.add('hidden');
-        });
-        document.getElementById(id).classList.toggle('hidden');
-    }
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('nav')) {
-            document.querySelectorAll('[id^="menu-"]').forEach(function (el) { el.classList.add('hidden'); });
+    (function () {
+        const nav = document.querySelector('.portal-nav');
+        if (!nav) return;
+
+        function closeMenus(exceptId) {
+            nav.querySelectorAll('[data-menu-trigger]').forEach(function (button) {
+                const menu = document.getElementById(button.getAttribute('aria-controls'));
+                if (!menu || menu.id === exceptId) return;
+                menu.classList.add('hidden');
+                button.setAttribute('aria-expanded', 'false');
+            });
         }
-    });
+
+        nav.querySelectorAll('[data-menu-trigger]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                const menu = document.getElementById(button.getAttribute('aria-controls'));
+                if (!menu) return;
+                const willOpen = menu.classList.contains('hidden');
+                closeMenus(menu.id);
+                menu.classList.toggle('hidden', !willOpen);
+                button.setAttribute('aria-expanded', String(willOpen));
+            });
+        });
+
+        document.addEventListener('click', function (event) {
+            if (!nav.contains(event.target)) closeMenus();
+        });
+        document.addEventListener('keydown', function (event) {
+            if (event.key !== 'Escape') return;
+            const openButton = nav.querySelector('[data-menu-trigger][aria-expanded="true"]');
+            closeMenus();
+            if (openButton) openButton.focus();
+        });
+    }());
     </script>
     {% endif %}
 

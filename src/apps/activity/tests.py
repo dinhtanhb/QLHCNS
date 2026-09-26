@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 import tempfile
 from urllib.parse import parse_qs, urlsplit
 
@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 
 from apps.activity.models import Activity, ActivityProposal
 from apps.activity.activity_codes import ACTIVITY_CODE_NAMES
@@ -147,14 +148,17 @@ class ActivityWorkflowTests(ActivityTestDataMixin, TestCase):
         task.due_date = date(2026, 9, 30)
         task.save()
 
-        today = date.today()
+        # Keep the reminder assertion independent of the weekday the suite runs on.
+        today = date(2026, 9, 28)  # Monday
         task.due_date = add_company_workdays(today, 1)
         task.save()
 
-        first_run = send_activity_report_reminders(today=today)
-        repeated_run = send_activity_report_reminders(today=today)
         weekend = today + timedelta(days=(5 - today.weekday()) % 7)
-        weekend_run = send_activity_report_reminders(today=weekend)
+        run_time = timezone.make_aware(datetime(2026, 9, 28, 9, 0))
+        with patch("django.utils.timezone.now", return_value=run_time):
+            first_run = send_activity_report_reminders(today=today)
+            repeated_run = send_activity_report_reminders(today=today)
+            weekend_run = send_activity_report_reminders(today=weekend)
 
         self.assertEqual(first_run, 1)
         self.assertEqual(repeated_run, 0)

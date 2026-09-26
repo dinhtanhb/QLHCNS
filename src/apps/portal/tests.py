@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import Decimal
+from hashlib import sha256
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -40,7 +41,7 @@ class PortalSensitiveWorkflowTests(TestCase):
             full_name=f"Nhân viên {code}",
             date_of_birth=date(1990, 1, 1),
             gender="Other",
-            national_id=f"PORTAL-ID-{code}",
+            national_id=sha256(code.encode("utf-8")).hexdigest()[:20],
             company_email=f"{code.lower()}@example.test",
             mobile_phone="0900000000",
             join_date=date(2020, 1, 1),
