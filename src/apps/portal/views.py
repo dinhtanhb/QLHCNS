@@ -610,8 +610,18 @@ def _can_assign_task(request):
 @login_required
 def task_list(request):
     employee = _get_employee(request)
-    tasks = Task.objects.filter(assigned_to_employee=employee).order_by("due_date") if employee else []
-    return render(request, "portal/task_list.html", {"tasks": tasks, "can_assign_task": _can_assign_task(request)})
+    is_project_overview = has_permission(request.user, "view_activity_dashboard")
+    task_scope = Q(assigned_to_employee=employee) if employee else Q(pk__in=[])
+    if is_project_overview:
+        task_scope |= Q(activity__in=visible_activities_for(request.user))
+    tasks = Task.objects.filter(task_scope).select_related(
+        "assigned_to_employee", "assigned_by_employee", "activity"
+    ).order_by("due_date", "created_date")
+    return render(request, "portal/task_list.html", {
+        "tasks": tasks,
+        "can_assign_task": _can_assign_task(request),
+        "is_project_overview": is_project_overview,
+    })
 
 
 @login_required
@@ -2225,7 +2235,11 @@ def hr_employee_create(request):
         except Exception as e:
             _friendly_error(request, e, "Không thể tạo hồ sơ.")
 
-    initial = {k: request.GET.get(k, "") for k in ["employee_code", "first_name", "last_name", "full_name", "personal_email", "mobile_phone", "address", "join_date"]}
+    initial_fields = (
+        "employee_code", "first_name", "last_name", "full_name",
+        "personal_email", "mobile_phone", "address", "join_date",
+    )
+    initial = {field: request.GET.get(field, "") for field in initial_fields}
     if not initial.get("employee_code"):
         initial["employee_code"] = _generate_next_employee_code()
     if "employee_code" not in initial or not initial.get("employee_code"):
@@ -2253,8 +2267,14 @@ def hr_employee_edit(request, pk):
         except Exception as e:
             _friendly_error(request, e, "Không thể cập nhật.")
 
+    initial = {
+        field: "" for field in (
+            "employee_code", "first_name", "last_name", "full_name",
+            "personal_email", "mobile_phone", "address", "join_date",
+        )
+    }
     return render(request, "portal/hr_employee_form.html", {
-        "employee": employee, "initial": {},
+        "employee": employee, "initial": initial,
         "departments": Department.objects.filter(is_active=True), "positions": Position.objects.all(),
         "job_titles": JobTitle.objects.all(),
         "managers": Employee.objects.filter(employment_status="Active").exclude(pk=employee.pk),

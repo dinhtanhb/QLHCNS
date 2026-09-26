@@ -148,16 +148,30 @@ class ActivityWorkflowTests(ActivityTestDataMixin, TestCase):
         task.due_date = date(2026, 9, 30)
         task.save()
 
-        # Keep the reminder assertion independent of the weekday the suite runs on.
-        today = date(2026, 9, 28)  # Monday
+        # Mốc cố định (thứ Hai) thay vì date.today(): bản cũ dùng ngày chạy
+        # thật nên tự fail vào cuối tuần (thứ Bảy/Chủ nhật) vì
+        # is_company_workday() luôn trả False cho ngày đó — không liên quan
+        # gì đến logic đang kiểm thử.
+        #
+        # send_activity_report_reminders() chống gửi trùng bằng cách so
+        # created_date__date=today, nhưng created_date của Notification luôn
+        # lấy giờ hệ thống thật (auto_now_add), không phải tham số `today`.
+        # Ngoài production hai giá trị này luôn khớp (lệnh chạy hằng ngày
+        # không truyền `today`); trong test phải "đóng băng" đồng hồ hệ
+        # thống về đúng mốc cố định thì mới tái hiện đúng hành vi thật —
+        # nếu không, first_run/repeated_run sẽ tự lệch bất kể ngày nào chạy.
+        today = date(2026, 10, 5)
+        frozen_now = timezone.make_aware(datetime(2026, 10, 5, 9, 0, 0))
         task.due_date = add_company_workdays(today, 1)
         task.save()
 
-        weekend = today + timedelta(days=(5 - today.weekday()) % 7)
-        run_time = timezone.make_aware(datetime(2026, 9, 28, 9, 0))
-        with patch("django.utils.timezone.now", return_value=run_time):
+        with patch("django.utils.timezone.now", return_value=frozen_now):
             first_run = send_activity_report_reminders(today=today)
             repeated_run = send_activity_report_reminders(today=today)
+
+        weekend = today + timedelta(days=(5 - today.weekday()) % 7)
+        weekend_now = timezone.make_aware(datetime(weekend.year, weekend.month, weekend.day, 9, 0, 0))
+        with patch("django.utils.timezone.now", return_value=weekend_now):
             weekend_run = send_activity_report_reminders(today=weekend)
 
         self.assertEqual(first_run, 1)
@@ -393,6 +407,34 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.own_activity.activity_code)
         self.assertNotContains(response, self.other_activity.activity_code)
+
+    def test_project_coordinator_can_see_report_task_assigned_to_cbda(self):
+        activity = self.make_activity("ACT-TASK-COORD", dispatch=self.dispatch)
+        coordinator_role, _ = Role.objects.get_or_create(
+            role_code="PROJECT_COORDINATOR", defaults={"role_name": "Điều phối dự án"}
+        )
+        self.create_user("coordinator_task_list", self.coordinator, coordinator_role)
+        self.client.login(username="coordinator_task_list", password="test-password")
+
+        response = self.client.get(reverse("portal:task_list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Giao việc &amp; hoàn tất")
+        self.assertContains(response, activity.activity_code)
+        self.assertContains(response, self.cbda.full_name)
+        self.assertEqual(list(response.context["tasks"]), [Task.objects.get(activity=activity)])
+
+    def test_cbda_task_list_shows_only_activities_in_own_scope(self):
+        own_activity = self.make_activity("ACT-TASK-OWN", dispatch=self.dispatch)
+        other_activity = self.make_activity("ACT-TASK-OTHER", dispatch=self.dispatch, lead=self.other_cbda)
+        self.create_user("cbda_task_list", self.cbda, self.cbda_role)
+        self.client.login(username="cbda_task_list", password="test-password")
+
+        response = self.client.get(reverse("portal:task_list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, own_activity.activity_code)
+        self.assertNotContains(response, other_activity.activity_code)
 
     def test_cbda_filter_limits_activity_dashboard_rows(self):
         coordinator_role, _ = Role.objects.get_or_create(

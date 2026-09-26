@@ -234,3 +234,14 @@ class PortalSensitiveWorkflowTests(TestCase):
         self.assertContains(response, "<details class=\"hr-action-menu relative inline-block\">")
         self.assertContains(response, reverse("portal:hr_employee_edit", args=(employee.pk,)))
         self.assertNotContains(response, "toggleMenu(")
+
+    def test_hr_can_open_edit_employee_form_without_missing_initial_values(self):
+        employee = self.make_employee("PORTAL-EDIT-FORM")
+        user = self.make_user("HR_OFFICER", employee, "portal-edit-form")
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("portal:hr_employee_edit", args=(employee.pk,)))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'name="employee_code"')
+        self.assertContains(response, employee.employee_code)

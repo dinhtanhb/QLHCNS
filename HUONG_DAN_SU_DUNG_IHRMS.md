@@ -131,7 +131,11 @@ Khi yêu cầu chỉnh sửa, người gửi, người tạo hồ sơ, CBDA ph�
 
 ### Theo dõi hoạt động và Task báo cáo
 
-Dashboard **Theo dõi hoạt động** cho biết người phụ trách, thời gian, trạng thái Task, hạn báo cáo, tệp báo cáo và trạng thái hồ sơ đề xuất. Dùng bộ lọc tháng/CBDA; dùng **Lịch hoạt động** để xem ngày triển khai và hạn báo cáo. CBDA mở Task được giao, cập nhật tiến độ và tải báo cáo hoạt động lên SharePoint theo chỉ dẫn trong Task. Task chỉ hoàn thành khi đã có báo cáo. Nhắc hạn cần Windows Task Scheduler được IT cấu hình; không mặc định rằng lịch nhắc đã chạy tự động nếu chưa được kiểm tra.
+Dashboard **Theo dõi hoạt động** cho biết người phụ trách, thời gian, trạng thái Task, hạn báo cáo, tệp báo cáo và trạng thái hồ sơ đề xuất. Dùng bộ lọc tháng/CBDA; dùng **Lịch hoạt động** để xem ngày triển khai và hạn báo cáo.
+
+Khi Điều phối viên/Quản lý dự án tạo hoặc cập nhật hoạt động, chọn CBDA phụ trách chính và liên kết công văn đi đã lập trong hệ thống. Sau khi lưu, IHRMS tự tạo Task báo cáo cho CBDA đó; người giao được ghi nhận là Điều phối viên, hoặc người ký công văn nếu hồ sơ không có Điều phối viên. Hạn là 10 ngày làm việc từ ngày gửi trên công văn. Không cần bấm “Giao việc mới” cho Task báo cáo hoạt động. Nếu chưa thấy Task, kiểm tra hoạt động đã được liên kết công văn đi và đã chọn đúng CBDA chưa.
+
+Mở **Hoạt động dự án → Giao việc & hoàn tất** để xem danh sách. CBDA thấy Task thuộc hoạt động mình phụ trách; Điều phối viên, Quản lý dự án và vai trò giám sát thấy Task trong phạm vi hoạt động được phép xem. Mở Task, cập nhật tiến độ; CBDA tải báo cáo hoạt động lên SharePoint rồi mới chọn **Hoàn thành**. Dashboard **Theo dõi hoạt động** cũng thể hiện trạng thái Task và tệp báo cáo. Nhắc hạn cần Windows Task Scheduler được IT cấu hình; không mặc định rằng lịch nhắc đã chạy tự động nếu chưa được kiểm tra.
 
 ## 6. Nhân sự
 
