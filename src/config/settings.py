@@ -105,6 +105,7 @@ INSTALLED_APPS = (['jazzmin'] if HAS_JAZZMIN else []) + [
     'apps.planning',
     'apps.m365',
     'apps.activity',
+    'apps.lifecycle',
 ]
 
 MIDDLEWARE = [

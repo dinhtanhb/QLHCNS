@@ -66,6 +66,8 @@ PERMISSION_MATRIX = {
         PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA, SYS_ADMIN,
     ),
     "approve_profile_change_request": (HR_OFFICER, HR_MANAGER),
+    "manage_lifecycle_case": (HR_OFFICER, HR_MANAGER),
+    "view_own_lifecycle_items": (EMPLOYEE, DEPT_MANAGER, HR_OFFICER, HR_MANAGER, SYS_ADMIN, FINANCE_OFFICER),
     # Tài chính, bảng lương
     "manage_finance": (FINANCE_OFFICER,),
     # Văn thư: công văn đến, phân công xử lý — chỉ Nhân sự và Quản trị hệ thống

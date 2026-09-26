@@ -6,6 +6,7 @@ from apps.activity.views import (
     activity_proposal_decide, activity_update,
 )
 from apps.activity.views import activity_proposal_approval_list, activity_proposal_file
+from apps.lifecycle import views as lifecycle_views
 
 app_name = "portal"
 
@@ -19,6 +20,11 @@ urlpatterns = [
     path("profile/requests/new/", views.profile_change_request_create, name="profile_change_request_create"),
     path("profile/requests/<int:pk>/decide/", views.profile_change_request_decide, name="profile_change_request_decide"),
     path("profile/requests/<int:pk>/attachment/", views.profile_change_request_attachment, name="profile_change_request_attachment"),
+    path("lifecycle/", lifecycle_views.lifecycle_case_list, name="lifecycle_case_list"),
+    path("lifecycle/cases/create/", lifecycle_views.lifecycle_case_create, name="lifecycle_case_create"),
+    path("lifecycle/cases/<int:pk>/", lifecycle_views.lifecycle_case_detail, name="lifecycle_case_detail"),
+    path("lifecycle/items/<int:pk>/assign/", lifecycle_views.lifecycle_item_assign, name="lifecycle_item_assign"),
+    path("lifecycle/items/<int:pk>/update/", lifecycle_views.lifecycle_item_update, name="lifecycle_item_update"),
     path("attendance/", views.attendance_list, name="attendance"),
     path("leave/", views.leave_list, name="leave_list"),
     path("leave/create/", views.leave_create, name="leave_create"),

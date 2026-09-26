@@ -151,6 +151,18 @@ def dashboard(request):
     is_super = request.user.is_superuser
     context = {"employee": employee}
 
+    if has_permission(request.user, "view_own_lifecycle_items"):
+        from apps.lifecycle.models import LifecycleChecklistItem
+        overdue_items = LifecycleChecklistItem.objects.filter(
+            case__status="Open", status="Pending", due_date__lt=timezone.localdate()
+        )
+        if has_permission(request.user, "manage_lifecycle_case"):
+            context["lifecycle_overdue_count"] = overdue_items.count()
+        elif employee:
+            context["lifecycle_overdue_count"] = overdue_items.filter(assigned_to_user=request.user).count()
+        else:
+            context["lifecycle_overdue_count"] = 0
+
     # Shared homepage: show the current month's project activity progress only
     # to roles that can open the activity dashboard. The scoped queryset keeps
     # department managers within their own departments.

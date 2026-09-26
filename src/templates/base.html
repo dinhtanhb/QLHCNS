@@ -116,6 +116,7 @@
                     <a href="{% url 'portal:profile' %}" class="block px-4 py-2 hover:bg-gray-50">Hồ sơ cá nhân</a>
                     <a href="{% url 'portal:profile_change_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">Yêu cầu cập nhật hồ sơ</a>
                     <a href="{% url 'portal:org_chart' %}" class="block px-4 py-2 hover:bg-gray-50">Sơ đồ tổ chức</a>
+                    <a href="{% url 'portal:lifecycle_case_list' %}" class="block px-4 py-2 hover:bg-gray-50">Checklist nhân sự</a>
                     <a href="{% url 'portal:timesheet_month' %}" class="block px-4 py-2 hover:bg-gray-50">Bảng công</a>
                     <a href="{% url 'portal:leave_list' %}" class="block px-4 py-2 hover:bg-gray-50">Nghỉ phép</a>
                     <a href="{% url 'portal:task_list' %}" class="block px-4 py-2 hover:bg-gray-50">Công việc</a>
@@ -152,6 +153,7 @@
                     {% if can_manage_hr %}
                     <a href="{% url 'portal:hr_employee_list' %}" class="block px-4 py-2 hover:bg-gray-50">NV & Hồ sơ</a>
                     <a href="{% url 'portal:profile_change_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt cập nhật hồ sơ</a>
+                    <a href="{% url 'portal:lifecycle_case_list' %}" class="block px-4 py-2 hover:bg-gray-50">Onboarding / Offboarding</a>
                     <a href="{% url 'portal:hr_contract_list' %}" class="block px-4 py-2 hover:bg-gray-50">Hợp đồng</a>
                     <a href="{% url 'portal:hr_candidate_list' %}" class="block px-4 py-2 hover:bg-gray-50">Ứng viên</a>
                     {% endif %}
