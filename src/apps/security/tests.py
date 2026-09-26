@@ -53,13 +53,18 @@ class PermissionMatrixTests(TestCase):
         cls.no_role = User.objects.create_user(username="chua_gan_vai_tro", password="x")
 
     # ---------- Nhân viên thường ----------
-    def test_nhan_vien_thuong_khong_co_quyen_nao(self):
+    def test_nhan_vien_thuong_chi_co_quyen_tu_phuc_vu(self):
         user = self.users[EMPLOYEE]
         for permission in PERMISSION_MATRIX:
-            self.assertFalse(
-                has_permission(user, permission),
-                f"Nhân viên thường KHÔNG được có quyền '{permission}'",
+            expected_self_service = permission in {
+                "submit_profile_change_request", "view_own_lifecycle_items",
+            }
+            self.assertEqual(
+                has_permission(user, permission), expected_self_service,
+                f"Unexpected employee permission '{permission}'",
             )
+        self.assertFalse(has_permission(user, "approve_profile_change_request"))
+        self.assertFalse(has_permission(user, "manage_lifecycle_case"))
 
     def test_tai_khoan_chua_gan_vai_tro_khong_co_quyen_nao(self):
         for permission in PERMISSION_MATRIX:
@@ -111,7 +116,8 @@ class PermissionMatrixTests(TestCase):
     def test_permission_flags_tra_ve_du_co_cho_giao_dien(self):
         flags = permission_flags(self.users[EMPLOYEE])
         self.assertEqual(set(flags), {f"can_{name}" for name in PERMISSION_MATRIX})
-        self.assertFalse(any(flags.values()))
+        enabled = {name for name, allowed in flags.items() if allowed}
+        self.assertEqual(enabled, {"can_submit_profile_change_request", "can_view_own_lifecycle_items"})
 
 
 # ==================================================================
