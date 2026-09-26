@@ -175,3 +175,31 @@ class PortalSensitiveWorkflowTests(TestCase):
         open_pdf = self.client.get(reverse("portal:payslip_pdf", args=(open_payslip.pk,)))
         self.assertEqual(open_pdf.status_code, 404)
         self.assertNotEqual(locked_payslip.pk, open_payslip.pk)
+
+    def test_org_chart_displays_manager_chain_and_search(self):
+        manager = self.make_employee("PORTAL-CHART-MANAGER")
+        report = self.make_employee("PORTAL-CHART-REPORT")
+        report.manager = manager
+        report.save(update_fields=("manager",))
+        user = self.make_user("EMPLOYEE", report, "portal-chart-viewer")
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("portal:org_chart"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="org-chart-search"')
+        self.assertContains(response, "Báo cáo cho:")
+        self.assertContains(response, manager.full_name)
+        self.assertContains(response, report.full_name)
+        self.assertEqual(response.context["employee_count"], 2)
+
+    def test_task_menu_is_explicitly_listed_under_planning(self):
+        employee = self.make_employee("PORTAL-TASK-MENU")
+        user = self.make_user("EMPLOYEE", employee, "portal-task-menu")
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("portal:dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse("portal:task_list"))
+        self.assertContains(response, "Giao việc &amp; hoàn tất")

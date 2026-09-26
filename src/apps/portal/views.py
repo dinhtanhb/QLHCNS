@@ -279,7 +279,7 @@ def org_chart(request):
               "position__position_name", "manager_id")
         .order_by("full_name", "id")
     )
-    nodes = {employee.pk: {"employee": employee, "children": []} for employee in employees}
+    nodes = {employee.pk: {"employee": employee, "children": [], "manager": None} for employee in employees}
     parents = {employee.pk: employee.manager_id for employee in employees}
     roots = []
     # Break any pre-existing manager cycle deterministically by making the
@@ -296,8 +296,13 @@ def org_chart(request):
         if cursor in visited:
             roots.append(nodes[employee.pk])
         else:
+            nodes[employee.pk]["manager"] = nodes[parent_id]["employee"]
             nodes[parent_id]["children"].append(nodes[employee.pk])
-    return render(request, "portal/org_chart.html", {"roots": roots})
+    return render(request, "portal/org_chart.html", {
+        "roots": roots,
+        "employee_count": len(employees),
+        "department_count": len({employee.department_id for employee in employees if employee.department_id}),
+    })
 
 
 @login_required

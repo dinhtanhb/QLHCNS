@@ -1,10 +1,21 @@
-<div class="border-l-2 border-blue-100 pl-4 py-1 {% if depth %}ml-3 sm:ml-6{% endif %}">
-  <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 max-w-xl">
-    <p class="font-semibold text-gray-900">{{ node.employee.full_name }}</p>
-    <p class="text-sm text-gray-600">{{ node.employee.position.position_name|default:"Chưa cập nhật chức vụ" }}</p>
-    <p class="text-xs text-gray-500 mt-1">{{ node.employee.department.department_name|default:"Chưa phân phòng ban" }}</p>
-  </div>
-  {% for child in node.children %}
-    {% include "portal/org_chart_node.html" with node=child depth=depth|add:1 %}
-  {% endfor %}
-</div>
+{% if is_root %}
+<div class="org-chart-root-node" data-org-node data-search-text="{{ node.employee.full_name }} {{ node.employee.position.position_name }} {{ node.employee.department.department_name }}">
+{% else %}
+<li class="org-chart-node" data-org-node data-search-text="{{ node.employee.full_name }} {{ node.employee.position.position_name }} {{ node.employee.department.department_name }}">
+{% endif %}
+  <article class="org-chart-card">
+    <div class="org-chart-avatar" aria-hidden="true">{{ node.employee.full_name|slice:":1"|upper }}</div>
+    <div class="min-w-0 text-left">
+      <h2 class="truncate font-semibold text-slate-900" title="{{ node.employee.full_name }}">{{ node.employee.full_name }}</h2>
+      <p class="mt-0.5 text-sm text-slate-700">{{ node.employee.position.position_name|default:"Chưa cập nhật chức vụ" }}</p>
+      <p class="mt-1 text-xs text-slate-500">{{ node.employee.department.department_name|default:"Chưa phân phòng ban" }}</p>
+      {% if node.manager %}<p class="mt-2 border-t border-slate-100 pt-2 text-xs text-slate-500">Báo cáo cho: <span class="font-medium text-slate-700">{{ node.manager.full_name }}</span></p>{% endif %}
+      {% if node.children %}<p class="mt-2 inline-flex rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800">{{ node.children|length }} báo cáo trực tiếp</p>{% endif %}
+    </div>
+  </article>
+  {% if node.children %}
+  <ul class="org-chart-children{% if node.children|length > 1 %} org-chart-children--branches{% endif %}">
+    {% for child in node.children %}{% include "portal/org_chart_node.html" with node=child is_root=False %}{% endfor %}
+  </ul>
+  {% endif %}
+{% if is_root %}</div>{% else %}</li>{% endif %}

@@ -96,3 +96,127 @@ input[type="radio"] {
         font-size: 0.8125rem;
     }
 }
+
+/* Organization chart: clear manager-to-report connectors with searchable cards. */
+.org-chart-viewport {
+    overflow-x: auto;
+    padding: 0.75rem 0.25rem 1.5rem;
+    overscroll-behavior-inline: contain;
+}
+
+.org-chart-roots {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2rem;
+    width: max-content;
+    min-width: 100%;
+}
+
+.org-chart-root-node {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+}
+
+.org-chart-card {
+    display: flex;
+    width: 17rem;
+    min-height: 7rem;
+    align-items: flex-start;
+    gap: 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-top: 3px solid #2563eb;
+    border-radius: 0.875rem;
+    background: #fff;
+    padding: 0.875rem;
+    text-align: left;
+    box-shadow: 0 2px 6px rgb(15 23 42 / 0.06);
+}
+
+.org-chart-root-node > .org-chart-card {
+    border-top-color: #0f766e;
+    background: #f8fffe;
+}
+
+.org-chart-avatar {
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 9999px;
+    background: #dbeafe;
+    color: #1e40af;
+    font-weight: 700;
+}
+
+.org-chart-root-node > .org-chart-card .org-chart-avatar {
+    background: #ccfbf1;
+    color: #115e59;
+}
+
+.org-chart-children {
+    display: flex;
+    position: relative;
+    width: max-content;
+    justify-content: center;
+    margin: 0 auto;
+    padding: 1.5rem 0 0;
+}
+
+.org-chart-node {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+    list-style: none;
+    padding: 1.5rem 0.75rem 0;
+}
+
+.org-chart-node::before {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    height: 1.5rem;
+    border-left: 2px solid #bfdbfe;
+    content: "";
+}
+
+.org-chart-children--branches > .org-chart-node:not(:only-child)::after {
+    position: absolute;
+    top: 0;
+    border-top: 2px solid #bfdbfe;
+    content: "";
+}
+
+.org-chart-children--branches > .org-chart-node:first-child::after {
+    left: 50%;
+    width: 50%;
+}
+
+.org-chart-children--branches > .org-chart-node:last-child::after {
+    right: 50%;
+    width: 50%;
+}
+
+.org-chart-children--branches > .org-chart-node:not(:first-child):not(:last-child)::after {
+    right: 0;
+    left: 0;
+}
+
+.org-chart-node[hidden],
+.org-chart-root-node[hidden] {
+    display: none;
+}
+
+@media (max-width: 640px) {
+    .org-chart-roots {
+        justify-content: flex-start;
+    }
+
+    .org-chart-card {
+        width: 15rem;
+    }
+}

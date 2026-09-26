@@ -25,6 +25,7 @@ from apps.security.permissions import (
     PERMISSION_MATRIX,
     PROJECT_COORDINATOR,
     PROJECT_MANAGER,
+    CBDA,
     STAFF_ALSO_ALLOWED,
     SYS_ADMIN,
     has_permission,
@@ -42,7 +43,7 @@ class PermissionMatrixTests(TestCase):
             code: Role.objects.get_or_create(role_code=code, defaults={"role_name": code})[0]
             for code in (
                 EMPLOYEE, DEPT_MANAGER, HR_MANAGER, HR_OFFICER, DIRECTOR,
-                FINANCE_OFFICER, SYS_ADMIN, PROJECT_MANAGER, PROJECT_COORDINATOR,
+                FINANCE_OFFICER, SYS_ADMIN, PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA,
             )
         }
         cls.users = {
@@ -107,6 +108,11 @@ class PermissionMatrixTests(TestCase):
         self.assertTrue(has_permission(self.users[DEPT_MANAGER], "approve_leave"))
         self.assertFalse(has_permission(self.users[DEPT_MANAGER], "approve_leave_all_departments"))
         self.assertFalse(has_permission(self.users[EMPLOYEE], "approve_leave"))
+
+    def test_project_roles_can_view_only_their_lifecycle_checklists(self):
+        for code in (DIRECTOR, PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA):
+            self.assertTrue(has_permission(self.users[code], "view_own_lifecycle_items"), code)
+            self.assertFalse(has_permission(self.users[code], "manage_lifecycle_case"), code)
 
     # ---------- Superuser ----------
     def test_superuser_co_moi_quyen(self):

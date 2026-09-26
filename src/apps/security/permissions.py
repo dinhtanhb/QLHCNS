@@ -67,7 +67,13 @@ PERMISSION_MATRIX = {
     ),
     "approve_profile_change_request": (HR_OFFICER, HR_MANAGER),
     "manage_lifecycle_case": (HR_OFFICER, HR_MANAGER),
-    "view_own_lifecycle_items": (EMPLOYEE, DEPT_MANAGER, HR_OFFICER, HR_MANAGER, SYS_ADMIN, FINANCE_OFFICER),
+    # Any staff role may receive checklist items. This grants access only to
+    # their own employee case or items assigned to their account; HR retains
+    # the separate permission to manage and view all cases.
+    "view_own_lifecycle_items": (
+        EMPLOYEE, DEPT_MANAGER, HR_OFFICER, HR_MANAGER, SYS_ADMIN, FINANCE_OFFICER,
+        DIRECTOR, PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA,
+    ),
     "export_compliance_report": (FINANCE_OFFICER, HR_MANAGER, DIRECTOR),
     # Tài chính, bảng lương
     "manage_finance": (FINANCE_OFFICER,),

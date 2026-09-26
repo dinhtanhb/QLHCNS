@@ -3,13 +3,13 @@
 {% block content %}
 <div class="max-w-5xl mx-auto space-y-5">
   <div class="bg-white border border-gray-200 rounded-xl p-6 flex flex-wrap items-center justify-between gap-3">
-    <div><h1 class="text-2xl font-bold text-gray-900">Checklist nhân sự</h1><p class="text-sm text-gray-600 mt-1">Theo dõi các đầu việc tiếp nhận và nghỉ việc.</p></div>
-    {% if can_manage_lifecycle_case %}<a href="{% url 'portal:lifecycle_case_create' %}" class="rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white">Mở checklist</a>{% endif %}
+    <div><h1 class="text-2xl font-bold text-gray-900">{% if can_manage_lifecycle_case %}Quản lý checklist nhân sự{% else %}Checklist &amp; việc được giao{% endif %}</h1><p class="text-sm text-gray-600 mt-1">{% if can_manage_lifecycle_case %}HR mở hồ sơ tiếp nhận/nghỉ việc, giao từng đầu việc và theo dõi toàn bộ tiến độ.{% else %}Bạn chỉ thấy hồ sơ của mình và checklist có đầu việc được giao cho bạn. Mở hồ sơ để cập nhật hoặc hoàn tất đầu việc.{% endif %}</p></div>
+    {% if can_manage_lifecycle_case %}<a href="{% url 'portal:lifecycle_case_create' %}" class="rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white">Mở checklist mới</a>{% endif %}
   </div>
   <div class="overflow-x-auto rounded-xl border border-gray-200 bg-white">
     <table class="w-full text-left text-sm"><thead class="bg-gray-50 text-xs uppercase text-gray-600"><tr><th class="px-4 py-3">Nhân viên</th><th class="px-4 py-3">Loại</th><th class="px-4 py-3">Ngày hiệu lực</th><th class="px-4 py-3">Mẫu</th><th class="px-4 py-3">Trạng thái</th><th class="px-4 py-3"></th></tr></thead><tbody class="divide-y divide-gray-100">
       {% for case in cases %}<tr><td class="px-4 py-3 font-medium">{{ case.employee.full_name }}</td><td class="px-4 py-3">{{ case.get_case_type_display }}</td><td class="px-4 py-3">{{ case.effective_date|date:"d/m/Y" }}</td><td class="px-4 py-3">{{ case.template.template_name }}</td><td class="px-4 py-3">{{ case.get_status_display }}</td><td class="px-4 py-3"><a class="text-blue-700 underline" href="{% url 'portal:lifecycle_case_detail' case.pk %}">Mở</a></td></tr>
-      {% empty %}<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">Chưa có checklist.</td></tr>{% endfor %}
+      {% empty %}<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">{% if can_manage_lifecycle_case %}Chưa có hồ sơ onboarding/offboarding. HR có thể mở checklist theo mẫu đã được duyệt.{% else %}Chưa có checklist hoặc đầu việc nào được giao cho bạn.{% endif %}</td></tr>{% endfor %}
     </tbody></table>
   </div>
 </div>

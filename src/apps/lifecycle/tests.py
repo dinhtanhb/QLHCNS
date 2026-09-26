@@ -106,6 +106,37 @@ class LifecycleWorkflowTests(TestCase):
         self.assertEqual(item.status, "Done")
         self.assertEqual(case.status, "Completed")
 
+    def test_project_coordinator_can_open_assigned_checklist_from_personal_menu(self):
+        case_employee = self.make_employee("COORD-TGT")
+        coordinator_employee = self.make_employee("COORD-ASG")
+        coordinator = self.make_user(
+            coordinator_employee, "PROJECT_COORDINATOR", "lifecycle-coordinator"
+        )
+        unrelated = self.make_user(
+            self.make_employee("COORD-OTH"), "PROJECT_MANAGER", "lifecycle-unrelated"
+        )
+        template, _ = self.make_template(code="COORD-TPL", role_code="PROJECT_COORDINATOR")
+        case, _ = open_onboarding_case(case_employee, template)
+        item = case.items.get()
+        item.assigned_to_user = coordinator
+        item.save(update_fields=("assigned_to_user",))
+
+        self.client.force_login(coordinator)
+        listing = self.client.get(reverse("portal:lifecycle_case_list"))
+        detail = self.client.get(reverse("portal:lifecycle_case_detail", args=(case.pk,)))
+        self.assertEqual(listing.status_code, 200)
+        self.assertContains(listing, "việc được giao", html=False)
+        self.assertContains(listing, case_employee.full_name)
+        self.assertEqual(detail.status_code, 200)
+        self.assertContains(detail, "Hoàn tất")
+
+        self.client.force_login(unrelated)
+        unrelated_listing = self.client.get(reverse("portal:lifecycle_case_list"))
+        unrelated_detail = self.client.get(reverse("portal:lifecycle_case_detail", args=(case.pk,)))
+        self.assertEqual(unrelated_listing.status_code, 200)
+        self.assertNotContains(unrelated_listing, case_employee.full_name)
+        self.assertEqual(unrelated_detail.status_code, 403)
+
     def test_hr_can_link_existing_asset_return_without_deleting_allocation_history(self):
         employee = self.make_employee("OFFBOARD")
         template, _ = self.make_template(code="ASSET-TPL", role_code="HR_OFFICER", requires_asset_return=True)
