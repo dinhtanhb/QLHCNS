@@ -48,9 +48,9 @@ input[type="radio"] {
     flex-wrap: wrap;
     align-items: stretch;
     gap: 0.125rem;
-    max-width: 80rem;
+    max-width: 64rem;
     margin-inline: auto;
-    padding-inline: clamp(0.5rem, 2vw, 1.5rem);
+    padding-inline: 1.5rem;
 }
 
 .portal-nav-group {
@@ -90,10 +90,6 @@ input[type="radio"] {
 }
 
 @media (max-width: 640px) {
-    .portal-nav-inner {
-        padding-inline: 0.5rem;
-    }
-
     .portal-nav-link,
     .portal-nav-trigger {
         padding-inline: 0.5rem;
