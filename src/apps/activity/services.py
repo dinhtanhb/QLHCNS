@@ -95,15 +95,47 @@ def create_task_for_activity(activity):
     if activity.status == "Cancelled":
         return None, False
 
-    existing = Task.objects.filter(activity=activity).first()
-    if existing:
-        return existing, False
-
     dispatch = activity.outgoing_document
     if dispatch.dispatch_type != "Outgoing":
         raise ValueError("Chỉ có thể tạo Task từ Công văn đi.")
-    issued_date = dispatch.received_or_sent_date
-    due_date = add_company_workdays(issued_date, ACTIVITY_REPORT_DEADLINE_WORKING_DAYS)
+    due_date = add_company_workdays(activity.end_date, ACTIVITY_REPORT_DEADLINE_WORKING_DAYS)
+    existing = Task.objects.filter(activity=activity).first()
+    if existing:
+        if existing.status == "Cancelled":
+            return existing, False
+        schedule_changed = (
+            existing.start_date != activity.start_date or existing.due_date != due_date
+        )
+        if not schedule_changed:
+            return existing, False
+
+        update_fields = []
+        if existing.start_date != activity.start_date:
+            existing.start_date = activity.start_date
+            update_fields.append("start_date")
+        if existing.due_date != due_date:
+            existing.due_date = due_date
+            update_fields.append("due_date")
+
+        reopened = (
+            existing.status == "Done"
+            and (existing.completed_date is None or existing.completed_date < activity.end_date)
+        )
+        if reopened:
+            # A report marked complete before the rescheduled activity ends cannot
+            # satisfy the new schedule. Detach the old report without deleting it
+            # from SharePoint so the assignee can upload the current report later.
+            existing.status = "Todo"
+            existing.completed_date = None
+            existing.report_file = None
+            update_fields.extend(("status", "completed_date", "report_file"))
+
+        update_fields.append("modified_date")
+        existing.save(update_fields=update_fields)
+        _notify_task_schedule_changed(existing, activity, due_date, reopened=reopened)
+        return existing, False
+
+    start_date = activity.start_date
     task_code = f"ACT-{activity.pk}-REPORT"
     task, created = Task.objects.get_or_create(
         task_code=task_code,
@@ -118,7 +150,7 @@ def create_task_for_activity(activity):
             "assigned_to_employee": activity.lead_cbda,
             "department": activity.project.department,
             "priority": "High",
-            "start_date": issued_date,
+            "start_date": start_date,
             "due_date": due_date,
             "status": "Todo",
             "activity": activity,
@@ -131,6 +163,30 @@ def create_task_for_activity(activity):
     if created:
         _notify_task_assigned(task, activity, due_date)
     return task, created
+
+
+def _notify_task_schedule_changed(task, activity, due_date, *, reopened=False):
+    from apps.notification.services import notify
+
+    message = (
+        f"{activity.activity_name}: thời gian hoạt động {activity.start_date:%d/%m/%Y}–"
+        f"{activity.end_date:%d/%m/%Y}; hạn báo cáo {due_date:%d/%m/%Y}."
+    )
+    if reopened:
+        message += " Task được mở lại vì lịch mới kết thúc sau ngày hoàn thành trước đó. Vui lòng nộp báo cáo theo lịch mới."
+
+    recipients = [task.assigned_to_employee]
+    if task.assigned_by_employee_id != task.assigned_to_employee_id:
+        recipients.append(task.assigned_by_employee)
+    for employee in recipients:
+        notify(
+            employee=employee,
+            notification_type="ActivityTaskScheduleChanged",
+            title="Lịch Task báo cáo hoạt động đã thay đổi",
+            message=message,
+            link=f"/portal/tasks/{task.pk}/",
+            created_by=activity.modified_by,
+        )
 
 
 def _notify_task_assigned(task, activity, due_date):

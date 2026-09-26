@@ -99,12 +99,16 @@ class ActivityWorkflowTests(ActivityTestDataMixin, TestCase):
         )
 
     def test_linking_issued_dispatch_creates_one_assigned_report_task(self):
-        activity = self.make_activity(dispatch=self.dispatch)
+        activity = self.make_activity()
+        activity.end_date = date(2026, 10, 31)
+        activity.outgoing_document = self.dispatch
+        activity.save()
 
         task = Task.objects.get(activity=activity)
         self.assertEqual(task.assigned_to_employee, self.cbda)
         self.assertEqual(task.assigned_by_employee, self.coordinator)
-        self.assertEqual(task.due_date, date(2026, 10, 9))
+        self.assertEqual(task.start_date, date(2026, 10, 1))
+        self.assertEqual(task.due_date, date(2026, 11, 13))
         self.assertEqual(task.status, "Todo")
         self.assertEqual(Notification.objects.filter(employee=self.cbda).count(), 1)
 
@@ -113,6 +117,31 @@ class ActivityWorkflowTests(ActivityTestDataMixin, TestCase):
         activity.save()
         self.assertEqual(Task.objects.filter(activity=activity).count(), 1)
         self.assertEqual(Notification.objects.filter(employee=self.cbda).count(), 1)
+
+    def test_rescheduling_activity_updates_task_dates_and_reopens_early_completion(self):
+        activity = self.make_activity(dispatch=self.dispatch)
+        task = Task.objects.get(activity=activity)
+        task.status = "Done"
+        task.completed_date = date(2026, 9, 26)
+        task.report_file = "activity_reports/old-report.pdf"
+        task.save()
+
+        activity.end_date = date(2026, 10, 31)
+        activity.save()
+
+        task.refresh_from_db()
+        self.assertEqual(Task.objects.filter(activity=activity).count(), 1)
+        self.assertEqual(task.start_date, date(2026, 10, 1))
+        self.assertEqual(task.due_date, date(2026, 11, 13))
+        self.assertEqual(task.status, "Todo")
+        self.assertIsNone(task.completed_date)
+        self.assertFalse(task.report_file)
+        self.assertEqual(
+            Notification.objects.filter(
+                employee=self.cbda, notification_type="ActivityTaskScheduleChanged"
+            ).count(),
+            1,
+        )
 
     def test_linking_dispatch_after_activity_creation_creates_task(self):
         activity = self.make_activity()
@@ -128,11 +157,26 @@ class ActivityWorkflowTests(ActivityTestDataMixin, TestCase):
         task = Task.objects.get(activity=activity)
         task.status = "Done"
 
-        with self.assertRaises(ValidationError):
-            task.full_clean()
+        with patch("apps.task.models.timezone.localdate", return_value=date(2026, 10, 2)):
+            with self.assertRaises(ValidationError):
+                task.full_clean()
 
         task.report_file = SimpleUploadedFile("bao-cao.pdf", b"test report", content_type="application/pdf")
-        task.full_clean()
+        with patch("apps.task.models.timezone.localdate", return_value=date(2026, 10, 2)):
+            task.full_clean()
+
+    def test_activity_report_task_cannot_be_completed_before_activity_ends(self):
+        activity = self.make_activity(dispatch=self.dispatch)
+        task = Task.objects.get(activity=activity)
+        task.status = "Done"
+        task.completed_date = date(2026, 9, 30)
+        task.report_file = SimpleUploadedFile("report.pdf", b"test report", content_type="application/pdf")
+
+        with patch("apps.task.models.timezone.localdate", return_value=date(2026, 9, 30)):
+            with self.assertRaises(ValidationError) as raised:
+                task.full_clean()
+
+        self.assertIn("status", raised.exception.message_dict)
 
     def test_linked_dispatch_requires_task_assigner(self):
         activity = self.make_activity(dispatch=self.dispatch)
@@ -575,7 +619,8 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
         task = Task.objects.get(activity=activity)
         self.assertEqual(activity.outgoing_document, self.dispatch)
         self.assertEqual(task.assigned_to_employee, self.cbda)
-        self.assertEqual(task.due_date, date(2026, 10, 9))
+        self.assertEqual(task.start_date, date(2026, 10, 1))
+        self.assertEqual(task.due_date, date(2026, 10, 15))
 
     def test_activity_form_warns_about_overlap_but_keeps_the_activity(self):
         coordinator_role, _ = Role.objects.get_or_create(
@@ -649,9 +694,10 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
             task.refresh_from_db()
             self.assertTrue(task.report_file)
 
-        self.client.post(
-            reverse("portal:task_detail", args=[task.pk]),
-            {"action": "update_status", "status": "Done"},
-        )
+        with patch("apps.portal.views.timezone.localdate", return_value=date(2026, 10, 2)):
+            self.client.post(
+                reverse("portal:task_detail", args=[task.pk]),
+                {"action": "update_status", "status": "Done"},
+            )
         task.refresh_from_db()
         self.assertEqual(task.status, "Done")

@@ -143,11 +143,11 @@ Trong checklist, kiểm tra các giấy tờ và thủ tục tiếp nhận/ngh�
 
 ### 4.4. Giao việc dự án và cập nhật hoàn tất
 
-Với tài khoản Điều phối viên/Quản lý dự án, tạo hoặc cập nhật một hoạt động, chọn CBDA phụ trách và liên kết một công văn đi. Hệ thống tự tạo Task báo cáo cho CBDA; Điều phối viên được ghi là người giao, hạn 10 ngày làm việc từ ngày gửi công văn. Đăng nhập bằng tài khoản có quyền **Hoạt động dự án**, mở **Hoạt động dự án → Giao việc & hoàn tất**.
+Với tài khoản Điều phối viên/Quản lý dự án, tạo hoặc cập nhật một hoạt động, chọn CBDA phụ trách và liên kết một công văn đi. Hệ thống giao Task báo cáo cho CBDA; Điều phối viên được ghi là người giao, ngày bắt đầu Task theo ngày bắt đầu hoạt động và hạn là 10 ngày làm việc sau ngày kết thúc. Đăng nhập bằng tài khoản có quyền **Hoạt động dự án**, mở **Hoạt động dự án → Giao việc & hoàn tất**.
 
 CBDA mở Task, cập nhật trạng thái và tải báo cáo lên SharePoint trước khi chọn **Hoàn thành**. Điều phối viên/Quản lý dự án cũng thấy các Task thuộc phạm vi hoạt động họ được phép xem để theo dõi tiến độ; họ không cần tạo Task báo cáo bằng nút giao việc thủ công.
 
-**Kết quả đúng:** Task xuất hiện trong danh sách của CBDA nhận việc và trong danh sách giám sát của Điều phối viên/Quản lý dự án. Ngày bắt đầu, hạn và ngày hoàn thành thực tế hiển thị riêng theo định dạng `ngày/tháng/năm`; khi hoàn thành trong ngày bắt đầu, ngày hoàn thành phải đúng ngày đó. Task chỉ được hoàn thành sau khi có tệp báo cáo; task dự án được tách khỏi checklist thủ tục HCNS.
+**Kết quả đúng:** Task xuất hiện trong danh sách của CBDA nhận việc và trong danh sách giám sát của Điều phối viên/Quản lý dự án. Ngày bắt đầu theo lịch hoạt động; hạn là 10 ngày làm việc sau ngày kết thúc. Khi sửa lịch, Task cập nhật ngày, gửi thông báo và mở lại nếu hoàn thành trước ngày kết thúc mới. Các ngày hiển thị riêng theo định dạng `ngày/tháng/năm`; Task chỉ được hoàn thành sau khi hoạt động kết thúc và đã có tệp báo cáo. Task dự án được tách khỏi checklist thủ tục HCNS.
 
 **Lỗi cần báo nếu gặp:** mở mẫu Offboarding nhưng vẫn thấy mẫu Onboarding trong danh sách chọn;
 mở trùng tạo ra 2 checklist riêng biệt; nhân viên không liên quan vẫn xem được checklist người

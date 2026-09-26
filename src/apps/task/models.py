@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 from apps.common.models import BaseAuditModel
 from apps.common.uploads import upload_to_activity_reports, validate_upload
 from apps.m365.storage import activity_reports_storage
@@ -67,6 +68,15 @@ class Task(BaseAuditModel):
         if self.activity_id and self.status == "Done" and not self.report_file:
             raise ValidationError({
                 "report_file": "Phải tải lên tệp báo cáo hoạt động trước khi đánh dấu Hoàn thành.",
+            })
+        if (
+            self.activity_id
+            and self.status == "Done"
+            and self.activity.end_date
+            and timezone.localdate() < self.activity.end_date
+        ):
+            raise ValidationError({
+                "status": "Chỉ có thể hoàn thành Task báo cáo sau khi hoạt động kết thúc.",
             })
 
 

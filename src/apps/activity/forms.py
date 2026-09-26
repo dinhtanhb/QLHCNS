@@ -108,8 +108,8 @@ class ActivityForm(forms.ModelForm):
         ).order_by("-received_or_sent_date", "-pk")
         self.fields["outgoing_document"].required = False
         self.fields["outgoing_document"].help_text = (
-            "Chọn công văn đi đã phát hành. Khi liên kết, IHRMS tự tạo Task báo cáo "
-            "và tính hạn 10 ngày làm việc. Có thể bổ sung công văn sau."
+            "Chọn công văn đi đã phát hành để giao Task cho CBDA. Ngày bắt đầu theo lịch hoạt động; "
+            "hạn là 10 ngày làm việc sau ngày kết thúc hoạt động. Có thể bổ sung công văn sau."
         )
 
         for field in self.fields.values():

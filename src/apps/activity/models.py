@@ -11,8 +11,8 @@ class Activity(BaseAuditModel):
 
     Thuộc về 1 Project (dự án/nhà tài trợ — dùng model Project có sẵn), và có
     thể liên kết tới 1 Công văn đi (apps.office.OutgoingDocument) khi kế
-    hoạch tháng được phát hành — thời điểm này dùng để tự tính hạn báo cáo
-    cho Task theo dõi hoạt động (xem apps.activity.services).
+    hoạch tháng được phát hành — điều kiện để giao Task báo cáo. Lịch Task bắt đầu
+    theo ngày bắt đầu hoạt động; hạn tính sau ngày kết thúc (xem apps.activity.services).
 
     Phạm vi module này CHỈ theo dõi tiến độ công việc + nhắc hạn, KHÔNG bao
     gồm ngân sách/quyết toán (theo đúng yêu cầu phạm vi ban đầu).
