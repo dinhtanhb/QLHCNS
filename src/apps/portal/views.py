@@ -21,12 +21,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from apps.attendance.models import Attendance
 from apps.leave.models import LeaveRequest, LeaveType, LeaveApproval
 from apps.payroll.models import Payroll
-from apps.notification.services import notify
-from apps.notification.models import Notification
+from apps.notification.services import notify, notify_with_email_draft
+from apps.notification.models import Notification, NotificationEmailOutbox
 from decimal import Decimal, InvalidOperation
 import calendar as calendar_module
 from django.db.models import Sum
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseForbidden
 from django.views.decorators.http import require_GET
 from apps.project.models import Project
 from apps.attendance.models import TimesheetEntry, WorkingCalendar, Holiday, MonthlyAttendanceSummary
@@ -386,13 +386,21 @@ def leave_approve(request, pk):
             decision=decision,
             created_by=request.user,
         )
-    label = "Đã duyệt" if decision == "Approved" else "Đã từ chối"
-    notify(
-        leave_request.employee, "leave",
-        f"Đơn nghỉ phép {label.lower()}",
-        f"Đơn nghỉ {leave_request.from_date} - {leave_request.to_date} của bạn {label.lower()}.",
-        link="/portal/leave/", created_by=request.user,
-    )
+        label = "Đã duyệt" if decision == "Approved" else "Đã từ chối"
+        notify_with_email_draft(
+            leave_request.employee,
+            "leave",
+            f"Đơn nghỉ phép {label.lower()}",
+            f"Đơn nghỉ {leave_request.from_date} - {leave_request.to_date} của bạn {label.lower()}.",
+            link="/portal/leave/",
+            email_subject="IHRMS: Có cập nhật về đơn nghỉ phép của bạn",
+            email_body=(
+                "Anh/chị có cập nhật mới về yêu cầu nghỉ phép trong IHRMS. "
+                "Vui lòng đăng nhập cổng nhân viên để xem trạng thái và chi tiết."
+            ),
+            created_by=request.user,
+            idempotency_key=f"leave-decision:{leave_request.pk}:{decision}",
+        )
     return redirect("portal:leave_approval_list")
 
 
@@ -733,20 +741,32 @@ def document_approve(request, pk):
         )
         document.status = decision
         document.save()
-        DocumentApproval.objects.create(
+        approval = DocumentApproval.objects.create(
             document=document, approver=approver, decision=decision, created_by=request.user
         )
+        submitter = None
+        if document.created_by_id and hasattr(document.created_by, "employee"):
+            submitter = document.created_by.employee
+        label = "được duyệt" if decision == "Approved" else "bị từ chối"
+        if submitter:
+            notify_with_email_draft(
+                submitter,
+                "document-decision",
+                f"Tài liệu {label}",
+                f"Tài liệu {document.document_no} đã {label}.",
+                link="/portal/documents/",
+                email_subject="IHRMS: Có cập nhật về tài liệu bạn gửi",
+                email_body=(
+                    "Có cập nhật mới về tài liệu anh/chị gửi trong IHRMS. "
+                    "Vui lòng đăng nhập cổng nhân viên để xem trạng thái."
+                ),
+                created_by=request.user,
+                idempotency_key=f"document-decision:{approval.pk}:{submitter.pk}",
+            )
 
     if document.status == "Approved":
         for emp in Employee.objects.filter(employment_status="Active"):
             notify(emp, "document", "Tài liệu mới ban hành", document.document_name, link="/portal/documents/")
-    else:
-        submitter = document.created_by.employee if hasattr(document.created_by, "employee") else None
-        notify(
-            submitter, "document", "Tài liệu bị từ chối",
-            f"Tài liệu {document.document_no} - {document.document_name} đã bị từ chối.",
-            link="/portal/documents/", created_by=request.user,
-        )
 
     label = "Đã ban hành" if decision == "Approved" else "Đã từ chối"
     messages.success(request, f"{label} tài liệu {document.document_no}.")
@@ -982,9 +1002,41 @@ def recruitment_approve(request, pk):
 @login_required
 def notification_list(request):
     employee = _get_employee(request)
-    items = Notification.objects.filter(employee=employee) if employee else []
-    Notification.objects.filter(employee=employee, is_read=False).update(is_read=True)
+    items = []
+    if employee:
+        items = Notification.objects.filter(employee=employee).prefetch_related(
+            Prefetch(
+                "email_outbox_entries",
+                queryset=NotificationEmailOutbox.objects.filter(status__in=("Draft", "Sent")),
+                to_attr="email_drafts",
+            )
+        )
+        Notification.objects.filter(employee=employee, is_read=False).update(is_read=True)
     return render(request, "portal/notification_list.html", {"items": items})
+
+
+@login_required
+@require_POST
+def notification_email_outbox_mark_sent(request, pk):
+    employee = _get_employee(request)
+    with transaction.atomic():
+        outbox = get_object_or_404(NotificationEmailOutbox.objects.select_for_update(), pk=pk)
+        if not has_permission(request.user, "manage_hr") and (
+            not employee or outbox.notification.employee_id != employee.pk
+        ):
+            return HttpResponseForbidden("Không có quyền xác nhận gửi email này.")
+        if outbox.status == "Sent":
+            messages.info(request, "Email này đã được xác nhận gửi trước đó.")
+            return redirect("portal:notification_list")
+        if outbox.status != "Draft":
+            messages.error(request, "Chỉ có thể xác nhận email đang ở trạng thái nháp Outlook.")
+            return redirect("portal:notification_list")
+        outbox.status = "Sent"
+        outbox.sent_by = request.user
+        outbox.sent_at = timezone.now()
+        outbox.save(update_fields=("status", "sent_by", "sent_at", "modified_date"))
+    messages.success(request, "Đã ghi nhận anh/chị gửi thư qua Outlook.")
+    return redirect("portal:notification_list")
 
 def _leave_days_in_month(employee, code, year, month):
     requests = LeaveRequest.objects.filter(
@@ -2591,6 +2643,26 @@ def finance_payroll_lock(request, pk):
         Payslip.objects.bulk_create([
             Payslip(payroll=payroll, created_by=request.user) for payroll in to_issue
         ])
+        period_managers = Employee.objects.filter(
+            employment_status="Active",
+            user_account__role__role_code__in=("DIRECTOR", "FINANCE_OFFICER"),
+        ).select_related("user_account", "user_account__role").distinct()
+        for recipient in period_managers:
+            is_finance = recipient.user_account.role.role_code == "FINANCE_OFFICER"
+            notify_with_email_draft(
+                recipient,
+                "payroll-period-locked",
+                "Kỳ lương đã khóa",
+                f"Kỳ lương {period} đã được khóa trong IHRMS.",
+                link="/portal/finance/periods/" if is_finance else "/portal/reports/",
+                email_subject="IHRMS: Kỳ lương đã khóa",
+                email_body=(
+                    f"Kỳ lương {period} đã được khóa. "
+                    "Vui lòng đăng nhập IHRMS để xem thông tin theo quyền được cấp."
+                ),
+                created_by=request.user,
+                idempotency_key=f"payroll-period-locked:{period.pk}:{recipient.pk}",
+            )
     for payroll in to_issue:
         notify(
             payroll.employee, "payroll", "Phiếu lương của bạn đã sẵn sàng",

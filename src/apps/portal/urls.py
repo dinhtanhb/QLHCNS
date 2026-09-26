@@ -47,6 +47,7 @@ urlpatterns = [
     path("recruitment/create/", views.recruitment_create, name="recruitment_create"),
     path("recruitment/<int:pk>/approve/", views.recruitment_approve, name="recruitment_approve"),
     path("notifications/", views.notification_list, name="notification_list"),
+    path("notifications/outbox/<int:pk>/mark-sent/", views.notification_email_outbox_mark_sent, name="notification_outbox_mark_sent"),
     path("timesheet/", views.timesheet_month, name="timesheet_month"),
     path("timesheet/create/", views.timesheet_entry_create, name="timesheet_entry_create"),
     path("timesheet/<int:pk>/delete/", views.timesheet_entry_delete, name="timesheet_entry_delete"),

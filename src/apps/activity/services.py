@@ -2,11 +2,11 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from urllib.parse import quote, urlencode
 
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
+from apps.common.email_draft import build_mailto_url
 
 
 ACTIVITY_REPORT_DEADLINE_WORKING_DAYS = 10
@@ -244,11 +244,10 @@ def build_activity_proposal_email_draft(package, approver, sender, approval_url=
         f"Mở hồ sơ và ghi nhận quyết định tại: {approval_url}\n\n"
         "Vui lòng xem xét và phản hồi quyết định trên IHRMS."
     )
-    mailto_query = urlencode({"subject": subject, "body": body}, quote_via=quote)
     return {
         "recipient": recipient,
         "sender_email": _user_email(sender),
         "subject": subject,
         "body": body,
-        "mailto_url": f"mailto:{quote(recipient, safe='@.,+')}?{mailto_query}",
+        "mailto_url": build_mailto_url(recipient, subject, body),
     }
