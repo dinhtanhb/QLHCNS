@@ -574,6 +574,8 @@ Form sửa nhân viên trước đây chỉ nạp phòng ban đang hoạt độn
 
 **Sao lưu:** `D:\QLHCNS-Backup-before-task-role-regression-tests-20260927-094500`.
 
-**Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.portal.tests` — 21/21 test đạt trên SQL Server test database. Kiểm tra dự án và migration sẽ được ghi nhận sau lượt xác minh cuối. Cảnh báo Requests/urllib3 hiện hữu; một lần POST ngoài phòng bị từ chối có log bảo mật như mong đợi.
+**Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.portal.tests` — 21/21 test đạt trên SQL Server test database; `manage.py check` đạt; `makemigrations --check --dry-run` không phát hiện migration thiếu; `git diff --check` đạt. Cảnh báo Requests/urllib3 hiện hữu; một lần POST ngoài phòng bị từ chối có log bảo mật như mong đợi.
 
 **Còn mở:** Không còn câu hỏi về phạm vi quyền trưởng phòng; quyết định giới hạn theo các phòng ban được quản lý đã được áp dụng.
+
+**Commit triển khai:** `875ab08` trên nhánh `chore/django-5.2-upgrade`; chưa push.
