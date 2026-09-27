@@ -10,6 +10,16 @@
     <a href="{% url 'portal:task_create' %}" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Giao việc mới</a>
     {% endif %}
 </div>
+{% if can_assign_task %}
+<nav class="mb-4 flex flex-wrap gap-2" aria-label="Phạm vi công việc">
+    <a href="{% url 'portal:task_list' %}"
+       {% if task_scope_name == "assigned_to_me" %}aria-current="page"{% endif %}
+       class="rounded-md border px-4 py-2 text-sm font-medium {% if task_scope_name == 'assigned_to_me' %}border-blue-700 bg-blue-700 text-white{% else %}border-gray-300 bg-white text-gray-700 hover:bg-gray-50{% endif %}">Việc của tôi</a>
+    <a href="{% url 'portal:task_list' %}?scope=assigned_by_me"
+       {% if task_scope_name == "assigned_by_me" %}aria-current="page"{% endif %}
+       class="rounded-md border px-4 py-2 text-sm font-medium {% if task_scope_name == 'assigned_by_me' %}border-blue-700 bg-blue-700 text-white{% else %}border-gray-300 bg-white text-gray-700 hover:bg-gray-50{% endif %}">Việc tôi đã giao</a>
+</nav>
+{% endif %}
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
     <div class="overflow-x-auto">
     <table class="w-full text-sm">
@@ -26,10 +36,10 @@
             <td class="py-2.5 pr-4 text-gray-500">{{ t.task_code }}</td>
             <td class="py-2.5 pr-4 font-medium text-blue-700">{{ t.task_name }}</td>
             {% if is_project_overview %}<td class="py-2.5 pr-4">{{ t.assigned_to_employee.full_name }}</td><td class="py-2.5 pr-4">{{ t.activity.activity_code|default:"—" }}</td>{% endif %}
-            <td class="py-2.5 pr-4">{{ t.get_priority_display }}</td>
             <td class="py-2.5 pr-4">{{ t.start_date|date:"d/m/Y"|default:"—" }}</td>
             <td class="py-2.5 pr-4">{{ t.due_date|date:"d/m/Y"|default:"—" }}</td>
             <td class="py-2.5 pr-4">{{ t.completed_date|date:"d/m/Y"|default:"—" }}</td>
+            <td class="py-2.5 pr-4">{{ t.get_priority_display }}</td>
             <td class="py-2.5">
                 <span class="px-2.5 py-1 rounded-full text-xs font-medium
                     {% if t.status == 'Done' %}bg-green-100 text-green-700
@@ -41,7 +51,7 @@
             </td>
         </tr>
         {% empty %}
-        <tr><td colspan="{% if is_project_overview %}9{% else %}7{% endif %}" class="py-6 text-center text-gray-400">{% if is_project_overview %}Chưa có task báo cáo. Hãy kiểm tra hoạt động đã được gắn công văn đi chưa.{% else %}Chưa có công việc nào được giao.{% endif %}</td></tr>
+        <tr><td colspan="{% if is_project_overview %}9{% else %}7{% endif %}" class="py-6 text-center text-gray-400">{% if task_scope_name == "assigned_by_me" %}Anh/chị chưa giao công việc nào.{% elif is_project_overview %}Chưa có task báo cáo. Hãy kiểm tra hoạt động đã được gắn công văn đi chưa.{% else %}Chưa có công việc nào được giao.{% endif %}</td></tr>
         {% endfor %}
         </tbody>
     </table>

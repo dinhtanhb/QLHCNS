@@ -210,6 +210,7 @@ class PortalSensitiveWorkflowTests(TestCase):
         self.assertEqual(html.count(task_link), 1)
         self.assertGreater(html.index(task_link), html.index('id="menu-hoatdongduan"'))
         self.assertContains(response, "Giao việc &amp; hoàn tất")
+        self.assertNotContains(response, "Việc tôi đã giao")
         self.assertNotContains(response, "Quản lý checklist onboarding/offboarding")
         self.assertNotContains(response, "Checklist &amp; việc được giao")
 
@@ -246,6 +247,124 @@ class PortalSensitiveWorkflowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'name="employee_code"')
         self.assertContains(response, employee.employee_code)
+
+    def test_task_list_can_switch_between_assigned_and_assigned_by_me(self):
+        assigner = self.make_employee("PORTAL-TASK-LIST-ASSIGNER")
+        assignee = self.make_employee("PORTAL-TASK-LIST-ASSIGNEE")
+        other_assigner = self.make_employee("PORTAL-TASK-LIST-OTHER")
+        user = self.make_user("HR_MANAGER", assigner, "portal-task-list-assigner")
+        assigned_by_me = Task.objects.create(
+            task_code="PORTAL-TASK-ASSIGNED-BY-ME",
+            task_name="Task do tôi giao",
+            assigned_by_employee=assigner,
+            assigned_to_employee=assignee,
+            due_date=date(2026, 10, 10),
+            created_by=user,
+        )
+        assigned_by_other = Task.objects.create(
+            task_code="PORTAL-TASK-ASSIGNED-BY-OTHER",
+            task_name="Task người khác giao",
+            assigned_by_employee=other_assigner,
+            assigned_to_employee=assignee,
+            due_date=date(2026, 10, 11),
+            created_by=user,
+        )
+        self.client.force_login(user)
+
+        own_work = self.client.get(reverse("portal:task_list"))
+        self.assertEqual(own_work.status_code, 200)
+        self.assertContains(own_work, "Việc của tôi")
+        self.assertContains(own_work, "Việc tôi đã giao")
+        self.assertContains(
+            own_work,
+            f'href="{reverse("portal:task_list")}?scope=assigned_by_me"',
+        )
+        self.assertEqual(list(own_work.context["tasks"]), [])
+
+        assigned_work = self.client.get(reverse("portal:task_list"), {"scope": "assigned_by_me"})
+
+        self.assertEqual(assigned_work.status_code, 200)
+        self.assertEqual(assigned_work.context["task_scope_name"], "assigned_by_me")
+        self.assertEqual(list(assigned_work.context["tasks"]), [assigned_by_me])
+        self.assertNotIn(assigned_by_other, assigned_work.context["tasks"])
+
+    def test_task_assigner_can_view_own_task_but_unrelated_employee_cannot(self):
+        assigner = self.make_employee("PORTAL-TASK-VIEW-ASSIGNER")
+        assignee = self.make_employee("PORTAL-TASK-VIEW-ASSIGNEE")
+        unrelated = self.make_employee("PORTAL-TASK-VIEW-UNRELATED")
+        assigner_user = self.make_user("DIRECTOR", assigner, "portal-task-view-director")
+        unrelated_user = self.make_user("EMPLOYEE", unrelated, "portal-task-view-unrelated")
+        task = Task.objects.create(
+            task_code="PORTAL-TASK-ASSIGNER-VIEW",
+            task_name="Task người giao cần xem lại",
+            assigned_by_employee=assigner,
+            assigned_to_employee=assignee,
+            due_date=date(2026, 10, 12),
+            created_by=assigner_user,
+        )
+
+        self.client.force_login(assigner_user)
+        assigner_response = self.client.get(reverse("portal:task_detail", args=(task.pk,)))
+        self.assertEqual(assigner_response.status_code, 200)
+        self.assertContains(assigner_response, task.task_name)
+
+        self.client.force_login(unrelated_user)
+        unrelated_response = self.client.get(reverse("portal:task_detail", args=(task.pk,)))
+        self.assertRedirects(unrelated_response, reverse("portal:task_list"))
+
+    def test_edit_employee_with_deactivated_department_keeps_department_unless_explicitly_changed(self):
+        inactive_department = Department.objects.create(
+            department_code="PORTAL-INACTIVE-DEPT",
+            department_name="Phòng ban đã ngừng hoạt động",
+            organization=self.organization,
+        )
+        employee = self.make_employee("PORTAL-INACTIVE-DEPT-EMP")
+        employee.department = inactive_department
+        employee.save(update_fields=("department",))
+        inactive_department.is_active = False
+        inactive_department.save(update_fields=("is_active",))
+        hr_employee = self.make_employee("PORTAL-INACTIVE-DEPT-HR")
+        hr_user = self.make_user("HR_OFFICER", hr_employee, "portal-inactive-dept-hr")
+        self.client.force_login(hr_user)
+        edit_url = reverse("portal:hr_employee_edit", args=(employee.pk,))
+
+        response = self.client.get(edit_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(inactive_department, list(response.context["departments"]))
+        self.assertContains(
+            response,
+            f'<option value="{inactive_department.pk}" selected>{inactive_department.department_name}</option>',
+        )
+        self.assertContains(response, "Phòng ban hiện tại đã ngừng hoạt động")
+
+        response = self.client.post(edit_url, {
+            "employee_code": employee.employee_code,
+            "first_name": employee.first_name,
+            "last_name": employee.last_name,
+            "full_name": employee.full_name,
+            "date_of_birth": "1990-01-01",
+            "gender": employee.gender,
+            "national_id": employee.national_id,
+            "tax_code": employee.tax_code or "",
+            "social_insurance_no": employee.social_insurance_no or "",
+            "company_email": employee.company_email,
+            "personal_email": employee.personal_email or "",
+            "mobile_phone": "0987654321",
+            "address": employee.address or "",
+            "join_date": "2020-01-01",
+            "leave_date": "",
+            "department": str(inactive_department.pk),
+            "position": str(employee.position_id),
+            "job_title": "",
+            "manager": "",
+            "employment_status": employee.employment_status,
+        })
+
+        self.assertRedirects(response, reverse("portal:hr_employee_detail", args=(employee.pk,)))
+        employee.refresh_from_db()
+        self.assertEqual(employee.department_id, inactive_department.pk)
+        self.assertEqual(employee.mobile_phone, "0987654321")
 
     def test_task_completed_on_start_day_displays_actual_completion_date(self):
         employee = self.make_employee("PORTAL-TASK-SAME-DAY")

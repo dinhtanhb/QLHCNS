@@ -55,6 +55,7 @@
                 <select name="department" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
                     {% for d in departments %}<option value="{{ d.id }}" {% if employee.department_id == d.id %}selected{% endif %}>{{ d.department_name }}</option>{% endfor %}
                 </select></div>
+            {% if current_department_inactive %}<p class="md:col-span-3 -mt-2 text-xs text-amber-700">Phòng ban hiện tại đã ngừng hoạt động — vui lòng chọn phòng ban mới nếu cần điều chuyển nhân viên.</p>{% endif %}
             <div><label class="block text-xs font-medium text-gray-700 mb-1">Vị trí</label>
                 <select name="position" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
                     {% for p in positions %}<option value="{{ p.id }}" {% if employee.position_id == p.id %}selected{% endif %}>{{ p.position_name }}</option>{% endfor %}

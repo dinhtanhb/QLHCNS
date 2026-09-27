@@ -611,9 +611,15 @@ def _can_assign_task(request):
 def task_list(request):
     employee = _get_employee(request)
     is_project_overview = has_permission(request.user, "view_activity_dashboard")
-    task_scope = Q(assigned_to_employee=employee) if employee else Q(pk__in=[])
-    if is_project_overview:
-        task_scope |= Q(activity__in=visible_activities_for(request.user))
+    task_scope_name = "assigned_by_me" if request.GET.get("scope") == "assigned_by_me" else "assigned_to_me"
+    if task_scope_name == "assigned_by_me":
+        # Người giao chỉ xem được những Task do chính họ giao; không mở rộng
+        # sang toàn bộ công việc chỉ vì họ có quyền giao việc.
+        task_scope = Q(assigned_by_employee=employee) if employee else Q(pk__in=[])
+    else:
+        task_scope = Q(assigned_to_employee=employee) if employee else Q(pk__in=[])
+        if is_project_overview:
+            task_scope |= Q(activity__in=visible_activities_for(request.user))
     tasks = Task.objects.filter(task_scope).select_related(
         "assigned_to_employee", "assigned_by_employee", "activity"
     ).order_by("due_date", "created_date")
@@ -621,6 +627,7 @@ def task_list(request):
         "tasks": tasks,
         "can_assign_task": _can_assign_task(request),
         "is_project_overview": is_project_overview,
+        "task_scope_name": task_scope_name,
     })
 
 
@@ -628,13 +635,17 @@ def task_list(request):
 def task_detail(request, pk):
     task = get_object_or_404(Task, pk=pk)
     employee = _get_employee(request)
-    is_owner = employee and task.assigned_to_employee_id == employee.id
+    is_owner = bool(employee and task.assigned_to_employee_id == employee.id)
+    is_assigner = bool(employee and task.assigned_by_employee_id == employee.id)
 
     if task.activity_id:
-        can_view = can_view_activity(request.user, task.activity)
+        can_view = bool(
+            is_owner or is_assigner or request.user.is_superuser
+            or can_view_activity(request.user, task.activity)
+        )
     else:
         can_view = bool(
-            is_owner or request.user.is_superuser
+            is_owner or is_assigner or request.user.is_superuser
             or _role_code(request) in ("HR_MANAGER", "DEPT_MANAGER")
         )
 
@@ -2279,7 +2290,11 @@ def hr_employee_edit(request, pk):
     }
     return render(request, "portal/hr_employee_form.html", {
         "employee": employee, "initial": initial,
-        "departments": Department.objects.filter(is_active=True), "positions": Position.objects.all(),
+        "departments": Department.objects.filter(
+            Q(is_active=True) | Q(pk=employee.department_id)
+        ),
+        "current_department_inactive": not employee.department.is_active,
+        "positions": Position.objects.all(),
         "job_titles": JobTitle.objects.all(),
         "managers": Employee.objects.filter(employment_status="Active").exclude(pk=employee.pk),
     })
