@@ -2761,6 +2761,14 @@ def finance_period_create(request):
         return redirect("portal:finance_period_list")
 
 
+def _employees_payable_for_period(period):
+    """Return active employees and inactive employees whose last day falls in this period."""
+    return Employee.objects.filter(
+        models.Q(employment_status="Active")
+        | models.Q(leave_date__gte=period.start_date, leave_date__lte=period.end_date)
+    )
+
+
 @login_required
 def finance_payroll_run(request, pk):
     if not _can_manage_finance(request):
@@ -2769,10 +2777,9 @@ def finance_payroll_run(request, pk):
 
     period = get_object_or_404(PayrollPeriod, pk=pk)
     existing_emp_ids = set(Payroll.objects.filter(payroll_period=period).values_list("employee_id", flat=True))
-    active_employees = Employee.objects.filter(employment_status="Active")
 
     payrolls = Payroll.objects.filter(payroll_period=period).select_related("employee")
-    missing_employees = active_employees.exclude(id__in=existing_emp_ids)
+    missing_employees = _employees_payable_for_period(period).exclude(id__in=existing_emp_ids)
     unissued_payslips = payrolls.filter(payslip__isnull=True).count() if period.status == "Locked" else 0
 
     return render(request, "portal/finance_payroll_run.html", {
@@ -2801,7 +2808,7 @@ def finance_payroll_generate(request, pk):
             Payroll.objects.filter(payroll_period=period).values_list("employee_id", flat=True)
         )
         employees = list(
-            Employee.objects.filter(employment_status="Active").exclude(id__in=existing_emp_ids)
+            _employees_payable_for_period(period).exclude(id__in=existing_emp_ids)
         )
         # Lấy lương cơ bản của tất cả nhân viên trong 1 lần truy vấn thay vì lặp từng người
         salary_map = {}

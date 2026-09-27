@@ -209,7 +209,7 @@ class PortalSensitiveWorkflowTests(TestCase):
         leaver = self.make_employee("PORTAL-PAYROLL-LEAVER")
         leaver.join_date = date(2020, 1, 1)
         leaver.leave_date = date(2025, 10, 15)
-        leaver.employment_status = "Inactive"
+        leaver.employment_status = "Resigned"
         leaver.save(update_fields=("join_date", "leave_date", "employment_status"))
         finance_user = self.make_user("FINANCE_OFFICER", self.make_employee("PORTAL-PAYROLL-FINANCE"), "portal-payroll-finance-i6")
         period = PayrollPeriod.objects.create(
@@ -222,12 +222,91 @@ class PortalSensitiveWorkflowTests(TestCase):
         )
         self.client.force_login(finance_user)
 
+        preview = self.client.get(reverse("portal:finance_payroll_run", args=(period.pk,)))
+        missing_ids = set(preview.context["missing_employees"].values_list("pk", flat=True))
+        self.assertIn(leaver.pk, missing_ids)
+
         self.client.post(reverse("portal:finance_payroll_generate", args=(period.pk,)))
 
         self.assertTrue(
             Payroll.objects.filter(payroll_period=period, employee=leaver).exists(),
             "Nhân viên có ngày nghỉ việc trong kỳ không được bỏ khỏi kỳ lương giữa tháng.",
         )
+        completed_preview = self.client.get(reverse("portal:finance_payroll_run", args=(period.pk,)))
+        completed_missing_ids = set(
+            completed_preview.context["missing_employees"].values_list("pk", flat=True)
+        )
+        self.assertNotIn(leaver.pk, completed_missing_ids)
+        self.client.post(reverse("portal:finance_payroll_generate", args=(period.pk,)))
+        self.assertEqual(Payroll.objects.filter(payroll_period=period, employee=leaver).count(), 1)
+
+    def test_payroll_generation_includes_employees_leaving_on_period_boundaries(self):
+        period = PayrollPeriod.objects.create(
+            payroll_month=10, payroll_year=2025,
+            start_date=date(2025, 10, 1), end_date=date(2025, 10, 31), status="Open",
+        )
+        first_day_leaver = self.make_employee("PORTAL-PAYROLL-LEAVE-START")
+        last_day_leaver = self.make_employee("PORTAL-PAYROLL-LEAVE-END")
+        for employee, leave_date in (
+            (first_day_leaver, period.start_date),
+            (last_day_leaver, period.end_date),
+        ):
+            employee.leave_date = leave_date
+            employee.employment_status = "Resigned"
+            employee.save(update_fields=("leave_date", "employment_status"))
+
+        finance_user = self.make_user(
+            "FINANCE_OFFICER", self.make_employee("PORTAL-PAYROLL-FINANCE-BOUNDARY"),
+            "portal-payroll-finance-boundary",
+        )
+        self.client.force_login(finance_user)
+
+        self.client.post(reverse("portal:finance_payroll_generate", args=(period.pk,)))
+
+        for employee in (first_day_leaver, last_day_leaver):
+            with self.subTest(leave_date=employee.leave_date):
+                self.assertTrue(Payroll.objects.filter(payroll_period=period, employee=employee).exists())
+
+    def test_payroll_generation_excludes_employee_who_left_before_period(self):
+        period = PayrollPeriod.objects.create(
+            payroll_month=10, payroll_year=2025,
+            start_date=date(2025, 10, 1), end_date=date(2025, 10, 31), status="Open",
+        )
+        former_employee = self.make_employee("PORTAL-PAYROLL-LEFT-BEFORE")
+        former_employee.leave_date = date(2025, 9, 30)
+        former_employee.employment_status = "Resigned"
+        former_employee.save(update_fields=("leave_date", "employment_status"))
+        finance_user = self.make_user(
+            "FINANCE_OFFICER", self.make_employee("PORTAL-PAYROLL-FINANCE-PRIOR"),
+            "portal-payroll-finance-prior",
+        )
+        self.client.force_login(finance_user)
+
+        preview = self.client.get(reverse("portal:finance_payroll_run", args=(period.pk,)))
+        missing_ids = set(preview.context["missing_employees"].values_list("pk", flat=True))
+        self.assertNotIn(former_employee.pk, missing_ids)
+
+        self.client.post(reverse("portal:finance_payroll_generate", args=(period.pk,)))
+
+        self.assertFalse(Payroll.objects.filter(payroll_period=period, employee=former_employee).exists())
+
+    def test_payroll_generation_keeps_active_employee_with_future_leave_date(self):
+        period = PayrollPeriod.objects.create(
+            payroll_month=10, payroll_year=2025,
+            start_date=date(2025, 10, 1), end_date=date(2025, 10, 31), status="Open",
+        )
+        active_employee = self.make_employee("PORTAL-PAYROLL-FUTURE-LEAVE")
+        active_employee.leave_date = date(2025, 11, 15)
+        active_employee.save(update_fields=("leave_date",))
+        finance_user = self.make_user(
+            "FINANCE_OFFICER", self.make_employee("PORTAL-PAYROLL-FINANCE-FUTURE"),
+            "portal-payroll-finance-future",
+        )
+        self.client.force_login(finance_user)
+
+        self.client.post(reverse("portal:finance_payroll_generate", args=(period.pk,)))
+
+        self.assertTrue(Payroll.objects.filter(payroll_period=period, employee=active_employee).exists())
 
     def test_payroll_generation_uses_salary_effective_at_period_start(self):
         """I7: mức lương hiệu lực từ 2026 không được dùng cho kỳ 12/2025."""
