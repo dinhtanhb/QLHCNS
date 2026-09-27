@@ -562,4 +562,4 @@ Form sửa nhân viên trước đây chỉ nạp phòng ban đang hoạt độn
 
 **Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.portal.tests apps.activity.tests` — 47/47 test đạt trên SQL Server test database; Django system check đạt; không có migration thiếu; `git diff --check` đạt. Không thay đổi dữ liệu thật.
 
-**Commit triển khai:** sẽ ghi ở mục bổ sung ngay sau khi commit code/tài liệu.
+**Commit triển khai:** `6917ed3` trên nhánh `chore/django-5.2-upgrade`; chưa push.
