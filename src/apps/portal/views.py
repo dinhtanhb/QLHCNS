@@ -1970,7 +1970,7 @@ def procurement_request_list(request):
         ).prefetch_related("items").order_by("-request_date")
     elif employee:
         requests_qs = ProcurementRequest.objects.filter(requested_by=employee).select_related(
-            "department"
+            "requested_by", "department"
         ).prefetch_related("items").order_by("-request_date")
     else:
         requests_qs = ProcurementRequest.objects.none()
@@ -2400,6 +2400,8 @@ def hr_employee_history_create(request, pk, history_type):
 
 @login_required
 def hr_contract_list(request):
+    if not _can_manage_hr(request):
+        return HttpResponseForbidden("Bạn không có quyền xem danh sách hợp đồng nhân sự.")
     contracts = Contract.objects.select_related("employee", "contract_type").order_by("-start_date")
     return render(request, "portal/hr_contract_list.html", {"contracts": contracts, "can_manage_hr": _can_manage_hr(request)})
 

@@ -8,7 +8,7 @@ Quy ước của công ty (dự án cộng đồng):
 from datetime import timedelta
 from decimal import Decimal, ROUND_DOWN
 
-from .models import Holiday, TimesheetEntry, WorkingCalendar
+from .models import Holiday, MonthlyAttendanceSummary, TimesheetEntry, WorkingCalendar
 
 
 def get_hours_per_day(year=None):
@@ -61,8 +61,17 @@ def compensatory_days_earned(employee, year):
     )
     hours_per_day = get_hours_per_day(year) or Decimal("8")
 
+    approved_months = MonthlyAttendanceSummary.objects.filter(
+        employee=employee,
+        year=year,
+        status=MonthlyAttendanceSummary.STATUS_APPROVED,
+    ).values_list("month", flat=True)
     hours_by_day = {}
-    entries = TimesheetEntry.objects.filter(employee=employee, work_date__year=year).values_list("work_date", "hours")
+    entries = TimesheetEntry.objects.filter(
+        employee=employee,
+        work_date__year=year,
+        work_date__month__in=approved_months,
+    ).values_list("work_date", "hours")
     for work_date, hours in entries:
         if work_date.weekday() >= 5 or work_date in holidays:
             hours_by_day[work_date] = hours_by_day.get(work_date, Decimal("0")) + (hours or Decimal("0"))

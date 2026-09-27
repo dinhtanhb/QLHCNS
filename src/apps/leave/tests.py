@@ -102,8 +102,19 @@ class StandardWorkingDaysTests(LeaveTestBase):
 # ------------------------------------------------------------------
 class CompensatoryDaysTests(LeaveTestBase):
 
-    def _log(self, day, hours):
+    def _log(self, day, hours, approved=True):
         TimesheetEntry.objects.create(employee=self.employee, work_date=day, hours=D(str(hours)))
+        MonthlyAttendanceSummary.objects.get_or_create(
+            employee=self.employee,
+            year=day.year,
+            month=day.month,
+            defaults={
+                "status": (
+                    MonthlyAttendanceSummary.STATUS_APPROVED
+                    if approved else MonthlyAttendanceSummary.STATUS_PENDING
+                ),
+            },
+        )
 
     def test_lam_ca_ngay_thu_bay_duoc_mot_ngay_bu(self):
         self._log(date(2025, 6, 14), 8)  # Thứ 7
@@ -144,13 +155,9 @@ class CompensatoryDaysTests(LeaveTestBase):
         self.assertEqual(compensatory_days_earned(self.employee, 2025), D("0"))
 
     def test_I3_gio_cuoi_tuan_chua_duoc_duyet_chua_duoc_tinh_nghi_bu(self):
-        """I3: dữ liệu giờ cuối tuần do nhân viên tự ghi không tự sinh quỹ nghỉ bù."""
-        self._log(date(2025, 6, 14), 8)
-        summary = MonthlyAttendanceSummary.objects.create(
-            employee=self.employee, year=2025, month=6,
-            compensatory_days=D("1"),
-            status=MonthlyAttendanceSummary.STATUS_PENDING,
-        )
+        """Giờ cuối tuần chỉ chuyển thành nghỉ bù sau khi bảng công tháng được duyệt."""
+        self._log(date(2025, 6, 14), 8, approved=False)
+        summary = MonthlyAttendanceSummary.objects.get(employee=self.employee, year=2025, month=6)
 
         self.assertEqual(compensatory_days_earned(self.employee, 2025), D("0"))
 
@@ -291,6 +298,10 @@ class LeaveRequestValidationTests(LeaveTestBase):
     def test_nghi_bu_trong_pham_vi_tich_luy_thi_duoc(self):
         TimesheetEntry.objects.create(employee=self.employee, work_date=date(2025, 6, 14), hours=D("8"))
         TimesheetEntry.objects.create(employee=self.employee, work_date=date(2025, 6, 21), hours=D("8"))
+        MonthlyAttendanceSummary.objects.create(
+            employee=self.employee, year=2025, month=6,
+            status=MonthlyAttendanceSummary.STATUS_APPROVED,
+        )
         req = self._new(date(2025, 6, 23), date(2025, 6, 24), leave_type=self.compensatory)
         req.full_clean()
         self.assertEqual(req.total_days, D("2"))

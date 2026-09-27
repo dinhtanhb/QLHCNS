@@ -53,12 +53,41 @@ class ProcurementModelTests(ProcurementTestBase):
 
 class ProcurementViewPermissionTests(ProcurementTestBase):
     def test_procurement_request_list_is_renderable(self):
-        """The employee-facing list route must render instead of failing at template lookup."""
+        """Employees without procurement rights still get a working, empty page."""
         self.client.force_login(self.make_user("EMPLOYEE", "pro-employee-reader"))
 
         response = self.client.get(reverse("portal:procurement_request_list"))
 
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Đề nghị mua sắm")
+
+    def test_procurement_requester_sees_create_form(self):
+        self.client.force_login(self.make_user("HR_OFFICER", "pro-requester"))
+
+        response = self.client.get(reverse("portal:procurement_request_list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["can_create"])
+        self.assertContains(response, reverse("portal:procurement_request_create"))
+
+    def test_procurement_approver_sees_requests_and_actions(self):
+        request = ProcurementRequest.objects.create(
+            request_no="PRO-REQ-PENDING", requested_by=self.employee, department=self.department,
+            request_date=date(2026, 9, 27),
+        )
+        ProcurementItem.objects.create(
+            procurement_request=request, item_name="Máy tính", quantity=1,
+            estimated_cost=Decimal("15000000"),
+        )
+        self.client.force_login(self.make_user("FINANCE_OFFICER", "pro-approver"))
+
+        response = self.client.get(reverse("portal:procurement_request_list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "PRO-REQ-PENDING")
+        self.assertContains(response, "Máy tính")
+        self.assertContains(response, "Duyệt")
+        self.assertContains(response, reverse("portal:procurement_request_approve", args=(request.pk,)))
 
     def test_employee_cannot_create_procurement_request_by_direct_post(self):
         self.client.force_login(self.make_user("EMPLOYEE", "pro-employee-requester"))

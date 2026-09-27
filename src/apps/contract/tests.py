@@ -64,7 +64,7 @@ class ContractValidationTests(ContractTestBase):
 
 
 class ContractViewPermissionTests(ContractTestBase):
-    def test_employee_cannot_read_another_employees_contract_from_hr_list(self):
+    def test_employee_cannot_access_hr_contract_list(self):
         confidential_contract = self.make_contract(self.other_employee, "CON-PRIVATE-1")
         confidential_contract.save()
         user = self.make_user("EMPLOYEE", self.employee, "con-employee-reader")
@@ -72,11 +72,23 @@ class ContractViewPermissionTests(ContractTestBase):
 
         response = self.client.get(reverse("portal:hr_contract_list"))
 
+        self.assertEqual(response.status_code, 403)
+        self.assertIsNone(response.context)
+
+    def test_hr_officer_can_view_all_contracts(self):
+        own_contract = self.make_contract(self.employee, "CON-HR-OWN")
+        own_contract.save()
+        other_contract = self.make_contract(self.other_employee, "CON-HR-OTHER")
+        other_contract.save()
+        user = self.make_user("HR_OFFICER", self.employee, "con-hr-reader")
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("portal:hr_contract_list"))
+
         self.assertEqual(response.status_code, 200)
-        self.assertNotIn(
-            confidential_contract,
-            list(response.context["contracts"]),
-            "Nhân viên không được nhận hồ sơ hợp đồng của người khác trong context của trang HR.",
+        self.assertEqual(
+            set(response.context["contracts"].values_list("pk", flat=True)),
+            {own_contract.pk, other_contract.pk},
         )
 
     def test_employee_cannot_create_contract_by_direct_post(self):
@@ -92,5 +104,6 @@ class ContractViewPermissionTests(ContractTestBase):
             "basic_salary": "12000000",
         })
 
-        self.assertRedirects(response, reverse("portal:hr_contract_list"))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], reverse("portal:hr_contract_list"))
         self.assertFalse(Contract.objects.filter(contract_no="CON-FORBIDDEN-1").exists())

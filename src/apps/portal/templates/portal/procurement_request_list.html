@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Đề nghị mua sắm{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div>
+        <h1 class="text-xl font-bold text-gray-900">Đề nghị mua sắm</h1>
+        <p class="mt-1 text-sm text-gray-500">Tạo đề nghị, theo dõi trạng thái hoặc xử lý các đề nghị chờ duyệt.</p>
+    </div>
+
+    {% if can_create %}
+    <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 class="mb-4 text-base font-semibold text-gray-900">Tạo đề nghị mới</h2>
+        <form method="post" action="{% url 'portal:procurement_request_create' %}" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label for="procurement-reason" class="mb-1 block text-sm font-medium text-gray-700">Lý do đề nghị</label>
+                <textarea id="procurement-reason" name="reason" rows="2" maxlength="1000"
+                    class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"></textarea>
+            </div>
+            <div>
+                <div class="mb-2 flex items-center justify-between">
+                    <h3 class="text-sm font-medium text-gray-700">Hạng mục cần mua</h3>
+                    <button type="button" id="add-procurement-item" class="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">+ Thêm dòng</button>
+                </div>
+                <div id="procurement-items" class="space-y-2">
+                    <div class="grid grid-cols-1 gap-2 sm:grid-cols-12">
+                        <input name="item_name" required maxlength="300" placeholder="Tên hàng hóa/dịch vụ"
+                            class="rounded-md border border-gray-300 px-3 py-2 text-sm sm:col-span-6">
+                        <input name="quantity" required type="number" min="1" value="1" placeholder="Số lượng"
+                            class="rounded-md border border-gray-300 px-3 py-2 text-sm sm:col-span-2">
+                        <input name="estimated_cost" type="number" min="0" step="0.01" placeholder="Đơn giá dự kiến"
+                            class="rounded-md border border-gray-300 px-3 py-2 text-sm sm:col-span-4">
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800">Gửi đề nghị</button>
+        </form>
+    </section>
+    {% endif %}
+
+    <section class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div class="border-b border-gray-200 px-6 py-4">
+            <h2 class="text-base font-semibold text-gray-900">{% if can_approve %}Danh sách đề nghị{% else %}Đề nghị của tôi{% endif %}</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-600">
+                    <tr>
+                        <th class="px-4 py-3">Mã đề nghị</th>
+                        <th class="px-4 py-3">Ngày</th>
+                        {% if can_approve %}<th class="px-4 py-3">Người đề nghị</th><th class="px-4 py-3">Phòng ban</th>{% endif %}
+                        <th class="px-4 py-3">Hạng mục</th>
+                        <th class="px-4 py-3">Lý do</th>
+                        <th class="px-4 py-3 text-right">Dự toán</th>
+                        <th class="px-4 py-3">Trạng thái</th>
+                        {% if can_approve %}<th class="px-4 py-3">Thao tác</th>{% endif %}
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for r in requests %}
+                    <tr class="align-top hover:bg-gray-50">
+                        <td class="whitespace-nowrap px-4 py-3 font-medium text-gray-900">{{ r.request_no }}</td>
+                        <td class="whitespace-nowrap px-4 py-3">{{ r.request_date|date:"d/m/Y" }}</td>
+                        {% if can_approve %}<td class="px-4 py-3">{{ r.requested_by.full_name }}</td><td class="px-4 py-3">{{ r.department.department_name }}</td>{% endif %}
+                        <td class="px-4 py-3">
+                            <ul class="space-y-1">
+                                {% for item in r.items.all %}
+                                <li>{{ item.item_name }} × {{ item.quantity }}</li>
+                                {% empty %}<li class="text-gray-400">Không có hạng mục</li>{% endfor %}
+                            </ul>
+                        </td>
+                        <td class="max-w-xs px-4 py-3 text-gray-600">{{ r.reason|default:"—" }}</td>
+                        <td class="whitespace-nowrap px-4 py-3 text-right">{{ r.total_estimated_cost|floatformat:0 }}</td>
+                        <td class="whitespace-nowrap px-4 py-3">
+                            <span class="rounded-full px-2.5 py-1 text-xs font-medium
+                                {% if r.status == 'Approved' or r.status == 'Purchased' %}bg-green-100 text-green-800
+                                {% elif r.status == 'Rejected' %}bg-red-100 text-red-700
+                                {% else %}bg-amber-100 text-amber-800{% endif %}">{{ r.get_status_display }}</span>
+                        </td>
+                        {% if can_approve %}
+                        <td class="whitespace-nowrap px-4 py-3">
+                            {% if r.status == "Pending" %}
+                            <div class="flex flex-wrap gap-2">
+                                <form method="post" action="{% url 'portal:procurement_request_approve' r.pk %}">
+                                    {% csrf_token %}<input type="hidden" name="decision" value="Approved">
+                                    <button class="text-xs font-medium text-green-700 hover:underline" type="submit">Duyệt</button>
+                                </form>
+                                <form method="post" action="{% url 'portal:procurement_request_approve' r.pk %}">
+                                    {% csrf_token %}<input type="hidden" name="decision" value="Rejected">
+                                    <button class="text-xs font-medium text-red-700 hover:underline" type="submit">Từ chối</button>
+                                </form>
+                            </div>
+                            {% elif r.status == "Approved" %}
+                            <form method="post" action="{% url 'portal:procurement_request_mark_purchased' r.pk %}">
+                                {% csrf_token %}<button class="text-xs font-medium text-blue-700 hover:underline" type="submit">Đánh dấu đã mua</button>
+                            </form>
+                            {% else %}—{% endif %}
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="{% if can_approve %}9{% else %}6{% endif %}" class="px-4 py-10 text-center text-gray-500">Chưa có đề nghị mua sắm.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+{% if can_create %}
+<script>
+    document.getElementById("add-procurement-item").addEventListener("click", function () {
+        const row = document.createElement("div");
+        row.className = "grid grid-cols-1 gap-2 sm:grid-cols-12";
+        row.innerHTML = '<input name="item_name" required maxlength="300" placeholder="Tên hàng hóa/dịch vụ" class="rounded-md border border-gray-300 px-3 py-2 text-sm sm:col-span-6">' +
+            '<input name="quantity" required type="number" min="1" value="1" placeholder="Số lượng" class="rounded-md border border-gray-300 px-3 py-2 text-sm sm:col-span-2">' +
+            '<input name="estimated_cost" type="number" min="0" step="0.01" placeholder="Đơn giá dự kiến" class="rounded-md border border-gray-300 px-3 py-2 text-sm sm:col-span-4">';
+        document.getElementById("procurement-items").appendChild(row);
+    });
+</script>
+{% endif %}
+{% endblock %}
