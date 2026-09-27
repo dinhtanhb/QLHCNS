@@ -602,4 +602,4 @@ Form sửa nhân viên trước đây chỉ nạp phòng ban đang hoạt độn
 
 **Cảnh báo còn hiện:** `RequestsDependencyWarning` về phiên bản urllib3; không ảnh hưởng kết quả kiểm thử.
 
-**Trạng thái Git:** thay đổi đã được kiểm thử, sẽ được commit trên `chore/django-5.2-upgrade`; chưa push.
+**Commit triển khai:** `8e6db7b` (`feat: restrict asset access by role`) trên `chore/django-5.2-upgrade`; đã commit cục bộ, chưa push.
