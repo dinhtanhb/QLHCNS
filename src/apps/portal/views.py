@@ -613,15 +613,24 @@ def task_list(request):
     is_project_overview = has_permission(request.user, "view_activity_dashboard")
     can_assign_task = _can_assign_task(request)
     can_view_task_scopes = can_assign_task or is_project_overview
-    task_scope_name = "assigned_by_me" if request.GET.get("scope") == "assigned_by_me" else "assigned_to_me"
+    requested_scope = request.GET.get("scope")
+    if requested_scope in {"assigned_to_me", "assigned_by_me"}:
+        task_scope_name = requested_scope
+    elif requested_scope == "activity_overview" and is_project_overview:
+        task_scope_name = "activity_overview"
+    else:
+        task_scope_name = "activity_overview" if is_project_overview else "assigned_to_me"
+
     if task_scope_name == "assigned_by_me":
         # Người giao chỉ xem được những Task do chính họ giao; không mở rộng
         # sang toàn bộ công việc chỉ vì họ có quyền giao việc.
         task_scope = Q(assigned_by_employee=employee) if employee else Q(pk__in=[])
+    elif task_scope_name == "activity_overview":
+        # Quyền giám sát hoạt động chỉ áp dụng trong phạm vi riêng này,
+        # không trộn Task của CBDA vào tab "Việc của tôi".
+        task_scope = Q(activity__in=visible_activities_for(request.user))
     else:
         task_scope = Q(assigned_to_employee=employee) if employee else Q(pk__in=[])
-        if is_project_overview:
-            task_scope |= Q(activity__in=visible_activities_for(request.user))
     tasks = Task.objects.filter(task_scope).select_related(
         "assigned_to_employee", "assigned_by_employee", "activity"
     ).order_by("due_date", "created_date")

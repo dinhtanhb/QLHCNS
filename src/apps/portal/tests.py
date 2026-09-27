@@ -6,11 +6,13 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.urls import reverse
 
+from apps.activity.models import Activity
 from apps.asset.models import AssetDisposalRequest
 from apps.hrm.models import Employee
 from apps.leave.models import LeaveApproval, LeaveRequest, LeaveType
 from apps.organization.models import Department, Organization, Position
 from apps.payroll.models import Payroll, PayrollPeriod, Payslip
+from apps.project.models import Project
 from apps.security.models import Role, User
 from apps.task.models import Task
 
@@ -215,6 +217,7 @@ class PortalSensitiveWorkflowTests(TestCase):
         self.assertNotContains(response, "Checklist &amp; việc được giao")
 
         task_page = self.client.get(reverse("portal:task_list"))
+        self.assertContains(task_page, "Theo dõi hoạt động")
         self.assertContains(task_page, "Việc của tôi")
         self.assertContains(task_page, "Việc tôi đã giao")
         self.assertNotContains(task_page, "+ Giao việc mới")
@@ -292,6 +295,61 @@ class PortalSensitiveWorkflowTests(TestCase):
         self.assertEqual(assigned_work.context["task_scope_name"], "assigned_by_me")
         self.assertEqual(list(assigned_work.context["tasks"]), [assigned_by_me])
         self.assertNotIn(assigned_by_other, assigned_work.context["tasks"])
+
+    def test_director_sees_project_tasks_only_in_activity_overview_scope(self):
+        director = self.make_employee("PORTAL-TASK-OVERVIEW-DIRECTOR")
+        cbda = self.make_employee("PORTAL-TASK-OVERVIEW-CBDA")
+        coordinator = self.make_employee("PORTAL-TASK-OVERVIEW-COORD")
+        director_user = self.make_user(
+            "DIRECTOR", director, "portal-task-activity-overview-director"
+        )
+        coordinator_user = self.make_user(
+            "PROJECT_COORDINATOR", coordinator, "portal-task-activity-overview-coordinator"
+        )
+        project = Project.objects.create(
+            project_code="PORTAL-TASK-OVERVIEW-PROJECT",
+            project_name="Dự án kiểm thử phạm vi Task",
+            department=self.department,
+        )
+        activity = Activity.objects.create(
+            activity_code="PORTAL-TASK-OVERVIEW-ACTIVITY",
+            activity_name="Hoạt động giao cho CBDA",
+            project=project,
+            start_date=date(2026, 10, 1),
+            end_date=date(2026, 10, 2),
+            lead_cbda=cbda,
+            coordinator=coordinator,
+        )
+        project_task = Task.objects.create(
+            task_code="PORTAL-TASK-OVERVIEW-REPORT",
+            task_name="Báo cáo của CBDA",
+            assigned_by_employee=coordinator,
+            assigned_to_employee=cbda,
+            activity=activity,
+            due_date=date(2026, 10, 16),
+            created_by=coordinator_user,
+        )
+        self.client.force_login(director_user)
+
+        default_scope = self.client.get(reverse("portal:task_list"))
+        self.assertEqual(default_scope.context["task_scope_name"], "activity_overview")
+        self.assertEqual(list(default_scope.context["tasks"]), [project_task])
+        self.assertContains(default_scope, "Theo dõi hoạt động")
+        self.assertContains(
+            default_scope,
+            f'href="{reverse("portal:task_list")}?scope=assigned_to_me"',
+        )
+
+        my_tasks = self.client.get(
+            reverse("portal:task_list"), {"scope": "assigned_to_me"}
+        )
+        self.assertEqual(my_tasks.context["task_scope_name"], "assigned_to_me")
+        self.assertEqual(list(my_tasks.context["tasks"]), [])
+
+        assigned_by_me = self.client.get(
+            reverse("portal:task_list"), {"scope": "assigned_by_me"}
+        )
+        self.assertEqual(list(assigned_by_me.context["tasks"]), [])
 
     def test_task_assigner_can_view_own_task_but_unrelated_employee_cannot(self):
         assigner = self.make_employee("PORTAL-TASK-VIEW-ASSIGNER")
