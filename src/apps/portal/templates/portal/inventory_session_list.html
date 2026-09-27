@@ -4,7 +4,8 @@
 <div class="flex items-center justify-between mb-4">
     <h1 class="text-lg font-bold text-gray-900">Kiểm kê Tài sản</h1>
 </div>
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+{% if not can_manage_asset %}<p class="mb-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">Chế độ chỉ xem các đợt kiểm kê.</p>{% endif %}
+{% if can_manage_asset %}<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
     <h2 class="text-sm font-bold text-gray-900 mb-3">Tạo đợt kiểm kê mới</h2>
     <form method="post" action="{% url 'portal:inventory_session_create' %}" class="grid grid-cols-1 md:grid-cols-3 gap-3">
         {% csrf_token %}
@@ -14,6 +15,7 @@
         <button type="submit" class="md:col-span-3 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Tạo đợt kiểm kê (tự nạp toàn bộ tài sản)</button>
     </form>
 </div>
+{% endif %}
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
     <table class="w-full text-sm">
         <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Tên đợt</th><th class="py-2 pr-4">Văn phòng</th><th class="py-2 pr-4">Thời điểm</th><th class="py-2">Trạng thái</th></tr></thead>

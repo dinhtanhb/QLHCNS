@@ -7,7 +7,9 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.activity.models import Activity
-from apps.asset.models import AssetDisposalRequest
+from apps.asset.models import (
+    Asset, AssetDisposalRequest, AssetType, InventoryLine, InventoryMember, InventorySession,
+)
 from apps.hrm.models import Employee
 from apps.leave.models import LeaveApproval, LeaveRequest, LeaveType
 from apps.organization.models import Department, Organization, Position
@@ -678,3 +680,127 @@ class PortalSensitiveWorkflowTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'name="start_date" value="2026-09-26"')
+
+    def test_asset_menu_and_pages_are_hidden_from_staff_outside_allowed_roles(self):
+        for role_code in ("EMPLOYEE", "CBDA", "DEPT_MANAGER", "PROJECT_MANAGER"):
+            employee = self.make_employee(f"PORTAL-ASSET-DENIED-{role_code}")
+            user = self.make_user(role_code, employee, f"portal-asset-denied-{role_code.lower()}")
+            self.client.force_login(user)
+
+            dashboard = self.client.get(reverse("portal:dashboard"))
+            self.assertEqual(dashboard.status_code, 200)
+            for route_name in (
+                "asset_list", "asset_admin_list", "inventory_session_list", "disposal_request_list",
+            ):
+                asset_url = reverse(f"portal:{route_name}")
+                self.assertNotContains(dashboard, asset_url)
+                response = self.client.get(asset_url)
+                self.assertRedirects(response, reverse("portal:dashboard"))
+
+    def test_asset_viewers_can_read_pages_but_only_hr_can_manage(self):
+        asset_type = AssetType.objects.create(
+            asset_type_code="PORTAL-ASSET-READ", asset_type_name="Thiết bị kiểm thử",
+        )
+        asset = Asset.objects.create(
+            asset_code="PORTAL-ASSET-READ-1", asset_name="Máy tính kiểm thử", asset_type=asset_type,
+        )
+        session = InventorySession.objects.create(
+            session_name="Kiểm kê kiểm thử", office_name="Văn phòng kiểm thử",
+            inventory_datetime="2026-09-27T09:00:00Z",
+        )
+        inventory_line = InventoryLine.objects.create(session=session, asset=asset)
+        requester = self.make_employee("PORTAL-ASSET-REQUESTER")
+        disposal = AssetDisposalRequest.objects.create(
+            request_no="PORTAL-ASSET-DISPOSAL", request_date=date(2026, 9, 27),
+            location_name="Văn phòng kiểm thử", requested_by=requester,
+        )
+
+        for role_code in ("DIRECTOR", "FINANCE_OFFICER", "PROJECT_COORDINATOR"):
+            employee = self.make_employee(f"PORTAL-ASSET-VIEW-{role_code}")
+            user = self.make_user(role_code, employee, f"portal-asset-view-{role_code.lower()}")
+            self.client.force_login(user)
+
+            dashboard = self.client.get(reverse("portal:dashboard"))
+            self.assertContains(dashboard, reverse("portal:asset_admin_list"))
+            self.assertContains(dashboard, reverse("portal:inventory_session_list"))
+            self.assertContains(dashboard, reverse("portal:disposal_request_list"))
+            for route_name, args in (
+                ("asset_list", ()),
+                ("asset_admin_list", ()),
+                ("inventory_session_list", ()),
+                ("inventory_session_detail", (session.pk,)),
+                ("disposal_request_list", ()),
+                ("disposal_request_detail", (disposal.pk,)),
+            ):
+                response = self.client.get(reverse(f"portal:{route_name}", args=args))
+                self.assertEqual(response.status_code, 200, f"{role_code}: {route_name}")
+
+            asset_page = self.client.get(reverse("portal:asset_admin_list"))
+            self.assertNotContains(asset_page, "Thêm tài sản mới")
+            inventory_page = self.client.get(reverse("portal:inventory_session_list"))
+            self.assertNotContains(inventory_page, "Tạo đợt kiểm kê mới")
+            inventory_detail = self.client.get(
+                reverse("portal:inventory_session_detail", args=(session.pk,))
+            )
+            self.assertNotContains(inventory_detail, 'name="action" value="add_member"')
+            self.assertNotContains(
+                inventory_detail,
+                reverse("portal:inventory_line_update", args=(inventory_line.pk,)),
+            )
+            disposal_page = self.client.get(reverse("portal:disposal_request_list"))
+            self.assertNotContains(disposal_page, "Tạo đề nghị mới")
+            disposal_detail = self.client.get(
+                reverse("portal:disposal_request_detail", args=(disposal.pk,))
+            )
+            self.assertNotContains(disposal_detail, 'name="action" value="add_member"')
+            self.assertNotContains(disposal_detail, 'name="action" value="add_item"')
+
+    def test_asset_viewer_cannot_write_by_posting_directly(self):
+        employee = self.make_employee("PORTAL-ASSET-VIEWER-POST")
+        user = self.make_user("FINANCE_OFFICER", employee, "portal-asset-viewer-post")
+        asset_type = AssetType.objects.create(
+            asset_type_code="PORTAL-ASSET-POST", asset_type_name="Thiết bị kiểm thử POST",
+        )
+        session = InventorySession.objects.create(
+            session_name="Kiểm kê POST", office_name="Văn phòng kiểm thử",
+            inventory_datetime="2026-09-27T09:00:00Z",
+        )
+        requester = self.make_employee("PORTAL-ASSET-POST-REQUESTER")
+        disposal = AssetDisposalRequest.objects.create(
+            request_no="PORTAL-ASSET-POST-DISPOSAL", request_date=date(2026, 9, 27),
+            location_name="Văn phòng kiểm thử", requested_by=requester,
+        )
+        self.client.force_login(user)
+
+        self.client.post(reverse("portal:asset_admin_create"), {
+            "asset_code": "PORTAL-ASSET-FORGED", "asset_name": "Không được tạo",
+            "asset_type": asset_type.pk,
+        })
+        self.client.post(reverse("portal:inventory_session_create"), {
+            "session_name": "Không được tạo", "office_name": "Kiểm thử",
+            "inventory_datetime": "2026-09-27T10:00",
+        })
+        self.client.post(reverse("portal:inventory_session_detail", args=(session.pk,)), {
+            "action": "add_member", "employee": employee.pk, "role": "Member",
+        })
+        self.client.post(reverse("portal:disposal_request_detail", args=(disposal.pk,)), {
+            "action": "add_member", "employee": employee.pk,
+        })
+
+        self.assertFalse(Asset.objects.filter(asset_code="PORTAL-ASSET-FORGED").exists())
+        self.assertFalse(InventorySession.objects.filter(session_name="Không được tạo").exists())
+        self.assertFalse(InventoryMember.objects.filter(session=session).exists())
+        self.assertFalse(disposal.members.exists())
+
+    def test_hr_retains_asset_management_access(self):
+        employee = self.make_employee("PORTAL-ASSET-HR-MANAGER")
+        user = self.make_user("HR_OFFICER", employee, "portal-asset-hr-manager")
+        self.client.force_login(user)
+
+        asset_page = self.client.get(reverse("portal:asset_admin_list"))
+        inventory_page = self.client.get(reverse("portal:inventory_session_list"))
+        disposal_page = self.client.get(reverse("portal:disposal_request_list"))
+
+        self.assertContains(asset_page, "Thêm tài sản mới")
+        self.assertContains(inventory_page, "Tạo đợt kiểm kê mới")
+        self.assertContains(disposal_page, "Tạo đề nghị mới")

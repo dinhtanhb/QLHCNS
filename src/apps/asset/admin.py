@@ -6,8 +6,11 @@ from .models import (
     AssetDisposalRequest, AssetDisposalRequestMember, AssetDisposalItem, AssetDisposalMinutes,
 )
 
-VIEW_ROLES = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER", "SYS_ADMIN")
-EDIT_ROLES = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER")
+VIEW_ROLES = (
+    "SUPER_ADMIN", "SYS_ADMIN", "DIRECTOR", "HR_MANAGER", "HR_OFFICER",
+    "FINANCE_OFFICER", "PROJECT_COORDINATOR",
+)
+EDIT_ROLES = ("SUPER_ADMIN", "SYS_ADMIN", "HR_MANAGER", "HR_OFFICER")
 
 
 class AssetTypeAdmin(BaseAuditAdmin):

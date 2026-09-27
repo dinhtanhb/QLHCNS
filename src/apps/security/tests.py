@@ -101,6 +101,28 @@ class PermissionMatrixTests(TestCase):
             self.assertTrue(has_permission(self.users[code], "access_outgoing_document"), code)
         self.assertFalse(has_permission(self.users[EMPLOYEE], "access_outgoing_document"))
 
+    # ---------- Tài sản ----------
+    def test_tai_san_chi_hien_cho_nhom_duoc_phep_va_quyen_quan_ly_rieng(self):
+        viewers = (
+            DIRECTOR, HR_MANAGER, HR_OFFICER, FINANCE_OFFICER,
+            PROJECT_COORDINATOR, SYS_ADMIN,
+        )
+        for code in viewers:
+            self.assertTrue(has_permission(self.users[code], "view_asset"), code)
+
+        managers = (HR_MANAGER, HR_OFFICER, SYS_ADMIN)
+        for code in managers:
+            self.assertTrue(has_permission(self.users[code], "manage_asset"), code)
+
+        view_only = (DIRECTOR, FINANCE_OFFICER, PROJECT_COORDINATOR)
+        for code in view_only:
+            self.assertFalse(has_permission(self.users[code], "manage_asset"), code)
+
+        denied = (EMPLOYEE, CBDA, DEPT_MANAGER, PROJECT_MANAGER)
+        for code in denied:
+            self.assertFalse(has_permission(self.users[code], "view_asset"), code)
+            self.assertFalse(has_permission(self.users[code], "manage_asset"), code)
+
     # ---------- Nghỉ phép ----------
     def test_duyet_nghi_phep_toan_cong_ty(self):
         for code in (HR_MANAGER, DIRECTOR):

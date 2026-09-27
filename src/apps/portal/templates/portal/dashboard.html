@@ -55,10 +55,10 @@
         <p class="text-gray-500 text-xs mb-1">Công việc đang mở (toàn công ty)</p>
         <p class="text-2xl font-bold text-gray-900">{{ open_tasks_company }}</p>
     </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+    {% if can_view_asset %}<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Tài sản đang cấp phát</p>
         <p class="text-2xl font-bold text-gray-900">{{ assets_in_use }}</p>
-    </div>
+    </div>{% endif %}
 </div>
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
     <h3 class="text-sm font-bold text-gray-900 mb-3">Nhân sự theo phòng ban</h3>
@@ -135,10 +135,10 @@
         <p class="text-gray-500 text-xs mb-1">Công việc chưa hoàn thành</p>
         <p class="text-2xl font-bold text-gray-900">{{ dept_open_tasks }}</p>
     </div>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+        {% if can_view_asset %}<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Tài sản đang cấp phát (phòng)</p>
         <p class="text-2xl font-bold text-gray-900">{{ dept_assets_in_use }}</p>
-    </div>
+    </div>{% endif %}
 </div>
 {% endif %}
 {% endblock %}

@@ -120,7 +120,7 @@
                     <a href="{% url 'portal:leave_list' %}" class="block px-4 py-2 hover:bg-gray-50">Nghỉ phép</a>
                     <a href="{% url 'portal:kpi_my_list' %}" class="block px-4 py-2 hover:bg-gray-50">KPI</a>
                     <a href="{% url 'portal:document_list' %}" class="block px-4 py-2 hover:bg-gray-50">Tài liệu</a>
-                    <a href="{% url 'portal:asset_list' %}" class="block px-4 py-2 hover:bg-gray-50">Tài sản</a>
+                    {% if can_view_asset %}<a href="{% url 'portal:asset_list' %}" class="block px-4 py-2 hover:bg-gray-50">Tài sản</a>{% endif %}
                     <a href="{% url 'portal:payslip_list' %}" class="block px-4 py-2 hover:bg-gray-50">Phiếu lương</a>
                 </div>
             </div>
@@ -184,11 +184,13 @@
                 <div id="menu-hc" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
                     <a href="{% url 'portal:dispatch_list' %}?type=Incoming" class="block px-4 py-2 hover:bg-gray-50">Công văn đến</a>
                     <a href="{% url 'portal:dispatch_list' %}?type=Outgoing" class="block px-4 py-2 hover:bg-gray-50">Công văn đi</a>
-                <div class="border-t border-gray-100 my-1"></div>
+                    {% if can_view_asset %}
+                    <div class="border-t border-gray-100 my-1"></div>
                     <a href="{% url 'portal:asset_admin_list' %}" class="block px-4 py-2 hover:bg-gray-50">Quản lý Tài sản</a>
                     <a href="{% url 'portal:inventory_session_list' %}" class="block px-4 py-2 hover:bg-gray-50">Kiểm kê Tài sản</a>
                     <a href="{% url 'portal:disposal_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">Thanh lý Tài sản</a>
                 <div class="border-t border-gray-100 my-1"></div>
+                    {% endif %}
                     <a href="{% url 'portal:room_booking_list' %}" class="block px-4 py-2 hover:bg-gray-50">Phòng họp</a>
                     <a href="{% url 'portal:vehicle_booking_list' %}" class="block px-4 py-2 hover:bg-gray-50">Đặt xe</a>
                     <a href="{% url 'portal:supply_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">VPP</a>

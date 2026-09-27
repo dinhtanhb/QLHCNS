@@ -227,7 +227,8 @@ def dashboard(request):
         context["pending_recruitment"] = RecruitmentRequest.objects.filter(status="Pending").count()
         context["pending_documents"] = Document.objects.filter(status="PendingApproval").count()
         context["open_tasks_company"] = Task.objects.exclude(status__in=["Done", "Cancelled"]).count()
-        context["assets_in_use"] = Asset.objects.filter(status="InUse").count()
+        if has_permission(request.user, "view_asset"):
+            context["assets_in_use"] = Asset.objects.filter(status="InUse").count()
         dept_counts = (
             Employee.objects.filter(employment_status="Active")
             .values("department__department_name")
@@ -247,9 +248,10 @@ def dashboard(request):
         context["dept_open_tasks"] = Task.objects.filter(
             department_id__in=dept_ids
         ).exclude(status__in=["Done", "Cancelled"]).count()
-        context["dept_assets_in_use"] = Asset.objects.filter(
-            allocations__employee__department_id__in=dept_ids, allocations__return_date__isnull=True
-        ).distinct().count()
+        if has_permission(request.user, "view_asset"):
+            context["dept_assets_in_use"] = Asset.objects.filter(
+                allocations__employee__department_id__in=dept_ids, allocations__return_date__isnull=True
+            ).distinct().count()
 
     return render(request, "portal/dashboard.html", context)
 
@@ -1091,11 +1093,17 @@ from apps.asset.models import AssetAllocation
 
 @login_required
 def asset_list(request):
+    if not has_permission(request.user, "view_asset"):
+        messages.error(request, "Anh/chị không có quyền xem thông tin tài sản.")
+        return redirect("portal:dashboard")
     employee = _get_employee(request)
     allocations = AssetAllocation.objects.filter(
         employee=employee, return_date__isnull=True
     ).select_related("asset", "asset__asset_type") if employee else []
-    return render(request, "portal/asset_list.html", {"allocations": allocations})
+    return render(request, "portal/asset_list.html", {
+        "allocations": allocations,
+        "can_manage_asset": _can_manage_asset(request),
+    })
 
 #=============================================
 #Tuyển dụng
@@ -3059,14 +3067,21 @@ def _can_manage_asset(request):
     return has_permission(request.user, "manage_asset")
 
 
+def _can_view_asset(request):
+    return has_permission(request.user, "view_asset")
+
+
 @login_required
 def asset_admin_list(request):
-    if not _can_manage_asset(request):
-        messages.error(request, "Anh/chị không có quyền quản lý tài sản.")
+    if not _can_view_asset(request):
+        messages.error(request, "Anh/chị không có quyền xem thông tin tài sản.")
         return redirect("portal:dashboard")
+    can_manage_asset = _can_manage_asset(request)
     assets = Asset.objects.select_related("asset_type").order_by("asset_type__asset_group", "asset_code")
     return render(request, "portal/asset_admin_list.html", {
-        "assets": assets, "asset_types": AssetType.objects.all(),
+        "assets": assets,
+        "asset_types": AssetType.objects.all() if can_manage_asset else AssetType.objects.none(),
+        "can_manage_asset": can_manage_asset,
     })
 
 
@@ -3097,11 +3112,13 @@ def asset_admin_create(request):
 
 @login_required
 def inventory_session_list(request):
-    if not _can_manage_asset(request):
-        messages.error(request, "Anh/chị không có quyền.")
+    if not _can_view_asset(request):
+        messages.error(request, "Anh/chị không có quyền xem thông tin tài sản.")
         return redirect("portal:dashboard")
     sessions = InventorySession.objects.order_by("-inventory_datetime")
-    return render(request, "portal/inventory_session_list.html", {"sessions": sessions})
+    return render(request, "portal/inventory_session_list.html", {
+        "sessions": sessions, "can_manage_asset": _can_manage_asset(request),
+    })
 
 
 @login_required
@@ -3129,10 +3146,14 @@ def inventory_session_create(request):
 
 @login_required
 def inventory_session_detail(request, pk):
-    if not _can_manage_asset(request):
-        messages.error(request, "Anh/chị không có quyền.")
+    if not _can_view_asset(request):
+        messages.error(request, "Anh/chị không có quyền xem thông tin tài sản.")
         return redirect("portal:dashboard")
     session = get_object_or_404(InventorySession, pk=pk)
+
+    if request.method == "POST" and not _can_manage_asset(request):
+        messages.error(request, "Anh/chị chỉ có quyền xem thông tin tài sản.")
+        return redirect("portal:inventory_session_detail", pk=pk)
 
     if request.method == "POST" and request.POST.get("action") == "add_member":
         try:
@@ -3146,12 +3167,14 @@ def inventory_session_detail(request, pk):
         return redirect("portal:inventory_session_detail", pk=pk)
 
     lines = session.lines.select_related("asset", "asset__asset_type").order_by("asset__asset_type__asset_group", "asset__asset_code")
+    can_manage_asset = _can_manage_asset(request)
     return render(request, "portal/inventory_session_detail.html", {
         "session": session, "lines": lines,
         "uncounted_lines": lines.filter(is_counted=False).count(),
         "line_count": lines.count(),
         "members": session.members.select_related("employee"),
-        "employees": Employee.objects.filter(employment_status="Active"),
+        "employees": Employee.objects.filter(employment_status="Active") if can_manage_asset else Employee.objects.none(),
+        "can_manage_asset": can_manage_asset,
     })
 
 
@@ -3199,8 +3222,8 @@ def inventory_session_complete(request, pk):
 
 @login_required
 def inventory_session_print(request, pk):
-    if not _can_manage_asset(request):
-        messages.error(request, "Anh/chị không có quyền.")
+    if not _can_view_asset(request):
+        messages.error(request, "Anh/chị không có quyền xem thông tin tài sản.")
         return redirect("portal:dashboard")
     session = get_object_or_404(InventorySession, pk=pk)
     lines = session.lines.select_related("asset", "asset__asset_type").order_by("asset__asset_type__asset_group", "asset__asset_code")
@@ -3219,8 +3242,8 @@ def inventory_session_print(request, pk):
 
 @login_required
 def inventory_session_export_excel(request, pk):
-    if not _can_manage_asset(request):
-        messages.error(request, "Anh/chị không có quyền.")
+    if not _can_view_asset(request):
+        messages.error(request, "Anh/chị không có quyền xem thông tin tài sản.")
         return redirect("portal:dashboard")
     session = get_object_or_404(InventorySession, pk=pk)
     lines = session.lines.select_related("asset", "asset__asset_type").order_by("asset__asset_type__asset_group", "asset__asset_code")
@@ -3288,11 +3311,13 @@ def inventory_session_export_excel(request, pk):
 #Portal — Đề nghị & Biên bản Thanh lý
 @login_required
 def disposal_request_list(request):
-    if not _can_manage_asset(request):
-        messages.error(request, "Anh/chị không có quyền.")
+    if not _can_view_asset(request):
+        messages.error(request, "Anh/chị không có quyền xem thông tin tài sản.")
         return redirect("portal:dashboard")
     requests_qs = AssetDisposalRequest.objects.order_by("-request_date")
-    return render(request, "portal/disposal_request_list.html", {"requests": requests_qs})
+    return render(request, "portal/disposal_request_list.html", {
+        "requests": requests_qs, "can_manage_asset": _can_manage_asset(request),
+    })
 
 
 @login_required
@@ -3326,13 +3351,16 @@ def _can_approve_disposal(request):
 
 @login_required
 def disposal_request_detail(request, pk):
-    if not _can_manage_asset(request):
-        messages.error(request, "Anh/chị không có quyền.")
+    if not _can_view_asset(request):
+        messages.error(request, "Anh/chị không có quyền xem thông tin tài sản.")
         return redirect("portal:dashboard")
     disposal_request = get_object_or_404(AssetDisposalRequest, pk=pk)
 
     if request.method == "POST":
         action = request.POST.get("action")
+        if action != "approve" and not _can_manage_asset(request):
+            messages.error(request, "Anh/chị chỉ có quyền xem thông tin tài sản.")
+            return redirect("portal:disposal_request_detail", pk=pk)
         if action == "add_member":
             try:
                 member = AssetDisposalRequestMember(
@@ -3382,13 +3410,15 @@ def disposal_request_detail(request, pk):
             messages.success(request, "Đã duyệt đề nghị thanh lý.")
         return redirect("portal:disposal_request_detail", pk=pk)
 
+    can_manage_asset = _can_manage_asset(request)
     return render(request, "portal/disposal_request_detail.html", {
         "req": disposal_request, "members": disposal_request.members.select_related("employee"),
         "items": disposal_request.items.select_related("asset"),
-        "employees": Employee.objects.filter(employment_status="Active"),
-        "assets": Asset.objects.exclude(status="Disposed"),
-        "directors": _director_employees(),
+        "employees": Employee.objects.filter(employment_status="Active") if can_manage_asset else Employee.objects.none(),
+        "assets": Asset.objects.exclude(status="Disposed") if can_manage_asset else Asset.objects.none(),
+        "directors": _director_employees() if can_manage_asset else Employee.objects.none(),
         "can_approve": _can_approve_disposal(request),
+        "can_manage_asset": can_manage_asset,
     })
 
 
@@ -3423,8 +3453,8 @@ def disposal_minutes_create(request, item_pk):
 
 @login_required
 def disposal_minutes_print(request, pk):
-    if not _can_manage_asset(request):
-        messages.error(request, "Anh/chị không có quyền.")
+    if not _can_view_asset(request):
+        messages.error(request, "Anh/chị không có quyền xem thông tin tài sản.")
         return redirect("portal:dashboard")
     minutes = get_object_or_404(AssetDisposalMinutes, pk=pk)
     return render(request, "portal/disposal_minutes_print.html", {
@@ -3435,8 +3465,8 @@ def disposal_minutes_print(request, pk):
 
 @login_required
 def disposal_request_print(request, pk):
-    if not _can_manage_asset(request):
-        messages.error(request, "Anh/chị không có quyền.")
+    if not _can_view_asset(request):
+        messages.error(request, "Anh/chị không có quyền xem thông tin tài sản.")
         return redirect("portal:dashboard")
     disposal_request = get_object_or_404(AssetDisposalRequest, pk=pk)
     return render(request, "portal/disposal_request_print.html", {
@@ -3446,8 +3476,8 @@ def disposal_request_print(request, pk):
 
 @login_required
 def disposal_decision_print(request, pk):
-    if not _can_manage_asset(request):
-        messages.error(request, "Anh/chị không có quyền.")
+    if not _can_view_asset(request):
+        messages.error(request, "Anh/chị không có quyền xem thông tin tài sản.")
         return redirect("portal:dashboard")
     disposal_request = get_object_or_404(AssetDisposalRequest, pk=pk)
     return render(request, "portal/disposal_decision_print.html", {
@@ -3457,8 +3487,8 @@ def disposal_decision_print(request, pk):
 
 @login_required
 def disposal_execution_print(request, pk):
-    if not _can_manage_asset(request):
-        messages.error(request, "Anh/chị không có quyền.")
+    if not _can_view_asset(request):
+        messages.error(request, "Anh/chị không có quyền xem thông tin tài sản.")
         return redirect("portal:dashboard")
     disposal_request = get_object_or_404(AssetDisposalRequest, pk=pk)
     return render(request, "portal/disposal_execution_print.html", {

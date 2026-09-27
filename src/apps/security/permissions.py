@@ -86,7 +86,11 @@ PERMISSION_MATRIX = {
     "request_procurement": (HR_MANAGER, HR_OFFICER, DEPT_MANAGER, FINANCE_OFFICER, SYS_ADMIN),
     "approve_procurement": (FINANCE_OFFICER, DIRECTOR),
     # Tài sản, kiểm kê, thanh lý
-    "manage_asset": (HR_MANAGER, HR_OFFICER, SYS_ADMIN),
+    "view_asset": (
+        SUPER_ADMIN, SYS_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER,
+        FINANCE_OFFICER, PROJECT_COORDINATOR,
+    ),
+    "manage_asset": (SUPER_ADMIN, HR_MANAGER, HR_OFFICER, SYS_ADMIN),
     # Trung tâm Báo cáo (/reports/) — chỉ Ban giám đốc, Nhân sự, Kế toán và Quản trị
     "view_report_center": (SUPER_ADMIN, SYS_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER, FINANCE_OFFICER),
     # Hiện menu quản trị

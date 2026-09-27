@@ -13,12 +13,13 @@
         {% endif %}
     </div>
 </div>
+{% if not can_manage_asset %}<p class="mb-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">Chế độ chỉ xem. Anh/chị vẫn có thể duyệt đề nghị nếu được giao thẩm quyền Giám đốc.</p>{% endif %}
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+<div class="{% if can_manage_asset %}grid grid-cols-1 md:grid-cols-2 gap-6{% else %}max-w-2xl{% endif %} mb-6">
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h2 class="text-sm font-bold text-gray-900 mb-3">Thành viên kiểm tra</h2>
         {% for m in members %}<p class="text-sm">{{ m.employee.full_name }} — {{ m.get_participation_display }}</p>{% endfor %}
-        <form method="post" class="flex flex-wrap gap-2 mt-3">
+        {% if can_manage_asset %}<form method="post" class="flex flex-wrap gap-2 mt-3">
             {% csrf_token %}<input type="hidden" name="action" value="add_member">
             <select name="employee" required class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
                 {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name }}</option>{% endfor %}
@@ -34,8 +35,9 @@
             </select>
             <button type="submit" class="bg-blue-700 text-white text-xs px-3 py-1.5 rounded">+ Thêm</button>
         </form>
+        {% endif %}
     </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    {% if can_manage_asset %}<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h2 class="text-sm font-bold text-gray-900 mb-3">Thêm tài sản đề nghị thanh lý</h2>
         <form method="post" class="space-y-2">
             {% csrf_token %}<input type="hidden" name="action" value="add_item">
@@ -45,7 +47,7 @@
             <input type="text" name="damage_description" placeholder="Tình trạng hư hỏng" required class="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm">
             <button type="submit" class="bg-blue-700 text-white text-xs px-3 py-1.5 rounded">+ Thêm tài sản</button>
         </form>
-    </div>
+    </div>{% endif %}
 </div>
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -60,7 +62,7 @@
             <td class="py-2">
                 {% if it.minutes %}
                 <a href="{% url 'portal:disposal_minutes_print' it.minutes.pk %}" class="text-blue-700 hover:underline">Xem biên bản</a>
-                {% elif req.status == "Approved" %}
+                {% elif req.status == "Approved" and can_manage_asset %}
                 <details><summary class="text-blue-700 cursor-pointer text-xs">+ Lập biên bản thanh lý</summary>
                 <form method="post" action="{% url 'portal:disposal_minutes_create' it.pk %}" class="mt-2 grid grid-cols-2 gap-2 text-xs">
                     {% csrf_token %}
@@ -91,7 +93,7 @@
         {% if req.decision_no %}
         <p class="text-sm mb-2">Số {{ req.decision_no }} ngày {{ req.decision_date }}</p>
         <a href="{% url 'portal:disposal_decision_print' req.pk %}" class="text-blue-700 hover:underline text-sm">Xem/In Quyết định</a>
-        {% else %}
+        {% elif can_manage_asset %}
         <form method="post" class="space-y-2">
             {% csrf_token %}<input type="hidden" name="action" value="issue_decision">
             <input type="text" name="decision_no" placeholder="Số Quyết định (VD: 01a-26/QĐ-VH)" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
@@ -110,7 +112,7 @@
         <h2 class="text-sm font-bold text-gray-900 mb-3">Ghi nhận thực hiện Tiêu hủy/Thanh lý (theo cả lô)</h2>
         {% if req.status == "Completed" %}
         <a href="{% url 'portal:disposal_execution_print' req.pk %}" class="text-blue-700 hover:underline text-sm">Xem/In Biên bản tiêu hủy</a>
-        {% else %}
+        {% elif can_manage_asset %}
         <form method="post" class="space-y-2">
             {% csrf_token %}<input type="hidden" name="action" value="record_execution">
             <input type="datetime-local" name="execution_datetime" required placeholder="Thời điểm bắt đầu" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
