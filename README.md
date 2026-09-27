@@ -1,142 +1,65 @@
-# QLHCNS — IHRMS
+# IHRMS — Quản lý Hành chính & Nhân sự
 
-> Nhật ký thay đổi lớn, kết quả kiểm tra và việc cần chủ dự án thực hiện được ghi tập trung tại [docs/PROJECT_WORK_LOG.md](docs/PROJECT_WORK_LOG.md). Quy tắc cập nhật nằm trong [AGENTS.md](AGENTS.md).
+Nhật ký thay đổi và kết quả kiểm tra được ghi tại [docs/PROJECT_WORK_LOG.md](docs/PROJECT_WORK_LOG.md); quy tắc làm việc tại [AGENTS.md](AGENTS.md).
 
-Hệ thống **Quản lý Hành chính & Nhân sự** nội bộ, xây dựng trên Django 5.2.
-Gồm **Cổng thông tin nhân viên** (`/portal/`), **Trang quản trị** (`/admin/`) và các phân hệ theo quyền.
+IHRMS là ứng dụng nội bộ Django 5.2, gồm Cổng nhân viên (/portal/), trang quản trị (/admin/) và các phân hệ nghiệp vụ. Mã nguồn Django nằm trong thư mục src/ (chữ thường).
 
-Tài liệu nghiệp vụ cho người dùng: [Cẩm nang sử dụng](HUONG_DAN_SU_DUNG_IHRMS.md), [Giáo án tập huấn](TAP_HUAN_IHRMS.md), [Lộ trình Hoạt động dự án NGO](docs/NGO_Activity_Planning_MEL_Roadmap.md). Kế hoạch các hạng mục HRMS tiếp theo nằm tại [docs/HRMS_Next_Features_Plan.md](docs/HRMS_Next_Features_Plan.md). Hướng dẫn kỹ thuật/vận hành nằm trong `docs/` và `.agents/skills/`.
+## Trạng thái chuẩn bị máy chủ SIT
 
-Phân hệ **Hoạt động dự án** có menu riêng ở cuối thanh điều hướng; gồm dashboard tiến độ, lịch, Task báo cáo, hồ sơ đề xuất/dự trù PDF, hàng chờ Giám đốc và thông báo trong IHRMS. Việc gửi xin duyệt được người dùng thực hiện trong Outlook; hiện chưa có sổ ngân sách/chứng từ/quyết toán trong ứng dụng.
+Rà soát ngày 27/09/2026: cấu hình máy phát triển kết nối SQL Server; 177 test đạt trên SQL Server test database tạm; check, kiểm tra migration và pip check đạt. Đây chưa phải bằng chứng máy chủ SIT đã cấu hình xong.
 
----
+Hướng dẫn dựng SIT, danh sách việc IT cần chuẩn bị và checklist kiểm thử: [docs/Server_Trial_Readiness_2026-09-27.md](docs/Server_Trial_Readiness_2026-09-27.md). Không trỏ SIT vào database production, không chép secrets từ .env của máy khác và không đưa .env, backup SQL, dữ liệu nhân sự/lương hay tệp tải lên vào Git.
 
-## 1. Yêu cầu máy cài đặt
+## Tài liệu dự án
 
-| Thành phần | Phiên bản |
+- [Cẩm nang sử dụng](HUONG_DAN_SU_DUNG_IHRMS.md), [giáo án tập huấn](TAP_HUAN_IHRMS.md), [kịch bản UAT](docs/UAT_Kich_Ban_Nghiem_Thu_4_Hang_Muc.md)
+- [Lộ trình Hoạt động dự án NGO](docs/NGO_Activity_Planning_MEL_Roadmap.md)
+- [Đánh giá sẵn sàng lịch sử](docs/Production_Readiness_Review_2026-09-23.md) là snapshot ngày 24/09; xem runbook SIT để biết trạng thái mới hơn
+- [Tiêu chuẩn triển khai](docs/08_Deployment_Standards.md); hướng dẫn Codex ở .agents/skills/
+
+Hoạt động dự án có dashboard, lịch, Task báo cáo, đề xuất PDF và hàng chờ duyệt. Người dùng soạn/gửi thư xin duyệt bằng Outlook trên máy họ. Ứng dụng chưa tự gửi thư qua máy chủ, chưa có sổ ngân sách/chứng từ/quyết toán và chưa triển khai SSO, Teams hay Office tự động. SharePoint cần cấu hình và kiểm tra quyền riêng cho SIT.
+
+## Thành phần
+
+| Thành phần | Yêu cầu/trạng thái |
 |---|---|
-| Python | 3.12 trở lên |
-| Hệ quản trị CSDL | SQLite cho cài đặt mặc định/kiểm thử hoặc SQL Server qua cấu hình `DB_ENGINE` |
-| Hệ điều hành | Windows 10/11 (đã chạy thực tế), Linux đều được |
+| Python | 3.12 |
+| Django | 5.2.17 |
+| Cơ sở dữ liệu | SQL Server; database riêng cho SIT |
+| Máy chủ mục tiêu | Windows Server; các nền tảng khác chưa được xác nhận |
+| WSGI cho Windows SIT | Waitress đặt sau reverse proxy có TLS |
+| SQL driver | ODBC Driver 17 theo cấu hình hiện tại |
+| Tệp đính kèm | SharePoint khi bật; thư mục src/media/ nếu lưu cục bộ |
 
-## 2. Cấu trúc thư mục
+## Cài đặt phát triển trên Windows
 
-```
-D:\QLHCNS\
-├── .env                  <- Cấu hình bí mật (KHÔNG đưa lên Git)
-├── .gitignore
-├── requirements.txt
-├── README.md
-├── venv\                 <- Môi trường ảo Python
-└── SRC\
-    ├── manage.py
-    ├── db.sqlite3        <- CSDL (KHÔNG đưa lên Git)
-    ├── config\           <- settings.py, urls.py
-    ├── apps\             <- Các phân hệ nghiệp vụ, gồm hoạt động dự án (activity)
-    ├── templates\        <- Giao diện dùng chung (base.html)
-    ├── static\
-    └── media\            <- File người dùng tải lên (KHÔNG đưa lên Git)
-```
+Trong PowerShell tại thư mục gốc dự án:
 
-## 3. Cài đặt lần đầu
+    py -3.12 -m venv venv
+    .\venv\Scripts\Activate.ps1
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+    Copy-Item .env.example .env
 
-Mở **Command Prompt** và chạy lần lượt:
+Sửa .env với database phát triển, sinh SECRET_KEY mới bằng lệnh dưới đây và không dùng giá trị mẫu:
 
-```bat
-cd /d D:\QLHCNS
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-```
+    python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 
-Tạo file cấu hình: copy `.env.example` thành `.env` (đặt tại `D:\QLHCNS\.env`), mở bằng Notepad và điền `SECRET_KEY`.
-Tạo chuỗi bí mật mới:
+Đặt DEBUG=True chỉ trong môi trường phát triển dùng runserver. Dùng DEBUG=False trên SIT/UAT.
 
-```bat
-python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
-```
+    python src\manage.py check
+    python src\manage.py migrate
+    python src\manage.py createsuperuser
+    python src\manage.py runserver
 
-Khởi tạo cơ sở dữ liệu và tài khoản quản trị:
+Mở http://127.0.0.1:8000/portal/. runserver chỉ dành cho phát triển cục bộ, không dùng làm web server máy chủ. Chỉ chạy migrate sau khi xác nhận database đích là database phát triển/SIT riêng và đã sao lưu.
 
-```bat
-cd /d D:\QLHCNS\SRC
-python manage.py migrate
-python manage.py createsuperuser
-```
+## Kiểm thử, sao lưu, phân quyền
 
-## 4. Chạy hằng ngày
+Lệnh manage.py test không nhãn có thể tìm thấy 0 test; dùng lệnh đầy đủ trong runbook SIT. Django tạo rồi xóa test database, vì vậy không chạy test trên database nghiệp vụ thật.
 
-```bat
-cd /d D:\QLHCNS\SRC
-..\venv\Scripts\activate
-python manage.py runserver
-```
+Ma trận vai trò nằm tại src/apps/security/permissions.py và được kiểm tra ở máy chủ. Các vai trò gồm SUPER_ADMIN, SYS_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER, DEPT_MANAGER, FINANCE_OFFICER, PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA, EMPLOYEE.
 
-Mở trình duyệt:
-- Cổng nhân viên: http://127.0.0.1:8000/portal/
-- Trang quản trị: http://127.0.0.1:8000/admin/
-- Trung tâm báo cáo: http://127.0.0.1:8000/reports/
+DBA sao lưu SQL Server và thử restore vào môi trường riêng. Nếu có lưu tệp cục bộ, sao lưu src/media/ cùng database. Tệp SharePoint theo chính sách retention/backup Microsoft 365. Cất .env trong kho secrets được kiểm soát riêng.
 
-Dừng server: nhấn `Ctrl + C`.
-
-## 5. Sau mỗi lần cập nhật mã nguồn
-
-```bat
-cd /d D:\QLHCNS\SRC
-..\venv\Scripts\activate
-pip install -r ..\requirements.txt
-python manage.py migrate
-python manage.py runserver
-```
-
-## 6. Sao lưu
-
-Chỉ cần sao chép 3 thứ:
-1. `D:\QLHCNS\SRC\db.sqlite3` — toàn bộ dữ liệu
-2. `D:\QLHCNS\SRC\media\` — file đính kèm
-3. `D:\QLHCNS\.env` — cấu hình
-
-## 7. Các phân hệ (`SRC\apps\`)
-
-| Thư mục | Chức năng |
-|---|---|
-| `common` | Tiện ích dùng chung, chuẩn hóa tên file tải lên |
-| `security` | Tài khoản, vai trò, **ma trận phân quyền** (`permissions.py`) |
-| `organization` | Cơ cấu tổ chức, phòng ban, chức danh |
-| `hrm` | Hồ sơ nhân viên |
-| `attendance` | Chấm công, lịch làm việc, ngày lễ |
-| `leave` | Nghỉ phép, quỹ phép, nghỉ bù |
-| `contract` | Hợp đồng lao động |
-| `payroll` | Bảng lương, bảo hiểm, thuế TNCN |
-| `portal` | Cổng thông tin nhân viên (giao diện chính) |
-| `task` | Giao việc, theo dõi công việc |
-| `kpi` | Chấm điểm KPI |
-| `document` | Tài liệu nội bộ, quy trình ban hành |
-| `office` | Công văn đến / công văn đi |
-| `asset` | Tài sản, kiểm kê, thanh lý |
-| `recruitment` | Tuyển dụng, hồ sơ ứng viên |
-| `procurement` | Mua sắm, văn phòng phẩm |
-| `project` | Dự án, chấm công theo dự án |
-| `planning` | Kế hoạch, lịch, sự kiện |
-| `notification` | Thông báo trong hệ thống |
-| `reporting` | Trung tâm báo cáo, xuất Excel |
-
-## 8. Phân quyền
-
-Toàn bộ quyền được khai báo **duy nhất** tại `SRC\apps\security\permissions.py`, trong bảng `PERMISSION_MATRIX`.
-Muốn thay đổi ai được làm gì, chỉ sửa bảng đó — cả menu lẫn trang thực tế sẽ tự áp dụng theo.
-
-Các vai trò: `SUPER_ADMIN`, `SYS_ADMIN`, `DIRECTOR`, `HR_MANAGER`, `HR_OFFICER`, `DEPT_MANAGER`, `FINANCE_OFFICER`, `EMPLOYEE`.
-
-> Lưu ý: cờ **Staff status** trong `/admin/` chỉ dùng để cho phép vào trang quản trị Django.
-> Tài khoản nhân viên thường **không** được tick ô này.
-
-## 9. Xử lý sự cố thường gặp
-
-| Hiện tượng | Cách xử lý |
-|---|---|
-| `ModuleNotFoundError` | Chưa kích hoạt venv → chạy `..\venv\Scripts\activate` |
-| `no such table` | Chưa chạy `python manage.py migrate` |
-| Giao diện sai/cũ | Nhấn `Ctrl + F5` trên trình duyệt để xóa cache |
-| `Conflicting migrations` | File migration bị đặt nhầm app → xóa file đặt sai chỗ |
-| `SECRET_KEY` cảnh báo | Thiếu file `.env` tại `D:\QLHCNS\.env` |
+Trước go-live, xem [Django deployment checklist](https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/) và checklist của công ty.

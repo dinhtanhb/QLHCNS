@@ -36,6 +36,8 @@ src/staticfiles/
 # --- Nhật ký & file tạm ---
 *.log
 logs/
+Logs/
+Backups/
 *.tmp
 ~$*
 
