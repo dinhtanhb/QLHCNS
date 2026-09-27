@@ -579,3 +579,13 @@ Form sửa nhân viên trước đây chỉ nạp phòng ban đang hoạt độn
 **Còn mở:** Không còn câu hỏi về phạm vi quyền trưởng phòng; quyết định giới hạn theo các phòng ban được quản lý đã được áp dụng.
 
 **Commit triển khai:** `875ab08` trên nhánh `chore/django-5.2-upgrade`; chưa push.
+
+## 2026-09-27 - Kiểm tra và đóng gói trước khi đẩy GitHub
+
+**Phạm vi chuẩn bị:** các thay đổi đang có trong workspace gồm test hồi quy chấm công, xử lý UTF-8 cho output Windows/Task Scheduler, cập nhật giáo án, hướng dẫn IT và bộ tài liệu đặc tả/UAT/checklist. Các file dự án được rà soát và đưa vào commit; không đưa thư mục sao lưu SQL Server, `Backups/backup-log.txt`, tệp rỗng cục bộ `src/qlhcns` hay `.env` lên Git.
+
+**Điểm nghiệp vụ còn chờ:** bản yêu cầu Task cập nhật có thêm câu hỏi DEPT_MANAGER mặc định vào **Theo dõi hoạt động** hay **Việc của tôi**. Đã gửi câu hỏi cho người phụ trách; giữ nguyên hành vi hiện tại và chưa thêm test/quy tắc mặc định mới cho đến khi có câu trả lời.
+
+**Kiểm tra trước đẩy:** lệnh tổng quát `manage.py test` tự tìm thấy 0 test do cấu trúc module nằm dưới `src/apps`; đã chạy tường minh 23 module test — 172/172 pass trên SQL Server test database, DB test được Django xóa. `manage.py check` đạt; `makemigrations --check --dry-run` không phát hiện migration thiếu; `git diff --check` đạt. Cảnh báo Requests/urllib3 vẫn hiện hữu nhưng không làm test thất bại.
+
+**Trạng thái Git trước đợt này:** nhánh `chore/django-5.2-upgrade` đã fetch `origin`, không thấy commit remote mới hơn; ban đầu có 22 commit chưa đẩy. Kết quả commit/push sẽ được báo sau khi hoàn tất.

@@ -15,6 +15,11 @@ if (-not (Test-Path -LiteralPath $pythonPath -PathType Leaf)) {
 
 Push-Location $repoRoot
 try {
+    # Keep redirected Python output UTF-8 even when this script is run outside
+    # a console, such as from Task Scheduler or a PowerShell pipeline.
+    $env:PYTHONIOENCODING = 'utf-8'
+    $env:PYTHONUTF8 = '1'
+
     $output = & $pythonPath 'src\manage.py' 'send_activity_report_reminders' 2>&1
     $exitCode = $LASTEXITCODE
     $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss zzz'

@@ -2,9 +2,9 @@
 
 **Dành cho:** người hướng dẫn nội bộ và đầu mối nghiệp vụ
 
-**Phiên bản:** 1.2 — 25/09/2026
+**Phiên bản:** 1.3 — 26/09/2026
 
-**Thời lượng gợi ý:** 75 phút nhân viên; thêm 45 phút quản lý; 90 phút Nhân sự; 120 phút Tài chính; 60 phút quản trị.
+**Thời lượng gợi ý:** 75 phút nhân viên; thêm 45 phút quản lý; 90 phút Nhân sự cộng 35 phút checklist; 120 phút Tài chính; 60 phút quản trị. Có thể thêm 45 phút cho module tự cập nhật hồ sơ/sơ đồ tổ chức.
 
 ## 1. Mục tiêu và nguyên tắc
 
@@ -18,6 +18,9 @@ Kết thúc buổi học, học viên tự đăng nhập, tìm đúng menu, hoà
 - Xác định đầu mối nghiệp vụ cho Nhân sự, Tài chính, phê duyệt và IT; công bố kênh hỗ trợ.
 - In/gửi [Cẩm nang sử dụng IHRMS](HUONG_DAN_SU_DUNG_IHRMS.md); chuẩn bị bài kiểm tra và bảng điểm danh.
 - Đối chiếu quy định công ty: hạn gửi công/nghỉ, người duyệt thay thế, lịch làm việc, quy trình sửa công, lịch chốt lương. Đánh dấu nội dung chưa được phê duyệt để không tự đặt quy tắc.
+- Với buổi Nhân sự, chuẩn bị hai mẫu checklist demo đã được HR duyệt nội dung, người chịu trách nhiệm và hạn; tài khoản cấu hình mẫu phải vào được Django Admin.
+- Với bài Outlook, dùng người nhận/hộp thư demo nội bộ được IT duyệt. Không gửi email thật ra ngoài trong giờ học.
+- Báo trước: nhắc checklist chưa có Task Scheduler; báo cáo BHXH/PIT/chi phí lương theo phòng ban chưa được cấu hình để xuất.
 
 ## 3. Lịch buổi học nhân viên — 75 phút
 
@@ -70,6 +73,18 @@ Mỗi người dùng tài khoản demo riêng:
 
 **Lưu ý người hướng dẫn:** chỉ tài khoản được cấp quyền xem mới có menu Hoạt động dự án; hàng chờ duyệt chỉ hiện hồ sơ giao đúng Giám đốc. Nếu không thấy hoạt động trong dashboard, chọn đúng tháng. Quyết định cũ không được thông báo hồi tố.
 
+## Thực hành bổ sung: Cập nhật hồ sơ và sơ đồ tổ chức — 30 phút
+
+**Đối tượng:** toàn thể nhân viên và Nhân sự. Chỉ dùng tài khoản/hồ sơ demo, không trình chiếu địa chỉ, email hoặc số điện thoại thật.
+
+1. Học viên đóng vai nhân viên vào **Cá nhân → Sơ đồ tổ chức**; chỉ ra họ tên, chức vụ, phòng ban và quan hệ quản lý. Xác nhận trang không phải danh bạ liên hệ.
+2. Vào **Cá nhân → Yêu cầu cập nhật hồ sơ → Tạo yêu cầu**; chọn một trường trong whitelist (email cá nhân, số điện thoại, địa chỉ), nhập giá trị demo/lý do, gửi.
+3. Học viên Nhân sự vào hàng chờ **Duyệt cập nhật hồ sơ**, kiểm tra thông tin và thử một trong các quyết định: duyệt, từ chối hoặc yêu cầu bổ sung; nhập ý kiến để nhân viên biết bước tiếp.
+4. Nhân viên xem trạng thái và thông báo trong IHRMS. Nếu được yêu cầu bổ sung, tạo yêu cầu mới đã sửa; không sửa trực tiếp thông tin trước khi được duyệt.
+5. Người hướng dẫn giải thích kiểm tra snapshot: nếu HR đã cập nhật trường gốc trong lúc yêu cầu chờ, yêu cầu cũ không được áp dụng.
+
+**Đạt khi:** nhân viên tạo đúng yêu cầu; HR chỉ duyệt đúng quyền; học viên nêu được rằng chỉ ba trường trong danh sách hiện được hỗ trợ và thông tin chỉ đổi sau khi duyệt.
+
 ## 6. Bổ sung cho Nhân sự — 90 phút
 
 - Thực hành tạo nhân viên demo với mã duy nhất, đơn vị, quản lý, ngày hiệu lực và trạng thái.
@@ -81,6 +96,22 @@ Mỗi người dùng tài khoản demo riêng:
 - Hoàn tất bằng kiểm tra hồ sơ demo và ghi nhận người rà soát.
 
 **Đạt khi:** không tạo trùng nhân viên; biết trường nào nhạy cảm; xử lý đúng ngày hiệu lực; biết không sửa lịch sử tùy tiện.
+
+### Thực hành checklist onboarding/offboarding — 35 phút
+
+**Đối tượng:** HR_OFFICER/HR_MANAGER; người được giao đầu việc; IT hỗ trợ phần tài khoản Admin và nhắc hạn.
+
+1. Tài khoản có quyền Django Admin mở **Lifecycle → Checklist templates**; trình diễn một mẫu Onboarding và một mẫu Offboarding. Xác nhận mã mẫu, loại, các dòng, thứ tự, mã vai trò chịu trách nhiệm, số ngày lệch hạn và cờ liên quan đến tài sản. Đây là cấu hình demo; HR chỉ nhập mẫu nghiệp vụ sau khi đã thống nhất chính thức.
+2. HR vào **Nhân sự → Onboarding / Offboarding** → **Mở checklist**, chọn nhân viên demo, đúng loại và mẫu. Với Offboarding nhập ngày hiệu lực; không dùng ngày thật nếu đây là môi trường đào tạo.
+3. Mở chi tiết, giao một mục cho tài khoản đang hoạt động có đúng mã vai trò; xác nhận vai trò trên mẫu lọc danh sách người có thể nhận việc.
+4. Người được giao mở checklist, đánh dấu một mục **Hoàn tất**; thử **Bỏ qua** một mục khác và xác nhận hệ thống yêu cầu lý do. HR theo dõi trạng thái và hạn.
+5. Với mục liên quan tài sản, liên kết một bản ghi cấp phát demo đã tồn tại. Không tạo/xóa lịch sử tài sản trong checklist. Chỉ thử Offboarding khi có bản ghi thu hồi phù hợp.
+6. Trình diễn sửa một dòng trong mẫu rồi xác nhận checklist đã mở không bị thay đổi (bản chụp theo hồ sơ).
+7. IT/HR xem số cảnh báo quá hạn trên dashboard. Nếu cần thử lệnh nhắc, chỉ chạy trên dữ liệu demo: `python src\manage.py send_lifecycle_reminders`. Không khẳng định đã có nhắc tự động hằng ngày cho đến khi Task Scheduler được IT cấu hình và kiểm tra.
+
+**Đạt khi:** HR mở hồ sơ đúng loại mà không tạo trùng; đầu việc giao đúng vai trò; người được giao chỉ cập nhật việc của mình; bỏ qua có lý do; lịch sử tài sản được giữ nguyên.
+
+**Việc sau buổi học:** HR xác nhận nội dung hai mẫu và người chịu trách nhiệm; IT xác nhận quyền Admin và quyết định khi nào lên lịch lệnh nhắc. Chưa nhập mẫu chính thức nếu nghiệp vụ chưa duyệt.
 
 ## 7. Thực hành hồ sơ có tệp đính kèm — 30 phút
 
@@ -108,6 +139,8 @@ Chỉ dùng kỳ và số liệu demo. Người hướng dẫn phải có ngư�
 7. Cấu hình hiệu lực: thêm bản ghi mới theo ngày hiệu lực; không chỉnh cấu hình quá khứ để tác động kỳ đã chốt.
 
 **Điểm kiểm soát:** luôn rà soát độc lập trước khóa; xác minh đúng kỳ; chỉ người được ủy quyền khóa/phát hành. Quy tắc tính pháp lý cần được bộ phận chuyên môn xác nhận.
+
+Sau khi khóa kỳ, một số người nhận thông báo trong IHRMS có thể thấy **Mở thư nháp trong Outlook**. Nếu trình diễn, dùng kỳ demo: mở nháp, kiểm tra người nhận/nội dung, tự gửi trong Outlook theo quy trình email nội bộ, rồi mới xác nhận **Đã gửi qua Outlook**. Không xác nhận nếu chưa gửi thật. IHRMS không gửi thư tự động. Báo cáo BHXH, PIT và chi phí lương theo phòng ban chưa được bật; không dùng khung kỹ thuật làm đầu ra nghiệp vụ.
 
 ## 9. Kiểm tra nhanh và tiêu chí hoàn thành
 
@@ -143,6 +176,9 @@ Yêu cầu gửi: người báo/mã NV; thời điểm; menu/URL; bước thao t
 - [ ] Dữ liệu demo không chứa dữ liệu thật.
 - [ ] Môi trường, PDF, thông báo và các luồng trình diễn hoạt động.
 - [ ] Tài khoản demo có quyền SharePoint phù hợp; thư mục upload đúng nghiệp vụ; tệp giả được chuẩn bị sẵn.
+- [ ] Mẫu onboarding/offboarding demo và người chịu trách nhiệm đã được HR rà soát; người cấu hình có quyền Admin.
+- [ ] Người hướng dẫn đã giải thích trạng thái email nháp Outlook, xác nhận gửi thủ công và tình trạng Task Scheduler.
+- [ ] Báo cáo tuân thủ chưa bật được nói rõ; không dùng dữ liệu demo để tạo biểu mẫu pháp lý.
 - [ ] Người hỗ trợ nghiệp vụ và IT đã được phân công.
 - [ ] Cẩm nang, giáo án, phiếu điểm danh và phản hồi đã sẵn sàng.
 - [ ] Các nội dung chưa được quyết định đã được nêu rõ thay vì hướng dẫn như chính sách.
