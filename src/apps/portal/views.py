@@ -655,11 +655,15 @@ def task_detail(request, pk):
             is_owner or is_assigner or request.user.is_superuser
             or can_view_activity(request.user, task.activity)
         )
+    elif request.user.is_superuser or is_owner:
+        can_view = True
+    elif _role_code(request) == "HR_MANAGER":
+        can_view = True
+    elif _role_code(request) == "DEPT_MANAGER" and employee:
+        managed_department_ids = employee.managed_departments.values_list("pk", flat=True)
+        can_view = task.assigned_to_employee.department_id in managed_department_ids
     else:
-        can_view = bool(
-            is_owner or is_assigner or request.user.is_superuser
-            or _role_code(request) in ("HR_MANAGER", "DEPT_MANAGER")
-        )
+        can_view = is_assigner
 
     if not can_view:
         messages.error(request, "Anh/chị không có quyền xem công việc này.")
@@ -732,12 +736,19 @@ def task_create(request):
 
     if request.method == "POST":
         try:
+            assignee = candidates.filter(
+                pk=request.POST.get("assigned_to_employee")
+            ).first()
+            if assignee is None:
+                raise ValidationError(
+                    "Chỉ được giao việc cho nhân viên thuộc phạm vi phòng ban của anh/chị."
+                )
             task = Task(
                 task_code=request.POST.get("task_code"),
                 task_name=request.POST.get("task_name"),
                 description=request.POST.get("description", ""),
                 assigned_by_employee=employee,
-                assigned_to_employee_id=request.POST.get("assigned_to_employee"),
+                assigned_to_employee=assignee,
                 department_id=request.POST.get("department") or None,
                 priority=request.POST.get("priority", "Normal"),
                 start_date=request.POST.get("start_date") or timezone.localdate(),

@@ -296,6 +296,202 @@ class PortalSensitiveWorkflowTests(TestCase):
         self.assertEqual(list(assigned_work.context["tasks"]), [assigned_by_me])
         self.assertNotIn(assigned_by_other, assigned_work.context["tasks"])
 
+    def test_dept_manager_can_create_task_and_see_it_in_assigned_by_me_tab(self):
+        manager = self.make_employee("PORTAL-DEPT-TASK-MANAGER")
+        assignee = self.make_employee("PORTAL-DEPT-TASK-ASSIGNEE")
+        self.department.manager = manager
+        self.department.save(update_fields=("manager",))
+        user = self.make_user("DEPT_MANAGER", manager, "portal-dept-task-manager")
+        self.client.force_login(user)
+
+        create_url = reverse("portal:task_create")
+        form = self.client.get(create_url)
+        self.assertEqual(form.status_code, 200)
+        self.assertIn(assignee, form.context["candidates"])
+
+        response = self.client.post(create_url, {
+            "task_code": "PORTAL-DEPT-TASK-CREATED",
+            "task_name": "Công việc trưởng phòng giao",
+            "assigned_to_employee": str(assignee.pk),
+            "department": str(self.department.pk),
+            "priority": "Normal",
+            "start_date": "2026-10-01",
+            "due_date": "2026-10-10",
+        })
+
+        self.assertRedirects(response, reverse("portal:task_list"))
+        task = Task.objects.get(task_code="PORTAL-DEPT-TASK-CREATED")
+        self.assertEqual(task.assigned_by_employee, manager)
+        self.assertEqual(task.assigned_to_employee, assignee)
+        self.assertIsNone(task.activity_id)
+
+        assigned_by_me = self.client.get(
+            reverse("portal:task_list"), {"scope": "assigned_by_me"}
+        )
+        self.assertEqual(list(assigned_by_me.context["tasks"]), [task])
+        detail = self.client.get(reverse("portal:task_detail", args=(task.pk,)))
+        self.assertEqual(detail.status_code, 200)
+
+    def test_dept_manager_cannot_assign_or_view_task_outside_managed_departments(self):
+        manager = self.make_employee("PORTAL-DEPT-TASK-SCOPE-MANAGER")
+        self.department.manager = manager
+        self.department.save(update_fields=("manager",))
+        other_department = Department.objects.create(
+            department_code="PORTAL-DEPT-TASK-SCOPE-OTHER",
+            department_name="Phòng ban ngoài phạm vi",
+            organization=self.organization,
+        )
+        other_employee = self.make_employee("PORTAL-DEPT-TASK-SCOPE-EMPLOYEE")
+        other_employee.department = other_department
+        other_employee.save(update_fields=("department",))
+        user = self.make_user("DEPT_MANAGER", manager, "portal-dept-task-scope-manager")
+        existing_task = Task.objects.create(
+            task_code="PORTAL-DEPT-TASK-OUTSIDE-EXISTING",
+            task_name="Task thuộc phòng ban khác",
+            assigned_by_employee=manager,
+            assigned_to_employee=other_employee,
+            department=other_department,
+            due_date=date(2026, 10, 10),
+            created_by=user,
+        )
+        self.client.force_login(user)
+
+        detail = self.client.get(reverse("portal:task_detail", args=(existing_task.pk,)))
+        self.assertRedirects(detail, reverse("portal:task_list"))
+
+        create_url = reverse("portal:task_create")
+        form = self.client.get(create_url)
+        self.assertNotIn(other_employee, form.context["candidates"])
+        response = self.client.post(create_url, {
+            "task_code": "PORTAL-DEPT-TASK-OUTSIDE-POST",
+            "task_name": "Không được giao sang phòng khác",
+            "assigned_to_employee": str(other_employee.pk),
+            "department": str(other_department.pk),
+            "priority": "Normal",
+            "start_date": "2026-10-01",
+            "due_date": "2026-10-10",
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(
+            Task.objects.filter(task_code="PORTAL-DEPT-TASK-OUTSIDE-POST").exists()
+        )
+
+    def test_hr_manager_can_create_and_view_task_across_departments(self):
+        hr_employee = self.make_employee("PORTAL-HR-TASK-MANAGER")
+        user = self.make_user("HR_MANAGER", hr_employee, "portal-hr-task-manager")
+        other_department = Department.objects.create(
+            department_code="PORTAL-HR-TASK-OTHER-DEPT",
+            department_name="Phòng ban khác",
+            organization=self.organization,
+        )
+        assignee = self.make_employee("PORTAL-HR-TASK-ASSIGNEE")
+        assignee.department = other_department
+        assignee.save(update_fields=("department",))
+        self.client.force_login(user)
+
+        create_url = reverse("portal:task_create")
+        form = self.client.get(create_url)
+        self.assertEqual(form.status_code, 200)
+        self.assertIn(assignee, form.context["candidates"])
+
+        response = self.client.post(create_url, {
+            "task_code": "PORTAL-HR-TASK-CROSS-DEPT",
+            "task_name": "Công việc HR giao cho phòng khác",
+            "assigned_to_employee": str(assignee.pk),
+            "department": str(other_department.pk),
+            "priority": "Normal",
+            "start_date": "2026-10-01",
+            "due_date": "2026-10-10",
+        })
+
+        self.assertRedirects(response, reverse("portal:task_list"))
+        task = Task.objects.get(task_code="PORTAL-HR-TASK-CROSS-DEPT")
+        self.assertEqual(task.assigned_to_employee, assignee)
+        self.assertEqual(task.department, other_department)
+        self.assertIsNone(task.activity_id)
+        assigned_by_me = self.client.get(
+            reverse("portal:task_list"), {"scope": "assigned_by_me"}
+        )
+        self.assertEqual(list(assigned_by_me.context["tasks"]), [task])
+        detail = self.client.get(reverse("portal:task_detail", args=(task.pk,)))
+        self.assertEqual(detail.status_code, 200)
+
+    def test_project_manager_sees_assigned_by_me_tab_and_project_scope(self):
+        manager = self.make_employee("PORTAL-PROJECT-TASK-MANAGER")
+        cbda = self.make_employee("PORTAL-PROJECT-TASK-CBDA")
+        coordinator = self.make_employee("PORTAL-PROJECT-TASK-COORD")
+        user = self.make_user("PROJECT_MANAGER", manager, "portal-project-task-manager")
+        coordinator_user = self.make_user(
+            "PROJECT_COORDINATOR", coordinator, "portal-project-task-coordinator"
+        )
+        project = Project.objects.create(
+            project_code="PORTAL-PROJECT-TASK-PROJECT",
+            project_name="Dự án kiểm thử vai trò quản lý",
+            department=self.department,
+        )
+        activity = Activity.objects.create(
+            activity_code="PORTAL-PROJECT-TASK-ACTIVITY",
+            activity_name="Hoạt động giao cho CBDA",
+            project=project,
+            start_date=date(2026, 10, 1),
+            end_date=date(2026, 10, 2),
+            lead_cbda=cbda,
+            coordinator=coordinator,
+        )
+        project_task = Task.objects.create(
+            task_code="PORTAL-PROJECT-TASK-REPORT",
+            task_name="Task báo cáo trong phạm vi dự án",
+            assigned_by_employee=coordinator,
+            assigned_to_employee=cbda,
+            activity=activity,
+            due_date=date(2026, 10, 16),
+            created_by=coordinator_user,
+        )
+        self.client.force_login(user)
+
+        overview = self.client.get(reverse("portal:task_list"))
+        self.assertEqual(overview.context["task_scope_name"], "activity_overview")
+        self.assertEqual(list(overview.context["tasks"]), [project_task])
+        self.assertContains(overview, "Theo dõi hoạt động")
+        self.assertContains(overview, "Việc của tôi")
+        self.assertContains(overview, "Việc tôi đã giao")
+
+        my_tasks = self.client.get(
+            reverse("portal:task_list"), {"scope": "assigned_to_me"}
+        )
+        self.assertEqual(list(my_tasks.context["tasks"]), [])
+        assigned_by_me = self.client.get(
+            reverse("portal:task_list"), {"scope": "assigned_by_me"}
+        )
+        self.assertEqual(list(assigned_by_me.context["tasks"]), [])
+
+    def test_regular_employee_does_not_see_task_scope_tabs(self):
+        employee = self.make_employee("PORTAL-TASK-REGULAR-EMPLOYEE")
+        assigner = self.make_employee("PORTAL-TASK-REGULAR-ASSIGNER")
+        user = self.make_user("EMPLOYEE", employee, "portal-task-regular-employee")
+        task = Task.objects.create(
+            task_code="PORTAL-TASK-REGULAR-OWN",
+            task_name="Công việc cá nhân được giao",
+            assigned_by_employee=assigner,
+            assigned_to_employee=employee,
+            due_date=date(2026, 10, 10),
+            created_by=user,
+        )
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("portal:task_list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context["can_view_task_scopes"])
+        self.assertEqual(response.context["task_scope_name"], "assigned_to_me")
+        self.assertEqual(list(response.context["tasks"]), [task])
+        self.assertContains(response, "Công việc của tôi")
+        self.assertNotContains(response, 'aria-label="Phạm vi công việc"')
+        self.assertNotContains(response, "Việc tôi đã giao")
+        self.assertNotContains(response, "+ Giao việc mới")
+        self.assertNotContains(response, "CBDA phụ trách")
+        self.assertNotContains(response, "Hoạt động")
+
     def test_director_sees_project_tasks_only_in_activity_overview_scope(self):
         director = self.make_employee("PORTAL-TASK-OVERVIEW-DIRECTOR")
         cbda = self.make_employee("PORTAL-TASK-OVERVIEW-CBDA")
