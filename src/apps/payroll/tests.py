@@ -14,7 +14,7 @@ Nếu sau này sửa công thức mà làm sai, các bài kiểm thử dưới �
 """
 
 from datetime import date
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase
@@ -335,3 +335,42 @@ class TaxBracketGenerationTests(PayrollTestBase):
         taxable = p.gross_income - p.insurance_amount - D("11000000")  # không có người phụ thuộc
         expected_tax = (taxable * D("2") / D("100")).quantize(D("1"))
         self.assertEqual(p.tax_amount, expected_tax)
+
+
+class PartialMonthSalaryTests(PayrollTestBase):
+    """I6 regressions: calculate() prorates salary to actual employment workdays."""
+
+    def _assert_prorated_for_employment_window(self, **employee_dates):
+        from apps.attendance.services import standard_working_days
+
+        for field, value in employee_dates.items():
+            setattr(self.employee, field, value)
+        self.employee.save(update_fields=list(employee_dates))
+
+        payroll = Payroll(
+            payroll_period=self.period, employee=self.employee,
+            basic_salary=D("23000000"), allowance=D("2000000"),
+        )
+        payroll.calculate()
+
+        standard_days = standard_working_days(self.period.start_date, self.period.end_date)
+        present_from = max(self.period.start_date, self.employee.join_date)
+        present_to = min(
+            self.period.end_date,
+            self.employee.leave_date or self.period.end_date,
+        )
+        present_days = standard_working_days(present_from, present_to)
+        ratio = present_days / standard_days
+        expected_gross = (
+            (D("23000000") * ratio).quantize(D("1"), rounding=ROUND_HALF_UP)
+            + (D("2000000") * ratio).quantize(D("1"), rounding=ROUND_HALF_UP)
+        )
+        self.assertEqual(payroll.actual_working_days, present_days)
+        self.assertEqual(payroll.gross_income, expected_gross)
+        self.assertLess(payroll.gross_income, D("25000000"))
+
+    def test_new_hire_mid_month_receives_prorated_salary(self):
+        self._assert_prorated_for_employment_window(join_date=date(2025, 1, 15))
+
+    def test_employee_leaving_mid_month_receives_prorated_salary(self):
+        self._assert_prorated_for_employment_window(leave_date=date(2025, 1, 15))

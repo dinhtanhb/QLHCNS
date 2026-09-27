@@ -16,7 +16,7 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from apps.attendance.models import Holiday, TimesheetEntry, WorkingCalendar
+from apps.attendance.models import Holiday, MonthlyAttendanceSummary, TimesheetEntry, WorkingCalendar
 from apps.attendance.services import (
     compensatory_days_earned,
     get_hours_per_day,
@@ -143,6 +143,21 @@ class CompensatoryDaysTests(LeaveTestBase):
         self._log(date(2024, 6, 15), 8)
         self.assertEqual(compensatory_days_earned(self.employee, 2025), D("0"))
 
+    def test_I3_gio_cuoi_tuan_chua_duoc_duyet_chua_duoc_tinh_nghi_bu(self):
+        """I3: dữ liệu giờ cuối tuần do nhân viên tự ghi không tự sinh quỹ nghỉ bù."""
+        self._log(date(2025, 6, 14), 8)
+        summary = MonthlyAttendanceSummary.objects.create(
+            employee=self.employee, year=2025, month=6,
+            compensatory_days=D("1"),
+            status=MonthlyAttendanceSummary.STATUS_PENDING,
+        )
+
+        self.assertEqual(compensatory_days_earned(self.employee, 2025), D("0"))
+
+        summary.status = MonthlyAttendanceSummary.STATUS_APPROVED
+        summary.save(update_fields=["status"])
+        self.assertEqual(compensatory_days_earned(self.employee, 2025), D("1"))
+
 
 # ------------------------------------------------------------------
 # 3. QUỸ PHÉP NĂM
@@ -183,6 +198,7 @@ class LeaveBalanceTests(LeaveTestBase):
         self.assertEqual(self.balance.available_annual_days, D("14"))
 
     def test_leave_spanning_new_year_is_split_between_each_year_balance(self):
+        """I4 regression: ngày nghỉ được phân bổ vào đúng năm dương lịch của từng ngày."""
         from apps.leave.models import LeaveBalance
         LeaveBalance.objects.create(employee=self.employee, year=2026, allocated_days=D("3"))
         req = self._request(date(2025, 12, 29), date(2026, 1, 5))
@@ -202,6 +218,7 @@ class LeaveBalanceTests(LeaveTestBase):
             ).full_clean()
 
     def test_leave_days_by_month_splits_spanning_request(self):
+        """I4 regression: bảng công tháng 1 không gộp ngày nghỉ của tháng 12."""
         from apps.portal.views import _leave_days_in_month
         req = self._request(date(2025, 12, 29), date(2026, 1, 5))
         self.assertEqual(_leave_days_in_month(self.employee, "AL", 2025, 12), D("3"))

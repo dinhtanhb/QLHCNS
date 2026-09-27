@@ -14,6 +14,7 @@ from apps.hrm.models import Employee
 from apps.leave.models import LeaveApproval, LeaveRequest, LeaveType
 from apps.organization.models import Department, Organization, Position
 from apps.payroll.models import Payroll, PayrollPeriod, Payslip
+from apps.payroll.models import EmployeeSalary
 from apps.project.models import Project
 from apps.security.models import Role, User
 from apps.task.models import Task
@@ -180,6 +181,131 @@ class PortalSensitiveWorkflowTests(TestCase):
         open_pdf = self.client.get(reverse("portal:payslip_pdf", args=(open_payslip.pk,)))
         self.assertEqual(open_pdf.status_code, 404)
         self.assertNotEqual(locked_payslip.pk, open_payslip.pk)
+
+    def test_locking_payroll_issues_payslips_for_period_payrolls(self):
+        employee = self.make_employee("PORTAL-PAYSLIP-ISSUE")
+        finance_user = self.make_user("FINANCE_OFFICER", employee, "portal-payslip-issuer")
+        period = PayrollPeriod.objects.create(
+            payroll_month=10, payroll_year=2026,
+            start_date=date(2026, 10, 1), end_date=date(2026, 10, 31), status="Open",
+        )
+        payroll = Payroll.objects.create(
+            payroll_period=period, employee=employee, basic_salary=Decimal("12345678")
+        )
+        self.client.force_login(finance_user)
+
+        # Suppress notifications in this test; only verify the transactional payslip issuance.
+        with patch("apps.portal.views.notify"), patch("apps.portal.views.notify_with_email_draft"):
+            response = self.client.post(reverse("portal:finance_payroll_lock", args=(period.pk,)))
+
+        period.refresh_from_db()
+        self.assertRedirects(response, reverse("portal:finance_period_list"))
+        self.assertEqual(period.status, "Locked")
+        self.assertTrue(Payslip.objects.filter(payroll=payroll).exists())
+        self.assertContains(self.client.get(reverse("portal:payslip_list")), "10/2026")
+
+    def test_payroll_generation_includes_employee_leaving_during_the_period(self):
+        """I6: người nghỉ giữa kỳ vẫn cần có dòng lương để chốt phần thời gian đã làm."""
+        leaver = self.make_employee("PORTAL-PAYROLL-LEAVER")
+        leaver.join_date = date(2020, 1, 1)
+        leaver.leave_date = date(2025, 10, 15)
+        leaver.employment_status = "Inactive"
+        leaver.save(update_fields=("join_date", "leave_date", "employment_status"))
+        finance_user = self.make_user("FINANCE_OFFICER", self.make_employee("PORTAL-PAYROLL-FINANCE"), "portal-payroll-finance-i6")
+        period = PayrollPeriod.objects.create(
+            payroll_month=10, payroll_year=2025,
+            start_date=date(2025, 10, 1), end_date=date(2025, 10, 31), status="Open",
+        )
+        EmployeeSalary.objects.create(
+            employee=leaver, current_basic_salary=Decimal("20000000"),
+            effective_date=date(2020, 1, 1), end_date=date(2025, 10, 15), status="Ended",
+        )
+        self.client.force_login(finance_user)
+
+        self.client.post(reverse("portal:finance_payroll_generate", args=(period.pk,)))
+
+        self.assertTrue(
+            Payroll.objects.filter(payroll_period=period, employee=leaver).exists(),
+            "Nhân viên có ngày nghỉ việc trong kỳ không được bỏ khỏi kỳ lương giữa tháng.",
+        )
+
+    def test_payroll_generation_uses_salary_effective_at_period_start(self):
+        """I7: mức lương hiệu lực từ 2026 không được dùng cho kỳ 12/2025."""
+        employee = self.make_employee("PORTAL-PAYROLL-EFFECTIVE")
+        EmployeeSalary.objects.create(
+            employee=employee, current_basic_salary=Decimal("18000000"),
+            effective_date=date(2024, 1, 1), end_date=date(2025, 12, 31), status="Ended",
+        )
+        EmployeeSalary.objects.create(
+            employee=employee, current_basic_salary=Decimal("22000000"),
+            effective_date=date(2026, 1, 1), status="Active",
+        )
+        finance_user = self.make_user("FINANCE_OFFICER", self.make_employee("PORTAL-PAYROLL-FINANCE-I7"), "portal-payroll-finance-i7b")
+        period = PayrollPeriod.objects.create(
+            payroll_month=12, payroll_year=2025,
+            start_date=date(2025, 12, 1), end_date=date(2025, 12, 31), status="Open",
+        )
+        self.client.force_login(finance_user)
+
+        self.client.post(reverse("portal:finance_payroll_generate", args=(period.pk,)))
+
+        payroll = Payroll.objects.get(payroll_period=period, employee=employee)
+        self.assertEqual(payroll.basic_salary, Decimal("18000000"))
+
+    def test_inventory_completion_is_blocked_until_every_line_is_counted(self):
+        employee = self.make_employee("PORTAL-INVENTORY-MANAGER")
+        manager = self.make_user("HR_OFFICER", employee, "portal-inventory-manager")
+        asset_type = AssetType.objects.create(
+            asset_type_code="PORTAL-I11-TYPE", asset_type_name="Thiết bị kiểm thử I11",
+        )
+        asset = Asset.objects.create(
+            asset_code="PORTAL-I11-ASSET", asset_name="Máy tính chưa kiểm đếm", asset_type=asset_type,
+        )
+        session = InventorySession.objects.create(
+            session_name="I11 chưa đếm hết", office_name="Văn phòng kiểm thử",
+            inventory_datetime="2026-09-27T09:00:00Z",
+        )
+        InventoryLine.objects.create(session=session, asset=asset, is_counted=False)
+        self.client.force_login(manager)
+
+        response = self.client.post(
+            reverse("portal:inventory_session_complete", args=(session.pk,)),
+            {"recommendation": "Không."},
+        )
+
+        session.refresh_from_db()
+        self.assertRedirects(response, reverse("portal:inventory_session_detail", args=(session.pk,)))
+        self.assertEqual(session.status, "Draft")
+
+    def test_completed_inventory_line_cannot_be_changed_by_direct_post(self):
+        employee = self.make_employee("PORTAL-INVENTORY-EDITOR")
+        manager = self.make_user("HR_OFFICER", employee, "portal-inventory-editor")
+        asset_type = AssetType.objects.create(
+            asset_type_code="PORTAL-I11-TYPE-2", asset_type_name="Thiết bị kiểm thử I11-2",
+        )
+        asset = Asset.objects.create(
+            asset_code="PORTAL-I11-ASSET-2", asset_name="Máy tính đã kiểm đếm", asset_type=asset_type,
+        )
+        session = InventorySession.objects.create(
+            session_name="I11 đã hoàn tất", office_name="Văn phòng kiểm thử",
+            inventory_datetime="2026-09-27T09:00:00Z",
+        )
+        line = InventoryLine.objects.create(
+            session=session, asset=asset, is_counted=True, note="Ghi chú ban đầu",
+        )
+        session.status = "Completed"
+        session.save()
+        self.client.force_login(manager)
+
+        response = self.client.post(
+            reverse("portal:inventory_line_update", args=(line.pk,)),
+            {"actual_condition": "Damaged", "note": "Sửa sau khi hoàn tất"},
+        )
+
+        line.refresh_from_db()
+        self.assertRedirects(response, reverse("portal:inventory_session_detail", args=(session.pk,)))
+        self.assertEqual(line.note, "Ghi chú ban đầu")
+        self.assertEqual(line.actual_condition, "Normal")
 
     def test_org_chart_displays_manager_chain_and_search(self):
         manager = self.make_employee("PORTAL-CHART-MANAGER")
