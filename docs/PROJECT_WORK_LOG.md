@@ -82,6 +82,18 @@ Kết quả gồm `page-1.png`, `page-2.png`, ... và PDF trong `D:\QLHCNS-docx-
 **Chưa làm hoặc chưa xác nhận:**
 **Chủ dự án cần làm:** bước cụ thể, người phụ trách và kết quả cần gửi lại.
 
+## 2026-09-27 — Cải thiện trải nghiệm mobile và PWA portal (Yêu cầu 3–6)
+
+**Mục tiêu/phạm vi:** giúp portal hoạt động thuận tiện trên điện thoại, thay CSS Tailwind CDN bằng bản build nội bộ, và cho phép cài lối tắt PWA online-only. Sao lưu trước đợt sửa: `D:\QLHCNS-Backup-before-mobile-requirements-3-6-20260927-183513.bundle` (bundle Git chứa các refs tại thời điểm trước sửa).
+
+**Đã làm:** bọc 21 bảng trong 18 template được review yêu cầu bằng vùng cuộn ngang; giữ nguyên bốn template in và thêm quy tắc in để wrapper không cắt nội dung. Chuyển menu portal sang hamburger dưới 768px, giữ menu ngang từ 768px và giữ điều kiện phân quyền, ARIA, click ngoài và Escape. Thêm Tailwind CLI 3.4.17, lockfile, lệnh build/watch và CSS đã build `src/static/css/tailwind.css`; bỏ Tailwind Play CDN. Thêm manifest `/portal/`, biểu tượng 192/512 từ biểu trưng sẵn có và service worker chỉ cache cùng origin `/static/`; không cache HTML hoặc dữ liệu nghiệp vụ. Bổ sung test hồi quy và hướng dẫn build/mobile/PWA tại `docs/06_Frontend_Standards.md`.
+
+**Kiểm tra:** `python src/manage.py check` đạt; `python src/manage.py makemigrations --check --dry-run` báo không có thay đổi; `python src/manage.py test apps.portal.tests_mobile` đạt 5/5; `python src/manage.py findstatic css/tailwind.css manifest.json img/ihrms-pwa-192.png --verbosity 2` tìm thấy các asset. `npm ci` thành công; `npm run build:css` sinh CSS 33 KB (có cảnh báo Browserslist data cũ, không chặn build). Trình duyệt kiểm tra tại 375px, 768px và 1024px: mobile có thể mở/đóng hamburger, menu con và cuộn bảng nằm trong khung không làm rộng trang; từ 768px menu hamburger ẩn và nav ngang hiện; dropdown desktop vẫn đóng bằng Escape/click ngoài. Kết nối cấu hình hiện tại nhận diện SQL Server (`microsoft`), nhưng test mobile không truy vấn DB; không chạy migration hay ghi dữ liệu nghiệp vụ.
+
+**Git/trạng thái:** nhánh `chore/django-5.2-upgrade`; thay đổi mobile được commit cục bộ trong đợt này và chưa push. Tệp chưa theo dõi `docs/Huong_Dan_Setup_TaskScheduler_SIT_UAT.md` đã có từ trước và được giữ nguyên, không thuộc thay đổi này.
+
+**Còn mở:** PWA chỉ có thể cài qua HTTPS hoặc localhost trên trình duyệt hỗ trợ; service worker chỉ tăng tốc asset và không tạo chế độ offline cho dữ liệu. Khi sửa Tailwind class, chạy `npm ci` rồi `npm run build:css` trước `collectstatic`.
+
 
 ## 2026-09-24 ? Word guide synchronization and rendering setup
 

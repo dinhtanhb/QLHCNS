@@ -1,0 +1,25 @@
+{
+  "id": "/portal/",
+  "name": "IHRMS — Cổng thông tin nhân viên",
+  "short_name": "IHRMS",
+  "description": "Cổng thông tin nội bộ IHRMS",
+  "start_url": "/portal/",
+  "scope": "/portal/",
+  "display": "standalone",
+  "background_color": "#eff6ff",
+  "theme_color": "#1d4ed8",
+  "icons": [
+    {
+      "src": "/static/img/ihrms-pwa-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/img/ihrms-pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

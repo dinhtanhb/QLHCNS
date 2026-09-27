@@ -83,7 +83,8 @@
         <p><span class="font-semibold">Thời gian:</span> Tháng {{ month }} năm {{ year }}</p>
     </div>
 
-    <table class="w-full text-sm border border-gray-300 border-collapse">
+    <div class="overflow-x-auto mobile-table-scroll">
+        <table class="w-full text-sm border border-gray-300 border-collapse">
         <thead>
             <tr class="bg-gray-100">
                 <th class="border border-gray-300 px-2 py-1.5 w-24">Ngày</th>
@@ -149,6 +150,7 @@
         </tr>
         </tbody>
     </table>
+    </div>
 
         <!-- Tổng hợp + Chữ ký: 2 cột song song -->
     <div class="timesheet-summary-layout grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">

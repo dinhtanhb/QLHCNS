@@ -1,6 +1,7 @@
 import re
 import logging
 import datetime
+from django.conf import settings
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
@@ -55,6 +56,20 @@ from apps.procurement.models import ProcurementRequest, ProcurementItem, Procure
 from apps.common.params import parse_int
 
 logger = logging.getLogger(__name__)
+
+
+def service_worker(request):
+    """Serve the portal-only worker with its scope explicitly limited to /portal/."""
+    worker_path = settings.BASE_DIR / "static" / "js" / "service-worker.js"
+    try:
+        worker_source = worker_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise Http404("Service worker file not found") from exc
+
+    response = HttpResponse(worker_source, content_type="application/javascript; charset=utf-8")
+    response["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response["Service-Worker-Allowed"] = "/portal/"
+    return response
 
 DIRECTOR_TITLE_KEYWORDS = ["Giám đốc"]
 

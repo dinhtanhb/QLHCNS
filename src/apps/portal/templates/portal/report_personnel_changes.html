@@ -19,45 +19,53 @@
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
     <h3 class="font-bold text-sm mb-2">🟢 Tuyển mới ({{ new_hires|length }})</h3>
-    <table class="w-full text-sm">
+    <div class="overflow-x-auto mobile-table-scroll">
+        <table class="w-full text-sm">
         <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-1.5 pr-4">Mã NV</th><th class="py-1.5 pr-4">Họ tên</th><th class="py-1.5 pr-4">Phòng ban</th><th class="py-1.5">Ngày vào làm</th></tr></thead>
         <tbody class="divide-y divide-gray-100">
         {% for e in new_hires %}<tr><td class="py-1.5 pr-4">{{ e.employee_code }}</td><td class="py-1.5 pr-4">{{ e.full_name }}</td><td class="py-1.5 pr-4">{{ e.department }}</td><td class="py-1.5">{{ e.join_date }}</td></tr>
         {% empty %}<tr><td colspan="4" class="py-3 text-gray-400">Không có.</td></tr>{% endfor %}
         </tbody>
     </table>
+    </div>
 </div>
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
     <h3 class="font-bold text-sm mb-2">🔴 Nghỉ việc ({{ departures|length }})</h3>
-    <table class="w-full text-sm">
+    <div class="overflow-x-auto mobile-table-scroll">
+        <table class="w-full text-sm">
         <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-1.5 pr-4">Mã NV</th><th class="py-1.5 pr-4">Họ tên</th><th class="py-1.5 pr-4">Phòng ban</th><th class="py-1.5">Ngày nghỉ việc</th></tr></thead>
         <tbody class="divide-y divide-gray-100">
         {% for e in departures %}<tr><td class="py-1.5 pr-4">{{ e.employee_code }}</td><td class="py-1.5 pr-4">{{ e.full_name }}</td><td class="py-1.5 pr-4">{{ e.department }}</td><td class="py-1.5">{{ e.leave_date }}</td></tr>
         {% empty %}<tr><td colspan="4" class="py-3 text-gray-400">Không có.</td></tr>{% endfor %}
         </tbody>
     </table>
+    </div>
 </div>
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
     <h3 class="font-bold text-sm mb-2">🔀 Điều chuyển ({{ transfers|length }})</h3>
-    <table class="w-full text-sm">
+    <div class="overflow-x-auto mobile-table-scroll">
+        <table class="w-full text-sm">
         <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-1.5 pr-4">Nhân viên</th><th class="py-1.5 pr-4">Từ phòng</th><th class="py-1.5 pr-4">Đến phòng</th><th class="py-1.5">Ngày hiệu lực</th></tr></thead>
         <tbody class="divide-y divide-gray-100">
         {% for t in transfers %}<tr><td class="py-1.5 pr-4">{{ t.employee }}</td><td class="py-1.5 pr-4">{{ t.from_department }}</td><td class="py-1.5 pr-4">{{ t.to_department }}</td><td class="py-1.5">{{ t.effective_date }}</td></tr>
         {% empty %}<tr><td colspan="4" class="py-3 text-gray-400">Không có.</td></tr>{% endfor %}
         </tbody>
     </table>
+    </div>
 </div>
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
     <h3 class="font-bold text-sm mb-2">⬆️ Bổ nhiệm / Thăng chức ({{ promotions|length }})</h3>
-    <table class="w-full text-sm">
+    <div class="overflow-x-auto mobile-table-scroll">
+        <table class="w-full text-sm">
         <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-1.5 pr-4">Nhân viên</th><th class="py-1.5 pr-4">Vị trí cũ</th><th class="py-1.5 pr-4">Vị trí mới</th><th class="py-1.5">Ngày hiệu lực</th></tr></thead>
         <tbody class="divide-y divide-gray-100">
         {% for p in promotions %}<tr><td class="py-1.5 pr-4">{{ p.employee }}</td><td class="py-1.5 pr-4">{{ p.old_position }}</td><td class="py-1.5 pr-4">{{ p.new_position }}</td><td class="py-1.5">{{ p.effective_date }}</td></tr>
         {% empty %}<tr><td colspan="4" class="py-3 text-gray-400">Không có.</td></tr>{% endfor %}
         </tbody>
     </table>
+    </div>
 </div>
 {% endblock %}

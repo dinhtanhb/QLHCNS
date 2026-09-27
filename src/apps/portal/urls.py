@@ -11,6 +11,7 @@ from apps.lifecycle import views as lifecycle_views
 app_name = "portal"
 
 urlpatterns = [
+    path("service-worker.js", views.service_worker, name="service_worker"),
     path("login/", auth_views.LoginView.as_view(template_name="registration/login.html"), name="login"),
     path("logout/", auth_views.LogoutView.as_view(next_page="portal:login"), name="logout"),
     path("", views.dashboard, name="dashboard"),

@@ -5,15 +5,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Cổng thông tin nhân viên{% endblock %} — IHRMS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="theme-color" content="#1d4ed8">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="apple-touch-icon" href="{% static 'img/ihrms-pwa-192.png' %}">
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
     <link rel="stylesheet" href="{% static 'css/ihrms.css' %}">
 </head>
 <body class="bg-gray-50 min-h-screen text-gray-800">
     <header class="bg-blue-700 text-white shadow">
-        <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="{% url 'portal:dashboard' %}" class="font-bold text-lg tracking-wide">IHRMS — Cổng thông tin nhân viên</a>
+        <div class="portal-header-inner max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="{% url 'portal:dashboard' %}" class="portal-brand font-bold text-lg tracking-wide">
+                <span class="sm:hidden">IHRMS</span>
+                <span class="hidden sm:inline">IHRMS — Cổng thông tin nhân viên</span>
+            </a>
             {% if user.is_authenticated %}
-            <div class="flex items-center gap-4 text-sm">
+            <button type="button" id="mobileNavToggle" class="portal-mobile-nav-toggle" aria-controls="portalNavigationMenu" aria-expanded="false" aria-label="Mở menu điều hướng">
+                <svg aria-hidden="true" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+            {% endif %}
+            {% if user.is_authenticated %}
+            <div class="portal-header-actions flex items-center gap-4 text-sm">
                 <a href="{% url 'portal:notification_list' %}" class="relative p-1.5 rounded-full hover:bg-blue-600 transition" title="Thông báo">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -103,7 +116,7 @@
 
     {% if user.is_authenticated %}
     <nav class="portal-nav bg-white border-b border-gray-200 relative z-20" aria-label="Điều hướng chính">
-        <div class="portal-nav-inner text-sm font-medium">
+        <div class="portal-nav-inner text-sm font-medium" id="portalNavigationMenu">
             {% url 'portal:dashboard' as u_dash %}
             <a href="{{ u_dash }}" class="portal-nav-link border-b-2 {% if request.path == u_dash %}border-blue-700 text-blue-700{% else %}border-transparent text-gray-600 hover:text-blue-700{% endif %}">Trang chủ</a>
 
@@ -231,7 +244,16 @@
     <script>
     (function () {
         const nav = document.querySelector('.portal-nav');
-        if (!nav) return;
+        const menuPanel = document.getElementById('portalNavigationMenu');
+        const mobileToggle = document.getElementById('mobileNavToggle');
+        if (!nav || !menuPanel) return;
+
+        function setMobileMenuOpen(isOpen) {
+            if (!mobileToggle) return;
+            menuPanel.classList.toggle('is-mobile-open', isOpen);
+            mobileToggle.setAttribute('aria-expanded', String(isOpen));
+            mobileToggle.setAttribute('aria-label', isOpen ? 'Đóng menu điều hướng' : 'Mở menu điều hướng');
+        }
 
         function closeMenus(exceptId) {
             nav.querySelectorAll('[data-menu-trigger]').forEach(function (button) {
@@ -255,13 +277,34 @@
 
         document.addEventListener('click', function (event) {
             if (!nav.contains(event.target)) closeMenus();
+            if (!nav.contains(event.target) && !(mobileToggle && mobileToggle.contains(event.target))) {
+                setMobileMenuOpen(false);
+            }
         });
         document.addEventListener('keydown', function (event) {
             if (event.key !== 'Escape') return;
             const openButton = nav.querySelector('[data-menu-trigger][aria-expanded="true"]');
             closeMenus();
-            if (openButton) openButton.focus();
+            if (openButton) {
+                openButton.focus();
+            } else if (mobileToggle && mobileToggle.getAttribute('aria-expanded') === 'true') {
+                setMobileMenuOpen(false);
+                mobileToggle.focus();
+            }
         });
+
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', function () {
+                const willOpen = mobileToggle.getAttribute('aria-expanded') !== 'true';
+                if (!willOpen) closeMenus();
+                setMobileMenuOpen(willOpen);
+            });
+            menuPanel.querySelectorAll('a').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    if (window.matchMedia('(max-width: 767px)').matches) setMobileMenuOpen(false);
+                });
+            });
+        }
     }());
     </script>
     {% endif %}
@@ -300,5 +343,19 @@
             }
         });
     </script>
+    {% if user.is_authenticated and "/portal/" in request.path %}
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register("{% url 'portal:service_worker' %}", {
+                    scope: "/portal/",
+                    updateViaCache: "none"
+                }).catch(function (error) {
+                    console.error('Không thể đăng ký IHRMS service worker:', error);
+                });
+            });
+        }
+    </script>
+    {% endif %}
 </body>
 </html>

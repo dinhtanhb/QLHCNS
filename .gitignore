@@ -45,6 +45,7 @@ Backups/
 .vscode/
 .idea/
 *.swp
+node_modules/
 
 # --- Windows / macOS ---
 Thumbs.db
