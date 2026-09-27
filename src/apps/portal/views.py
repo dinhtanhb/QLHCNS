@@ -611,6 +611,8 @@ def _can_assign_task(request):
 def task_list(request):
     employee = _get_employee(request)
     is_project_overview = has_permission(request.user, "view_activity_dashboard")
+    can_assign_task = _can_assign_task(request)
+    can_view_task_scopes = can_assign_task or is_project_overview
     task_scope_name = "assigned_by_me" if request.GET.get("scope") == "assigned_by_me" else "assigned_to_me"
     if task_scope_name == "assigned_by_me":
         # Người giao chỉ xem được những Task do chính họ giao; không mở rộng
@@ -625,7 +627,8 @@ def task_list(request):
     ).order_by("due_date", "created_date")
     return render(request, "portal/task_list.html", {
         "tasks": tasks,
-        "can_assign_task": _can_assign_task(request),
+        "can_assign_task": can_assign_task,
+        "can_view_task_scopes": can_view_task_scopes,
         "is_project_overview": is_project_overview,
         "task_scope_name": task_scope_name,
     })

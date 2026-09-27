@@ -118,6 +118,21 @@ class ActivityWorkflowTests(ActivityTestDataMixin, TestCase):
         self.assertEqual(Task.objects.filter(activity=activity).count(), 1)
         self.assertEqual(Notification.objects.filter(employee=self.cbda).count(), 1)
 
+    def test_report_task_schedule_uses_activity_dates_not_dispatch_issue_date(self):
+        self.dispatch.issue_date = date(2026, 6, 18)
+        self.dispatch.save(update_fields=("issue_date",))
+        activity = self.make_activity()
+        activity.start_date = date(2026, 9, 19)
+        activity.end_date = date(2026, 9, 20)
+        activity.outgoing_document = self.dispatch
+
+        activity.save()
+
+        task = Task.objects.get(activity=activity)
+        self.assertEqual(task.start_date, date(2026, 9, 19))
+        # Ten Monday-Friday workdays after the Sunday end date; 20/09 is day zero.
+        self.assertEqual(task.due_date, date(2026, 10, 2))
+
     def test_rescheduling_activity_updates_task_dates_and_reopens_early_completion(self):
         activity = self.make_activity(dispatch=self.dispatch)
         task = Task.objects.get(activity=activity)

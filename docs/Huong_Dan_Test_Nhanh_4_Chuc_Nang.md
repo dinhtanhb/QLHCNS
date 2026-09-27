@@ -143,9 +143,9 @@ Trong checklist, kiểm tra các giấy tờ và thủ tục tiếp nhận/ngh�
 
 ### 4.4. Giao việc dự án và cập nhật hoàn tất
 
-Với tài khoản Điều phối viên/Quản lý dự án, tạo hoặc cập nhật một hoạt động, chọn CBDA phụ trách và liên kết một công văn đi. Hệ thống giao Task báo cáo cho CBDA; Điều phối viên được ghi là người giao, ngày bắt đầu Task theo ngày bắt đầu hoạt động và hạn là 10 ngày làm việc sau ngày kết thúc. Đăng nhập bằng tài khoản có quyền **Hoạt động dự án**, mở **Hoạt động dự án → Giao việc & hoàn tất**.
+Với tài khoản Điều phối viên/Quản lý dự án, tự nhập ngày bắt đầu và ngày kết thúc của hoạt động, chọn CBDA phụ trách và liên kết một công văn đi. Ngày phát hành công văn chỉ kích hoạt giao Task, không làm ngày bắt đầu hoạt động. Hệ thống giao Task báo cáo cho CBDA; hạn là 10 ngày làm việc sau ngày kết thúc, không tính Thứ Bảy, Chủ Nhật và ngày nghỉ đã khai báo. Đăng nhập bằng tài khoản có quyền **Hoạt động dự án**, mở **Hoạt động dự án → Giao việc & hoàn tất**.
 
-CBDA mở Task, cập nhật trạng thái và tải báo cáo lên SharePoint trước khi chọn **Hoàn thành**. Điều phối viên/Quản lý dự án cũng thấy các Task thuộc phạm vi hoạt động họ được phép xem để theo dõi tiến độ; họ không cần tạo Task báo cáo bằng nút giao việc thủ công.
+Kiểm tra trang có hai tab **Việc của tôi** và **Việc tôi đã giao**; tab thứ hai chỉ hiện Task do tài khoản đang đăng nhập giao. Nút **Giao việc mới** vẫn theo quyền giao Task riêng. CBDA mở Task, cập nhật trạng thái và tải báo cáo lên SharePoint trước khi chọn **Hoàn thành**. Điều phối viên/Quản lý dự án cũng thấy các Task thuộc phạm vi hoạt động họ được phép xem để theo dõi tiến độ; họ không cần tạo Task báo cáo bằng nút giao việc thủ công.
 
 **Kết quả đúng:** Task xuất hiện trong danh sách của CBDA nhận việc và trong danh sách giám sát của Điều phối viên/Quản lý dự án. Ngày bắt đầu theo lịch hoạt động; hạn là 10 ngày làm việc sau ngày kết thúc. Khi sửa lịch, Task cập nhật ngày, gửi thông báo và mở lại nếu hoàn thành trước ngày kết thúc mới. Các ngày hiển thị riêng theo định dạng `ngày/tháng/năm`; Task chỉ được hoàn thành sau khi hoạt động kết thúc và đã có tệp báo cáo. Task dự án được tách khỏi checklist thủ tục HCNS.
 

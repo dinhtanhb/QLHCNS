@@ -214,6 +214,11 @@ class PortalSensitiveWorkflowTests(TestCase):
         self.assertNotContains(response, "Quản lý checklist onboarding/offboarding")
         self.assertNotContains(response, "Checklist &amp; việc được giao")
 
+        task_page = self.client.get(reverse("portal:task_list"))
+        self.assertContains(task_page, "Việc của tôi")
+        self.assertContains(task_page, "Việc tôi đã giao")
+        self.assertNotContains(task_page, "+ Giao việc mới")
+
     def test_hr_checklist_menu_appears_only_under_hr_menu(self):
         employee = self.make_employee("PORTAL-HR-MENU")
         user = self.make_user("HR_OFFICER", employee, "portal-hr-menu")

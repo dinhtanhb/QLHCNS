@@ -98,6 +98,8 @@ def create_task_for_activity(activity):
     dispatch = activity.outgoing_document
     if dispatch.dispatch_type != "Outgoing":
         raise ValueError("Chỉ có thể tạo Task từ Công văn đi.")
+    # The dispatch only triggers task creation. Schedule dates always come from
+    # the coordinator/manager-entered activity dates, never the dispatch issue date.
     due_date = add_company_workdays(activity.end_date, ACTIVITY_REPORT_DEADLINE_WORKING_DAYS)
     existing = Task.objects.filter(activity=activity).first()
     if existing:

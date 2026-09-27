@@ -107,9 +107,16 @@ class ActivityForm(forms.ModelForm):
             dispatch_type="Outgoing"
         ).order_by("-received_or_sent_date", "-pk")
         self.fields["outgoing_document"].required = False
+        self.fields["start_date"].help_text = (
+            "ĐPV/quản lý tự nhập theo lịch hoạt động; ngày phát hành công văn không tự điền ngày bắt đầu."
+        )
+        self.fields["end_date"].help_text = (
+            "ĐPV/quản lý tự nhập ngày kết thúc; hạn Task báo cáo là 10 ngày làm việc sau ngày này."
+        )
         self.fields["outgoing_document"].help_text = (
-            "Chọn công văn đi đã phát hành để giao Task cho CBDA. Ngày bắt đầu theo lịch hoạt động; "
-            "hạn là 10 ngày làm việc sau ngày kết thúc hoạt động. Có thể bổ sung công văn sau."
+            "Chọn công văn đi đã phát hành để kích hoạt giao Task cho CBDA; ngày công văn không dùng "
+            "làm mốc lịch hoạt động. Hạn Task không tính Thứ Bảy, Chủ Nhật và ngày nghỉ đã khai báo. "
+            "Có thể bổ sung công văn sau."
         )
 
         for field in self.fields.values():

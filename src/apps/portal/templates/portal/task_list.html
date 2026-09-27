@@ -4,13 +4,13 @@
 <div class="flex items-center justify-between mb-4">
     <div>
         <h1 class="text-lg font-bold text-gray-900">{% if is_project_overview %}Giao việc &amp; hoàn tất — Hoạt động dự án{% else %}Công việc của tôi{% endif %}</h1>
-        {% if is_project_overview %}<p class="mt-1 max-w-3xl text-sm text-gray-600">Task báo cáo được IHRMS tự tạo khi hoạt động được liên kết với công văn đi. Điều phối viên là người giao (hoặc người ký công văn nếu hồ sơ thiếu Điều phối viên); CBDA phụ trách chính là người nhận. Hạn hoàn thành là 10 ngày làm việc tính từ ngày gửi. CBDA tải báo cáo lên SharePoint trước khi chọn Hoàn thành.</p>{% endif %}
+        {% if is_project_overview %}<p class="mt-1 max-w-3xl text-sm text-gray-600">Công văn đi đã phát hành chỉ kích hoạt giao Task, không xác định ngày hoạt động. ĐPV/quản lý nhập ngày bắt đầu và kết thúc trong kế hoạch hoạt động; hạn Task là 10 ngày làm việc sau ngày kết thúc, không tính Thứ Bảy, Chủ Nhật và ngày nghỉ đã khai báo trong IHRMS. CBDA tải báo cáo lên SharePoint trước khi chọn Hoàn thành.</p>{% endif %}
     </div>
     {% if can_assign_task %}
     <a href="{% url 'portal:task_create' %}" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Giao việc mới</a>
     {% endif %}
 </div>
-{% if can_assign_task %}
+{% if can_view_task_scopes %}
 <nav class="mb-4 flex flex-wrap gap-2" aria-label="Phạm vi công việc">
     <a href="{% url 'portal:task_list' %}"
        {% if task_scope_name == "assigned_to_me" %}aria-current="page"{% endif %}
