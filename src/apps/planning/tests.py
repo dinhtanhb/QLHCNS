@@ -1,7 +1,8 @@
 from datetime import date
 from decimal import Decimal
+from unittest import skipUnless
 
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError, connection, transaction
 from django.test import TestCase
 from django.urls import reverse
 
@@ -63,7 +64,12 @@ class PlanningUniqueConstraintTests(PlanningTestBase):
                     year=2026, department=self.department, category="Other", allocated_amount=D("2000")
                 )
 
+    @skipUnless(
+        connection.vendor == "microsoft",
+        "SQL Server treats NULL as equal for this unique index; SQLite allows multiple NULL values.",
+    )
     def test_company_wide_annual_budget_with_null_department_is_unique(self):
+        """SQL Server-specific NULL uniqueness; this is not a production defect on SQL Server."""
         AnnualBudget.objects.create(
             year=2026, department=None, category="Other", allocated_amount=D("1000")
         )

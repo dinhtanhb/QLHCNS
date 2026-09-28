@@ -93,9 +93,9 @@ Waitress hỗ trợ CPython trên Windows. Django yêu cầu WSGI/ASGI server th
 
 Chỉ chạy trên SIT được phép tạo/xóa database test. Django test runner sẽ tạo rồi xóa test database; không chạy với production hay database dùng chung:
 
-    .\venv\Scripts\python.exe src\manage.py test apps.task.tests apps.m365.tests apps.contract.tests apps.security.tests apps.common.tests apps.lifecycle.tests apps.reporting.tests apps.attendance.tests apps.leave.tests apps.portal.tests apps.payroll.tests apps.recruitment.tests apps.asset.tests apps.activity.tests apps.organization.tests apps.kpi.tests apps.document.tests apps.hrm.tests apps.office.tests apps.project.tests apps.planning.tests apps.notification.tests apps.procurement.tests
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1
 
-Kết quả ngày 27/09 là 177 test đạt trên SQL Server test database tạm. Lưu số test/backend/log của lần chạy trên máy chủ; xử lý mọi lỗi thay vì dựa vào kết quả trước đây.
+Script tự vào `src`, chạy toàn bộ test tự phát hiện bao gồm `apps.portal.tests_mobile`, in tổng số và báo lỗi nếu số test bằng 0. `python src\manage.py test` gọi trực tiếp từ thư mục gốc có thể tìm 0 test. Kết quả ngày 27/09 là 177 test đạt trên SQL Server test database tạm, chỉ là lịch sử; lưu số test/backend/log của lần chạy mới trên máy chủ và xử lý mọi lỗi.
 
 ## 5. Smoke test bằng dữ liệu nhân tạo
 

@@ -56,7 +56,13 @@ Mở http://127.0.0.1:8000/portal/. runserver chỉ dành cho phát triển cụ
 
 ## Kiểm thử, sao lưu, phân quyền
 
-Lệnh manage.py test không nhãn có thể tìm thấy 0 test; dùng lệnh đầy đủ trong runbook SIT. Django tạo rồi xóa test database, vì vậy không chạy test trên database nghiệp vụ thật.
+Từ thư mục gốc dự án, dùng một lệnh chuẩn:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1
+```
+
+Script tự chuyển vào `src`, dùng `venv\Scripts\python.exe` nếu có, chạy toàn bộ test đã phát hiện (bao gồm `apps.portal.tests_mobile`) và báo lỗi nếu số test bằng 0. Chạy trực tiếp `python src\manage.py test` từ thư mục gốc có thể phát hiện 0 test; nếu gọi Django trực tiếp, phải đứng trong `D:\QLHCNS\src`. Django test runner tạo rồi xóa test database, vì vậy chỉ chạy khi cấu hình trỏ tới database test cô lập (SQLite local hoặc SQL Server test/SIT), không phải database nghiệp vụ dùng chung.
 
 Ma trận vai trò nằm tại src/apps/security/permissions.py và được kiểm tra ở máy chủ. Các vai trò gồm SUPER_ADMIN, SYS_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER, DEPT_MANAGER, FINANCE_OFFICER, PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA, EMPLOYEE.
 

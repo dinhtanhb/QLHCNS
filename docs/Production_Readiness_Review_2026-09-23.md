@@ -12,11 +12,13 @@
 - `requirements.txt` ghim Django `5.2.17`; các migration hiện có được phát sinh và `makemigrations --check --dry-run` trả về `No changes detected` trong lần kiểm tra gần nhất.
 - Trên máy kiểm thử, Django kết nối được SQL Server (`connection.vendor=microsoft`). Chủ dự án đã báo đã chuyển cấu hình và áp dụng migration SQL Server. Tuy nhiên, toàn bộ 81 bài kiểm thử đã cung cấp trước đó chạy trên SQLite; chưa có kết quả chạy đủ test suite trên SQL Server.
 - `manage.py check` không có lỗi. Lần chạy gần nhất có 86/86 bài đạt trên SQLite: asset/common/hrm/leave/payroll/security và m365.
-- Cần gọi rõ các module test, ví dụ `python src/manage.py test apps.asset.tests apps.common.tests apps.hrm.tests apps.leave.tests apps.payroll.tests apps.security.tests apps.m365.tests`. Lệnh `python src/manage.py test` không kèm module hiện phát hiện 0 bài trong cấu trúc này; nên thêm lệnh có nhãn test rõ ràng vào quy trình CI để tránh báo xanh giả.
+- Cần gọi rõ các module test, ví dụ `python src/manage.py test apps.asset.tests apps.common.tests apps.hrm.tests apps.leave.tests apps.payroll.tests apps.security.tests apps.m365.tests apps.portal.tests_mobile`. Lệnh `python src/manage.py test` không kèm module từ thư mục gốc hiện phát hiện 0 bài trong cấu trúc này; xem cập nhật 28/09 bên dưới để chạy bộ test hiện hành.
 - Microsoft Graph/SharePoint đã được kiểm tra thật qua thao tác tải lên, xem/đọc lại và xóa tệp thử. Người dùng xác nhận các luồng lưu tệp cần thiết vào thư viện/folder SharePoint tương ứng hoạt động. Đây là kiểm tra lưu trữ, không chứng minh email, Teams, OneDrive đồng bộ hay SSO đã được triển khai.
 - Các FileField cần lưu hồ sơ dùng adapter storage ổn định qua migration; khi SharePoint bị tắt, hệ thống dùng media storage cục bộ. Migrations của document, leave, m365, office và recruitment đã được tạo.
 
 ## Còn thiếu trước khi go-live
+
+> **Cập nhật 28/09/2026 — test discovery:** Review lịch sử ở trên phản ánh trạng thái tại ngày 24/09. Lệnh chuẩn hiện hành là `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1` từ thư mục gốc; script tự chạy trong `src`, bao gồm `apps.portal.tests_mobile`, in số test và báo lỗi nếu không phát hiện test. Kết quả SIT phải được ghi riêng cho từng lần chạy.
 
 ### 1. Cấu hình Windows Server và HTTPS
 
