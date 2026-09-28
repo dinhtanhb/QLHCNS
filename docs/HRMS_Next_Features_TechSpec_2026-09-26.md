@@ -1,7 +1,7 @@
 # IHRMS — Đặc tả kỹ thuật chi tiết cho 4 hạng mục tiếp theo
 
 Ngày lập: 2026-09-26
-Bổ sung cho: `docs/HRMS_Next_Features_Plan.md` (kế hoạch cấp chiến lược đã có trong repo — tài liệu này KHÔNG thay thế mà đi sâu xuống mức model/migration/view/test theo đúng quy ước code hiện tại: `BaseAuditModel`, `db_column` PascalCase, `db_table` tiền tố `tbl`, phân quyền tập trung trong `apps/security/permissions.py`, view function-based trong `apps/portal/views.py` +
+Bổ sung cho: `docs/HRMS_Next_Features_Plan.md` (kế hoạch cấp chiến lược đã có trong repo — tài liệu này KHÔNG thay thế mà đi sâu xuống mức model/migration/view/test theo đúng quy ước code hiện tại: `BaseAuditModel`, `db_column` PascalCase, `db_table` tiền tố `tbl`, phân quyền tập trung trong `apps/security/permissions.py`, view function-based trong package `apps/portal/views/` +
 `apps/<app>/views.py` cho app tự trị (theo mẫu `activity`).
 
 Thứ tự triển khai giữ nguyên như tài liệu chiến lược: **1 → 4 → 2 → 3**. Mỗi hạng mục là một
@@ -20,7 +20,7 @@ cập nhật `docs/PROJECT_WORK_LOG.md`.
   không viết điều kiện vai trò rải rác trong view.
 - View dùng `@login_required` + kiểm tra `has_permission(request.user, "...")` ngay đầu hàm,
   trả `HttpResponseForbidden` hoặc `messages.error` + redirect khi không đủ quyền — đúng mẫu
-  đang dùng trong `portal/views.py`.
+  đang dùng trong package `portal/views/`.
 - Test viết theo mẫu `apps/portal/tests.py` / `apps/activity/tests.py`: `TestCase` +
   `Client`/`self.client`, dựng fixture bằng `objects.create`, không mock DB.
 - Mọi ngày giờ nghiệp vụ dùng `timezone.localdate()`/`timezone.now()`, không dùng
@@ -145,7 +145,7 @@ làm hàm dùng chung, để hạng mục 1 không viết lại logic encode y h
 
 ### 1.5 View & URL
 
-- `apps/portal/views.py` thêm `notification_list` (đã có sẵn trang chuông thông báo theo work
+- `apps/portal/views/tasks_kpi.py` chứa `notification_list` (đã có sẵn trang chuông thông báo theo work
   log — kiểm tra trước khi thêm, tránh trùng route) và `notification_email_outbox_mark_sent`
   (POST, chỉ cho phép người có quyền `manage_hr` hoặc chính người nhận xác nhận "đã gửi qua
   Outlook", giống cơ chế `activity_proposal` đang dùng).
@@ -185,7 +185,7 @@ xác thực, hoặc Graph `Mail.Send` + admin consent). Cho tới lúc đó, out
 Dữ liệu đã đủ từ `hrm.Employee.manager` (self-FK) + `organization.Department`. Chỉ cần 1 view
 đọc + 1 template, không migration.
 
-**View** (`apps/portal/views.py`):
+**View** (`apps/portal/views/core.py`):
 ```python
 @login_required
 def org_chart(request):
@@ -476,7 +476,7 @@ cầu nghỉ việc) — cần xác nhận với HR quy trình nghỉ việc hi�
 "view_own_lifecycle_items": (EMPLOYEE, DEPT_MANAGER, HR_OFFICER, HR_MANAGER, SYS_ADMIN, FINANCE_OFFICER),
 ```
 
-### 2.5 View/URL — `apps/portal/views.py` + `portal/urls.py`
+### 2.5 View/URL — package `apps/portal/views/` + `portal/urls.py`
 
 - `lifecycle_case_create` (chọn employee + template, chỉ `manage_lifecycle_case`)
 - `lifecycle_case_detail` (danh sách item, người được giao chỉ sửa item của mình)

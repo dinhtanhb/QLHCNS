@@ -195,7 +195,7 @@ class PortalSensitiveWorkflowTests(TestCase):
         self.client.force_login(finance_user)
 
         # Suppress notifications in this test; only verify the transactional payslip issuance.
-        with patch("apps.portal.views.notify"), patch("apps.portal.views.notify_with_email_draft"):
+        with patch("apps.portal.views.finance.notify"), patch("apps.portal.views.finance.notify_with_email_draft"):
             response = self.client.post(reverse("portal:finance_payroll_lock", args=(period.pk,)))
 
         period.refresh_from_db()
@@ -848,7 +848,7 @@ class PortalSensitiveWorkflowTests(TestCase):
         )
         self.client.force_login(user)
 
-        with patch("apps.portal.views.timezone.localdate", return_value=work_date):
+        with patch("apps.portal.views.tasks_kpi.timezone.localdate", return_value=work_date):
             response = self.client.post(
                 reverse("portal:task_detail", args=(task.pk,)),
                 {"action": "update_status", "status": "Done"},
@@ -867,7 +867,7 @@ class PortalSensitiveWorkflowTests(TestCase):
         listing = self.client.get(reverse("portal:task_list"))
         self.assertContains(listing, "26/09/2026")
 
-        with patch("apps.portal.views.timezone.localdate", return_value=date(2026, 9, 27)):
+        with patch("apps.portal.views.tasks_kpi.timezone.localdate", return_value=date(2026, 9, 27)):
             self.client.post(
                 reverse("portal:task_detail", args=(task.pk,)),
                 {"action": "update_status", "status": "InProgress"},
@@ -880,7 +880,7 @@ class PortalSensitiveWorkflowTests(TestCase):
         user = self.make_user("HR_MANAGER", employee, "portal-task-default")
         self.client.force_login(user)
 
-        with patch("apps.portal.views.timezone.localdate", return_value=date(2026, 9, 26)):
+        with patch("apps.portal.views.tasks_kpi.timezone.localdate", return_value=date(2026, 9, 26)):
             response = self.client.get(reverse("portal:task_create"))
 
         self.assertEqual(response.status_code, 200)

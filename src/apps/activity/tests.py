@@ -709,7 +709,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
             task.refresh_from_db()
             self.assertTrue(task.report_file)
 
-        with patch("apps.portal.views.timezone.localdate", return_value=date(2026, 10, 2)):
+        with patch("apps.portal.views.tasks_kpi.timezone.localdate", return_value=date(2026, 10, 2)):
             self.client.post(
                 reverse("portal:task_detail", args=[task.pk]),
                 {"action": "update_status", "status": "Done"},
