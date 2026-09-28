@@ -61,4 +61,4 @@ Django modular monolith cùng một database SQL Server riêng phù hợp với 
 - [Kiến trúc giải pháp](02_Solution_Architecture.md)
 - [Tiêu chuẩn triển khai](08_Deployment_Standards.md)
 
-> Báo cáo gốc ngày 23/09/2026 được lưu trong [Review_23092026_recovered.md](../Review_23092026_recovered.md); đây là bản snapshot lịch sử, không phải đánh giá hiện hành.
+> Báo cáo gốc ngày 23/09/2026 được lưu trong [Review_23092026_recovered.md](archive/reviews/Review_23092026_recovered.md); đây là bản snapshot lịch sử, không phải đánh giá hiện hành.
