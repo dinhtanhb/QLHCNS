@@ -55,15 +55,16 @@ def hr_employee_list(request):
 @login_required
 def hr_employee_detail(request, pk):
     employee = get_object_or_404(_employee_scope(request), pk=pk)
+    sensitive = has_permission(request.user, 'view_employee_compensation')
     return render(request, "portal/hr_employee_detail.html", {
         "employee": employee, "can_manage_hr": _can_manage_hr(request),
-        "contracts": employee.contracts.select_related("contract_type").order_by("-start_date"),
-        "current_contract": employee.contracts.order_by("-start_date").first(),
+        "contracts": employee.contracts.select_related("contract_type").order_by("-start_date") if sensitive else [],
+        "current_contract": employee.contracts.order_by("-start_date").first() if sensitive else None,
         "transfers": employee.transfers.select_related("from_department", "to_department"),
         "promotions": employee.promotions.select_related("old_position", "new_position"),
         "rewards": employee.rewards.all(),
         "disciplines": employee.disciplines.all(),
-        "salaries": employee.salaries.order_by("-effective_date"),
+        "salaries": employee.salaries.order_by("-effective_date") if sensitive else [],
         "departments": Department.objects.filter(is_active=True),
         "positions": Position.objects.all(),
     })

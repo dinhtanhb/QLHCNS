@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.core.exceptions import PermissionDenied
+from django.db import transaction
 
 
 class RoleBasedAdminMixin:
@@ -32,10 +34,10 @@ class RoleBasedAdminMixin:
         return self.has_module_permission(request)
 
     def has_add_permission(self, request):
+        if not request.user.is_active or not request.user.is_staff:
+            return False
         if request.user.is_superuser:
             return True
-        if not request.user.is_staff:
-            return False
         if self.edit_roles is None:
             return True
         return self._role_code(request) in self.edit_roles
@@ -53,7 +55,7 @@ class RoleBasedAdminMixin:
                 self.edit_roles is None or self._role_code(request) in self.edit_roles
             )
         )
-        if request.GET.get("show_deleted") == "1" and can_manage:
+        if request.GET.get("show_deleted") == "1" and can_manage and hasattr(self.model, "all_objects"):
             qs = self.model.all_objects.filter(is_deleted=True)
         else:
             qs = super().get_queryset(request)
@@ -78,8 +80,8 @@ class BaseAuditAdmin(RoleBasedAdminMixin, admin.ModelAdmin):
             ("soft_delete_selected", "Xóa mềm các bản ghi đã chọn"),
             ("restore_selected", "Khôi phục các bản ghi đã chọn"),
         ):
-            if name not in actions:
-                actions[name] = (getattr(self, name), name, description)
+            if self.has_delete_permission(request) and name not in actions:
+                actions[name] = (getattr(type(self), name), name, description)
         if request.GET.get("show_deleted") == "1":
             actions.pop("soft_delete_selected", None)
         else:
@@ -87,14 +89,22 @@ class BaseAuditAdmin(RoleBasedAdminMixin, admin.ModelAdmin):
         actions.pop("delete_selected", None)
         return actions
 
-    @admin.action(description="Xóa mềm các bản ghi đã chọn")
+    @admin.action(description="Xóa mềm các bản ghi đã chọn", permissions=['delete'])
     def soft_delete_selected(self, request, queryset):
-        count, _ = queryset.delete(user=request.user)
+        with transaction.atomic():
+            objects = list(queryset.select_for_update())
+            if not self.has_delete_permission(request) or any(not self.has_delete_permission(request, obj) for obj in objects):
+                raise PermissionDenied
+            count, _ = queryset.delete(user=request.user)
         self.message_user(request, f"Đã chuyển {count} bản ghi vào danh sách đã xóa mềm.")
 
-    @admin.action(description="Khôi phục các bản ghi đã chọn")
+    @admin.action(description="Khôi phục các bản ghi đã chọn", permissions=['delete'])
     def restore_selected(self, request, queryset):
-        count = queryset.restore(user=request.user)
+        with transaction.atomic():
+            objects = list(queryset.select_for_update())
+            if not self.has_delete_permission(request) or any(not self.has_delete_permission(request, obj) for obj in objects):
+                raise PermissionDenied
+            count = queryset.restore(user=request.user)
         self.message_user(request, f"Đã khôi phục {count} bản ghi.")
 
     def delete_model(self, request, obj):

@@ -45,7 +45,7 @@ class ActivityAdmin(BaseAuditAdmin):
                 level=messages.WARNING,
             )
 
-    @admin.action(description="Kiểm tra/tạo lại Task báo cáo cho các hoạt động đã có công văn")
+    @admin.action(description="Kiểm tra/tạo lại Task báo cáo cho các hoạt động đã có công văn", permissions=["change"])
     def action_create_tracking_task(self, request, queryset):
         created, skipped = 0, 0
         for activity in queryset:
@@ -67,3 +67,4 @@ class ActivityAdmin(BaseAuditAdmin):
                 f"Bỏ qua {skipped} hoạt động chưa tạo mới (đã có Task hoặc chưa có Công văn đi).",
                 level=messages.WARNING,
             )
+

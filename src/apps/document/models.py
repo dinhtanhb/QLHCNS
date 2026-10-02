@@ -46,6 +46,20 @@ class Document(BaseAuditModel):
         verbose_name = "Tài liệu"
         verbose_name_plural = "Tài liệu"
 
+    @property
+    def safe_document_url(self):
+        from urllib.parse import urlsplit
+        url = self.document_url or ""
+        if any(ord(char) < 32 for char in url):
+            return ""
+        try:
+            parsed = urlsplit(url)
+            if parsed.scheme in ("http", "https") and parsed.hostname and not parsed.username and not parsed.password:
+                return url
+        except ValueError:
+            pass
+        return ""
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         if self.uploaded_file and self.uploaded_file.url != self.document_url:

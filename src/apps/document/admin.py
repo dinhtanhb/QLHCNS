@@ -58,6 +58,10 @@ class OfficialDispatchAdmin(BaseAuditAdmin):
     view_roles = VIEW_ROLES
     edit_roles = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER", "DEPT_MANAGER")
 
+    def scope_queryset(self, request, qs):
+        from apps.security.data_access import visible_dispatches_for
+        return visible_dispatches_for(request.user, qs)
+
 
 @admin.register(DispatchTracking)
 class DispatchTrackingAdmin(BaseAuditAdmin):

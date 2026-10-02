@@ -24,8 +24,10 @@
             <td class="py-2.5 pr-4">v{{ d.version_no }}</td>
             <td class="py-2.5 pr-4">{{ d.effective_date|default:"—" }}</td>
             <td class="py-2.5">
-                {% if d.document_url %}
-                <a href="{{ d.document_url }}" target="_blank" class="text-blue-700 hover:underline">Xem/Tải</a>
+                {% if d.uploaded_file %}
+                <a href="{{ d.uploaded_file.url }}" class="text-blue-700 hover:underline">Xem/Tải</a>
+                {% elif d.safe_document_url %}
+                <a href="{{ d.safe_document_url }}" target="_blank" rel="noopener noreferrer" class="text-blue-700 hover:underline">Xem/Tải</a>
                 {% else %}
                 <span class="text-gray-400">—</span>
                 {% endif %}

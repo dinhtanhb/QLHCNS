@@ -205,10 +205,10 @@ class AccessControlViewTests(TestCase):
         )
 
     def login_employee(self):
-        self.client.login(username="nhanvien", password="matkhau123")
+        self.client.post("/portal/login/", {"username": "nhanvien", "password": "matkhau123"})
 
     def login_hr(self):
-        self.client.login(username="nhansu", password="matkhau123")
+        self.client.post("/portal/login/", {"username": "nhansu", "password": "matkhau123"})
 
     # ---------- Trung tâm báo cáo ----------
     def test_nhan_vien_bi_chan_vao_trung_tam_bao_cao(self):
@@ -267,3 +267,4 @@ class AccessControlViewTests(TestCase):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302, url)
             self.assertIn("login", response["Location"])
+

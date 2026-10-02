@@ -459,7 +459,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
 
     def test_cbda_sees_only_own_project_activities(self):
         self.create_user("cbda_a", self.cbda, self.cbda_role)
-        self.client.login(username="cbda_a", password="test-password")
+        self.client.post("/portal/login/", {"username": "cbda_a", "password": "test-password"})
 
         response = self.client.get(reverse("portal:activity_dashboard"), {"month": "2026-10"})
 
@@ -473,7 +473,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
             role_code="PROJECT_COORDINATOR", defaults={"role_name": "Điều phối dự án"}
         )
         self.create_user("coordinator_task_list", self.coordinator, coordinator_role)
-        self.client.login(username="coordinator_task_list", password="test-password")
+        self.client.post("/portal/login/", {"username": "coordinator_task_list", "password": "test-password"})
 
         response = self.client.get(reverse("portal:task_list"))
 
@@ -487,7 +487,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
         own_activity = self.make_activity("ACT-TASK-OWN", dispatch=self.dispatch)
         other_activity = self.make_activity("ACT-TASK-OTHER", dispatch=self.dispatch, lead=self.other_cbda)
         self.create_user("cbda_task_list", self.cbda, self.cbda_role)
-        self.client.login(username="cbda_task_list", password="test-password")
+        self.client.post("/portal/login/", {"username": "cbda_task_list", "password": "test-password"})
 
         response = self.client.get(reverse("portal:task_list"))
 
@@ -500,7 +500,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
             role_code="PROJECT_COORDINATOR", defaults={"role_name": "Điều phối dự án"}
         )
         self.create_user("coordinator_filter", self.coordinator, coordinator_role)
-        self.client.login(username="coordinator_filter", password="test-password")
+        self.client.post("/portal/login/", {"username": "coordinator_filter", "password": "test-password"})
 
         response = self.client.get(reverse("portal:activity_dashboard"), {
             "month": "2026-10", "cbda": str(self.cbda.pk),
@@ -515,7 +515,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
         self.own_activity.outgoing_document = self.dispatch
         self.own_activity.save()
         self.create_user("cbda_calendar", self.cbda, self.cbda_role)
-        self.client.login(username="cbda_calendar", password="test-password")
+        self.client.post("/portal/login/", {"username": "cbda_calendar", "password": "test-password"})
 
         response = self.client.get(reverse("portal:activity_calendar"), {"month": "2026-10"})
 
@@ -542,7 +542,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
             role_code="DIRECTOR", defaults={"role_name": "Giám đốc"}
         )
         self.create_user("director_home", self.coordinator, director_role)
-        self.client.login(username="director_home", password="test-password")
+        self.client.post("/portal/login/", {"username": "director_home", "password": "test-password"})
 
         response = self.client.get(reverse("portal:dashboard"))
 
@@ -587,7 +587,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
             role_code="DEPT_MANAGER", defaults={"role_name": "Trưởng phòng"}
         )
         self.create_user("department_manager_home", self.coordinator, manager_role)
-        self.client.login(username="department_manager_home", password="test-password")
+        self.client.post("/portal/login/", {"username": "department_manager_home", "password": "test-password"})
 
         home_response = self.client.get(reverse("portal:dashboard"))
         activity_response = self.client.get(reverse("portal:activity_dashboard"))
@@ -604,7 +604,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
             role_code="PROJECT_COORDINATOR", defaults={"role_name": "Điều phối dự án"}
         )
         self.create_user("coordinator", self.coordinator, coordinator_role)
-        self.client.login(username="coordinator", password="test-password")
+        self.client.post("/portal/login/", {"username": "coordinator", "password": "test-password"})
 
         response = self.client.get(reverse("portal:activity_create"))
 
@@ -616,7 +616,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
             role_code="PROJECT_COORDINATOR", defaults={"role_name": "Điều phối dự án"}
         )
         self.create_user("coordinator", self.coordinator, coordinator_role)
-        self.client.login(username="coordinator", password="test-password")
+        self.client.post("/portal/login/", {"username": "coordinator", "password": "test-password"})
 
         response = self.client.post(reverse("portal:activity_create"), {
             "activity_code": "46.9.1.1.2.1",
@@ -648,7 +648,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
             role_code="PROJECT_COORDINATOR", defaults={"role_name": "Điều phối dự án"}
         )
         self.create_user("coordinator_overlap", self.coordinator, coordinator_role)
-        self.client.login(username="coordinator_overlap", password="test-password")
+        self.client.post("/portal/login/", {"username": "coordinator_overlap", "password": "test-password"})
 
         response = self.client.post(reverse("portal:activity_create"), {
             "activity_code": "46.9.1.1.2.2",
@@ -667,7 +667,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
 
     def test_cbda_cannot_create_activity(self):
         self.create_user("cbda_create", self.cbda, self.cbda_role)
-        self.client.login(username="cbda_create", password="test-password")
+        self.client.post("/portal/login/", {"username": "cbda_create", "password": "test-password"})
 
         response = self.client.get(reverse("portal:activity_create"))
 
@@ -681,7 +681,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
             activity=self.other_activity,
         )
         self.create_user("cbda_a", self.cbda, self.cbda_role)
-        self.client.login(username="cbda_a", password="test-password")
+        self.client.post("/portal/login/", {"username": "cbda_a", "password": "test-password"})
 
         response = self.client.get(reverse("portal:task_detail", args=[task.pk]))
 
@@ -691,7 +691,7 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
         activity = self.make_activity("ACT-REPORT", dispatch=self.dispatch)
         task = Task.objects.get(activity=activity)
         self.create_user("cbda_a", self.cbda, self.cbda_role)
-        self.client.login(username="cbda_a", password="test-password")
+        self.client.post("/portal/login/", {"username": "cbda_a", "password": "test-password"})
 
         response = self.client.post(
             reverse("portal:task_detail", args=[task.pk]),
@@ -722,3 +722,4 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
             )
         task.refresh_from_db()
         self.assertEqual(task.status, "Done")
+

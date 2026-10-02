@@ -1057,3 +1057,25 @@ Ready For:
 - UI Design
 - Development
 - Testing
+
+
+## Trạng thái bảo vệ dữ liệu trong mã nguồn (02/10/2026)
+
+Các mục thiết kế ở trên là yêu cầu mục tiêu; không được coi toàn bộ đã triển khai.
+Bản mã hiện tại có:
+
+- URL tệp qua `/private-files/`, kiểm tra đăng nhập, vai trò và chủ/phạm vi bản ghi trước khi đọc đĩa hoặc Graph; bản ghi đã xóa bị từ chối. Tệp trả dạng download, sandbox và no-store. Không trả URL trực tiếp SharePoint.
+- Django không phục vụ `/media/`, kể cả DEBUG. IIS/reverse proxy phải bỏ virtual directory/alias phục vụ media và đặt tệp ngoài web root; quyền đĩa chỉ cấp service account. Bảo vệ trong Django không chặn được alias độc lập ở IIS.
+- SYS_ADMIN không sửa vai trò, liên kết nhân viên, superuser/staff, group hoặc permission; không đổi mật khẩu tài khoản đặc quyền. Chỉ superuser thực sự được quản lý phân quyền. CCCD/MST/BHXH không xuất hiện trong Admin Employee cho SYS_ADMIN/DEPT_MANAGER.
+- Thao tác Admin xóa/khôi phục kiểm tra quyền từng bản ghi trong transaction, bao gồm kỳ lương Locked. Action tạo Task hoạt động yêu cầu quyền sửa.
+- Xuất nhân sự/hợp đồng yêu cầu quyền riêng; công văn xuất theo cùng phạm vi xem và độ mật. Chuỗi trong Excel được ghi dạng text.
+- Đăng nhập Portal/Admin dùng django-axes, 5 lần sai theo username **hoặc** IP khóa 30 phút. IP dùng chung có thể bị khóa chung; chỉ tin header IP từ proxy đã cấu hình tin cậy, không nhận header tùy ý. Đăng nhập đúng xóa bộ đếm phù hợp; không kéo dài thời gian khóa khi thử trong lúc khóa.
+- Phiên không thao tác hết hạn sau SESSION_IDLE_TIMEOUT (mặc định 1800 giây); nội dung đã đăng nhập no-store; cookie HttpOnly/SameSite; APP_ENV=production từ chối DEBUG, thiếu HTTPS, key yếu hoặc wildcard host. Kết nối SQL Server ở production ép Encrypt=yes;TrustServerCertificate=no; cần chứng chỉ server hợp lệ.
+- SecurityEvent lưu metadata login/logout, tải tệp và xuất dữ liệu, không lưu giá trị nhạy cảm/tên tệp/credentials. Admin chỉ đọc nhật ký. Đây chưa phải audit bất biến: DBA vẫn có quyền database.
+- Lỗi nghiệp vụ ghi loại exception và ID; handler logging trong DEBUG=False bỏ payload/traceback exception để tránh ghi SQL/Graph chứa bí mật.
+- Dependency đã nâng và quét lỗ hổng đã biết; phải quét lại theo mỗi bản phát hành.
+
+**Chưa được xác nhận/triển khai đầy đủ:** mã hóa cấp trường CCCD/MST/BHXH/lương (các trường vẫn plaintext trong database), SQL Server TLS/TDE và backup encryption, quản lý/luân chuyển khóa, MFA/SSO Entra, chính sách một phiên hoạt động, audit bất biến và pentest trên máy chủ thực. Không tự đổi kiểu trường dữ liệu đang chạy để tránh mất uniqueness/truy vấn hoặc khóa dữ liệu khi chưa có thiết kế khóa và migration khôi phục.
+
+Trước production: DBA xác nhận TLS và mã hóa database/backup, kiểm thử khôi phục có khóa; IT bật HTTPS/MFA, rà ACL SharePoint và service account tối thiểu, loại bỏ raw media alias. IIS phải thay thế header X-Forwarded-Proto từ client và chặn truy cập trực tiếp backend HTTP.
+Chi tiết kiểm chứng và các bước triển khai nằm tại [PROJECT_WORK_LOG.md](PROJECT_WORK_LOG.md).

@@ -110,6 +110,11 @@ def generate_employee_list_excel():
     _apply_table_borders(ws, 4, current_row - 1, 1, len(headers))
     _auto_fit_columns(ws)
 
+    # Treat imported/user-entered strings as text, never executable Excel formulas.
+    for row in ws.iter_rows():
+        for cell in row:
+            if isinstance(cell.value, str):
+                cell.data_type = "s"
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
@@ -166,13 +171,18 @@ def generate_expiring_contracts_excel(days_threshold=60):
         _apply_table_borders(ws, 3, current_row - 1, 1, len(headers))
     _auto_fit_columns(ws)
 
+    # Treat imported/user-entered strings as text, never executable Excel formulas.
+    for row in ws.iter_rows():
+        for cell in row:
+            if isinstance(cell.value, str):
+                cell.data_type = "s"
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
     return output
 
 
-def generate_dispatch_book_excel(dispatch_type="Incoming", year=None):
+def generate_dispatch_book_excel(dispatch_type="Incoming", year=None, queryset=None):
     """Xuất Sổ công văn đến hoặc Sổ công văn đi sang file Excel chuẩn lưu trữ."""
     wb = Workbook()
     ws = wb.active
@@ -180,7 +190,7 @@ def generate_dispatch_book_excel(dispatch_type="Incoming", year=None):
     ws.title = f"Sổ {type_name}"
     ws.views.sheetView[0].showGridLines = True
 
-    qs = OfficialDispatch.objects.filter(dispatch_type=dispatch_type)
+    qs = (queryset if queryset is not None else OfficialDispatch.objects.all()).filter(dispatch_type=dispatch_type)
     if year:
         qs = qs.filter(received_or_sent_date__year=year)
     dispatches = qs.select_related("department", "assigned_to").order_by("dispatch_no")
@@ -236,7 +246,13 @@ def generate_dispatch_book_excel(dispatch_type="Incoming", year=None):
         _apply_table_borders(ws, 3, current_row - 1, 1, len(headers))
     _auto_fit_columns(ws)
 
+    # Treat imported/user-entered strings as text, never executable Excel formulas.
+    for row in ws.iter_rows():
+        for cell in row:
+            if isinstance(cell.value, str):
+                cell.data_type = "s"
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
     return output
+

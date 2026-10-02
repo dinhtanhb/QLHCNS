@@ -31,7 +31,10 @@ def _friendly_error(request, exc, user_message, log_context=""):
     Mục 3.D: trước đây rất nhiều `except Exception as e` show thẳng
     `f"...: {e}"` (lỗi kỹ thuật gốc) ra UI cho người dùng cuối.
     """
-    logger.exception("Lỗi khi xử lý %s (user=%s): %s", log_context or request.path, request.user, exc)
+    # SQL/Graph exceptions can embed credentials, payloads and employee values.
+    # Keep diagnostic types and numeric actor IDs, never raw exception/traceback.
+    route = getattr(getattr(request, 'resolver_match', None), 'view_name', 'unknown')
+    logger.error('Business request failed: view=%s actor_id=%s error_type=%s', route, request.user.pk, type(exc).__name__)
     if isinstance(exc, ValidationError):
         # Lỗi validate dữ liệu (full_clean) vẫn nên cho người dùng biết cụ thể sai ở đâu.
         detail = "; ".join(exc.messages) if hasattr(exc, "messages") else str(exc)

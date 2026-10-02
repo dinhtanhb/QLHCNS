@@ -67,10 +67,8 @@ class SharePointStorage(Storage):
         return meta.get("size", 0)
 
     def url(self, name):
-        try:
-            return self.client.get_web_url(self.library_name, name)
-        except GraphAPIError:
-            return ""
+        from apps.security.storage import private_file_url
+        return private_file_url(name)
 
     def get_accessed_time(self, name):  # pragma: no cover - Graph không cung cấp
         raise NotImplementedError("SharePoint không cung cấp thời gian truy cập gần nhất.")
@@ -140,7 +138,8 @@ class ConfiguredStorage(Storage):
         return self.backend.size(self._remote_name(name))
 
     def url(self, name):
-        return self.backend.url(self._remote_name(name))
+        from apps.security.storage import private_file_url
+        return private_file_url(name)
 
     def path(self, name):
         return self.backend.path(name)

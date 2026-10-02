@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 from django.core.exceptions import ImproperlyConfigured
@@ -69,15 +70,30 @@ if ENABLE_HTTPS_ENFORCEMENT:
     )
     SECURE_HSTS_PRELOAD = os.getenv("SECURE_HSTS_PRELOAD", "False").lower() in ("true", "1", "t")
 
+# Production must be explicitly configured; development remains HTTP-compatible.
+APP_ENV = os.getenv("APP_ENV", "development").lower()
+if APP_ENV == "production":
+    if DEBUG or not ENABLE_HTTPS_ENFORCEMENT:
+        raise ImproperlyConfigured("Production yêu cầu DEBUG=False và ENABLE_HTTPS_ENFORCEMENT=True.")
+    if len(SECRET_KEY) < 50 or len(set(SECRET_KEY)) < 5 or SECRET_KEY.startswith("django-insecure-"):
+        raise ImproperlyConfigured("Production yêu cầu SECRET_KEY ngẫu nhiên, riêng và dài ít nhất 50 ký tự.")
+    if not ALLOWED_HOSTS or "*" in ALLOWED_HOSTS:
+        raise ImproperlyConfigured("Production yêu cầu ALLOWED_HOSTS cụ thể.")
+
 # Các cờ này an toàn để bật ở MỌI môi trường (không phụ thuộc HTTPS):
 SECURE_CONTENT_TYPE_NOSNIFF = True  # chặn trình duyệt tự đoán sai loại tệp, giảm rủi ro XSS qua upload
 X_FRAME_OPTIONS = "DENY"  # chặn nhúng trang vào iframe từ site khác (chống clickjacking)
 
-# Tự động đăng xuất sau 8 giờ không thao tác, hoặc khi đóng trình duyệt nếu
+# Giới hạn phiên 8 giờ; middleware đăng xuất sau SESSION_IDLE_TIMEOUT không thao tác.
+# Đóng trình duyệt kết thúc phiên nếu
 # SESSION_EXPIRE_AT_BROWSER_CLOSE=True — hợp lý cho hệ thống HR có dữ liệu
 # lương/CCCD nhạy cảm.
 SESSION_COOKIE_AGE = 8 * 60 * 60
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_IDLE_TIMEOUT = int(os.getenv('SESSION_IDLE_TIMEOUT', '1800'))
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
 
 
 # Application definition
@@ -89,6 +105,7 @@ except ImportError:
     HAS_JAZZMIN = False
 
 INSTALLED_APPS = (['jazzmin'] if HAS_JAZZMIN else []) + [
+    'axes',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -126,10 +143,22 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'apps.security.middleware.SensitiveResponseMiddleware',
     'apps.common.middleware.ApplyDueEmployeeChangesMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'axes.middleware.AxesMiddleware',
 ]
+
+# Persistent database handler protects both portal and Django admin logins.
+AUTHENTICATION_BACKENDS = ['axes.backends.AxesStandaloneBackend', 'django.contrib.auth.backends.ModelBackend']
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = timedelta(minutes=30)
+AXES_LOCKOUT_PARAMETERS = ['username', 'ip_address']
+AXES_RESET_ON_SUCCESS = True
+AXES_RESET_COOL_OFF_ON_FAILURE_DURING_LOCKOUT = False
+AXES_SENSITIVE_PARAMETERS = ['username', 'ip_address', 'password', 'csrfmiddlewaretoken']
+AXES_VERBOSE = False
 
 ROOT_URLCONF = 'config.urls'
 
@@ -179,6 +208,7 @@ else:
             "OPTIONS": {
                 "driver": os.getenv("DB_DRIVER", "ODBC Driver 17 for SQL Server"),
                 "trusted_connection": DB_TRUSTED_CONNECTION,
+                **({"extra_params": "Encrypt=yes;TrustServerCertificate=no"} if APP_ENV == "production" else {}),
             },
         }
     }
@@ -231,6 +261,10 @@ LOGIN_REDIRECT_URL = "portal:dashboard"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+STORAGES = {
+    'default': {'BACKEND': 'apps.security.storage.PrivateFileStorage'},
+    'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
+}
 
 # ==========================================
 # TÍCH HỢP MICROSOFT 365 (SharePoint / OneDrive)
@@ -435,6 +469,7 @@ LOG_DIR.mkdir(parents=True, exist_ok=True)
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "filters": {"safe_exception": {"()": "apps.security.logging.SafeExceptionFilter"}},
     "formatters": {
         "verbose": {
             "format": "[{asctime}] {levelname} {name} - {message}",
@@ -444,10 +479,12 @@ LOGGING = {
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
+            "filters": ["safe_exception"],
             "formatter": "verbose",
         },
         "app_file": {
             "class": "logging.handlers.RotatingFileHandler",
+            "filters": ["safe_exception"],
             "filename": LOG_DIR / "app.log",
             "maxBytes": 5 * 1024 * 1024,
             "backupCount": 30,
@@ -456,6 +493,7 @@ LOGGING = {
         },
         "error_file": {
             "class": "logging.handlers.RotatingFileHandler",
+            "filters": ["safe_exception"],
             "filename": LOG_DIR / "error.log",
             "maxBytes": 5 * 1024 * 1024,
             "backupCount": 30,

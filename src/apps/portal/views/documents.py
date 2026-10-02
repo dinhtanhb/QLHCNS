@@ -101,15 +101,9 @@ def _visible_dispatches(request):
     Dùng chung cho cả danh sách và trang chi tiết, nếu không trang chi tiết sẽ
     hở lỗ hổng: chỉ cần đổi số pk trên URL là đọc được công văn của phòng khác.
     """
+    from apps.security.data_access import visible_dispatches_for
     qs = OfficialDispatch.objects.select_related("department", "assigned_to", "dispatch_book")
-    if _role_code(request) in ("PROJECT_MANAGER", "PROJECT_COORDINATOR"):
-        return qs.filter(dispatch_type="Outgoing")
-    if has_permission(request.user, "access_outgoing_document") or request.user.is_staff:
-        return qs
-    employee = _get_employee(request)
-    if not employee:
-        return qs.none()
-    return qs.filter(models.Q(assigned_to=employee) | models.Q(department=employee.department))
+    return visible_dispatches_for(request.user, qs)
 
 
 @login_required

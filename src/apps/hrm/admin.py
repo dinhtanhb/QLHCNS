@@ -8,6 +8,12 @@ class EmployeeAdmin(BaseAuditAdmin):
     view_roles = ("SUPER_ADMIN", "SYS_ADMIN", "HR_MANAGER", "HR_OFFICER", "DEPT_MANAGER", "DIRECTOR")
     edit_roles = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER")
 
+    def get_exclude(self, request, obj=None):
+        excluded = tuple(super().get_exclude(request, obj) or ())
+        if not request.user.is_superuser and self._role_code(request) in ("SYS_ADMIN", "DEPT_MANAGER"):
+            excluded += ("national_id", "tax_code", "social_insurance_no")
+        return excluded
+
     def scope_queryset(self, request, qs):
         role_code = self._role_code(request)
         if role_code == "DEPT_MANAGER":

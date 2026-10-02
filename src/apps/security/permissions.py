@@ -61,6 +61,8 @@ PERMISSION_MATRIX = {
     # Nhân sự
     "manage_hr": (HR_MANAGER, HR_OFFICER),
     "view_all_employees": (HR_MANAGER, HR_OFFICER, DIRECTOR),
+    "export_employee_data": (HR_MANAGER, HR_OFFICER, DIRECTOR, FINANCE_OFFICER),
+    "view_employee_compensation": (HR_MANAGER, HR_OFFICER, DIRECTOR),
     "submit_profile_change_request": (
         EMPLOYEE, DEPT_MANAGER, HR_OFFICER, HR_MANAGER, DIRECTOR, FINANCE_OFFICER,
         PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA, SYS_ADMIN,
@@ -126,7 +128,7 @@ def get_role_name(user):
 
 def has_permission(user, permission):
     """Tài khoản có quyền này không. Superuser luôn có mọi quyền."""
-    if not getattr(user, "is_authenticated", False):
+    if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
         return False
     if getattr(user, "is_superuser", False):
         return True

@@ -30,3 +30,16 @@ class User(AbstractUser):
 
     class Meta:
         db_table = "tblUser"
+
+
+class SecurityEvent(models.Model):
+    """Access metadata only: never store values, filenames, query strings or secrets."""
+    user = models.ForeignKey('security.User', null=True, on_delete=models.SET_NULL)
+    action = models.CharField(max_length=40)
+    resource = models.CharField(max_length=100)
+    record_id = models.CharField(max_length=64, blank=True)
+    occurred_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        db_table = 'tblSecurityEvent'
+        ordering = ('-occurred_at',)

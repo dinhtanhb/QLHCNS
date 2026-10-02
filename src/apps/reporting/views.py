@@ -4,6 +4,8 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render
 
 from apps.security.permissions import has_permission
+from apps.security.data_access import visible_dispatches_for
+from apps.security.models import SecurityEvent
 from apps.common.params import parse_int
 
 from apps.hrm.models import Employee
@@ -66,7 +68,7 @@ def report_dashboard(request):
 
 @login_required
 def export_employees(request):
-    if not _can_view_reports(request):
+    if not has_permission(request.user, 'export_employee_data'):
         return HttpResponseForbidden("Không có quyền xuất dữ liệu.")
     excel_stream = generate_employee_list_excel()
     response = HttpResponse(
@@ -74,12 +76,13 @@ def export_employees(request):
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     response["Content-Disposition"] = f'attachment; filename="Danh_sach_nhan_su_{date.today().strftime("%Y%m%d")}.xlsx"'
+    SecurityEvent.objects.create(user=request.user, action="data_export", resource=request.resolver_match.url_name)
     return response
 
 
 @login_required
 def export_contracts(request):
-    if not _can_view_reports(request):
+    if not has_permission(request.user, 'export_employee_data'):
         return HttpResponseForbidden("Không có quyền xuất dữ liệu.")
     days = parse_int(request.GET.get("days"), 60, min_value=1, max_value=3650)
     excel_stream = generate_expiring_contracts_excel(days_threshold=days)
@@ -88,6 +91,7 @@ def export_contracts(request):
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     response["Content-Disposition"] = f'attachment; filename="Hop_dong_sap_het_han_{days}_ngay.xlsx"'
+    SecurityEvent.objects.create(user=request.user, action="data_export", resource=request.resolver_match.url_name)
     return response
 
 
@@ -97,11 +101,12 @@ def export_dispatches(request):
         return HttpResponseForbidden("Không có quyền xuất dữ liệu.")
     dispatch_type = request.GET.get("type", "Incoming")
     year = parse_int(request.GET.get("year"), date.today().year, min_value=2000, max_value=2100)
-    excel_stream = generate_dispatch_book_excel(dispatch_type=dispatch_type, year=year)
+    excel_stream = generate_dispatch_book_excel(dispatch_type=dispatch_type, year=year, queryset=visible_dispatches_for(request.user))
     type_slug = "den" if dispatch_type == "Incoming" else "di"
     response = HttpResponse(
         excel_stream.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     response["Content-Disposition"] = f'attachment; filename="So_cong_van_{type_slug}_{year}.xlsx"'
+    SecurityEvent.objects.create(user=request.user, action="data_export", resource=request.resolver_match.url_name)
     return response
