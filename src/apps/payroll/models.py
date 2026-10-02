@@ -1,4 +1,4 @@
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from dataclasses import dataclass
 import hashlib
 import copy
@@ -19,6 +19,14 @@ class PayrollConfiguration:
     insurance: object
     deduction: object
     tax_brackets: tuple
+
+
+def _decimal_amount(value):
+    try:
+        amount = Decimal(str(value if value is not None else 0))
+    except (InvalidOperation, TypeError, ValueError):
+        return None
+    return amount if amount.is_finite() else None
 
 
 class EmployeeSalary(BaseAuditModel):
@@ -44,6 +52,9 @@ class EmployeeSalary(BaseAuditModel):
         return f"{self.employee} - {self.current_basic_salary:,.0f}đ (từ {self.effective_date})"
 
     def clean(self):
+        salary = _decimal_amount(self.current_basic_salary)
+        if salary is not None and salary < 0:
+            raise ValidationError({"current_basic_salary": "Lương cơ bản không được âm."})
         if self.end_date and self.effective_date and self.end_date < self.effective_date:
             raise ValidationError("Ngày kết thúc phải sau hoặc bằng ngày hiệu lực.")
         self._validate_no_overlap()
@@ -337,11 +348,21 @@ class Payroll(BaseAuditModel):
         ]
 
     def clean(self):
+        self.validate_input_amounts()
         # C2 (đã sửa): trước đây có `and self.pk` — chỉ chặn SỬA dòng đã tồn tại, còn TẠO MỚI
         # (self.pk chưa có trước khi save) một dòng Payroll cho kỳ đã Locked lại lọt qua hoàn
         # toàn. Bỏ điều kiện `self.pk` để chặn cả 2 trường hợp.
         if self.payroll_period_id and self.payroll_period.status == "Locked":
             raise ValidationError("Kỳ lương đã khóa — không được thêm/sửa bảng lương.")
+
+    def validate_input_amounts(self):
+        amounts = {name: _decimal_amount(getattr(self, name)) for name in self.INPUT_FIELDS}
+        errors = {
+            name: "Số tiền không được âm."
+            for name, amount in amounts.items() if amount is not None and amount < 0
+        }
+        if errors:
+            raise ValidationError(errors)
 
     def __str__(self):
         return f"{self.employee} - {self.payroll_period}"
@@ -382,6 +403,7 @@ class Payroll(BaseAuditModel):
 
     def calculate(self, *, configuration=None):
         """Tính Gross, Bảo hiểm, Thuế TNCN, Net theo tỷ lệ hiệu lực tại thời điểm StartDate của kỳ lương."""
+        self.validate_input_amounts()
         from apps.attendance.models import MonthlyAttendanceSummary
         from apps.attendance.services import standard_working_days as _standard_working_days
 

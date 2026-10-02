@@ -23,6 +23,7 @@ from apps.hrm.models import Employee
 from apps.organization.models import Department, Organization, Position
 from apps.payroll.models import (
     EmployeeDependent,
+    EmployeeSalary,
     InsuranceRateConfig,
     Payroll,
     PayrollPeriod,
@@ -282,6 +283,29 @@ class NetIncomeTests(PayrollTestBase):
 # 4. RÀNG BUỘC NGHIỆP VỤ
 # ------------------------------------------------------------------
 class PayrollGuardTests(PayrollTestBase):
+
+    def test_negative_employee_salary_is_rejected(self):
+        salary = EmployeeSalary(
+            employee=self.employee, current_basic_salary=D("-1"), effective_date=date(2025, 1, 1)
+        )
+        with self.assertRaises(ValidationError):
+            salary.full_clean()
+
+    def test_calculation_rejects_negative_input(self):
+        payroll = Payroll(
+            payroll_period=self.period, employee=self.employee,
+            basic_salary=D("10000000"), allowance=D("-1"),
+        )
+        with self.assertRaises(ValidationError):
+            payroll.calculate()
+
+    def test_negative_payroll_inputs_are_rejected(self):
+        for field in Payroll.INPUT_FIELDS:
+            with self.subTest(field=field):
+                payroll = self.make_payroll(basic_salary=D("10000000"))
+                setattr(payroll, field, D("-1"))
+                with self.assertRaises(ValidationError):
+                    payroll.full_clean()
 
     def test_khong_duoc_sua_bang_luong_cua_ky_da_khoa(self):
         p = self.make_payroll(basic_salary=D("10000000"))
