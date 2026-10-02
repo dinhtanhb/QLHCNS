@@ -7,13 +7,14 @@
 
 param(
     [string]$ServerInstance = "localhost\SQLEXPRESS",
-    [string]$Database       = "qlhcns",
+    [Parameter(Mandatory = $true)][ValidatePattern("^[A-Za-z0-9_-]+$")][string]$Database,
     [string]$BackupRoot     = "D:\QLHCNS\Backups",
-    [int]$RetentionDays     = 3   # log backup chỉ cần giữ ngắn ngày, đủ để khôi phục điểm-trong-thời-gian giữa 2 lần full backup
+    [ValidateRange(30, 3650)][int]$RetentionDays = 30   # giữ ít nhất bằng cửa sổ Daily để không tự cắt chuỗi khôi phục
 )
 
 $ErrorActionPreference = "Stop"
-$timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+. (Join-Path $PSScriptRoot "Backup-Common.ps1")
+$timestamp = Get-Date -Format "yyyyMMdd_HHmmss_fffffff"
 $logDir    = Join-Path $BackupRoot "TransactionLog"
 $logFile   = Join-Path $BackupRoot "backup-log.txt"
 
@@ -26,25 +27,17 @@ function Write-BackupLog {
     Write-Output $line
 }
 
-$backupFile = Join-Path $logDir "qlhcns_log_$timestamp.trn"
+$backupFile = Join-Path $logDir "${Database}_log_$timestamp.trn"
 
 try {
     Write-BackupLog "Bắt đầu TRANSACTION LOG backup -> $backupFile"
 
-    $sql = @"
-BACKUP LOG [$Database]
-TO DISK = N'$backupFile'
-WITH INIT, COMPRESSION, CHECKSUM;
-"@
-
-    sqlcmd -S $ServerInstance -E -Q $sql
-    if ($LASTEXITCODE -ne 0) {
-        throw "sqlcmd trả về mã lỗi $LASTEXITCODE. Kiểm tra database có đang ở chế độ FULL recovery không (chạy Setup-RecoveryModel.sql nếu chưa)."
-    }
+    $hash = New-VerifiedDatabaseBackup -ServerInstance $ServerInstance -Database $Database -BackupFile $backupFile -Kind LOG
+    Write-BackupLog "Backup checksum/VERIFYONLY đạt; SHA256=$hash"
 
     Write-BackupLog "Log backup thành công: $backupFile"
 
-    Get-ChildItem $logDir -Filter "*.trn" |
+    Get-ChildItem $logDir -Filter "${Database}_log_*.trn" |
         Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-$RetentionDays) } |
         ForEach-Object { Write-BackupLog "Xoá log backup quá hạn: $($_.Name)"; Remove-Item $_.FullName -Force }
 }

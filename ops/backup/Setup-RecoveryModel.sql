@@ -11,6 +11,7 @@
 -- này -> Execute (F5).
 -- ============================================================
 
+-- Rà đúng tên database và đường dẫn trước khi chạy; không dùng cho database khác.
 USE master;
 GO
 
@@ -22,7 +23,8 @@ GO
 -- chuỗi", trước khi lên lịch tự động qua Task Scheduler:
 BACKUP DATABASE qlhcns
 TO DISK = 'D:\QLHCNS\Backups\Daily\qlhcns_full_init.bak'
-WITH INIT, COMPRESSION, STATS = 10;
+WITH INIT, NO_COMPRESSION, CHECKSUM, STATS = 10;
+RESTORE VERIFYONLY FROM DISK = N'D:\QLHCNS\Backups\Daily\qlhcns_full_init.bak' WITH CHECKSUM;
 GO
 
 -- Kiểm tra lại: cột recovery_model_desc phải hiện 'FULL'

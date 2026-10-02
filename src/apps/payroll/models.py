@@ -1,5 +1,8 @@
 from decimal import Decimal, ROUND_HALF_UP
 from dataclasses import dataclass
+import hashlib
+import copy
+from django.utils import timezone
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -304,6 +307,27 @@ class Payroll(BaseAuditModel):
         "Thực lãnh (Net)", max_digits=18, decimal_places=2, default=0, db_column="NetIncome"
     )
 
+    calculated_at = models.DateTimeField(null=True, blank=True, editable=False)
+    calculation_signature = models.CharField(max_length=64, blank=True, editable=False)
+
+    INPUT_FIELDS = ("basic_salary", "allowance", "overtime_amount", "overtime_tax_exempt_amount",
+                    "insurance_salary", "deduction_amount")
+    RESULT_FIELDS = ("standard_working_days", "actual_working_days", "gross_income",
+                     "insurance_amount", "tax_amount", "net_income")
+
+    def input_signature(self):
+        values = [str(Decimal(str(getattr(self, name) or 0)).normalize()) for name in self.INPUT_FIELDS]
+        values.extend([str(self.employee_id), str(self.payroll_period_id)])
+        return hashlib.sha256("|".join(values).encode()).hexdigest()
+
+    def validate_calculated(self, *, configuration=None):
+        if not self.calculated_at or self.calculation_signature != self.input_signature():
+            raise ValidationError("Có dòng lương chưa tính hoặc đã đổi đầu vào; hãy tính lương lại trước khi khóa.")
+        fresh = copy.copy(self)
+        fresh.calculate(configuration=configuration)
+        if any(getattr(fresh, name) != getattr(self, name) for name in self.RESULT_FIELDS):
+            raise ValidationError("Dữ liệu công/nhân sự/cấu hình lương đã thay đổi; hãy tính lương lại trước khi khóa.")
+
     class Meta:
         db_table = "tblPayroll"
         verbose_name = "Bảng lương"
@@ -463,6 +487,8 @@ class Payroll(BaseAuditModel):
 
         self.tax_amount = tax.quantize(Decimal("1"), rounding=ROUND_HALF_UP)
         self.net_income = self.gross_income - self.insurance_amount - self.tax_amount - self.deduction_amount
+        self.calculated_at = timezone.now()
+        self.calculation_signature = self.input_signature()
 
 
 class Payslip(BaseAuditModel):

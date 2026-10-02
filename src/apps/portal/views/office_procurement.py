@@ -328,36 +328,8 @@ def supply_request_issue(request, pk):
         messages.error(request, "Anh/chị không có quyền cấp phát VPP.")
         return redirect("portal:dashboard")
     try:
-        with transaction.atomic():
-            supply_request = get_object_or_404(
-                SupplyRequest.objects.select_for_update(), pk=pk, status="Approved"
-            )
-            lines = list(supply_request.items.select_related("item").select_for_update())
-            items_locked = {
-                item.pk: item
-                for item in SupplyItem.objects.select_for_update().filter(
-                    pk__in=[line.item_id for line in lines]
-                )
-            }
-            for line in lines:
-                item = items_locked[line.item_id]
-                to_issue = line.quantity_requested - line.quantity_issued
-                if to_issue > 0 and item.quantity_in_stock < to_issue:
-                    raise ValidationError(
-                        f"Không đủ tồn kho cho {item.item_name} (còn {item.quantity_in_stock}, cần {to_issue})."
-                    )
-            for line in lines:
-                item = items_locked[line.item_id]
-                to_issue = line.quantity_requested - line.quantity_issued
-                if to_issue <= 0:
-                    continue
-                item.quantity_in_stock -= to_issue
-                item.save(update_fields=["quantity_in_stock"])
-                line.quantity_issued = line.quantity_requested
-                line.save(update_fields=["quantity_issued"])
-            supply_request.status = "Issued"
-            supply_request.modified_by = request.user
-            supply_request.save(update_fields=["status", "modified_by"])
+        from apps.office.services import issue_supply_request
+        supply_request = issue_supply_request(pk, actor=request.user)
         notify(
             supply_request.employee, "office", "Đã cấp phát vật tư",
             f"Đề nghị {supply_request.request_no} đã được cấp phát.",
@@ -503,3 +475,4 @@ def procurement_request_mark_purchased(request, pk):
     except Exception as e:
         _friendly_error(request, e, "Không thể cập nhật đề nghị mua sắm.")
     return redirect("portal:procurement_request_list")
+

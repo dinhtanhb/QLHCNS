@@ -1,0 +1,75 @@
+name: Main regression and dependency checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DJANGO_SETTINGS_MODULE: config.settings
+      DB_ENGINE: django.db.backends.sqlite3
+      DEBUG: "False"
+      M365_STORAGE_ENABLED: "False"
+      ENABLE_HTTPS_ENFORCEMENT: "False"
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          submodules: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install pinned dependencies
+        run: python -m pip install -r requirements.txt pip-audit==2.9.0
+      - name: Dependency consistency and known vulnerabilities
+        run: |
+          python -m pip check
+          python -m pip_audit -r requirements.txt
+      - name: Framework and migration checks with disposable settings
+        run: |
+          export SECRET_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(64))')"
+          python src/manage.py check
+          python src/manage.py makemigrations --check --dry-run
+      - name: All regressions using disposable database and media
+        run: python ops/run_tests.py --backend sqlite
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          submodules: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm audit --audit-level=low
+      - run: npm run build:css
+  backup-command-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          submodules: false
+      - name: Backup scripts with mocked sqlcmd only
+        shell: pwsh
+        run: |
+          foreach ($kind in @("Full", "Log")) {
+            foreach ($scenario in @("Express", "Standard", "Failure")) {
+              & ./ops/backup/Test-BackupSafety.ps1 -Kind $kind -Scenario $scenario
+            }
+          }

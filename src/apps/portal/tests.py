@@ -194,6 +194,11 @@ class PortalSensitiveWorkflowTests(TestCase):
         )
         self.client.force_login(finance_user)
 
+        from apps.payroll.test_fixtures import create_calculation_rates
+        create_calculation_rates()
+        payroll.calculate()
+        payroll.save()
+
         # Suppress notifications in this test; only verify the transactional payslip issuance.
         with patch("apps.portal.views.finance.notify"), patch("apps.portal.views.finance.notify_with_email_draft"):
             response = self.client.post(reverse("portal:finance_payroll_lock", args=(period.pk,)))
@@ -1009,3 +1014,4 @@ class PortalSensitiveWorkflowTests(TestCase):
         self.assertContains(asset_page, "Thêm tài sản mới")
         self.assertContains(inventory_page, "Tạo đợt kiểm kê mới")
         self.assertContains(disposal_page, "Tạo đề nghị mới")
+

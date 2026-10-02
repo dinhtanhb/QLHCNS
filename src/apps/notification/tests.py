@@ -15,7 +15,7 @@ from apps.notification.models import Notification, NotificationEmailOutbox
 from apps.notification.services import notify_with_email_draft
 from apps.organization.models import Department, Organization, Position
 from apps.security.models import Role, User
-from apps.payroll.models import PayrollPeriod
+from apps.payroll.models import PayrollPeriod, Payroll
 
 
 class NotificationEmailOutboxTests(TestCase):
@@ -138,6 +138,14 @@ class NotificationEmailOutboxTests(TestCase):
             payroll_month=11, payroll_year=2026,
             start_date=date(2026, 11, 1), end_date=date(2026, 11, 30), status="Open",
         )
+        from apps.payroll.test_fixtures import create_calculation_rates
+        create_calculation_rates()
+        payroll = Payroll.objects.create(payroll_period=period, employee=finance_employee, basic_salary=10000000)
+        payroll.calculate()
+        payroll.save()
+        director_payroll = Payroll.objects.create(payroll_period=period, employee=director_employee, basic_salary=10000000)
+        director_payroll.calculate()
+        director_payroll.save()
         self.client.force_login(finance_user)
 
         response = self.client.post(reverse("portal:finance_payroll_lock", args=(period.pk,)))
@@ -221,3 +229,4 @@ class NotificationEmailOutboxTests(TestCase):
         self.assertEqual(parsed.scheme, "mailto")
         self.assertEqual(params["subject"], ["Tiêu đề có dấu & ký tự"])
         self.assertEqual(params["body"], ["Nội dung có dấu\nDòng thứ hai"])
+

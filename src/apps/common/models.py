@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 
 
@@ -10,7 +10,18 @@ class SoftDeleteQuerySet(models.QuerySet):
         if user is not None:
             values["deleted_by"] = user
             values["modified_by"] = user
-        count = self.filter(is_deleted=False).update(**values)
+        if hasattr(self.model, "before_soft_delete") or hasattr(self.model, "after_soft_delete"):
+            with transaction.atomic(using=self.db):
+                count = 0
+                for obj in self.filter(is_deleted=False).order_by("pk"):
+                    if hasattr(obj, "before_soft_delete"):
+                        obj.before_soft_delete()
+                    changed = self.filter(pk=obj.pk, is_deleted=False).update(**values)
+                    if changed and hasattr(obj, "after_soft_delete"):
+                        obj.after_soft_delete()
+                    count += changed
+        else:
+            count = self.filter(is_deleted=False).update(**values)
         return count, {self.model._meta.label: count}
 
     def hard_delete(self):
@@ -21,7 +32,17 @@ class SoftDeleteQuerySet(models.QuerySet):
         values = {"is_deleted": False, "deleted_date": None, "deleted_by": None, "modified_date": now}
         if user is not None:
             values["modified_by"] = user
-        count = self.filter(is_deleted=True).update(**values)
+        with transaction.atomic(using=self.db):
+            count = 0
+            for obj in self.filter(is_deleted=True).order_by("pk"):
+                if hasattr(obj, "before_restore"):
+                    obj.before_restore()
+                obj.is_deleted = False
+                obj.full_clean(exclude=["created_by", "modified_by", "deleted_by", "deleted_date"])
+                changed = self.filter(pk=obj.pk, is_deleted=True).update(**values)
+                if changed and hasattr(obj, "after_restore"):
+                    obj.after_restore()
+                count += changed
         return count
 
 
@@ -68,3 +89,4 @@ class BaseAuditModel(models.Model):
 
     class Meta:
         abstract = True
+

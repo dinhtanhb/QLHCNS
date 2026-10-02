@@ -305,6 +305,6 @@ def profile_change_request_attachment(request, pk):
         item = get_object_or_404(EmployeeProfileChangeRequest, pk=pk)
     if not item.attachment:
         raise Http404
-    response = FileResponse(item.attachment.open("rb"), as_attachment=True, filename=item.attachment.name.rsplit("/", 1)[-1])
-    response["X-Content-Type-Options"] = "nosniff"
-    return response
+    from apps.security.files import protected_file_response
+    return protected_file_response(request, item.attachment, obj=item)
+

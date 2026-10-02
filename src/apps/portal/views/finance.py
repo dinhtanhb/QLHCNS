@@ -64,6 +64,7 @@ def payslip_pdf(request, pk):
             "payroll__payroll_period",
         ),
         pk=pk, payroll__employee=employee, payroll__payroll_period__status="Locked",
+        payroll__is_deleted=False, payroll__payroll_period__is_deleted=False, payroll__employee__is_deleted=False,
     )
     from apps.payroll.payslip_pdf import render_payslip_pdf
     response = HttpResponse(render_payslip_pdf(payslip), content_type="application/pdf")
@@ -115,7 +116,7 @@ def finance_period_create(request):
 
 def _employees_payable_for_period(period):
     """Return active employees and inactive employees whose last day falls in this period."""
-    return Employee.objects.filter(
+    return Employee.objects.filter(join_date__lte=period.end_date).filter(
         models.Q(employment_status="Active")
         | models.Q(leave_date__gte=period.start_date, leave_date__lte=period.end_date)
     )
@@ -156,6 +157,9 @@ def finance_payroll_generate(request, pk):
     with transaction.atomic():
         # Khóa bản ghi kỳ lương để 2 người bấm cùng lúc không tạo trùng
         period = PayrollPeriod.objects.select_for_update().get(pk=pk)
+        if period.status != "Open":
+            messages.error(request, "Kỳ lương đã khóa — không thể tạo thêm dòng.")
+            return redirect("portal:finance_payroll_run", pk=pk)
         existing_emp_ids = set(
             Payroll.objects.filter(payroll_period=period).values_list("employee_id", flat=True)
         )
@@ -210,6 +214,11 @@ def finance_payroll_calculate_all(request, pk):
     for payroll in Payroll.objects.filter(payroll_period=period).select_related("employee"):
         try:
             with transaction.atomic():
+                locked_period = PayrollPeriod.objects.select_for_update().get(pk=period.pk)
+                if locked_period.status != "Open":
+                    raise ValidationError("Kỳ lương đã khóa — không thể tính lại.")
+                payroll = Payroll.objects.select_for_update().select_related("employee").get(pk=payroll.pk)
+                payroll.payroll_period = locked_period
                 payroll.calculate(configuration=configuration)
                 payroll.modified_by = request.user
                 payroll.save()
@@ -235,6 +244,22 @@ def finance_payroll_lock(request, pk):
         return redirect("portal:finance_period_list")
     with transaction.atomic():
         period = get_object_or_404(PayrollPeriod.objects.select_for_update(), pk=pk)
+        if period.status == "Locked":
+            messages.info(request, "Kỳ lương đã khóa.")
+            return redirect("portal:finance_period_list")
+        payrolls = list(Payroll.objects.select_for_update().filter(payroll_period=period).select_related("employee"))
+        try:
+            if not payrolls:
+                raise ValidationError("Kỳ lương chưa có dòng bảng lương.")
+            if _employees_payable_for_period(period).exclude(pk__in=[row.employee_id for row in payrolls]).exists():
+                raise ValidationError("Kỳ lương còn thiếu nhân viên cần trả lương; hãy tạo đủ dòng trước khi khóa.")
+            configuration = Payroll.load_calculation_configuration(period.start_date)
+            for payroll in payrolls:
+                payroll.payroll_period = period
+                payroll.validate_calculated(configuration=configuration)
+        except ValidationError as error:
+            _friendly_error(request, error, "Không thể khóa kỳ lương.")
+            return redirect("portal:finance_payroll_run", pk=pk)
         period.status = "Locked"
         period.modified_by = request.user
         period.save()
@@ -314,15 +339,21 @@ def finance_payroll_update_line(request, pk):
         messages.error(request, "Kỳ lương đã khóa, không thể sửa.")
         return redirect("portal:finance_payroll_run", pk=payroll.payroll_period_id)
     try:
-        payroll.allowance = request.POST.get("allowance") or 0
-        payroll.overtime_amount = request.POST.get("overtime_amount") or 0
-        payroll.overtime_tax_exempt_amount = request.POST.get("overtime_tax_exempt_amount") or 0
-        payroll.insurance_salary = request.POST.get("insurance_salary") or 0
-        payroll.deduction_amount = request.POST.get("deduction_amount") or 0
-        payroll.modified_by = request.user
-        payroll.full_clean(exclude=["created_by", "modified_by"])
-        payroll.save()
-        messages.success(request, "Đã cập nhật, cần bấm \"Tính lương lại\" để cập nhật số liệu.")
+        with transaction.atomic():
+            period = PayrollPeriod.objects.select_for_update().get(pk=payroll.payroll_period_id)
+            if period.status != "Open":
+                raise ValidationError("Kỳ lương đã khóa, không thể sửa.")
+            payroll = Payroll.objects.select_for_update().get(pk=pk)
+            payroll.payroll_period = period
+            payroll.allowance = request.POST.get("allowance") or 0
+            payroll.overtime_amount = request.POST.get("overtime_amount") or 0
+            payroll.overtime_tax_exempt_amount = request.POST.get("overtime_tax_exempt_amount") or 0
+            payroll.insurance_salary = request.POST.get("insurance_salary") or 0
+            payroll.deduction_amount = request.POST.get("deduction_amount") or 0
+            payroll.modified_by = request.user
+            payroll.full_clean(exclude=["created_by", "modified_by"])
+            payroll.save()
+            messages.success(request, "Đã cập nhật, cần bấm \"Tính lương lại\" để cập nhật số liệu.")
     except Exception as e:
         _friendly_error(request, e, "Không thể lưu.")
     return redirect("portal:finance_payroll_run", pk=payroll.payroll_period_id)
@@ -435,3 +466,4 @@ def finance_dependent_list(request):
         "dependents": EmployeeDependent.objects.filter(is_active=True).select_related("employee"),
         "employees": Employee.objects.filter(employment_status="Active"),
     })
+

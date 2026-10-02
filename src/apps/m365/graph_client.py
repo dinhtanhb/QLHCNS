@@ -34,6 +34,11 @@ CHUNK_SIZE = 5 * 1024 * 1024  # phải là bội số của 320 KiB theo yêu c�
 
 class GraphAPIError(Exception):
     """Lỗi khi gọi Microsoft Graph API (mạng, xác thực, hoặc phản hồi lỗi)."""
+    def __init__(self, message, *, status_code=None, retry_after=None):
+        super().__init__(message)
+        self.status_code = status_code
+        self.retry_after = retry_after
+
 
 
 class GraphNotConfigured(GraphAPIError):
@@ -98,8 +103,7 @@ class GraphClient:
             result: dict = app.acquire_token_for_client(scopes=GRAPH_SCOPE)  # type: ignore[assignment]
             if "access_token" not in result:
                 raise GraphAPIError(
-                    "Không lấy được access token từ Azure AD: "
-                    f"{result.get('error')}: {result.get('error_description')}"
+                    "Không xác thực được với dịch vụ lưu trữ.", status_code=503
                 )
 
             self._token = result["access_token"]
@@ -114,13 +118,14 @@ class GraphClient:
 
     def _request(self, method, url, **kwargs):
         headers = kwargs.pop("headers", {}) or {}
-        response = requests.request(
-            method, url, headers=self._headers(headers), timeout=60, **kwargs
-        )
+        try:
+            response = requests.request(method, url, headers=self._headers(headers), timeout=60, **kwargs)
+        except requests.RequestException as error:
+            raise GraphAPIError("Không kết nối được dịch vụ lưu trữ.", status_code=503) from error
         if response.status_code >= 400:
-            raise GraphAPIError(
-                f"Graph API {method} {url} lỗi {response.status_code}: {response.text[:500]}"
-            )
+            retry_after = response.headers.get("Retry-After")
+            raise GraphAPIError(f"Graph trả lỗi HTTP {response.status_code}.",
+                status_code=response.status_code, retry_after=retry_after)
         return response
 
     # ------------------------------------------------------------------
@@ -188,8 +193,7 @@ class GraphClient:
                     },
                 )
             except GraphAPIError as exc:
-                message = str(exc)
-                if "nameAlreadyExists" not in message and "409" not in message:
+                if exc.status_code != 409:
                     raise
             parent = posixpath.join(parent, folder_name)
 
@@ -235,7 +239,8 @@ class GraphClient:
             if last_response.status_code >= 400:
                 raise GraphAPIError(
                     f"Upload session lỗi tại byte {start}: "
-                    f"{last_response.status_code}: {last_response.text[:500]}"
+                    f"HTTP {last_response.status_code}.", status_code=last_response.status_code,
+                    retry_after=last_response.headers.get("Retry-After")
                 )
             start = end + 1
 
@@ -250,7 +255,7 @@ class GraphClient:
         try:
             self._request("DELETE", url)
         except GraphAPIError as exc:
-            if "404" not in str(exc):
+            if exc.status_code != 404:
                 raise
 
     def exists(self, library_name: str, path: str) -> bool:
@@ -259,7 +264,7 @@ class GraphClient:
             self._request("GET", url)
             return True
         except GraphAPIError as exc:
-            if "404" in str(exc):
+            if exc.status_code == 404:
                 return False
             raise
 
@@ -281,3 +286,4 @@ def get_graph_client() -> GraphClient:
     if _default_client is None:
         _default_client = GraphClient()
     return _default_client
+

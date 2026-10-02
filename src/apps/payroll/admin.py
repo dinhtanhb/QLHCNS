@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.db import transaction
+from django.core.exceptions import ValidationError
 from apps.common.admin import BaseAuditAdmin
 from .models import (
     EmployeeSalary, InsuranceRateConfig, PersonalIncomeTaxBracket,
@@ -31,6 +33,7 @@ class PayrollPeriodAdmin(PayrollBaseAdmin):
     đã thiết kế ở `finance_payroll_lock`."""
     list_display = ("payroll_month", "payroll_year", "start_date", "end_date", "status")
     list_filter = ("status", "payroll_year")
+    readonly_fields = ("status",)  # Khóa kỳ qua luồng kiểm tra đầy đủ trên Portal.
 
     def has_change_permission(self, request, obj=None):
         if not super().has_change_permission(request, obj):
@@ -64,6 +67,14 @@ class PayrollAdmin(BaseAuditAdmin):
     view_roles = PAYROLL_ROLES
     edit_roles = PAYROLL_ROLES
 
+    def save_model(self, request, obj, form, change):
+        with transaction.atomic():
+            period = PayrollPeriod.objects.select_for_update().get(pk=obj.payroll_period_id)
+            if period.status != "Open":
+                raise ValidationError("Kỳ lương đã khóa — không thể ghi bảng lương.")
+            obj.payroll_period = period
+            super().save_model(request, obj, form, change)
+
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("employee", "payroll_period")
 
@@ -91,7 +102,7 @@ class PayrollAdmin(BaseAuditAdmin):
         """C2 (đã sửa): action trước đây không kiểm tra `payroll_period.status`, nên tính lại được
         lương của kỳ đã khóa ngay từ danh sách Admin — bỏ qua hoàn toàn nút "Khóa kỳ lương" ở portal.
         Giờ bỏ qua (và báo rõ) các dòng thuộc kỳ Locked, chỉ tính các dòng thuộc kỳ còn Open;
-        SUPER_ADMIN vẫn được phép tính lại kỳ Locked (thao tác khẩn cấp có kiểm soát)."""
+        Kỳ đã khóa không được tính lại qua action."""
         count, skipped, errors = 0, 0, []
         configurations = {}
         queryset = queryset.select_related("employee", "payroll_period")
@@ -100,12 +111,16 @@ class PayrollAdmin(BaseAuditAdmin):
                 skipped += 1
                 continue
             try:
-                period_date = payroll.payroll_period.start_date
-                if period_date not in configurations:
-                    configurations[period_date] = Payroll.load_calculation_configuration(period_date)
-                payroll.calculate(configuration=configurations[period_date])
-                payroll.modified_by = request.user
-                payroll.save()
+                with transaction.atomic():
+                    period = PayrollPeriod.objects.select_for_update().get(pk=payroll.payroll_period_id)
+                    if period.status != "Open":
+                        raise ValidationError("Kỳ lương đã khóa.")
+                    payroll = Payroll.objects.select_for_update().select_related("employee").get(pk=payroll.pk)
+                    payroll.payroll_period = period
+                    configuration = Payroll.load_calculation_configuration(period.start_date)
+                    payroll.calculate(configuration=configuration)
+                    payroll.modified_by = request.user
+                    payroll.save()
                 count += 1
             except Exception as e:
                 errors.append(f"{payroll}: {e}")
@@ -118,3 +133,4 @@ class PayrollAdmin(BaseAuditAdmin):
             )
         for err in errors:
             self.message_user(request, err, level="ERROR")
+

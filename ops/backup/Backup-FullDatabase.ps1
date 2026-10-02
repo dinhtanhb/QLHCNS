@@ -15,12 +15,13 @@
 
 param(
     [string]$ServerInstance = "localhost\SQLEXPRESS",
-    [string]$Database       = "qlhcns",
+    [Parameter(Mandatory = $true)][ValidatePattern("^[A-Za-z0-9_-]+$")][string]$Database,
     [string]$BackupRoot     = "D:\QLHCNS\Backups"
 )
 
 $ErrorActionPreference = "Stop"
-$timestamp   = Get-Date -Format "yyyyMMdd_HHmmss"
+. (Join-Path $PSScriptRoot "Backup-Common.ps1")
+$timestamp   = Get-Date -Format "yyyyMMdd_HHmmss_fffffff"
 $dailyDir    = Join-Path $BackupRoot "Daily"
 $weeklyDir   = Join-Path $BackupRoot "Weekly"
 $monthlyDir  = Join-Path $BackupRoot "Monthly"
@@ -37,22 +38,13 @@ function Write-BackupLog {
     Write-Output $line
 }
 
-$backupFile = Join-Path $dailyDir "qlhcns_full_$timestamp.bak"
+$backupFile = Join-Path $dailyDir "${Database}_full_$timestamp.bak"
 
 try {
     Write-BackupLog "Bắt đầu FULL backup -> $backupFile"
 
-    $sql = @"
-BACKUP DATABASE [$Database]
-TO DISK = N'$backupFile'
-WITH INIT, COMPRESSION, CHECKSUM, STATS = 10,
-     NAME = N'$Database Full Backup $timestamp';
-"@
-
-    sqlcmd -S $ServerInstance -E -Q $sql
-    if ($LASTEXITCODE -ne 0) {
-        throw "sqlcmd trả về mã lỗi $LASTEXITCODE khi backup."
-    }
+    $hash = New-VerifiedDatabaseBackup -ServerInstance $ServerInstance -Database $Database -BackupFile $backupFile -Kind DATABASE
+    Write-BackupLog "Backup checksum/VERIFYONLY đạt; SHA256=$hash"
 
     Write-BackupLog "FULL backup thành công: $backupFile"
 
@@ -60,6 +52,7 @@ WITH INIT, COMPRESSION, CHECKSUM, STATS = 10,
     if ((Get-Date).DayOfWeek -eq [System.DayOfWeek]::Sunday) {
         $weeklyFile = Join-Path $weeklyDir (Split-Path $backupFile -Leaf)
         Copy-Item -Path $backupFile -Destination $weeklyFile -Force
+        if ((Get-FileHash -LiteralPath $weeklyFile -Algorithm SHA256).Hash -ne $hash) { throw "Weekly copy checksum mismatch." }
         Write-BackupLog "Đã sao chép sang Weekly: $weeklyFile"
     }
 
@@ -67,19 +60,20 @@ WITH INIT, COMPRESSION, CHECKSUM, STATS = 10,
     if ((Get-Date).Day -eq 1) {
         $monthlyFile = Join-Path $monthlyDir (Split-Path $backupFile -Leaf)
         Copy-Item -Path $backupFile -Destination $monthlyFile -Force
+        if ((Get-FileHash -LiteralPath $monthlyFile -Algorithm SHA256).Hash -ne $hash) { throw "Monthly copy checksum mismatch." }
         Write-BackupLog "Đã sao chép sang Monthly: $monthlyFile"
     }
 
     # -- Dọn theo retention: Daily 30 ngày / Weekly 12 tuần / Monthly 12 tháng
-    Get-ChildItem $dailyDir -Filter "*.bak" |
+    Get-ChildItem $dailyDir -Filter "${Database}_full_*.bak" |
         Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-30) } |
         ForEach-Object { Write-BackupLog "Xoá Daily quá hạn: $($_.Name)"; Remove-Item $_.FullName -Force }
 
-    Get-ChildItem $weeklyDir -Filter "*.bak" |
+    Get-ChildItem $weeklyDir -Filter "${Database}_full_*.bak" |
         Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-84) } |
         ForEach-Object { Write-BackupLog "Xoá Weekly quá hạn: $($_.Name)"; Remove-Item $_.FullName -Force }
 
-    Get-ChildItem $monthlyDir -Filter "*.bak" |
+    Get-ChildItem $monthlyDir -Filter "${Database}_full_*.bak" |
         Where-Object { $_.LastWriteTime -lt (Get-Date).AddMonths(-12) } |
         ForEach-Object { Write-BackupLog "Xoá Monthly quá hạn: $($_.Name)"; Remove-Item $_.FullName -Force }
 

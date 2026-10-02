@@ -1,4 +1,5 @@
 import datetime
+from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.views.decorators.http import require_POST
 from apps.security.permissions import has_permission
@@ -327,9 +328,12 @@ def timesheet_entry_create(request):
     except Exception as e:
         _friendly_error(request, e, "Không thể lưu.")
 
-    if work_date:
-        y, m, _ = work_date.split("-")
-        return redirect(f"/portal/timesheet/?year={y}&month={int(m)}")
+    try:
+        parsed_date = datetime.date.fromisoformat(work_date)
+    except (ValueError, TypeError):
+        parsed_date = None
+    if parsed_date:
+        return redirect(f"/portal/timesheet/?year={parsed_date.year}&month={parsed_date.month}")
     return redirect("portal:timesheet_month")
 
 
@@ -339,8 +343,11 @@ def timesheet_entry_delete(request, pk):
     employee = _get_employee(request)
     entry = get_object_or_404(TimesheetEntry, pk=pk, employee=employee)
     year, month = entry.work_date.year, entry.work_date.month
-    entry.delete()
-    messages.success(request, "Đã xóa dòng chấm công.")
+    try:
+        entry.delete(user=request.user)
+        messages.success(request, "Đã xóa dòng chấm công.")
+    except Exception as error:
+        _friendly_error(request, error, "Không thể xóa dòng chấm công.")
     return redirect(f"/portal/timesheet/?year={year}&month={month}")
 
 
@@ -356,32 +363,26 @@ def timesheet_summary_update(request):
         messages.error(request, "Tài khoản chưa gắn hồ sơ nhân viên.")
         return redirect("portal:timesheet_month")
 
-    summary, _ = MonthlyAttendanceSummary.objects.get_or_create(employee=employee, year=year, month=month)
-
-    # I3 (đã sửa): số liệu này ảnh hưởng trực tiếp yêu cầu giờ công và lương (xem comment ở
-    # model MonthlyAttendanceSummary) nên một khi đã được quản lý duyệt, nhân viên không được
-    # tự sửa lại nữa — phải liên hệ quản lý để quản lý sửa/duyệt lại.
-    if summary.status == MonthlyAttendanceSummary.STATUS_APPROVED:
-        messages.error(
-            request,
-            "Bảng tổng hợp chấm công tháng này đã được duyệt, không thể tự sửa. "
-            "Liên hệ quản lý nếu cần điều chỉnh.",
-        )
-        return redirect(f"/portal/timesheet/?year={year}&month={month}")
-
     try:
-        summary.sick_days = request.POST.get("sick_days") or 0
-        summary.maternity_days = request.POST.get("maternity_days") or 0
-        summary.compensatory_days = request.POST.get("compensatory_days") or 0
-        summary.annual_leave_days = request.POST.get("annual_leave_days") or 0
-        summary.unpaid_leave_days = request.POST.get("unpaid_leave_days") or 0
-        summary.status = MonthlyAttendanceSummary.STATUS_PENDING
-        summary.approved_by = None
-        summary.approved_at = None
-        summary.modified_by = request.user
-        summary.full_clean()
-        summary.save()
-        messages.success(request, "Đã cập nhật số ngày nghỉ trong tháng — đang chờ quản lý duyệt.")
+        with transaction.atomic():
+            from apps.payroll.models import PayrollPeriod
+            list(PayrollPeriod.objects.select_for_update().filter(payroll_year=year, payroll_month=month).values_list("pk", flat=True))
+            list(Employee.objects.select_for_update().filter(pk=employee.pk).values_list("pk", flat=True))
+            summary, _ = MonthlyAttendanceSummary.objects.select_for_update().get_or_create(employee=employee, year=year, month=month)
+            if summary.status != "Pending":
+                raise ValidationError("Bảng tổng hợp đã duyệt; không thể tự sửa hoặc mở lại.")
+            summary.sick_days = request.POST.get("sick_days") or 0
+            summary.maternity_days = request.POST.get("maternity_days") or 0
+            summary.compensatory_days = request.POST.get("compensatory_days") or 0
+            summary.annual_leave_days = request.POST.get("annual_leave_days") or 0
+            summary.unpaid_leave_days = request.POST.get("unpaid_leave_days") or 0
+            summary.status = MonthlyAttendanceSummary.STATUS_PENDING
+            summary.approved_by = None
+            summary.approved_at = None
+            summary.modified_by = request.user
+            summary.full_clean()
+            summary.save()
+            messages.success(request, "Đã cập nhật số ngày nghỉ trong tháng — đang chờ quản lý duyệt.")
     except Exception as e:
         _friendly_error(request, e, "Không thể lưu.")
 
@@ -428,6 +429,10 @@ def timesheet_summary_approve(request, pk):
         return redirect("portal:dashboard")
 
     with transaction.atomic():
+        target = get_object_or_404(_approvable_timesheet_summaries(request), pk=pk)
+        from apps.payroll.models import PayrollPeriod
+        list(PayrollPeriod.objects.select_for_update().filter(payroll_year=target.year, payroll_month=target.month).values_list("pk", flat=True))
+        list(Employee.objects.select_for_update().filter(pk=target.employee_id).values_list("pk", flat=True))
         summary = get_object_or_404(
             _approvable_timesheet_summaries(request).select_for_update(), pk=pk,
         )
@@ -485,3 +490,4 @@ def holiday_delete(request, pk):
     holiday.save(update_fields=["is_active"])
     messages.success(request, "Đã xóa ngày lễ.")
     return redirect("portal:holiday_list")
+

@@ -38,8 +38,8 @@ D:\QLHCNS\Backups\TransactionLog
    để chắc chắn không lỗi trước khi đăng ký lịch tự động:
 ```powershell
    cd D:\QLHCNS\ops\backup
-   .\Backup-FullDatabase.ps1
-   .\Backup-TransactionLog.ps1
+   .\Backup-FullDatabase.ps1 -Database "TEN_DATABASE_DA_XAC_NHAN"
+   .\Backup-TransactionLog.ps1 -Database "TEN_DATABASE_DA_XAC_NHAN"
 ```
    Kiểm tra file `.bak` / `.trn` đã xuất hiện đúng thư mục, và file
    `D:\QLHCNS\Backups\backup-log.txt` có dòng "HOÀN TẤT" / "thành công".
@@ -64,7 +64,7 @@ D:\QLHCNS\Backups\TransactionLog
    Start time: **22:00:00** → OK.
 4. Tab **Actions** → New → Action: **Start a program**:
    - Program/script: `powershell.exe`
-   - Add arguments: `-NoProfile -ExecutionPolicy Bypass -File "D:\QLHCNS\ops\backup\Backup-FullDatabase.ps1"`
+   - Add arguments: `-NoProfile -ExecutionPolicy Bypass -File "D:\QLHCNS\ops\backup\Backup-FullDatabase.ps1" -Database "TEN_DATABASE_DA_XAC_NHAN"`
 5. Tab **Conditions**: bỏ tích "Start the task only if the computer is on
    AC power" nếu đây là server luôn cắm điện.
 6. OK → nhập mật khẩu tài khoản Windows đang dùng để chạy Task khi được hỏi.
@@ -75,7 +75,7 @@ Lặp lại các bước trên với khác biệt:
 - Name = `QLHCNS - Transaction Log Backup`
 - Trigger: **Daily**, Start time bất kỳ (ví dụ 00:05) → tích **"Repeat task
   every"** → chọn **1 hour** → **for a duration of** → **Indefinitely**.
-- Action arguments: `-NoProfile -ExecutionPolicy Bypass -File "D:\QLHCNS\ops\backup\Backup-TransactionLog.ps1"`
+- Action arguments: `-NoProfile -ExecutionPolicy Bypass -File "D:\QLHCNS\ops\backup\Backup-TransactionLog.ps1" -Database "TEN_DATABASE_DA_XAC_NHAN"`
 
 ### Kiểm tra Task đã chạy đúng
 
@@ -136,3 +136,15 @@ Sau vài lần diễn tập, so sánh với mục tiêu:
 - **RTO 8 giờ**: cần đo thực tế qua diễn tập ở trên. Nếu vượt 8 giờ, cần
   xem lại: máy restore có đủ mạnh không, dung lượng backup có quá lớn
   không, hay cần restore song song nhiều file log cùng lúc.
+
+## Kiểm soát lỗi và bảo vệ dữ liệu
+
+`-Database` bắt buộc: thay TEN_DATABASE_DA_XAC_NHAN bằng đúng tên DB đã đối chiếu; Setup-RecoveryModel.sql vẫn là ví dụ qlhcns, phải sửa tên/path nếu cấu hình khác. Script dùng Windows Authentication, sqlcmd `-b -V 11 -x`, nhận diện edition và NO_COMPRESSION cho Express. Chỉ ghi thành công/dọn retention sau khi backup mới, RESTORE VERIFYONLY WITH CHECKSUM và kiểm tra file đạt; Weekly/Monthly kiểm tra SHA256 sau copy. Dọn theo prefix đúng database. Log backup giữ tối thiểu 30 ngày, đồng bộ cửa sổ Daily; DBA cần giữ toàn bộ chuỗi phù hợp mốc phục hồi yêu cầu. Không chạy đồng thời các job cùng database.
+
+Chạy trên máy SQL Server hoặc dùng UNC mà cả service SQL và tài khoản Task đọc/ghi được. Tệp .sha256 là metadata kiểm chứng, bảo quản cùng backup. VERIFYONLY kiểm tra khả năng đọc/cấu trúc; không thay thế khôi phục database và đối chiếu nghiệp vụ. Nếu backup/verify/copy lỗi, mã thoát khác 0 và chưa dọn bản cũ. Theo dõi History/log và cảnh báo job thất bại.
+
+Backup chứa dữ liệu nhân sự/lương: IT phải đặt ACL, mã hóa ổ/backup và sao chép sang đích độc lập được bảo vệ. SharePoint/local uploads cần kế hoạch sao lưu/khôi phục riêng cùng database; script SQL không sao lưu media. Chưa được phép ghi nhận restore drill đạt khi chưa chạy thật tại SIT.
+
+## Kiểm thử script không dùng database
+
+PowerShell 7: `./Test-BackupSafety.ps1 -Kind Full -Scenario Express`. Chạy cả Full/Log và Express/Standard/Failure (6 ca). Harness giả lập sqlcmd và chỉ tạo/xóa tệp ở thư mục tạm riêng; kiểm tra cú pháp, ngưỡng compression theo edition, failure exit, giữ bản cũ khi lỗi và không xóa backup của DB khác. CI chạy cùng harness. Kết quả này không xác nhận SQL Server, Windows ACL hoặc restore thật.

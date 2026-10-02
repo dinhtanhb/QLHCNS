@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.core.exceptions import ValidationError, PermissionDenied
+from .services import issue_supply_request
 from apps.common.admin import BaseAuditAdmin
 from .models import (
     IncomingDocument, OutgoingDocument, MeetingRoom, Vehicle,
@@ -70,18 +72,25 @@ class SupplyRequestAdmin(BaseAuditAdmin):
     edit_roles = OFFICE_ROLES
     actions = ["approve_and_issue"]
 
-    @admin.action(description="✅ Duyệt & cấp phát (trừ kho)")
+    def has_change_permission(self, request, obj=None):
+        if obj is not None and obj.status == "Issued":
+            return False
+        return super().has_change_permission(request, obj)
+
+    def get_readonly_fields(self, request, obj=None):
+        return ("status",) if obj is None or obj.status != "Approved" else ("status",)
+
+    @admin.action(description="Duyệt & cấp phát (trừ kho)", permissions=["change"])
     def approve_and_issue(self, request, queryset):
+        if not self.has_change_permission(request):
+            raise PermissionDenied
         count = 0
-        for supply_request in queryset.filter(status="Pending"):
-            for line in supply_request.items.all():
-                line.item.quantity_in_stock -= line.quantity_requested
-                line.item.save(update_fields=["quantity_in_stock"])
-                line.quantity_issued = line.quantity_requested
-                line.save(update_fields=["quantity_issued"])
-            supply_request.status = "Issued"
-            supply_request.save()
-            count += 1
+        for pk in queryset.filter(status="Pending").values_list("pk", flat=True):
+            try:
+                issue_supply_request(pk, actor=request.user, approve_first=True)
+                count += 1
+            except ValidationError as error:
+                self.message_user(request, "; ".join(error.messages), level="ERROR")
         self.message_user(request, f"Đã duyệt & cấp phát {count} đề nghị.")
 
 

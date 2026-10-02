@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 from apps.common.models import BaseAuditModel
 from apps.common.uploads import upload_to_incoming_docs, upload_to_outgoing_docs, validate_upload
@@ -182,10 +183,11 @@ class SupplyItem(BaseAuditModel):
     item_code = models.CharField("Mã vật tư", max_length=50, unique=True, db_column="ItemCode")
     item_name = models.CharField("Tên vật tư", max_length=200, db_column="ItemName")
     unit = models.CharField("Đơn vị tính", max_length=30, default="Cái", db_column="Unit")
-    quantity_in_stock = models.IntegerField("Số lượng tồn kho", default=0, db_column="QuantityInStock")
+    quantity_in_stock = models.IntegerField("Số lượng tồn kho", default=0, db_column="QuantityInStock", validators=[MinValueValidator(0)])
     min_stock_alert = models.IntegerField("Mức cảnh báo tồn tối thiểu", default=5, db_column="MinStockAlert")
 
     class Meta:
+        constraints = [models.CheckConstraint(condition=models.Q(quantity_in_stock__gte=0), name="CK_SupplyItem_Stock_Nonnegative")]
         db_table = "tblSupplyItem"
         verbose_name = "Vật tư văn phòng"
         verbose_name_plural = "Vật tư văn phòng"
@@ -215,10 +217,14 @@ class SupplyRequest(BaseAuditModel):
 class SupplyRequestItem(BaseAuditModel):
     supply_request = models.ForeignKey(SupplyRequest, on_delete=models.CASCADE, db_column="SupplyRequestID", related_name="items")
     item = models.ForeignKey(SupplyItem, verbose_name="Vật tư", on_delete=models.PROTECT, db_column="ItemID")
-    quantity_requested = models.IntegerField("Số lượng đề nghị", default=1, db_column="QuantityRequested")
-    quantity_issued = models.IntegerField("Số lượng đã cấp", default=0, db_column="QuantityIssued")
+    quantity_requested = models.IntegerField("Số lượng đề nghị", default=1, db_column="QuantityRequested", validators=[MinValueValidator(1)])
+    quantity_issued = models.IntegerField("Số lượng đã cấp", default=0, db_column="QuantityIssued", validators=[MinValueValidator(0)])
 
     class Meta:
+        constraints = [
+            models.CheckConstraint(condition=models.Q(quantity_requested__gte=1), name="CK_SupplyLine_Requested_Positive"),
+            models.CheckConstraint(condition=models.Q(quantity_issued__gte=0) & models.Q(quantity_issued__lte=models.F("quantity_requested")), name="CK_SupplyLine_Issued_Range"),
+        ]
         db_table = "tblSupplyRequestItem"
         verbose_name = "Hạng mục vật tư"
         verbose_name_plural = "Hạng mục vật tư"

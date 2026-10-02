@@ -59,12 +59,27 @@ class TimesheetEntryAdmin(BaseAuditAdmin):
     view_roles = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER", "DEPT_MANAGER")
     edit_roles = ("SUPER_ADMIN", "HR_MANAGER")  # nhân viên nhập qua Portal, Admin chỉ để HR sửa khi cần
 
+    def scope_queryset(self, request, qs):
+        return AttendanceAdmin.scope_queryset(self, request, qs)
+
 @admin.register(MonthlyAttendanceSummary)
 class MonthlyAttendanceSummaryAdmin(BaseAuditAdmin):
     list_display = ("employee", "year", "month", "sick_days", "maternity_days", "compensatory_days", "annual_leave_days", "unpaid_leave_days")
     search_fields = ("employee__full_name", "employee__employee_code")
     view_roles = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER")
     edit_roles = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER")
+
+    readonly_fields = ("status", "approved_by", "approved_at")
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None and obj.status == "Approved":
+            return False
+        return super().has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None and obj.status == "Approved":
+            return False
+        return super().has_delete_permission(request, obj)
 
 @admin.register(ProjectTimeAllocation)
 class ProjectTimeAllocationAdmin(BaseAuditAdmin):

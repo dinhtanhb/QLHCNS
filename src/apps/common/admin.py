@@ -1,6 +1,7 @@
 from django.contrib import admin
-from django.core.exceptions import PermissionDenied
-from django.db import transaction
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.db import transaction, IntegrityError
+from django.http import HttpResponseRedirect
 
 
 class RoleBasedAdminMixin:
@@ -42,11 +43,17 @@ class RoleBasedAdminMixin:
             return True
         return self._role_code(request) in self.edit_roles
 
+    def _object_in_scope(self, request, obj):
+        if obj is None or request.user.is_superuser:
+            return True
+        manager = getattr(self.model, "all_objects", self.model._default_manager)
+        return self.scope_queryset(request, manager.filter(pk=obj.pk)).exists()
+
     def has_change_permission(self, request, obj=None):
-        return self.has_add_permission(request)
+        return self.has_add_permission(request) and self._object_in_scope(request, obj)
 
     def has_delete_permission(self, request, obj=None):
-        return self.has_add_permission(request)
+        return self.has_add_permission(request) and self._object_in_scope(request, obj)
 
     # ---- Giới hạn dữ liệu nhìn thấy (vd: Trưởng phòng chỉ thấy phòng mình) ----
     def get_queryset(self, request):
@@ -74,6 +81,15 @@ class BaseAuditAdmin(RoleBasedAdminMixin, admin.ModelAdmin):
     change_list_template = "admin/common/audit_change_list.html"
     actions = ("soft_delete_selected", "restore_selected")
 
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        try:
+            return super().changeform_view(request, object_id, form_url, extra_context)
+        except ValidationError as error:
+            self.message_user(request, "; ".join(error.messages), level="ERROR")
+        except IntegrityError:
+            self.message_user(request, "Dữ liệu đã thay đổi hoặc vi phạm ràng buộc. Tải lại và kiểm tra trước khi lưu.", level="ERROR")
+        return HttpResponseRedirect(request.path)
+
     def get_actions(self, request):
         actions = super().get_actions(request)
         for name, description in (
@@ -91,20 +107,28 @@ class BaseAuditAdmin(RoleBasedAdminMixin, admin.ModelAdmin):
 
     @admin.action(description="Xóa mềm các bản ghi đã chọn", permissions=['delete'])
     def soft_delete_selected(self, request, queryset):
-        with transaction.atomic():
-            objects = list(queryset.select_for_update())
-            if not self.has_delete_permission(request) or any(not self.has_delete_permission(request, obj) for obj in objects):
-                raise PermissionDenied
-            count, _ = queryset.delete(user=request.user)
+        try:
+            with transaction.atomic():
+                objects = list(queryset)
+                if not self.has_delete_permission(request) or any(not self.has_delete_permission(request, obj) for obj in objects):
+                    raise PermissionDenied
+                count, _ = queryset.delete(user=request.user)
+        except ValidationError as error:
+            self.message_user(request, "; ".join(error.messages), level="ERROR")
+            return
         self.message_user(request, f"Đã chuyển {count} bản ghi vào danh sách đã xóa mềm.")
 
     @admin.action(description="Khôi phục các bản ghi đã chọn", permissions=['delete'])
     def restore_selected(self, request, queryset):
-        with transaction.atomic():
-            objects = list(queryset.select_for_update())
-            if not self.has_delete_permission(request) or any(not self.has_delete_permission(request, obj) for obj in objects):
-                raise PermissionDenied
-            count = queryset.restore(user=request.user)
+        try:
+            with transaction.atomic():
+                objects = list(queryset)
+                if not self.has_delete_permission(request) or any(not self.has_delete_permission(request, obj) for obj in objects):
+                    raise PermissionDenied
+                count = queryset.restore(user=request.user)
+        except ValidationError as error:
+            self.message_user(request, "; ".join(error.messages), level="ERROR")
+            return
         self.message_user(request, f"Đã khôi phục {count} bản ghi.")
 
     def delete_model(self, request, obj):
@@ -117,6 +141,19 @@ class BaseAuditAdmin(RoleBasedAdminMixin, admin.ModelAdmin):
         if obj is not None and obj.is_deleted:
             return False
         return super().has_change_permission(request, obj)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if self._role_code(request) == "DEPT_MANAGER" and not request.user.is_superuser:
+            employee = getattr(request.user, "employee", None)
+            departments = employee.managed_departments.values_list("pk", flat=True) if employee else []
+            related = db_field.remote_field.model
+            qs = kwargs.get("queryset", related._default_manager.all())
+            if related._meta.label_lower == "organization.department":
+                kwargs["queryset"] = qs.filter(pk__in=departments)
+                kwargs["required"] = True
+            elif related._meta.label_lower == "hrm.employee":
+                kwargs["queryset"] = qs.filter(department_id__in=departments)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
         if not change:

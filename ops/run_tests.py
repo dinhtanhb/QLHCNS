@@ -20,6 +20,7 @@ def main():
     sys.path.insert(0, str(root / 'src'))
     os.environ.update(
         DJANGO_SETTINGS_MODULE='config.settings',
+        APP_ENV='test',  # Test HTTPS/storage isolation must not inherit production guards.
         SECRET_KEY=secrets.token_urlsafe(64),
         DEBUG='False',
         M365_STORAGE_ENABLED='False',
@@ -72,3 +73,4 @@ def main():
 
 if __name__ == '__main__':
     raise SystemExit(main())
+

@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.db import transaction
+from django.core.exceptions import ValidationError
 from apps.common.admin import BaseAuditAdmin
 from .models import LeaveType, LeaveRequest, LeaveApproval
 from .models import LeaveBalance
@@ -34,43 +36,48 @@ class LeaveRequestAdmin(LeaveScopeMixin, BaseAuditAdmin):
     view_roles = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER", "DEPT_MANAGER", "DIRECTOR")
     edit_roles = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER", "DEPT_MANAGER")
 
-    @admin.action(description="✅ Duyệt các đơn đã chọn")
-    def approve_selected(self, request, queryset):
-        role_code = self._role_code(request)
-        if not request.user.is_superuser and role_code not in ("HR_MANAGER", "DEPT_MANAGER", "DIRECTOR"):
-            self.message_user(request, "Vai trò của anh/chị không có quyền duyệt đơn.", level="ERROR")
-            return
-        count = 0
-        for leave_request in queryset.filter(status="Pending"):
-            leave_request.status = "Approved"
-            leave_request.save()
-            LeaveApproval.objects.create(
-                leave_request=leave_request,
-                approver=request.user.employee,
-                decision="Approved",
-                created_by=request.user,
-            )
-            count += 1
-        self.message_user(request, f"Đã duyệt {count} đơn.")
+    readonly_fields = ("status", "total_days")
 
-    @admin.action(description="❌ Từ chối các đơn đã chọn")
-    def reject_selected(self, request, queryset):
-        role_code = self._role_code(request)
-        if not request.user.is_superuser and role_code not in ("HR_MANAGER", "DEPT_MANAGER", "DIRECTOR"):
-            self.message_user(request, "Vai trò của anh/chị không có quyền duyệt đơn.", level="ERROR")
+    def has_change_permission(self, request, obj=None):
+        if obj is not None and obj.status != "Pending":
+            return False
+        return super().has_change_permission(request, obj)
+
+    def has_approve_permission(self, request):
+        return self.has_view_permission(request) and bool(getattr(request.user, "employee_id", None)) and (
+            request.user.is_superuser or self._role_code(request) in ("HR_MANAGER", "DEPT_MANAGER", "DIRECTOR"))
+
+    def _decide(self, request, queryset, decision):
+        if not self.has_approve_permission(request):
+            self.message_user(request, "Anh/chị không có quyền duyệt đơn.", level="ERROR")
             return
         count = 0
-        for leave_request in queryset.filter(status="Pending"):
-            leave_request.status = "Rejected"
-            leave_request.save()
-            LeaveApproval.objects.create(
-                leave_request=leave_request,
-                approver=request.user.employee,
-                decision="Rejected",
-                created_by=request.user,
-            )
-            count += 1
-        self.message_user(request, f"Đã từ chối {count} đơn.")
+        for pk in self.scope_queryset(request, queryset).values_list("pk", flat=True):
+            try:
+                with transaction.atomic():
+                    leave_request = self.scope_queryset(request, LeaveRequest.objects.select_for_update()).filter(pk=pk, status="Pending").first()
+                    if leave_request is None:
+                        continue
+                    if self._role_code(request) == "DEPT_MANAGER" and leave_request.employee_id == request.user.employee_id:
+                        raise ValidationError("Không thể tự duyệt đơn nghỉ phép của chính mình.")
+                    leave_request.status = decision
+                    leave_request.modified_by = request.user
+                    leave_request.full_clean()
+                    leave_request.save()
+                    LeaveApproval.objects.create(leave_request=leave_request, approver=request.user.employee,
+                        decision=decision, created_by=request.user)
+                count += 1
+            except ValidationError as error:
+                self.message_user(request, "; ".join(error.messages), level="ERROR")
+        self.message_user(request, f"Đã xử lý {count} đơn.")
+
+    @admin.action(description="Duyệt các đơn đã chọn", permissions=["approve"])
+    def approve_selected(self, request, queryset):
+        self._decide(request, queryset, "Approved")
+
+    @admin.action(description="Từ chối các đơn đã chọn", permissions=["approve"])
+    def reject_selected(self, request, queryset):
+        self._decide(request, queryset, "Rejected")
 
 
 @admin.register(LeaveApproval)

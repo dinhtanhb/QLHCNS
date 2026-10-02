@@ -441,9 +441,8 @@ def activity_proposal_file(request, package_id, field_name):
         raise PermissionDenied
     content_type, _ = mimetypes.guess_type(stored_file.name)
     filename = stored_file.name.rsplit("/", 1)[-1]
-    return FileResponse(
-        stored_file.open("rb"),
+    from apps.security.files import protected_file_response
+    return protected_file_response(request, stored_file, obj=package,
         as_attachment=(not field_name.endswith("_pdf") or request.GET.get("download") == "1"),
-        filename=filename,
-        content_type=content_type or "application/octet-stream",
-    )
+        content_type=content_type or "application/octet-stream")
+

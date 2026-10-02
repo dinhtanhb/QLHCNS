@@ -153,6 +153,8 @@ MIDDLEWARE = [
 # Persistent database handler protects both portal and Django admin logins.
 AUTHENTICATION_BACKENDS = ['axes.backends.AxesStandaloneBackend', 'django.contrib.auth.backends.ModelBackend']
 AXES_FAILURE_LIMIT = 5
+AXES_IP_FAILURE_LIMIT = max(AXES_FAILURE_LIMIT, int(os.getenv("AXES_IP_FAILURE_LIMIT", "50")))
+AXES_HANDLER = "apps.security.login_handler.SharedIPAxesHandler"
 AXES_COOLOFF_TIME = timedelta(minutes=30)
 AXES_LOCKOUT_PARAMETERS = ['username', 'ip_address']
 AXES_RESET_ON_SUCCESS = True

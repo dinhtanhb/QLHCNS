@@ -75,6 +75,8 @@ class AssetAllocation(BaseAuditModel):
         super().clean()
         if not self.asset_id or not self.assigned_date:
             return
+        if self.return_date and self.return_date < self.assigned_date:
+            raise ValidationError({"return_date": "Ngày thu hồi không được trước ngày cấp phát."})
         overlapping = AssetAllocation.objects.filter(
             asset_id=self.asset_id,
             assigned_date__lte=self.return_date or calendar_date.max,
@@ -104,11 +106,11 @@ class AssetAllocation(BaseAuditModel):
             was_active = False
             if self.pk:
                 previous = AssetAllocation.all_objects.using(using).filter(pk=self.pk).values(
-                    "asset_id", "return_date"
+                    "asset_id", "return_date", "is_deleted"
                 ).first()
                 if previous:
                     previous_asset_id = previous["asset_id"]
-                    was_active = previous["return_date"] is None
+                    was_active = previous["return_date"] is None and not previous["is_deleted"]
             asset_ids = sorted({asset_id for asset_id in (previous_asset_id, self.asset_id) if asset_id})
             locked_assets = {
                 asset.pk: asset for asset in Asset.objects.using(using).select_for_update().filter(pk__in=asset_ids).order_by("pk")
@@ -143,6 +145,36 @@ class AssetAllocation(BaseAuditModel):
                 if current_asset.status != target_status:
                     current_asset.status = target_status
                     current_asset.save(update_fields=["status"], using=using)
+
+    def _lock_asset(self):
+        return Asset.objects.using(self._state.db).select_for_update().get(pk=self.asset_id)
+
+    def before_soft_delete(self):
+        self._lock_asset()
+
+    def _sync_asset_status(self):
+        active = AssetAllocation.objects.using(self._state.db).filter(asset_id=self.asset_id, return_date__isnull=True).exists()
+        asset = self._lock_asset()
+        if active:
+            if asset.status not in ("Available", "InUse"):
+                raise ValidationError("Tài sản không sẵn sàng để khôi phục cấp phát.")
+            status = "InUse"
+        elif asset.status == "InUse":
+            status = "Available"
+        else:
+            return
+        Asset.objects.using(self._state.db).filter(pk=asset.pk).update(status=status, modified_date=timezone.now())
+
+    def after_soft_delete(self):
+        self._sync_asset_status()
+
+    def before_restore(self):
+        asset = self._lock_asset()
+        if self.return_date is None and asset.status != "Available":
+            raise ValidationError("Tài sản đang dùng/bảo trì/đã thanh lý; không thể khôi phục cấp phát cũ.")
+
+    def after_restore(self):
+        self._sync_asset_status()
 
     def __str__(self):
         return f"{self.asset} - {self.employee}"
@@ -355,3 +387,4 @@ class AssetDisposalMinutes(BaseAuditModel):
 
     def __str__(self):
         return f"Biên bản thanh lý - {self.item.asset}"
+

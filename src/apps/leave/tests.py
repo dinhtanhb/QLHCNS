@@ -103,18 +103,15 @@ class StandardWorkingDaysTests(LeaveTestBase):
 class CompensatoryDaysTests(LeaveTestBase):
 
     def _log(self, day, hours, approved=True):
+        # Build each fixture through a pending month, then approve its complete entries.
+        summary, _ = MonthlyAttendanceSummary.objects.get_or_create(employee=self.employee,
+            year=day.year, month=day.month)
+        if summary.status == "Approved":
+            summary.status = "Pending"
+            summary.save()
         TimesheetEntry.objects.create(employee=self.employee, work_date=day, hours=D(str(hours)))
-        MonthlyAttendanceSummary.objects.get_or_create(
-            employee=self.employee,
-            year=day.year,
-            month=day.month,
-            defaults={
-                "status": (
-                    MonthlyAttendanceSummary.STATUS_APPROVED
-                    if approved else MonthlyAttendanceSummary.STATUS_PENDING
-                ),
-            },
-        )
+        summary.status = "Approved" if approved else "Pending"
+        summary.save()
 
     def test_lam_ca_ngay_thu_bay_duoc_mot_ngay_bu(self):
         self._log(date(2025, 6, 14), 8)  # Thứ 7
@@ -305,3 +302,4 @@ class LeaveRequestValidationTests(LeaveTestBase):
         req = self._new(date(2025, 6, 23), date(2025, 6, 24), leave_type=self.compensatory)
         req.full_clean()
         self.assertEqual(req.total_days, D("2"))
+
