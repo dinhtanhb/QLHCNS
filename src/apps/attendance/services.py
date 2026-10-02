@@ -32,11 +32,12 @@ def holiday_dates(from_date, to_date):
     )
 
 
-def standard_working_days(from_date, to_date):
+def standard_working_days(from_date, to_date, *, holidays=None):
     """Số ngày công chuẩn trong khoảng: chỉ đếm Thứ 2–Thứ 6 và bỏ qua ngày lễ."""
     if not from_date or not to_date or to_date < from_date:
         return Decimal("0")
-    holidays = holiday_dates(from_date, to_date)
+    if holidays is None:
+        holidays = holiday_dates(from_date, to_date)
     count = 0
     day = from_date
     while day <= to_date:

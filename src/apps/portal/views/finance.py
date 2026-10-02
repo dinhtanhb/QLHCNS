@@ -206,10 +206,11 @@ def finance_payroll_calculate_all(request, pk):
     # trong cùng vòng lặp sẽ ăn theo lỗi TransactionManagementError, dù bản thân
     # họ tính hoàn toàn đúng. Dùng savepoint riêng từng người để cô lập lỗi.
     count, errors = 0, []
+    configuration = Payroll.load_calculation_configuration(period.start_date)
     for payroll in Payroll.objects.filter(payroll_period=period).select_related("employee"):
         try:
             with transaction.atomic():
-                payroll.calculate()
+                payroll.calculate(configuration=configuration)
                 payroll.modified_by = request.user
                 payroll.save()
             count += 1

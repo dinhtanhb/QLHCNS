@@ -557,6 +557,12 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
         self.own_activity.start_date = today
         self.own_activity.end_date = today
         self.own_activity.save()
+        # Both fixtures are in the managed department. Keep the second outside
+        # the tested month so this assertion is independent of the real date.
+        other_month = date(today.year + 1, today.month, 1)
+        self.other_activity.start_date = other_month
+        self.other_activity.end_date = other_month
+        self.other_activity.save()
         other_department = Department.objects.create(
             department_code="DEP-ACT-OTHER",
             department_name="Phòng khác",

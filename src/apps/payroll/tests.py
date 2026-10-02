@@ -114,6 +114,26 @@ class PayrollTestBase(TestCase):
 # ------------------------------------------------------------------
 # 1. BẢO HIỂM
 # ------------------------------------------------------------------
+class PayrollConfigurationReuseTests(PayrollTestBase):
+    def test_reusing_configuration_preserves_results_and_avoids_reloading(self):
+        reference = self.make_payroll(basic_salary=D('20000000'), allowance=D('2000000'))
+        with self.assertNumQueries(4):
+            configuration = Payroll.load_calculation_configuration(self.period.start_date)
+        for _ in range(2):
+            payroll = Payroll(payroll_period=self.period, employee=self.employee,
+                              basic_salary=D('20000000'), allowance=D('2000000'))
+            with self.assertNumQueries(4):
+                payroll.calculate(configuration=configuration)
+            for field in ('gross_income', 'insurance_amount', 'tax_amount', 'net_income', 'actual_working_days'):
+                self.assertEqual(getattr(payroll, field), getattr(reference, field))
+
+    def test_configuration_from_different_period_is_rejected(self):
+        configuration = Payroll.load_calculation_configuration(date(2024, 12, 1))
+        payroll = Payroll(payroll_period=self.period, employee=self.employee, basic_salary=D('20000000'))
+        with self.assertRaises(ValidationError):
+            payroll.calculate(configuration=configuration)
+
+
 class InsuranceCalculationTests(PayrollTestBase):
 
     def test_bao_hiem_muc_luong_thong_thuong(self):

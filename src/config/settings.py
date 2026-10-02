@@ -177,7 +177,7 @@ else:
             "HOST": os.getenv("DB_HOST"),
             "PORT": os.getenv("DB_PORT", "1433"),
             "OPTIONS": {
-                "driver": "ODBC Driver 17 for SQL Server",
+                "driver": os.getenv("DB_DRIVER", "ODBC Driver 17 for SQL Server"),
                 "trusted_connection": DB_TRUSTED_CONNECTION,
             },
         }

@@ -17,6 +17,7 @@ from django.utils import timezone
 from apps.hrm.models import Employee
 from apps.task.models import Task, TaskComment
 from apps.kpi.models import EmployeeKPI, KPIPeriod, KPITemplate
+from apps.common.params import parse_int
 from .common import _friendly_error, _get_employee, _role_code
 
 
@@ -208,12 +209,7 @@ def kpi_my_list(request):
     })
 
 
-@login_required
-def kpi_score_list(request):
-    if not _can_score_kpi(request):
-        messages.error(request, "Anh/chị không có quyền chấm điểm KPI.")
-        return redirect("portal:dashboard")
-
+def _scorable_kpis(request):
     qs = EmployeeKPI.objects.select_related("employee", "kpi_template", "kpi_period")
     role_code = _role_code(request)
     if not request.user.is_superuser and role_code == "DEPT_MANAGER":
@@ -223,8 +219,17 @@ def kpi_score_list(request):
         else:
             dept_ids = employee.managed_departments.values_list("pk", flat=True)
             qs = qs.filter(employee__department_id__in=dept_ids)
+    return qs
 
-    period_id = request.GET.get("period")
+
+@login_required
+def kpi_score_list(request):
+    if not _can_score_kpi(request):
+        messages.error(request, "Anh/chị không có quyền chấm điểm KPI.")
+        return redirect("portal:dashboard")
+    qs = _scorable_kpis(request)
+
+    period_id = parse_int(request.GET.get("period"), None, min_value=1, max_value=2147483647)
     if period_id:
         qs = qs.filter(kpi_period_id=period_id)
 
@@ -242,10 +247,11 @@ def kpi_score_update(request, pk):
         messages.error(request, "Anh/chị không có quyền chấm điểm KPI.")
         return redirect("portal:dashboard")
 
-    result = get_object_or_404(EmployeeKPI, pk=pk)
+    result = get_object_or_404(_scorable_kpis(request), pk=pk)
     actual = request.POST.get("actual")
     try:
         result.actual = Decimal(actual) if actual not in (None, "") else None
+        result.full_clean()
         result.modified_by = request.user
         result.save()
         notify(
@@ -270,16 +276,18 @@ def kpi_assign_create(request):
 
     employee = _get_employee(request)
     role_code = _role_code(request)
-    if not request.user.is_superuser and role_code == "DEPT_MANAGER" and employee:
-        dept_ids = employee.managed_departments.values_list("pk", flat=True)
-        candidates = Employee.objects.filter(department_id__in=dept_ids)
+    if not request.user.is_superuser and role_code == "DEPT_MANAGER":
+        candidates = Employee.objects.filter(
+            department_id__in=employee.managed_departments.values_list("pk", flat=True)
+        ) if employee else Employee.objects.none()
     else:
         candidates = Employee.objects.all()
 
     if request.method == "POST":
+        target_employee = get_object_or_404(candidates, pk=parse_int(request.POST.get("employee"), None, min_value=1, max_value=2147483647))
         try:
             kpi_result = EmployeeKPI(
-                employee_id=request.POST.get("employee"),
+                employee=target_employee,
                 kpi_template_id=request.POST.get("kpi_template"),
                 kpi_period_id=request.POST.get("kpi_period"),
                 target=request.POST.get("target") or 0,
@@ -309,15 +317,33 @@ def notification_list(request):
     employee = _get_employee(request)
     items = []
     if employee:
-        items = Notification.objects.filter(employee=employee).prefetch_related(
+        items = Notification.objects.filter(employee=employee).order_by('-created_date', '-pk').prefetch_related(
             Prefetch(
                 "email_outbox_entries",
                 queryset=NotificationEmailOutbox.objects.filter(status__in=("Draft", "Sent")),
                 to_attr="email_drafts",
             )
         )
+    from .common import _paginated_context
+    return render(request, "portal/notification_list.html", _paginated_context(request, items, 'items'))
+
+
+@login_required
+@require_POST
+def notification_mark_read(request, pk):
+    notification = get_object_or_404(Notification, pk=pk, employee=_get_employee(request))
+    notification.is_read = True
+    notification.save(update_fields=['is_read'])
+    return redirect('portal:notification_list')
+
+
+@login_required
+@require_POST
+def notification_mark_all_read(request):
+    employee = _get_employee(request)
+    if employee:
         Notification.objects.filter(employee=employee, is_read=False).update(is_read=True)
-    return render(request, "portal/notification_list.html", {"items": items})
+    return redirect('portal:notification_list')
 
 
 @login_required

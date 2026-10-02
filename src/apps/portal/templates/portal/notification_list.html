@@ -2,6 +2,10 @@
 {% block title %}Thông báo{% endblock %}
 {% block content %}
 <h1 class="text-lg font-bold text-gray-900 mb-4">Thông báo của tôi</h1>
+<form method="post" action="{% url 'portal:notification_mark_all_read' %}" class="mb-4">
+    {% csrf_token %}
+    <button class="text-sm text-blue-700 underline" type="submit">Đánh dấu tất cả đã đọc</button>
+</form>
 <div class="space-y-3">
     {% for n in items %}
     <article class="bg-white rounded-xl shadow-sm border border-gray-200 px-5 py-4 {% if not n.is_read %}ring-1 ring-blue-100{% endif %}">
@@ -10,6 +14,11 @@
             <p class="text-gray-600 text-sm mt-1">{{ n.message }}</p>
             <p class="text-gray-400 text-xs mt-1">{{ n.created_date|date:"d/m/Y H:i" }}</p>
         </a>
+        {% if not n.is_read %}
+        <form method="post" action="{% url 'portal:notification_mark_read' n.pk %}" class="mt-2">
+            {% csrf_token %}<button class="text-sm text-blue-700 underline" type="submit">Đánh dấu đã đọc</button>
+        </form>
+        {% endif %}
         {% for draft in n.email_drafts %}
             {% if draft.status == "Draft" %}
             <div class="mt-3 pt-3 border-t border-gray-100 flex flex-wrap items-center gap-3">
@@ -33,4 +42,5 @@
     <p class="bg-white rounded-xl border border-gray-200 px-6 py-8 text-center text-gray-500">Không có thông báo nào.</p>
     {% endfor %}
 </div>
+{% include "portal/_pagination.html" %}
 {% endblock %}

@@ -1,3 +1,9 @@
+param(
+    [ValidateSet('configured', 'sqlite', 'sqlserver')]
+    [string]$Backend = 'configured',
+    [string[]]$Labels = @()
+)
+
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $sourceDirectory = Join-Path $repoRoot 'src'
 $managePy = Join-Path $sourceDirectory 'manage.py'
@@ -18,9 +24,11 @@ if (Test-Path -LiteralPath $venvPython -PathType Leaf) {
 }
 
 $scriptExitCode = 0
+$previousPythonEncoding = $env:PYTHONIOENCODING
 Push-Location -LiteralPath $sourceDirectory
 try {
-    $testOutput = & $pythonCommand manage.py test --verbosity 1 2>&1
+    $env:PYTHONIOENCODING = 'utf-8'
+    $testOutput = & $pythonCommand (Join-Path $PSScriptRoot 'run_tests.py') --backend $Backend @Labels 2>&1
     $pythonExitCode = $LASTEXITCODE
     foreach ($line in $testOutput) {
         if ($line -is [System.Management.Automation.ErrorRecord]) {
@@ -51,6 +59,7 @@ try {
         }
     }
 } finally {
+    $env:PYTHONIOENCODING = $previousPythonEncoding
     Pop-Location
 }
 

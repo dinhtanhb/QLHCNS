@@ -17,7 +17,7 @@ from apps.payroll.models import EmployeeSalary
 from django.utils import timezone
 from apps.hrm.models import Employee
 from apps.organization.models import Position
-from .common import _friendly_error, _get_employee, _role_code
+from .common import _friendly_error, _get_employee, _role_code, _paginated_context
 from .finance import _can_manage_finance, _day_before
 
 
@@ -47,7 +47,8 @@ def hr_employee_list(request):
     if q:
         employees = employees.filter(models.Q(full_name__icontains=q) | models.Q(employee_code__icontains=q))
     return render(request, "portal/hr_employee_list.html", {
-        "employees": employees, "q": q, "can_manage_hr": _can_manage_hr(request),
+        **_paginated_context(request, employees.order_by('full_name', 'pk'), 'employees'),
+        "q": q, "can_manage_hr": _can_manage_hr(request),
     })
 
 
@@ -114,8 +115,6 @@ def hr_employee_create(request):
     )
     initial = {field: request.GET.get(field, "") for field in initial_fields}
     if not initial.get("employee_code"):
-        initial["employee_code"] = _generate_next_employee_code()
-    if "employee_code" not in initial or not initial.get("employee_code"):
         initial["employee_code"] = _generate_next_employee_code()
     return render(request, "portal/hr_employee_form.html", {
         "employee": None, "initial": initial,

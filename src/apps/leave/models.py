@@ -12,18 +12,18 @@ ANNUAL_LEAVE_CODE = "AL"          # Phép năm
 COMPENSATORY_LEAVE_CODE = "CO"    # Nghỉ bù (do làm Thứ 7/Chủ nhật/ngày lễ)
 
 
-def leave_days_in_period(from_date, to_date):
+def leave_days_in_period(from_date, to_date, *, holidays=None):
     """Working days in an inclusive leave-date range, excluding weekends and holidays."""
     from apps.attendance.services import standard_working_days
-    return standard_working_days(from_date, to_date)
+    return standard_working_days(from_date, to_date, holidays=holidays)
 
 
-def leave_days_in_year(leave_request, year):
+def leave_days_in_year(leave_request, year, *, holidays=None):
     start = max(leave_request.from_date, _date(year, 1, 1))
     end = min(leave_request.to_date, _date(year, 12, 31))
     if end < start:
         return _Decimal("0")
-    return leave_days_in_period(start, end)
+    return leave_days_in_period(start, end, holidays=holidays)
 
 
 def leave_days_in_month(leave_request, year, month):

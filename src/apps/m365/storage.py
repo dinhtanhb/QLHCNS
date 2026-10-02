@@ -55,14 +55,9 @@ class SharePointStorage(Storage):
         return ContentFile(data, name=name)
 
     def exists(self, name):
-        try:
-            return self.client.exists(self.library_name, name)
-        except GraphAPIError:
-            # An toàn kiểu "thà báo trùng tên còn hơn ghi đè nhầm": nếu không
-            # chắc chắn tệp có tồn tại hay không (ví dụ lỗi mạng tạm thời),
-            # coi như CHƯA tồn tại để Django tự thêm hậu tố tránh trùng tên,
-            # tránh mất dữ liệu do ghi đè.
-            return False
+        # If lookup fails, abort the save. False can overwrite an existing file;
+        # True would make Django retry alternative names indefinitely.
+        return self.client.exists(self.library_name, name)
 
     def delete(self, name):
         self.client.delete_file(self.library_name, name)

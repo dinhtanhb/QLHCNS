@@ -132,7 +132,7 @@
             <td class="border border-gray-300 px-2 py-1.5" colspan="3">
                 <strong>
                 Tổng số giờ cần làm trong tháng: {{ base_days }} ngày
-                {% if summary.total_leave_days %}- {{ summary.total_leave_days }} ngày nghỉ{% endif %}
+                {% if approved_leave_total %}- {{ approved_leave_total }} ngày nghỉ đã duyệt{% endif %}
                 = {{ required_days|floatformat:1 }} ngày × {{ hours_per_day|floatformat:1 }}h
                 = {{ required_hours|floatformat:"-2" }}h
                 </strong>

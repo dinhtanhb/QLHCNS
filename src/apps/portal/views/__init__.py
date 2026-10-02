@@ -183,5 +183,7 @@ from .tasks_kpi import (
     kpi_score_update,
     kpi_assign_create,
     notification_list,
+    notification_mark_read,
+    notification_mark_all_read,
     notification_email_outbox_mark_sent,
 )

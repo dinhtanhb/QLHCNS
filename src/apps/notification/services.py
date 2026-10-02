@@ -5,6 +5,16 @@ from django.db import transaction
 from .models import Notification, NotificationEmailOutbox
 
 
+def notify_many(employees, notification_type, title, message, link=None, created_by=None):
+    """Create notices in batches without inserting once per employee."""
+    employee_ids = dict.fromkeys(employee.pk for employee in employees if employee)
+    return Notification.objects.bulk_create([
+        Notification(employee_id=pk, notification_type=notification_type, title=title,
+                     message=message, link=link or '', created_by=created_by)
+        for pk in employee_ids
+    ], batch_size=100)
+
+
 def notify(employee, notification_type, title, message, link=None, created_by=None):
     """Tạo 1 thông báo cho 1 nhân viên. Gọi hàm này ở bất kỳ đâu cần báo tin."""
     if not employee:

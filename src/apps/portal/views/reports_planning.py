@@ -6,12 +6,18 @@ from django.shortcuts import redirect, render
 from apps.notification.services import notify
 from decimal import Decimal
 from django.db.models import Sum
+from datetime import date
+from collections import defaultdict
+from django.db.models import DecimalField, ExpressionWrapper, F
+from django.utils.dateparse import parse_date
+from django.core.exceptions import ValidationError
 from apps.attendance.models import MonthlyAttendanceSummary, TimesheetEntry, WorkingCalendar
-from apps.leave.models import LeaveBalance
+from apps.leave.models import ANNUAL_LEAVE_CODE, LeaveBalance, LeaveRequest, leave_days_in_year
+from apps.attendance.services import holiday_dates
 from apps.hrm.models import EmployeePromotion, EmployeeTransfer
-from apps.planning.models import AnnualBudget, Event, HeadcountPlan, TrainingEnrollment
+from apps.planning.models import AnnualBudget, Event, HeadcountPlan, TrainingEnrollment, TrainingCourse, with_headcounts
 from apps.organization.models import Department
-from apps.procurement.models import ProcurementRequest
+from apps.procurement.models import ProcurementItem
 from apps.common.params import parse_int
 from django.utils import timezone
 from apps.hrm.models import Employee
@@ -47,27 +53,31 @@ def report_timesheet(request):
     working_calendar = WorkingCalendar.objects.filter(calendar_year=year).first()
     hours_per_day = working_calendar.working_hours_per_day if working_calendar else Decimal("8")
 
+    employees = list(Employee.objects.filter(employment_status="Active").select_related("department").order_by("department__department_name", "full_name"))
+    employee_ids = [employee.pk for employee in employees]
+    hours = dict(TimesheetEntry.objects.filter(employee_id__in=employee_ids, work_date__year=year, work_date__month=month).order_by().values(
+        'employee_id'
+    ).annotate(total=Sum('hours')).values_list('employee_id', 'total'))
+    summaries = {summary.employee_id: summary for summary in MonthlyAttendanceSummary.objects.filter(employee_id__in=employee_ids, year=year, month=month)}
+    balances = {balance.employee_id: balance for balance in LeaveBalance.objects.filter(employee_id__in=employee_ids, year=year)}
+    annual_holidays = holiday_dates(date(year, 1, 1), date(year, 12, 31))
+    annual_used = defaultdict(lambda: Decimal('0'))
+    for leave in LeaveRequest.objects.filter(employee_id__in=employee_ids, status='Approved',
+        leave_type__leave_type_code__iexact=ANNUAL_LEAVE_CODE, from_date__lte=date(year, 12, 31), to_date__gte=date(year, 1, 1)):
+        annual_used[leave.employee_id] += leave_days_in_year(leave, year, holidays=annual_holidays)
     rows = []
-    for emp in Employee.objects.filter(employment_status="Active").select_related("department").order_by("department__department_name", "full_name"):
-        total_hours = TimesheetEntry.objects.filter(
-            employee=emp, work_date__year=year, work_date__month=month
-        ).aggregate(total=Sum("hours"))["total"] or Decimal("0")
-
-        # I3 (đã sửa): báo cáo BCC cho quản lý chỉ tính theo số liệu đã được duyệt
-        # (status="Approved"), không dùng thẳng số nhân viên tự khai chưa ai xác nhận.
-        summary = MonthlyAttendanceSummary.objects.filter(
-            employee=emp, year=year, month=month, status=MonthlyAttendanceSummary.STATUS_APPROVED,
-        ).first()
+    for emp in employees:
+        total_hours = hours.get(emp.pk) or Decimal('0')
+        submitted_summary = summaries.get(emp.pk)
+        summary = submitted_summary if submitted_summary and submitted_summary.status == MonthlyAttendanceSummary.STATUS_APPROVED else None
         leave_total = summary.total_leave_days if summary else Decimal("0")
         required_hours = (Decimal(base_days) - leave_total) * hours_per_day
-        balance = LeaveBalance.objects.filter(employee=emp, year=year).first()
-        has_pending_summary = MonthlyAttendanceSummary.objects.filter(
-            employee=emp, year=year, month=month, status=MonthlyAttendanceSummary.STATUS_PENDING,
-        ).exists()
+        balance = balances.get(emp.pk)
+        has_pending_summary = bool(submitted_summary and submitted_summary.status == MonthlyAttendanceSummary.STATUS_PENDING)
         rows.append({
             "employee": emp, "total_hours": total_hours, "required_hours": required_hours,
             "diff_hours": total_hours - required_hours,
-            "leave_remaining": balance.remaining_days if balance else None,
+            "leave_remaining": balance.allocated_days + balance.carried_over_days - annual_used[emp.pk] if balance else None,
             "has_pending_summary": has_pending_summary,
         })
 
@@ -85,8 +95,14 @@ def report_personnel_changes(request):
 
     today = timezone.now().date()
     default_from = today.replace(day=1)
-    from_date = request.GET.get("from_date", default_from.isoformat())
-    to_date = request.GET.get("to_date", today.isoformat())
+    try:
+        from_date = parse_date(request.GET.get("from_date", default_from.isoformat()))
+        to_date = parse_date(request.GET.get("to_date", today.isoformat()))
+        if not from_date or not to_date or to_date < from_date:
+            raise ValueError
+    except ValueError:
+        messages.error(request, "Khoảng ngày không hợp lệ; đã dùng tháng hiện tại.")
+        from_date, to_date = default_from, today
 
     new_hires = Employee.objects.filter(join_date__range=[from_date, to_date]).select_related("department")
     departures = Employee.objects.filter(
@@ -102,7 +118,7 @@ def report_personnel_changes(request):
     return render(request, "portal/report_personnel_changes.html", {
         "new_hires": new_hires, "departures": departures,
         "transfers": transfers, "promotions": promotions,
-        "from_date": from_date, "to_date": to_date,
+        "from_date": from_date.isoformat(), "to_date": to_date.isoformat(),
     })
 
 
@@ -127,10 +143,17 @@ def event_list(request):
             messages.error(request, "Anh/chị không có quyền tạo sự kiện.")
             return redirect("portal:event_list")
         try:
+            raw_department = request.POST.get('department', '')
+            department_id = parse_int(raw_department, None, min_value=1, max_value=2147483647)
+            if raw_department and department_id is None:
+                raise ValidationError('Phòng ban không hợp lệ.')
+            if _role_code(request) == 'DEPT_MANAGER' and not request.user.is_superuser and department_id:
+                if not employee or not employee.managed_departments.filter(pk=department_id).exists():
+                    raise ValidationError('Chỉ được tạo sự kiện cho phòng ban thuộc phạm vi quản lý.')
             event = Event(
                 title=request.POST.get("title"),
                 event_type=request.POST.get("event_type", "Meeting"),
-                department_id=request.POST.get("department") or None,
+                department_id=department_id,
                 start_time=request.POST.get("start_time"),
                 end_time=request.POST.get("end_time"),
                 location=request.POST.get("location", ""),
@@ -175,7 +198,7 @@ def report_headcount(request):
         return redirect("portal:dashboard")
     today = timezone.now().date()
     year = parse_int(request.GET.get("year"), today.year, min_value=2000, max_value=2100)
-    plans = HeadcountPlan.objects.filter(year=year).select_related("department")
+    plans = with_headcounts(HeadcountPlan.objects.filter(year=year))
     return render(request, "portal/report_headcount.html", {
         "plans": plans, "year": year, "years": range(today.year - 1, today.year + 2),
     })
@@ -190,19 +213,19 @@ def report_budget(request):
     year = parse_int(request.GET.get("year"), today.year, min_value=2000, max_value=2100)
     budgets = AnnualBudget.objects.filter(year=year).select_related("department")
 
+    costs = ProcurementItem.objects.filter(procurement_request__is_deleted=False,
+        procurement_request__request_date__year=year, procurement_request__status__in=['Approved', 'Purchased'])
+    amount = ExpressionWrapper(F('estimated_cost') * F('quantity'), output_field=DecimalField(max_digits=24, decimal_places=2))
+    department_costs = dict(costs.order_by().values('procurement_request__department_id').annotate(total=Sum(amount)).values_list('procurement_request__department_id', 'total'))
+    company_procurement = sum((value or Decimal('0') for value in department_costs.values()), Decimal('0'))
+    training_cost = TrainingCourse.objects.filter(start_date__year=year).aggregate(total=Sum('cost'))['total'] or Decimal('0')
     rows = []
     for b in budgets:
         actual = Decimal("0")
         if b.category == "Procurement":
-            from apps.procurement.models import ProcurementRequest
-            qs = ProcurementRequest.objects.filter(request_date__year=year, status__in=["Approved", "Purchased"])
-            if b.department:
-                qs = qs.filter(department=b.department)
-            actual = sum((pr.total_estimated_cost for pr in qs), Decimal("0"))
+            actual = (department_costs.get(b.department_id) or Decimal('0')) if b.department_id else company_procurement
         elif b.category == "Training":
-            from apps.planning.models import TrainingCourse
-            qs = TrainingCourse.objects.filter(start_date__year=year)
-            actual = sum((c.cost for c in qs), Decimal("0"))
+            actual = training_cost
         rows.append({"budget": b, "actual": actual, "remaining": b.allocated_amount - actual})
 
     return render(request, "portal/report_budget.html", {"rows": rows, "year": year, "years": range(today.year - 1, today.year + 2)})

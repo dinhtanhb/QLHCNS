@@ -18,6 +18,7 @@ from apps.office.models import (
 from apps.procurement.models import ProcurementApproval, ProcurementItem, ProcurementRequest
 from django.utils import timezone
 from .common import _employees_with_permission, _friendly_error, _get_employee
+from apps.common.params import parse_int
 
 
 
@@ -232,7 +233,19 @@ def supply_request_create(request):
 
     item_ids = request.POST.getlist("item")
     quantities = request.POST.getlist("quantity")
-    valid_lines = [(i, q) for i, q in zip(item_ids, quantities) if i and q and int(q) > 0]
+    valid_lines = []
+    if len(item_ids) != len(quantities):
+        messages.error(request, "Danh sách vật tư và số lượng không khớp.")
+        return redirect("portal:supply_request_list")
+    for item_id, quantity in zip(item_ids, quantities):
+        if not item_id and not quantity:
+            continue
+        parsed_id = parse_int(item_id, None, min_value=1, max_value=2147483647)
+        parsed_quantity = parse_int(quantity, None, min_value=1, max_value=2147483647)
+        if parsed_id is None or parsed_quantity is None:
+            messages.error(request, "Vui lòng chọn vật tư và nhập số lượng nguyên dương hợp lệ.")
+            return redirect("portal:supply_request_list")
+        valid_lines.append((parsed_id, parsed_quantity))
 
     if not valid_lines:
         messages.error(request, "Vui lòng chọn ít nhất 1 vật tư với số lượng > 0.")

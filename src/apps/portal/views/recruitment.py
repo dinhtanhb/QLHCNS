@@ -4,13 +4,14 @@ from apps.security.permissions import has_permission
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
+from django.http import HttpResponseForbidden
 from apps.notification.services import notify
 from apps.organization.models import Department
 from apps.recruitment.models import Candidate, Interview, Offer
 from apps.hrm.models import Employee
 from apps.recruitment.models import RecruitmentRequest
 from apps.organization.models import Position
-from .common import _friendly_error, _get_employee, _role_code
+from .common import _friendly_error, _get_employee, _role_code, _paginated_context
 from .hr import _can_manage_hr
 
 
@@ -115,8 +116,13 @@ def recruitment_approve(request, pk):
 
 @login_required
 def hr_candidate_list(request):
+    if not _can_manage_hr(request):
+        return HttpResponseForbidden("Bạn không có quyền xem hồ sơ ứng viên.")
     candidates = Candidate.objects.all().order_by("-created_date")
-    return render(request, "portal/hr_candidate_list.html", {"candidates": candidates, "can_manage_hr": _can_manage_hr(request)})
+    return render(request, "portal/hr_candidate_list.html", {
+        **_paginated_context(request, candidates.order_by('-created_date', '-pk'), 'candidates'),
+        "can_manage_hr": _can_manage_hr(request),
+    })
 
 
 @login_required
@@ -146,6 +152,8 @@ def hr_candidate_create(request):
 
 @login_required
 def hr_candidate_detail(request, pk):
+    if not _can_manage_hr(request):
+        return HttpResponseForbidden("Bạn không có quyền xem hồ sơ ứng viên.")
     candidate = get_object_or_404(Candidate, pk=pk)
     return render(request, "portal/hr_candidate_detail.html", {
         "candidate": candidate, "can_manage_hr": _can_manage_hr(request),

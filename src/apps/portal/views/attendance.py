@@ -268,7 +268,11 @@ def timesheet_month(request):
     base_days = _weekday_count(year, month) - _holiday_weekday_count(year, month)
     working_calendar = WorkingCalendar.objects.filter(calendar_year=year).first()
     hours_per_day = working_calendar.working_hours_per_day if working_calendar else Decimal("8")
-    leave_total = summary.total_leave_days if summary else Decimal("0")
+    leave_total = (
+        summary.total_leave_days
+        if summary and summary.status == MonthlyAttendanceSummary.STATUS_APPROVED
+        else Decimal("0")
+    )
     required_days = Decimal(base_days) - leave_total
     required_hours = required_days * hours_per_day
 
@@ -290,6 +294,7 @@ def timesheet_month(request):
         "total_hours": total_hours,
         "base_days": base_days, "hours_per_day": hours_per_day,
         "required_days": required_days, "required_hours": required_hours,
+        "approved_leave_total": leave_total,
         "allocations": allocations, "diff_hours": diff_hours,
         "summary": summary, "balance": balance,
         "projects": Project.objects.filter(is_active=True),

@@ -15,12 +15,14 @@ def _paginate(request, queryset, per_page=20, param="page"):
     Trả về đối tượng Page để dùng thẳng trong template (has_next, has_previous,
     number, paginator.num_pages...).
     """
-    paginator = Paginator(queryset, per_page)
-    page_number = request.GET.get(param) or 1
-    try:
-        return paginator.page(page_number)
-    except Exception:
-        return paginator.page(1)
+    return Paginator(queryset, per_page).get_page(request.GET.get(param) or 1)
+
+
+def _paginated_context(request, queryset, name):
+    page = _paginate(request, queryset)
+    filters = request.GET.copy()
+    filters.pop('page', None)
+    return {name: page, 'page_obj': page, 'pagination_query': filters.urlencode()}
 
 
 def _friendly_error(request, exc, user_message, log_context=""):

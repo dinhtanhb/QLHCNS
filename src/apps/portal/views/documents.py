@@ -1,16 +1,18 @@
 from django.db import models, transaction
+from datetime import date
+from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_POST
 from apps.security.permissions import has_permission
 from apps.document.models import DispatchBook, DispatchTracking, OfficialDispatch
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
-from apps.notification.services import notify, notify_with_email_draft
+from apps.notification.services import notify, notify_many, notify_with_email_draft
 from apps.organization.models import Department
 from apps.hrm.models import Employee
 from apps.document.models import Document, DocumentApproval
 from .attendance import _can_approve
-from .common import _friendly_error, _get_employee, _role_code
+from .common import _friendly_error, _get_employee, _role_code, _paginated_context
 
 
 
@@ -85,8 +87,8 @@ def document_approve(request, pk):
             )
 
     if document.status == "Approved":
-        for emp in Employee.objects.filter(employment_status="Active"):
-            notify(emp, "document", "Tài liệu mới ban hành", document.document_name, link="/portal/documents/")
+        notify_many(Employee.objects.filter(employment_status="Active"), "document",
+                    "Tài liệu mới ban hành", document.document_name, link="/portal/documents/")
 
     label = "Đã ban hành" if decision == "Approved" else "Đã từ chối"
     messages.success(request, f"{label} tài liệu {document.document_no}.")
@@ -132,7 +134,7 @@ def dispatch_list(request):
         )
 
     return render(request, "portal/dispatch_list.html", {
-        "dispatches": qs,
+        **_paginated_context(request, qs.order_by('-issue_date', '-pk'), 'dispatches'),
         "selected_type": dispatch_type or "",
         "selected_status": status or "",
         "search_query": search or "",
@@ -215,53 +217,61 @@ def dispatch_create(request):
 
     if request.method == "POST":
         try:
-            dispatch_type = request.POST.get("dispatch_type")
-            issue_date = request.POST.get("issue_date")
-            year = int(issue_date[:4])
+            with transaction.atomic():
+                dispatch_type = request.POST.get("dispatch_type")
+                issue_date = request.POST.get("issue_date")
+                if dispatch_type not in dict(OfficialDispatch.DISPATCH_TYPE_CHOICES):
+                    raise ValidationError("Loại công văn không hợp lệ.")
+                try:
+                    issue_date = date.fromisoformat(issue_date or "")
+                except ValueError:
+                    raise ValidationError("Ngày ban hành phải là ngày hợp lệ (YYYY-MM-DD).")
+                year = issue_date.year
+                book_type = "Internal" if dispatch_type == "InternalDirective" else dispatch_type
 
-            book_names = {
-                "Incoming": "Sổ công văn đến", "Outgoing": "Sổ công văn đi", "InternalDirective": "Sổ văn bản nội bộ",
-            }
-            book, _ = DispatchBook.objects.get_or_create(
-                book_type=dispatch_type, year=year,
-                defaults={
-                    "book_code": f"{dispatch_type}-{year}",
-                    "book_name": f"{book_names.get(dispatch_type)} {year}",
-                    "created_by": request.user,
-                },
-            )
-            book.current_number += 1
-            book.save(update_fields=["current_number"])
-
-            dispatch = OfficialDispatch(
-                dispatch_type=dispatch_type, dispatch_book=book,
-                dispatch_no=request.POST.get("dispatch_no"),
-                original_doc_no=request.POST.get("original_doc_no", ""),
-                title=request.POST.get("title"),
-                issuing_organization=request.POST.get("issuing_organization"),
-                issue_date=issue_date,
-                received_or_sent_date=request.POST.get("received_or_sent_date"),
-                urgency_level=request.POST.get("urgency_level", "Normal"),
-                security_level=request.POST.get("security_level", "Normal"),
-                department_id=request.POST.get("department") or None,
-                assigned_to_id=request.POST.get("assigned_to") or None,
-                signer_id=request.POST.get("signer") or None,
-                due_date=request.POST.get("due_date") or None,
-                attachment=request.FILES.get("attachment"),
-                created_by=request.user,
-            )
-            dispatch.full_clean()
-            dispatch.save()
-            DispatchTracking.objects.create(
-                dispatch=dispatch, actor=employee, action_type="Vào sổ",
-                comment="Tiếp nhận/Phát hành công văn.", created_by=request.user,
-            )
-            if dispatch.assigned_to_id:
-                notify(
-                    dispatch.assigned_to, "dispatch", "Bạn được giao xử lý công văn",
-                    f"{dispatch.dispatch_no} - {dispatch.title}.",
-                    link=f"/portal/dispatches/{dispatch.pk}/", created_by=request.user,
+                book_names = {
+                    "Incoming": "Sổ công văn đến", "Outgoing": "Sổ công văn đi", "InternalDirective": "Sổ văn bản nội bộ",
+                }
+                book, _ = DispatchBook.objects.select_for_update().get_or_create(
+                    book_type=book_type, year=year,
+                    defaults={
+                        "book_code": f"{book_type}-{year}",
+                        "book_name": f"{book_names.get(dispatch_type)} {year}",
+                        "created_by": request.user,
+                    },
                 )
+                book.current_number += 1
+                book.save(update_fields=["current_number"])
+
+                dispatch = OfficialDispatch(
+                    dispatch_type=dispatch_type, dispatch_book=book,
+                    dispatch_no=request.POST.get("dispatch_no"),
+                    original_doc_no=request.POST.get("original_doc_no", ""),
+                    title=request.POST.get("title"),
+                    issuing_organization=request.POST.get("issuing_organization"),
+                    issue_date=issue_date,
+                    received_or_sent_date=request.POST.get("received_or_sent_date"),
+                    urgency_level=request.POST.get("urgency_level", "Normal"),
+                    security_level=request.POST.get("security_level", "Normal"),
+                    department_id=request.POST.get("department") or None,
+                    assigned_to_id=request.POST.get("assigned_to") or None,
+                    signer_id=request.POST.get("signer") or None,
+                    due_date=request.POST.get("due_date") or None,
+                    attachment=request.FILES.get("attachment"),
+                    created_by=request.user,
+                )
+                dispatch.full_clean()
+                dispatch.save()
+                DispatchTracking.objects.create(
+                    dispatch=dispatch, actor=employee, action_type="Vào sổ",
+                    comment="Tiếp nhận/Phát hành công văn.", created_by=request.user,
+                )
+                if dispatch.assigned_to_id:
+                    notify(
+                        dispatch.assigned_to, "dispatch", "Bạn được giao xử lý công văn",
+                        f"{dispatch.dispatch_no} - {dispatch.title}.",
+                        link=f"/portal/dispatches/{dispatch.pk}/", created_by=request.user,
+                    )
             messages.success(request, f"Đã vào sổ công văn {dispatch.dispatch_no}.")
             return redirect("portal:dispatch_detail", pk=dispatch.pk)
         except Exception as e:
