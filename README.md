@@ -4,6 +4,18 @@ Nhật ký thay đổi và kết quả kiểm tra được ghi tại [docs/PROJE
 
 IHRMS là ứng dụng nội bộ Django 5.2, gồm Cổng nhân viên (/portal/), trang quản trị (/admin/) và các phân hệ nghiệp vụ. Mã nguồn Django nằm trong thư mục src/ (chữ thường).
 
+## Nhánh mã nguồn
+
+Chỉ dùng `main` để phát triển, kiểm thử và chạy ứng dụng. Quy tắc chi tiết tại [AGENTS.md](AGENTS.md); kết quả hợp nhất tại [nhật ký dự án](docs/PROJECT_WORK_LOG.md). Khi bản sao cục bộ không có thay đổi chưa commit, cập nhật trong thư mục gốc dự án:
+
+```powershell
+git fetch origin
+git switch main
+git pull --ff-only origin main
+```
+
+Nếu còn thay đổi cục bộ hoặc Git báo không thể fast-forward, giữ nguyên chúng và đối chiếu trước khi tiếp tục.
+
 ## Trạng thái chuẩn bị máy chủ SIT
 
 Rà soát ngày 27/09/2026: cấu hình máy phát triển kết nối SQL Server; 177 test đạt trên SQL Server test database tạm; check, kiểm tra migration và pip check đạt. Đây chưa phải bằng chứng máy chủ SIT đã cấu hình xong.

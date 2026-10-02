@@ -1,5 +1,9 @@
 # Hướng dẫn làm việc trong dự án IHRMS
 
+## Nhánh làm việc duy nhất
+
+Theo quyết định của chủ dự án ngày 02/10/2026, chỉ dùng `main` để phát triển, sửa lỗi, kiểm thử, chạy ứng dụng và triển khai. Không tạo hoặc tiếp tục làm việc trên nhánh khác trừ khi chủ dự án yêu cầu rõ ràng sau này. Trước mỗi đợt làm việc, xác nhận nhánh hiện tại là `main`, kiểm tra trạng thái working tree và đồng bộ `origin/main`; giữ nguyên mọi thay đổi cục bộ chưa commit, không reset/ghi đè để đổi nhánh. Các nhánh `master` và `chore/django-5.2-upgrade` đã hợp nhất chỉ còn để tra cứu lịch sử.
+
 ## Nhật ký thay đổi bắt buộc
 
 Sau mỗi đợt thay đổi lớn (tính năng, sửa lỗi ảnh hưởng nghiệp vụ, migration, cấu hình triển khai, nâng dependency hoặc cập nhật bộ tài liệu), cập nhật **một nơi duy nhất**: [`docs/PROJECT_WORK_LOG.md`](docs/PROJECT_WORK_LOG.md).
