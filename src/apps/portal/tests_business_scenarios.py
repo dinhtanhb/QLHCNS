@@ -75,6 +75,10 @@ class BusinessWorkflowScenarioTests(TestCase):
         summary.refresh_from_db()
         self.assertEqual(summary.sick_days, Decimal('2'))
         self.assertEqual(summary.status, 'Pending')
+        self.assertContains(
+            self.client.get(reverse('portal:timesheet_month'), {'year': 2026, 'month': 10}),
+            'name="sick_days" value="2.0"',
+        )
         self.client.force_login(self.hr_user)
         self.assertEqual(self.post('portal:timesheet_entry_delete', {}, (row.pk,)).status_code, 404)
         self.assertTrue(TimesheetEntry.objects.filter(pk=row.pk).exists())

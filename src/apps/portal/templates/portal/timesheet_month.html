@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load l10n %}
 {% block title %}Bảng chấm công{% endblock %}
 {% block content %}
 <style>
@@ -167,23 +168,23 @@
             <div class="space-y-1">
                 <div class="timesheet-leave-row py-0.5">
                     <label for="timesheet-sick-days" class="text-gray-700">Số ngày nghỉ ốm trong tháng:</label>
-                    <input id="timesheet-sick-days" type="number" step="0.5" name="sick_days" value="{{ summary.sick_days }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
+                    <input id="timesheet-sick-days" type="number" step="0.5" name="sick_days" value="{{ summary.sick_days|unlocalize }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
                 </div>
                 <div class="timesheet-leave-row py-0.5">
                     <label for="timesheet-maternity-days" class="text-gray-700">Số ngày thai sản trong tháng:</label>
-                    <input id="timesheet-maternity-days" type="number" step="0.5" name="maternity_days" value="{{ summary.maternity_days }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
+                    <input id="timesheet-maternity-days" type="number" step="0.5" name="maternity_days" value="{{ summary.maternity_days|unlocalize }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
                 </div>
                 <div class="timesheet-leave-row py-0.5">
                     <label for="timesheet-compensatory-days" class="text-gray-700">Số ngày nghỉ bù trong tháng:</label>
-                    <input id="timesheet-compensatory-days" type="number" step="0.5" name="compensatory_days" value="{{ summary.compensatory_days }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
+                    <input id="timesheet-compensatory-days" type="number" step="0.5" name="compensatory_days" value="{{ summary.compensatory_days|unlocalize }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
                 </div>
                 <div class="timesheet-leave-row py-0.5">
                     <label for="timesheet-annual-leave-days" class="text-gray-700">Số ngày nghỉ phép trong tháng:</label>
-                    <input id="timesheet-annual-leave-days" type="number" step="0.5" name="annual_leave_days" value="{{ summary.annual_leave_days }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
+                    <input id="timesheet-annual-leave-days" type="number" step="0.5" name="annual_leave_days" value="{{ summary.annual_leave_days|unlocalize }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
                 </div>
                 <div class="timesheet-leave-row py-0.5">
                     <label for="timesheet-unpaid-leave-days" class="text-gray-700">Số ngày nghỉ không lương trong tháng:</label>
-                    <input id="timesheet-unpaid-leave-days" type="number" step="0.5" name="unpaid_leave_days" value="{{ summary.unpaid_leave_days }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
+                    <input id="timesheet-unpaid-leave-days" type="number" step="0.5" name="unpaid_leave_days" value="{{ summary.unpaid_leave_days|unlocalize }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
                 </div>
                 {% if balance %}
                 <div class="flex items-center justify-between gap-3 py-0.5 pt-2 border-t border-gray-100 mt-2">

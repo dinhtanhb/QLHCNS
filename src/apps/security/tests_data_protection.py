@@ -95,7 +95,11 @@ class SensitiveDataTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('attachment', response['Content-Disposition'])
         self.assertIn('no-store', response['Cache-Control'])
-        response.close()
+        # Release the streamed file without request_finished: response.close()
+        # closes SQL Server's connection inside TestCase's transaction.
+        for closer in response._resource_closers:
+            closer()
+        response._resource_closers.clear()
         leave.delete()
         self.assertEqual(self.client.get(url).status_code, 404)
 
