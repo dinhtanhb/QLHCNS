@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Mở checklist nhân sự{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-5">
+  <div class="bg-white border border-gray-200 rounded-xl p-6"><h1 class="text-2xl font-bold text-gray-900">Mở checklist onboarding/offboarding</h1><p class="mt-2 text-sm text-gray-600">Thao tác này tạo bản chụp đầu việc theo mẫu. Lưu hồ sơ nhân viên không tự mở checklist.</p></div>
+  <form method="post" class="bg-white border border-gray-200 rounded-xl p-6 space-y-4">{% csrf_token %}
+    <div><label class="mb-1 block text-sm font-medium" for="employee_id">Nhân viên</label><select id="employee_id" name="employee_id" required class="w-full rounded-lg border border-gray-400 px-3 py-2"><option value="">Chọn nhân viên</option>{% for employee in employees %}<option value="{{ employee.pk }}">{{ employee.employee_code }} — {{ employee.full_name }}</option>{% endfor %}</select></div>
+    <div><label class="mb-1 block text-sm font-medium" for="case_type">Loại checklist</label><select id="case_type" name="case_type" required class="w-full rounded-lg border border-gray-400 px-3 py-2"><option value="">Chọn loại</option><option value="Onboarding">Tiếp nhận</option><option value="Offboarding">Nghỉ việc</option></select></div>
+    <div><label class="mb-1 block text-sm font-medium" for="template_id">Mẫu checklist</label><select id="template_id" name="template_id" required class="w-full rounded-lg border border-gray-400 px-3 py-2"><option value="">Chọn mẫu</option>{% for template in templates %}<option value="{{ template.pk }}" data-type="{{ template.template_type }}">{{ template.template_name }} — {{ template.get_template_type_display }}</option>{% endfor %}</select></div>
+    <div><label class="mb-1 block text-sm font-medium" for="effective_date">Ngày nghỉ việc hiệu lực (offboarding)</label><input id="effective_date" type="date" name="effective_date" class="w-full rounded-lg border border-gray-400 px-3 py-2"><p class="mt-1 text-xs text-gray-500">Onboarding dùng ngày vào làm trong hồ sơ.</p></div>
+    <button class="rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white">Tạo checklist</button>
+  </form>
+</div>
+<script>
+(() => {
+  const type = document.getElementById('case_type');
+  const template = document.getElementById('template_id');
+  const date = document.getElementById('effective_date');
+  function sync() {
+    for (const option of template.options) {
+      if (option.value) option.hidden = option.dataset.type !== type.value;
+    }
+    if (template.selectedOptions[0]?.dataset.type !== type.value) template.value = '';
+    date.required = type.value === 'Offboarding';
+  }
+  type.addEventListener('change', sync); sync();
+})();
+</script>
+{% endblock %}

@@ -55,10 +55,10 @@
         <p class="text-gray-500 text-xs mb-1">Công việc đang mở (toàn công ty)</p>
         <p class="text-2xl font-bold text-gray-900">{{ open_tasks_company }}</p>
     </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+    {% if can_view_asset %}<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Tài sản đang cấp phát</p>
         <p class="text-2xl font-bold text-gray-900">{{ assets_in_use }}</p>
-    </div>
+    </div>{% endif %}
 </div>
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
     <h3 class="text-sm font-bold text-gray-900 mb-3">Nhân sự theo phòng ban</h3>
@@ -72,6 +72,50 @@
             <span class="w-8 text-right font-medium">{{ d.total }}</span>
         </div>
         {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if lifecycle_overdue_count %}
+<a href="{% url 'portal:lifecycle_case_list' %}" class="mb-6 flex items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-red-900">
+    <span class="font-semibold">Checklist onboarding/offboarding quá hạn</span>
+    <span class="rounded-full bg-red-700 px-3 py-1 text-sm font-bold text-white">{{ lifecycle_overdue_count }}</span>
+</a>
+{% endif %}
+
+{% if show_project_activity_summary %}
+<div class="mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div>
+            <h2 class="text-sm font-bold text-gray-900">Tiến độ hoạt động dự án</h2>
+            <p class="text-xs text-gray-500 mt-1">Tháng {{ activity_month_label }}</p>
+        </div>
+        <a href="{% url 'portal:activity_dashboard' %}?month={{ activity_month }}"
+           class="text-sm font-medium text-blue-700 hover:text-blue-900">
+            Mở Dashboard hoạt động →
+        </a>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <p class="text-gray-500 text-xs mb-1">Hoạt động trong tháng</p>
+            <p class="text-2xl font-bold text-blue-700">{{ activity_total }}</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <p class="text-gray-500 text-xs mb-1">Task báo cáo hoàn thành</p>
+            <p class="text-2xl font-bold text-green-700">{{ activity_completed }}</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <p class="text-gray-500 text-xs mb-1">Task quá hạn</p>
+            <p class="text-2xl font-bold {% if activity_overdue %}text-red-700{% else %}text-gray-900{% endif %}">{{ activity_overdue }}</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <p class="text-gray-500 text-xs mb-1">Task thiếu báo cáo</p>
+            <p class="text-2xl font-bold {% if activity_report_missing %}text-amber-700{% else %}text-gray-900{% endif %}">{{ activity_report_missing }}</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <p class="text-gray-500 text-xs mb-1">Hoạt động chưa có Task</p>
+            <p class="text-2xl font-bold text-gray-900">{{ activity_without_task }}</p>
+        </div>
     </div>
 </div>
 {% endif %}
@@ -91,10 +135,10 @@
         <p class="text-gray-500 text-xs mb-1">Công việc chưa hoàn thành</p>
         <p class="text-2xl font-bold text-gray-900">{{ dept_open_tasks }}</p>
     </div>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+        {% if can_view_asset %}<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Tài sản đang cấp phát (phòng)</p>
         <p class="text-2xl font-bold text-gray-900">{{ dept_assets_in_use }}</p>
-    </div>
+    </div>{% endif %}
 </div>
 {% endif %}
 {% endblock %}

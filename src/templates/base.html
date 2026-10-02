@@ -5,14 +5,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Cổng thông tin nhân viên{% endblock %} — IHRMS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="theme-color" content="#1d4ed8">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="apple-touch-icon" href="{% static 'img/ihrms-pwa-192.png' %}">
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ihrms.css' %}">
 </head>
 <body class="bg-gray-50 min-h-screen text-gray-800">
     <header class="bg-blue-700 text-white shadow">
-        <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="{% url 'portal:dashboard' %}" class="font-bold text-lg tracking-wide">IHRMS — Cổng thông tin nhân viên</a>
+        <div class="portal-header-inner max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="{% url 'portal:dashboard' %}" class="portal-brand font-bold text-lg tracking-wide">
+                <span class="sm:hidden">IHRMS</span>
+                <span class="hidden sm:inline">IHRMS — Cổng thông tin nhân viên</span>
+            </a>
             {% if user.is_authenticated %}
-            <div class="flex items-center gap-4 text-sm">
+            <button type="button" id="mobileNavToggle" class="portal-mobile-nav-toggle" aria-controls="portalNavigationMenu" aria-expanded="false" aria-label="Mở menu điều hướng">
+                <svg aria-hidden="true" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+            {% endif %}
+            {% if user.is_authenticated %}
+            <div class="portal-header-actions flex items-center gap-4 text-sm">
                 <a href="{% url 'portal:notification_list' %}" class="relative p-1.5 rounded-full hover:bg-blue-600 transition" title="Thông báo">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -101,38 +115,40 @@
     </header>
 
     {% if user.is_authenticated %}
-    <nav class="bg-white border-b border-gray-200 relative z-20">
-        <div class="max-w-5xl mx-auto px-6 flex gap-1 text-sm font-medium">
+    <nav class="portal-nav bg-white border-b border-gray-200 relative z-20" aria-label="Điều hướng chính">
+        <div class="portal-nav-inner text-sm font-medium" id="portalNavigationMenu">
             {% url 'portal:dashboard' as u_dash %}
-            <a href="{{ u_dash }}" class="px-4 py-3 border-b-2 {% if request.path == u_dash %}border-blue-700 text-blue-700{% else %}border-transparent text-gray-600 hover:text-blue-700{% endif %}">Trang chủ</a>
+            <a href="{{ u_dash }}" class="portal-nav-link border-b-2 {% if request.path == u_dash %}border-blue-700 text-blue-700{% else %}border-transparent text-gray-600 hover:text-blue-700{% endif %}">Trang chủ</a>
 
             <!-- CÁ NHÂN -->
-            <div class="relative">
-                <button type="button" onclick="toggleMenu('menu-canhan')" class="px-4 py-3 flex items-center gap-1 text-gray-600 hover:text-blue-700">
+            <div class="portal-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-canhan" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
                     Cá nhân <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-canhan" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
                     <a href="{% url 'portal:profile' %}" class="block px-4 py-2 hover:bg-gray-50">Hồ sơ cá nhân</a>
+                    <a href="{% url 'portal:profile_change_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">Yêu cầu cập nhật hồ sơ</a>
+                    <a href="{% url 'portal:org_chart' %}" class="block px-4 py-2 hover:bg-gray-50">Sơ đồ tổ chức</a>
                     <a href="{% url 'portal:timesheet_month' %}" class="block px-4 py-2 hover:bg-gray-50">Bảng công</a>
                     <a href="{% url 'portal:leave_list' %}" class="block px-4 py-2 hover:bg-gray-50">Nghỉ phép</a>
-                    <a href="{% url 'portal:task_list' %}" class="block px-4 py-2 hover:bg-gray-50">Công việc</a>
                     <a href="{% url 'portal:kpi_my_list' %}" class="block px-4 py-2 hover:bg-gray-50">KPI</a>
                     <a href="{% url 'portal:document_list' %}" class="block px-4 py-2 hover:bg-gray-50">Tài liệu</a>
-                    <a href="{% url 'portal:asset_list' %}" class="block px-4 py-2 hover:bg-gray-50">Tài sản</a>
+                    {% if can_view_asset %}<a href="{% url 'portal:asset_list' %}" class="block px-4 py-2 hover:bg-gray-50">Tài sản</a>{% endif %}
                     <a href="{% url 'portal:payslip_list' %}" class="block px-4 py-2 hover:bg-gray-50">Phiếu lương</a>
                 </div>
             </div>
 
             <!-- DUYỆT & XỬ LÝ -->
-            {% if can_approve or can_approve_timesheet or can_manage_calendar or can_approve_document %}
-            <div class="relative">
-                <button type="button" onclick="toggleMenu('menu-duyet')" class="px-4 py-3 flex items-center gap-1 text-gray-600 hover:text-blue-700">
+            {% if can_approve or can_approve_timesheet or can_manage_calendar or can_approve_document or can_approve_activity_proposals %}
+            <div class="portal-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-duyet" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
                     Duyệt & Xử lý <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-duyet" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
                     {% if can_approve %}<a href="{% url 'portal:leave_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt nghỉ phép</a>{% endif %}
                     {% if can_approve_timesheet %}<a href="{% url 'portal:timesheet_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt chấm công</a>{% endif %}
                     {% if can_approve_document %}<a href="{% url 'portal:document_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt tài liệu</a>{% endif %}
+                    {% if can_approve_activity_proposals %}<a href="{% url 'portal:activity_proposal_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt đề xuất hoạt động{% if pending_activity_proposal_count %} <span class="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{{ pending_activity_proposal_count }}</span>{% endif %}</a>{% endif %}
                     {% if can_manage_calendar %}<a href="{% url 'portal:holiday_list' %}" class="block px-4 py-2 hover:bg-gray-50">Ngày lễ</a>{% endif %}
                 </div>
             </div>
@@ -140,13 +156,15 @@
 
             <!-- NHÂN SỰ -->
             {% if can_manage_hr or can_request_recruitment or can_approve_recruitment %}
-            <div class="relative">
-                <button type="button" onclick="toggleMenu('menu-nhansu')" class="px-4 py-3 flex items-center gap-1 text-gray-600 hover:text-blue-700">
+            <div class="portal-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-nhansu" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
                     Nhân sự <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-nhansu" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
                     {% if can_manage_hr %}
                     <a href="{% url 'portal:hr_employee_list' %}" class="block px-4 py-2 hover:bg-gray-50">NV & Hồ sơ</a>
+                    <a href="{% url 'portal:profile_change_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt cập nhật hồ sơ</a>
+                    <a href="{% url 'portal:lifecycle_case_list' %}" class="block px-4 py-2 hover:bg-gray-50">Quản lý checklist onboarding/offboarding</a>
                     <a href="{% url 'portal:hr_contract_list' %}" class="block px-4 py-2 hover:bg-gray-50">Hợp đồng</a>
                     <a href="{% url 'portal:hr_candidate_list' %}" class="block px-4 py-2 hover:bg-gray-50">Ứng viên</a>
                     {% endif %}
@@ -158,8 +176,8 @@
             {% endif %}
 
             {% if can_manage_finance %}
-            <div class="relative">
-                <button type="button" onclick="toggleMenu('menu-ketoan')" class="px-4 py-3 flex items-center gap-1 text-gray-600 hover:text-blue-700">
+            <div class="portal-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-ketoan" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
                     Kế toán <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-ketoan" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
@@ -172,18 +190,20 @@
             {% endif %}
 
             <!-- HÀNH CHÍNH -->
-            <div class="relative">
-                <button type="button" onclick="toggleMenu('menu-hc')" class="px-4 py-3 flex items-center gap-1 text-gray-600 hover:text-blue-700">
+            <div class="portal-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-hc" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
                     Hành chính <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-hc" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
                     <a href="{% url 'portal:dispatch_list' %}?type=Incoming" class="block px-4 py-2 hover:bg-gray-50">Công văn đến</a>
                     <a href="{% url 'portal:dispatch_list' %}?type=Outgoing" class="block px-4 py-2 hover:bg-gray-50">Công văn đi</a>
-                <div class="border-t border-gray-100 my-1"></div>
+                    {% if can_view_asset %}
+                    <div class="border-t border-gray-100 my-1"></div>
                     <a href="{% url 'portal:asset_admin_list' %}" class="block px-4 py-2 hover:bg-gray-50">Quản lý Tài sản</a>
                     <a href="{% url 'portal:inventory_session_list' %}" class="block px-4 py-2 hover:bg-gray-50">Kiểm kê Tài sản</a>
                     <a href="{% url 'portal:disposal_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">Thanh lý Tài sản</a>
                 <div class="border-t border-gray-100 my-1"></div>
+                    {% endif %}
                     <a href="{% url 'portal:room_booking_list' %}" class="block px-4 py-2 hover:bg-gray-50">Phòng họp</a>
                     <a href="{% url 'portal:vehicle_booking_list' %}" class="block px-4 py-2 hover:bg-gray-50">Đặt xe</a>
                     <a href="{% url 'portal:supply_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">VPP</a>
@@ -191,8 +211,8 @@
             </div>
 
             <!-- KẾ HOẠCH -->
-            <div class="relative">
-                <button type="button" onclick="toggleMenu('menu-kh')" class="px-4 py-3 flex items-center gap-1 text-gray-600 hover:text-blue-700">
+            <div class="portal-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-kh" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
                     Kế hoạch <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-kh" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
@@ -203,27 +223,93 @@
 
             {% if can_view_reports %}
             {% url 'portal:report_hub' as u_report %}
-            <a href="{{ u_report }}" class="px-4 py-3 border-b-2 {% if u_report in request.path %}border-blue-700 text-blue-700{% else %}border-transparent text-gray-600 hover:text-blue-700{% endif %}">Báo cáo</a>
+            <a href="{{ u_report }}" class="portal-nav-link border-b-2 {% if u_report in request.path %}border-blue-700 text-blue-700{% else %}border-transparent text-gray-600 hover:text-blue-700{% endif %}">Báo cáo</a>
+            {% endif %}
+
+            {% if can_view_activity_dashboard %}
+            <div class="portal-nav-group portal-nav-group--right">
+                <button type="button" data-menu-trigger aria-controls="menu-hoatdongduan" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
+                    Hoạt động dự án <span class="text-xs">▾</span>
+                </button>
+                <div id="menu-hoatdongduan" class="hidden absolute right-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-56 py-1 z-30">
+                    <a href="{% url 'portal:activity_dashboard' %}" class="block px-4 py-2 hover:bg-gray-50">Theo dõi hoạt động</a>
+                    <a href="{% url 'portal:activity_calendar' %}" class="block px-4 py-2 hover:bg-gray-50">Lịch hoạt động</a>
+                    <a href="{% url 'portal:task_list' %}" class="block px-4 py-2 hover:bg-gray-50">Giao việc &amp; hoàn tất</a>
+                </div>
+            </div>
             {% endif %}
         </div>
     </nav>
 
     <script>
-    function toggleMenu(id) {
-        document.querySelectorAll('[id^="menu-"]').forEach(function (el) {
-            if (el.id !== id) el.classList.add('hidden');
-        });
-        document.getElementById(id).classList.toggle('hidden');
-    }
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('nav')) {
-            document.querySelectorAll('[id^="menu-"]').forEach(function (el) { el.classList.add('hidden'); });
+    (function () {
+        const nav = document.querySelector('.portal-nav');
+        const menuPanel = document.getElementById('portalNavigationMenu');
+        const mobileToggle = document.getElementById('mobileNavToggle');
+        if (!nav || !menuPanel) return;
+
+        function setMobileMenuOpen(isOpen) {
+            if (!mobileToggle) return;
+            menuPanel.classList.toggle('is-mobile-open', isOpen);
+            mobileToggle.setAttribute('aria-expanded', String(isOpen));
+            mobileToggle.setAttribute('aria-label', isOpen ? 'Đóng menu điều hướng' : 'Mở menu điều hướng');
         }
-    });
+
+        function closeMenus(exceptId) {
+            nav.querySelectorAll('[data-menu-trigger]').forEach(function (button) {
+                const menu = document.getElementById(button.getAttribute('aria-controls'));
+                if (!menu || menu.id === exceptId) return;
+                menu.classList.add('hidden');
+                button.setAttribute('aria-expanded', 'false');
+            });
+        }
+
+        nav.querySelectorAll('[data-menu-trigger]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                const menu = document.getElementById(button.getAttribute('aria-controls'));
+                if (!menu) return;
+                const willOpen = menu.classList.contains('hidden');
+                closeMenus(menu.id);
+                menu.classList.toggle('hidden', !willOpen);
+                button.setAttribute('aria-expanded', String(willOpen));
+            });
+        });
+
+        document.addEventListener('click', function (event) {
+            if (!nav.contains(event.target)) closeMenus();
+            if (!nav.contains(event.target) && !(mobileToggle && mobileToggle.contains(event.target))) {
+                setMobileMenuOpen(false);
+            }
+        });
+        document.addEventListener('keydown', function (event) {
+            if (event.key !== 'Escape') return;
+            const openButton = nav.querySelector('[data-menu-trigger][aria-expanded="true"]');
+            closeMenus();
+            if (openButton) {
+                openButton.focus();
+            } else if (mobileToggle && mobileToggle.getAttribute('aria-expanded') === 'true') {
+                setMobileMenuOpen(false);
+                mobileToggle.focus();
+            }
+        });
+
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', function () {
+                const willOpen = mobileToggle.getAttribute('aria-expanded') !== 'true';
+                if (!willOpen) closeMenus();
+                setMobileMenuOpen(willOpen);
+            });
+            menuPanel.querySelectorAll('a').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    if (window.matchMedia('(max-width: 767px)').matches) setMobileMenuOpen(false);
+                });
+            });
+        }
+    }());
     </script>
     {% endif %}
 
-    <main class="max-w-5xl mx-auto px-6 py-8">
+    <main class="{% block main_container_class %}max-w-5xl{% endblock %} mx-auto px-6 py-8">
         {% if messages %}
             {% for message in messages %}
                 <div class="mb-4 px-4 py-3 rounded-md text-sm font-medium
@@ -257,5 +343,19 @@
             }
         });
     </script>
+    {% if user.is_authenticated and "/portal/" in request.path %}
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register("{% url 'portal:service_worker' %}", {
+                    scope: "/portal/",
+                    updateViaCache: "none"
+                }).catch(function (error) {
+                    console.error('Không thể đăng ký IHRMS service worker:', error);
+                });
+            });
+        }
+    </script>
+    {% endif %}
 </body>
 </html>

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Duyệt đề xuất hoạt động{% endblock %}
+{% block content %}
+<main class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+    <div class="flex flex-wrap items-end justify-between gap-3">
+        <div>
+            <p class="text-sm font-semibold uppercase tracking-wide text-blue-700">Hoạt động dự án</p>
+            <h1 class="mt-1 text-2xl font-bold text-gray-900">Đề xuất đang chờ duyệt</h1>
+            <p class="mt-2 text-sm text-gray-600">Danh sách chỉ gồm hồ sơ được gửi đích danh cho tài khoản của bạn.</p>
+        </div>
+        <a href="{% url 'portal:activity_dashboard' %}" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">Dashboard hoạt động</a>
+    </div>
+    <section class="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        {% if packages %}
+        <div class="overflow-x-auto"><table class="w-full text-left text-sm">
+            <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-600"><tr><th class="px-4 py-3">Hoạt động</th><th class="px-4 py-3">Dự án</th><th class="px-4 py-3">CBDA / ĐPV</th><th class="px-4 py-3">Người gửi</th><th class="px-4 py-3">Ngày gửi</th><th class="px-4 py-3">Hồ sơ</th></tr></thead>
+            <tbody class="divide-y divide-gray-100">
+            {% for package in packages %}<tr class="align-top hover:bg-gray-50">
+                <td class="px-4 py-4"><strong>{{ package.activity.activity_code }}</strong><span class="mt-1 block">{{ package.activity.activity_name }}</span><span class="mt-1 block text-xs text-gray-500">Phiên bản {{ package.version }}</span></td>
+                <td class="px-4 py-4">{{ package.activity.project.project_name }}</td>
+                <td class="px-4 py-4">{{ package.activity.lead_cbda.full_name }}<span class="mt-1 block text-xs text-gray-500">ĐPV: {{ package.activity.coordinator.full_name|default:"Chưa phân công" }}</span></td>
+                <td class="px-4 py-4">{{ package.submitted_by.get_full_name|default:package.submitted_by.username }}</td>
+                <td class="whitespace-nowrap px-4 py-4">{{ package.submitted_at|date:"d/m/Y H:i" }}</td>
+                <td class="px-4 py-4"><a class="font-semibold text-blue-700 underline" href="{% url 'portal:activity_proposal' package.activity_id %}">Xem và xử lý</a></td>
+            </tr>{% endfor %}
+            </tbody>
+        </table></div>
+        {% else %}<div class="p-8 text-center text-gray-600">Hiện không có đề xuất nào đang chờ bạn duyệt.</div>{% endif %}
+    </section>
+</main>
+{% endblock %}

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from apps.common.admin import BaseAuditAdmin
-from .models import HeadcountPlan, TrainingCourse, TrainingEnrollment, AnnualBudget, Event
+from .models import HeadcountPlan, TrainingCourse, TrainingEnrollment, AnnualBudget, Event, with_headcounts
 
 PLANNING_ROLES = ("SUPER_ADMIN", "HR_MANAGER", "DIRECTOR")
 
@@ -10,6 +10,9 @@ class HeadcountPlanAdmin(BaseAuditAdmin):
     list_display = ("department", "year", "planned_headcount", "actual_headcount", "gap")
     view_roles = PLANNING_ROLES + ("DEPT_MANAGER",)
     edit_roles = ("SUPER_ADMIN", "HR_MANAGER")
+
+    def get_queryset(self, request):
+        return with_headcounts(super().get_queryset(request))
 
     def scope_queryset(self, request, qs):
         role_code = self._role_code(request)

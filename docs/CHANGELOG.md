@@ -2,6 +2,13 @@
 
 # CHANGELOG — CÁC PHẦN BỔ SUNG CHO BỘ TÀI LIỆU IHRMS
 
+## 2026-09-25 — Hoạt động dự án và luồng xin phê duyệt
+
+- Tách **Hoạt động dự án** thành menu riêng ở cuối thanh điều hướng, gồm theo dõi và lịch; menu phê duyệt vẫn nằm ở **Duyệt & Xử lý**.
+- Bổ sung hàng chờ Giám đốc, trạng thái/ý kiến hồ sơ trên dashboard và thông báo trong IHRMS cho người gửi, người tạo, CBDA, ĐPV khi bị yêu cầu sửa.
+- Người dùng chuẩn bị hai PDF; Excel không tải lên. Outlook mở thư nháp bằng `mailto:`; người gửi phải tự đính kèm PDF và gửi. Không dùng SMTP tự động.
+- Cập nhật cẩm nang, giáo án, roadmap và skill vận hành. Chi tiết thay đổi và kiểm tra được ghi một nơi tại [`PROJECT_WORK_LOG.md`](PROJECT_WORK_LOG.md).
+
 ## Ngày rà soát
 
 18/09/2026

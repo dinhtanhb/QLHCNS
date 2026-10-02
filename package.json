@@ -1,0 +1,12 @@
+{
+  "name": "ihrms-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss --config tailwind.config.js --input src/frontend/tailwind.input.css --output src/static/css/tailwind.css --minify",
+    "watch:css": "tailwindcss --config tailwind.config.js --input src/frontend/tailwind.input.css --output src/static/css/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  }
+}

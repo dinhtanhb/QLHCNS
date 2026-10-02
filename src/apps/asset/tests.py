@@ -47,6 +47,27 @@ class AssetSafetyTests(TestCase):
             asset=self.asset, employee=self.employees[1], assigned_date=date(2025, 2, 1),
         )
 
+    def test_returning_legacy_duplicate_allocation_keeps_asset_in_use(self):
+        """I5: thu hồi 1 dòng cũ không được đặt Available nếu còn dòng cấp phát mở."""
+        first = AssetAllocation.objects.create(
+            asset=self.asset, employee=self.employees[0], assigned_date=date(2025, 1, 1),
+        )
+        # Tái hiện dữ liệu trùng có thể tồn tại từ trước khi có kiểm tra overlap.
+        AssetAllocation.objects.bulk_create([
+            AssetAllocation(
+                asset=self.asset, employee=self.employees[1], assigned_date=date(2025, 2, 1),
+            )
+        ])
+
+        first.return_date = date(2025, 1, 31)
+        first.save()
+
+        self.asset.refresh_from_db()
+        self.assertEqual(self.asset.status, "InUse")
+        self.assertEqual(
+            AssetAllocation.objects.filter(asset=self.asset, return_date__isnull=True).count(), 1
+        )
+
     def test_inventory_session_cannot_complete_with_uncounted_lines(self):
         session = InventorySession.objects.create(
             session_name="Annual", office_name="Test", inventory_datetime="2025-01-01T09:00:00Z",

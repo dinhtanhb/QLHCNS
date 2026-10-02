@@ -23,6 +23,9 @@ from apps.security.permissions import (
     HR_MANAGER,
     HR_OFFICER,
     PERMISSION_MATRIX,
+    PROJECT_COORDINATOR,
+    PROJECT_MANAGER,
+    CBDA,
     STAFF_ALSO_ALLOWED,
     SYS_ADMIN,
     has_permission,
@@ -37,8 +40,11 @@ class PermissionMatrixTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.roles = {
-            code: Role.objects.create(role_code=code, role_name=code)
-            for code in (EMPLOYEE, DEPT_MANAGER, HR_MANAGER, HR_OFFICER, DIRECTOR, FINANCE_OFFICER, SYS_ADMIN)
+            code: Role.objects.get_or_create(role_code=code, defaults={"role_name": code})[0]
+            for code in (
+                EMPLOYEE, DEPT_MANAGER, HR_MANAGER, HR_OFFICER, DIRECTOR,
+                FINANCE_OFFICER, SYS_ADMIN, PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA,
+            )
         }
         cls.users = {
             code: User.objects.create_user(username=f"u_{code}", password="x", role=role)
@@ -48,13 +54,18 @@ class PermissionMatrixTests(TestCase):
         cls.no_role = User.objects.create_user(username="chua_gan_vai_tro", password="x")
 
     # ---------- Nhân viên thường ----------
-    def test_nhan_vien_thuong_khong_co_quyen_nao(self):
+    def test_nhan_vien_thuong_chi_co_quyen_tu_phuc_vu(self):
         user = self.users[EMPLOYEE]
         for permission in PERMISSION_MATRIX:
-            self.assertFalse(
-                has_permission(user, permission),
-                f"Nhân viên thường KHÔNG được có quyền '{permission}'",
+            expected_self_service = permission in {
+                "submit_profile_change_request",
+            }
+            self.assertEqual(
+                has_permission(user, permission), expected_self_service,
+                f"Unexpected employee permission '{permission}'",
             )
+        self.assertFalse(has_permission(user, "approve_profile_change_request"))
+        self.assertFalse(has_permission(user, "manage_lifecycle_case"))
 
     def test_tai_khoan_chua_gan_vai_tro_khong_co_quyen_nao(self):
         for permission in PERMISSION_MATRIX:
@@ -83,9 +94,34 @@ class PermissionMatrixTests(TestCase):
             self.assertFalse(has_permission(self.users[code], "manage_office"), code)
 
     def test_cong_van_di_moi_vai_tro_tru_nhan_vien(self):
-        for code in (DEPT_MANAGER, DIRECTOR, HR_MANAGER, HR_OFFICER, FINANCE_OFFICER, SYS_ADMIN):
+        for code in (
+            DEPT_MANAGER, DIRECTOR, HR_MANAGER, HR_OFFICER, FINANCE_OFFICER,
+            SYS_ADMIN, PROJECT_MANAGER, PROJECT_COORDINATOR,
+        ):
             self.assertTrue(has_permission(self.users[code], "access_outgoing_document"), code)
         self.assertFalse(has_permission(self.users[EMPLOYEE], "access_outgoing_document"))
+
+    # ---------- Tài sản ----------
+    def test_tai_san_chi_hien_cho_nhom_duoc_phep_va_quyen_quan_ly_rieng(self):
+        viewers = (
+            DIRECTOR, HR_MANAGER, HR_OFFICER, FINANCE_OFFICER,
+            PROJECT_COORDINATOR, SYS_ADMIN,
+        )
+        for code in viewers:
+            self.assertTrue(has_permission(self.users[code], "view_asset"), code)
+
+        managers = (HR_MANAGER, HR_OFFICER, SYS_ADMIN)
+        for code in managers:
+            self.assertTrue(has_permission(self.users[code], "manage_asset"), code)
+
+        view_only = (DIRECTOR, FINANCE_OFFICER, PROJECT_COORDINATOR)
+        for code in view_only:
+            self.assertFalse(has_permission(self.users[code], "manage_asset"), code)
+
+        denied = (EMPLOYEE, CBDA, DEPT_MANAGER, PROJECT_MANAGER)
+        for code in denied:
+            self.assertFalse(has_permission(self.users[code], "view_asset"), code)
+            self.assertFalse(has_permission(self.users[code], "manage_asset"), code)
 
     # ---------- Nghỉ phép ----------
     def test_duyet_nghi_phep_toan_cong_ty(self):
@@ -95,6 +131,15 @@ class PermissionMatrixTests(TestCase):
         self.assertFalse(has_permission(self.users[DEPT_MANAGER], "approve_leave_all_departments"))
         self.assertFalse(has_permission(self.users[EMPLOYEE], "approve_leave"))
 
+    def test_lifecycle_checklists_are_limited_to_hr_and_system_admin(self):
+        for code in (DIRECTOR, PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA):
+            self.assertFalse(has_permission(self.users[code], "view_own_lifecycle_items"), code)
+            self.assertFalse(has_permission(self.users[code], "manage_lifecycle_case"), code)
+        for code in (HR_OFFICER, HR_MANAGER):
+            self.assertTrue(has_permission(self.users[code], "view_own_lifecycle_items"), code)
+        for code in (EMPLOYEE, SYS_ADMIN):
+            self.assertFalse(has_permission(self.users[code], "view_own_lifecycle_items"), code)
+
     # ---------- Superuser ----------
     def test_superuser_co_moi_quyen(self):
         for permission in PERMISSION_MATRIX:
@@ -103,7 +148,8 @@ class PermissionMatrixTests(TestCase):
     def test_permission_flags_tra_ve_du_co_cho_giao_dien(self):
         flags = permission_flags(self.users[EMPLOYEE])
         self.assertEqual(set(flags), {f"can_{name}" for name in PERMISSION_MATRIX})
-        self.assertFalse(any(flags.values()))
+        enabled = {name for name, allowed in flags.items() if allowed}
+        self.assertEqual(enabled, {"can_submit_profile_change_request"})
 
 
 # ==================================================================

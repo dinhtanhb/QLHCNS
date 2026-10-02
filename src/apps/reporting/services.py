@@ -9,6 +9,35 @@ from apps.contract.models import Contract
 from apps.document.models import OfficialDispatch
 
 
+class ComplianceReportNotConfigured(NotImplementedError):
+    """Raised until Finance confirms the applicable official report rules."""
+
+
+def generate_insurance_change_report_excel(period, changes_queryset):
+    """Reserved for the Finance-approved BHXH change-report template.
+
+    Deliberately produces no file until Finance confirms the official form/version
+    and field mapping.
+    """
+    raise ComplianceReportNotConfigured(
+        "Chưa xuất báo cáo BHXH: chờ Kế toán xác nhận mẫu chính thức và mapping cột."
+    )
+
+
+def generate_pit_finalization_data(year):
+    """Reserved for year-specific personal income tax finalization mapping."""
+    raise ComplianceReportNotConfigured(
+        "Chưa tạo dữ liệu quyết toán PIT: chờ Kế toán xác nhận biểu mẫu/phụ lục áp dụng cho năm này."
+    )
+
+
+def generate_payroll_cost_by_department_excel(period, allocation_rule="current_department"):
+    """Reserved for a payroll-cost report with a Finance-approved allocation rule."""
+    raise ComplianceReportNotConfigured(
+        "Chưa xuất chi phí lương theo phòng ban: chờ Kế toán xác nhận quy tắc phân bổ."
+    )
+
+
 def _style_header_cell(cell, text):
     cell.value = text
     cell.font = Font(name="Arial", size=11, bold=True, color="FFFFFF")

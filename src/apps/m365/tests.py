@@ -1,13 +1,22 @@
 import tempfile
+from unittest.mock import Mock
 
 from django.core.files.base import ContentFile
 from django.test import SimpleTestCase, override_settings
 
-from apps.m365.graph_client import GRAPH_BASE, GraphClient
-from apps.m365.storage import ConfiguredStorage, get_storage
+from apps.m365.graph_client import GRAPH_BASE, GraphAPIError, GraphClient
+from apps.m365.storage import ConfiguredStorage, SharePointStorage, get_storage
 
 
 class ConfiguredStorageTests(SimpleTestCase):
+    def test_graph_lookup_failure_aborts_save_before_upload(self):
+        storage = SharePointStorage('Documents')
+        storage.client = Mock()
+        storage.client.exists.side_effect = GraphAPIError('Temporary lookup failure')
+        with self.assertRaises(GraphAPIError):
+            storage.save('existing.pdf', ContentFile(b'replacement'))
+        storage.client.upload_file.assert_not_called()
+
     def test_deconstruction_does_not_depend_on_m365_toggle(self):
         folders = {"documents": "", "dispatches": "CongVan"}
         with override_settings(M365_STORAGE_ENABLED=False, M365_FOLDER_MAP=folders):

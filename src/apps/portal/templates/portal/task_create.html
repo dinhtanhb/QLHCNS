@@ -37,7 +37,7 @@
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Ngày bắt đầu</label>
-                <input type="date" name="start_date" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+                <input type="date" name="start_date" value="{{ today|date:'Y-m-d' }}" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Hạn hoàn thành</label>

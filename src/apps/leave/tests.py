@@ -16,7 +16,7 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from apps.attendance.models import Holiday, TimesheetEntry, WorkingCalendar
+from apps.attendance.models import Holiday, MonthlyAttendanceSummary, TimesheetEntry, WorkingCalendar
 from apps.attendance.services import (
     compensatory_days_earned,
     get_hours_per_day,
@@ -102,8 +102,19 @@ class StandardWorkingDaysTests(LeaveTestBase):
 # ------------------------------------------------------------------
 class CompensatoryDaysTests(LeaveTestBase):
 
-    def _log(self, day, hours):
+    def _log(self, day, hours, approved=True):
         TimesheetEntry.objects.create(employee=self.employee, work_date=day, hours=D(str(hours)))
+        MonthlyAttendanceSummary.objects.get_or_create(
+            employee=self.employee,
+            year=day.year,
+            month=day.month,
+            defaults={
+                "status": (
+                    MonthlyAttendanceSummary.STATUS_APPROVED
+                    if approved else MonthlyAttendanceSummary.STATUS_PENDING
+                ),
+            },
+        )
 
     def test_lam_ca_ngay_thu_bay_duoc_mot_ngay_bu(self):
         self._log(date(2025, 6, 14), 8)  # Thứ 7
@@ -142,6 +153,17 @@ class CompensatoryDaysTests(LeaveTestBase):
     def test_khong_tinh_gio_cua_nam_khac(self):
         self._log(date(2024, 6, 15), 8)
         self.assertEqual(compensatory_days_earned(self.employee, 2025), D("0"))
+
+    def test_I3_gio_cuoi_tuan_chua_duoc_duyet_chua_duoc_tinh_nghi_bu(self):
+        """Giờ cuối tuần chỉ chuyển thành nghỉ bù sau khi bảng công tháng được duyệt."""
+        self._log(date(2025, 6, 14), 8, approved=False)
+        summary = MonthlyAttendanceSummary.objects.get(employee=self.employee, year=2025, month=6)
+
+        self.assertEqual(compensatory_days_earned(self.employee, 2025), D("0"))
+
+        summary.status = MonthlyAttendanceSummary.STATUS_APPROVED
+        summary.save(update_fields=["status"])
+        self.assertEqual(compensatory_days_earned(self.employee, 2025), D("1"))
 
 
 # ------------------------------------------------------------------
@@ -183,6 +205,7 @@ class LeaveBalanceTests(LeaveTestBase):
         self.assertEqual(self.balance.available_annual_days, D("14"))
 
     def test_leave_spanning_new_year_is_split_between_each_year_balance(self):
+        """I4 regression: ngày nghỉ được phân bổ vào đúng năm dương lịch của từng ngày."""
         from apps.leave.models import LeaveBalance
         LeaveBalance.objects.create(employee=self.employee, year=2026, allocated_days=D("3"))
         req = self._request(date(2025, 12, 29), date(2026, 1, 5))
@@ -202,6 +225,7 @@ class LeaveBalanceTests(LeaveTestBase):
             ).full_clean()
 
     def test_leave_days_by_month_splits_spanning_request(self):
+        """I4 regression: bảng công tháng 1 không gộp ngày nghỉ của tháng 12."""
         from apps.portal.views import _leave_days_in_month
         req = self._request(date(2025, 12, 29), date(2026, 1, 5))
         self.assertEqual(_leave_days_in_month(self.employee, "AL", 2025, 12), D("3"))
@@ -274,6 +298,10 @@ class LeaveRequestValidationTests(LeaveTestBase):
     def test_nghi_bu_trong_pham_vi_tich_luy_thi_duoc(self):
         TimesheetEntry.objects.create(employee=self.employee, work_date=date(2025, 6, 14), hours=D("8"))
         TimesheetEntry.objects.create(employee=self.employee, work_date=date(2025, 6, 21), hours=D("8"))
+        MonthlyAttendanceSummary.objects.create(
+            employee=self.employee, year=2025, month=6,
+            status=MonthlyAttendanceSummary.STATUS_APPROVED,
+        )
         req = self._new(date(2025, 6, 23), date(2025, 6, 24), leave_type=self.compensatory)
         req.full_clean()
         self.assertEqual(req.total_days, D("2"))

@@ -36,6 +36,8 @@ src/staticfiles/
 # --- Nhật ký & file tạm ---
 *.log
 logs/
+Logs/
+Backups/
 *.tmp
 ~$*
 
@@ -43,6 +45,7 @@ logs/
 .vscode/
 .idea/
 *.swp
+node_modules/
 
 # --- Windows / macOS ---
 Thumbs.db

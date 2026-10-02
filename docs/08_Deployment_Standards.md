@@ -10,7 +10,9 @@ Internal Administration & Human Resource Management System (IHRMS)
 
 ## Status
 
-Approved
+Reference baseline - validate environment-specific values before use.
+
+This document is a target standard; it does not prove that a server is configured or that the application is approved for deployment. Review the [server trial readiness guide](Server_Trial_Readiness_2026-09-27.md) before setting up SIT.
 
 ---
 

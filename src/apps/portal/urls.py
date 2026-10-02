@@ -1,14 +1,31 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from . import views
+from apps.activity.views import (
+    activity_calendar, activity_create, activity_dashboard, activity_proposal,
+    activity_proposal_decide, activity_update,
+)
+from apps.activity.views import activity_proposal_approval_list, activity_proposal_file
+from apps.lifecycle import views as lifecycle_views
 
 app_name = "portal"
 
 urlpatterns = [
+    path("service-worker.js", views.service_worker, name="service_worker"),
     path("login/", auth_views.LoginView.as_view(template_name="registration/login.html"), name="login"),
     path("logout/", auth_views.LogoutView.as_view(next_page="portal:login"), name="logout"),
     path("", views.dashboard, name="dashboard"),
     path("profile/", views.profile, name="profile"),
+    path("organization-chart/", views.org_chart, name="org_chart"),
+    path("profile/requests/", views.profile_change_request_list, name="profile_change_request_list"),
+    path("profile/requests/new/", views.profile_change_request_create, name="profile_change_request_create"),
+    path("profile/requests/<int:pk>/decide/", views.profile_change_request_decide, name="profile_change_request_decide"),
+    path("profile/requests/<int:pk>/attachment/", views.profile_change_request_attachment, name="profile_change_request_attachment"),
+    path("lifecycle/", lifecycle_views.lifecycle_case_list, name="lifecycle_case_list"),
+    path("lifecycle/cases/create/", lifecycle_views.lifecycle_case_create, name="lifecycle_case_create"),
+    path("lifecycle/cases/<int:pk>/", lifecycle_views.lifecycle_case_detail, name="lifecycle_case_detail"),
+    path("lifecycle/items/<int:pk>/assign/", lifecycle_views.lifecycle_item_assign, name="lifecycle_item_assign"),
+    path("lifecycle/items/<int:pk>/update/", lifecycle_views.lifecycle_item_update, name="lifecycle_item_update"),
     path("attendance/", views.attendance_list, name="attendance"),
     path("leave/", views.leave_list, name="leave_list"),
     path("leave/create/", views.leave_create, name="leave_create"),
@@ -19,6 +36,14 @@ urlpatterns = [
     path("tasks/", views.task_list, name="task_list"),
     path("tasks/create/", views.task_create, name="task_create"),
     path("tasks/<int:pk>/", views.task_detail, name="task_detail"),
+    path("project-activities/", activity_dashboard, name="activity_dashboard"),
+    path("project-activities/calendar/", activity_calendar, name="activity_calendar"),
+    path("project-activities/create/", activity_create, name="activity_create"),
+    path("project-activities/<int:pk>/edit/", activity_update, name="activity_update"),
+    path("project-activities/<int:activity_id>/proposal/", activity_proposal, name="activity_proposal"),
+    path("project-activities/proposals/pending/", activity_proposal_approval_list, name="activity_proposal_approval_list"),
+    path("project-activities/proposals/<int:package_id>/decision/", activity_proposal_decide, name="activity_proposal_decide"),
+    path("project-activities/proposals/<int:package_id>/files/<str:field_name>/", activity_proposal_file, name="activity_proposal_file"),
     path("kpi/", views.kpi_my_list, name="kpi_my_list"),
     path("kpi/score/", views.kpi_score_list, name="kpi_score_list"),
     path("kpi/score/<int:pk>/update/", views.kpi_score_update, name="kpi_score_update"),
@@ -34,6 +59,9 @@ urlpatterns = [
     path("recruitment/create/", views.recruitment_create, name="recruitment_create"),
     path("recruitment/<int:pk>/approve/", views.recruitment_approve, name="recruitment_approve"),
     path("notifications/", views.notification_list, name="notification_list"),
+    path("notifications/<int:pk>/read/", views.notification_mark_read, name="notification_mark_read"),
+    path("notifications/read-all/", views.notification_mark_all_read, name="notification_mark_all_read"),
+    path("notifications/outbox/<int:pk>/mark-sent/", views.notification_email_outbox_mark_sent, name="notification_outbox_mark_sent"),
     path("timesheet/", views.timesheet_month, name="timesheet_month"),
     path("timesheet/create/", views.timesheet_entry_create, name="timesheet_entry_create"),
     path("timesheet/<int:pk>/delete/", views.timesheet_entry_delete, name="timesheet_entry_delete"),

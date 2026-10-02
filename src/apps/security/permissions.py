@@ -18,6 +18,9 @@ HR_OFFICER = "HR_OFFICER"
 DEPT_MANAGER = "DEPT_MANAGER"
 FINANCE_OFFICER = "FINANCE_OFFICER"
 EMPLOYEE = "EMPLOYEE"
+PROJECT_MANAGER = "PROJECT_MANAGER"
+PROJECT_COORDINATOR = "PROJECT_COORDINATOR"
+CBDA = "CBDA"
 
 # ------------------------------------------------------------------
 # AI ĐƯỢC LÀM GÌ — bảng duy nhất, sửa ở đây là áp dụng toàn hệ thống
@@ -33,6 +36,15 @@ PERMISSION_MATRIX = {
     "approve_timesheet_all_departments": (HR_MANAGER, DIRECTOR),
     # Công việc
     "assign_task": (HR_MANAGER, DEPT_MANAGER),
+    # Hoạt động dự án NGO: quyền riêng, không kế thừa KPI/HR permissions.
+    "view_activity_dashboard": (
+        SUPER_ADMIN, DIRECTOR, PROJECT_MANAGER, PROJECT_COORDINATOR, DEPT_MANAGER, CBDA,
+    ),
+    "view_all_project_activities": (
+        SUPER_ADMIN, DIRECTOR, PROJECT_MANAGER, PROJECT_COORDINATOR,
+    ),
+    "manage_project_activities": (SUPER_ADMIN, PROJECT_MANAGER, PROJECT_COORDINATOR),
+    "approve_activity_proposals": (DIRECTOR,),
     # KPI
     "score_kpi": (HR_MANAGER, DEPT_MANAGER),
     # Tài liệu & công văn
@@ -49,6 +61,16 @@ PERMISSION_MATRIX = {
     # Nhân sự
     "manage_hr": (HR_MANAGER, HR_OFFICER),
     "view_all_employees": (HR_MANAGER, HR_OFFICER, DIRECTOR),
+    "submit_profile_change_request": (
+        EMPLOYEE, DEPT_MANAGER, HR_OFFICER, HR_MANAGER, DIRECTOR, FINANCE_OFFICER,
+        PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA, SYS_ADMIN,
+    ),
+    "approve_profile_change_request": (HR_OFFICER, HR_MANAGER),
+    "manage_lifecycle_case": (HR_OFFICER, HR_MANAGER),
+    # Onboarding/offboarding paperwork is an HR workflow, separate from general
+    # company/project task assignment.
+    "view_own_lifecycle_items": (HR_OFFICER, HR_MANAGER),
+    "export_compliance_report": (FINANCE_OFFICER, HR_MANAGER, DIRECTOR),
     # Tài chính, bảng lương
     "manage_finance": (FINANCE_OFFICER,),
     # Văn thư: công văn đến, phân công xử lý — chỉ Nhân sự và Quản trị hệ thống
@@ -56,7 +78,7 @@ PERMISSION_MATRIX = {
     # Sổ công văn đi — mọi vai trò TRỪ nhân viên thường
     "access_outgoing_document": (
         SUPER_ADMIN, SYS_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER,
-        DEPT_MANAGER, FINANCE_OFFICER,
+        DEPT_MANAGER, FINANCE_OFFICER, PROJECT_MANAGER, PROJECT_COORDINATOR,
     ),
     # Duyệt đặt phòng họp/đặt xe/đề nghị VPP — dùng chung quyền với "manage_office"
     "approve_office_request": (HR_MANAGER, HR_OFFICER, SYS_ADMIN),
@@ -64,7 +86,11 @@ PERMISSION_MATRIX = {
     "request_procurement": (HR_MANAGER, HR_OFFICER, DEPT_MANAGER, FINANCE_OFFICER, SYS_ADMIN),
     "approve_procurement": (FINANCE_OFFICER, DIRECTOR),
     # Tài sản, kiểm kê, thanh lý
-    "manage_asset": (HR_MANAGER, HR_OFFICER, SYS_ADMIN),
+    "view_asset": (
+        SUPER_ADMIN, SYS_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER,
+        FINANCE_OFFICER, PROJECT_COORDINATOR,
+    ),
+    "manage_asset": (SUPER_ADMIN, HR_MANAGER, HR_OFFICER, SYS_ADMIN),
     # Trung tâm Báo cáo (/reports/) — chỉ Ban giám đốc, Nhân sự, Kế toán và Quản trị
     "view_report_center": (SUPER_ADMIN, SYS_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER, FINANCE_OFFICER),
     # Hiện menu quản trị

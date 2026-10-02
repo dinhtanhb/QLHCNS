@@ -14,7 +14,8 @@
 </div>
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <table class="w-full text-sm">
+    <div class="overflow-x-auto mobile-table-scroll">
+        <table class="w-full text-sm">
         <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Kỳ lương</th><th class="py-2 pr-4">Thời gian</th><th class="py-2 pr-4">Trạng thái</th><th class="py-2">Thao tác</th></tr></thead>
         <tbody class="divide-y divide-gray-100">
         {% for p in periods %}
@@ -29,5 +30,6 @@
         {% empty %}<tr><td colspan="4" class="py-6 text-center text-gray-400">Chưa có kỳ lương nào.</td></tr>{% endfor %}
         </tbody>
     </table>
+    </div>
 </div>
 {% endblock %}

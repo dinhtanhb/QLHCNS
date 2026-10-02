@@ -1,4 +1,7 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+from django.db.models import Count, IntegerField, OuterRef, Subquery, Value
+from django.db.models.functions import Coalesce
 from apps.common.models import BaseAuditModel
 
 
@@ -23,6 +26,8 @@ class HeadcountPlan(BaseAuditModel):
 
     @property
     def actual_headcount(self):
+        if hasattr(self, '_actual_headcount'):
+            return self._actual_headcount
         return self.department.employees.filter(employment_status="Active").count()
 
     @property
@@ -31,6 +36,16 @@ class HeadcountPlan(BaseAuditModel):
 
     def __str__(self):
         return f"{self.department} - {self.year}: {self.planned_headcount}"
+
+
+def with_headcounts(queryset):
+    from apps.hrm.models import Employee
+    counts = Employee.objects.filter(department_id=OuterRef('department_id'), employment_status='Active').order_by().values(
+        'department_id'
+    ).annotate(total=Count('pk')).values('total')
+    return queryset.select_related('department').annotate(
+        _actual_headcount=Coalesce(Subquery(counts, output_field=IntegerField()), Value(0))
+    )
 
 
 # ============================================================
@@ -56,6 +71,11 @@ class TrainingCourse(BaseAuditModel):
 
     def __str__(self):
         return f"{self.course_code} - {self.course_name}"
+
+    def clean(self):
+        super().clean()
+        if self.start_date and self.end_date and self.end_date < self.start_date:
+            raise ValidationError({'end_date': 'Ngày kết thúc không được trước ngày bắt đầu.'})
 
 
 class TrainingEnrollment(BaseAuditModel):
@@ -133,3 +153,8 @@ class Event(BaseAuditModel):
 
     def __str__(self):
         return f"{self.title} ({self.start_time:%d/%m %H:%M})"
+
+    def clean(self):
+        super().clean()
+        if self.start_time and self.end_time and self.end_time <= self.start_time:
+            raise ValidationError({'end_time': 'Thời điểm kết thúc phải sau thời điểm bắt đầu.'})

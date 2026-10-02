@@ -11,13 +11,19 @@ class TaskCommentInline(admin.TabularInline):
 
 @admin.register(Task)
 class TaskAdmin(BaseAuditAdmin):
-    list_display = ("task_code", "task_name", "assigned_to_employee", "department", "priority", "due_date", "status")
-    list_filter = ("status", "priority", "department")
-    search_fields = ("task_code", "task_name", "assigned_to_employee__full_name")
+    list_display = ("task_code", "task_name", "assigned_to_employee", "department", "priority", "due_date", "status", "activity")
+    list_filter = ("status", "priority", "department", "activity")
+    search_fields = ("task_code", "task_name", "assigned_to_employee__full_name", "activity__activity_code")
     inlines = [TaskCommentInline]
 
-    view_roles = ("SUPER_ADMIN", "HR_MANAGER", "DEPT_MANAGER", "DIRECTOR")
-    edit_roles = ("SUPER_ADMIN", "HR_MANAGER", "DEPT_MANAGER")
+    view_roles = (
+        "SUPER_ADMIN", "HR_MANAGER", "DEPT_MANAGER", "DIRECTOR",
+        "PROJECT_MANAGER", "PROJECT_COORDINATOR",
+    )
+    edit_roles = (
+        "SUPER_ADMIN", "HR_MANAGER", "DEPT_MANAGER",
+        "PROJECT_MANAGER", "PROJECT_COORDINATOR",
+    )
 
     def scope_queryset(self, request, qs):
         role_code = self._role_code(request)

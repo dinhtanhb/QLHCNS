@@ -3,6 +3,16 @@
 import os
 import sys
 
+# Management commands may run with stdout/stderr redirected by Task Scheduler,
+# CI, or a shell pipeline. On Windows those streams can default to a legacy
+# code page that cannot encode Vietnamese output. Configure them once here so
+# every command launched through manage.py uses UTF-8 and never crashes on an
+# unencodable character.
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 
 def main():
     """Run administrative tasks."""

@@ -1,7 +1,9 @@
 # CẨM NANG SỬ DỤNG IHRMS
 
-**Đối tượng:** nhân viên, quản lý, Nhân sự, Tài chính, quản trị hệ thống  
-**Phiên bản:** 1.0 — 24/09/2026  
+**Đối tượng:** nhân viên, quản lý, Nhân sự, Tài chính, quản trị hệ thống
+
+**Phiên bản:** 1.3 — 26/09/2026
+
 **Phạm vi:** thao tác theo giao diện hiện có. Quy định nội bộ về hạn xử lý, người thay thế và phê duyệt cần công ty ban hành riêng.
 
 ## 1. Sau khóa học, bạn có thể
@@ -25,7 +27,7 @@ Menu thay đổi theo quyền tài khoản. Cờ “Staff status” không thay 
 
 1. Mở địa chỉ IHRMS do công ty cung cấp; kiểm tra đúng tên miền và HTTPS.
 2. Đăng nhập bằng tài khoản cá nhân. Nếu quên mật khẩu, liên hệ đầu mối được công ty chỉ định; không gửi mật khẩu qua chat/email.
-3. Trang chính là **Bảng điều khiển**. Menu bên trái có thể gồm **Hồ sơ cá nhân**, **Bảng công**, **Nghỉ phép**, **Công việc**, **KPI**, **Tài liệu**, **Tài sản**, **Phiếu lương**. Menu duyệt/quản lý chỉ hiện với người được cấp quyền.
+3. Trang chính là **Bảng điều khiển**. Menu thay đổi theo vai trò. **Hoạt động dự án** là menu riêng ở cuối thanh điều hướng, gồm **Theo dõi hoạt động** và **Lịch hoạt động**; chỉ tài khoản được cấp quyền mới thấy. Menu **Duyệt & Xử lý** dành cho các hàng chờ phê duyệt được cấp.
 4. Chuông thông báo hiển thị thông tin được gửi tới bạn. Chọn tên tài khoản để xem lựa chọn tài khoản.
 5. Chọn **Đăng xuất** khi xong, nhất là trên máy dùng chung.
 
@@ -34,6 +36,10 @@ Menu thay đổi theo quyền tài khoản. Cờ “Staff status” không thay 
 ### 4.1 Đối chiếu hồ sơ
 
 Mở **Hồ sơ cá nhân**. Đối chiếu họ tên, ngày sinh, giới tính, email công ty, điện thoại, phòng ban, chức vụ, quản lý, ngày vào làm/trạng thái và thông tin hợp đồng/lịch sử nếu hiển thị. Nếu sai hoặc không sửa được, gửi yêu cầu cho Nhân sự; không tạo hồ sơ khác để thay thế.
+
+Muốn đổi **email cá nhân, số điện thoại hoặc địa chỉ**, mở **Cá nhân → Yêu cầu cập nhật hồ sơ → Tạo yêu cầu**. Chọn đúng trường, nhập giá trị mới, lý do và chứng từ nếu cần rồi gửi. Thay đổi chỉ có hiệu lực sau khi Nhân sự duyệt. Theo dõi trạng thái và ý kiến xử lý ở cùng danh sách; nếu Nhân sự yêu cầu bổ sung, tạo yêu cầu mới với thông tin đã sửa. Không gửi CCCD, mã số thuế, tài khoản ngân hàng hoặc thông tin lương qua biểu mẫu này.
+
+Mở **Cá nhân → Sơ đồ tổ chức** để xem nhân viên đang làm việc theo quản lý trực tiếp. Trang chỉ hiện họ tên, chức vụ và phòng ban; không phải danh bạ liên hệ.
 
 ### 4.2 Ghi và kiểm tra công
 
@@ -57,13 +63,30 @@ Mở **Hồ sơ cá nhân**. Đối chiếu họ tên, ngày sinh, giới tính,
 
 Mở **Công việc** hoặc **KPI**, đọc yêu cầu, hạn và trạng thái; cập nhật tiến độ/kết quả trong mục tương ứng rồi lưu. Thiếu thông tin hoặc hạn không khả thi thì trao đổi với người giao việc. Trong **Tài liệu**, mở đúng hồ sơ và theo dõi duyệt; không tải lên thông tin vượt mục đích.
 
-### 4.5 Phiếu lương
+### 4.5 Tệp đính kèm trên SharePoint
+
+Khi chức năng được cấu hình dùng SharePoint, người dùng vẫn đính kèm và mở tệp từ màn hình IHRMS như bình thường. IHRMS lưu tệp vào thư viện `Documents`, trong thư mục nghiệp vụ như `CongVanDen`, `CongVanDi`, `DonNghiPhep`, `HoSoUngVien` hoặc `TaiSanHinhAnh`; tên thư mục thực tế do IT cấu hình. Nhân viên không cần tự tải tệp lên thư viện SharePoint.
+
+1. Chỉ chọn tệp đúng hồ sơ và đúng mục đích; xem lại người có quyền xem trước khi lưu.
+2. Sau khi lưu, mở lại bản ghi và dùng liên kết tệp trong IHRMS để xác nhận xem/tải được đúng tệp.
+3. Nếu tải lên hoặc mở tệp báo lỗi, ghi lại mục IHRMS, thời gian và mã lỗi rồi báo IT. Không tải lặp nhiều lần hoặc xóa tệp trực tiếp trong SharePoint để tự khắc phục; IT cần kiểm tra bản ghi và vị trí lưu trước.
+4. Tệp nhân sự, ứng viên, nghỉ phép và công văn có thể chứa dữ liệu hạn chế. Không chia sẻ liên kết thư viện rộng hơn quyền nghiệp vụ và không gửi tệp qua nhóm chat không được công ty duyệt.
+
+Kết quả smoke test tải lên/đọc lại/xóa tệp thử đã được xác nhận trên SharePoint. Điều đó xác nhận lưu trữ cơ bản; không có nghĩa mọi tính năng Microsoft 365 như email, Teams, SSO hay đồng tác giả Office đã được bật.
+
+### 4.6 Phiếu lương
 
 Mở **Phiếu lương**, chọn kỳ, kiểm tra Gross (tổng thu nhập), bảo hiểm, thuế, Net (thực nhận); tải PDF nếu cần. Chỉ xem/chia sẻ phiếu của bản thân. Không thấy kỳ mới thì có thể kỳ chưa được phát hành; hỏi Tài chính/Nhân sự.
 
-### 4.6 Dịch vụ văn phòng
+### 4.7 Dịch vụ văn phòng
 
 Các mục có thể gồm đặt phòng, đặt xe, văn phòng phẩm, lịch công tác, đào tạo. Chọn đúng mục, điền thời gian/mục đích/nội dung, gửi và theo dõi trạng thái. “Chờ duyệt” chưa có nghĩa là được chấp thuận.
+
+### 4.8 Thông báo và bản nháp Outlook
+
+Mở chuông hoặc **Thông báo** để xem cập nhật IHRMS. Với một số sự kiện — quyết định đơn nghỉ, duyệt/từ chối tài liệu hoặc khóa kỳ lương — trang có thể hiện **Mở thư nháp trong Outlook**. Chọn để mở thư, kiểm tra tài khoản gửi, người nhận và nội dung, bổ sung CC nếu cần, rồi tự gửi trong Outlook. IHRMS không gửi thư thay bạn. Chỉ chọn **Đã gửi qua Outlook** sau khi Outlook xác nhận gửi thành công. Nếu liên kết không mở Outlook, báo IT kiểm tra ứng dụng mặc định xử lý liên kết email của Windows.
+
+Thông báo về yêu cầu cập nhật hồ sơ và nhắc checklist hiện nằm trong IHRMS; không mặc định sẽ có email cho các thông báo đó.
 
 ## 5. Người duyệt
 
@@ -76,6 +99,44 @@ Mở **Duyệt chấm công**, chọn tháng/bộ phận. Đối chiếu giờ, 
 ### Duyệt tài liệu/yêu cầu
 Mở danh sách chờ duyệt tương ứng; đọc nội dung và tệp, kiểm tra đúng thẩm quyền, sau đó duyệt/từ chối kèm ghi chú. Không duyệt chỉ dựa trên tiêu đề khi có cam kết hoặc chi phí.
 
+### Duyệt yêu cầu cập nhật hồ sơ
+Người có quyền Nhân sự mở **Nhân sự → Duyệt cập nhật hồ sơ** hoặc **Cá nhân → Yêu cầu cập nhật hồ sơ**. Kiểm tra nhân viên, trường, giá trị đề nghị, lý do và chứng từ; chọn **Duyệt cập nhật**, **Yêu cầu bổ sung** hoặc **Từ chối**, ghi ý kiến cụ thể. Khi duyệt, hệ thống kiểm tra giá trị gốc chưa bị HR thay đổi trong lúc chờ; nếu đã đổi, yêu cầu không được áp dụng và nhân viên cần gửi lại. Giá trị email/địa chỉ/số điện thoại chỉ xem trong phạm vi chủ hồ sơ và Nhân sự.
+
+## Hoạt động dự án — lập hồ sơ và xin phê duyệt
+
+Phân hệ này theo dõi hoạt động, người phụ trách, Task báo cáo và hồ sơ đề xuất. Phần dự trù PDF là tài liệu xin duyệt; IHRMS hiện chưa quản lý ngân sách thực chi, chứng từ hay quyết toán.
+
+### CBDA chuẩn bị hồ sơ
+
+1. Mở menu **Hoạt động dự án** → **Theo dõi hoạt động**; chọn tháng hoặc mở **Lịch hoạt động** để tìm hoạt động được giao.
+2. Chọn **Đề xuất & dự trù** ở dòng hoạt động. Hoàn thiện biểu mẫu Excel theo mẫu công ty trên máy tính, xuất thành PDF.
+3. Tải lên hai tệp PDF: **Đề xuất hoạt động** và **Dự trù kinh phí**. Tệp Excel gốc không tải lên IHRMS. Sau khi lưu, mở liên kết PDF trong hồ sơ để kiểm tra.
+4. Báo Điều phối viên khi bộ hồ sơ đã sẵn sàng. Nếu trạng thái là **Yêu cầu chỉnh sửa**, đọc ý kiến Giám đốc ở dashboard hoặc chuông thông báo; cập nhật biểu mẫu, xuất PDF mới và tải thay thế/tạo phiên bản hồ sơ theo hướng dẫn trên trang.
+
+### Điều phối viên gửi xin duyệt qua Outlook
+
+1. Mở **Đề xuất & dự trù**, kiểm tra đủ hai PDF và chọn đúng tài khoản Giám đốc trong ô người duyệt.
+2. Chọn **Soạn thư trong Outlook**. IHRMS mở thư nháp để người gửi kiểm tra người nhận, nội dung và tài khoản gửi; tự thêm CC nếu cần.
+3. Tải hai PDF từ các liên kết trên màn hình và đính kèm vào thư Outlook. `mailto:` không tự đính kèm tệp và không tự chọn tài khoản gửi.
+4. Kiểm tra thư rồi tự bấm **Gửi** trong Outlook. Quay lại IHRMS và xác nhận đã gửi. Chỉ xác nhận sau khi Outlook đã gửi thư thật; IHRMS không tự kiểm tra hộp thư gửi.
+5. Giám đốc được thông báo trong chuông IHRMS và có thể mở hàng chờ từ **Duyệt & Xử lý** → **Duyệt đề xuất hoạt động**. Link email vẫn dùng được nhưng không phải cách duy nhất vào hồ sơ.
+
+### Giám đốc xem xét và phản hồi
+
+1. Mở **Duyệt & Xử lý** → **Duyệt đề xuất hoạt động**. Danh sách chỉ hiện hồ sơ đang chờ được gửi đích danh cho tài khoản Giám đốc đang đăng nhập.
+2. Chọn **Xem và xử lý**, xem hai PDF và kiểm tra thông tin hoạt động.
+3. Chọn **Phê duyệt** hoặc **Yêu cầu chỉnh sửa**; nhập nội dung cụ thể, lưu quyết định. Nếu yêu cầu sửa, ghi rõ phần cần bổ sung/thay đổi để người lập hồ sơ xử lý được.
+
+Khi yêu cầu chỉnh sửa, người gửi, người tạo hồ sơ, CBDA phụ trách và Điều phối viên nhận thông báo trong chuông/trang **Thông báo**; nếu một nhân viên đồng thời giữ nhiều vai trò thì chỉ nhận một thông báo. Dashboard hoạt động hiển thị trạng thái mới nhất và ý kiến Giám đốc ngay dưới tên hoạt động. Dashboard lọc theo tháng, vì vậy hãy chọn tháng có ngày hoạt động nếu không thấy dòng. Hồ sơ cũ được quyết định trước khi có thông báo trong hệ thống không được tạo thông báo ngược; trạng thái/lịch sử vẫn xem được trong hồ sơ.
+
+### Theo dõi hoạt động và Task báo cáo
+
+Dashboard **Theo dõi hoạt động** cho biết người phụ trách, thời gian, trạng thái Task, hạn báo cáo, tệp báo cáo và trạng thái hồ sơ đề xuất. Dùng bộ lọc tháng/CBDA; dùng **Lịch hoạt động** để xem ngày triển khai và hạn báo cáo.
+
+Khi Điều phối viên/Quản lý dự án tạo hoặc cập nhật hoạt động, tự nhập ngày bắt đầu và ngày kết thúc theo kế hoạch thực tế, chọn CBDA phụ trách chính rồi liên kết công văn đi đã lập trong hệ thống. Ngày phát hành công văn chỉ kích hoạt giao Task, không dùng làm ngày bắt đầu hoạt động. Sau khi lưu, IHRMS giao Task báo cáo cho CBDA đó; người giao được ghi nhận là Điều phối viên, hoặc người ký công văn nếu hồ sơ không có Điều phối viên. Hạn là 10 ngày làm việc sau ngày kết thúc hoạt động, không tính Thứ Bảy, Chủ Nhật và ngày nghỉ đã khai báo trong IHRMS. Nếu đổi lịch hoạt động, Task được đồng bộ ngày, thông báo cho người liên quan và được mở lại nếu đã hoàn thành trước khi hoạt động mới kết thúc. Không cần bấm “Giao việc mới” cho Task báo cáo hoạt động. Nếu chưa thấy Task, kiểm tra hoạt động đã được liên kết công văn đi và đã chọn đúng CBDA chưa.
+
+Mở **Hoạt động dự án → Giao việc & hoàn tất** để xem danh sách. Với tài khoản có quyền giám sát hoạt động, tab mặc định **Theo dõi hoạt động** liệt kê Task trong phạm vi dự án được phép xem; tab **Việc của tôi** chỉ liệt kê Task giao cho chính người đang đăng nhập; tab **Việc tôi đã giao** chỉ liệt kê Task do chính tài khoản đó giao. Như vậy Task giao cho CBDA không bị hiểu nhầm là việc của Giám đốc/Điều phối viên khi họ theo dõi tiến độ. Nút **Giao việc mới** vẫn tuân theo quyền giao Task riêng. CBDA mở Task, cập nhật tiến độ; tải báo cáo hoạt động lên SharePoint rồi mới chọn **Hoàn thành**. Dashboard **Theo dõi hoạt động** cũng thể hiện trạng thái Task và tệp báo cáo. Nhắc hạn cần Windows Task Scheduler được IT cấu hình; không mặc định rằng lịch nhắc đã chạy tự động nếu chưa được kiểm tra.
+
 ## 6. Nhân sự
 
 ### Tiếp nhận nhân viên mới
@@ -87,6 +148,16 @@ Mở danh sách chờ duyệt tương ứng; đọc nội dung và tệp, kiểm
 
 ### Thay đổi nhân sự, tuyển dụng, lịch
 Ghi ngày hiệu lực chính xác cho điều chuyển/thay đổi; không áp dụng thay đổi tương lai sớm và không sửa lịch sử tùy tiện. Theo dõi ứng viên, trạng thái và hồ sơ; đề xuất tuyển dụng phải được duyệt mới xem là nhu cầu được chấp thuận. Khi cập nhật ngày lễ/lịch, rà ảnh hưởng tới phép và công.
+
+### Mở và theo dõi checklist tiếp nhận/nghỉ việc
+
+Checklist nhân sự là công cụ riêng của Phòng HCNS để theo dõi giấy tờ và thủ tục tiếp nhận/nghỉ việc; không dùng cho giao việc chung hoặc hoạt động dự án. Chỉ `HR_OFFICER`/`HR_MANAGER` truy cập qua **Nhân sự → Quản lý checklist onboarding/offboarding**. Mục này không nằm trong menu Cá nhân. HR chọn **Mở checklist**, nhân viên, loại hồ sơ và mẫu đang hoạt động đúng loại; với Offboarding nhập ngày nghỉ việc hiệu lực. Việc thêm/sửa hồ sơ nhân viên không tự mở checklist. Nếu mở lại cùng nhân viên/sự kiện, hệ thống không tạo hồ sơ trùng.
+
+Trong chi tiết checklist, HR giao từng đầu việc cho tài khoản HCNS đang hoạt động có đúng vai trò ghi trên mẫu (`HR_OFFICER` hoặc `HR_MANAGER`) và HCNS cập nhật **Hoàn tất**; chọn **Bỏ qua** phải ghi lý do. Nếu mục yêu cầu bàn giao/thu hồi tài sản, liên kết bản ghi cấp phát/thu hồi đã có của đúng nhân viên. Không tạo/xóa lịch sử cấp phát tài sản từ checklist. Hồ sơ tự hoàn tất khi mọi mục đã Hoàn tất hoặc Bỏ qua.
+
+Mẫu được cấu hình trong Django Admin bởi tài khoản có quyền truy cập Admin. Tạo ít nhất một mẫu Onboarding và một mẫu Offboarding, có các dòng công việc, vai trò và số ngày lệch hạn đã được HR thống nhất. Mỗi hồ sơ giữ bản chụp mẫu lúc mở; sửa mẫu không đổi hồ sơ cũ. Chưa có mẫu checklist chuẩn của công ty được nạp sẵn.
+
+Đầu việc quá hạn hiện tạo thông báo khi lệnh nhắc được chạy. IT có thể chạy thủ công từ thư mục gốc dự án: `python src\manage.py send_lifecycle_reminders`. Windows Task Scheduler chưa được cấu hình; không coi nhắc việc là tự động cho đến khi IT kiểm tra lịch chạy.
 
 ## 7. Tài chính — chạy lương
 
@@ -120,7 +191,9 @@ Phiên kiểm kê liệt kê tài sản; kiểm đếm từng dòng, ghi tình t
 
 ## 9. Báo cáo và bảo mật
 
-Báo cáo có thể gồm công/nghỉ, biến động nhân sự, số lượng nhân sự so kế hoạch, ngân sách so chi tiêu. Chọn đúng kỳ/bộ lọc và kiểm tra ngày cập nhật. Chỉ chia sẻ báo cáo nhân sự/lương cho người có thẩm quyền; lưu tệp xuất tại nơi công ty cho phép.
+Báo cáo hiện có thể gồm công/nghỉ, biến động nhân sự, số lượng nhân sự so kế hoạch, ngân sách so chi tiêu. Chọn đúng kỳ/bộ lọc và kiểm tra ngày cập nhật. Chỉ chia sẻ báo cáo nhân sự/lương cho người có thẩm quyền; lưu tệp xuất tại nơi công ty cho phép.
+
+Các báo cáo BHXH, quyết toán PIT và chi phí lương theo phòng ban **chưa được bật và chưa xuất được từ IHRMS**. Chờ Kế toán xác nhận biểu mẫu/phiên bản áp dụng và quy tắc phân bổ trước khi sử dụng báo cáo chính thức. Không xem khung kỹ thuật trong hệ thống là biểu mẫu đã được Kế toán phê duyệt.
 
 ## 10. Xử lý sự cố
 
@@ -132,6 +205,7 @@ Báo cáo có thể gồm công/nghỉ, biến động nhân sự, số lượng
 | Công đã duyệt không sửa được | Yêu cầu quy trình điều chỉnh, không tạo dữ liệu thay thế gây lệch. |
 | Chưa có phiếu lương | Hỏi Tài chính kỳ đã phát hành chưa. Không chia sẻ bảng lương chung. |
 | Trang/PDF lỗi | Ghi màn hình, bước thao tác, thời gian và thông báo; che thông tin cá nhân khi chụp. |
+| Tệp đính kèm không tải/mở được | Không thử xóa ở SharePoint hoặc gửi bản sao qua kênh không duyệt. Ghi mục IHRMS, tên hồ sơ/mã bản ghi, thời gian và thông báo; báo IT kiểm tra quyền và trạng thái lưu. |
 | Gửi IT | Ghi người báo/mã NV, thời điểm, URL, các bước, kết quả mong đợi/thực tế, mã lỗi, mức ảnh hưởng. Tuyệt đối không gửi mật khẩu, SECRET_KEY hay chuỗi kết nối. |
 
 ## 11. Tự kiểm tra
@@ -140,6 +214,8 @@ Báo cáo có thể gồm công/nghỉ, biến động nhân sự, số lượng
 - Tôi biết gửi đơn nghỉ và kiểm tra trạng thái.
 - Tôi hiểu công đã duyệt cần quy trình điều chỉnh.
 - Tôi chỉ tải phiếu lương của bản thân.
+- Tôi biết yêu cầu thay đổi hồ sơ phải được Nhân sự duyệt mới có hiệu lực.
+- Tôi biết checklist quá hạn chỉ được nhắc tự động khi IT đã cấu hình lịch chạy.
 - Tôi biết báo lỗi mà không gửi bí mật.
 
-**Tài liệu đi kèm:** [Giáo án và bài thực hành tập huấn](TAP_HUAN_IHRMS.md).
+**Tài liệu đi kèm:** [Giáo án và bài thực hành tập huấn](TAP_HUAN_IHRMS.md). Bản đánh giá triển khai hiện hành: [Production Readiness Review](docs/Production_Readiness_Review_2026-09-23.md). Bản review ngày 23/09 là snapshot lịch sử.

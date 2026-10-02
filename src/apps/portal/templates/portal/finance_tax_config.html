@@ -59,7 +59,8 @@
         <input type="number" step="0.01" name="tax_rate" placeholder="Thuế suất (%)" required class="rounded-md border border-gray-300 px-2 py-1.5">
         <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-medium px-4 py-1.5 rounded-md transition">+ Thêm bậc</button>
     </form>
-    <table class="w-full text-sm">
+    <div class="overflow-x-auto mobile-table-scroll">
+        <table class="w-full text-sm">
         <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Hiệu lực từ</th><th class="py-2 pr-4">Bậc</th><th class="py-2 pr-4">Từ</th><th class="py-2 pr-4">Đến</th><th class="py-2">Thuế suất</th></tr></thead>
         <tbody class="divide-y divide-gray-100">
         {% for b in tax_brackets %}
@@ -73,5 +74,6 @@
         {% empty %}<tr><td colspan="5" class="py-6 text-center text-gray-400">Chưa có bậc thuế nào.</td></tr>{% endfor %}
         </tbody>
     </table>
+    </div>
 </div>
 {% endblock %}

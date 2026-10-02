@@ -38,7 +38,7 @@ Toàn bộ giao diện hệ thống phải tuân thủ tài liệu này.
 ## Framework
 
 ```text
-Bootstrap 5
+Django templates + Tailwind CSS 3 (local CLI build) + shared project CSS
 ```
 
 ---
@@ -46,7 +46,7 @@ Bootstrap 5
 ## Admin Template
 
 ```text
-AdminLTE 3
+Django Admin with Jazzmin when installed; employee portal uses project templates
 ```
 
 ---
@@ -60,9 +60,7 @@ CSS3
 
 JavaScript ES6
 
-jQuery
-
-AJAX
+Django Template Language
 ```
 
 ---
@@ -1228,3 +1226,38 @@ Ready For:
 - Dashboard Development
 - UAT
 - Go Live
+
+---
+
+# 47. IHRMS PORTAL MOBILE AND ASSET BUILD
+
+## Tailwind CSS build
+
+Portal Django biên dịch Tailwind CSS 3 bằng CLI cục bộ. Không thêm Tailwind Play CDN vào trang. Node.js/npm chỉ cần ở bước build; khi chạy, hệ thống phục vụ `src/static/css/tailwind.css` như một static asset Django thông thường.
+
+Từ thư mục gốc dự án, cài đúng các phiên bản trong lockfile và build lại sau khi sửa class Tailwind trong template hoặc mã nguồn:
+
+```powershell
+npm ci
+npm run build:css
+```
+
+Để tự build lại liên tục trong lúc phát triển:
+
+```powershell
+npm run watch:css
+```
+
+File đầu vào là `src/frontend/tailwind.input.css`; quy tắc quét nằm trong `tailwind.config.js`; CSS đã build được quản lý tại `src/static/css/tailwind.css`. Sau khi build, chạy Django `collectstatic` theo quy trình triển khai. Không sửa trực tiếp file CSS đã sinh.
+
+## Portal mobile layout
+
+- Menu chính của portal giữ bố cục ngang ở độ rộng từ 768px. Dưới 768px, nút hamburger mở menu dọc có thể cuộn và hỗ trợ bàn phím/trình đọc màn hình.
+- Bảng dữ liệu dài dùng khung cuộn ngang trên màn hình nhỏ. Giữ riêng template chỉ dùng để in và bảo toàn kiểu in hiện có.
+- Sau khi đổi menu hoặc layout chung, kiểm tra ở 375px, 768px và 1024px. Đảm bảo thao tác bàn phím vẫn dùng được và cuộn bảng không làm rộng toàn trang.
+
+## Installable portal and cache policy
+
+Manifest mở portal tại `/portal/` ở chế độ standalone. Trên trình duyệt hỗ trợ và website dùng HTTPS (hoặc localhost), người dùng có thể thêm IHRMS vào màn hình chính. Service worker chỉ được cache file `/static/` cùng origin. Không thêm HTML, phản hồi API, trang, hay dữ liệu nghiệp vụ/nhân sự/lương vào cache. PWA vẫn cần mạng để xem và cập nhật dữ liệu; cache chỉ giúp tải asset nhanh hơn.
+
+Khi đổi chính sách cache hoặc danh sách asset precache, rà lại `src/static/js/service-worker.js` và tăng phiên bản `STATIC_CACHE` để thiết bị thay cache cũ có chủ đích.

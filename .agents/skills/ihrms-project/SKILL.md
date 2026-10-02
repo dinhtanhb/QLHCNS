@@ -8,8 +8,10 @@ description: Develop, debug, and review the IHRMS Django codebase, including HR,
 ## Project context
 
 - Repository root: `D:/QLHCNS`; Django project currently runs from `src/`.
-- The source directory is currently represented by a gitlink without a `.gitmodules` mapping. Verify source tracking before relying on a clean clone or claiming a reproducible release; see [Production Readiness Review](../../../docs/Production_Readiness_Review_2026-09-23.md).
-- SQLite is the active development/test database. Do not change DB engine, migrate production data, or run schema changes against a live database unless the user explicitly asks.
+- `src/` is tracked in the main repository. Confirm the current branch/worktree and retain unrelated user changes before committing.
+- The user's local environment has been configured for SQL Server; other clones/test runs may use SQLite. Never assume the active backend: inspect it safely with `manage.py shell -c "from django.db import connection; print(connection.vendor)"`. Do not run schema changes against a live database without explicit authorization.
+- The application uses SharePoint through Microsoft Graph for configured file storage. Company email is composed in Outlook through a `mailto:` draft; the user attaches PDFs and sends manually. Do not reintroduce server-side SMTP assumptions without an explicit requirement.
+- NGO project activity workflow is a distinct menu/module: activity dashboard/calendar, proposal/budget PDF package, assigned-director approval inbox, in-app notifications, and report Task. Financial commitment tracking, receipts, and settlement remain outside current scope.
 - The application serves 30–50 internal employees. Prefer the existing Django modular monolith; do not add infrastructure for scale without evidence.
 - Read `docs/00_Project_Charter.md`, `docs/04_Security_Design.md`, `docs/10_RBAC_Permission_Matrix.md`, and relevant module standards before changing sensitive flows.
 
@@ -26,12 +28,12 @@ description: Develop, debug, and review the IHRMS Django codebase, including HR,
 
 ## Validation
 
-Run commands from `D:/QLHCNS/src` using the project virtualenv:
+Run commands from `D:/QLHCNS` using the project virtualenv:
 
 ```powershell
-& 'D:/QLHCNS/venv/Scripts/python.exe' manage.py check
-& 'D:/QLHCNS/venv/Scripts/python.exe' manage.py makemigrations --check --dry-run
-& 'D:/QLHCNS/venv/Scripts/python.exe' manage.py test
+& 'D:/QLHCNS/venv/Scripts/python.exe' src/manage.py check
+& 'D:/QLHCNS/venv/Scripts/python.exe' src/manage.py makemigrations --check --dry-run
+& 'D:/QLHCNS/venv/Scripts/python.exe' src/manage.py test
 ```
 
 Use Django's test runner so writes go to an isolated test database. Never run `migrate`, `flush`, `loaddata`, or bulk updates against production as routine verification. If the change affects SQL Server behavior, also run the relevant suite against a disposable SQL Server SIT database and state clearly if that environment is unavailable.

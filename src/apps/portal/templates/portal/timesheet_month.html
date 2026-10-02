@@ -2,10 +2,40 @@
 {% block title %}Bảng chấm công{% endblock %}
 {% block content %}
 <style>
+    .timesheet-leave-row {
+        display: grid;
+        grid-template-columns: 8rem 4rem;
+        align-items: center;
+        justify-content: start;
+        column-gap: 0.5rem;
+    }
+    .timesheet-leave-input {
+        width: 4rem !important;
+        max-width: 4rem;
+        min-height: 1.75rem;
+        padding: 0.2rem 0.35rem !important;
+        text-align: right;
+    }
     @media print {
+        @page { size: A4 portrait; margin: 12mm; }
         header, nav, .no-print { display: none !important; }
         main { max-width: 100% !important; padding: 0 !important; }
         body { background: white !important; }
+        .timesheet-document {
+            padding: 8mm !important;
+            border: 1px solid #d1d5db !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+        .timesheet-summary-layout {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 1.5rem !important;
+        }
+        .timesheet-leave-row { grid-template-columns: 15rem 4rem !important; }
+        .timesheet-leave-row label { white-space: nowrap; }
+        .timesheet-leave-input { width: 4rem !important; min-height: 1.75rem !important; }
+        table { font-size: 9pt !important; }
+        tr { break-inside: avoid; }
     }
 </style>
 
@@ -42,7 +72,7 @@
 </div>
 
 <!-- KHUNG BẢNG CHẤM CÔNG — theo đúng layout mẫu -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-10">
+<div class="timesheet-document bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-10">
     <div class="text-center mb-6">
         <h1 class="text-xl font-bold">BẢNG CHẤM CÔNG</h1>
     </div>
@@ -53,7 +83,8 @@
         <p><span class="font-semibold">Thời gian:</span> Tháng {{ month }} năm {{ year }}</p>
     </div>
 
-    <table class="w-full text-sm border border-gray-300 border-collapse">
+    <div class="overflow-x-auto mobile-table-scroll">
+        <table class="w-full text-sm border border-gray-300 border-collapse">
         <thead>
             <tr class="bg-gray-100">
                 <th class="border border-gray-300 px-2 py-1.5 w-24">Ngày</th>
@@ -97,13 +128,15 @@
             <td class="border border-gray-300 px-2 py-1.5" colspan="2">Tổng số giờ làm việc trong tháng</td>
             <td class="border border-gray-300 px-2 py-1.5 text-center">{{ total_hours }}</td>
         </tr>
-        <tr class="font-semibold">
-            <td class="border border-gray-300 px-2 py-1.5" colspan="2">
+        <tr>
+            <td class="border border-gray-300 px-2 py-1.5" colspan="3">
+                <strong>
                 Tổng số giờ cần làm trong tháng: {{ base_days }} ngày
-                {% if summary.total_leave_days %}- {{ summary.total_leave_days }} ngày nghỉ{% endif %}
-                = {{ required_days }} ngày × {{ hours_per_day }}h
+                {% if approved_leave_total %}- {{ approved_leave_total }} ngày nghỉ đã duyệt{% endif %}
+                = {{ required_days|floatformat:1 }} ngày × {{ hours_per_day|floatformat:1 }}h
+                = {{ required_hours|floatformat:"-2" }}h
+                </strong>
             </td>
-            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ required_hours }}</td>
         </tr>
                 {% for a in allocations %}
         <tr class="font-semibold">
@@ -117,9 +150,10 @@
         </tr>
         </tbody>
     </table>
+    </div>
 
         <!-- Tổng hợp + Chữ ký: 2 cột song song -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
+    <div class="timesheet-summary-layout grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
         <form method="post" action="{% url 'portal:timesheet_summary_update' %}" class="text-sm">
             {% csrf_token %}
             <input type="hidden" name="year" value="{{ year }}">
@@ -131,25 +165,25 @@
             {% endif %}
             <fieldset {% if summary.status == "Approved" %}disabled{% endif %}>
             <div class="space-y-1">
-                <div class="flex items-center justify-between gap-3 py-0.5">
-                    <label class="text-gray-700">Số ngày nghỉ ốm trong tháng:</label>
-                    <input type="number" step="0.5" name="sick_days" value="{{ summary.sick_days }}" class="w-16 rounded border border-gray-300 px-2 py-0.5 text-right text-sm">
+                <div class="timesheet-leave-row py-0.5">
+                    <label for="timesheet-sick-days" class="text-gray-700">Số ngày nghỉ ốm trong tháng:</label>
+                    <input id="timesheet-sick-days" type="number" step="0.5" name="sick_days" value="{{ summary.sick_days }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
                 </div>
-                <div class="flex items-center justify-between gap-3 py-0.5">
-                    <label class="text-gray-700">Số ngày thai sản trong tháng:</label>
-                    <input type="number" step="0.5" name="maternity_days" value="{{ summary.maternity_days }}" class="w-16 rounded border border-gray-300 px-2 py-0.5 text-right text-sm">
+                <div class="timesheet-leave-row py-0.5">
+                    <label for="timesheet-maternity-days" class="text-gray-700">Số ngày thai sản trong tháng:</label>
+                    <input id="timesheet-maternity-days" type="number" step="0.5" name="maternity_days" value="{{ summary.maternity_days }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
                 </div>
-                <div class="flex items-center justify-between gap-3 py-0.5">
-                    <label class="text-gray-700">Số ngày nghỉ bù trong tháng:</label>
-                    <input type="number" step="0.5" name="compensatory_days" value="{{ summary.compensatory_days }}" class="w-16 rounded border border-gray-300 px-2 py-0.5 text-right text-sm">
+                <div class="timesheet-leave-row py-0.5">
+                    <label for="timesheet-compensatory-days" class="text-gray-700">Số ngày nghỉ bù trong tháng:</label>
+                    <input id="timesheet-compensatory-days" type="number" step="0.5" name="compensatory_days" value="{{ summary.compensatory_days }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
                 </div>
-                <div class="flex items-center justify-between gap-3 py-0.5">
-                    <label class="text-gray-700">Số ngày nghỉ phép trong tháng:</label>
-                    <input type="number" step="0.5" name="annual_leave_days" value="{{ summary.annual_leave_days }}" class="w-16 rounded border border-gray-300 px-2 py-0.5 text-right text-sm">
+                <div class="timesheet-leave-row py-0.5">
+                    <label for="timesheet-annual-leave-days" class="text-gray-700">Số ngày nghỉ phép trong tháng:</label>
+                    <input id="timesheet-annual-leave-days" type="number" step="0.5" name="annual_leave_days" value="{{ summary.annual_leave_days }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
                 </div>
-                <div class="flex items-center justify-between gap-3 py-0.5">
-                    <label class="text-gray-700">Số ngày nghỉ không lương trong tháng:</label>
-                    <input type="number" step="0.5" name="unpaid_leave_days" value="{{ summary.unpaid_leave_days }}" class="w-16 rounded border border-gray-300 px-2 py-0.5 text-right text-sm">
+                <div class="timesheet-leave-row py-0.5">
+                    <label for="timesheet-unpaid-leave-days" class="text-gray-700">Số ngày nghỉ không lương trong tháng:</label>
+                    <input id="timesheet-unpaid-leave-days" type="number" step="0.5" name="unpaid_leave_days" value="{{ summary.unpaid_leave_days }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
                 </div>
                 {% if balance %}
                 <div class="flex items-center justify-between gap-3 py-0.5 pt-2 border-t border-gray-100 mt-2">
@@ -171,15 +205,13 @@
         </form>
 
         <div class="grid grid-cols-2 gap-6 text-sm text-center self-start">
-            <div>
-                <p class="font-semibold mb-14">Quản lý trực tiếp</p>
-                <p>(Ký, họ tên)</p>
-                <p class="font-medium mt-1">{{ summary.employee.manager.full_name|default:"—" }}</p>
+            <div class="flex h-32 flex-col items-center">
+                <p class="font-semibold">Quản lý trực tiếp</p>
+                <p class="font-medium mt-auto">{{ summary.employee.manager.full_name|default:"—" }}</p>
             </div>
-            <div>
-                <p class="font-semibold mb-14">Chữ ký nhân viên</p>
-                <p>(Ký, họ tên)</p>
-                <p class="font-medium mt-1">{{ summary.employee.full_name }}</p>
+            <div class="flex h-32 flex-col items-center">
+                <p class="font-semibold">Chữ ký nhân viên</p>
+                <p class="font-medium mt-auto">{{ summary.employee.full_name }}</p>
             </div>
         </div>
     </div>

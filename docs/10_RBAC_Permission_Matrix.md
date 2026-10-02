@@ -380,14 +380,14 @@ Close
 
 # 14. ASSET MODULE
 
-| Action | Super Admin | HR Manager | Manager | Employee | Director |
-|----------|------------|------------|------------|------------|------------|
-| Create Asset | Y | Y | N | N | N |
-| Assign Asset | Y | Y | Y | N | N |
-| Return Asset | Y | Y | Y | Own | N |
-| Maintenance | Y | Y | N | N | N |
-| Dispose Asset | Y | Y | N | N | Y |
-| Read Asset | Y | Y | Department | Own | Y |
+| Action | Super/System Admin | HR Manager/Officer | Finance Officer | Project Coordinator | Director | Other staff/CBDA |
+|----------|--------------------|--------------------|-----------------|---------------------|----------|------------------|
+| View asset, inventory and disposal records | Y | Y | Y | Y | Y | N |
+| Manage assets and inventory | Y | Y | N | N | N | N |
+| Create/prepare disposal records | Y | Y | N | N | N | N |
+| Approve disposal request | Y | N | N | N | Y* | N |
+
+`view_asset` controls the portal menus, personal asset list, read-only asset pages and Django Admin visibility. `manage_asset` is limited to HR and system administrators. Director approval continues to use the existing director-employee check. Ordinary employees, department managers, project managers and CBDA do not get asset navigation or direct page access.
 
 ---
 

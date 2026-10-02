@@ -1,5 +1,11 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from apps.common.models import BaseAuditModel
+from apps.common.uploads import validate_upload, build_upload_path
+
+
+def upload_to_profile_change(instance, filename):
+    return build_upload_path("profile-change-requests", filename)
 
 
 class Employee(BaseAuditModel):
@@ -63,6 +69,58 @@ class Employee(BaseAuditModel):
 
     def __str__(self):
         return f"{self.employee_code} - {self.full_name}"
+
+
+class EmployeeProfileChangeRequest(BaseAuditModel):
+    ALLOWED_FIELDS = ("personal_email", "mobile_phone", "address")
+    FIELD_CHOICES = [
+        ("personal_email", "Email cá nhân"),
+        ("mobile_phone", "Số điện thoại"),
+        ("address", "Địa chỉ"),
+    ]
+    STATUS_CHOICES = [
+        ("Pending", "Chờ duyệt"),
+        ("Approved", "Đã duyệt"),
+        ("Rejected", "Từ chối"),
+        ("NeedsMoreInfo", "Yêu cầu bổ sung"),
+    ]
+
+    employee = models.ForeignKey(
+        Employee, on_delete=models.CASCADE, related_name="profile_change_requests",
+        db_column="EmployeeID",
+    )
+    field_name = models.CharField("Trường đề nghị đổi", max_length=50, choices=FIELD_CHOICES, db_column="FieldName")
+    old_value = models.CharField("Giá trị hiện tại", max_length=500, blank=True, db_column="OldValue")
+    new_value = models.CharField("Giá trị đề nghị", max_length=500, db_column="NewValue")
+    submitted_snapshot = models.CharField(max_length=500, blank=True, db_column="SubmittedSnapshot")
+    reason = models.CharField("Lý do", max_length=500, blank=True, db_column="Reason")
+    attachment = models.FileField(
+        "Chứng từ đính kèm", upload_to=upload_to_profile_change,
+        validators=[validate_upload], null=True, blank=True, db_column="Attachment",
+    )
+    status = models.CharField(
+        "Trạng thái", max_length=20, choices=STATUS_CHOICES, default="Pending", db_column="Status"
+    )
+    decided_by = models.ForeignKey(
+        "security.User", null=True, blank=True, on_delete=models.SET_NULL,
+        related_name="+", db_column="DecidedByUserID",
+    )
+    decided_at = models.DateTimeField(null=True, blank=True, db_column="DecidedAt")
+    decision_note = models.CharField("Ý kiến xử lý", max_length=500, blank=True, db_column="DecisionNote")
+
+    class Meta:
+        db_table = "tblEmployeeProfileChangeRequest"
+        verbose_name = "Yêu cầu cập nhật hồ sơ"
+        verbose_name_plural = "Yêu cầu cập nhật hồ sơ"
+        ordering = ["-created_date"]
+
+    def clean(self):
+        super().clean()
+        if self.field_name not in self.ALLOWED_FIELDS:
+            raise ValidationError({"field_name": "Trường này không được phép tự cập nhật."})
+
+    def __str__(self):
+        return f"{self.employee} — {self.field_name} ({self.status})"
 
 class EmployeeTransfer(BaseAuditModel):
     employee = models.ForeignKey(

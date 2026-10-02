@@ -93,13 +93,17 @@ class PayrollAdmin(BaseAuditAdmin):
         Giờ bỏ qua (và báo rõ) các dòng thuộc kỳ Locked, chỉ tính các dòng thuộc kỳ còn Open;
         SUPER_ADMIN vẫn được phép tính lại kỳ Locked (thao tác khẩn cấp có kiểm soát)."""
         count, skipped, errors = 0, 0, []
+        configurations = {}
         queryset = queryset.select_related("employee", "payroll_period")
         for payroll in queryset:
             if payroll.payroll_period.status == "Locked" and not request.user.is_superuser:
                 skipped += 1
                 continue
             try:
-                payroll.calculate()
+                period_date = payroll.payroll_period.start_date
+                if period_date not in configurations:
+                    configurations[period_date] = Payroll.load_calculation_configuration(period_date)
+                payroll.calculate(configuration=configurations[period_date])
                 payroll.modified_by = request.user
                 payroll.save()
                 count += 1

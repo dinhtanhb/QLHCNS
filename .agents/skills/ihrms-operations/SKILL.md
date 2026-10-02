@@ -8,9 +8,9 @@ description: Prepare and operate IHRMS environments, troubleshoot user and payro
 ## Operational constraints
 
 - This project handles identifiable HR data and confidential payroll. Use least privilege, separate accounts, TLS, and approved company retention rules.
-- SQLite is the current test/development database. A setting change to `DB_ENGINE=mssql` is not a data migration. Preserve the original SQLite database and take a verified backup before any cutover.
+- The developer has tested/configured IHRMS against SQL Server 2022 Express; production is intended for a company Windows Server/SQL Server environment. Verify backend and target database before every operation. A setting change is not a data migration.
 - Do not run destructive management commands or schema/data changes against production. Use a disposable database for rehearsal; require an approved release window and rollback plan for production work.
-- The application currently has a source-control gitlink problem and the pinned Django 5.0.14 is unsupported. Consult [Production Readiness Review](../../../docs/Production_Readiness_Review_2026-09-23.md) before representing the system as production-ready.
+- `src/` is tracked in the main repository and Django dependencies have been upgraded to 5.2.x; consult the current [Production Readiness Review](../../../docs/Production_Readiness_Review_2026-09-23.md) and project work log before stating deployment readiness. Do not repeat the old gitlink/Django 5.0.14 issue as current state without rechecking.
 - Follow the rewritten end-user procedures in [IHRMS User Guide](../../../HUONG_DAN_SU_DUNG_IHRMS.md). Never request or expose passwords, secret keys, full identity numbers, or payroll documents in support messages.
 
 ## Environment setup and support
@@ -20,6 +20,15 @@ description: Prepare and operate IHRMS environments, troubleshoot user and payro
 3. Production must use a maintained Django patch, compatible pinned packages, a supported SQL Server backend/ODBC driver, HTTPS, secure cookies, an explicit host/CSRF allowlist, production WSGI hosting, collected static assets, controlled media storage, and useful logs.
 4. Never use `manage.py runserver` as the production server.
 5. Create individual accounts; link each account to the correct employee record; assign only necessary roles. Disable access promptly on departure and review role changes.
+
+## NGO project activity operations
+
+- Activity management is separated in the final **Hoạt động dự án** navigation menu. Approval remains under **Duyệt & Xử lý**.
+- The assigned Director opens **Duyệt đề xuất hoạt động** to review only proposals assigned to that account; email links are optional entry points.
+- Proposal workflow stores the two PDFs (activity proposal and budget estimate) in the configured SharePoint library. Excel source files are not uploaded by the current user flow.
+- Outlook email is user-sent: IHRMS opens a `mailto:` draft; the user checks From/To/CC, manually attaches the two downloaded PDFs, sends, then confirms submission in IHRMS. `mailto:` does not attach files or verify delivery.
+- Change requests notify the submitter, proposal creator, assigned CBDA and activity coordinator in the IHRMS notification center, deduplicated by employee. The activity dashboard also shows latest proposal status/comment. These notifications are not backfilled for decisions made before this behavior was deployed.
+- Current project module tracks activities, tasks, due dates, reports and approval documents. It does not implement budget ledger, receipt validation, or settlement. Windows Task Scheduler reminders remain an operations setup step; verify task registration and logs before telling users reminders are automatic.
 
 ## SQLite-to-SQL-Server release workflow
 

@@ -1,4 +1,5 @@
 from decimal import Decimal, ROUND_HALF_UP
+from dataclasses import dataclass
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -8,6 +9,14 @@ from apps.common.models import BaseAuditModel
 # ============================================================
 # 1. LƯƠNG CƠ BẢN CỦA NHÂN VIÊN
 # ============================================================
+
+@dataclass(frozen=True)
+class PayrollConfiguration:
+    period_date: object
+    insurance: object
+    deduction: object
+    tax_brackets: tuple
+
 
 class EmployeeSalary(BaseAuditModel):
     STATUS_CHOICES = [("Active", "Đang áp dụng"), ("Ended", "Đã kết thúc")]
@@ -314,14 +323,8 @@ class Payroll(BaseAuditModel):
         return f"{self.employee} - {self.payroll_period}"
 
     # -------- Công thức tính lương, theo 06A_Payroll_Statutory_Rate_Master_Data mục 2 --------
-    def calculate(self):
-        """Tính Gross, Bảo hiểm, Thuế TNCN, Net theo tỷ lệ hiệu lực tại thời điểm StartDate của kỳ lương."""
-        from apps.attendance.models import MonthlyAttendanceSummary
-        from apps.attendance.services import standard_working_days as _standard_working_days
-
-        period = self.payroll_period
-        period_date = period.start_date
-
+    @staticmethod
+    def load_calculation_configuration(period_date):
         insurance_cfg = (
             InsuranceRateConfig.objects.filter(effective_from__lte=period_date)
             .filter(models.Q(effective_to__isnull=True) | models.Q(effective_to__gte=period_date))
@@ -350,6 +353,23 @@ class Payroll(BaseAuditModel):
         tax_brackets = list(
             PersonalIncomeTaxBracket.objects.filter(effective_from=latest_bracket_generation).order_by("bracket_no")
         ) if latest_bracket_generation else []
+
+        return PayrollConfiguration(period_date, insurance_cfg, deduction_cfg, tuple(tax_brackets))
+
+    def calculate(self, *, configuration=None):
+        """Tính Gross, Bảo hiểm, Thuế TNCN, Net theo tỷ lệ hiệu lực tại thời điểm StartDate của kỳ lương."""
+        from apps.attendance.models import MonthlyAttendanceSummary
+        from apps.attendance.services import standard_working_days as _standard_working_days
+
+        period = self.payroll_period
+        period_date = period.start_date
+
+        configuration = configuration or self.load_calculation_configuration(period_date)
+        if configuration.period_date != period_date:
+            raise ValidationError("Payroll configuration does not match the period start date.")
+        insurance_cfg = configuration.insurance
+        deduction_cfg = configuration.deduction
+        tax_brackets = configuration.tax_brackets
 
         if not insurance_cfg or not deduction_cfg or not tax_brackets:
             raise ValidationError(
