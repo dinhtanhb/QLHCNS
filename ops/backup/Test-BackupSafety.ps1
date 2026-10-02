@@ -66,6 +66,8 @@ try {
         if ($Scenario -eq 'Express' -and $backupQuery -notmatch 'NO_COMPRESSION') { throw 'Express compressed backup' }
         if ($Scenario -eq 'Standard' -and $backupQuery -match 'NO_COMPRESSION') { throw 'Standard compression unavailable' }
     }
+    # Expected child exit 1 was asserted above; do not leak it to a CI shell.
+    $global:LASTEXITCODE = 0
     Write-Output "PASS: $Kind / $Scenario (sqlcmd mocked; real SQL restore not tested)"
 } finally {
     Remove-Item function:sqlcmd -ErrorAction SilentlyContinue
