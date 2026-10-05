@@ -1248,7 +1248,7 @@ npm run build:css
 npm run watch:css
 ```
 
-File đầu vào là `src/frontend/tailwind.input.css`; quy tắc quét nằm trong `tailwind.config.js`; CSS đã build được quản lý tại `src/static/css/tailwind.css`. Sau khi build, chạy Django `collectstatic` theo quy trình triển khai. Không sửa trực tiếp file CSS đã sinh.
+File đầu vào là `src/frontend/tailwind.input.css`; chỉ thị `@source "../"` quét mã trong `src` bằng Tailwind CSS 4 và `@tailwindcss/cli`. CSS đã build được quản lý tại `src/static/css/tailwind.css`. Sau khi build, chạy Django `collectstatic` theo quy trình triển khai. Không sửa trực tiếp file CSS đã sinh.
 
 ## Portal mobile layout
 

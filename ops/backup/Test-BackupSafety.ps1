@@ -53,7 +53,8 @@ try {
         $mock = (Get-Item function:sqlcmd).Definition
         $target = Join-Path $PSScriptRoot $script
         Set-Content $helper "`$Scenario = 'Failure'; function global:sqlcmd { $mock }; & '$target' -Database TestDB -BackupRoot '$root'; exit `$LASTEXITCODE"
-        $output = & (Join-Path $PSHOME 'pwsh') -NoProfile -File $helper 2>&1
+        $shellName = if ($PSVersionTable.PSEdition -eq 'Core') { 'pwsh' } else { 'powershell.exe' }
+        $output = & (Join-Path $PSHOME $shellName) -NoProfile -File $helper 2>&1
         if ($LASTEXITCODE -ne 1) { throw 'Failure did not return exit 1' }
         if (-not (Test-Path $old)) { throw 'Failure deleted old valid backup' }
         if (Get-ChildItem $directory -Filter '*.sha256') { throw 'Failure recorded verified checksum' }
