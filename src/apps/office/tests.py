@@ -46,6 +46,15 @@ class OfficeTestBase(TestCase):
 
 
 class OfficeModelValidationTests(OfficeTestBase):
+    def test_vehicle_booking_accepts_pending_and_rejected_states(self):
+        booking = VehicleBooking(
+            vehicle=self.vehicle, employee=self.employee, destination="Biên Hòa",
+            start_time=self.at(15), end_time=self.at(16), status="Pending",
+        )
+        booking.full_clean()
+        booking.status = "Rejected"
+        booking.full_clean()
+
     def test_room_booking_requires_end_after_start(self):
         booking = RoomBooking(
             room=self.room, employee=self.employee, purpose="Họp",
@@ -95,6 +104,20 @@ class OfficeModelValidationTests(OfficeTestBase):
 
 
 class OfficeViewPermissionTests(OfficeTestBase):
+    def test_employee_can_submit_vehicle_booking_for_approval(self):
+        self.client.force_login(self.make_user("EMPLOYEE", "off-vehicle-requester"))
+        response = self.client.post(reverse("portal:vehicle_booking_create"), {
+            "vehicle": self.vehicle.pk,
+            "destination": "Biên Hòa",
+            "start_time": "2026-10-05T15:00",
+            "end_time": "2026-10-05T16:00",
+        })
+        self.assertRedirects(response, reverse("portal:vehicle_booking_list"))
+        self.assertTrue(VehicleBooking.objects.filter(
+            vehicle=self.vehicle, employee=self.employee,
+            destination="Biên Hòa", status="Pending",
+        ).exists())
+
     def test_employee_cannot_approve_room_booking_by_direct_post(self):
         booking = RoomBooking.objects.create(
             room=self.room, employee=self.employee, purpose="Họp chờ duyệt",

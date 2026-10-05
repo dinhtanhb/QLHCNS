@@ -146,7 +146,10 @@ class RoomBooking(BaseAuditModel):
 
 
 class VehicleBooking(BaseAuditModel):
-    STATUS_CHOICES = [("Approved", "Đã đặt"), ("Cancelled", "Đã hủy")]
+    STATUS_CHOICES = [
+        ("Pending", "Chờ duyệt"), ("Approved", "Đã đặt"),
+        ("Rejected", "Từ chối"), ("Cancelled", "Đã hủy"),
+    ]
 
     vehicle = models.ForeignKey(Vehicle, verbose_name="Xe", on_delete=models.PROTECT, db_column="VehicleID", related_name="bookings")
     employee = models.ForeignKey("hrm.Employee", verbose_name="Người đặt", on_delete=models.PROTECT, db_column="EmployeeID", related_name="vehicle_bookings")
@@ -154,7 +157,7 @@ class VehicleBooking(BaseAuditModel):
     purpose = models.CharField("Mục đích", max_length=300, null=True, blank=True, db_column="Purpose")
     start_time = models.DateTimeField("Bắt đầu", db_column="StartTime")
     end_time = models.DateTimeField("Kết thúc", db_column="EndTime")
-    status = models.CharField("Trạng thái", max_length=30, choices=STATUS_CHOICES, default="Approved", db_column="Status")
+    status = models.CharField("Trạng thái", max_length=30, choices=STATUS_CHOICES, default="Pending", db_column="Status")
 
     class Meta:
         db_table = "tblVehicleBooking"
