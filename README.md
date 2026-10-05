@@ -28,6 +28,7 @@ Hướng dẫn dựng SIT, danh sách việc IT cần chuẩn bị và checklist
 - [Lộ trình Hoạt động dự án NGO](docs/NGO_Activity_Planning_MEL_Roadmap.md)
 - [Đánh giá sẵn sàng lịch sử](docs/Production_Readiness_Review_2026-09-23.md) là snapshot ngày 24/09; xem runbook SIT để biết trạng thái mới hơn
 - [Tiêu chuẩn triển khai](docs/08_Deployment_Standards.md); hướng dẫn Codex ở .agents/skills/
+- [Hướng dẫn review tổng thể hoặc thay đổi, mẫu yêu cầu và lệnh kiểm tra](docs/Huong_Dan_Review_Du_An.md); reviewer Sixth tại [.sixth/agents/code-review.md](.sixth/agents/code-review.md)
 
 Hoạt động dự án có dashboard, lịch, Task báo cáo, đề xuất PDF và hàng chờ duyệt. Người dùng soạn/gửi thư xin duyệt bằng Outlook trên máy họ. Ứng dụng chưa tự gửi thư qua máy chủ, chưa có sổ ngân sách/chứng từ/quyết toán và chưa triển khai SSO, Teams hay Office tự động. SharePoint cần cấu hình và kiểm tra quyền riêng cho SIT.
 

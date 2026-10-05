@@ -18,6 +18,8 @@ Không dừng ở câu “không làm được”. Trong nhật ký, ghi rõ tha
 
 ## Quy trình hoàn tất
 
+Khi được giao review, đọc [hướng dẫn review dự án](docs/Huong_Dan_Review_Du_An.md). Phân biệt FULL (toàn mã hiện tại) với CHANGES (diff), REVIEW (không sửa) với FIX (được sửa). Mặc định REVIEW nếu yêu cầu chưa cho phép sửa; không dùng diff rỗng trên `main` để kết luận review tổng thể đã hoàn tất. Reviewer Sixth tại [`.sixth/agents/code-review.md`](.sixth/agents/code-review.md) là định nghĩa riêng của Sixth, không đồng nghĩa đã có hoặc đã chạy Bugbot.
+
 1. Đọc trạng thái Git và tài liệu liên quan trước khi sửa.
 2. Thực hiện thay đổi trong phạm vi đã yêu cầu; không đưa `.env`, database, dữ liệu thật hay bí mật vào Git.
 3. Chạy kiểm tra phù hợp và ghi chính xác lệnh/kết quả trong nhật ký.
