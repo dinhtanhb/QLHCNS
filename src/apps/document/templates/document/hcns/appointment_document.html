@@ -1,0 +1,17 @@
+<article class="hcns-paper hcns-appointment" style="{{ document.profile.paper_css }}">
+  <div class="hcns-decision-head">
+    <div><div>LIÊN HIỆP CÁC HỘI KH &amp; KT VIỆT NAM</div><strong>TRUNG TÂM PHÁT TRIỂN<br>SỨC KHỎE BỀN VỮNG</strong><div>─────</div><p>Số: {{ decision.number }}</p></div>
+    <div><strong>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong><div><strong>Độc lập - Tự do - Hạnh phúc</strong></div><div>───────────────</div><p><em>{{ decision.date_line }}</em></p></div>
+  </div>
+  <h1>QUYẾT ĐỊNH</h1>
+  <p class="hcns-decision-subject">V/v: {{ decision.subject }}</p>
+  <p class="hcns-draft-mark">BẢN SOẠN THẢO – Chưa thay thế văn bản được ký / ban hành</p>
+  <h2>GIÁM ĐỐC TRUNG TÂM</h2>
+  <div class="hcns-decision-bases">{% for line in decision.bases %}<p>{{ line }}</p>{% endfor %}</div>
+  <h2>QUYẾT ĐỊNH</h2>
+  {% for article in decision.articles %}<p class="hcns-decision-article"><strong>Điều {{ article.number }}:</strong> {{ article.text|linebreaksbr }}</p>{% if article.table %}<div class="hcns-document-table"><table><colgroup>{% for width in article.table.css_widths %}<col style="width:{{ width }}%">{% endfor %}</colgroup><thead><tr>{% for col in article.table.columns %}<th>{{ col.label }}</th>{% endfor %}</tr></thead><tbody>{% for row in article.table.rows %}<tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>{% endfor %}</tbody></table></div>{% endif %}{% endfor %}
+  <div class="hcns-decision-foot">
+    <div class="hcns-decision-recipients"><strong><em>Nơi nhận:</em></strong>{% for line in decision.recipients %}<p>{{ line }}</p>{% endfor %}</div>
+    <div class="hcns-decision-signature"><strong>GIÁM ĐỐC</strong><div class="hcns-signature-space"></div><strong>{{ decision.signer }}</strong></div>
+  </div>
+</article>

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{% if document %}{{ document.filename_stem }}{% else %}{{ spec.title }}{% endif %}{% endblock %}
+{% block content %}
+{% if document %}<div id="hcns-export-name" data-filename="{{ document.filename_stem }}" hidden></div>{% endif %}
+<link rel="stylesheet" href="{% static 'css/hcns_forms.css' %}?v=20261006-5">
+{% if document %}<style>@page { {{ document.profile.page_css }} }</style>{% endif %}
+<div class="hcns-heading no-print">
+  <div><a href="{% url 'portal:hcns_catalog' %}{% if catalog_query %}?{{ catalog_query }}{% endif %}">← Biểu mẫu HCNS</a><h1>{{ spec.title }}</h1><p>Mẫu tham khảo: {{ spec.source }}</p></div>
+</div>
+{% if source_label %}<p class="hcns-notice no-print">Lấy thông tin từ: {{ source_label }}. Chữ ký được để trống để kiểm tra và ký trên bản mới.</p>{% endif %}
+{% if document %}<p class="no-print">Tên tệp: <strong>{{ document.filename_stem }}.{{ spec.kind }}</strong>. Sau khi sửa thông tin, cập nhật bản xem trước để kiểm tra lại tên.</p>{% endif %}
+{% if workflow_source %}<p class="hcns-notice no-print">Ngày hiệu lực và thông tin thay đổi được lấy từ đúng bản ghi đã chọn. Các thông tin còn lại tham khảo hồ sơ hiện tại; lương trong bản bổ nhiệm / điều chuyển cần xác nhận riêng. {% if source_reason %}Lý do đã ghi nhận: {{ source_reason }}. {% endif %}Kiểm tra nội dung các điều trước khi xuất; số quyết định, ngày ký, người ký và thông tin chưa ghi nhận cần bổ sung. <a href="{% url 'portal:hr_employee_detail' source_employee_id %}">Trở về hồ sơ nhân viên →</a></p>{% endif %}
+{% if employee_source %}<p class="hcns-notice no-print">Các trường có dữ liệu tương ứng đã được điền từ hồ sơ. Mục chưa có dữ liệu hoặc không thuộc hồ sơ nhân viên được giữ nguyên để bổ sung. Lương nếu có là lương cơ bản hiện hành để tham khảo; ngày hiệu lực, mức lương mới, người ký và kết quả đánh giá cần được xác nhận riêng.</p>{% endif %}
+{% if spec.note %}<p class="hcns-notice no-print">{{ spec.note }}</p>{% endif %}
+{% if read_only %}
+  <p class="hcns-notice no-print">Hồ sơ nguồn có nhiều dòng. Bản xem trước và tệp xuất giữ đầy đủ các dòng; chỉnh sửa thông tin tại phân hệ nguồn.</p>
+  <div class="hcns-actions no-print"><a class="hcns-button primary" href="?{{ source_query }}&amp;export=1">Tải Excel đầy đủ</a><button type="button" class="hcns-button" onclick="window.print()">In / lưu PDF</button></div>
+{% else %}
+<details class="hcns-editor no-print" open>
+  <summary>Nhập và kiểm tra nội dung</summary>
+  <form method="post" action="{{ request.path }}{% if source_query %}?{{ source_query }}{% endif %}" id="hcns-draft-form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for section in editor_sections %}
+      {% if section.title %}<h2>{{ section.title }}</h2>{% endif %}
+      <div class="hcns-field-grid">{% for field in section.fields %}<div class="hcns-field {% if field.field.widget.input_type == None %}wide{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{{ field.errors }}</div>{% endfor %}</div>
+      {% if section.table %}
+      <div class="hcns-table-editor" data-prefix="{{ section.table.spec.key }}" data-max-rows="{{ section.table.spec.max_rows }}">
+        <h3>{{ section.table.spec.title }}</h3>{{ section.table.formset.management_form }}{{ section.table.formset.non_form_errors }}
+        <div class="hcns-table-scroll"><table><thead><tr>{% for col in section.table.spec.columns %}<th scope="col">{{ col.label }}</th>{% endfor %}{% if not section.table.spec.fixed %}<th>Thao tác</th>{% endif %}</tr></thead>
+          <tbody>{% for row in section.table.editor_rows %}<tr>{% for cell in row.cells %}<td>{% if cell.locked %}{{ cell.text }}{% else %}{{ cell.field }}{{ cell.field.errors }}{% endif %}</td>{% endfor %}{% if not section.table.spec.fixed %}<td><button class="hcns-remove" type="button">Xóa dòng</button></td>{% endif %}</tr>{% endfor %}</tbody>
+        </table></div>
+        {% if not section.table.spec.fixed %}<button class="hcns-add hcns-button" type="button">+ Thêm dòng</button><template><tr>{% for field in section.table.empty_fields %}<td>{{ field }}</td>{% endfor %}<td><button class="hcns-remove" type="button">Xóa dòng</button></td></tr></template>{% endif %}
+      </div>
+      {% endif %}
+    {% endfor %}
+    <p class="hcns-editor-note">Dữ liệu đang soạn chỉ tồn tại trên trang này. Tải tệp để giữ bản soạn thảo trước khi rời trang.</p>
+    <div class="hcns-actions"><button class="hcns-button primary" name="action" value="preview">Cập nhật bản xem trước</button><button class="hcns-button" name="action" value="export">Tải {% if spec.kind == "xlsx" %}Excel (.xlsx){% else %}Word (.docx){% endif %}</button><button type="button" class="hcns-button" id="hcns-print">In / lưu PDF</button></div>
+  </form>
+</details>
+{% endif %}
+{% if document %}
+<div class="hcns-preview-label no-print">Bản xem trước {% if preview_updated %}đã cập nhật{% endif %}</div>
+{% include "document/hcns/document.html" with document=document %}
+{% else %}<p class="hcns-notice no-print">Sửa các mục được báo lỗi để xem trước hoặc xuất tệp.</p>{% endif %}
+{% if employee_choices %}{{ employee_choices|json_script:"hcns-employee-choices" }}{% endif %}
+{{ reference_data|json_script:"hcns-reference-data" }}
+<script src="{% static 'js/hcns_forms.js' %}?v=20261006-6" defer></script>
+{% endblock %}

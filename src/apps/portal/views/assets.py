@@ -278,7 +278,10 @@ def inventory_session_export_excel(request, pk):
         ws.column_dimensions[openpyxl.utils.get_column_letter(c)].width = 18
 
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    response["Content-Disposition"] = f'attachment; filename="BBKK_{session.session_name}.xlsx"'
+    from apps.common.export_names import export_name
+    from django.utils import timezone
+    filename = export_name("BB_KiemKeTaiSan", session.session_name, timezone.localtime(session.inventory_datetime).date(), "xlsx")
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
     wb.save(response)
     return response
 

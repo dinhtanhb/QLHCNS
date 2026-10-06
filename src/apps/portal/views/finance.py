@@ -69,7 +69,10 @@ def payslip_pdf(request, pk):
     from apps.payroll.payslip_pdf import render_payslip_pdf
     response = HttpResponse(render_payslip_pdf(payslip), content_type="application/pdf")
     period = payslip.payroll.payroll_period
-    response["Content-Disposition"] = f'attachment; filename="phieu-luong-{period.payroll_year}-{period.payroll_month:02d}.pdf"'
+    from apps.common.export_names import export_name
+    from django.utils import timezone
+    filename = export_name("Phieu_Luong", f"{employee.employee_code}-{period.payroll_year}{period.payroll_month:02d}", timezone.localtime(payslip.generated_date).date(), "pdf")
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
     response["Cache-Control"] = "private, no-store"
     response["X-Content-Type-Options"] = "nosniff"
     return response

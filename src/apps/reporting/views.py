@@ -2,6 +2,8 @@ from datetime import date, timedelta
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render
+from django.utils import timezone
+from apps.common.export_names import export_name
 
 from apps.security.permissions import has_permission
 from apps.security.data_access import visible_dispatches_for
@@ -75,7 +77,7 @@ def export_employees(request):
         excel_stream.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response["Content-Disposition"] = f'attachment; filename="Danh_sach_nhan_su_{date.today().strftime("%Y%m%d")}.xlsx"'
+    response["Content-Disposition"] = f'attachment; filename="{export_name("DS_NhanSu", "TongHop", timezone.localdate(), "xlsx")}"'
     SecurityEvent.objects.create(user=request.user, action="data_export", resource=request.resolver_match.url_name)
     return response
 
@@ -90,7 +92,7 @@ def export_contracts(request):
         excel_stream.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response["Content-Disposition"] = f'attachment; filename="Hop_dong_sap_het_han_{days}_ngay.xlsx"'
+    response["Content-Disposition"] = f'attachment; filename="{export_name("DS_HopDongSapHetHan", str(days) + "Ngay", timezone.localdate(), "xlsx")}"'
     SecurityEvent.objects.create(user=request.user, action="data_export", resource=request.resolver_match.url_name)
     return response
 
@@ -107,6 +109,6 @@ def export_dispatches(request):
         excel_stream.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
-    response["Content-Disposition"] = f'attachment; filename="So_cong_van_{type_slug}_{year}.xlsx"'
+    response["Content-Disposition"] = f'attachment; filename="{export_name("So_CongVan", str(year) + "-" + type_slug, timezone.localdate(), "xlsx")}"'
     SecurityEvent.objects.create(user=request.user, action="data_export", resource=request.resolver_match.url_name)
     return response

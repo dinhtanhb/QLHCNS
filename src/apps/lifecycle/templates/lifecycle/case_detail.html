@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Checklist — {{ case.employee.full_name }}{% endblock %}
 {% block content %}
+{% if can_manage_lifecycle_case %}<p class="mb-4"><a href="{% url 'portal:hcns_catalog' %}?group=personnel&amp;employee_id={{ case.employee_id }}" class="text-blue-700 hover:underline">Soạn / xuất hồ sơ tiếp nhận và bàn giao</a></p>{% endif %}
 <div class="max-w-5xl mx-auto space-y-5">
   <div class="bg-white border border-gray-200 rounded-xl p-6"><div class="flex flex-wrap items-start justify-between gap-3"><div><p class="text-xs font-semibold uppercase tracking-wide text-blue-700">{{ case.get_case_type_display }}</p><h1 class="mt-1 text-2xl font-bold text-gray-900">{{ case.employee.full_name }}</h1><p class="mt-1 text-sm text-gray-600">{{ case.employee.employee_code }} · {{ case.template.template_name }} · Hiệu lực {{ case.effective_date|date:"d/m/Y" }}</p></div><span class="rounded-full bg-blue-50 px-3 py-1 text-sm text-blue-800">{{ case.get_status_display }}</span></div></div>
   <div class="rounded-xl border border-blue-200 bg-blue-50 px-5 py-4 text-sm text-blue-950">

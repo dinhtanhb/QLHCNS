@@ -1,3 +1,5 @@
+from django.core.exceptions import ValidationError
+from django.urls import reverse
 import re
 from django.db import models, transaction
 from django.views.decorators.http import require_POST
@@ -27,6 +29,18 @@ def _can_manage_hr(request):
     return has_permission(request.user, "manage_hr")
 
 
+def _can_draft_hr(request):
+    return all(has_permission(request.user, permission) for permission in
+               ("export_employee_data", "view_all_employees", "view_employee_compensation"))
+
+
+def _save_history(model, **values):
+    obj = model(**values)
+    obj.full_clean()
+    obj.save()
+    return obj
+
+
 def _employee_scope(request):
     """Trả về queryset Employee theo đúng quyền xem của tài khoản đang đăng nhập."""
     if has_permission(request.user, "view_all_employees"):
@@ -48,7 +62,7 @@ def hr_employee_list(request):
         employees = employees.filter(models.Q(full_name__icontains=q) | models.Q(employee_code__icontains=q))
     return render(request, "portal/hr_employee_list.html", {
         **_paginated_context(request, employees.order_by('full_name', 'pk'), 'employees'),
-        "q": q, "can_manage_hr": _can_manage_hr(request),
+        "q": q, "can_manage_hr": _can_manage_hr(request), "can_draft_hr": _can_draft_hr(request),
     })
 
 
@@ -57,8 +71,8 @@ def hr_employee_detail(request, pk):
     employee = get_object_or_404(_employee_scope(request), pk=pk)
     sensitive = has_permission(request.user, 'view_employee_compensation')
     return render(request, "portal/hr_employee_detail.html", {
-        "employee": employee, "can_manage_hr": _can_manage_hr(request),
-        "contracts": employee.contracts.select_related("contract_type").order_by("-start_date") if sensitive else [],
+        "employee": employee, "can_manage_hr": _can_manage_hr(request), "can_draft_hr": _can_draft_hr(request),
+        "contracts": employee.contracts.select_related("contract_type").prefetch_related("appendices").order_by("-start_date") if sensitive else [],
         "current_contract": employee.contracts.order_by("-start_date").first() if sensitive else None,
         "transfers": employee.transfers.select_related("from_department", "to_department"),
         "promotions": employee.promotions.select_related("old_position", "new_position"),
@@ -168,7 +182,7 @@ def hr_employee_history_create(request, pk, history_type):
     employee = get_object_or_404(Employee, pk=pk)
     try:
         if history_type == "transfer":
-            transfer = EmployeeTransfer.objects.create(
+            transfer = _save_history(EmployeeTransfer,
                 employee=employee, from_department=employee.department,
                 to_department_id=request.POST.get("to_department"),
                 effective_date=request.POST.get("effective_date"),
@@ -179,9 +193,9 @@ def hr_employee_history_create(request, pk, history_type):
                 f"Điều chuyển từ {transfer.from_department} sang {transfer.to_department}, hiệu lực {transfer.effective_date}.",
                 link=f"/portal/hr/employees/{pk}/", created_by=request.user,
             )
-            messages.success(request, "Đã ghi nhận điều chuyển. Phòng ban của nhân viên đã được cập nhật.")
+            messages.success(request, "Đã ghi nhận điều chuyển. Phòng ban được cập nhật theo ngày hiệu lực.")
         elif history_type == "promotion":
-            promotion = EmployeePromotion.objects.create(
+            promotion = _save_history(EmployeePromotion,
                 employee=employee, old_position=employee.position,
                 new_position_id=request.POST.get("new_position"),
                 effective_date=request.POST.get("effective_date"),
@@ -192,9 +206,9 @@ def hr_employee_history_create(request, pk, history_type):
                 f"Từ {promotion.old_position} lên {promotion.new_position}, hiệu lực {promotion.effective_date}.",
                 link=f"/portal/hr/employees/{pk}/", created_by=request.user,
             )
-            messages.success(request, "Đã ghi nhận bổ nhiệm/thăng chức. Vị trí của nhân viên đã được cập nhật.")
+            messages.success(request, "Đã ghi nhận bổ nhiệm/thăng chức. Vị trí được cập nhật theo ngày hiệu lực.")
         elif history_type == "reward":
-            reward = EmployeeReward.objects.create(
+            reward = _save_history(EmployeeReward,
                 employee=employee, reward_type=request.POST.get("reward_type"),
                 reward_date=request.POST.get("reward_date"),
                 amount=request.POST.get("amount") or None,
@@ -207,7 +221,7 @@ def hr_employee_history_create(request, pk, history_type):
             )
             messages.success(request, "Đã ghi nhận khen thưởng.")
         elif history_type == "discipline":
-            discipline = EmployeeDiscipline.objects.create(
+            discipline = _save_history(EmployeeDiscipline,
                 employee=employee, discipline_type=request.POST.get("discipline_type"),
                 discipline_date=request.POST.get("discipline_date"),
                 description=request.POST.get("description", ""), created_by=request.user,
@@ -218,6 +232,12 @@ def hr_employee_history_create(request, pk, history_type):
                 link=f"/portal/hr/employees/{pk}/", created_by=request.user,
             )
             messages.success(request, "Đã ghi nhận kỷ luật.")
+        else:
+            raise ValidationError("Thao tác nhân sự không hợp lệ.")
+        if request.POST.get("next") == "hcns" and _can_draft_hr(request) and history_type in ("transfer", "promotion"):
+            record = transfer if history_type == "transfer" else promotion
+            slug = "salary-decision" if history_type == "transfer" else "appointment-decision"
+            return redirect(reverse("portal:hcns_draft", args=[slug]) + f"?{history_type}_id={record.pk}")
     except Exception as e:
         _friendly_error(request, e, "Không thể lưu.")
     return redirect("portal:hr_employee_detail", pk=pk)
@@ -264,6 +284,7 @@ def hr_contract_create(request):
     return render(request, "portal/hr_contract_form.html", {
         "employees": Employee.objects.filter(employment_status__in=["Active", "Probation"]),
         "contract_types": ContractType.objects.all(),
+        "selected_employee": request.POST.get("employee") or request.GET.get("employee_id", ""),
     })
 
 
@@ -275,7 +296,7 @@ def hr_contract_appendix_create(request, pk):
         return redirect("portal:hr_contract_list")
     contract = get_object_or_404(Contract, pk=pk)
     try:
-        appendix = ContractAppendix.objects.create(
+        appendix = _save_history(ContractAppendix,
             contract=contract, appendix_no=request.POST.get("appendix_no"),
             effective_date=request.POST.get("effective_date"),
             description=request.POST.get("description", ""), created_by=request.user,
@@ -313,6 +334,9 @@ def hr_salary_create(request, pk):
         # cho 1 nhân viên cùng lúc tạo ra 2 bản ghi lương "Active" song song (mục 3.C).
         with transaction.atomic():
             employee = Employee.objects.select_for_update().get(pk=employee.pk)
+            previous_end = _day_before(effective_date)
+            if EmployeeSalary.objects.filter(employee=employee, status="Active", effective_date__gt=previous_end).exists():
+                raise ValidationError("Ngày nâng lương phải sau ngày hiệu lực của mức lương đang ghi nhận.")
             EmployeeSalary.objects.filter(employee=employee, status="Active").update(
                 status="Ended", end_date=_day_before(effective_date)
             )
@@ -328,6 +352,8 @@ def hr_salary_create(request, pk):
             link=f"/portal/hr/employees/{pk}/#luong", created_by=request.user,
         )
         messages.success(request, "Đã ghi nhận nâng lương.")
+        if request.POST.get("next") == "hcns" and _can_draft_hr(request):
+            return redirect(reverse("portal:hcns_draft", args=["salary-decision"]) + f"?salary_id={new_salary.pk}")
     except Exception as e:
         _friendly_error(request, e, "Không thể lưu.")
     return redirect(f"/portal/hr/employees/{pk}/#luong")
@@ -350,6 +376,11 @@ def hr_contract_renew(request, pk):
         # đồng cùng lúc tạo 2 phụ lục trùng nhau (mục 3.C).
         with transaction.atomic():
             contract = Contract.objects.select_for_update().get(pk=contract.pk)
+            renewed_end = Contract._meta.get_field("end_date").clean(new_end_date, contract)
+            if not renewed_end or (contract.end_date and renewed_end <= contract.end_date):
+                raise ValidationError("Gia hạn cần ngày kết thúc mới sau ngày kết thúc hiện tại.")
+            if contract.end_date is None:
+                raise ValidationError("Hợp đồng không xác định thời hạn không cần gia hạn ngày kết thúc.")
             appendix = ContractAppendix(
                 contract=contract, appendix_no=request.POST.get("appendix_no") or f"GH-{timezone.now():%Y%m%d%H%M}",
                 effective_date=timezone.now().date(),

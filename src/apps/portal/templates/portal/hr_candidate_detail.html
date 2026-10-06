@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ candidate.full_name }}{% endblock %}
 {% block content %}
+{% if can_manage_hr %}<div class="flex flex-wrap gap-4 mb-4"><a href="{% url 'portal:hcns_draft' 'candidate-interview' %}?candidate_id={{ candidate.pk }}" class="text-blue-700 hover:underline">Phiếu phỏng vấn / Word</a><a href="{% url 'portal:hcns_draft' 'candidate-score-summary' %}?candidate_id={{ candidate.pk }}" class="text-blue-700 hover:underline">Tổng hợp điểm / Excel</a></div>{% endif %}
 <h1 class="text-lg font-bold text-gray-900 mb-1">{{ candidate.full_name }} <span class="text-gray-400 font-normal text-sm">({{ candidate.candidate_code }})</span></h1>
 <p class="text-gray-500 text-sm mb-4">{{ candidate.phone_number }} · {{ candidate.email }} · Trạng thái: <strong>{{ candidate.get_status_display }}</strong></p>
 

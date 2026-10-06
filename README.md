@@ -65,7 +65,7 @@ Sửa .env với database phát triển, sinh SECRET_KEY mới bằng lệnh dư
     python src\manage.py createsuperuser
     python src\manage.py runserver
 
-Mở http://127.0.0.1:8000/portal/. runserver chỉ dành cho phát triển cục bộ, không dùng làm web server máy chủ. Chỉ chạy migrate sau khi xác nhận database đích là database phát triển/SIT riêng và đã sao lưu.
+Mở http://127.0.0.1:8001/portal/. Lệnh `runserver` của QLHCNS mặc định dùng cổng 8001 để tránh trùng các dự án khác. Có thể chọn cổng khác bằng `python src\manage.py runserver 8002`. runserver chỉ dành cho phát triển cục bộ, không dùng làm web server máy chủ. Chỉ chạy migrate sau khi xác nhận database đích là database phát triển/SIT riêng và đã sao lưu.
 
 ## Kiểm thử, sao lưu, phân quyền
 

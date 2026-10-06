@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ req.request_no }}{% endblock %}
 {% block content %}
+<div class="flex flex-wrap gap-4 mb-4"><a href="{% url 'portal:hcns_draft' 'asset-disposal-proposal' %}?disposal_id={{ req.pk }}" class="text-blue-700 hover:underline">Đề nghị / Word</a><a href="{% url 'portal:hcns_draft' 'asset-disposal-decision' %}?disposal_id={{ req.pk }}" class="text-blue-700 hover:underline">Quyết định / Word</a><a href="{% url 'portal:hcns_draft' 'asset-destruction-minutes' %}?disposal_id={{ req.pk }}" class="text-blue-700 hover:underline">Biên bản xử lý / Word</a></div>
 <div class="flex items-center justify-between mb-4">
     <h1 class="text-lg font-bold text-gray-900">{{ req.request_no }} <span class="text-sm font-normal text-gray-400">({{ req.get_status_display }})</span></h1>
     <div class="flex gap-2">

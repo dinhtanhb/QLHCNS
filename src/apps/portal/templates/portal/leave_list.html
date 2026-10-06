@@ -50,6 +50,7 @@
                     {% else %}bg-yellow-100 text-yellow-800{% endif %}">
                     {{ r.get_status_display }}
                 </span>
+                {% if r.leave_type.leave_type_code == 'AL' %}<a href="{% url 'portal:hcns_draft' 'annual-leave' %}?leave_id={{ r.pk }}" class="block mt-2 text-blue-700 hover:underline">In / Word</a>{% elif r.leave_type.leave_type_code == 'CO' %}<a href="{% url 'portal:hcns_draft' 'compensatory-leave' %}?leave_id={{ r.pk }}" class="block mt-2 text-blue-700 hover:underline">In / Word</a>{% elif r.leave_type.leave_type_code == 'UL' %}<a href="{% url 'portal:hcns_draft' 'unpaid-leave' %}?leave_id={{ r.pk }}" class="block mt-2 text-blue-700 hover:underline">In / Word</a>{% endif %}
             </td>
         </tr>
         {% empty %}

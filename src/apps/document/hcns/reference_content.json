@@ -1,0 +1,428 @@
+{
+  "onboarding_documents": [
+    "Sơ yếu lý lịch có xác nhận của chính quyền địa phương",
+    "Chứng minh thư – photo – công chứng",
+    "Hộ khẩu – photo – công chứng",
+    "Giấy khai sinh (bản sao)",
+    "Bằng cấp, Bảng điểm – photo – công chứng",
+    "Quyết định nghỉ việc của Công ty trước (nếu có)",
+    "Chứng nhận sức khỏe (từ bệnh viện cấp quận/huyện trở lên)",
+    "2 ảnh 3 x 4",
+    "Mã số thuế: …………",
+    "Người phụ thuộc (nếu có):",
+    "Giấy đăng ký tạm trú, tạm vắng (nếu không có hộ khẩu Hà Nội)",
+    "Sổ BHXH: Nếu có ghi số sổ: ……….Nếu không, điền vào tờ khai cấp sổ",
+    "Giấy tờ khác (nếu có):"
+  ],
+  "offboarding_documents": [
+    "Đơn xin nghỉ việc (nếu có)",
+    "Biên bản bàn giao công việc (file Word)",
+    "Biên bản bàn giao nghỉ việc (File Excel)",
+    "Bảng chấm công tháng",
+    "Đơn xin nghỉ bù, nghỉ phép tháng (nếu có)",
+    "Sổ Bảo hiểm xã hội",
+    "Thẻ Bảo hiểm y tế",
+    "Giấy tờ khác (nếu có ghi rõ):"
+  ],
+  "evaluation_criteria": [
+    {
+      "category": "Thu thập thông tin",
+      "criterion": "Thu thập thông tin cần thiết khi Quản lý yêu cầu"
+    },
+    {
+      "category": "Thu thập thông tin",
+      "criterion": "Lựa chọn các tài liệu đáng tin cậy để có được thông tin cần thiết"
+    },
+    {
+      "category": "Thu thập thông tin",
+      "criterion": "Lập báo cáo chi tiết, trình Quản lý xem xét, rà soát nội dung"
+    },
+    {
+      "category": "Phiên dịch",
+      "criterion": "Tham gia phiên dịch tại các cuộc họp của dự án/trung tâm"
+    },
+    {
+      "category": "Phiên dịch",
+      "criterion": "Phiên dịch chi tiết nội dung cuộc đối thoại"
+    },
+    {
+      "category": "Phiên dịch",
+      "criterion": "Dịch tóm tắt, nội dung mơ hồ/đoán mò, không chắc chắn về nội dung"
+    },
+    {
+      "category": "Dịch tài liệu",
+      "criterion": "Dịch rất cẩn thận nội dung các tài liệu được giao"
+    },
+    {
+      "category": "Dịch tài liệu",
+      "criterion": "Cố gắng giữ đúng bố cục, format"
+    },
+    {
+      "category": "Dịch tài liệu",
+      "criterion": "Gửi tài liệu đã dịch tới Quản lý để rà soát/ xác nhận nội dung"
+    },
+    {
+      "category": "Gửi các tài liệu qua thư/fax",
+      "criterion": "Nghiên cứu, hiểu được nội dung tài liệu trước khi gửi đi"
+    },
+    {
+      "category": "Gửi các tài liệu qua thư/fax",
+      "criterion": "Gọi điện thoại cho đơn vị/người nhận để khẳng định đã nhận thư/fax"
+    },
+    {
+      "category": "Gửi các tài liệu qua thư/fax",
+      "criterion": "Sử dụng số và trích yếu văn bản khi gọi điện thoại cho người nhận/đơn vị khác khi bạn nói chuyện về các văn bản này."
+    },
+    {
+      "category": "Gửi các tài liệu qua thư/fax",
+      "criterion": "Theo dõi, nhắc nhở việc trả lời/gửi báo cáo trước thời hạn 2-3 ngày"
+    },
+    {
+      "category": "Gửi các tài liệu qua thư/fax",
+      "criterion": "Điện thoại nhắc đối tác về thời hạn vào ngày hết hạn"
+    },
+    {
+      "category": "Gửi các tài liệu qua thư/fax",
+      "criterion": "Ghi chép/lập danh sách các phản hồi, tổng hợp báo cáo"
+    },
+    {
+      "category": "Gửi các tài liệu qua thư/fax",
+      "criterion": "Báo cáo quá trình, kết quả thực hiện cho Quản lý mỗi ngày"
+    },
+    {
+      "category": "Chuẩn bị tài liệu, lập kế hoạch, báo cáo...",
+      "criterion": "Chuẩn bị tài liệu, kế hoạch, báo cáo... theo yêu cầu của dự án, trung tâm."
+    },
+    {
+      "category": "Chuẩn bị tài liệu, lập kế hoạch, báo cáo...",
+      "criterion": "Trình bày bố cục tài liệu ngay ngắn, theo mẫu văn bản"
+    },
+    {
+      "category": "Chuẩn bị tài liệu, lập kế hoạch, báo cáo...",
+      "criterion": "Xác nhận nội dung tài liệu, kế hoạch,báo cáo với Quản lý trước khi gửi đi"
+    },
+    {
+      "category": "Thu thập, chuẩn bị chứng từ tài chính",
+      "criterion": "Trung thực với các chi tiêu, các vấn đề tài chính"
+    },
+    {
+      "category": "Thu thập, chuẩn bị chứng từ tài chính",
+      "criterion": "Tìm hiểu và thực hiện Quy chế quản lý tài chính của dự án/trung tâm"
+    },
+    {
+      "category": "Thu thập, chuẩn bị chứng từ tài chính",
+      "criterion": "Phối hợp với Kế toán dự án để lập kế hoạch ngân sách, chi tiêu các hoạt động của dự án/trung tâm"
+    },
+    {
+      "category": "Thu thập, chuẩn bị chứng từ tài chính",
+      "criterion": "Yêu cầu nhà cung cấp, đối tác dự án cung cấp chứng từ hợp lý, hợp lệ"
+    },
+    {
+      "category": "Thu thập, chuẩn bị chứng từ tài chính",
+      "criterion": "Kiểm tra kỹ thông tin: loại chứng từ, ngày tháng, giá tiền, nội dung/tên hàng, tên dự án, tên cửa hàng (chữ kí, con dấu)  trước khi trình lên Quản lý/Lãnh đạo"
+    },
+    {
+      "category": "Tại Trung tâm/ Văn phòng dự án",
+      "criterion": "Chuẩn bị phòng họp, bàn ghế ít nhất 10 phút trước cuộc họp"
+    },
+    {
+      "category": "Tại Trung tâm/ Văn phòng dự án",
+      "criterion": "Chuẩn bị trà/nước…, phục vụ trà/nước khi cuộc họp bắt đầu"
+    },
+    {
+      "category": "Tại Trung tâm/ Văn phòng dự án",
+      "criterion": "Chuẩn bị tài liệu theo yêu cầu của Quản lý/Lãnh đạo"
+    },
+    {
+      "category": "Tại Trung tâm/ Văn phòng dự án",
+      "criterion": "Ghi chép, đánh máy biên bản cuộc họp vào ngày hôm sau"
+    },
+    {
+      "category": "Tại Trung tâm/ Văn phòng dự án",
+      "criterion": "Gửi biên bản cuộc họp đến Quản lý/ thành viên để xin ý kiến góp ý"
+    },
+    {
+      "category": "Tại Trung tâm/ Văn phòng dự án",
+      "criterion": "Chỉnh sửa biên bản căn cứ ý kiến góp ý của Quản lý/Lãnh đạo"
+    },
+    {
+      "category": "Tại Trung tâm/ Văn phòng dự án",
+      "criterion": "Lưu bản sao biên bản cuộc họp vào File tài liệu dự án"
+    },
+    {
+      "category": "Bên ngoài trung tâm/dự án, đi địa phương",
+      "criterion": "Tìm hiểu chương trình, chuẩn bị nội dung trước ít nhất 3 ngày"
+    },
+    {
+      "category": "Bên ngoài trung tâm/dự án, đi địa phương",
+      "criterion": "Mang thiết bị, tài liệu đến phòng họp ít nhất 30 phút trước khi đón tiếp"
+    },
+    {
+      "category": "Bên ngoài trung tâm/dự án, đi địa phương",
+      "criterion": "Đến địa điểm họp ít nhất 10 phút trước khi bắt đầu, nếu là đại biểu"
+    },
+    {
+      "category": "Bên ngoài trung tâm/dự án, đi địa phương",
+      "criterion": "Sắp xếp, lắp đặt thiết bị, tài liệu trước khi bắt đầu đón tiếp/họp"
+    },
+    {
+      "category": "Quản lý Danh sách thông tin liên lạc",
+      "criterion": "Lập danh bạ thông tin liên lạc, cập nhật khi có thay đổi"
+    },
+    {
+      "category": "Quản lý Danh sách thông tin liên lạc",
+      "criterion": "Danh sách cập nhật phải được gửi Quản lý hàng tháng"
+    },
+    {
+      "category": "Tạo các mối quan hệ tốt",
+      "criterion": "Tự giới thiệu về cá nhân và trình bày vắn tắt về trung tâm/dự án"
+    },
+    {
+      "category": "Tạo các mối quan hệ tốt",
+      "criterion": "Tạo mối quan hệ tốt với các đối tác (địa phương) của trung tâm/dự án"
+    },
+    {
+      "category": "Tạo các mối quan hệ tốt",
+      "criterion": "Giao tiếp lịch sự, tôn trọng các tổ chức/cá nhân/đối tác liên quan"
+    },
+    {
+      "category": "Tạo các mối quan hệ tốt",
+      "criterion": "Báo cáo Quản lý nếu gặp vấn đề về mối quan hệ với các đối tác"
+    },
+    {
+      "category": "Tạo môi trường làm việc tốt",
+      "criterion": "Quét dọn phòng làm việc bằng chổi nếu cần thiết"
+    },
+    {
+      "category": "Tạo môi trường làm việc tốt",
+      "criterion": "Lau dọn bàn làm việc, thiết bị văn phòng hàng tuần"
+    },
+    {
+      "category": "Tạo môi trường làm việc tốt",
+      "criterion": "Đổ rác hàng ngày/khi thùng rác, máy hủy tài liệu đầy"
+    },
+    {
+      "category": "Theo dõi tình hình sử dụng vật dụng, thiết bị",
+      "criterion": "Lập danh sách theo dõi số lượng vận dụng, thiết bị đang quản lý"
+    },
+    {
+      "category": "Theo dõi tình hình sử dụng vật dụng, thiết bị",
+      "criterion": "Thực hành tiết kiệm: sử dụng giấy một mặt để ghi chép, in văn bản lên 2 mặt giấy và tắt bớt thiết bị điện khi không cần thiết"
+    },
+    {
+      "category": "Theo dõi tình hình sử dụng vật dụng, thiết bị",
+      "criterion": "Báo cáo Quản lý về thiết bị, vận dụng cần mua, thay thế nếu hết, bị hỏng"
+    },
+    {
+      "category": "Theo dõi tình hình sử dụng vật dụng, thiết bị",
+      "criterion": "Phối hợp với Bộ phận văn phòng để mua sắm, xin trang cấp vật dụng"
+    },
+    {
+      "category": "Điều kiện làm việc",
+      "criterion": "Thực hiện chấm công hàng ngày, gửi Quản lý vào cuối tháng"
+    },
+    {
+      "category": "Điều kiện làm việc",
+      "criterion": "Báo cáo Quản lý ít nhất trước 30 phút nếu đến làm việc muộn"
+    },
+    {
+      "category": "Điều kiện làm việc",
+      "criterion": "Báo cáo ngay cho Quản lý vào buổi sáng nếu bị ốm hoặc gặp tai nạn khẩn cấp để xin phép nghỉ"
+    },
+    {
+      "category": "Điều kiện làm việc",
+      "criterion": "Báo cáo Quản lý ít nhất 3 ngày trước khi nghỉ phép 1 ngày"
+    },
+    {
+      "category": "Điều kiện làm việc",
+      "criterion": "Báo cáo Quản lý ít nhất 1 tuần trước khi có kế hoạch nghỉ dài hơn 2 ngày"
+    },
+    {
+      "category": "Phong cách làm việc",
+      "criterion": "Tìm hiểu các chính sách của Trung tâm và của dự án"
+    },
+    {
+      "category": "Phong cách làm việc",
+      "criterion": "Tìm hiểu Mô tả nhiệm vụ, có trách nhiệm với công việc đang làm"
+    },
+    {
+      "category": "Phong cách làm việc",
+      "criterion": "Xác định công việc cần làm, lập kế hoạch công việc tiếp theo"
+    },
+    {
+      "category": "Phong cách làm việc",
+      "criterion": "Luôn phối hợp, làm việc nhóm với đồng nghiệp, kế toán dự án để lập kế hoạch, triển khai hoạt động, báo cáo kết quả"
+    },
+    {
+      "category": "Phong cách làm việc",
+      "criterion": "Báo cáo với Quản lý khi có yêu cầu hỗ trợ của nhóm/phòng khác"
+    },
+    {
+      "category": "Phong cách làm việc",
+      "criterion": "Thảo luận với Quản lý khi không hiểu, chưa biết chắc công việc cần làm"
+    },
+    {
+      "category": "Phong cách làm việc",
+      "criterion": "Báo cáo Quản lý về tiến độ công việc, thời hạn hoàn thành và thảo luận khi không kịp thời hạn"
+    }
+  ],
+  "exit_questions": [
+    "Vì sao Anh/Chị quyết định nghỉ việc tại tổ chức?",
+    "Điều gì đã khiến anh/chị bắt đầu tìm kiếm (tiếp nhận) cơ hội việc làm mới?",
+    "Tổ chức có trang bị đủ điều kiện để anh/chị làm việc tốt nhất khả năng không?",
+    "Công ty mới có điểm nào ưu việt hơn Viethealth đang làm.",
+    "Anh/Chị thích và không thích Viethealth ở điểm nào?",
+    "Nhận xét về người quản lý trực tiếp & ban lãnh đạo Viethealth của anh/chị.",
+    "Nếu anh/chị có thể thay đổi một điều gì đó ở công việc hay tổ chức của chúng ta, anh/em sẽ thay đổi điều gì?",
+    "Anh/Chị sẽ giới thiệu (đề xuất) cơ hội nghề nghiệp tại Viethealth với bạn bè chứ? Vì sao?",
+    "Bạn cảm thấy thành quả của mình đã được nhận ra và trân trọng ở mức nào",
+    "Bạn thấy mình đã được đào tạo và hỗ trợ đúng như mong muốn chưa?",
+    "Bạn thấy việc sắp xếp chỗ ở cho cán bộ dự án như hiện nay có phù hợp không?",
+    "Có điều gì mà bạn ước là mình đã biết sớm hơn không?"
+  ],
+  "offboarding_handover": [
+    "Đơn xin nghỉ việc/ Ý kiến của Quản lý",
+    "Biên bản bàn giao công việc",
+    "Quyết định chấm dứt hợp đồng lao động",
+    "Máy tính bàn/ máy tính xách tay",
+    "Bàn giao quyền truy cập máy tính / email qua quy trình IT (không ghi mật khẩu)",
+    "Điện thoại bàn/ thiết bị dụng cụ làm việc",
+    "File tài liệu (solf/ hard copies)",
+    "Phương tiện đi lại của văn phòng",
+    "Chìa khóa tủ/ văn phòng/ xe máy - ô tô",
+    "Thẻ bảo hiểm y tế",
+    "Sổ bảo hiểm xã hội",
+    "Danh thiếp của tổ chức",
+    "Các đồ dùng khác…",
+    "Hoàn tất các khoản thanh toán (Phụ cấp, vay, tạm ứng…)",
+    "Hoàn trả quỹ tiền mặt",
+    "Hoàn thành các khoản thuế phải nộp",
+    "Cam kết sau chương trình đào tạo",
+    "Các chứng từ, khoản chi tiêu đang thực hiện"
+  ],
+  "salary_scale": {
+    "minimum": "5000000",
+    "step": "0.07",
+    "rounding": "5",
+    "rows": [
+      {
+        "position_code": "O1",
+        "level": "1",
+        "step_1": "5000000",
+        "step_2": "5400000",
+        "step_3": "5800000",
+        "step_4": "6200000",
+        "step_5": "6600000",
+        "step_6": "7100000",
+        "step_7": "7600000",
+        "step_8": "8100000",
+        "step_9": "8700000",
+        "step_10": "9300000"
+      },
+      {
+        "position_code": "O2",
+        "level": "2",
+        "step_1": "7000000",
+        "step_2": "7500000",
+        "step_3": "8000000",
+        "step_4": "8600000",
+        "step_5": "9200000",
+        "step_6": "9800000",
+        "step_7": "10500000",
+        "step_8": "11200000",
+        "step_9": "12000000",
+        "step_10": "12800000"
+      },
+      {
+        "position_code": "SO1",
+        "level": "3",
+        "step_1": "9800000",
+        "step_2": "10500000",
+        "step_3": "11200000",
+        "step_4": "12000000",
+        "step_5": "12800000",
+        "step_6": "13700000",
+        "step_7": "14700000",
+        "step_8": "15700000",
+        "step_9": "16800000",
+        "step_10": "18000000"
+      },
+      {
+        "position_code": "SO2",
+        "level": "4",
+        "step_1": "13700000",
+        "step_2": "14700000",
+        "step_3": "15700000",
+        "step_4": "16800000",
+        "step_5": "18000000",
+        "step_6": "19300000",
+        "step_7": "20700000",
+        "step_8": "22100000",
+        "step_9": "23600000",
+        "step_10": "25300000"
+      },
+      {
+        "position_code": "M1/SO3",
+        "level": "5",
+        "step_1": "18200000",
+        "step_2": "19500000",
+        "step_3": "20900000",
+        "step_4": "22400000",
+        "step_5": "24000000",
+        "step_6": "25700000",
+        "step_7": "27500000",
+        "step_8": "29400000",
+        "step_9": "31500000",
+        "step_10": "33700000"
+      },
+      {
+        "position_code": "M2/SO4",
+        "level": "6",
+        "step_1": "26200000",
+        "step_2": "28000000",
+        "step_3": "30000000",
+        "step_4": "32100000",
+        "step_5": "34300000",
+        "step_6": "36700000",
+        "step_7": "39300000",
+        "step_8": "42100000",
+        "step_9": "45000000",
+        "step_10": "48200000"
+      },
+      {
+        "position_code": "L1",
+        "level": "7",
+        "step_1": "37000000",
+        "step_2": "39600000",
+        "step_3": "42400000",
+        "step_4": "45400000",
+        "step_5": "48600000",
+        "step_6": "52000000",
+        "step_7": "55600000",
+        "step_8": "59500000",
+        "step_9": "63700000",
+        "step_10": "68200000"
+      },
+      {
+        "position_code": "L2",
+        "level": "8",
+        "step_1": "51600000",
+        "step_2": "55200000",
+        "step_3": "59100000",
+        "step_4": "63200000",
+        "step_5": "67600000",
+        "step_6": "72300000",
+        "step_7": "77400000",
+        "step_8": "82800000",
+        "step_9": "88600000",
+        "step_10": "94800000"
+      }
+    ]
+  },
+  "tor": {
+    "TOR - CRS_CBDA.docx": "Giới thiệu:\n\nTrung tâm Phát triển Sức khỏe Bền vững – VietHealth là tổ chức hoạt động khoa học công nghệ của Việt Nam trực thuộc Liên hiệp các hội Khoa học và Kỹ thuật Việt Nam (VUSTA), hoạt động về sức khỏe và phát triển cộng đồng.\n\nVietHealth triển khai dự án “…” tại tỉnh Tây Ninh và Bình Phước do … quản lý và tài trợ bởi USAID. Mục tiêu của dự án là cải thiện chất lượng cuộc sống của trẻ khuyết tật thông qua việc triển khai mô hình phục hồi chức năng toàn diện cho trẻ em khuyết tật.\n\nMô tả chung về vị trí công việc:\n\nTham gia triển khai thực hiện các hoạt động của dự án theo kế hoạch tổng thể, năm, quý và tháng;\n\nLàm việc dưới sự giám sát, phân công trực tiếp của Giám đốc/Phó giám đốc dự án;\n\nLàm việc với:\n\nTrẻ khuyết tật và gia đình;\n\nCác đối tác địa phương (cán bộ đầu mối, lãnh đạo) thuộc các ngành Y tế và Giáo dục các tuyến tỉnh, huyện và xã;\n\nCác cán bộ chương trình, chuyên viên môn của văn phòng VietHealth tại Hà Nội;\n\nCác đối tác liên quan khác của dự án.\n\nĐịa điểm làm việc: Văn phòng tại Hà Nội.\n\nNhiệm vụ cụ thể:\n\nTham gia hỗ trợ triển khai hoạt động dự án:\n\nTham gia hỗ trợ Trợ lý dự án tỉnh trong việc triển khai các hoạt động dự án khi được Giám đốc Dự án yêu cầu;\n\nThực hiện việc kiểm tra, lưu trữ và sắp xếp hồ sơ của các đơn vị/cá nhân tham gia cung cấp dịch vụ chăm sóc trẻ khuyết tật, người khuyết tật trong khuôn khổ dự án và trẻ khuyết tật theo từng địa bàn của dự án;\n\nHỗ trợ các chuyên gia, chuyên viên, kỹ thuật viên và Trợ lý dự án các công tác chuẩn bị triển khai hoạt động;\n\nĐảm bảo thông tin thông suốt với các bên trong quá trình triển khai hoạt động.\n\nBáo cáo:\n\nBáo cáo kết quả công việc được phân công thực hiện cho Giám đốc Dự án;\n\nHỗ trợ Trợ lý dự án tỉnh trong việc thu thập các tài liệu, báo cáo hoạt động, số liệu về hoạt động và cung cấp dịch vụ theo kỳ báo cáo, …;\n\nTham gia thu thập tài liệu, tư liệu, bài học, câu chuyện thành công của dự án.\n\nQuan hệ đối tác, truyền thông:\n\nDuy trì các quan hệ tích cực với các đối tác tỉnh, các bệnh viện/trung tâm y tế, các đối tác liên quan khác; giao tiếp rõ ràng, tôn trọng đối tác và đồng nghiệp.\n\nTích cực tham gia các hoạt động khác của dự án và Trung tâm; Tuân thủ các chính sách và quy định của VietHealth.\n\nYêu cầu về năng lực và kinh nghiệm:\n\nLà công dân Việt Nam;\n\nTốt nghiệp Đại học, chuyên ngành về y tế công cộng, phục hồi chức năng, giáo dục, tâm lý, hoặc khoa học xã hội;\n\nƯu tiên cho người có kinh nghiệm về triển khai các hoạt động dự án phát triển/phi lợi nhuận liên quan đến một hoặc nhiều trong các nội dung: sức khoẻ, giáo dục, xây dựng/phát triển cộng đồng, người khuyết tật hoặc các đối tượng yếu thế...;\n\nKỹ năng: về lập kế hoạch, lập ngân sách, hành chính, giao tiếp và tổ chức;\n\nKỹ năng vi tính về các phần mềm văn phòng (Word, Excel, Power Point và Outlook);\n\nKhả năng làm việc độc lập và làm việc nhóm.\n\nPhẩm chất:\n\nTrung thực;\n\nTrách nhiệm;\n\nChịu áp lực;\n\nChủ động sáng tạo;\n\nHọc hỏi;\n\nĐam mê hoạt động cộng đồng;\n\nChia sẻ và giúp đỡ đội nhóm.\n\nQuyền lợi\n\nĐược ký hợp đồng Lao động sau 02 tháng thử việc;\n\nĐược đóng BHXH, BHYT, BHTN theo Luật lao động;\n\nĐược nghỉ lễ, nghỉ phép theo quy định;\n\nĐược hưởng tháng lương thứ 13;\n\nĐược tập huấn, hướng dẫn về công tác xây dựng và triển khai hoạt động tại thực địa;\n\nCó cơ hội học tập và làm việc với đội ngũ chuyên gia, kỹ thuật viên về Vật lý trị liệu, Hoạt động trị liệu, Ngôn ngữ trị liệu và Giáo dục đặc biệt;\n\nVietHealth bảo đảm các cơ hội làm việc và thăng tiến bình đẳng cho người lao động, không phân biệt về dân tộc, tôn giáo, giới tính, và các vấn đề về khuyết tật.",
+    "TOR - CRS_DPVDA tinh.docx": "Giới thiệu:\n\nTrung tâm Phát triển Sức khỏe Bền vững – VietHealth là tổ chức hoạt động khoa học công nghệ của Việt Nam trực thuộc Liên hiệp các hội Khoa học và Kỹ thuật Việt Nam (VUSTA), hoạt động về sức khỏe và phát triển cộng đồng.\n\nVietHealth triển khai dự án “…” tại tỉnh Tây Ninh và Bình Phước do … quản lý và tài trợ bởi USAID. Mục tiêu của dự án là cải thiện chất lượng cuộc sống của trẻ khuyết tật thông qua việc triển khai mô hình phục hồi chức năng toàn diện cho trẻ em khuyết tật.\n\nMô tả chung về vị trí công việc:\n\nĐiều phối viên Dự án làm việc tại tỉnh, phụ trách các hoạt động của dự án, dưới sự giám sát trực tiếp và chỉ đạo của Giám đốc và Phó giám đốc dự án để đảm bảo triển khai và giám sát tốt các hoạt động dự án. Ngoài ra, Điều phối viên Dự án  phải làm việc với các chuyên gia tư vấn, cán bộ hỗ trợ của địa phương, các đối tác địa phương và chỉ đạo các Cán bộ dự án để triển khai các hoạt động của Dự án.\n\nĐịa điểm làm việc: Văn phòng Dự án tại tỉnh Tây Ninh hoặc tỉnh Bình Phước.\n\nChức năng nhiệm vụ\n\nĐiều phối viên Dự án phải phối hợp với Chuyên viên về Giáo dục đặc biệt và Chuyên viên Phục hồi chức năng để lên kế hoạch hoạt động hàng tháng, quý và năm. Đồng thời chỉ đạo các Cán bộ dự án làm việc hàng ngày để triển khai các hoạt động của dự án theo kế hoạch và văn kiện của dự án. Điều phối viên Dự án sẽ làm việc và trao đổi trực tiếp công việc với các đối tác (các Sở, ban ngành tại địa phương), quản lý tài chính, hoạt động và tổng hợp xây dựng báo cáo.\n\nCán bộ Điều phối viên Dự án làm việc tại Văn phòng dự án tỉnh.\n\nNhiệm vụ cụ thể:\n\nXây dựng kế hoạch hoạt động dự án:\n\nLàm việc với Chuyên viên về Giáo dục đặc biệt, Chuyên viên Phục hồi chức năng, Phó giám đốc dự án, chuyên gia tư vấn, các đối tác địa phương bao gồm Sở LĐTBXH, Sở Y tế, Sở GDĐT để xây dựng kế hoạch và ngân sách hoạt động năm, quý, tháng của dự án.\n\nTriển khai dự án:\n\nChỉ đạo các Trợ lý dự án và các kỹ thuật viên tại tỉnh triển khai các hoạt động của dự án bao gồm: đào tạo, hỗ trợ kỹ thuật, can thiệp cho trẻ tại chỗ và chuyển gửi; tham gia xây dựng TOR cho tư vấn, hỗ trợ và giám sát hoạt động tư vấn để đảm bảo chất lượng hoạt động, kết quả đầu ra.\n\nGiám sát và quản lý chất lượng:\n\nGiám sát các Cán bộ dự án thực hiện các hoạt động thực địa, hỗ trợ cán bộ giám sát đánh giá và các cán bộ của tổ chức về việc thu thập và quản lý số liệu, thông tin, báo cáo... các loại bao gồm file dữ liệu, bản cứng, video, audio, phim, ảnh...\n\nBáo cáo:\n\nTổng hợp, cung cấp các báo cáo hoạt động, báo cáo tiến độ đúng thời hạn theo yêu cầu.\n\nTài chính:\n\nGiám sát và đảm bảo các khoản chi tiêu tuân thủ quy định của VietHealth, nhà tài trợ và pháp luật.\n\nTổng hợp tài liệu:\n\nTham gia tổng hợp các tài liệu, tư liệu, bài học, câu chuyện thành công của dự án.\n\nQuan hệ đối tác, truyền thông:\n\nDuy trì các quan hệ đối tác tích cực với Sở LĐTBXH, Sở GDĐT, Sở Y tế và các đối tác liên quan khác; giao tiếp rõ ràng, tôn trọng đối tác và đồng nghiệp.\n\nYêu cầu về năng lực và kinh nghiệm:\n\nLà công dân Việt Nam;\n\nTốt nghiệp Đại học, chuyên ngành về y tế công cộng, phục hồi chức năng, giáo dục, tâm lý, hoặc khoa học xã hội;\n\nCó ít nhất 03 (ba) năm kinh nghiệm về công việc tương tự/có liên quan;\n\nNắm rõ về quyền, chính sách về và các vấn đề của người khuyết tật, đặc biệt chú trọng trẻ em khuyết tật;\n\nSẵn sàng tham gia công tác thực địa, tương tác với các đối tác liên quan các cấp; đáp ứng với việc thay đổi nếu cần thiết;\n\nKhả năng làm việc độc lập và làm việc nhóm;\n\nKỹ năng tổ chức và giao tiếp tốt;\n\nKỹ năng quản lý về hành chính và tài chính tốt;\n\nKỹ năng giao tiếp và viết tốt;\n\nKỹ năng vi tính về các phần mềm phục vụ văn phòng tốt (Word, Excel, Power Point và Outlook);\n\nCác trách nhiệm cần thiết khác tuân theo các chính sách và quy định của VietHealth.\n\nPhẩm chất:\n\nTrung thực;\n\nTrách nhiệm;\n\nChịu áp lực;\n\nChủ động sáng tạo;\n\nHọc hỏi;\n\nĐam mê hoạt động cộng đồng;\n\nChia sẻ và giúp đỡ đội nhóm.\n\nQuyền lợi\n\nĐược ký hợp đồng Lao động sau 02 tháng thử việc;\n\nĐược đóng BHXH, BHYT, BHTN theo Luật lao động;\n\nĐược nghỉ lễ, nghỉ phép theo quy định;\n\nĐược hưởng tháng lương thứ 13;\n\nĐược bố trí chỗ ở tại tỉnh làm việc.\n\nVietHealth bảo đảm các cơ hội làm việc và thăng tiến bình đẳng cho người lao động, không phân biệt về dân tộc, tôn giáo, giới tính, và các vấn đề về khuyết tật.",
+    "TOR - CRS_TLDA tinh.docx": "Giới thiệu:\n\nTrung tâm Phát triển Sức khỏe Bền vững – VietHealth là tổ chức hoạt động khoa học công nghệ của Việt Nam trực thuộc Liên hiệp các hội Khoa học và Kỹ thuật Việt Nam (VUSTA), hoạt động về sức khỏe và phát triển cộng đồng.\n\nVietHealth triển khai dự án “…” tại tỉnh Tây Ninh và Bình Phước do … quản lý và tài trợ bởi USAID. Mục tiêu của dự án là cải thiện chất lượng cuộc sống của trẻ khuyết tật thông qua việc triển khai mô hình phục hồi chức năng toàn diện cho trẻ em khuyết tật.\n\nMô tả chung về vị trí công việc:\n\nTriển khai thực hiện các hoạt động của dự án theo kế hoạch tổng thể, năm, quý và tháng;\n\nLàm việc dưới sự giám sát trực tiếp của Điều phối viên tỉnh;\n\nLàm việc với:\n\nTrẻ khuyết tật và gia đình;\n\nCác đối tác địa phương (cán bộ đầu mối, lãnh đạo) thuộc các ngành Y tế, Giáo dục, LĐTBXH tuyến tỉnh, huyện và xã;\n\nCác cán bộ chương trình, chuyên môn của văn phòng VietHealth tại Hà Nội;\n\nChuyên gia tư vấn;\n\nCác đối tác liên quan khác của dự án.\n\nĐịa điểm làm việc: Văn phòng Dự án tại tỉnh Tây Ninh hoặc tỉnh Bình Phước.\n\nNhiệm vụ cụ thể:\n\nTriển khai hoạt động dự án:\n\nLập kế hoạch và ngân sách cho các hoạt động;\n\nTổ chức các hoạt động: tập huấn, hỗ trợ kỹ thuật; khám, đánh giá trẻ khuyết tật; can thiệp PHCN cho trẻ khuyết tật.\n\nGiám sát và quản lý chất lượng:\n\nPhối hợp với cán bộ giám sát đánh giá tổ chức và theo dõi công tác nhập liệu của cán bộ cung cấp dịch vụ;\n\nHỗ trợ cán bộ giám sát đánh giá và dự án về việc thu thập và quản lý số liệu, thông tin, báo cáo... các loại bao gồm file dữ liệu, bản cứng, video, audio, phim, ảnh...\n\nBáo cáo:\n\nBáo cáo kết quả thực hiện các hoạt động và tài chính;\n\nĐôn đốc và thu thập các tài liệu, báo cáo hoạt động, số liệu hoạt động và cung cấp dịch vụ theo kỳ báo cáo;\n\nTham gia tổng hợp các tài liệu, tư liệu, bài học, câu chuyện thành công của dự án.\n\nTài chính:\n\nThực hiện tạm ứng, thanh quyết toán các hoạt động chịu trách nhiệm triển khai theo quy định của Dự án và Trung tâm;\n\nThu thập các báo cáo, hồ sơ cung cấp dịch vụ và hồ sơ thanh quyết toán.\n\nQuan hệ đối tác:\n\nDuy trì các quan hệ đối tác tích cực để đảm bảo triển khai hiệu quả và chất lượng các hoạt động.\n\nCác hoạt động khác của Dự án và Trung tâm khi được phân công.\n\nYêu cầu về năng lực và kinh nghiệm:\n\nLà công dân Việt Nam;\n\nTốt nghiệp Đại học, chuyên ngành về y tế công cộng, phục hồi chức năng, giáo dục, tâm lý, hoặc khoa học xã hội;\n\nƯu tiên cho người có kinh nghiệm về triển khai các hoạt động dự án phát triển/phi lợi nhuận liên quan đến một hoặc nhiều trong các nội dung: sức khoẻ, giáo dục, xây dựng/phát triển cộng đồng, người khuyết tật hoặc các đối tượng yếu thế...;\n\nKỹ năng: về lập kế hoạch, lập ngân sách, hành chính, giao tiếp và tổ chức;\n\nKỹ năng vi tính về các phần mềm văn phòng (Word, Excel, Power Point và Outlook);\n\nKhả năng làm việc độc lập và làm việc nhóm.\n\nPhẩm chất:\n\nTrung thực;\n\nTrách nhiệm;\n\nChịu áp lực;\n\nChủ động sáng tạo;\n\nHọc hỏi;\n\nĐam mê hoạt động cộng đồng;\n\nChia sẻ và giúp đỡ đội nhóm.\n\nQuyền lợi\n\nĐược ký hợp đồng Lao động sau 02 tháng thử việc;\n\nĐược đóng BHXH, BHYT, BHTN theo Luật lao động;\n\nĐược nghỉ lễ, nghỉ phép theo quy định;\n\nĐược hưởng tháng lương thứ 13;\n\nĐược tập huấn, hướng dẫn về công tác xây dựng và triển khai hoạt động tại thực địa;\n\nCó cơ hội học tập và làm việc với đội ngũ chuyên gia, kỹ thuật viên về Vật lý trị liệu, Hoạt động trị liệu, Ngôn ngữ trị liệu và Giáo dục đặc biệt;\n\nĐược bố trí chỗ ở tại tỉnh làm việc.\n\nVietHealth bảo đảm các cơ hội làm việc và thăng tiến bình đẳng cho người lao động, không phân biệt về dân tộc, tôn giáo, giới tính, và các vấn đề về khuyết tật.",
+    "TOR - Ke toan.docx": "TRÁCH NHIỆM CHÍNH\n\nKế toán viên là người chịu trách nhiệm trong việc triển khai và duy trì hệ thống tài chính, chế độ kế toán của tổ chức chính xác, đầy đủ, ổn định, minh bạch và hiệu quả.\n\nLàm việc và báo cáo công việc dưới sự quản lý trực tiếp của Phụ trách kế toán; thực hiện các công việc khác do Ban giám đốc phân công.\n\nLàm việc tại Văn phòng Hà Nội và đi công tác thực địa theo nhiệm vụ được giao.\n\nPHẠM VI CÔNG VIỆC\n\nXây dựng, vận hành hệ thống Tài chính và Kế toán\n\nTham gia vào việc xây dựng và duy trì hệ thống tài chính và chế độ kế toán.\n\nCập nhật các văn bản pháp lý và hướng dẫn của Chính phủ Việt Nam và Nhà tài trợ có liên quan đến chế độ kế toán dự án; Đảm bảo tất cả các quy trình theo yêu cầu đều được cập nhật và tuân theo các quy định đối với công tác kế toán;\n\nTham gia tổ chức và triển khai hệ thống kiểm soát nội bộ hợp lý.\n\nQuản lý thanh toán và ngân sách Dự án\n\nThực hiện, duy trì và cập nhật cơ chế thanh toán phù hợp với quy định của VietHealth, nhà tài trợ và pháp luật.\n\nThực hiện nhiệm vụ kế toán và giám sát ngân sách và các khoản chi tiêu của dự án đảm bảo tuân thủ quy định của nhà tài trợ và pháp luật.\n\nBáo cáo tài chính và thuế\n\nCập nhật, chuẩn bị và báo cáo tình hình thực hiện chi tiêu của các dự án theo yêu cầu của Nhà tài trợ và tổng hợp báo cáo của toàn VietHealth.\n\nLập báo cáo thuế chính xác, đúng thời hạn theo yêu cầu nhà tài trợ và cơ quan quản lý.\n\nHỗ trợ quản lý kiểm toán và thanh tra\n\nHợp tác với đơn vị kiểm toán để đảm bảo hoạt động kiểm toán minh bạch và đúng thời hạn.\n\nLàm việc với cơ quan quản lý chức năng trong công tác kiểm tra, thanh tra hoạt động tài chính của tổ chức.\n\nQuản lý thông tin và công việc khác\n\nDuy trì và chia sẻ thông tin với các nhóm và bộ phận liên quan.\n\nLiên hệ và điều phối các vấn đề liên quan đến kế toán của dự án với các cơ quan liên quan, bao gồm Nhà tài trợ, đối tác, cơ quan thuế,..\n\nThực hiện các công việc khác theo yêu cầu của Lãnh đạo hoặc Quản lý bộ phận.\n\nQuyền lợi\n\nĐược ký hợp đồng Lao động sau 02 tháng thử việc;\n\nĐược đóng BHXH, BHYT, BHTN theo Luật lao động;\n\nĐược nghỉ lễ, nghỉ phép theo quy định;\n\nĐược hưởng tháng lương thứ 13;\n\nVietHealth bảo đảm các cơ hội làm việc và thăng tiến bình đẳng cho người lao động, không phân biệt về dân tộc, tôn giáo, giới tính, và các vấn đề về khuyết tật.\n\nYÊU CẦU TRÌNH ĐỘ VÀ KỸ NĂNG\n\nTốt nghiệp đại học ngành kinh tế và kế toán hoặc chuyên ngành liên quan hoặc tương đương;\n\nCó ít nhất 05 (năm) năm kinh nghiệm làm kế toán (doanh nghiệp/đơn vị hành chính sự nghiệp);\n\nTiếng Anh trình độ cơ bản/sơ cấp là một lợi thế;\n\nSử dụng thành thạo các phần mềm kế toán, máy vi tính, các phần mềm văn phòng (MS Office);\n\nAm hiểu các quy định hiện hành của chính phủ về kế toán và quản lý tài chính của các quỹ tài chính công;\n\nCác kỹ năng và yêu cầu khác: giao tiếp hiệu quả, làm việc độc lập, làm việc nhóm, cam kết mục tiêu phát triển cá nhân..."
+  }
+}

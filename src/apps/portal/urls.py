@@ -1,5 +1,6 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
+from apps.document.hcns import views as hcns_views
 from . import views
 from apps.activity.views import (
     activity_calendar, activity_create, activity_dashboard, activity_proposal,
@@ -11,6 +12,8 @@ from apps.lifecycle import views as lifecycle_views
 app_name = "portal"
 
 urlpatterns = [
+    path("hcns-forms/", hcns_views.catalog, name="hcns_catalog"),
+    path("hcns-forms/<slug:slug>/", hcns_views.draft, name="hcns_draft"),
     path("service-worker.js", views.service_worker, name="service_worker"),
     path("login/", auth_views.LoginView.as_view(template_name="registration/login.html"), name="login"),
     path("logout/", auth_views.LogoutView.as_view(next_page="portal:login"), name="logout"),

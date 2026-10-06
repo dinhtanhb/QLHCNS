@@ -7,7 +7,7 @@
         {% csrf_token %}
         <div><label class="block text-sm font-medium text-gray-700 mb-1">Nhân viên</label>
             <select name="employee" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-                {% for e in employees %}<option value="{{ e.id }}">{{ e.employee_code }} - {{ e.full_name }}</option>{% endfor %}
+                {% for e in employees %}<option value="{{ e.id }}" {% if e.pk|stringformat:"s" == selected_employee %}selected{% endif %}>{{ e.employee_code }} - {{ e.full_name }}</option>{% endfor %}
             </select></div>
         <div><label class="block text-sm font-medium text-gray-700 mb-1">Loại hợp đồng</label>
             <select name="contract_type" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">

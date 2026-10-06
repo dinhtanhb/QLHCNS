@@ -31,6 +31,9 @@
                         <a href="{% url 'portal:hr_employee_detail' e.pk %}#bonhiem" class="block px-4 py-2 text-xs hover:bg-gray-50">Bổ nhiệm</a>
                         <a href="{% url 'portal:hr_employee_detail' e.pk %}#luong" class="block px-4 py-2 text-xs hover:bg-gray-50">Nâng lương</a>
                         <a href="{% url 'portal:hr_employee_detail' e.pk %}#hopdong" class="block px-4 py-2 text-xs hover:bg-gray-50">Gia hạn HĐ</a>
+                        <a href="{% url 'portal:hr_employee_detail' e.pk %}#khenthuong" class="block px-4 py-2 text-xs hover:bg-gray-50">Khen thưởng</a>
+                        <a href="{% url 'portal:hr_employee_detail' e.pk %}#kyluat" class="block px-4 py-2 text-xs hover:bg-gray-50">Kỷ luật</a>
+                        {% if can_export_employee_data and can_view_all_employees %}<a href="{% url 'portal:hcns_catalog' %}?employee_id={{ e.pk }}" class="block px-4 py-2 text-xs hover:bg-gray-50">Biểu mẫu HCNS</a>{% endif %}
                         <a href="{% url 'portal:hr_employee_edit' e.pk %}" class="block px-4 py-2 text-xs hover:bg-gray-50 border-t border-gray-100">Sửa hồ sơ</a>
                     </div>
                 </details>
