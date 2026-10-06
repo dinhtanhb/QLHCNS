@@ -24,6 +24,8 @@
 
 **Kiểm tra follow-up:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.document.tests_hr_workflow`: **26/26 đạt**; `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.document.tests_hr_workflow apps.notification.tests apps.security.tests_data_protection apps.portal.tests_review_hardening`: **75 tests, 74 đạt, 1 skip, 0 lỗi**; full suite `venv\Scripts\python.exe ops\run_tests.py --backend sqlite`: **366 tests, 364 đạt, 2 skip, 0 lỗi**; `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver apps.document.tests_hr_workflow apps.notification.tests apps.security.tests_data_protection`: **55/55 đạt**. Regression xác nhận người nhận, link, nội dung phản hồi, unread badge, private PDF và ẩn preview/history/Word với nhân viên. Sau chỉnh template cuối, workflow SQLite chạy lại **26/26 đạt**. Chưa chạy browser sau follow-up.
 
+**Commit follow-up:** `c1ea248` (`feat(document): notify personnel decision workflow`), gồm thông báo bell trình/duyệt/từ chối/ban hành và quyền xem PDF cuối cho nhân viên. Đã chạy full SQLite và SQL Server focused như trên. Chưa push commit follow-up; chưa kiểm tra GitHub Actions cho SHA này.
+
 ## 2026-10-06 — Chuẩn hóa tên mọi tệp export được tạo mới
 
 **Mục tiêu/phạm vi:** FIX điểm xuất của 26 biểu mẫu HCNS, ba báo cáo Excel, kiểm kê trực tiếp và phiếu lương PDF. Thống nhất `LoạiTàiLiệu_MãHồSơ_YYYYMMDD.ext`, ví dụ `QD_NangLuong_VH-999_20261006.docx`. Không đổi nội dung bản xuất, schema hoặc bản ghi nghiệp vụ. Tệp đính kèm đã lưu vẫn giữ tên hiện có khi tải lại.
