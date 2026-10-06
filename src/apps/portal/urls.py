@@ -14,6 +14,10 @@ app_name = "portal"
 urlpatterns = [
     path("hcns-forms/", hcns_views.catalog, name="hcns_catalog"),
     path("hcns-forms/<slug:slug>/", hcns_views.draft, name="hcns_draft"),
+    path("hr-decisions/", hcns_views.personnel_decision_list, name="personnel_decision_list"),
+    path("hr-decisions/<int:pk>/", hcns_views.personnel_decision_detail, name="personnel_decision_detail"),
+    path("hr-decisions/<int:pk>/word/", hcns_views.personnel_decision_word, name="personnel_decision_word"),
+    path("hr-decisions/<int:pk>/transition/<str:action>/", hcns_views.personnel_decision_transition, name="personnel_decision_transition"),
     path("service-worker.js", views.service_worker, name="service_worker"),
     path("login/", auth_views.LoginView.as_view(template_name="registration/login.html"), name="login"),
     path("logout/", auth_views.LogoutView.as_view(next_page="portal:login"), name="logout"),

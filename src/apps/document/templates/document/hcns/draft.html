@@ -19,7 +19,7 @@
 {% else %}
 <details class="hcns-editor no-print" open>
   <summary>Nhập và kiểm tra nội dung</summary>
-  <form method="post" action="{{ request.path }}{% if source_query %}?{{ source_query }}{% endif %}" id="hcns-draft-form">
+  <form method="post" action="{{ request.path }}{% if decision_query %}?{{ decision_query }}{% elif source_query %}?{{ source_query }}{% endif %}" id="hcns-draft-form">
     {% csrf_token %}
     {{ form.non_field_errors }}
     {% for section in editor_sections %}
@@ -35,8 +35,8 @@
       </div>
       {% endif %}
     {% endfor %}
-    <p class="hcns-editor-note">Dữ liệu đang soạn chỉ tồn tại trên trang này. Tải tệp để giữ bản soạn thảo trước khi rời trang.</p>
-    <div class="hcns-actions"><button class="hcns-button primary" name="action" value="preview">Cập nhật bản xem trước</button><button class="hcns-button" name="action" value="export">Tải {% if spec.kind == "xlsx" %}Excel (.xlsx){% else %}Word (.docx){% endif %}</button><button type="button" class="hcns-button" id="hcns-print">In / lưu PDF</button></div>
+    <p class="hcns-editor-note">{% if can_save_decision %}Lưu bản nháp quyết định để ghi nội dung vào hệ thống; xuất Word hoặc in PDF không tự lưu thay đổi.{% else %}Dữ liệu đang soạn chỉ tồn tại trên trang này. Tải tệp để giữ bản soạn thảo trước khi rời trang.{% endif %}</p>
+    <div class="hcns-actions"><button class="hcns-button primary" name="action" value="preview">Cập nhật bản xem trước</button><button class="hcns-button" name="action" value="export">Tải {% if spec.kind == "xlsx" %}Excel (.xlsx){% else %}Word (.docx){% endif %}</button>{% if can_save_decision %}<button class="hcns-button" name="action" value="save_decision">Lưu bản nháp quyết định</button>{% endif %}<button type="button" class="hcns-button" id="hcns-print">In / lưu PDF</button></div>
   </form>
 </details>
 {% endif %}

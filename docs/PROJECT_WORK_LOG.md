@@ -2,6 +2,22 @@
 
 Đây là **nơi ghi nhận tập trung duy nhất** các đợt thay đổi lớn, thao tác kiểm tra, quyết định và việc cần chủ dự án thực hiện. Cập nhật tiếp vào tệp này thay vì tạo log mới cho từng lần làm việc. Không ghi secrets, dữ liệu cá nhân hoặc nội dung `.env`.
 
+## 2026-10-06 — Quản lý quyết định nhân sự chính thức
+
+**Mục tiêu/phạm vi:** bổ sung bản ghi quyết định HCNS có snapshot nội dung, trạng thái Draft → PendingApproval → Approved → Issued, lịch sử thao tác, trang danh sách/chi tiết, tải lại Word và lưu PDF đã ký để ban hành. Không tự áp dụng quyết định lên hồ sơ lương/nhân viên; không thay luồng tài liệu chung.
+
+**Git:** làm trên `main`; xác nhận nhánh đồng bộ `origin/main` trước khi sửa. Working tree ban đầu sạch. Sau sửa còn các tệp tính năng được liệt kê dưới đây và untracked `src/qlhcns` không thuộc nhiệm vụ, giữ nguyên. Chưa stage, commit, push hay deploy.
+
+**Tệp/phân hệ:** `src/apps/document/models.py`, migration `0005_personnel_decision_workflow.py`, `src/apps/document/hcns/{views.py,choices.py}`, `src/apps/common/uploads.py`, `src/apps/security/{permissions.py,data_access.py,files.py}`, `src/apps/portal/urls.py`, `src/templates/base.html`, form/templates HCNS và hai template quản lý quyết định. Thêm `PersonnelDecision` và lịch sử append-only theo action, snapshot JSON gồm dữ liệu đã kiểm tra và preview, trạng thái; endpoint lưu/mở lại nháp, tìm/lọc, trình duyệt, duyệt/từ chối, hủy, ban hành và tải Word. Người trình không tự duyệt; từ chối cần lý do; ban hành cần PDF có phần mở đầu `%PDF-`, giới hạn 20 MB, lưu private storage và chỉ tải qua `private_file`. HR xem toàn bộ; người duyệt xem hồ sơ chờ hoặc hồ sơ mình đã xử lý. Cập nhật `docs/Huong_Dan_Bieu_Mau_HCNS.md` và `docs/11_Workflow_Definition.md`.
+
+**Kiểm tra đã chạy:** `venv\Scripts\python.exe src\manage.py check` (SQLite với SECRET_KEY tạm): đạt; `venv\Scripts\python.exe src\manage.py makemigrations --check --dry-run`: `No changes detected`; `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.document.tests_hr_workflow`: **26/26 đạt**; `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver apps.document.tests_hr_workflow`: **26/26 đạt**, runner dùng DB test riêng và đã xóa; `venv\Scripts\python.exe ops\run_tests.py --backend sqlite`: **366 tests, 364 đạt, 2 skip, 0 lỗi**. Diagnostics không phát hiện lỗi. Chưa chạy browser/Word desktop/UAT.
+
+**Bản chạy thử cục bộ:** tạo `D:\QLHCNS-Test` từ working tree hiện tại, giữ đủ thay đổi tính năng; loại `.env`, `.git`, virtualenv, DB/media/staticfiles, backup, `docs/templates/` và `src/qlhcns`. Trong bản sao, tạo SQLite mới, áp dụng toàn bộ migration gồm `document.0005`, tắt M365 và nạp dữ liệu giả. Server chỉ bind `127.0.0.1:8011`. Đã đăng nhập HR trên browser, mở trang quản lý, soạn/lưu `DEMO-QD-001` và xác nhận bản nháp xuất hiện trong danh sách/chi tiết; không trình duyệt hoặc ban hành dữ liệu demo.
+
+**Điều hướng follow-up:** sắp xếp lại `src/templates/base.html` và bản tương ứng trong sandbox. Chuyển Biểu mẫu HCNS khỏi Cá nhân vào Nhân sự; thêm link cấp đầu “Quyết định nhân sự” cho HR/người duyệt; đổi “Duyệt & Xử lý” thành “Cần duyệt”; nhóm Hành chính thành Văn bản, Tài sản, Đặt chỗ & đề nghị; đổi Kế toán thành Tài chính, đưa ngày lễ về Kế hoạch và rút “Hoạt động dự án” thành “Dự án”. Browser xác nhận HR nhìn thấy quyết định trực tiếp và Biểu mẫu trong Nhân sự; Giám đốc thấy quyết định/Cần duyệt nhưng không thấy menu Nhân sự; mobile mở menu không tràn ngang. Đã restart server sandbox để nạp template. Người dùng có thể đã tiếp tục thao tác demo sau lần xác nhận ban đầu; tác vụ follow-up này không chuyển trạng thái bản ghi.
+
+**Còn mở / hành động chủ dự án:** migration **chưa áp dụng** vào database cấu hình, SIT/UAT hoặc Production. Trước triển khai cần backup theo quy trình, xác nhận đích, áp dụng `document.0005_personnel_decision_workflow` bằng release/migration procedure hiện hành, kiểm tra menu “Quản lý quyết định”, tạo nháp, duyệt/từ chối, tải PDF ký và phân quyền tải tệp. Nếu dùng SQL Server, xác nhận mapping `JSONField`/migration trên DB đích. Chưa xác nhận CI GitHub, chưa commit/push/deploy.
+
 ## 2026-10-06 — Chuẩn hóa tên mọi tệp export được tạo mới
 
 **Mục tiêu/phạm vi:** FIX điểm xuất của 26 biểu mẫu HCNS, ba báo cáo Excel, kiểm kê trực tiếp và phiếu lương PDF. Thống nhất `LoạiTàiLiệu_MãHồSơ_YYYYMMDD.ext`, ví dụ `QD_NangLuong_VH-999_20261006.docx`. Không đổi nội dung bản xuất, schema hoặc bản ghi nghiệp vụ. Tệp đính kèm đã lưu vẫn giữ tên hiện có khi tải lại.

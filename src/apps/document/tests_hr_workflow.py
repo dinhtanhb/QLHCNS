@@ -1,13 +1,16 @@
 from datetime import date
 from decimal import Decimal
 
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 
 from apps.contract.models import Contract, ContractAppendix, ContractType
+from apps.document.models import PersonnelDecision
 from apps.hrm.models import EmployeePromotion, EmployeeTransfer, EmployeeReward, EmployeeDiscipline
 from apps.organization.models import Department, Position
 from apps.payroll.models import EmployeeSalary
+from apps.security.models import SecurityEvent
 from .tests_hcns import HCNSFormTests as Fixtures
 
 
@@ -17,6 +20,8 @@ class HRWorkflowTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         Fixtures.setUpTestData.__func__(cls)
+        cls.hr_manager = Fixtures.user.__func__(cls, "workflow-hr-manager", "HR_MANAGER", None)
+        cls.director = Fixtures.user.__func__(cls, "workflow-director", "DIRECTOR", None)
 
     def setUp(self):
         self.client.force_login(self.superuser)
@@ -154,3 +159,109 @@ class HRWorkflowTests(TestCase):
         data.update(contract_no='INVALID', end_date='2019-01-01')
         self.client.post(url, data)
         self.assertFalse(Contract.objects.filter(contract_no='INVALID').exists())
+
+    def _save_salary_decision(self, user=None, **overrides):
+        user = user or self.hr
+        self.client.force_login(user)
+        data = Fixtures.data(self, "salary-decision", action="save_decision", full_name=str(self.employee.pk),
+            decision_no="QD-TEST-001", document_date="2026-10-06", effective_date="2026-11-01",
+            salary="23000000", **overrides)
+        return self.client.post(reverse("portal:hcns_draft", args=["salary-decision"]), data)
+
+    def test_decision_snapshot_reopens_and_exports_with_original_employee(self):
+        duplicate = self.employees[1]
+        duplicate.full_name = self.employee.full_name
+        duplicate.save(update_fields=["full_name"])
+        response = self._save_salary_decision()
+        self.assertEqual(response.status_code, 302)
+        decision = PersonnelDecision.objects.get()
+        self.assertEqual(decision.employee_id, self.employee.pk)
+        self.assertEqual(decision.status, "Draft")
+        self.assertEqual(decision.content_snapshot["values"]["full_name"], self.employee.full_name)
+        self.assertEqual(decision.history.get().action, "DraftCreated")
+
+        edit_url = reverse("portal:hcns_draft", args=["salary-decision"])
+        wrong_template = reverse("portal:hcns_draft", args=["appointment-decision"])
+        self.assertEqual(self.client.get(wrong_template, {"decision_id": decision.pk}).status_code, 404)
+        edit = self.client.get(edit_url, {"decision_id": decision.pk})
+        self.assertEqual(edit.status_code, 200)
+        self.assertEqual(edit.context["form"].initial["full_name"], self.employee.pk)
+        self.assertContains(edit, "Lưu bản nháp quyết định")
+        exported = self.client.get(reverse("portal:personnel_decision_word", args=[decision.pk]))
+        self.assertEqual(exported.status_code, 200)
+        self.assertIn("attachment", exported["Content-Disposition"])
+        self.assertEqual(SecurityEvent.objects.filter(resource="hcns:salary-decision").count(), 1)
+
+    def test_decision_approval_issue_and_private_pdf_access(self):
+        response = self._save_salary_decision(self.hr_manager)
+        decision = PersonnelDecision.objects.get()
+        self.client.post(reverse("portal:personnel_decision_transition", args=[decision.pk, "submit"]))
+        decision.refresh_from_db()
+        self.assertEqual(decision.status, "PendingApproval")
+
+        self.client.post(reverse("portal:personnel_decision_transition", args=[decision.pk, "approve"]))
+        decision.refresh_from_db()
+        self.assertEqual(decision.status, "PendingApproval")
+
+        self.client.force_login(self.director)
+        pending = self.client.get(reverse("portal:personnel_decision_list"))
+        self.assertContains(pending, "QD-TEST-001")
+        self.client.post(reverse("portal:personnel_decision_transition", args=[decision.pk, "approve"]), {"comment": "Đã kiểm tra"})
+        decision.refresh_from_db()
+        self.assertEqual(decision.status, "Approved")
+        self.assertEqual(self.client.get(reverse("portal:personnel_decision_detail", args=[decision.pk])).status_code, 200)
+
+        self.client.force_login(self.hr)
+        invalid_pdf = SimpleUploadedFile("wrong.docx", b"not a PDF", content_type="application/pdf")
+        self.client.post(
+            reverse("portal:personnel_decision_transition", args=[decision.pk, "issue"]),
+            {"issued_file": invalid_pdf},
+        )
+        decision.refresh_from_db()
+        self.assertEqual(decision.status, "Approved")
+
+        signed_pdf = SimpleUploadedFile("QD-TEST-001.pdf", b"%PDF-1.4\nsynthetic signed copy", content_type="application/pdf")
+        response = self.client.post(
+            reverse("portal:personnel_decision_transition", args=[decision.pk, "issue"]),
+            {"comment": "Đã ký", "issued_file": signed_pdf},
+        )
+        self.assertEqual(response.status_code, 302)
+        decision.refresh_from_db()
+        self.assertEqual(decision.status, "Issued")
+        self.assertIsNotNone(decision.issued_at)
+        self.assertEqual(list(decision.history.values_list("action", flat=True)), ["DraftCreated", "Submitted", "Approved", "Issued"])
+
+        private_download = self.client.get(decision.issued_file.url)
+        self.assertEqual(private_download.status_code, 200)
+        self.assertEqual(b"".join(private_download.streaming_content), b"%PDF-1.4\nsynthetic signed copy")
+        self.client.force_login(self.director)
+        self.assertEqual(self.client.get(decision.issued_file.url).status_code, 200)
+        self.client.force_login(self.staff)
+        self.assertEqual(self.client.get(decision.issued_file.url).status_code, 404)
+        self.assertEqual(self.client.get(reverse("portal:personnel_decision_detail", args=[decision.pk])).status_code, 403)
+
+    def test_rejection_requires_comment_and_saved_rejection_returns_to_draft(self):
+        self._save_salary_decision()
+        decision = PersonnelDecision.objects.get()
+        self.client.post(reverse("portal:personnel_decision_transition", args=[decision.pk, "submit"]))
+
+        self.client.force_login(self.director)
+        self.client.post(reverse("portal:personnel_decision_transition", args=[decision.pk, "reject"]))
+        decision.refresh_from_db()
+        self.assertEqual(decision.status, "PendingApproval")
+        self.client.post(reverse("portal:personnel_decision_transition", args=[decision.pk, "reject"]), {"comment": "Bổ sung căn cứ"})
+        decision.refresh_from_db()
+        self.assertEqual(decision.status, "Rejected")
+
+        self.client.force_login(self.hr)
+        edit_url = reverse("portal:hcns_draft", args=["salary-decision"])
+        edit_response = self.client.get(edit_url, {"decision_id": decision.pk})
+        self.assertEqual(edit_response.status_code, 200)
+        data = Fixtures.data(self, "salary-decision", action="save_decision", full_name=str(self.employee.pk),
+            decision_no="QD-TEST-001", document_date="2026-10-06", effective_date="2026-11-01", salary="24000000")
+        response = self.client.post(f"{edit_url}?decision_id={decision.pk}", data)
+        self.assertEqual(response.status_code, 302)
+        decision.refresh_from_db()
+        self.assertEqual(decision.status, "Draft")
+        self.assertEqual(decision.content_snapshot["values"]["salary"], "24000000")
+        self.assertEqual(list(decision.history.values_list("action", flat=True)), ["DraftCreated", "Submitted", "Rejected", "DraftUpdated"])

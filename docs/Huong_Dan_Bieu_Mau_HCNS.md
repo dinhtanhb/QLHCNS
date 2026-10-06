@@ -9,7 +9,11 @@ Mở **Tài liệu → Biểu mẫu HCNS**, hoặc đường dẫn `/portal/hcns
 3. Bấm **Cập nhật bản xem trước**, rồi **In / lưu PDF**. PDF được tạo bằng hộp thoại in của trình duyệt. Nếu vừa sửa nội dung, phải cập nhật bản xem trước trước khi in.
 4. Bấm **Tải Word (.docx)** hoặc **Tải Excel (.xlsx)** để xuất trực tiếp nội dung đang nhập đã qua kiểm tra. Sau khi chỉnh sửa tiếp bằng Office, người phụ trách kiểm tra lại bố cục và nội dung trước khi ký.
 
-Bản đang soạn không được lưu tự động và không ghi vào hồ sơ nghiệp vụ. Tải tệp trước khi rời trang. Các bản xuất có nhãn **BẢN SOẠN THẢO**; không tự gửi đơn, thay đổi lương, kết thúc hợp đồng, duyệt đề nghị hoặc xác nhận xử lý tài sản. Không sao chép chữ ký, tên người phê duyệt hay dữ liệu minh họa đã điền trong tệp gốc vào bản mới.
+Bản đang soạn không được lưu tự động. Với biểu mẫu thông thường, nội dung chỉ tồn tại trên trang; tải tệp trước khi rời trang. Các bản xuất mang nhãn **BẢN SOẠN THẢO** và không tự gửi đơn, thay đổi lương, kết thúc hợp đồng, duyệt đề nghị hoặc xác nhận xử lý tài sản.
+
+Riêng bốn mẫu quyết định nhân sự, người có quyền quản lý HR chọn **Lưu bản nháp quyết định** để lưu nội dung vào hệ thống. Mở **Nhân sự → Quản lý quyết định** để tìm, sửa bản nháp, trình duyệt và xem lịch sử. Sau khi được duyệt, HR tải PDF đã ký lên để ghi nhận ban hành; chỉ PDF này là bản ban hành có thể tải lại. Word và chức năng in từ nội dung lưu vẫn giữ nhãn **BẢN SOẠN THẢO**. Lưu/duyệt/ban hành văn bản không tự thay đổi bản ghi lương, điều chuyển, bổ nhiệm hay hồ sơ nhân viên.
+
+Người trình không được tự duyệt quyết định của mình. Khi bị từ chối, HR nhập nội dung sửa, lưu lại thành bản nháp rồi trình duyệt lại. PDF ban hành được giới hạn truy cập theo quyền quyết định nhân sự, không phải tài liệu công khai trong thư viện chung. Không sao chép chữ ký, tên người phê duyệt hay dữ liệu minh họa đã điền trong tệp gốc vào bản mới.
 
 ## Các nhóm được hỗ trợ
 

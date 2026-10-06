@@ -767,6 +767,26 @@ Mandatory
 
 ---
 
+## WF-HR-DEC-001 — Quyết định nhân sự
+
+### Flow
+
+```text
+Save Draft
+↓
+Submit for Approval
+↓
+Approve / Reject
+↓
+Upload signed PDF and Issue
+```
+
+HR Officer/HR Manager tạo, sửa và trình bản nháp. HR Manager/Director duyệt; người trình không được tự duyệt. Từ chối phải có lý do; HR sửa và lưu lại để tạo lượt trình duyệt mới. Chỉ trạng thái Approved được ban hành và phải kèm PDF đã ký hợp lệ. Mỗi lần lưu/chuyển trạng thái ghi người thao tác, thời gian, trạng thái trước/sau và ghi chú vào lịch sử.
+
+Nội dung quyết định được lưu thành snapshot, tách biệt bản ghi nghiệp vụ nguồn như mức lương hoặc điều chuyển. Sửa, duyệt hay ban hành quyết định không tự áp dụng thay đổi lên hồ sơ nhân viên. Quyền xem/tải bản nháp, PDF ký và lịch sử giới hạn cho HR hoặc người duyệt có tham gia workflow; không đưa quyết định vào thư viện tài liệu công khai.
+
+---
+
 # 16. DOCUMENT REVISION WORKFLOW
 
 ## WF-DOC-002

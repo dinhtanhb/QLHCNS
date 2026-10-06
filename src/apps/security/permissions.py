@@ -49,6 +49,7 @@ PERMISSION_MATRIX = {
     "score_kpi": (HR_MANAGER, DEPT_MANAGER),
     # Tài liệu & công văn
     "approve_document": (HR_MANAGER, DIRECTOR),
+    "approve_personnel_decision": (HR_MANAGER, DIRECTOR),
     # Tuyển dụng
     "request_recruitment": (DEPT_MANAGER, HR_MANAGER),
     "approve_recruitment": (HR_MANAGER,),

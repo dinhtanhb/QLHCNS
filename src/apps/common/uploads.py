@@ -64,6 +64,10 @@ def upload_to_documents(instance, filename):
     return build_upload_path("documents", filename)
 
 
+def upload_to_personnel_decisions(instance, filename):
+    return build_upload_path("personnel-decisions", filename)
+
+
 def upload_to_dispatches(instance, filename):
     return build_upload_path("dispatches", filename)
 
@@ -113,6 +117,19 @@ def validate_upload(uploaded_file):
         raise ValidationError(
             f"Tệp nặng {size / 1024 / 1024:.1f} MB, vượt quá giới hạn {MAX_UPLOAD_SIZE_MB} MB."
         )
+
+
+def validate_decision_pdf(uploaded_file):
+    validate_upload(uploaded_file)
+    if uploaded_file and os.path.splitext(getattr(uploaded_file, "name", ""))[1].lower() != ".pdf":
+        raise ValidationError("Vui lòng tải bản PDF đã ký để ghi nhận quyết định ban hành.")
+    if uploaded_file:
+        position = uploaded_file.tell()
+        try:
+            if b"%PDF-" not in uploaded_file.read(1024):
+                raise ValidationError("Tệp tải lên không có định dạng PDF hợp lệ.")
+        finally:
+            uploaded_file.seek(position)
 
 
 def validate_media_upload(uploaded_file):

@@ -1,12 +1,21 @@
+import copy
+from datetime import date, datetime, time
+from decimal import Decimal
 from urllib.parse import urlencode
 
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator
+from django.db import transaction
+from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseForbidden
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from django.views.decorators.cache import never_cache
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_POST
 
+from apps.document.models import PersonnelDecision, PersonnelDecisionHistory
 from apps.security.models import SecurityEvent
 from apps.security.permissions import has_permission
 
@@ -16,6 +25,88 @@ from .forms import DraftForm, clean_tables, initial_document_data, make_table_fo
 from .filenames import draft_name
 from .prefill import SELECTORS, can_use, prefill
 from .rendering import display, document_context
+
+
+def _json_safe(value):
+    if hasattr(value, "_meta") and hasattr(value, "pk"):
+        return value.pk
+    if isinstance(value, (date, datetime, time)):
+        return value.isoformat()
+    if isinstance(value, Decimal):
+        return str(value)
+    if isinstance(value, dict):
+        return {str(key): _json_safe(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(item) for item in value]
+    return value
+
+
+def _visible_personnel_decision(user, decision):
+    if has_permission(user, "manage_hr"):
+        return True
+    return has_permission(user, "approve_personnel_decision") and (
+        decision.status == "PendingApproval" or decision.history.filter(created_by=user).exists()
+    )
+
+
+def _decision_rendered(decision):
+    return copy.deepcopy(decision.content_snapshot.get("rendered", {}))
+
+
+def _record_decision_event(decision, action, previous_status, comment, user):
+    PersonnelDecisionHistory.objects.create(
+        decision=decision,
+        action=action,
+        status_from=previous_status,
+        status_to=decision.status,
+        comment=comment,
+        created_by=user,
+    )
+
+
+def _save_personnel_decision(request, spec, form, cleaned_tables, context, source_label, source_query, saved_decision):
+    employee = getattr(form, "selected_employee", None)
+    if not employee:
+        form.add_error("full_name", "Chọn hồ sơ nhân viên trước khi lưu quyết định.")
+        return None
+
+    values = form.cleaned_data
+    content_snapshot = {
+        "values": _json_safe(values),
+        "reference_ids": {
+            key: request.POST.get(key)
+            for key, field in form.fields.items()
+            if hasattr(field, "queryset") and request.POST.get(key)
+            and field.queryset.filter(pk=request.POST.get(key)).exists()
+        },
+        "tables": _json_safe(cleaned_tables),
+        "source_label": source_label,
+        "source_query": source_query,
+        "rendered": _json_safe(context),
+    }
+    decision_date = values.get("decision_date") or values.get("document_date")
+    effective_date = values.get("effective_date")
+    previous_status = saved_decision.status if saved_decision else ""
+    with transaction.atomic():
+        decision = saved_decision or PersonnelDecision(created_by=request.user)
+        decision.employee = employee
+        decision.template_slug = spec["slug"]
+        decision.decision_no = values.get("decision_no") or ""
+        decision.decision_date = decision_date
+        decision.effective_date = effective_date
+        decision.content_snapshot = content_snapshot
+        decision.status = "Draft"
+        decision.modified_by = request.user if saved_decision else None
+        decision.full_clean()
+        decision.save()
+        _record_decision_event(
+            decision,
+            "DraftUpdated" if saved_decision else "DraftCreated",
+            previous_status,
+            "",
+            request.user,
+        )
+    return decision
 
 
 @login_required
@@ -64,7 +155,26 @@ def draft(request, slug):
         raise Http404()
     if not can_use(request.user, spec):
         return HttpResponseForbidden("Anh/chị không có quyền sử dụng mẫu này.")
-    initial, table_initial, source_label = prefill(request.user, spec, request.GET)
+    saved_decision = None
+    decision_id = request.GET.get("decision_id", "")
+    if decision_id:
+        if spec["group"] != "decision":
+            raise Http404()
+        if not has_permission(request.user, "manage_hr"):
+            return HttpResponseForbidden("Anh/chị không có quyền sửa quyết định nhân sự.")
+        saved_decision = get_object_or_404(
+            PersonnelDecision.objects.filter(status__in=("Draft", "Rejected")), pk=decision_id
+        )
+        if saved_decision.template_slug != slug:
+            raise Http404()
+        snapshot = saved_decision.content_snapshot
+        initial = dict(snapshot.get("values", {}))
+        initial.update(snapshot.get("reference_ids", {}))
+        initial.update({"_employee_pk": saved_decision.employee_id, "_employee_code": saved_decision.employee.employee_code})
+        table_initial = snapshot.get("tables", {})
+        source_label = snapshot.get("source_label", "")
+    else:
+        initial, table_initial, source_label = prefill(request.user, spec, request.GET)
     source_query = urlencode({key: request.GET[key] for key in SELECTORS if request.GET.get(key)})
     large_source = any(len(table_initial.get(table["key"], [])) > table["max_rows"] for table in tables_for(spec))
     if large_source and request.method == "POST":
@@ -77,6 +187,9 @@ def draft(request, slug):
     if request.method == "POST":
         table_valid, cleaned_tables = clean_tables(bound_tables)
         valid = form.is_valid() and table_valid
+        if valid and request.POST.get("action") == "save_decision" and spec["group"] == "decision" and not getattr(form, "selected_employee", None):
+            form.add_error("full_name", "Chọn hồ sơ nhân viên trước khi lưu quyết định.")
+            valid = False
         if valid:
             if getattr(form, "selected_employee", None):
                 source_record = any(request.GET.get(key) for key in ("salary_id", "promotion_id", "transfer_id", "leave_id", "lifecycle_id"))
@@ -93,14 +206,17 @@ def draft(request, slug):
                     initial.pop("_employee_pk", None)
             context = document_context(spec, form.cleaned_data, cleaned_tables, source_label)
     else:
-        try:
-            values, rows = initial_document_data(spec, initial, table_initial, user=request.user)
-            context = document_context(spec, values, rows, source_label)
-        except ValidationError:
-            # No raw values or exception content are returned to the browser/logs.
-            form.errors
-            form.cleaned_data = {}
-            form.add_error(None, "Dữ liệu hồ sơ nguồn chưa phù hợp với mẫu. Hãy kiểm tra tại phân hệ nguồn.")
+        if saved_decision:
+            values = initial
+            context = _decision_rendered(saved_decision)
+        else:
+            try:
+                values, rows = initial_document_data(spec, initial, table_initial, user=request.user)
+                context = document_context(spec, values, rows, source_label)
+            except ValidationError:
+                form.errors
+                form.cleaned_data = {}
+                form.add_error(None, "Dữ liệu hồ sơ nguồn chưa phù hợp với mẫu. Hãy kiểm tra tại phân hệ nguồn.")
     if context:
         identity = ""
         if request.method == "POST" and "full_name" in form.fields:
@@ -111,7 +227,19 @@ def draft(request, slug):
             identity = initial.get("_employee_code", "")
         elif initial.get("_candidate_pk"):
             identity = initial.get("_candidate_code", "")
-        context["filename_stem"] = draft_name(context, identity, form.cleaned_data if request.method == "POST" else values)
+        if saved_decision and request.method == "GET":
+            context["filename_stem"] = context.get("filename_stem") or draft_name(context, identity, values)
+        else:
+            context["filename_stem"] = draft_name(context, identity, form.cleaned_data if request.method == "POST" else values)
+    if request.method == "POST" and request.POST.get("action") == "save_decision" and valid and context:
+        if spec["group"] != "decision" or not has_permission(request.user, "manage_hr"):
+            return HttpResponseForbidden("Anh/chị không có quyền lưu quyết định nhân sự.")
+        decision = _save_personnel_decision(
+            request, spec, form, cleaned_tables, context, source_label, source_query, saved_decision
+        )
+        if decision:
+            messages.success(request, "Đã lưu bản nháp quyết định.")
+            return redirect("portal:personnel_decision_detail", pk=decision.pk)
     export_requested = request.POST.get("action") == "export" if request.method == "POST" else request.GET.get("export") == "1"
     if export_requested and context and (valid or request.method == "GET"):
         return _export(request, context)
@@ -134,9 +262,162 @@ def draft(request, slug):
     return render(request, "document/hcns/draft.html", {"spec": spec, "form": form, "editor_sections": editor_sections,
         "document": context, "source_label": source_label, "source_query": source_query, "read_only": large_source,
         "preview_updated": valid, "employee_choices": form.employee_choices,
+        "can_save_decision": spec["group"] == "decision" and has_permission(request.user, "manage_hr"),
+        "decision_query": urlencode({"decision_id": saved_decision.pk}) if saved_decision else "",
         "reference_data": editor_data(form, request.user, table_initial),
         "workflow_source": any(key + "=" in source_query for key in ("salary_id", "promotion_id", "transfer_id")),
         "source_employee_id": initial.get("_employee_pk"),
         "source_reason": initial.get("_source_reason", ""),
         "catalog_query": urlencode({"employee_id": initial["_employee_pk"]}) if initial.get("_employee_pk") else "",
         "employee_source": "employee_id=" in source_query}, status=422 if request.method == "POST" and not valid else 200)
+
+
+@login_required
+@never_cache
+@require_http_methods(["GET"])
+def personnel_decision_list(request):
+    can_manage = has_permission(request.user, "manage_hr")
+    can_approve = has_permission(request.user, "approve_personnel_decision")
+    if not (can_manage or can_approve):
+        return HttpResponseForbidden("Anh/chị không có quyền xem quyết định nhân sự.")
+
+    decisions = PersonnelDecision.objects.select_related("employee", "created_by")
+    if not can_manage:
+        decisions = decisions.filter(Q(status="PendingApproval") | Q(history__created_by=request.user)).distinct()
+    query = request.GET.get("q", "").strip()
+    if query:
+        decisions = decisions.filter(
+            Q(decision_no__icontains=query)
+            | Q(employee__employee_code__icontains=query)
+            | Q(employee__full_name__icontains=query)
+        )
+    status = request.GET.get("status", "")
+    valid_statuses = {choice[0] for choice in PersonnelDecision.STATUS_CHOICES}
+    if status in valid_statuses and (can_manage or status == "PendingApproval"):
+        decisions = decisions.filter(status=status)
+    page_obj = Paginator(decisions.order_by("-created_date", "-pk"), 25).get_page(request.GET.get("page"))
+    for decision in page_obj.object_list:
+        decision.template_title = FORMS.get(decision.template_slug, {}).get("title", decision.template_slug)
+    return render(request, "portal/personnel_decision_list.html", {
+        "page_obj": page_obj,
+        "decisions": page_obj.object_list,
+        "query": query,
+        "selected_status": status,
+        "status_choices": PersonnelDecision.STATUS_CHOICES,
+        "can_manage_decisions": can_manage,
+        "can_approve_decisions": can_approve,
+    })
+
+
+@login_required
+@never_cache
+@require_http_methods(["GET"])
+def personnel_decision_detail(request, pk):
+    decision = get_object_or_404(
+        PersonnelDecision.objects.select_related("employee", "created_by").prefetch_related("history__created_by"),
+        pk=pk,
+    )
+    if not _visible_personnel_decision(request.user, decision):
+        return HttpResponseForbidden("Anh/chị không có quyền xem quyết định này.")
+    rendered = _decision_rendered(decision)
+    decision.template_title = FORMS.get(decision.template_slug, {}).get("title", decision.template_slug)
+    history = decision.history.select_related("created_by").all()
+    last_submission = history.filter(action="Submitted").order_by("-pk").first()
+    can_manage = has_permission(request.user, "manage_hr")
+    can_approve = has_permission(request.user, "approve_personnel_decision")
+    return render(request, "portal/personnel_decision_detail.html", {
+        "decision": decision,
+        "document": rendered,
+        "history": history,
+        "can_edit_decision": can_manage and decision.status in ("Draft", "Rejected"),
+        "can_submit_decision": can_manage and decision.status == "Draft",
+        "can_approve_decision": can_approve and decision.status == "PendingApproval" and last_submission and last_submission.created_by_id != request.user.pk,
+        "can_issue_decision": can_manage and decision.status == "Approved",
+        "can_cancel_decision": can_manage and decision.status in ("Draft", "Rejected"),
+    })
+
+
+@login_required
+@never_cache
+@require_http_methods(["GET"])
+def personnel_decision_word(request, pk):
+    decision = get_object_or_404(PersonnelDecision.objects.select_related("employee"), pk=pk)
+    if not _visible_personnel_decision(request.user, decision):
+        return HttpResponseForbidden("Anh/chị không có quyền tải quyết định này.")
+    context = _decision_rendered(decision)
+    if not context:
+        raise Http404()
+    if not context.get("filename_stem"):
+        raise Http404()
+    return _export(request, context)
+
+
+@login_required
+@never_cache
+@require_POST
+def personnel_decision_transition(request, pk, action):
+    comment = request.POST.get("comment", "").strip()
+    with transaction.atomic():
+        decision = get_object_or_404(PersonnelDecision.objects.select_for_update(), pk=pk)
+        previous_status = decision.status
+        if action == "submit":
+            if not has_permission(request.user, "manage_hr"):
+                return HttpResponseForbidden("Anh/chị không có quyền trình duyệt quyết định.")
+            if decision.status != "Draft":
+                messages.error(request, "Chỉ bản nháp mới được trình duyệt.")
+                return redirect("portal:personnel_decision_detail", pk=pk)
+            if not decision.decision_no or not decision.decision_date:
+                messages.error(request, "Cần có số quyết định và ngày quyết định trước khi trình duyệt.")
+                return redirect("portal:personnel_decision_detail", pk=pk)
+            decision.status = "PendingApproval"
+            history_action = "Submitted"
+        elif action in ("approve", "reject"):
+            if not has_permission(request.user, "approve_personnel_decision"):
+                return HttpResponseForbidden("Anh/chị không có quyền duyệt quyết định.")
+            if decision.status != "PendingApproval":
+                messages.error(request, "Quyết định không còn ở trạng thái chờ duyệt.")
+                return redirect("portal:personnel_decision_detail", pk=pk)
+            latest_submission = decision.history.filter(action="Submitted").order_by("-pk").first()
+            if latest_submission and latest_submission.created_by_id == request.user.pk:
+                messages.error(request, "Người trình duyệt không được tự duyệt quyết định này.")
+                return redirect("portal:personnel_decision_detail", pk=pk)
+            if action == "reject" and not comment:
+                messages.error(request, "Nhập lý do từ chối để lưu lịch sử xử lý.")
+                return redirect("portal:personnel_decision_detail", pk=pk)
+            decision.status = "Approved" if action == "approve" else "Rejected"
+            history_action = "Approved" if action == "approve" else "Rejected"
+        elif action == "issue":
+            if not has_permission(request.user, "manage_hr"):
+                return HttpResponseForbidden("Anh/chị không có quyền ban hành quyết định.")
+            if decision.status != "Approved":
+                messages.error(request, "Chỉ quyết định đã duyệt mới được ban hành.")
+                return redirect("portal:personnel_decision_detail", pk=pk)
+            signed_pdf = request.FILES.get("issued_file")
+            if not signed_pdf:
+                messages.error(request, "Tải PDF đã ký lên để ghi nhận ban hành.")
+                return redirect("portal:personnel_decision_detail", pk=pk)
+            decision.issued_file = signed_pdf
+            decision.issued_at = timezone.now()
+            decision.status = "Issued"
+            history_action = "Issued"
+        elif action == "cancel":
+            if not has_permission(request.user, "manage_hr"):
+                return HttpResponseForbidden("Anh/chị không có quyền hủy quyết định.")
+            if decision.status not in ("Draft", "Rejected"):
+                messages.error(request, "Chỉ bản nháp hoặc quyết định bị từ chối mới được hủy.")
+                return redirect("portal:personnel_decision_detail", pk=pk)
+            decision.status = "Cancelled"
+            history_action = "Cancelled"
+        else:
+            raise Http404()
+
+        decision.modified_by = request.user
+        try:
+            decision.full_clean()
+        except ValidationError as error:
+            messages.error(request, "; ".join(error.messages))
+            return redirect("portal:personnel_decision_detail", pk=pk)
+        decision.save()
+        _record_decision_event(decision, history_action, previous_status, comment, request.user)
+    messages.success(request, f"Đã cập nhật trạng thái: {decision.get_status_display()}.")
+    return redirect("portal:personnel_decision_detail", pk=pk)

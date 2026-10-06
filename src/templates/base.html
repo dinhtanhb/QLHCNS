@@ -132,25 +132,23 @@
                     <a href="{% url 'portal:timesheet_month' %}" class="block px-4 py-2 hover:bg-gray-50">Bảng công</a>
                     <a href="{% url 'portal:leave_list' %}" class="block px-4 py-2 hover:bg-gray-50">Nghỉ phép</a>
                     <a href="{% url 'portal:kpi_my_list' %}" class="block px-4 py-2 hover:bg-gray-50">KPI</a>
-                    <a href="{% url 'portal:document_list' %}" class="block px-4 py-2 hover:bg-gray-50">Tài liệu</a>
-                    <a href="{% url 'portal:hcns_catalog' %}" class="block px-4 py-2 hover:bg-gray-50">Biểu mẫu HCNS</a>
-                    {% if can_view_asset %}<a href="{% url 'portal:asset_list' %}" class="block px-4 py-2 hover:bg-gray-50">Tài sản</a>{% endif %}
                     <a href="{% url 'portal:payslip_list' %}" class="block px-4 py-2 hover:bg-gray-50">Phiếu lương</a>
                 </div>
             </div>
 
             <!-- DUYỆT & XỬ LÝ -->
-            {% if can_approve or can_approve_timesheet or can_manage_calendar or can_approve_document or can_approve_activity_proposals %}
+            {% if can_approve or can_approve_timesheet or can_approve_document or can_approve_activity_proposals or can_approve_personnel_decision or can_manage_hr %}
             <div class="portal-nav-group">
                 <button type="button" data-menu-trigger aria-controls="menu-duyet" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
-                    Duyệt & Xử lý <span class="text-xs">▾</span>
+                    Cần duyệt <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-duyet" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
                     {% if can_approve %}<a href="{% url 'portal:leave_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt nghỉ phép</a>{% endif %}
                     {% if can_approve_timesheet %}<a href="{% url 'portal:timesheet_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt chấm công</a>{% endif %}
                     {% if can_approve_document %}<a href="{% url 'portal:document_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt tài liệu</a>{% endif %}
+                    {% if can_approve_personnel_decision %}<a href="{% url 'portal:personnel_decision_list' %}" class="block px-4 py-2 hover:bg-gray-50">Chờ duyệt quyết định</a>{% endif %}
+                    {% if can_manage_hr %}<a href="{% url 'portal:profile_change_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt cập nhật hồ sơ</a>{% endif %}
                     {% if can_approve_activity_proposals %}<a href="{% url 'portal:activity_proposal_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt đề xuất hoạt động{% if pending_activity_proposal_count %} <span class="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{{ pending_activity_proposal_count }}</span>{% endif %}</a>{% endif %}
-                    {% if can_manage_calendar %}<a href="{% url 'portal:holiday_list' %}" class="block px-4 py-2 hover:bg-gray-50">Ngày lễ</a>{% endif %}
                 </div>
             </div>
             {% endif %}
@@ -164,7 +162,7 @@
                 <div id="menu-nhansu" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
                     {% if can_manage_hr %}
                     <a href="{% url 'portal:hr_employee_list' %}" class="block px-4 py-2 hover:bg-gray-50">NV & Hồ sơ</a>
-                    <a href="{% url 'portal:profile_change_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt cập nhật hồ sơ</a>
+                    <a href="{% url 'portal:hcns_catalog' %}" class="block px-4 py-2 hover:bg-gray-50">Biểu mẫu HCNS</a>
                     <a href="{% url 'portal:lifecycle_case_list' %}" class="block px-4 py-2 hover:bg-gray-50">Quản lý checklist onboarding/offboarding</a>
                     <a href="{% url 'portal:hr_contract_list' %}" class="block px-4 py-2 hover:bg-gray-50">Hợp đồng</a>
                     <a href="{% url 'portal:hr_candidate_list' %}" class="block px-4 py-2 hover:bg-gray-50">Ứng viên</a>
@@ -176,10 +174,15 @@
             </div>
             {% endif %}
 
+            {% if can_manage_hr or can_approve_personnel_decision %}
+            {% url 'portal:personnel_decision_list' as u_personnel_decisions %}
+            <a href="{{ u_personnel_decisions }}" class="portal-nav-link border-b-2 {% if u_personnel_decisions in request.path %}border-blue-700 text-blue-700{% else %}border-transparent text-gray-600 hover:text-blue-700{% endif %}">Quyết định nhân sự</a>
+            {% endif %}
+
             {% if can_manage_finance %}
             <div class="portal-nav-group">
                 <button type="button" data-menu-trigger aria-controls="menu-ketoan" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
-                    Kế toán <span class="text-xs">▾</span>
+                    Tài chính <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-ketoan" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
                     <a href="{% url 'portal:finance_period_list' %}" class="block px-4 py-2 hover:bg-gray-50">Chạy lương hàng tháng</a>
@@ -196,15 +199,20 @@
                     Hành chính <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-hc" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
+                    <p class="px-4 pb-1 pt-2 text-xs font-semibold uppercase text-gray-500">Văn bản</p>
+                    <a href="{% url 'portal:document_list' %}" class="block px-4 py-2 hover:bg-gray-50">Tài liệu đã ban hành</a>
                     <a href="{% url 'portal:dispatch_list' %}?type=Incoming" class="block px-4 py-2 hover:bg-gray-50">Công văn đến</a>
                     <a href="{% url 'portal:dispatch_list' %}?type=Outgoing" class="block px-4 py-2 hover:bg-gray-50">Công văn đi</a>
                     {% if can_view_asset %}
                     <div class="border-t border-gray-100 my-1"></div>
+                    <p class="px-4 pb-1 pt-2 text-xs font-semibold uppercase text-gray-500">Tài sản</p>
+                    <a href="{% url 'portal:asset_list' %}" class="block px-4 py-2 hover:bg-gray-50">Tài sản của tôi</a>
                     <a href="{% url 'portal:asset_admin_list' %}" class="block px-4 py-2 hover:bg-gray-50">Quản lý Tài sản</a>
                     <a href="{% url 'portal:inventory_session_list' %}" class="block px-4 py-2 hover:bg-gray-50">Kiểm kê Tài sản</a>
                     <a href="{% url 'portal:disposal_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">Thanh lý Tài sản</a>
-                <div class="border-t border-gray-100 my-1"></div>
                     {% endif %}
+                    <div class="border-t border-gray-100 my-1"></div>
+                    <p class="px-4 pb-1 pt-2 text-xs font-semibold uppercase text-gray-500">Đặt chỗ &amp; đề nghị</p>
                     <a href="{% url 'portal:room_booking_list' %}" class="block px-4 py-2 hover:bg-gray-50">Phòng họp</a>
                     <a href="{% url 'portal:vehicle_booking_list' %}" class="block px-4 py-2 hover:bg-gray-50">Đặt xe</a>
                     <a href="{% url 'portal:supply_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">VPP</a>
@@ -219,6 +227,7 @@
                 <div id="menu-kh" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
                     <a href="{% url 'portal:event_list' %}" class="block px-4 py-2 hover:bg-gray-50">Lịch công tác</a>
                     <a href="{% url 'portal:training_my_list' %}" class="block px-4 py-2 hover:bg-gray-50">Đào tạo</a>
+                    {% if can_manage_calendar %}<a href="{% url 'portal:holiday_list' %}" class="block px-4 py-2 hover:bg-gray-50">Quản lý ngày lễ</a>{% endif %}
                 </div>
             </div>
 
@@ -230,7 +239,7 @@
             {% if can_view_activity_dashboard %}
             <div class="portal-nav-group portal-nav-group--right">
                 <button type="button" data-menu-trigger aria-controls="menu-hoatdongduan" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
-                    Hoạt động dự án <span class="text-xs">▾</span>
+                    Dự án <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-hoatdongduan" class="hidden absolute right-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-56 py-1 z-30">
                     <a href="{% url 'portal:activity_dashboard' %}" class="block px-4 py-2 hover:bg-gray-50">Theo dõi hoạt động</a>

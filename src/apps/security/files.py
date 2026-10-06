@@ -11,6 +11,7 @@ from .models import SecurityEvent
 
 FILE_FIELDS = {
     'document.Document': ('uploaded_file',),
+    'document.PersonnelDecision': ('issued_file',),
     'document.OfficialDispatch': ('attachment',),
     'office.IncomingDocument': ('attachment',),
     'office.OutgoingDocument': ('attachment',),

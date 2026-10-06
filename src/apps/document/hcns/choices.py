@@ -26,6 +26,8 @@ class ReferenceField(forms.ModelChoiceField):
             return ""
         if hasattr(value, "pk"):
             return value.pk
+        if str(value).isdigit() and self.queryset.filter(pk=value).exists():
+            return int(value)
         # Source values are converted separately from POST validation. Free text
         # sent by a client never becomes an extra allowed option.
         matches = [obj.pk for obj in self.queryset if self.printable(obj) == value]

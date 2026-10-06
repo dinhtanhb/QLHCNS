@@ -1,6 +1,12 @@
 from django.db import models
 from apps.common.models import BaseAuditModel
-from apps.common.uploads import upload_to_dispatches, upload_to_documents, validate_upload
+from apps.common.uploads import (
+    upload_to_dispatches,
+    upload_to_documents,
+    upload_to_personnel_decisions,
+    validate_decision_pdf,
+    validate_upload,
+)
 from apps.m365.storage import get_storage
 
 
@@ -89,6 +95,71 @@ class DocumentApproval(BaseAuditModel):
 
     def __str__(self):
         return f"{self.document} - {self.get_decision_display()} bởi {self.approver}"
+
+
+class PersonnelDecision(BaseAuditModel):
+    STATUS_CHOICES = [
+        ("Draft", "Bản nháp"),
+        ("PendingApproval", "Chờ duyệt"),
+        ("Approved", "Đã duyệt"),
+        ("Rejected", "Từ chối"),
+        ("Issued", "Đã ban hành"),
+        ("Cancelled", "Đã hủy"),
+    ]
+
+    employee = models.ForeignKey(
+        "hrm.Employee", on_delete=models.PROTECT, db_column="EmployeeID", related_name="personnel_decisions"
+    )
+    template_slug = models.SlugField(max_length=80, db_column="TemplateSlug")
+    decision_no = models.CharField("Số quyết định", max_length=100, blank=True, db_column="DecisionNo")
+    decision_date = models.DateField("Ngày quyết định", null=True, blank=True, db_column="DecisionDate")
+    effective_date = models.DateField("Ngày hiệu lực", null=True, blank=True, db_column="EffectiveDate")
+    content_snapshot = models.JSONField(default=dict, db_column="ContentSnapshot")
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default="Draft", db_column="Status")
+    issued_file = models.FileField(
+        "Bản PDF đã ký", upload_to=upload_to_personnel_decisions,
+        validators=[validate_decision_pdf], null=True, blank=True,
+        storage=get_storage("documents"),
+    )
+    issued_at = models.DateTimeField(null=True, blank=True, db_column="IssuedAt")
+
+    class Meta:
+        db_table = "tblPersonnelDecision"
+        ordering = ["-created_date", "-id"]
+        verbose_name = "Quyết định nhân sự"
+        verbose_name_plural = "Quyết định nhân sự"
+
+    def __str__(self):
+        return f"{self.decision_no or self.template_slug} - {self.employee}"
+
+
+class PersonnelDecisionHistory(BaseAuditModel):
+    ACTION_CHOICES = [
+        ("DraftCreated", "Tạo bản nháp"),
+        ("DraftUpdated", "Cập nhật bản nháp"),
+        ("Submitted", "Trình duyệt"),
+        ("Approved", "Duyệt"),
+        ("Rejected", "Từ chối"),
+        ("Issued", "Ban hành"),
+        ("Cancelled", "Hủy"),
+    ]
+
+    decision = models.ForeignKey(
+        PersonnelDecision, on_delete=models.PROTECT, db_column="DecisionID", related_name="history"
+    )
+    action = models.CharField(max_length=30, choices=ACTION_CHOICES, db_column="Action")
+    status_from = models.CharField(max_length=30, blank=True, db_column="StatusFrom")
+    status_to = models.CharField(max_length=30, db_column="StatusTo")
+    comment = models.TextField(blank=True, db_column="Comment")
+
+    class Meta:
+        db_table = "tblPersonnelDecisionHistory"
+        ordering = ["created_date", "id"]
+        verbose_name = "Lịch sử quyết định nhân sự"
+        verbose_name_plural = "Lịch sử quyết định nhân sự"
+
+    def get_status_to_display(self):
+        return dict(PersonnelDecision.STATUS_CHOICES).get(self.status_to, self.status_to)
 
 
 class DispatchBook(BaseAuditModel):
