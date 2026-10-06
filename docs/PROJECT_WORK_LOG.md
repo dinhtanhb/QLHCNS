@@ -24,7 +24,7 @@
 
 **Kiểm tra follow-up:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.document.tests_hr_workflow`: **26/26 đạt**; `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.document.tests_hr_workflow apps.notification.tests apps.security.tests_data_protection apps.portal.tests_review_hardening`: **75 tests, 74 đạt, 1 skip, 0 lỗi**; full suite `venv\Scripts\python.exe ops\run_tests.py --backend sqlite`: **366 tests, 364 đạt, 2 skip, 0 lỗi**; `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver apps.document.tests_hr_workflow apps.notification.tests apps.security.tests_data_protection`: **55/55 đạt**. Regression xác nhận người nhận, link, nội dung phản hồi, unread badge, private PDF và ẩn preview/history/Word với nhân viên. Sau chỉnh template cuối, workflow SQLite chạy lại **26/26 đạt**. Chưa chạy browser sau follow-up.
 
-**Commit follow-up:** `c1ea248` (`feat(document): notify personnel decision workflow`), gồm thông báo bell trình/duyệt/từ chối/ban hành và quyền xem PDF cuối cho nhân viên. Đã chạy full SQLite và SQL Server focused như trên. Chưa push commit follow-up; chưa kiểm tra GitHub Actions cho SHA này.
+**Commit/push follow-up:** `c1ea248` (`feat(document): notify personnel decision workflow`) và `0d78fec` (cập nhật nhật ký) đã push; `main` khớp `origin/main`. GitHub Actions cho SHA cuối `0d78fec328a37f2e6ed80399621b1162ba723721` chưa xác minh được vì `gh run list --branch main --commit <SHA> --limit 10` trả HTTP 401 `Bad credentials`. Cần chạy lại sau khi xác thực bằng `gh auth login -h github.com`, rồi xác nhận đủ `backend`, `frontend`, `backup-command-tests`.
 
 ## 2026-10-06 — Chuẩn hóa tên mọi tệp export được tạo mới
 
