@@ -105,9 +105,15 @@ def room_booking_approve(request, pk):
         # transaction.atomic() + select_for_update(): tránh 2 người bấm duyệt
         # cùng lúc dẫn tới 2 phòng chồng giờ đều được duyệt (mục 3.C).
         with transaction.atomic():
+            resource_id = get_object_or_404(RoomBooking, pk=pk, status="Pending").room_id
+            # Lock the common resource before individual reservations, so two
+            # approvals for different pending rows cannot both pass overlap checks.
+            get_object_or_404(MeetingRoom.objects.select_for_update(), pk=resource_id)
             booking = get_object_or_404(
                 RoomBooking.objects.select_for_update(), pk=pk, status="Pending"
             )
+            if booking.room_id != resource_id:
+                raise ValidationError("Phòng họp đã thay đổi. Tải lại yêu cầu trước khi duyệt.")
             booking.status = decision
             booking.modified_by = request.user
             booking.full_clean()
@@ -195,9 +201,13 @@ def vehicle_booking_approve(request, pk):
         return redirect("portal:vehicle_booking_approval_list")
     try:
         with transaction.atomic():
+            resource_id = get_object_or_404(VehicleBooking, pk=pk, status="Pending").vehicle_id
+            get_object_or_404(Vehicle.objects.select_for_update(), pk=resource_id)
             booking = get_object_or_404(
                 VehicleBooking.objects.select_for_update(), pk=pk, status="Pending"
             )
+            if booking.vehicle_id != resource_id:
+                raise ValidationError("Xe đã thay đổi. Tải lại yêu cầu trước khi duyệt.")
             booking.status = decision
             booking.modified_by = request.user
             booking.full_clean()

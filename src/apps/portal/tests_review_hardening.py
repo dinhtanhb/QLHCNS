@@ -21,7 +21,7 @@ from apps.notification.models import Notification
 from apps.office.models import SupplyRequest
 from apps.organization.models import Department
 from apps.portal import tests as portal_tests
-from apps.recruitment.models import Candidate
+from apps.recruitment.models import Candidate, RecruitmentRequest
 from apps.security.models import User
 from apps.planning.models import AnnualBudget, Event, HeadcountPlan, TrainingCourse, with_headcounts
 from apps.procurement.models import ProcurementRequest, ProcurementItem
@@ -58,6 +58,32 @@ class ReviewHardeningTests(TestCase):
         self.client.force_login(self.make_user('HR_MANAGER', self.employee, 'review-hr'))
         self.assertEqual(self.client.get(reverse('portal:hr_candidate_list')).status_code, 200)
         self.assertEqual(self.client.get(reverse('portal:hr_candidate_detail', args=[candidate.pk])).status_code, 200)
+
+    def test_recruitment_manager_cannot_post_outside_managed_departments(self):
+        other = Department.objects.create(department_code='REVIEW-RECRUIT-OTHER', department_name='Other', organization=self.organization)
+        self.department.manager = self.employee
+        self.department.save(update_fields=['manager'])
+        user = self.make_user('DEPT_MANAGER', self.employee, 'review-recruit-manager')
+        self.client.force_login(user)
+        data = {'request_code': 'REVIEW-RECRUIT', 'department': other.pk,
+                'position': self.employee_position.pk, 'required_quantity': '1', 'required_date': '2026-11-01'}
+        url = reverse('portal:recruitment_create')
+        self.client.post(url, data)
+        self.assertFalse(RecruitmentRequest.objects.exists())
+        data['department'] = self.department.pk
+        self.client.post(url, data)
+        self.assertEqual(RecruitmentRequest.objects.get().department_id, self.department.pk)
+
+    def test_unlinked_manager_has_no_recruitment_or_task_scope(self):
+        self.client.force_login(self.make_user('DEPT_MANAGER', None, 'review-unlinked-manager'))
+        recruitment = self.client.get(reverse('portal:recruitment_create'))
+        self.assertEqual(list(recruitment.context['departments']), [])
+        tasks = self.client.get(reverse('portal:task_create'))
+        self.assertEqual(list(tasks.context['candidates']), [])
+        self.client.post(reverse('portal:recruitment_create'), {
+            'request_code': 'REVIEW-UNLINKED', 'department': self.department.pk,
+            'position': self.employee_position.pk, 'required_quantity': '1', 'required_date': '2026-11-01'})
+        self.assertFalse(RecruitmentRequest.objects.exists())
 
     def test_kpi_manager_cannot_update_other_department_or_without_employee(self):
         other_department = Department.objects.create(department_code='REVIEW-OTHER', department_name='Other',

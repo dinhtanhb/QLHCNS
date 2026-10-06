@@ -125,7 +125,7 @@ add("exit-interview", "Phỏng vấn thôi việc", "personnel", "VH_Bo cau hoi 
 
 def decision(slug, subject, source, extra_fields, articles):
     add(slug, "Quyết định " + subject, "decision", source, [
-        section(fields=[field("decision_no", "Số quyết định")] + META + EMPLOYEE + [SIGNER]),
+        section(fields=[field("decision_no", "Số quyết định", max_length=100)] + META + EMPLOYEE + [SIGNER]),
         section("Căn cứ", fields=[field("bases", "Nội dung căn cứ", "textarea", initial=BASES)],
             paragraphs=["GIÁM ĐỐC TRUNG TÂM"]),
         section("Thông tin quyết định", fields=extra_fields),

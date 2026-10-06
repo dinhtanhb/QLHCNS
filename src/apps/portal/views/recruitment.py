@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_POST
 from apps.security.permissions import has_permission
 from django.contrib.auth.decorators import login_required
@@ -53,17 +54,19 @@ def recruitment_create(request):
 
     employee = _get_employee(request)
     role_code = _role_code(request)
-    if not request.user.is_superuser and role_code == "DEPT_MANAGER" and employee:
-        departments = employee.managed_departments.all()
+    if not request.user.is_superuser and role_code == "DEPT_MANAGER":
+        departments = employee.managed_departments.all() if employee else Department.objects.none()
     else:
-        from apps.organization.models import Department
         departments = Department.objects.all()
 
     if request.method == "POST":
         try:
+            department = departments.filter(pk=request.POST.get("department")).first()
+            if department is None:
+                raise ValidationError("Chỉ được đề xuất tuyển dụng cho phòng ban thuộc phạm vi quản lý.")
             recruitment_request = RecruitmentRequest(
                 request_code=request.POST.get("request_code"),
-                department_id=request.POST.get("department"),
+                department=department,
                 position_id=request.POST.get("position"),
                 required_quantity=request.POST.get("required_quantity") or 1,
                 request_reason=request.POST.get("request_reason", ""),

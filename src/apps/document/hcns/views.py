@@ -1,7 +1,7 @@
 import copy
 from datetime import date, datetime, time
 from decimal import Decimal
-from urllib.parse import urlencode
+from urllib.parse import parse_qs, urlencode
 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -157,9 +157,15 @@ def _save_personnel_decision(request, spec, form, cleaned_tables, context, sourc
     }
     decision_date = values.get("decision_date") or values.get("document_date")
     effective_date = values.get("effective_date")
-    previous_status = saved_decision.status if saved_decision else ""
     with transaction.atomic():
-        decision = saved_decision or PersonnelDecision(created_by=request.user)
+        if saved_decision:
+            decision = get_object_or_404(PersonnelDecision.objects.select_for_update(), pk=saved_decision.pk)
+            if decision.status not in ("Draft", "Rejected") or decision.template_slug != spec["slug"]:
+                form.add_error(None, "Quyết định đã chuyển trạng thái. Tải lại trang để xem nội dung hiện tại.")
+                return None
+        else:
+            decision = PersonnelDecision(created_by=request.user)
+        previous_status = decision.status if saved_decision else ""
         decision.employee = employee
         decision.template_slug = spec["slug"]
         decision.decision_no = values.get("decision_no") or ""
@@ -168,7 +174,15 @@ def _save_personnel_decision(request, spec, form, cleaned_tables, context, sourc
         decision.content_snapshot = content_snapshot
         decision.status = "Draft"
         decision.modified_by = request.user if saved_decision else None
-        decision.full_clean()
+        try:
+            decision.full_clean()
+        except ValidationError as error:
+            if hasattr(error, "message_dict"):
+                for key, errors in error.message_dict.items():
+                    form.add_error(key if key in form.fields else None, errors)
+            else:
+                form.add_error(None, error)
+            return None
         decision.save()
         _record_decision_event(
             decision,
@@ -244,9 +258,12 @@ def draft(request, slug):
         initial.update({"_employee_pk": saved_decision.employee_id, "_employee_code": saved_decision.employee.employee_code})
         table_initial = snapshot.get("tables", {})
         source_label = snapshot.get("source_label", "")
+        source_selectors = parse_qs(snapshot.get("source_query", ""))
     else:
         initial, table_initial, source_label = prefill(request.user, spec, request.GET)
-    source_query = urlencode({key: request.GET[key] for key in SELECTORS if request.GET.get(key)})
+        source_selectors = {key: [request.GET[key]] for key in SELECTORS if request.GET.get(key)}
+    source_selectors = {key: values[-1] for key, values in source_selectors.items() if key in SELECTORS and values}
+    source_query = urlencode(source_selectors)
     large_source = any(len(table_initial.get(table["key"], [])) > table["max_rows"] for table in tables_for(spec))
     if large_source and request.method == "POST":
         return HttpResponseForbidden("Hồ sơ nhiều dòng chỉ được xem và xuất đầy đủ; sửa dữ liệu tại phân hệ nguồn.")
@@ -263,11 +280,11 @@ def draft(request, slug):
             valid = False
         if valid:
             if getattr(form, "selected_employee", None):
-                source_record = any(request.GET.get(key) for key in ("salary_id", "promotion_id", "transfer_id", "leave_id", "lifecycle_id"))
+                source_record = any(source_selectors.get(key) for key in ("salary_id", "promotion_id", "transfer_id", "leave_id", "lifecycle_id"))
                 same_record_employee = initial.get("_employee_pk") == form.selected_employee.pk and source_record
                 if not same_record_employee:
                     source_label = "Hồ sơ nhân viên " + form.selected_employee.employee_code
-                if request.GET.get("employee_id") or (source_record and not same_record_employee):
+                if source_selectors.get("employee_id") or (source_record and not same_record_employee) or (saved_decision and saved_decision.employee_id != form.selected_employee.pk):
                     source_query = urlencode({"employee_id": form.selected_employee.pk})
                     initial["_employee_pk"] = form.selected_employee.pk
             if getattr(form, "selected_candidate", None):
@@ -311,6 +328,7 @@ def draft(request, slug):
         if decision:
             messages.success(request, "Đã lưu bản nháp quyết định.")
             return redirect("portal:personnel_decision_detail", pk=decision.pk)
+        valid = False
     export_requested = request.POST.get("action") == "export" if request.method == "POST" else request.GET.get("export") == "1"
     if export_requested and context and (valid or request.method == "GET"):
         return _export(request, context)

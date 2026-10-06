@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import Decimal
+from unittest.mock import patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
@@ -205,6 +206,68 @@ class HRWorkflowTests(TestCase):
         self.assertEqual(exported.status_code, 200)
         self.assertIn("attachment", exported["Content-Disposition"])
         self.assertEqual(SecurityEvent.objects.filter(resource="hcns:salary-decision").count(), 1)
+
+    def test_draft_save_cannot_revert_a_concurrent_submission(self):
+        from apps.document.hcns import views
+        self._save_salary_decision()
+        decision = PersonnelDecision.objects.get()
+        original = views._save_personnel_decision
+
+        def submit_before_save(*args, **kwargs):
+            PersonnelDecision.objects.filter(pk=decision.pk).update(status="PendingApproval")
+            return original(*args, **kwargs)
+
+        data = Fixtures.data(self, "salary-decision", action="save_decision", full_name=str(self.employee.pk), salary="24000000")
+        url = reverse("portal:hcns_draft", args=["salary-decision"]) + f"?decision_id={decision.pk}"
+        with patch.object(views, "_save_personnel_decision", side_effect=submit_before_save):
+            response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 422)
+        self.assertTrue(response.context["form"].non_field_errors())
+        decision.refresh_from_db()
+        self.assertEqual(decision.status, "PendingApproval")
+        self.assertEqual(decision.content_snapshot["values"]["salary"], "23000000")
+        self.assertEqual(decision.history.count(), 1)
+
+    def test_long_decision_number_returns_form_error_without_writes(self):
+        self.client.force_login(self.hr)
+        data = Fixtures.data(self, "salary-decision", action="save_decision", full_name=str(self.employee.pk), decision_no="X" * 101)
+        response = self.client.post(reverse("portal:hcns_draft", args=["salary-decision"]), data)
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("decision_no", response.context["form"].errors)
+        self.assertFalse(PersonnelDecision.objects.exists())
+
+    def test_edit_preserves_salary_source_without_refreshing_snapshot(self):
+        self.client.force_login(self.hr)
+        salary = EmployeeSalary.objects.create(employee=self.employee, current_basic_salary=23000000, effective_date=date(2026, 11, 1))
+        url = reverse("portal:hcns_draft", args=["salary-decision"])
+        data = Fixtures.data(self, "salary-decision", action="save_decision", full_name=str(self.employee.pk), salary="23000000")
+        self.client.post(url + f"?salary_id={salary.pk}", data)
+        decision = PersonnelDecision.objects.get()
+        label = decision.content_snapshot["source_label"]
+        EmployeeSalary.objects.filter(pk=salary.pk).update(current_basic_salary=25000000)
+        edit_url = url + f"?decision_id={decision.pk}"
+        response = self.client.get(edit_url)
+        self.assertTrue(response.context["workflow_source"])
+        self.assertEqual(response.context["form"].initial["salary"], "23000000")
+        self.assertEqual(self.client.post(edit_url, data).status_code, 302)
+        decision.refresh_from_db()
+        self.assertEqual(decision.content_snapshot["source_query"], f"salary_id={salary.pk}")
+        self.assertEqual(decision.content_snapshot["source_label"], label)
+        data["full_name"] = str(self.employees[1].pk)
+        self.assertEqual(self.client.post(edit_url, data).status_code, 302)
+        decision.refresh_from_db()
+        self.assertEqual(decision.employee_id, self.employees[1].pk)
+        self.assertEqual(decision.content_snapshot["source_query"], f"employee_id={self.employees[1].pk}")
+
+    def test_saved_decision_loads_layout_and_print_controls(self):
+        self._save_salary_decision()
+        decision = PersonnelDecision.objects.get()
+        response = self.client.get(reverse("portal:personnel_decision_detail", args=[decision.pk]))
+        self.assertContains(response, "css/hcns_forms.css")
+        self.assertContains(response, "js/hcns_forms.js")
+        self.assertContains(response, decision.content_snapshot["rendered"]["profile"]["page_css"])
+        self.assertContains(response, 'id="hcns-export-name"')
+        self.assertContains(response, '<section class="no-print border-t')
 
     def test_decision_approval_issue_and_private_pdf_access(self):
         response = self._save_salary_decision(self.hr_manager)

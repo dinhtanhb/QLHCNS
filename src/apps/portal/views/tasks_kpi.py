@@ -148,8 +148,8 @@ def task_create(request):
 
     employee = _get_employee(request)
     role_code = _role_code(request)
-    if not request.user.is_superuser and role_code == "DEPT_MANAGER" and employee:
-        dept_ids = employee.managed_departments.values_list("pk", flat=True)
+    if not request.user.is_superuser and role_code == "DEPT_MANAGER":
+        dept_ids = employee.managed_departments.values_list("pk", flat=True) if employee else []
         candidates = Employee.objects.filter(department_id__in=dept_ids)
     else:
         candidates = Employee.objects.all()

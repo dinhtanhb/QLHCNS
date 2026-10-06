@@ -128,9 +128,10 @@ def generate_expiring_contracts_excel(days_threshold=60):
     ws.title = "HĐ sắp hết hạn"
     ws.views.sheetView[0].showGridLines = True
 
-    limit_date = date.today() + timedelta(days=days_threshold)
+    today = date.today()
+    limit_date = today + timedelta(days=days_threshold)
     contracts = Contract.objects.filter(
-        status="Active", end_date__isnull=False, end_date__lte=limit_date
+        status="Active", end_date__isnull=False, end_date__gte=today, end_date__lte=limit_date
     ).select_related("employee", "employee__department", "contract_type").order_by("end_date")
 
     ws.merge_cells("A1:H1")
@@ -152,7 +153,7 @@ def generate_expiring_contracts_excel(days_threshold=60):
 
     current_row = 4
     for idx, c in enumerate(contracts, 1):
-        days_left = (c.end_date - date.today()).days if c.end_date else 0
+        days_left = (c.end_date - today).days if c.end_date else 0
         ws.cell(row=current_row, column=1, value=idx).alignment = Alignment(horizontal="center")
         ws.cell(row=current_row, column=2, value=c.contract_no).alignment = Alignment(horizontal="center")
         ws.cell(row=current_row, column=3, value=c.employee.employee_code).alignment = Alignment(horizontal="center")

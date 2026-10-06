@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
-from django.db import models
+from django.db import models, transaction
 from apps.common.models import BaseAuditModel
 from apps.common.uploads import upload_to_incoming_docs, upload_to_outgoing_docs, validate_upload
 from apps.m365.storage import get_storage
@@ -113,7 +113,23 @@ class Vehicle(BaseAuditModel):
         return f"{self.vehicle_name} ({self.plate_number})"
 
 
-class RoomBooking(BaseAuditModel):
+class ResourceBookingSaveMixin:
+    """Serialize approved reservations on the shared room/vehicle, including Admin writes."""
+    def save(self, *args, **kwargs):
+        if self.status != "Approved":
+            return super().save(*args, **kwargs)
+        using = kwargs.get("using") or self._state.db or "default"
+        resource_field = self._meta.get_field(self.resource_field_name)
+        with transaction.atomic(using=using):
+            resource_field.remote_field.model.objects.using(using).select_for_update().get(
+                pk=getattr(self, resource_field.attname)
+            )
+            self.full_clean()
+            return super().save(*args, **kwargs)
+
+
+class RoomBooking(ResourceBookingSaveMixin, BaseAuditModel):
+    resource_field_name = "room"
     STATUS_CHOICES = [
         ("Pending", "Chờ duyệt"), ("Approved", "Đã duyệt"),
         ("Rejected", "Từ chối"), ("Cancelled", "Đã hủy"),
@@ -145,7 +161,8 @@ class RoomBooking(BaseAuditModel):
         return f"{self.room} - {self.employee} ({self.start_time:%d/%m %H:%M})"
 
 
-class VehicleBooking(BaseAuditModel):
+class VehicleBooking(ResourceBookingSaveMixin, BaseAuditModel):
+    resource_field_name = "vehicle"
     STATUS_CHOICES = [
         ("Pending", "Chờ duyệt"), ("Approved", "Đã đặt"),
         ("Rejected", "Từ chối"), ("Cancelled", "Đã hủy"),

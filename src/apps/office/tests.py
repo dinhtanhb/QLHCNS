@@ -1,8 +1,12 @@
 from datetime import date, datetime
+from concurrent.futures import ThreadPoolExecutor
+from threading import Barrier
+from unittest import skipUnless
 
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
+from django.db import connection, close_old_connections
 from django.urls import reverse
 from django.utils import timezone
 
@@ -46,6 +50,20 @@ class OfficeTestBase(TestCase):
 
 
 class OfficeModelValidationTests(OfficeTestBase):
+    def test_approved_save_rechecks_conflicts_without_callers_clean(self):
+        for model, resource in [(RoomBooking, {'room': self.room, 'purpose': 'Synthetic'}),
+                                (VehicleBooking, {'vehicle': self.vehicle, 'destination': 'Synthetic'})]:
+            with self.subTest(model=model.__name__):
+                first = model.objects.create(employee=self.employee, start_time=self.at(10), end_time=self.at(11), **resource)
+                second = model.objects.create(employee=self.employee, start_time=self.at(10, 30), end_time=self.at(11, 30), **resource)
+                first.status = 'Approved'
+                first.save()
+                second.status = 'Approved'
+                with self.assertRaises(ValidationError):
+                    second.save()
+                second.refresh_from_db()
+                self.assertEqual(second.status, 'Pending')
+
     def test_vehicle_booking_accepts_pending_and_rejected_states(self):
         booking = VehicleBooking(
             vehicle=self.vehicle, employee=self.employee, destination="Biên Hòa",
@@ -101,6 +119,45 @@ class OfficeModelValidationTests(OfficeTestBase):
                 field = model._meta.get_field("attachment")
                 with self.assertRaises(ValidationError):
                     field.validators[0](SimpleUploadedFile("virus.exe", b"not executable"))
+
+
+@skipUnless(connection.vendor == 'microsoft', 'Requires SQL Server row locking.')
+class ConcurrentBookingTests(TransactionTestCase):
+    at = staticmethod(OfficeTestBase.at)
+
+    def setUp(self):
+        OfficeTestBase.setUpTestData.__func__(type(self))
+
+    def check_concurrent_approvals(self, model, resource):
+        first = model.objects.create(employee=self.employee, start_time=self.at(10), end_time=self.at(11), **resource)
+        second = model.objects.create(employee=self.employee, start_time=self.at(10, 30), end_time=self.at(11, 30), **resource)
+        barrier = Barrier(2)
+
+        def approve(pk):
+            close_old_connections()
+            try:
+                booking = model.objects.get(pk=pk)
+                booking.status = 'Approved'
+                barrier.wait(timeout=10)
+                try:
+                    booking.save()
+                except ValidationError:
+                    return False
+                return True
+            finally:
+                close_old_connections()
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            outcomes = list(pool.map(approve, [first.pk, second.pk]))
+        self.assertEqual(sorted(outcomes), [False, True])
+        self.assertEqual(model.objects.filter(status='Approved').count(), 1)
+        self.assertEqual(model.objects.filter(status='Pending').count(), 1)
+
+    def test_room_concurrent_approvals_preserve_one_reservation(self):
+        self.check_concurrent_approvals(RoomBooking, {'room': self.room, 'purpose': 'Synthetic'})
+
+    def test_vehicle_concurrent_approvals_preserve_one_reservation(self):
+        self.check_concurrent_approvals(VehicleBooking, {'vehicle': self.vehicle, 'destination': 'Synthetic'})
 
 
 class OfficeViewPermissionTests(OfficeTestBase):
