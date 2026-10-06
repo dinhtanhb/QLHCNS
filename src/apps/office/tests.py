@@ -50,6 +50,14 @@ class OfficeTestBase(TestCase):
 
 
 class OfficeModelValidationTests(OfficeTestBase):
+    def test_approved_save_reports_missing_resource_as_validation_error(self):
+        booking = RoomBooking(
+            room_id=2147483647, employee=self.employee, purpose="Synthetic",
+            start_time=self.at(10), end_time=self.at(11), status="Approved",
+        )
+        with self.assertRaisesMessage(ValidationError, "Tài nguyên đặt chỗ không còn tồn tại"):
+            booking.save()
+
     def test_approved_save_rechecks_conflicts_without_callers_clean(self):
         for model, resource in [(RoomBooking, {'room': self.room, 'purpose': 'Synthetic'}),
                                 (VehicleBooking, {'vehicle': self.vehicle, 'destination': 'Synthetic'})]:

@@ -113,10 +113,13 @@ def room_booking_approve(request, pk):
                 RoomBooking.objects.select_for_update(), pk=pk, status="Pending"
             )
             if booking.room_id != resource_id:
+                # Phòng bị đổi giữa hai lần đọc: khóa đang giữ không bảo vệ đúng
+                # tài nguyên, phải tải lại thay vì duyệt nhầm.
                 raise ValidationError("Phòng họp đã thay đổi. Tải lại yêu cầu trước khi duyệt.")
             booking.status = decision
             booking.modified_by = request.user
-            booking.full_clean()
+            # ResourceBookingSaveMixin khóa lại tài nguyên và chạy full_clean()
+            # khi trạng thái là "Approved"; không lặp lại kiểm tra ở đây.
             booking.save()
         label = "duyệt" if decision == "Approved" else "từ chối"
         notify(
@@ -207,10 +210,13 @@ def vehicle_booking_approve(request, pk):
                 VehicleBooking.objects.select_for_update(), pk=pk, status="Pending"
             )
             if booking.vehicle_id != resource_id:
+                # Xe bị đổi giữa hai lần đọc: khóa đang giữ không bảo vệ đúng
+                # tài nguyên, phải tải lại thay vì duyệt nhầm.
                 raise ValidationError("Xe đã thay đổi. Tải lại yêu cầu trước khi duyệt.")
             booking.status = decision
             booking.modified_by = request.user
-            booking.full_clean()
+            # ResourceBookingSaveMixin khóa lại tài nguyên và chạy full_clean()
+            # khi trạng thái là "Approved"; không lặp lại kiểm tra ở đây.
             booking.save()
         label = "duyệt" if decision == "Approved" else "từ chối"
         notify(

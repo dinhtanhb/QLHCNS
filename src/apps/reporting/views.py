@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import timedelta
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render
@@ -30,7 +30,7 @@ def report_dashboard(request):
     if not _can_view_reports(request):
         return HttpResponseForbidden("Anh/chị không có quyền truy cập Trung tâm Báo cáo.")
 
-    today = date.today()
+    today = timezone.localdate()
     limit_60 = today + timedelta(days=60)
     limit_30 = today + timedelta(days=30)
 
@@ -102,7 +102,7 @@ def export_dispatches(request):
     if not _can_view_reports(request):
         return HttpResponseForbidden("Không có quyền xuất dữ liệu.")
     dispatch_type = request.GET.get("type", "Incoming")
-    year = parse_int(request.GET.get("year"), date.today().year, min_value=2000, max_value=2100)
+    year = parse_int(request.GET.get("year"), timezone.localdate().year, min_value=2000, max_value=2100)
     excel_stream = generate_dispatch_book_excel(dispatch_type=dispatch_type, year=year, queryset=visible_dispatches_for(request.user))
     type_slug = "den" if dispatch_type == "Incoming" else "di"
     response = HttpResponse(

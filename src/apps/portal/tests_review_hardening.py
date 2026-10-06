@@ -74,6 +74,17 @@ class ReviewHardeningTests(TestCase):
         self.client.post(url, data)
         self.assertEqual(RecruitmentRequest.objects.get().department_id, self.department.pk)
 
+    def test_non_manager_role_cannot_see_recruitment_even_if_marked_department_manager(self):
+        self.department.manager = self.employee
+        self.department.save(update_fields=['manager'])
+        RecruitmentRequest.objects.create(
+            request_code='REVIEW-ROLE-SCOPE', department=self.department,
+            position=self.employee_position, required_quantity=1, required_date=date(2026, 11, 1),
+        )
+        self.client.force_login(self.make_user('EMPLOYEE', self.employee, 'review-role-scope'))
+        response = self.client.get(reverse('portal:recruitment_list'))
+        self.assertNotContains(response, 'REVIEW-ROLE-SCOPE')
+
     def test_unlinked_manager_has_no_recruitment_or_task_scope(self):
         self.client.force_login(self.make_user('DEPT_MANAGER', None, 'review-unlinked-manager'))
         recruitment = self.client.get(reverse('portal:recruitment_create'))
@@ -237,6 +248,16 @@ class ReviewHardeningTests(TestCase):
         self.client.post(reverse('portal:event_list'), {'title': 'Forbidden event', 'department': other.pk,
             'start_time': '2026-10-01T08:00', 'end_time': '2026-10-01T09:00'})
         self.assertFalse(Event.objects.filter(title='Forbidden event').exists())
+
+    def test_event_manager_cannot_create_company_wide_event_with_blank_department(self):
+        self.department.manager = self.employee
+        self.department.save(update_fields=['manager'])
+        self.client.force_login(self.make_user('DEPT_MANAGER', self.employee, 'review-event-global'))
+        self.client.post(reverse('portal:event_list'), {
+            'title': 'Forbidden company event', 'department': '',
+            'start_time': '2026-10-01T08:00', 'end_time': '2026-10-01T09:00',
+        })
+        self.assertFalse(Event.objects.filter(title='Forbidden company event').exists())
 
     def test_bulk_notices_deduplicate_recipients_without_query_per_employee(self):
         recipients = [self.make_employee(f'REVIEW-BULK-{index}') for index in range(12)]

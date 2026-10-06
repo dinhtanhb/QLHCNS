@@ -1,8 +1,10 @@
 import io
-from datetime import date, timedelta
+from datetime import timedelta
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
+
+from django.utils import timezone
 
 from apps.hrm.models import Employee
 from apps.contract.models import Contract
@@ -79,7 +81,7 @@ def generate_employee_list_excel():
     title_cell.alignment = Alignment(horizontal="center", vertical="center")
     ws.row_dimensions[1].height = 30
 
-    ws["A2"] = f"Ngày xuất báo cáo: {date.today().strftime('%d/%m/%Y')}"
+    ws["A2"] = f"Ngày xuất báo cáo: {timezone.localdate().strftime('%d/%m/%Y')}"
     ws["A2"].font = Font(name="Arial", size=10, italic=True)
 
     headers = [
@@ -128,7 +130,7 @@ def generate_expiring_contracts_excel(days_threshold=60):
     ws.title = "HĐ sắp hết hạn"
     ws.views.sheetView[0].showGridLines = True
 
-    today = date.today()
+    today = timezone.localdate()
     limit_date = today + timedelta(days=days_threshold)
     contracts = Contract.objects.filter(
         status="Active", end_date__isnull=False, end_date__gte=today, end_date__lte=limit_date
@@ -198,7 +200,7 @@ def generate_dispatch_book_excel(dispatch_type="Incoming", year=None, queryset=N
 
     ws.merge_cells("A1:I1")
     title_cell = ws["A1"]
-    title_cell.value = f"SỔ THEO DÕI {type_name} NĂM {year or date.today().year}"
+    title_cell.value = f"SỔ THEO DÕI {type_name} NĂM {year or timezone.localdate().year}"
     title_cell.font = Font(name="Arial", size=14, bold=True, color="1F4E79")
     title_cell.alignment = Alignment(horizontal="center", vertical="center")
     ws.row_dimensions[1].height = 30

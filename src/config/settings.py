@@ -16,6 +16,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 from django.core.exceptions import ImproperlyConfigured
 
+from config.env import env_flag
+
 # BASE_DIR là thư mục 'src'
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,7 +32,7 @@ if not SECRET_KEY:
         "Thiếu biến môi trường SECRET_KEY. Khai báo SECRET_KEY trong file .env (xem "
         "ROOT_DIR/.env) trước khi chạy ứng dụng — không được dùng key mặc định/công khai."
     )
-DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "t")
+DEBUG = env_flag("DEBUG")
 
 ALLOWED_HOSTS = [
     host.strip()
@@ -51,7 +53,7 @@ CSRF_TRUSTED_ORIGINS = [
 # đăng nhập được. Chỉ bật khi ENABLE_HTTPS_ENFORCEMENT=True trong .env
 # (đặt True khi deploy thật, sau IIS/reverse proxy đã có chứng chỉ SSL).
 # ==========================================
-ENABLE_HTTPS_ENFORCEMENT = os.getenv("ENABLE_HTTPS_ENFORCEMENT", "False").lower() in ("true", "1", "t")
+ENABLE_HTTPS_ENFORCEMENT = env_flag("ENABLE_HTTPS_ENFORCEMENT")
 
 if ENABLE_HTTPS_ENFORCEMENT:
     SECURE_SSL_REDIRECT = True
@@ -66,9 +68,9 @@ if ENABLE_HTTPS_ENFORCEMENT:
     # Keep it off by default in SIT to avoid persisting browser HTTPS policy.
     SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "0"))
     SECURE_HSTS_INCLUDE_SUBDOMAINS = (
-        os.getenv("SECURE_HSTS_INCLUDE_SUBDOMAINS", "False").lower() in ("true", "1", "t")
+        env_flag("SECURE_HSTS_INCLUDE_SUBDOMAINS")
     )
-    SECURE_HSTS_PRELOAD = os.getenv("SECURE_HSTS_PRELOAD", "False").lower() in ("true", "1", "t")
+    SECURE_HSTS_PRELOAD = env_flag("SECURE_HSTS_PRELOAD")
 
 # Production must be explicitly configured; development remains HTTP-compatible.
 APP_ENV = os.getenv("APP_ENV", "development").lower()
@@ -199,6 +201,9 @@ if DB_ENGINE == "django.db.backends.sqlite3":
     }
 else:
     DB_TRUSTED_CONNECTION = os.getenv("DB_TRUSTED_CONNECTION", "no")
+    DB_EXTRA_PARAMS = os.getenv("DB_EXTRA_PARAMS", "").strip()
+    if not DB_EXTRA_PARAMS and APP_ENV == "production":
+        DB_EXTRA_PARAMS = "Encrypt=yes;TrustServerCertificate=no"
     DATABASES = {
         "default": {
             "ENGINE": "mssql",
@@ -210,7 +215,7 @@ else:
             "OPTIONS": {
                 "driver": os.getenv("DB_DRIVER", "ODBC Driver 17 for SQL Server"),
                 "trusted_connection": DB_TRUSTED_CONNECTION,
-                **({"extra_params": "Encrypt=yes;TrustServerCertificate=no"} if APP_ENV == "production" else {}),
+                **({"extra_params": DB_EXTRA_PARAMS} if DB_EXTRA_PARAMS else {}),
             },
         }
     }
@@ -286,7 +291,7 @@ M365_SHAREPOINT_SITE_PATH = os.getenv("M365_SHAREPOINT_SITE_PATH", "")
 # Bật lưu trữ qua SharePoint/OneDrive thay vì đĩa cục bộ. Mặc định TẮT để hệ
 # thống vẫn chạy bình thường (lưu vào MEDIA_ROOT) trong lúc chờ IT cấp đủ
 # Tenant ID / Client ID / Client Secret / site SharePoint ở trên.
-M365_STORAGE_ENABLED = os.getenv("M365_STORAGE_ENABLED", "False") == "True"
+M365_STORAGE_ENABLED = env_flag("M365_STORAGE_ENABLED")
 
 # One SharePoint document library (a Graph drive) contains per-feature folders.
 # Legacy M365_LIBRARY_DOCUMENTS remains a fallback for the former library setting.

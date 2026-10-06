@@ -1,6 +1,37 @@
 """Explicit object scopes; staff status never grants business data access."""
 from django.db.models import Q
-from apps.security.permissions import get_role_code, has_permission
+from apps.security.permissions import DEPT_MANAGER, get_role_code, has_permission
+
+
+def managed_departments_for(user, *, global_roles=(), scoped_roles=(DEPT_MANAGER,)):
+    """Departments a role may target in department-scoped write workflows."""
+    from apps.organization.models import Department
+
+    qs = Department.objects.all()
+    if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
+        return qs.none()
+    role = get_role_code(user)
+    if getattr(user, "is_superuser", False) or role in global_roles:
+        return qs
+    if role not in scoped_roles:
+        return qs.none()
+    employee = getattr(user, "employee", None)
+    if not employee or employee.is_deleted:
+        return qs.none()
+    return employee.managed_departments.all()
+
+
+def employees_for_department_scope(user, *, global_roles=(), scoped_roles=(DEPT_MANAGER,)):
+    """Employees selectable by a global role or within managed departments."""
+    from apps.hrm.models import Employee
+
+    qs = Employee.objects.all()
+    departments = managed_departments_for(
+        user, global_roles=global_roles, scoped_roles=scoped_roles,
+    )
+    if getattr(user, "is_superuser", False) or get_role_code(user) in global_roles:
+        return qs
+    return qs.filter(department__in=departments)
 
 
 def visible_dispatches_for(user, queryset=None):

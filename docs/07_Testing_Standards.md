@@ -1086,3 +1086,13 @@ Ready For:
 - SIT
 - UAT
 - Go Live
+
+---
+
+# 33. AUTOMATED DATABASE REGRESSION
+
+- Mỗi push/PR vào `main` chạy toàn bộ regression trên SQLite qua `.github/workflows/ci.yml`.
+- `.github/workflows/sqlserver-regression.yml` chạy toàn bộ regression trên SQL Server vào 00:30 thứ Hai (giờ Việt Nam) và cho phép chạy thủ công bằng `workflow_dispatch`.
+- Các test đồng thời dựa vào `select_for_update` chỉ được coi là đã xác nhận khi job SQL Server đạt; kết quả skip trên SQLite không thay thế kiểm tra này.
+- Mỗi lượt dùng database `test_ihrms_<UUID>` và media tạm; không trỏ runner vào database nghiệp vụ.
+- Trước phát hành cần đối chiếu đúng SHA và trạng thái từng job. Test tự động không thay restore drill, UAT hoặc kiểm tra tích hợp Microsoft 365 trên môi trường đích.

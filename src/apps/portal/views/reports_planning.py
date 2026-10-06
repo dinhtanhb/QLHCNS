@@ -1,5 +1,7 @@
 from django.db import models
 from apps.security.permissions import has_permission
+from apps.security.permissions import HR_MANAGER
+from apps.security.data_access import managed_departments_for
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import redirect, render
@@ -16,7 +18,6 @@ from apps.leave.models import ANNUAL_LEAVE_CODE, LeaveBalance, LeaveRequest, lea
 from apps.attendance.services import holiday_dates
 from apps.hrm.models import EmployeePromotion, EmployeeTransfer
 from apps.planning.models import AnnualBudget, Event, HeadcountPlan, TrainingEnrollment, TrainingCourse, with_headcounts
-from apps.organization.models import Department
 from apps.procurement.models import ProcurementItem
 from apps.common.params import parse_int
 from django.utils import timezone
@@ -147,9 +148,12 @@ def event_list(request):
             department_id = parse_int(raw_department, None, min_value=1, max_value=2147483647)
             if raw_department and department_id is None:
                 raise ValidationError('Phòng ban không hợp lệ.')
-            if _role_code(request) == 'DEPT_MANAGER' and not request.user.is_superuser and department_id:
-                if not employee or not employee.managed_departments.filter(pk=department_id).exists():
+            allowed_departments = managed_departments_for(request.user, global_roles=(HR_MANAGER,))
+            if department_id:
+                if not allowed_departments.filter(pk=department_id).exists():
                     raise ValidationError('Chỉ được tạo sự kiện cho phòng ban thuộc phạm vi quản lý.')
+            elif not (request.user.is_superuser or _role_code(request) == HR_MANAGER):
+                raise ValidationError('Trưởng phòng phải chọn phòng ban thuộc phạm vi quản lý.')
             event = Event(
                 title=request.POST.get("title"),
                 event_type=request.POST.get("event_type", "Meeting"),
@@ -178,7 +182,7 @@ def event_list(request):
             _friendly_error(request, e, "Không thể tạo.")
         return redirect("portal:event_list")
 
-    my_departments = employee.managed_departments.all() if employee and _role_code(request) == "DEPT_MANAGER" else Department.objects.all()
+    my_departments = managed_departments_for(request.user, global_roles=(HR_MANAGER,))
     return render(request, "portal/event_list.html", {
         "events": events, "can_create_event": _can_create_event(request), "departments": my_departments,
     })

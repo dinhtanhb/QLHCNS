@@ -115,15 +115,31 @@ class Vehicle(BaseAuditModel):
 
 class ResourceBookingSaveMixin:
     """Serialize approved reservations on the shared room/vehicle, including Admin writes."""
+
+    # Fields that decide whether a booking still fits the shared resource window.
+    overlap_fields = ("start_time", "end_time", "status")
+
     def save(self, *args, **kwargs):
         if self.status != "Approved":
             return super().save(*args, **kwargs)
+        update_fields = kwargs.get("update_fields")
+        guarded = set(self.overlap_fields) | {self.resource_field_name}
+        if update_fields is not None and not guarded.intersection(update_fields):
+            # A partial save that cannot move the reservation window must not be
+            # blocked by unrelated legacy rows that fail full_clean().
+            return super().save(*args, **kwargs)
         using = kwargs.get("using") or self._state.db or "default"
         resource_field = self._meta.get_field(self.resource_field_name)
+        resource_model = resource_field.remote_field.model
         with transaction.atomic(using=using):
-            resource_field.remote_field.model.objects.using(using).select_for_update().get(
-                pk=getattr(self, resource_field.attname)
-            )
+            try:
+                # Lock the common resource before this reservation so two
+                # approvals on different rows cannot both pass the overlap check.
+                resource_model.objects.using(using).select_for_update().get(
+                    pk=getattr(self, resource_field.attname)
+                )
+            except resource_model.DoesNotExist:
+                raise ValidationError("Tài nguyên đặt chỗ không còn tồn tại. Tải lại trang và chọn lại.")
             self.full_clean()
             return super().save(*args, **kwargs)
 

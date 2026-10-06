@@ -173,7 +173,7 @@ def _save_personnel_decision(request, spec, form, cleaned_tables, context, sourc
         decision.effective_date = effective_date
         decision.content_snapshot = content_snapshot
         decision.status = "Draft"
-        decision.modified_by = request.user if saved_decision else None
+        decision.modified_by = request.user
         try:
             decision.full_clean()
         except ValidationError as error:
@@ -302,7 +302,6 @@ def draft(request, slug):
                 values, rows = initial_document_data(spec, initial, table_initial, user=request.user)
                 context = document_context(spec, values, rows, source_label)
             except ValidationError:
-                form.errors
                 form.cleaned_data = {}
                 form.add_error(None, "Dữ liệu hồ sơ nguồn chưa phù hợp với mẫu. Hãy kiểm tra tại phân hệ nguồn.")
     if context:

@@ -1,7 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.views.decorators.http import require_POST
-from apps.security.permissions import has_permission
+from apps.security.permissions import has_permission, HR_MANAGER
+from apps.security.data_access import employees_for_department_scope
 from django.db.models import Prefetch, Q
 from apps.activity.permissions import can_view_activity, visible_activities_for
 from apps.common.uploads import validate_upload
@@ -14,7 +15,6 @@ from apps.notification.models import Notification, NotificationEmailOutbox
 from decimal import Decimal, InvalidOperation
 from django.http import HttpResponseForbidden
 from django.utils import timezone
-from apps.hrm.models import Employee
 from apps.task.models import Task, TaskComment
 from apps.kpi.models import EmployeeKPI, KPIPeriod, KPITemplate
 from apps.common.params import parse_int
@@ -147,12 +147,7 @@ def task_create(request):
         return redirect("portal:task_list")
 
     employee = _get_employee(request)
-    role_code = _role_code(request)
-    if not request.user.is_superuser and role_code == "DEPT_MANAGER":
-        dept_ids = employee.managed_departments.values_list("pk", flat=True) if employee else []
-        candidates = Employee.objects.filter(department_id__in=dept_ids)
-    else:
-        candidates = Employee.objects.all()
+    candidates = employees_for_department_scope(request.user, global_roles=(HR_MANAGER,))
 
     if request.method == "POST":
         try:
@@ -211,15 +206,9 @@ def kpi_my_list(request):
 
 def _scorable_kpis(request):
     qs = EmployeeKPI.objects.select_related("employee", "kpi_template", "kpi_period")
-    role_code = _role_code(request)
-    if not request.user.is_superuser and role_code == "DEPT_MANAGER":
-        employee = _get_employee(request)
-        if not employee:
-            qs = qs.none()
-        else:
-            dept_ids = employee.managed_departments.values_list("pk", flat=True)
-            qs = qs.filter(employee__department_id__in=dept_ids)
-    return qs
+    return qs.filter(
+        employee__in=employees_for_department_scope(request.user, global_roles=(HR_MANAGER,))
+    )
 
 
 @login_required
@@ -274,14 +263,7 @@ def kpi_assign_create(request):
         messages.error(request, "Anh/chị không có quyền tạo chỉ tiêu KPI.")
         return redirect("portal:dashboard")
 
-    employee = _get_employee(request)
-    role_code = _role_code(request)
-    if not request.user.is_superuser and role_code == "DEPT_MANAGER":
-        candidates = Employee.objects.filter(
-            department_id__in=employee.managed_departments.values_list("pk", flat=True)
-        ) if employee else Employee.objects.none()
-    else:
-        candidates = Employee.objects.all()
+    candidates = employees_for_department_scope(request.user, global_roles=(HR_MANAGER,))
 
     if request.method == "POST":
         target_employee = get_object_or_404(candidates, pk=parse_int(request.POST.get("employee"), None, min_value=1, max_value=2147483647))

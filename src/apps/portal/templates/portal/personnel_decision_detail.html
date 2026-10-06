@@ -4,7 +4,7 @@
 {% block content %}
 {% if document %}
 <link rel="stylesheet" href="{% static 'css/hcns_forms.css' %}?v=20261006-5">
-<style>@page { {{ document.profile.page_css }} }</style>
+<style>@page { {{ document.profile.page_css|escape }} }</style>
 <div id="hcns-export-name" data-filename="{{ document.filename_stem }}" hidden></div>
 {% endif %}
 <div class="no-print mb-5 flex flex-wrap items-start justify-between gap-4">

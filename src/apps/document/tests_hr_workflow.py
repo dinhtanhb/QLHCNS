@@ -192,6 +192,8 @@ class HRWorkflowTests(TestCase):
         self.assertEqual(decision.employee_id, self.employee.pk)
         self.assertEqual(decision.status, "Draft")
         self.assertEqual(decision.content_snapshot["values"]["full_name"], self.employee.full_name)
+        self.assertEqual(decision.created_by_id, self.hr.pk)
+        self.assertEqual(decision.modified_by_id, self.hr.pk)
         self.assertEqual(decision.history.get().action, "DraftCreated")
         self.assertFalse(Notification.objects.exists())
 

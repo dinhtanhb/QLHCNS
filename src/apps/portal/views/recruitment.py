@@ -1,18 +1,18 @@
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_POST
-from apps.security.permissions import has_permission
+from apps.security.permissions import has_permission, HR_MANAGER
+from apps.security.data_access import managed_departments_for
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponseForbidden
 from apps.notification.services import notify
-from apps.organization.models import Department
 from apps.recruitment.models import Candidate, Interview, Offer
 from apps.hrm.models import Employee
 from apps.recruitment.models import RecruitmentRequest
 from apps.organization.models import Position
-from .common import _friendly_error, _get_employee, _role_code, _paginated_context
+from .common import _friendly_error, _paginated_context
 from .hr import _can_manage_hr
 
 
@@ -28,16 +28,8 @@ def _can_approve_recruitment(request):
 
 @login_required
 def recruitment_list(request):
-    employee = _get_employee(request)
-    role_code = _role_code(request)
-
-    if request.user.is_superuser or role_code == "HR_MANAGER":
-        requests_qs = RecruitmentRequest.objects.all()
-    elif role_code == "DEPT_MANAGER" and employee:
-        dept_ids = employee.managed_departments.values_list("pk", flat=True)
-        requests_qs = RecruitmentRequest.objects.filter(department_id__in=dept_ids)
-    else:
-        requests_qs = RecruitmentRequest.objects.none()
+    departments = managed_departments_for(request.user, global_roles=(HR_MANAGER,))
+    requests_qs = RecruitmentRequest.objects.filter(department__in=departments)
 
     return render(request, "portal/recruitment_list.html", {
         "requests": requests_qs.select_related("department", "position").order_by("-required_date"),
@@ -52,12 +44,7 @@ def recruitment_create(request):
         messages.error(request, "Anh/chị không có quyền đề xuất tuyển dụng.")
         return redirect("portal:recruitment_list")
 
-    employee = _get_employee(request)
-    role_code = _role_code(request)
-    if not request.user.is_superuser and role_code == "DEPT_MANAGER":
-        departments = employee.managed_departments.all() if employee else Department.objects.none()
-    else:
-        departments = Department.objects.all()
+    departments = managed_departments_for(request.user, global_roles=(HR_MANAGER,))
 
     if request.method == "POST":
         try:

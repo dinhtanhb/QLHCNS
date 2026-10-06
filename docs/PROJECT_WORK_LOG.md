@@ -2,6 +2,18 @@
 
 Đây là **nơi ghi nhận tập trung duy nhất** các đợt thay đổi lớn, thao tác kiểm tra, quyết định và việc cần chủ dự án thực hiện. Cập nhật tiếp vào tệp này thay vì tạo log mới cho từng lần làm việc. Không ghi secrets, dữ liệu cá nhân hoặc nội dung `.env`.
 
+## 2026-10-07 — FIX: hoàn thiện các finding review sau commit 68a5228
+
+**Mục tiêu/phạm vi:** xác minh và sửa toàn bộ finding đã nêu cho cấu hình M365, ngày báo cáo, phạm vi RBAC, booking đồng thời, audit quyết định, lỗi im lặng và CSS in. Làm trên `main`, bắt đầu từ `68a5228`, giữ dữ liệu nghiệp vụ nguyên trạng. Test dùng SQLite memory/SQL Server `test_ihrms_<UUID>` và media tạm; không migrate/deploy DB đang dùng, không gọi M365 hoặc gửi email.
+
+**Thay đổi:** thêm `config.env.env_flag()` và dùng chung cho các cờ boolean; hỗ trợ `DB_EXTRA_PARAMS` để job SQL Server CI dùng ODBC 18 an toàn trong container. Báo cáo/dashboards dùng `timezone.localdate()`, test khóa ngày cố định. Thêm helper phạm vi phòng ban/nhân viên tại `security.data_access`, áp cho tuyển dụng, giao việc, KPI và sự kiện; chặn trưởng phòng tạo sự kiện toàn công ty bằng phòng ban trống. Booking Approved chỉ full-clean khi thay đổi trường ảnh hưởng xung đột, khóa tài nguyên chung và đổi tài nguyên mất thành `ValidationError`; view không full-clean kép. Quyết định mới ghi cả `created_by`/`modified_by`, bỏ câu `form.errors` vô tác dụng và escape `page_css` ở cả trang soạn/chi tiết.
+
+**Kiểm thử mới/hardening:** thêm test parse `True/true/TRUE/1/t`, false/rỗng/giá trị lạ/default; báo cáo hợp đồng mock ngày địa phương; audit quyết định; tài nguyên booking không tồn tại; trưởng phòng không thể tạo sự kiện toàn công ty. Thêm workflow `.github/workflows/sqlserver-regression.yml` chạy full suite lúc 00:30 thứ Hai giờ Việt Nam và thủ công; cập nhật `docs/07_Testing_Standards.md` để phân biệt SQLite với kiểm tra khóa SQL Server.
+
+**Kết quả cục bộ:** tập trung SQLite **105 tests, 102 đạt/3 skip SQL Server-only, 0 lỗi**; tập trung SQL Server **105/105 đạt**; regression scope cuối **57 tests, 56 đạt/1 skip SQL Server-only**. Full cuối SQLite **382 tests, 378 đạt/4 skip SQL Server-only, 0 lỗi**, 192.297 giây; full cuối SQL Server **382/382 đạt**, 209.348 giây, DB test đã xóa. `manage.py check`, `makemigrations --check --dry-run`, compile Python, parse YAML và `git diff --check` đạt. `check --deploy` với cấu hình production giả chỉ còn cảnh báo HSTS chưa bật, phù hợp chính sách chờ IT xác nhận toàn bộ host HTTPS. `pip check`, `pip-audit`, `npm audit`, build CSS đạt; 6/6 backup mock đạt (không phải restore SQL thật). Logs nằm trong `%TEMP%` với tiền tố `ihrms-review-fix-*20261007.log`.
+
+**Còn mở:** workflow SQL Server mới chỉ được parse và full suite đã chạy trên SQL Server cục bộ; trạng thái GitHub Actions đúng SHA sẽ được xác nhận sau push. Chưa deploy, chưa kiểm thử M365/SharePoint thật, IIS, restore backup thật hoặc UAT dữ liệu ẩn danh. Cảnh báo Jazzmin `dark_mode_theme` deprecated vẫn xuất hiện nhưng không gây lỗi test và không thuộc finding này.
+
 ## 2026-10-06 — Kiểm thử demo toàn hệ thống và cập nhật hướng dẫn
 
 **Mục tiêu/phạm vi:** theo yêu cầu cho phép tự test demo toàn bộ tính năng, lập báo cáo và cập nhật hướng dẫn. Chạy lại toàn bộ suite trên cả hai backend cô lập; xác nhận thêm các luồng browser đã đăng nhập cho 26 biểu mẫu HCNS, xuất tệp và thao tác từ NV & Hồ sơ. Không dùng dữ liệu nghiệp vụ thật, không gửi email, không migrate/deploy và không commit/push.

@@ -1,0 +1,61 @@
+name: Scheduled SQL Server regression
+
+on:
+  schedule:
+    - cron: "30 17 * * 0" # 00:30 Monday, Asia/Ho_Chi_Minh
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sqlserver-regression:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 25
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: Y
+          MSSQL_SA_PASSWORD: IHRMS_ci_only_2026!Strong
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'IHRMS_ci_only_2026!Strong' -Q 'SELECT 1'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      DJANGO_SETTINGS_MODULE: config.settings
+      DB_ENGINE: mssql
+      DB_NAME: master
+      DB_USER: sa
+      DB_PASSWORD: IHRMS_ci_only_2026!Strong
+      DB_HOST: 127.0.0.1
+      DB_PORT: "1433"
+      DB_DRIVER: ODBC Driver 18 for SQL Server
+      DB_TRUSTED_CONNECTION: "no"
+      DB_EXTRA_PARAMS: Encrypt=yes;TrustServerCertificate=yes
+      APP_ENV: test
+      DEBUG: "False"
+      M365_STORAGE_ENABLED: "False"
+      ENABLE_HTTPS_ENFORCEMENT: "False"
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          submodules: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install Microsoft ODBC driver
+        run: |
+          curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /usr/share/keyrings/microsoft-prod.gpg > /dev/null
+          curl -fsSL https://packages.microsoft.com/config/ubuntu/22.04/prod.list | sed 's#deb \[arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft-prod.gpg\]#deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-prod.gpg]#' | sudo tee /etc/apt/sources.list.d/microsoft-prod.list
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Run SQL Server regression suite on a disposable database
+        run: python ops/run_tests.py --backend sqlserver

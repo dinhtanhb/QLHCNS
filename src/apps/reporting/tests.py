@@ -1,4 +1,6 @@
-from datetime import date, timedelta
+from datetime import timedelta
+from datetime import date
+from unittest.mock import patch
 from openpyxl import load_workbook
 from django.test import SimpleTestCase, TestCase
 from apps.portal import tests as portal_tests
@@ -34,11 +36,12 @@ class ContractExportBoundaryTests(TestCase):
     def test_upcoming_export_excludes_past_and_beyond_cutoff(self):
         employee = self.make_employee('EXPORT-BOUNDARY')
         contract_type = ContractType.objects.create(contract_type_code='EXPORT-TEST', contract_type_name='Synthetic')
-        today = date.today()
+        today = date(2026, 10, 7)
         for code, offset in [('PAST', -1), ('TODAY', 0), ('CUTOFF', 60), ('LATER', 61)]:
             Contract.objects.create(employee=employee, contract_type=contract_type, contract_no=code,
                 start_date=today - timedelta(days=100), end_date=today + timedelta(days=offset),
                 basic_salary=100, status='Active')
-        workbook = load_workbook(generate_expiring_contracts_excel(days_threshold=60))
+        with patch("apps.reporting.services.timezone.localdate", return_value=today):
+            workbook = load_workbook(generate_expiring_contracts_excel(days_threshold=60))
         codes = [row[1].value for row in workbook.active.iter_rows(min_row=4)]
         self.assertEqual(codes, ['TODAY', 'CUTOFF'])
