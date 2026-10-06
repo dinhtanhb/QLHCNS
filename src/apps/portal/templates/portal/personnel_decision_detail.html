@@ -2,10 +2,10 @@
 {% block title %}{{ decision.decision_no|default:decision.template_title }}{% endblock %}
 {% block content %}
 <div class="no-print mb-5 flex flex-wrap items-start justify-between gap-4">
-  <div><a href="{% url 'portal:personnel_decision_list' %}" class="text-sm text-blue-700 hover:underline">← Quản lý quyết định</a><h1 class="mt-2 text-xl font-bold text-gray-900">{{ decision.decision_no|default:"Chưa đánh số" }} · {{ decision.template_title }}</h1><p class="mt-1 text-sm text-gray-600">{{ decision.employee.full_name }} · {{ decision.employee.employee_code }} · {{ decision.get_status_display }}</p></div>
+  <div>{% if can_view_workflow %}<a href="{% url 'portal:personnel_decision_list' %}" class="text-sm text-blue-700 hover:underline">← Quản lý quyết định</a>{% else %}<a href="{% url 'portal:dashboard' %}" class="text-sm text-blue-700 hover:underline">← Trang chủ</a>{% endif %}<h1 class="mt-2 text-xl font-bold text-gray-900">{{ decision.decision_no|default:"Chưa đánh số" }} · {{ decision.template_title }}</h1><p class="mt-1 text-sm text-gray-600">{{ decision.employee.full_name }} · {{ decision.employee.employee_code }} · {{ decision.get_status_display }}</p></div>
   <div class="flex flex-wrap gap-2">
-    <a class="rounded border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50" href="{% url 'portal:personnel_decision_word' decision.pk %}">Tải Word</a>
-    <button type="button" class="rounded border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50" onclick="window.print()">In / lưu PDF</button>
+    {% if can_download_word %}<a class="rounded border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50" href="{% url 'portal:personnel_decision_word' decision.pk %}">Tải Word</a>{% endif %}
+    {% if document %}<button type="button" class="rounded border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50" onclick="window.print()">In / lưu PDF</button>{% endif %}
     {% if decision.issued_file %}<a class="rounded border border-green-700 px-3 py-2 text-sm text-green-800 hover:bg-green-50" href="{{ decision.issued_file.url }}">Tải PDF đã ký</a>{% endif %}
     {% if can_edit_decision %}<a class="rounded border border-blue-700 px-3 py-2 text-sm text-blue-700 hover:bg-blue-50" href="{% url 'portal:hcns_draft' decision.template_slug %}?decision_id={{ decision.pk }}">Sửa bản nháp</a>{% endif %}
   </div>
@@ -20,11 +20,12 @@
 {% endif %}
 {% if can_issue_decision %}<form class="no-print mb-5 flex flex-wrap items-end gap-3 border-b border-gray-200 pb-5" method="post" enctype="multipart/form-data" action="{% url 'portal:personnel_decision_transition' decision.pk 'issue' %}">{% csrf_token %}<label class="text-sm">PDF đã ký<input type="file" name="issued_file" accept="application/pdf,.pdf" required class="mt-1 block max-w-full"></label><label class="text-sm">Ghi chú<input name="comment" maxlength="2000" class="mt-1 block rounded border border-gray-300 px-3 py-2"></label><button class="rounded bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800">Ghi nhận ban hành</button></form>{% endif %}
 {% if can_cancel_decision %}<form class="no-print mb-5" method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'cancel' %}">{% csrf_token %}<label class="mr-2 text-sm">Lý do hủy<input name="comment" maxlength="2000" class="ml-2 rounded border border-gray-300 px-3 py-2"></label><button class="rounded border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50">Hủy bản nháp</button></form>{% endif %}
-<div class="mb-6 overflow-x-auto">{% include "document/hcns/document.html" with document=document %}</div>
-<section class="border-t border-gray-200 pt-5">
+{% if document %}<div class="mb-6 overflow-x-auto">{% include "document/hcns/document.html" with document=document %}</div>{% elif is_employee_recipient %}<p class="mb-6 rounded border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-900">Quyết định đã ban hành. Tải PDF đã ký ở phía trên để xem nội dung chính thức.</p>{% endif %}
+{% if can_view_workflow %}<section class="border-t border-gray-200 pt-5">
   <h2 class="mb-3 text-lg font-semibold text-gray-900">Lịch sử xử lý</h2>
   <ol class="space-y-3">
     {% for event in history %}<li class="border-l-2 border-gray-300 pl-3"><p class="text-sm font-semibold">{{ event.get_action_display }} · {{ event.get_status_to_display|default:event.status_to }}</p><p class="text-xs text-gray-600">{{ event.created_date|date:"d/m/Y H:i" }} · {{ event.created_by|default:"Hệ thống" }}</p>{% if event.comment %}<p class="mt-1 whitespace-pre-line text-sm">{{ event.comment }}</p>{% endif %}</li>{% empty %}<li class="text-sm text-gray-500">Chưa có lịch sử.</li>{% endfor %}
   </ol>
 </section>
+{% endif %}
 {% endblock %}

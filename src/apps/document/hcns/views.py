@@ -16,8 +16,10 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods, require_POST
 
 from apps.document.models import PersonnelDecision, PersonnelDecisionHistory
-from apps.security.models import SecurityEvent
-from apps.security.permissions import has_permission
+from apps.hrm.models import Employee
+from apps.notification.services import notify, notify_many
+from apps.security.models import SecurityEvent, User
+from apps.security.permissions import PERMISSION_MATRIX, has_permission
 
 from .catalog import FORMS, GROUPS, tables_for
 from .exports import export_docx, export_xlsx
@@ -44,6 +46,9 @@ def _json_safe(value):
 def _visible_personnel_decision(user, decision):
     if has_permission(user, "manage_hr"):
         return True
+    employee = getattr(user, "employee", None)
+    if decision.status == "Issued" and employee and decision.employee_id == employee.pk:
+        return True
     return has_permission(user, "approve_personnel_decision") and (
         decision.status == "PendingApproval" or decision.history.filter(created_by=user).exists()
     )
@@ -61,6 +66,72 @@ def _record_decision_event(decision, action, previous_status, comment, user):
         status_to=decision.status,
         comment=comment,
         created_by=user,
+    )
+
+
+def _decision_link(decision):
+    return f"/portal/hr-decisions/{decision.pk}/"
+
+
+def _notify_personnel_decision_approvers(decision, actor):
+    recipients = User.objects.filter(is_active=True, employee__isnull=False).filter(
+        Q(is_superuser=True)
+        | Q(role__role_code__in=PERMISSION_MATRIX.get("approve_personnel_decision", ()))
+    ).exclude(pk=actor.pk)
+    if actor.employee_id:
+        recipients = recipients.exclude(employee_id=actor.employee_id)
+    employee_ids = recipients.values_list("employee_id", flat=True)
+    notify_many(
+        Employee.objects.filter(pk__in=employee_ids),
+        "personnel-decision",
+        "Có quyết định nhân sự cần duyệt",
+        f"{decision.decision_no or 'Chưa đánh số'} của {decision.employee.full_name} đang chờ duyệt.",
+        link=_decision_link(decision),
+        created_by=actor,
+    )
+
+
+def _latest_decision_submitter(decision):
+    submission = decision.history.filter(action="Submitted").select_related("created_by__employee").order_by("-pk").first()
+    return submission.created_by if submission else decision.created_by
+
+
+def _notify_decision_submitter(decision, action, comment, actor):
+    submitter = _latest_decision_submitter(decision)
+    recipient = getattr(submitter, "employee", None) if submitter else None
+    if not recipient:
+        return
+    approved = action == "Approved"
+    status_text = "đã được duyệt" if approved else "bị từ chối"
+    message = f"Quyết định {decision.decision_no or decision.pk} {status_text}."
+    if comment:
+        message += f" Ý kiến: {comment[:600]}"
+    notify(
+        recipient,
+        "personnel-decision",
+        "Quyết định đã được duyệt" if approved else "Quyết định bị từ chối",
+        message,
+        link=_decision_link(decision),
+        created_by=actor,
+    )
+
+
+def _notify_decision_issued(decision, comment, actor):
+    recipient_ids = {decision.employee_id}
+    submitter = _latest_decision_submitter(decision)
+    submitter_employee_id = getattr(submitter, "employee_id", None) if submitter else None
+    if submitter_employee_id:
+        recipient_ids.add(submitter_employee_id)
+    message = f"Quyết định {decision.decision_no or decision.pk} đã ban hành. Mở để xem và tải PDF đã ký."
+    if comment:
+        message += f" Ghi chú: {comment[:500]}"
+    notify_many(
+        Employee.objects.filter(pk__in=recipient_ids),
+        "personnel-decision",
+        "Quyết định nhân sự đã ban hành",
+        message,
+        link=_decision_link(decision),
+        created_by=actor,
     )
 
 
@@ -325,10 +396,17 @@ def personnel_decision_detail(request, pk):
     last_submission = history.filter(action="Submitted").order_by("-pk").first()
     can_manage = has_permission(request.user, "manage_hr")
     can_approve = has_permission(request.user, "approve_personnel_decision")
+    is_employee_recipient = bool(
+        not can_manage and not can_approve and decision.status == "Issued"
+        and request.user.employee_id == decision.employee_id
+    )
     return render(request, "portal/personnel_decision_detail.html", {
         "decision": decision,
-        "document": rendered,
-        "history": history,
+        "document": None if is_employee_recipient else rendered,
+        "history": [] if is_employee_recipient else history,
+        "is_employee_recipient": is_employee_recipient,
+        "can_view_workflow": can_manage or can_approve,
+        "can_download_word": not is_employee_recipient,
         "can_edit_decision": can_manage and decision.status in ("Draft", "Rejected"),
         "can_submit_decision": can_manage and decision.status == "Draft",
         "can_approve_decision": can_approve and decision.status == "PendingApproval" and last_submission and last_submission.created_by_id != request.user.pk,
@@ -342,7 +420,10 @@ def personnel_decision_detail(request, pk):
 @require_http_methods(["GET"])
 def personnel_decision_word(request, pk):
     decision = get_object_or_404(PersonnelDecision.objects.select_related("employee"), pk=pk)
-    if not _visible_personnel_decision(request.user, decision):
+    if not _visible_personnel_decision(request.user, decision) or not (
+        has_permission(request.user, "manage_hr")
+        or has_permission(request.user, "approve_personnel_decision")
+    ):
         return HttpResponseForbidden("Anh/chị không có quyền tải quyết định này.")
     context = _decision_rendered(decision)
     if not context:
@@ -419,5 +500,11 @@ def personnel_decision_transition(request, pk, action):
             return redirect("portal:personnel_decision_detail", pk=pk)
         decision.save()
         _record_decision_event(decision, history_action, previous_status, comment, request.user)
+        if history_action == "Submitted":
+            _notify_personnel_decision_approvers(decision, request.user)
+        elif history_action in ("Approved", "Rejected"):
+            _notify_decision_submitter(decision, history_action, comment, request.user)
+        elif history_action == "Issued":
+            _notify_decision_issued(decision, comment, request.user)
     messages.success(request, f"Đã cập nhật trạng thái: {decision.get_status_display()}.")
     return redirect("portal:personnel_decision_detail", pk=pk)

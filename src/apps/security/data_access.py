@@ -40,9 +40,12 @@ def can_read_file(user, obj):
     role = get_role_code(user)
     label = obj._meta.label_lower
     if label == 'document.personneldecision':
+        employee_recipient = bool(employee and obj.status == 'Issued' and obj.employee_id == employee.pk)
         return has_permission(user, 'manage_hr') or (
-            has_permission(user, 'approve_personnel_decision')
-            and (obj.status == 'PendingApproval' or obj.history.filter(created_by=user).exists())
+            employee_recipient or (
+                has_permission(user, 'approve_personnel_decision')
+                and (obj.status == 'PendingApproval' or obj.history.filter(created_by=user).exists())
+            )
         )
     if label == 'document.document':
         return obj.status == 'Approved' or obj.created_by_id == user.pk or has_permission(user, 'approve_document') or has_permission(user, 'manage_hr')

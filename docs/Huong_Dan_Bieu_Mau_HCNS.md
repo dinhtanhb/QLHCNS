@@ -13,7 +13,9 @@ Bản đang soạn không được lưu tự động. Với biểu mẫu thông 
 
 Riêng bốn mẫu quyết định nhân sự, người có quyền quản lý HR chọn **Lưu bản nháp quyết định** để lưu nội dung vào hệ thống. Mở **Nhân sự → Quản lý quyết định** để tìm, sửa bản nháp, trình duyệt và xem lịch sử. Sau khi được duyệt, HR tải PDF đã ký lên để ghi nhận ban hành; chỉ PDF này là bản ban hành có thể tải lại. Word và chức năng in từ nội dung lưu vẫn giữ nhãn **BẢN SOẠN THẢO**. Lưu/duyệt/ban hành văn bản không tự thay đổi bản ghi lương, điều chuyển, bổ nhiệm hay hồ sơ nhân viên.
 
-Người trình không được tự duyệt quyết định của mình. Khi bị từ chối, HR nhập nội dung sửa, lưu lại thành bản nháp rồi trình duyệt lại. PDF ban hành được giới hạn truy cập theo quyền quyết định nhân sự, không phải tài liệu công khai trong thư viện chung. Không sao chép chữ ký, tên người phê duyệt hay dữ liệu minh họa đã điền trong tệp gốc vào bản mới.
+Người trình không được tự duyệt quyết định của mình. Khi bị từ chối, HR nhập nội dung sửa, lưu lại thành bản nháp rồi trình duyệt lại. PDF ban hành được giới hạn truy cập theo quyền quyết định nhân sự và nhân viên có tên trong quyết định; nhân viên chỉ thấy trạng thái cùng nút tải PDF đã ký, không thấy bản Word nháp hay lịch sử duyệt. Tệp không được đưa vào thư viện chung. Không sao chép chữ ký, tên người phê duyệt hay dữ liệu minh họa đã điền trong tệp gốc vào bản mới.
+
+Chuông thông báo nội bộ được cập nhật khi HR trình duyệt (báo HR Manager/Giám đốc có tài khoản gắn hồ sơ nhân viên), khi duyệt hoặc từ chối (báo người trình), và khi ban hành (báo nhân viên liên quan cùng người trình). Mỗi thông báo mở đúng trang quyết định; nhân viên nhận chỉ xem/tải PDF đã ký. Đây là thông báo trong IHRMS, không tự gửi email; tài khoản chưa gắn hồ sơ nhân viên không có hộp chuông nhận thông báo.
 
 ## Các nhóm được hỗ trợ
 

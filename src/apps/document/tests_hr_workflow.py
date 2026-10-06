@@ -7,7 +7,8 @@ from django.urls import reverse
 
 from apps.contract.models import Contract, ContractAppendix, ContractType
 from apps.document.models import PersonnelDecision
-from apps.hrm.models import EmployeePromotion, EmployeeTransfer, EmployeeReward, EmployeeDiscipline
+from apps.hrm.models import Employee, EmployeePromotion, EmployeeTransfer, EmployeeReward, EmployeeDiscipline
+from apps.notification.models import Notification
 from apps.organization.models import Department, Position
 from apps.payroll.models import EmployeeSalary
 from apps.security.models import SecurityEvent
@@ -20,8 +21,20 @@ class HRWorkflowTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         Fixtures.setUpTestData.__func__(cls)
-        cls.hr_manager = Fixtures.user.__func__(cls, "workflow-hr-manager", "HR_MANAGER", None)
-        cls.director = Fixtures.user.__func__(cls, "workflow-director", "DIRECTOR", None)
+        cls.hr_manager_employee = Employee.objects.create(
+            employee_code="WF-HR-MANAGER", first_name="HR", last_name="Manager", full_name="HR Manager Test",
+            date_of_birth=date(1985, 1, 1), gender="Other", national_id="WF-HR-NATIONAL",
+            company_email="workflow-hr-manager@example.test", mobile_phone="0000000001",
+            join_date=date(2020, 1, 1), department=cls.department, position=cls.position,
+        )
+        cls.director_employee = Employee.objects.create(
+            employee_code="WF-DIRECTOR", first_name="Test", last_name="Director", full_name="Director Test",
+            date_of_birth=date(1980, 1, 1), gender="Other", national_id="WF-DIR-NATIONAL",
+            company_email="workflow-director@example.test", mobile_phone="0000000002",
+            join_date=date(2019, 1, 1), department=cls.department, position=cls.position,
+        )
+        cls.hr_manager = Fixtures.user.__func__(cls, "workflow-hr-manager", "HR_MANAGER", cls.hr_manager_employee)
+        cls.director = Fixtures.user.__func__(cls, "workflow-director", "DIRECTOR", cls.director_employee)
 
     def setUp(self):
         self.client.force_login(self.superuser)
@@ -179,6 +192,7 @@ class HRWorkflowTests(TestCase):
         self.assertEqual(decision.status, "Draft")
         self.assertEqual(decision.content_snapshot["values"]["full_name"], self.employee.full_name)
         self.assertEqual(decision.history.get().action, "DraftCreated")
+        self.assertFalse(Notification.objects.exists())
 
         edit_url = reverse("portal:hcns_draft", args=["salary-decision"])
         wrong_template = reverse("portal:hcns_draft", args=["appointment-decision"])
@@ -198,10 +212,17 @@ class HRWorkflowTests(TestCase):
         self.client.post(reverse("portal:personnel_decision_transition", args=[decision.pk, "submit"]))
         decision.refresh_from_db()
         self.assertEqual(decision.status, "PendingApproval")
+        approver_notice = Notification.objects.get(
+            employee=self.director_employee, notification_type="personnel-decision"
+        )
+        self.assertEqual(approver_notice.link, reverse("portal:personnel_decision_detail", args=[decision.pk]))
+        self.assertIn("QD-TEST-001", approver_notice.message)
+        self.assertFalse(Notification.objects.filter(employee=self.hr_manager_employee).exists())
 
         self.client.post(reverse("portal:personnel_decision_transition", args=[decision.pk, "approve"]))
         decision.refresh_from_db()
         self.assertEqual(decision.status, "PendingApproval")
+        self.assertFalse(Notification.objects.filter(employee=self.hr_manager_employee).exists())
 
         self.client.force_login(self.director)
         pending = self.client.get(reverse("portal:personnel_decision_list"))
@@ -210,6 +231,11 @@ class HRWorkflowTests(TestCase):
         decision.refresh_from_db()
         self.assertEqual(decision.status, "Approved")
         self.assertEqual(self.client.get(reverse("portal:personnel_decision_detail", args=[decision.pk])).status_code, 200)
+        approval_notice = Notification.objects.get(
+            employee=self.hr_manager_employee, notification_type="personnel-decision"
+        )
+        self.assertEqual(approval_notice.title, "Quyết định đã được duyệt")
+        self.assertIn("Đã kiểm tra", approval_notice.message)
 
         self.client.force_login(self.hr)
         invalid_pdf = SimpleUploadedFile("wrong.docx", b"not a PDF", content_type="application/pdf")
@@ -230,6 +256,10 @@ class HRWorkflowTests(TestCase):
         self.assertEqual(decision.status, "Issued")
         self.assertIsNotNone(decision.issued_at)
         self.assertEqual(list(decision.history.values_list("action", flat=True)), ["DraftCreated", "Submitted", "Approved", "Issued"])
+        self.assertTrue(Notification.objects.filter(
+            employee=self.employee, notification_type="personnel-decision", title="Quyết định nhân sự đã ban hành"
+        ).exists())
+        self.assertEqual(Notification.objects.filter(employee=self.hr_manager_employee).count(), 2)
 
         private_download = self.client.get(decision.issued_file.url)
         self.assertEqual(private_download.status_code, 200)
@@ -239,6 +269,21 @@ class HRWorkflowTests(TestCase):
         self.client.force_login(self.staff)
         self.assertEqual(self.client.get(decision.issued_file.url).status_code, 404)
         self.assertEqual(self.client.get(reverse("portal:personnel_decision_detail", args=[decision.pk])).status_code, 403)
+        self.hr.role = self.staff.role
+        self.hr.save(update_fields=["role"])
+        self.client.force_login(self.hr)
+        employee_detail = self.client.get(reverse("portal:personnel_decision_detail", args=[decision.pk]))
+        self.assertEqual(employee_detail.status_code, 200)
+        self.assertTrue(employee_detail.context["is_employee_recipient"])
+        self.assertEqual(employee_detail.context["unread_notification_count"], 1)
+        self.assertContains(employee_detail, "Tải PDF đã ký")
+        self.assertNotContains(employee_detail, "Tải Word")
+        self.assertNotContains(employee_detail, "Lịch sử xử lý")
+        self.assertNotContains(employee_detail, "BẢN SOẠN THẢO")
+        self.assertContains(employee_detail, "Quyết định đã ban hành")
+        employee_pdf = self.client.get(decision.issued_file.url)
+        self.assertEqual(employee_pdf.status_code, 200)
+        self.assertEqual(b"".join(employee_pdf.streaming_content), b"%PDF-1.4\nsynthetic signed copy")
 
     def test_rejection_requires_comment_and_saved_rejection_returns_to_draft(self):
         self._save_salary_decision()
@@ -252,6 +297,10 @@ class HRWorkflowTests(TestCase):
         self.client.post(reverse("portal:personnel_decision_transition", args=[decision.pk, "reject"]), {"comment": "Bổ sung căn cứ"})
         decision.refresh_from_db()
         self.assertEqual(decision.status, "Rejected")
+        rejection_notice = Notification.objects.get(
+            employee=self.employee, title="Quyết định bị từ chối"
+        )
+        self.assertIn("Bổ sung căn cứ", rejection_notice.message)
 
         self.client.force_login(self.hr)
         edit_url = reverse("portal:hcns_draft", args=["salary-decision"])
