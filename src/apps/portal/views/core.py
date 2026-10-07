@@ -205,15 +205,16 @@ def org_chart(request):
 
 @login_required
 def profile_change_request_list(request):
-    if not has_permission(request.user, "submit_profile_change_request"):
+    can_approve = has_permission(request.user, "approve_profile_change_request")
+    if not has_permission(request.user, "submit_profile_change_request") and not can_approve:
         return HttpResponseForbidden()
     employee = _get_employee(request)
-    if not employee:
+    if not employee and not can_approve:
         return HttpResponseForbidden("Tài khoản chưa được gắn hồ sơ nhân viên.")
     requests_qs = EmployeeProfileChangeRequest.objects.select_related("employee", "decided_by")
-    if has_permission(request.user, "approve_profile_change_request"):
+    if can_approve:
         pending = requests_qs.filter(status="Pending")
-        own = requests_qs.filter(employee=employee).exclude(status="Pending")
+        own = requests_qs.filter(employee=employee).exclude(status="Pending") if employee else requests_qs.none()
         items = list(pending) + list(own)
     else:
         items = requests_qs.filter(employee=employee)
@@ -297,12 +298,12 @@ def profile_change_request_decide(request, pk):
 @login_required
 def profile_change_request_attachment(request, pk):
     employee = _get_employee(request)
-    if not (employee and has_permission(request.user, "approve_profile_change_request")):
+    if has_permission(request.user, "approve_profile_change_request"):
+        item = get_object_or_404(EmployeeProfileChangeRequest, pk=pk)
+    else:
         if not employee:
             return HttpResponseForbidden()
         item = get_object_or_404(EmployeeProfileChangeRequest, pk=pk, employee=employee)
-    else:
-        item = get_object_or_404(EmployeeProfileChangeRequest, pk=pk)
     if not item.attachment:
         raise Http404
     from apps.security.files import protected_file_response

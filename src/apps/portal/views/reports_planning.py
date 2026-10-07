@@ -46,7 +46,7 @@ def report_timesheet(request):
         messages.error(request, "Anh/chị không có quyền xem báo cáo.")
         return redirect("portal:dashboard")
 
-    today = timezone.now().date()
+    today = timezone.localdate()
     year = parse_int(request.GET.get("year"), today.year, min_value=2000, max_value=2100)
     month = parse_int(request.GET.get("month"), today.month, min_value=1, max_value=12)
 
@@ -94,7 +94,7 @@ def report_personnel_changes(request):
         messages.error(request, "Anh/chị không có quyền xem báo cáo.")
         return redirect("portal:dashboard")
 
-    today = timezone.now().date()
+    today = timezone.localdate()
     default_from = today.replace(day=1)
     try:
         from_date = parse_date(request.GET.get("from_date", default_from.isoformat()))
@@ -200,7 +200,7 @@ def report_headcount(request):
     if not _can_view_reports(request):
         messages.error(request, "Anh/chị không có quyền xem báo cáo.")
         return redirect("portal:dashboard")
-    today = timezone.now().date()
+    today = timezone.localdate()
     year = parse_int(request.GET.get("year"), today.year, min_value=2000, max_value=2100)
     plans = with_headcounts(HeadcountPlan.objects.filter(year=year))
     return render(request, "portal/report_headcount.html", {
@@ -213,7 +213,7 @@ def report_budget(request):
     if not _can_view_reports(request):
         messages.error(request, "Anh/chị không có quyền xem báo cáo.")
         return redirect("portal:dashboard")
-    today = timezone.now().date()
+    today = timezone.localdate()
     year = parse_int(request.GET.get("year"), today.year, min_value=2000, max_value=2100)
     budgets = AnnualBudget.objects.filter(year=year).select_related("department")
 

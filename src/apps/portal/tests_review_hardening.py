@@ -1,5 +1,5 @@
 """Regression tests for direct access, malformed inputs and atomic dispatch entry."""
-from datetime import date
+from datetime import date, datetime, timezone as datetime_timezone
 from decimal import Decimal
 from unittest.mock import patch
 from unittest import skipUnless
@@ -18,7 +18,8 @@ from apps.attendance.models import MonthlyAttendanceSummary
 from apps.document.models import DispatchBook, DispatchTracking, OfficialDispatch
 from apps.kpi.models import EmployeeKPI, KPIPeriod, KPITemplate
 from apps.notification.models import Notification
-from apps.office.models import SupplyRequest
+from apps.office.models import SupplyItem, SupplyRequest
+from apps.contract.models import Contract, ContractAppendix, ContractType
 from apps.organization.models import Department
 from apps.portal import tests as portal_tests
 from apps.recruitment.models import Candidate, RecruitmentRequest
@@ -37,6 +38,69 @@ class ReviewHardeningTests(TestCase):
 
     def setUp(self):
         self.employee = self.make_employee('REVIEW-STAFF')
+
+    def test_portal_default_dates_follow_vietnam_local_day(self):
+        """00:30 giờ Việt Nam đã sang ngày mới dù UTC vẫn ở ngày hôm trước."""
+        user = self.make_user('HR_MANAGER', self.employee, 'review-local-date')
+        self.client.force_login(user)
+        utc_previous_day = datetime(2026, 12, 31, 17, 30, tzinfo=datetime_timezone.utc)
+        local_day = timezone.localdate(utc_previous_day)
+        self.assertEqual(local_day, date(2027, 1, 1))
+
+        with patch('django.utils.timezone.localdate', return_value=local_day):
+            timesheet = self.client.get(reverse('portal:timesheet_month'))
+            report = self.client.get(reverse('portal:report_timesheet'))
+            personnel = self.client.get(reverse('portal:report_personnel_changes'))
+            headcount = self.client.get(reverse('portal:report_headcount'))
+            budget = self.client.get(reverse('portal:report_budget'))
+
+        self.assertEqual((timesheet.context['year'], timesheet.context['month']), (2027, 1))
+        self.assertEqual((report.context['year'], report.context['month']), (2027, 1))
+        self.assertEqual(personnel.context['from_date'], '2027-01-01')
+        self.assertEqual(personnel.context['to_date'], '2027-01-01')
+        self.assertEqual(headcount.context['year'], 2027)
+        self.assertEqual(budget.context['year'], 2027)
+
+    def test_generated_business_records_use_vietnam_local_day(self):
+        user = self.make_user('HR_MANAGER', self.employee, 'review-local-record-date')
+        supply = SupplyItem.objects.create(
+            item_code='REVIEW-LOCAL-DATE', item_name='Vật tư kiểm thử', quantity_in_stock=10,
+        )
+        contract_type = ContractType.objects.create(
+            contract_type_code='REVIEW-LOCAL-DATE', contract_type_name='Hợp đồng kiểm thử',
+        )
+        contract = Contract.objects.create(
+            employee=self.employee, contract_type=contract_type, contract_no='REVIEW-LOCAL-DATE',
+            start_date=date(2026, 1, 1), end_date=date(2026, 12, 31),
+            basic_salary=Decimal('10000000'), status='Active',
+        )
+        self.client.force_login(user)
+        utc_previous_day = datetime(2026, 12, 31, 17, 30, tzinfo=datetime_timezone.utc)
+        local_now = timezone.localtime(utc_previous_day)
+        local_day = local_now.date()
+        self.assertEqual(local_day, date(2027, 1, 1))
+
+        with patch('django.utils.timezone.localtime', return_value=local_now):
+            self.client.post(reverse('portal:supply_request_create'), {
+                'item': [str(supply.pk)], 'quantity': ['1'],
+            })
+            self.client.post(reverse('portal:procurement_request_create'), {
+                'reason': 'Kiểm thử ngày địa phương', 'item_name': ['Máy tính'],
+                'quantity': ['1'], 'estimated_cost': ['1000000'],
+            })
+            self.client.post(reverse('portal:hr_contract_renew', args=(self.employee.pk,)), {
+                'new_end_date': '2027-12-31',
+            })
+
+        supply_request = SupplyRequest.objects.get()
+        procurement_request = ProcurementRequest.objects.get()
+        appendix = ContractAppendix.objects.get(contract=contract)
+        self.assertEqual(supply_request.request_date, date(2027, 1, 1))
+        self.assertIn('-20270101003000', supply_request.request_no)
+        self.assertEqual(procurement_request.request_date, date(2027, 1, 1))
+        self.assertIn('-20270101003000', procurement_request.request_no)
+        self.assertEqual(appendix.effective_date, date(2027, 1, 1))
+        self.assertEqual(appendix.appendix_no, 'GH-202701010030')
 
     def test_employee_and_staff_flag_cannot_read_candidates(self):
         candidate = Candidate.objects.create(candidate_code='REVIEW-CANDIDATE', full_name='Test Candidate',

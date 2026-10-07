@@ -381,9 +381,10 @@ def hr_contract_renew(request, pk):
                 raise ValidationError("Gia hạn cần ngày kết thúc mới sau ngày kết thúc hiện tại.")
             if contract.end_date is None:
                 raise ValidationError("Hợp đồng không xác định thời hạn không cần gia hạn ngày kết thúc.")
+            business_now = timezone.localtime()
             appendix = ContractAppendix(
-                contract=contract, appendix_no=request.POST.get("appendix_no") or f"GH-{timezone.now():%Y%m%d%H%M}",
-                effective_date=timezone.now().date(),
+                contract=contract, appendix_no=request.POST.get("appendix_no") or f"GH-{business_now:%Y%m%d%H%M}",
+                effective_date=business_now.date(),
                 description=f"Gia hạn hợp đồng đến {new_end_date}", created_by=request.user,
             )
             appendix.full_clean()

@@ -269,9 +269,10 @@ def supply_request_create(request):
 
     try:
         with transaction.atomic():
+            business_now = timezone.localtime()
             supply_request = SupplyRequest.objects.create(
-                request_no=f"VPP-{employee.employee_code}-{timezone.now():%Y%m%d%H%M%S}",
-                employee=employee, request_date=timezone.now().date(), created_by=request.user,
+                request_no=f"VPP-{employee.employee_code}-{business_now:%Y%m%d%H%M%S}",
+                employee=employee, request_date=business_now.date(), created_by=request.user,
             )
             for item_id, qty in valid_lines:
                 SupplyRequestItem.objects.create(
@@ -412,10 +413,11 @@ def procurement_request_create(request):
 
     try:
         with transaction.atomic():
+            business_now = timezone.localtime()
             proc_request = ProcurementRequest.objects.create(
-                request_no=f"MS-{employee.employee_code}-{timezone.now():%Y%m%d%H%M%S}",
+                request_no=f"MS-{employee.employee_code}-{business_now:%Y%m%d%H%M%S}",
                 requested_by=employee, department=employee.department,
-                request_date=timezone.now().date(), reason=request.POST.get("reason", ""),
+                request_date=business_now.date(), reason=request.POST.get("reason", ""),
                 created_by=request.user,
             )
             for name, qty, cost in valid_lines:

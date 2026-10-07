@@ -3,6 +3,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from apps.hrm.models import Employee, EmployeePromotion, EmployeeTransfer, EmployeeProfileChangeRequest
 from apps.hrm.services import apply_due_employee_changes
@@ -119,6 +120,26 @@ class EmployeeProfileChangeRequestTests(TestCase):
         self.assertEqual(list_response.status_code, 200)
         self.assertNotContains(list_response, owner.full_name)
         self.assertEqual(response.status_code, 404)
+
+    def test_unlinked_hr_approver_can_review_pending_request_and_attachment(self):
+        owner = self.make_employee("NOEMP")
+        request_item = EmployeeProfileChangeRequest.objects.create(
+            employee=owner, field_name="address", old_value="Old address", new_value="New address",
+            submitted_snapshot="Old address",
+            attachment=SimpleUploadedFile("proof.pdf", b"%PDF-1.4 test", content_type="application/pdf"),
+        )
+        reviewer = self.make_user(None, "HR_OFFICER", "profile-unlinked-hr")
+        self.client.force_login(reviewer)
+
+        list_response = self.client.get(reverse("portal:profile_change_request_list"))
+        attachment_response = self.client.get(
+            reverse("portal:profile_change_request_attachment", args=(request_item.pk,))
+        )
+
+        self.assertEqual(list_response.status_code, 200)
+        self.assertContains(list_response, owner.full_name)
+        self.assertEqual(attachment_response.status_code, 200)
+        attachment_response.close()
 
     def test_approval_is_blocked_if_value_changed_after_submission(self):
         employee = self.make_employee("SNAPSHOT")

@@ -229,7 +229,7 @@ def _holiday_weekday_count(year, month):
 def timesheet_month(request):
 
     employee = _get_employee(request)
-    today = timezone.now().date()
+    today = timezone.localdate()
     year = parse_int(request.GET.get("year"), today.year, min_value=2000, max_value=2100)
     month = parse_int(request.GET.get("month"), today.month, min_value=1, max_value=12)
 
@@ -356,7 +356,7 @@ def timesheet_entry_delete(request, pk):
 def timesheet_summary_update(request):
 
     employee = _get_employee(request)
-    today = timezone.now().date()
+    today = timezone.localdate()
     year = parse_int(request.POST.get("year"), today.year, min_value=2000, max_value=2100)
     month = parse_int(request.POST.get("month"), today.month, min_value=1, max_value=12)
     if not employee:

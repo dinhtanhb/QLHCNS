@@ -12,9 +12,9 @@ import os
 import re
 import unicodedata
 import uuid
-from datetime import date
 
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 # Định dạng tệp được phép tải lên
 ALLOWED_EXTENSIONS = {
@@ -53,7 +53,7 @@ def slugify_filename(filename, max_length=80):
 def build_upload_path(folder, filename):
     """Đường dẫn lưu tệp: <folder>/<năm>/<tháng>/<ten-da-chuan-hoa>-<mã>.<ext>"""
     base, ext = slugify_filename(filename)
-    today = date.today()
+    today = timezone.localdate()
     unique = uuid.uuid4().hex[:8]
     return f"{folder}/{today:%Y}/{today:%m}/{base}-{unique}{ext}"
 

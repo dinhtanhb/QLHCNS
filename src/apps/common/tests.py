@@ -1,5 +1,9 @@
+from datetime import date
+from unittest.mock import patch
+
 from django.test import TestCase
 
+from apps.common.uploads import build_upload_path
 from apps.organization.models import Department, Organization
 
 
@@ -28,3 +32,13 @@ class SoftDeleteTests(TestCase):
         self.assertTrue(Department.all_objects.filter(pk=pk, is_deleted=True).exists())
         self.assertEqual(Department.all_objects.filter(pk=pk).hard_delete()[0], 1)
         self.assertFalse(Department.all_objects.filter(pk=pk).exists())
+
+
+class UploadPathTests(TestCase):
+    @patch("apps.common.uploads.timezone.localdate", return_value=date(2027, 1, 1))
+    def test_upload_path_uses_configured_local_date(self, localdate):
+        path = build_upload_path("documents", "Biên bản.pdf")
+
+        self.assertTrue(path.startswith("documents/2027/01/bien-ban-"))
+        self.assertTrue(path.endswith(".pdf"))
+        localdate.assert_called_once_with()
