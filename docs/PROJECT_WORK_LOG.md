@@ -2,6 +2,16 @@
 
 Đây là **nơi ghi nhận tập trung duy nhất** các đợt thay đổi lớn, thao tác kiểm tra, quyết định và việc cần chủ dự án thực hiện. Cập nhật tiếp vào tệp này thay vì tạo log mới cho từng lần làm việc. Không ghi secrets, dữ liệu cá nhân hoặc nội dung `.env`.
 
+## 2026-10-07 — Tạo tài liệu mô tả thiết kế giao diện quản trị
+
+**Mục tiêu/phạm vi:** tạo tài liệu riêng trong `docs/` để mô tả nguồn cấu hình giao diện admin của IHRMS và làm tài liệu tham khảo khi áp dụng ý tưởng cho QLHD, `nhaplieu_app`. Chỉ cập nhật tài liệu, không đổi mã ứng dụng hoặc cấu hình.
+
+**Tệp liên quan:** thêm `docs/ADMIN_UI_DESIGN.md`, nêu cấu hình Jazzmin/AdminLTE 3 trong `src/config/settings.py`, phân biệt Django Admin với portal tại `src/templates/base.html` và CSS liên quan, đồng thời ghi nguyên tắc tái sử dụng cùng lưu ý về framework, app/model/URL và quyền ở dự án đích.
+
+**Kiểm tra:** xác nhận nhánh `main`, working tree sạch trước khi sửa và đồng bộ `origin/main`; đối chiếu nội dung với cấu hình `JAZZMIN_SETTINGS`, `JAZZMIN_UI_TWEAKS` và các template/static liên quan. `git diff --check` đạt. Đây là thay đổi tài liệu nên không chạy test ứng dụng.
+
+**Commit/push:** chưa commit/push. **Việc còn mở:** chưa đánh giá framework, phiên bản giao diện hay yêu cầu thương hiệu riêng của QLHD và `nhaplieu_app`; cần khảo sát hai dự án trước khi chuyển thiết kế thành thay đổi mã.
+
 ## 2026-10-07 — Thêm và chạy subagent review IHRMS ở chế độ FULL/FIX
 
 **Mục tiêu/phạm vi:** thêm subagent cấp dự án dành cho Cursor/Codex, tách biệt với agent Sixth hiện có. Agent hỗ trợ review `FULL`/`CHANGES`, mặc định `REVIEW`, và chỉ chuyển sang `FIX`, commit hoặc push khi nhiệm vụ cho phép rõ ràng.
