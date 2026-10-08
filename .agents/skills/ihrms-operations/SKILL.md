@@ -11,7 +11,7 @@ description: Prepare and operate IHRMS environments, troubleshoot user and payro
 - The developer has tested/configured IHRMS against SQL Server 2022 Express; production is intended for a company Windows Server/SQL Server environment. Verify backend and target database before every operation. A setting change is not a data migration.
 - Do not run destructive management commands or schema/data changes against production. Use a disposable database for rehearsal; require an approved release window and rollback plan for production work.
 - `src/` is tracked in the main repository and Django dependencies have been upgraded to 5.2.x; consult the current [Production Readiness Review](../../../docs/Production_Readiness_Review_2026-09-23.md) and project work log before stating deployment readiness. Do not repeat the old gitlink/Django 5.0.14 issue as current state without rechecking.
-- Follow the rewritten end-user procedures in [IHRMS User Guide](../../../HUONG_DAN_SU_DUNG_IHRMS.md). Never request or expose passwords, secret keys, full identity numbers, or payroll documents in support messages.
+- Follow the rewritten end-user procedures in [IHRMS User Guide](../../../docs/HUONG_DAN_SU_DUNG_IHRMS.md). Never request or expose passwords, secret keys, full identity numbers, or payroll documents in support messages.
 
 ## Environment setup and support
 

@@ -55,8 +55,8 @@ Django modular monolith cùng một database SQL Server riêng phù hợp với 
 
 ## Tài liệu liên quan
 
-- [Cẩm nang sử dụng IHRMS](../HUONG_DAN_SU_DUNG_IHRMS.md)
-- [Giáo án và bài thực hành tập huấn](../TAP_HUAN_IHRMS.md)
+- [Cẩm nang sử dụng IHRMS](HUONG_DAN_SU_DUNG_IHRMS.md)
+- [Giáo án và bài thực hành tập huấn](TAP_HUAN_IHRMS.md)
 - [Kế hoạch triển khai](ihrms-rollout-plan.canvas.tsx)
 - [Kiến trúc giải pháp](02_Solution_Architecture.md)
 - [Tiêu chuẩn triển khai](08_Deployment_Standards.md)

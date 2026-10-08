@@ -54,7 +54,7 @@ Người phụ trách viết tắt: **IT** (quản trị máy chủ), **HR**, **
 
 | # | Việc | Người | Xong khi | ☐ |
 |---|---|---|---|---|
-| 5.1 | **[BẮT BUỘC]** Tập huấn HR, Kế toán, quản lý, nhân viên theo `TAP_HUAN_IHRMS.md` trên môi trường demo | HR | Danh sách người đã tập huấn | ☐ |
+| 5.1 | **[BẮT BUỘC]** Tập huấn HR, Kế toán, quản lý, nhân viên theo `docs/TAP_HUAN_IHRMS.md` trên môi trường demo | HR | Danh sách người đã tập huấn | ☐ |
 | 5.2 | **[BẮT BUỘC]** Chốt kế hoạch cutover: nhập dữ liệu thật (nhân viên, hợp đồng, phép năm còn lại, lương hiện hành), thời điểm dừng nhập tay | HR + IT | Có kế hoạch từng bước, có ngày giờ | ☐ |
 | 5.3 | **[BẮT BUỘC]** Kế hoạch quay lui: nếu lỗi nghiêm trọng trong tuần đầu thì quay về quy trình cũ; giữ bản sao dữ liệu trước cutover | IT + GĐ | Nêu rõ điều kiện quay lui và người quyết định | ☐ |
 | 5.4 | **[BẮT BUỘC]** Tuần đầu sau go-live: 1 đầu mối IT + 1 đầu mối HR trực nhận lỗi; ghi mọi sự cố | IT + HR | Danh sách sự cố cập nhật hằng ngày | ☐ |

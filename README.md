@@ -24,7 +24,7 @@ Hướng dẫn dựng SIT, danh sách việc IT cần chuẩn bị và checklist
 
 ## Tài liệu dự án
 
-- [Cẩm nang sử dụng](HUONG_DAN_SU_DUNG_IHRMS.md), [giáo án tập huấn](TAP_HUAN_IHRMS.md), [kịch bản UAT](docs/UAT_Kich_Ban_Nghiem_Thu_4_Hang_Muc.md)
+- [Cẩm nang sử dụng](docs/HUONG_DAN_SU_DUNG_IHRMS.md), [giáo án tập huấn](docs/TAP_HUAN_IHRMS.md), [kịch bản UAT](docs/UAT_Kich_Ban_Nghiem_Thu_4_Hang_Muc.md)
 - [Lộ trình Hoạt động dự án NGO](docs/NGO_Activity_Planning_MEL_Roadmap.md)
 - [Đánh giá sẵn sàng lịch sử](docs/Production_Readiness_Review_2026-09-23.md) là snapshot ngày 24/09; xem runbook SIT để biết trạng thái mới hơn
 - [Tiêu chuẩn triển khai](docs/08_Deployment_Standards.md); hướng dẫn Codex ở .agents/skills/

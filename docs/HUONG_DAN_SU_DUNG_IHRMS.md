@@ -218,4 +218,4 @@ Các báo cáo BHXH, quyết toán PIT và chi phí lương theo phòng ban **ch
 - Tôi biết checklist quá hạn chỉ được nhắc tự động khi IT đã cấu hình lịch chạy.
 - Tôi biết báo lỗi mà không gửi bí mật.
 
-**Tài liệu đi kèm:** [Giáo án và bài thực hành tập huấn](TAP_HUAN_IHRMS.md). Bản đánh giá triển khai hiện hành: [Production Readiness Review](docs/Production_Readiness_Review_2026-09-23.md). Bản review ngày 23/09 là snapshot lịch sử.
+**Tài liệu đi kèm:** [Giáo án và bài thực hành tập huấn](TAP_HUAN_IHRMS.md). Bản đánh giá triển khai hiện hành: [Production Readiness Review](Production_Readiness_Review_2026-09-23.md). Bản review ngày 23/09 là snapshot lịch sử.

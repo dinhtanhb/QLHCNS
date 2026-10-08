@@ -2,6 +2,8 @@
 
 **Dành cho:** người hướng dẫn nội bộ và đầu mối nghiệp vụ
 
+**Vị trí tài liệu:** bộ tài liệu dự án trong thư mục `docs/`.
+
 **Phiên bản:** 1.3 — 26/09/2026
 
 **Thời lượng gợi ý:** 75 phút nhân viên; thêm 45 phút quản lý; 90 phút Nhân sự cộng 35 phút checklist; 120 phút Tài chính; 60 phút quản trị. Có thể thêm 45 phút cho module tự cập nhật hồ sơ/sơ đồ tổ chức.
