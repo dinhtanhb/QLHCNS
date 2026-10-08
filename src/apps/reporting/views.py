@@ -102,9 +102,16 @@ def export_dispatches(request):
     if not _can_view_reports(request):
         return HttpResponseForbidden("Không có quyền xuất dữ liệu.")
     dispatch_type = request.GET.get("type", "Incoming")
+    valid_dispatch_types = dict(OfficialDispatch.DISPATCH_TYPE_CHOICES)
+    if dispatch_type not in valid_dispatch_types:
+        dispatch_type = "Incoming"
     year = parse_int(request.GET.get("year"), timezone.localdate().year, min_value=2000, max_value=2100)
     excel_stream = generate_dispatch_book_excel(dispatch_type=dispatch_type, year=year, queryset=visible_dispatches_for(request.user))
-    type_slug = "den" if dispatch_type == "Incoming" else "di"
+    type_slug = {
+        "Incoming": "den",
+        "Outgoing": "di",
+        "InternalDirective": "noi-bo",
+    }[dispatch_type]
     response = HttpResponse(
         excel_stream.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"

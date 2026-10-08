@@ -10,7 +10,7 @@ from apps.office.models import SupplyItem, SupplyRequest, SupplyRequestItem
 from apps.attendance.models import TimesheetEntry, MonthlyAttendanceSummary
 from apps.asset.models import Asset, AssetType, AssetAllocation
 from apps.leave.models import LeaveType, LeaveRequest
-from apps.payroll.models import Payroll, PayrollPeriod, Payslip
+from apps.payroll.models import EmployeeSalary, Payroll, PayrollPeriod, Payslip
 from apps.organization.models import Department
 from apps.task.models import Task
 
@@ -191,7 +191,20 @@ class ApprovedReviewRegressionTests(TestCase):
         row.calculate(); row.save()
         summary = MonthlyAttendanceSummary.objects.create(employee=self.emp,year=2026,month=10,
             status='Approved', unpaid_leave_days=1)
-        self.client.force_login(self.make_user('FINANCE_OFFICER',self.make_employee('REVIEW-FIN'),'review-finance'))
+        finance_employee = self.make_employee('REVIEW-FIN')
+        EmployeeSalary.objects.create(
+            employee=finance_employee,
+            current_basic_salary=10000000,
+            effective_date=date(2026, 1, 1),
+            status='Active',
+        )
+        EmployeeSalary.objects.create(
+            employee=self.hr.employee,
+            current_basic_salary=10000000,
+            effective_date=date(2026, 1, 1),
+            status='Active',
+        )
+        self.client.force_login(self.make_user('FINANCE_OFFICER',finance_employee,'review-finance'))
         self.client.post(reverse('portal:finance_payroll_generate',args=[period.pk]))
         for other in Payroll.objects.filter(payroll_period=period).exclude(pk=row.pk):
             other.calculate(); other.save()

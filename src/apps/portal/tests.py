@@ -259,6 +259,13 @@ class PortalSensitiveWorkflowTests(TestCase):
             employee.leave_date = leave_date
             employee.employment_status = "Resigned"
             employee.save(update_fields=("leave_date", "employment_status"))
+            EmployeeSalary.objects.create(
+                employee=employee,
+                current_basic_salary=Decimal("10000000"),
+                effective_date=date(2025, 1, 1),
+                end_date=leave_date,
+                status="Ended",
+            )
 
         finance_user = self.make_user(
             "FINANCE_OFFICER", self.make_employee("PORTAL-PAYROLL-FINANCE-BOUNDARY"),
@@ -303,6 +310,12 @@ class PortalSensitiveWorkflowTests(TestCase):
         active_employee = self.make_employee("PORTAL-PAYROLL-FUTURE-LEAVE")
         active_employee.leave_date = date(2025, 11, 15)
         active_employee.save(update_fields=("leave_date",))
+        EmployeeSalary.objects.create(
+            employee=active_employee,
+            current_basic_salary=Decimal("10000000"),
+            effective_date=date(2025, 1, 1),
+            status="Active",
+        )
         finance_user = self.make_user(
             "FINANCE_OFFICER", self.make_employee("PORTAL-PAYROLL-FINANCE-FUTURE"),
             "portal-payroll-finance-future",

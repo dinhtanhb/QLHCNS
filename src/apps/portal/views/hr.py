@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 import re
-from django.db import models, transaction
+from django.db import IntegrityError, models, transaction
 from django.views.decorators.http import require_POST
 from apps.security.permissions import has_permission
 from django.db.models import Q
@@ -84,8 +84,8 @@ def hr_employee_detail(request, pk):
     })
 
 
-def _save_employee_form(request, employee):
-    employee.employee_code = request.POST.get("employee_code")
+def _save_employee_form(request, employee, *, employee_code=None):
+    employee.employee_code = employee_code or request.POST.get("employee_code")
     employee.first_name = request.POST.get("first_name")
     employee.last_name = request.POST.get("last_name")
     employee.full_name = request.POST.get("full_name")
@@ -117,8 +117,30 @@ def hr_employee_create(request):
 
     if request.method == "POST":
         try:
-            employee = Employee(created_by=request.user)
-            _save_employee_form(request, employee)
+            requested_code = (request.POST.get("employee_code") or "").strip()
+            employee = None
+            for attempt in range(3):
+                candidate_code = requested_code if attempt == 0 else _generate_next_employee_code()
+                try:
+                    with transaction.atomic():
+                        employee = Employee(created_by=request.user)
+                        _save_employee_form(
+                            request, employee, employee_code=candidate_code
+                        )
+                    break
+                except ValidationError as error:
+                    code_collision = bool(
+                        re.fullmatch(r"VH\d{4,}", candidate_code)
+                        and "employee_code" in getattr(error, "message_dict", {})
+                        and Employee.objects.filter(employee_code=candidate_code).exists()
+                    )
+                    if not code_collision or attempt == 2:
+                        raise
+                except IntegrityError:
+                    if not re.fullmatch(r"VH\d{4,}", candidate_code) or attempt == 2:
+                        raise
+            if employee is None or employee.pk is None:
+                raise ValidationError("Không thể sinh mã nhân viên duy nhất sau 3 lần thử.")
             messages.success(request, "Đã tạo hồ sơ nhân viên mới.")
             return redirect("portal:hr_employee_detail", pk=employee.pk)
         except Exception as e:
@@ -366,9 +388,9 @@ def hr_contract_renew(request, pk):
         messages.error(request, "Anh/chị không có quyền.")
         return redirect("portal:hr_employee_detail", pk=pk)
     employee = get_object_or_404(Employee, pk=pk)
-    contract = employee.contracts.order_by("-start_date").first()
+    contract = employee.contracts.filter(status="Active").order_by("-start_date", "-pk").first()
     if not contract:
-        messages.error(request, "Nhân viên chưa có hợp đồng nào để gia hạn.")
+        messages.error(request, "Nhân viên không có hợp đồng đang hiệu lực để gia hạn.")
         return redirect("portal:hr_employee_detail", pk=pk)
     try:
         new_end_date = request.POST.get("new_end_date")

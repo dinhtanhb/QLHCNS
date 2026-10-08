@@ -11,7 +11,6 @@ from apps.notification.services import notify, notify_many, notify_with_email_dr
 from apps.organization.models import Department
 from apps.hrm.models import Employee
 from apps.document.models import Document, DocumentApproval
-from .attendance import _can_approve
 from .common import _friendly_error, _get_employee, _role_code, _paginated_context
 
 
@@ -108,7 +107,7 @@ def _visible_dispatches(request):
 
 @login_required
 def dispatch_list(request):
-    is_mgmt = _can_approve(request) or request.user.is_staff
+    is_mgmt = has_permission(request.user, "manage_office")
     qs = _visible_dispatches(request)
 
     dispatch_type = request.GET.get("type")
@@ -154,8 +153,9 @@ def dispatch_detail(request, pk):
             messages.error(request, "Tài khoản chưa liên kết hồ sơ nhân viên.")
             return redirect("portal:dispatch_detail", pk=pk)
 
-        # Chỉ người được phân công xử lý hoặc cấp quản lý mới được cập nhật tiến độ.
-        is_mgmt = _can_approve(request) or request.user.is_staff
+        # Chỉ người được phân công xử lý hoặc vai trò văn thư mới được cập nhật tiến độ.
+        # `is_staff` chỉ cấp quyền vào Django Admin, không phải quyền nghiệp vụ.
+        is_mgmt = has_permission(request.user, "manage_office")
         if not is_mgmt and dispatch.assigned_to_id != employee.pk:
             messages.error(request, "Anh/chị không có quyền cập nhật công văn này.")
             return redirect("portal:dispatch_detail", pk=pk)

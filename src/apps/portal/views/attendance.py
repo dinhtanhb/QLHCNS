@@ -97,22 +97,26 @@ def leave_create(request):
         to_date = request.POST.get("to_date")
         reason = request.POST.get("reason", "")
         try:
-            leave_request = LeaveRequest(
-                employee=employee,
-                leave_type_id=leave_type_id,
-                from_date=from_date,
-                to_date=to_date,
-                reason=reason,
-                created_by=request.user,
-            )
-            leave_request.full_clean()
-            leave_request.save()
-            for approver in _leave_approvers_for(employee):
-                notify(
-                    approver, "leave", "Có đơn nghỉ phép chờ duyệt",
-                    f"{employee.full_name} xin nghỉ {leave_request.from_date} - {leave_request.to_date}.",
-                    link="/portal/leave/approvals/", created_by=request.user,
+            with transaction.atomic():
+                # Serialize submissions for one employee, including the case where a
+                # LeaveBalance row has not been created yet.
+                employee = Employee.objects.select_for_update().get(pk=employee.pk)
+                leave_request = LeaveRequest(
+                    employee=employee,
+                    leave_type_id=leave_type_id,
+                    from_date=from_date,
+                    to_date=to_date,
+                    reason=reason,
+                    created_by=request.user,
                 )
+                leave_request.full_clean()
+                leave_request.save()
+                for approver in _leave_approvers_for(employee):
+                    notify(
+                        approver, "leave", "Có đơn nghỉ phép chờ duyệt",
+                        f"{employee.full_name} xin nghỉ {leave_request.from_date} - {leave_request.to_date}.",
+                        link="/portal/leave/approvals/", created_by=request.user,
+                    )
             messages.success(request, "Đã gửi đơn xin nghỉ phép, chờ phê duyệt.")
             return redirect("portal:leave_list")
         except Exception as e:

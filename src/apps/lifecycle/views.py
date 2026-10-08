@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.db.models import Q
 from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
@@ -117,54 +118,64 @@ def lifecycle_item_assign(request, pk):
 @login_required
 @require_POST
 def lifecycle_item_update(request, pk):
-    item = get_object_or_404(
-        LifecycleChecklistItem.objects.select_related("case", "case__employee"), pk=pk
+    case_id = get_object_or_404(
+        LifecycleChecklistItem.objects.values_list("case_id", flat=True), pk=pk
     )
-    if not _can_view_case(request.user, item.case):
-        return HttpResponseForbidden()
-    if item.assigned_to_user_id != request.user.pk and not has_permission(request.user, "manage_lifecycle_case"):
-        return HttpResponseForbidden()
-    if item.case.status != "Open" or item.status != "Pending":
-        return HttpResponseForbidden("Đầu việc checklist này không còn ở trạng thái chờ xử lý.")
-    action = request.POST.get("action")
-    if action == "done":
-        allocation_id = request.POST.get("asset_allocation_id")
-        if allocation_id:
-            allocation = get_object_or_404(
-                AssetAllocation.objects.select_related("asset"), pk=allocation_id, employee=item.case.employee
-            )
-            if item.case.case_type == "Offboarding" and allocation.return_date is None:
-                messages.error(request, "Tài sản đang sử dụng chưa được xác nhận thu hồi.")
+    with transaction.atomic():
+        case = get_object_or_404(
+            EmployeeLifecycleCase.objects.select_for_update().select_related("employee"),
+            pk=case_id,
+        )
+        item = get_object_or_404(
+            LifecycleChecklistItem.objects.select_for_update().select_related("case", "case__employee"),
+            pk=pk,
+            case=case,
+        )
+        if not _can_view_case(request.user, case):
+            return HttpResponseForbidden()
+        if item.assigned_to_user_id != request.user.pk and not has_permission(request.user, "manage_lifecycle_case"):
+            return HttpResponseForbidden()
+        if case.status != "Open" or item.status != "Pending":
+            return HttpResponseForbidden("Đầu việc checklist này không còn ở trạng thái chờ xử lý.")
+        action = request.POST.get("action")
+        if action == "done":
+            allocation_id = request.POST.get("asset_allocation_id")
+            if allocation_id:
+                allocation = get_object_or_404(
+                    AssetAllocation.objects.select_related("asset"), pk=allocation_id, employee=case.employee
+                )
+                if case.case_type == "Offboarding" and allocation.return_date is None:
+                    messages.error(request, "Tài sản đang sử dụng chưa được xác nhận thu hồi.")
+                    return redirect("portal:lifecycle_case_detail", pk=item.case_id)
+                item.asset_allocation = allocation
+            elif item.requires_asset_return:
+                messages.error(request, "Hãy liên kết lịch sử cấp phát/thu hồi tài sản trước khi hoàn tất đầu việc này.")
                 return redirect("portal:lifecycle_case_detail", pk=item.case_id)
-            item.asset_allocation = allocation
-        elif item.requires_asset_return:
-            messages.error(request, "Hãy liên kết lịch sử cấp phát/thu hồi tài sản trước khi hoàn tất đầu việc này.")
-            return redirect("portal:lifecycle_case_detail", pk=item.case_id)
-        item.status = "Done"
-        item.completed_by = request.user
-        from django.utils import timezone
-        item.completed_at = timezone.now()
-        item.skip_reason = ""
-    elif action == "skip":
-        reason = request.POST.get("skip_reason", "").strip()
-        if not reason:
-            messages.error(request, "Cần ghi lý do khi bỏ qua đầu việc.")
-            return redirect("portal:lifecycle_case_detail", pk=item.case_id)
-        item.status = "Skipped"
-        item.completed_by = request.user
-        from django.utils import timezone
-        item.completed_at = timezone.now()
-        item.skip_reason = reason[:500]
-    else:
-        return HttpResponseForbidden("Thao tác không hợp lệ.")
-    item.modified_by = request.user
-    item.save(update_fields=[
-        "status", "completed_by", "completed_at", "skip_reason", "asset_allocation",
-        "modified_by", "modified_date",
-    ])
-    if not item.case.items.filter(status="Pending").exists():
-        item.case.status = "Completed"
-        item.case.modified_by = request.user
-        item.case.save(update_fields=["status", "modified_by", "modified_date"])
+            item.status = "Done"
+            item.completed_by = request.user
+            from django.utils import timezone
+            item.completed_at = timezone.now()
+            item.skip_reason = ""
+        elif action == "skip":
+            reason = request.POST.get("skip_reason", "").strip()
+            if not reason:
+                messages.error(request, "Cần ghi lý do khi bỏ qua đầu việc.")
+                return redirect("portal:lifecycle_case_detail", pk=item.case_id)
+            item.status = "Skipped"
+            item.completed_by = request.user
+            from django.utils import timezone
+            item.completed_at = timezone.now()
+            item.skip_reason = reason[:500]
+        else:
+            return HttpResponseForbidden("Thao tác không hợp lệ.")
+        item.modified_by = request.user
+        item.save(update_fields=[
+            "status", "completed_by", "completed_at", "skip_reason", "asset_allocation",
+            "modified_by", "modified_date",
+        ])
+        if not case.items.filter(status="Pending").exists():
+            case.status = "Completed"
+            case.modified_by = request.user
+            case.save(update_fields=["status", "modified_by", "modified_date"])
     messages.success(request, "Đã cập nhật đầu việc checklist.")
     return redirect("portal:lifecycle_case_detail", pk=item.case_id)

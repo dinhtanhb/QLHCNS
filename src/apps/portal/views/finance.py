@@ -125,6 +125,22 @@ def _employees_payable_for_period(period):
     )
 
 
+def _effective_salary_map(employees, period):
+    """Map each employee to the latest salary effective at the period start."""
+    employee_ids = [employee.pk for employee in employees]
+    salary_map = {}
+    for salary in (
+        EmployeeSalary.objects.filter(
+            employee_id__in=employee_ids,
+            effective_date__lte=period.start_date,
+        )
+        .filter(models.Q(end_date__isnull=True) | models.Q(end_date__gte=period.start_date))
+        .order_by("effective_date", "pk")
+    ):
+        salary_map[salary.employee_id] = salary.current_basic_salary
+    return salary_map
+
+
 @login_required
 def finance_payroll_run(request, pk):
     if not _can_manage_finance(request):
@@ -135,11 +151,17 @@ def finance_payroll_run(request, pk):
     existing_emp_ids = set(Payroll.objects.filter(payroll_period=period).values_list("employee_id", flat=True))
 
     payrolls = Payroll.objects.filter(payroll_period=period).select_related("employee")
-    missing_employees = _employees_payable_for_period(period).exclude(id__in=existing_emp_ids)
+    pending_employees = _employees_payable_for_period(period).exclude(id__in=existing_emp_ids)
+    salary_map = _effective_salary_map(list(pending_employees), period)
+    missing_employees = pending_employees.filter(pk__in=salary_map)
+    missing_salary_employees = pending_employees.exclude(pk__in=salary_map)
     unissued_payslips = payrolls.filter(payslip__isnull=True).count() if period.status == "Locked" else 0
 
     return render(request, "portal/finance_payroll_run.html", {
-        "period": period, "payrolls": payrolls, "missing_employees": missing_employees,
+        "period": period,
+        "payrolls": payrolls,
+        "missing_employees": missing_employees,
+        "missing_salary_employees": missing_salary_employees,
         "unissued_payslips": unissued_payslips,
     })
 
@@ -169,20 +191,17 @@ def finance_payroll_generate(request, pk):
         employees = list(
             _employees_payable_for_period(period).exclude(id__in=existing_emp_ids)
         )
-        # Lấy lương cơ bản của tất cả nhân viên trong 1 lần truy vấn thay vì lặp từng người
-        salary_map = {}
-        for sal in (
-            EmployeeSalary.objects.filter(employee__in=employees, effective_date__lte=period.start_date)
-            .filter(models.Q(end_date__isnull=True) | models.Q(end_date__gte=period.start_date))
-            .order_by("effective_date")
-        ):
-            salary_map[sal.employee_id] = sal.current_basic_salary
+        salary_map = _effective_salary_map(employees, period)
+        missing_salary_employees = [
+            employee for employee in employees if employee.pk not in salary_map
+        ]
+        employees = [employee for employee in employees if employee.pk in salary_map]
 
         new_rows = [
             Payroll(
                 payroll_period=period, employee=employee,
-                basic_salary=salary_map.get(employee.id, 0),
-                insurance_salary=salary_map.get(employee.id, 0),
+                basic_salary=salary_map[employee.id],
+                insurance_salary=salary_map[employee.id],
                 created_by=request.user,
             )
             for employee in employees
@@ -191,6 +210,16 @@ def finance_payroll_generate(request, pk):
         count = len(new_rows)
 
     messages.success(request, f"Đã tạo {count} dòng bảng lương mới cho kỳ {period}.")
+    if missing_salary_employees:
+        employee_labels = ", ".join(
+            f"{employee.employee_code} - {employee.full_name}"
+            for employee in missing_salary_employees
+        )
+        messages.error(
+            request,
+            "Chưa tạo dòng lương cho nhân viên chưa có mức lương hiệu lực: "
+            f"{employee_labels}.",
+        )
     return redirect("portal:finance_payroll_run", pk=pk)
 
 
@@ -256,6 +285,17 @@ def finance_payroll_lock(request, pk):
                 raise ValidationError("Kỳ lương chưa có dòng bảng lương.")
             if _employees_payable_for_period(period).exclude(pk__in=[row.employee_id for row in payrolls]).exists():
                 raise ValidationError("Kỳ lương còn thiếu nhân viên cần trả lương; hãy tạo đủ dòng trước khi khóa.")
+            zero_salary_rows = [
+                payroll.employee.employee_code
+                for payroll in payrolls
+                if payroll.basic_salary is None or payroll.basic_salary <= 0
+            ]
+            if zero_salary_rows:
+                raise ValidationError(
+                    "Không thể khóa kỳ vì có dòng lương cơ bản bằng 0: "
+                    + ", ".join(zero_salary_rows)
+                    + "."
+                )
             configuration = Payroll.load_calculation_configuration(period.start_date)
             for payroll in payrolls:
                 payroll.payroll_period = period

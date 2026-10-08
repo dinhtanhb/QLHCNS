@@ -35,6 +35,17 @@
 </div>
 {% endif %}
 
+{% if missing_salary_employees %}
+<div class="bg-red-50 border border-red-200 rounded-xl p-5 mb-6" role="alert">
+    <p class="font-semibold text-red-800">Chưa thể tạo bảng lương cho {{ missing_salary_employees|length }} nhân viên chưa có mức lương hiệu lực:</p>
+    <ul class="mt-2 list-disc pl-5 text-sm text-red-700">
+        {% for employee in missing_salary_employees %}
+        <li>{{ employee.employee_code }} — {{ employee.full_name }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
     <div class="overflow-x-auto">
     <table class="w-full text-sm">
