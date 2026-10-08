@@ -1,7 +1,16 @@
-"""Temporary review probe - verifies model-level validation findings."""
+"""Temporary review probe for model-level booking status validation.
+
+This diagnostic is not a regression test. Run it only against an isolated,
+migrated test database with synthetic fixtures.
+"""
+
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 os.environ.update(
     DJANGO_SETTINGS_MODULE="config.settings",
@@ -10,7 +19,7 @@ os.environ.update(
     DEBUG="False",
     APP_ENV="test",
 )
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
+sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 import django
 
@@ -18,7 +27,7 @@ django.setup()
 
 from django.core.exceptions import ValidationError
 
-from apps.office.models import VehicleBooking, RoomBooking
+from apps.office.models import RoomBooking, VehicleBooking
 
 
 def probe(label, instance):
