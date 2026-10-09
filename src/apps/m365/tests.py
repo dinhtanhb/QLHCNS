@@ -1,11 +1,13 @@
 import tempfile
-from unittest.mock import Mock
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
 
 from django.core.files.base import ContentFile
 from django.test import SimpleTestCase, override_settings
 
 from apps.m365.graph_client import GRAPH_BASE, GraphAPIError, GraphClient
 from apps.m365.storage import ConfiguredStorage, SharePointStorage, get_storage
+from apps.common.uploads import upload_to_dispatches
 
 
 class ConfiguredStorageTests(SimpleTestCase):
@@ -48,6 +50,47 @@ class ConfiguredStorageTests(SimpleTestCase):
         ):
             self.assertEqual(storage._remote_name("dispatches/2026/09/file.txt"), "CongVan/2026/09/file.txt")
             self.assertEqual(storage._remote_name("CongVan/2026/09/file.txt"), "CongVan/2026/09/file.txt")
+
+    def test_dispatch_files_route_by_direction_and_legacy_paths_remain_readable(self):
+        folders = {
+            "dispatches": "CongVan", "incoming_docs": "CongVanDen", "outgoing_docs": "CongVanDi",
+        }
+        prefixes = {
+            "dispatches": "dispatches", "incoming_docs": "incoming_docs", "outgoing_docs": "outgoing_docs",
+        }
+        storage = get_storage("dispatches")
+        with override_settings(M365_FOLDER_MAP=folders, M365_UPLOAD_PREFIX_MAP=prefixes):
+            for dispatch_type, prefix, folder in (
+                ("Incoming", "incoming_docs", "CongVanDen"),
+                ("Outgoing", "outgoing_docs", "CongVanDi"),
+                ("InternalDirective", "dispatches", "CongVan"),
+            ):
+                with self.subTest(dispatch_type=dispatch_type):
+                    generated = upload_to_dispatches(SimpleNamespace(dispatch_type=dispatch_type), "van-ban.pdf")
+                    self.assertTrue(generated.startswith(prefix + "/"))
+                    self.assertTrue(storage._remote_name(generated).startswith(folder + "/"))
+                    self.assertEqual(storage._remote_name(f"{folder}/2026/09/van-ban.pdf"), f"{folder}/2026/09/van-ban.pdf")
+            self.assertEqual(storage._remote_name("dispatches/2026/09/old.pdf"), "CongVan/2026/09/old.pdf")
+            self.assertEqual(storage._remote_name("CongVan/2026/09/old.pdf"), "CongVan/2026/09/old.pdf")
+
+    def test_dispatch_save_uses_direction_folder_and_old_name_still_opens(self):
+        storage = get_storage("dispatches")
+        with override_settings(
+            M365_STORAGE_ENABLED=True,
+            M365_SHAREPOINT_LIBRARY="Documents",
+            M365_FOLDER_MAP={"dispatches": "CongVan", "incoming_docs": "CongVanDen", "outgoing_docs": "CongVanDi"},
+            M365_UPLOAD_PREFIX_MAP={"dispatches": "dispatches", "incoming_docs": "incoming_docs", "outgoing_docs": "outgoing_docs"},
+        ), patch("apps.m365.storage.SharePointStorage") as backend_class:
+            backend = backend_class.return_value
+            backend.exists.return_value = False
+            for dispatch_type, folder in (("Incoming", "CongVanDen"), ("Outgoing", "CongVanDi")):
+                with self.subTest(dispatch_type=dispatch_type):
+                    path = upload_to_dispatches(SimpleNamespace(dispatch_type=dispatch_type), "van-ban.pdf")
+                    saved = storage.save(path, ContentFile(b"test", name="van-ban.pdf"))
+                    self.assertTrue(saved.startswith(folder + "/"))
+                    self.assertEqual(backend._save.call_args.args[0], saved)
+            storage.open("CongVan/2026/09/old.pdf")
+            backend._open.assert_called_with("CongVan/2026/09/old.pdf", "rb")
 
 
 class GraphClientFolderTests(SimpleTestCase):

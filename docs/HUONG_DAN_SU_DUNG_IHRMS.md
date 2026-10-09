@@ -65,7 +65,7 @@ Mở **Công việc** hoặc **KPI**, đọc yêu cầu, hạn và trạng thái
 
 ### 4.5 Tệp đính kèm trên SharePoint
 
-Khi chức năng được cấu hình dùng SharePoint, người dùng vẫn đính kèm và mở tệp từ màn hình IHRMS như bình thường. IHRMS lưu tệp vào thư viện `Documents`, trong thư mục nghiệp vụ như `CongVanDen`, `CongVanDi`, `DonNghiPhep`, `HoSoUngVien` hoặc `TaiSanHinhAnh`; tên thư mục thực tế do IT cấu hình. Nhân viên không cần tự tải tệp lên thư viện SharePoint.
+Khi chức năng được cấu hình dùng SharePoint, người dùng vẫn đính kèm và mở tệp từ màn hình IHRMS như bình thường. IHRMS lưu tệp vào thư viện `Documents`, trong thư mục nghiệp vụ như `CongVanDen`, `CongVanDi`, `DonNghiPhep`, `HoSoUngVien` hoặc `TaiSanHinhAnh`; tên thư mục thực tế do IT cấu hình. Công văn đến/đi tải lên sau bản sửa này được tách theo loại; tệp đã lưu ở `CongVan` vẫn mở qua bản ghi cũ, không tự di chuyển. Nhân viên không cần tự tải tệp lên thư viện SharePoint.
 
 1. Chỉ chọn tệp đúng hồ sơ và đúng mục đích; xem lại người có quyền xem trước khi lưu.
 2. Sau khi lưu, mở lại bản ghi và dùng liên kết tệp trong IHRMS để xác nhận xem/tải được đúng tệp.

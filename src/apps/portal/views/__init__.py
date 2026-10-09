@@ -164,6 +164,7 @@ from .recruitment import (
 from .reports_planning import (
     _can_view_reports,
     report_hub,
+    report_hub_export,
     report_timesheet,
     report_personnel_changes,
     _can_create_event,

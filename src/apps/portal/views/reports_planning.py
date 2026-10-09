@@ -4,6 +4,7 @@ from apps.security.permissions import HR_MANAGER
 from apps.security.data_access import managed_departments_for
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from apps.notification.services import notify
 from decimal import Decimal
@@ -20,8 +21,16 @@ from apps.hrm.models import EmployeePromotion, EmployeeTransfer
 from apps.planning.models import AnnualBudget, Event, HeadcountPlan, TrainingEnrollment, TrainingCourse, with_headcounts
 from apps.procurement.models import ProcurementItem
 from apps.common.params import parse_int
+from apps.common.export_names import export_name
+from apps.security.models import SecurityEvent
 from django.utils import timezone
 from apps.hrm.models import Employee
+from ..reporting_dashboard import (
+    build_report_snapshot,
+    export_snapshot_docx,
+    export_snapshot_pptx,
+    export_snapshot_xlsx,
+)
 from .attendance import _holiday_weekday_count, _weekday_count
 from .common import _friendly_error, _get_employee, _role_code
 
@@ -37,7 +46,42 @@ def report_hub(request):
     if not _can_view_reports(request):
         messages.error(request, "Anh/chị không có quyền xem báo cáo.")
         return redirect("portal:dashboard")
-    return render(request, "portal/report_hub.html")
+    today = timezone.localdate()
+    default_from = today.replace(month=1, day=1)
+    try:
+        from_date = parse_date(request.GET.get("from_date", default_from.isoformat()))
+        to_date = parse_date(request.GET.get("to_date", today.isoformat()))
+        if not from_date or not to_date or to_date < from_date or (to_date - from_date).days > 1095:
+            raise ValueError
+    except ValueError:
+        messages.error(request, "Khoảng ngày không hợp lệ; đã dùng từ đầu năm đến hôm nay.")
+        from_date, to_date = default_from, today
+    return render(request, "portal/report_hub.html", build_report_snapshot(from_date, to_date))
+
+
+@login_required
+def report_hub_export(request, export_format):
+    if not _can_view_reports(request):
+        return HttpResponse("Anh/chị không có quyền xuất báo cáo.", status=403)
+    today = timezone.localdate()
+    default_from = today.replace(month=1, day=1)
+    from_date = parse_date(request.GET.get("from_date", default_from.isoformat()))
+    to_date = parse_date(request.GET.get("to_date", today.isoformat()))
+    if not from_date or not to_date or to_date < from_date or (to_date - from_date).days > 1095:
+        return HttpResponse("Khoảng ngày báo cáo không hợp lệ.", status=400)
+    exporters = {
+        "xlsx": (export_snapshot_xlsx, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "excel"),
+        "docx": (export_snapshot_docx, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "word"),
+        "pptx": (export_snapshot_pptx, "application/vnd.openxmlformats-officedocument.presentationml.presentation", "powerpoint"),
+    }
+    if export_format not in exporters:
+        return HttpResponse("Định dạng xuất không được hỗ trợ.", status=404)
+    exporter, content_type, audit_label = exporters[export_format]
+    response = HttpResponse(exporter(build_report_snapshot(from_date, to_date)), content_type=content_type)
+    filename = export_name("BaoCao_DieuHanh_IHRMS", f"{from_date:%Y%m%d}-{to_date:%Y%m%d}", today, export_format)
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    SecurityEvent.objects.create(user=request.user, action="data_export", resource=f"report_hub_{audit_label}")
+    return response
 
 
 @login_required

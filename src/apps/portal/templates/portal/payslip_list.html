@@ -13,7 +13,7 @@
         <tbody class="divide-y divide-gray-100">
         {% for p in payrolls %}
         <tr>
-            <td class="py-2.5 pr-4">{{ p.payroll_period }}<span class="ml-1 text-[10px] text-gray-400">(đã chốt)</span></td>
+            <td class="py-2.5 pr-4">{{ p.payroll_period }}<span class="ml-1 text-xs text-gray-600">(đã chốt)</span></td>
             <td class="py-2.5 pr-4">{{ p.gross_income|floatformat:0 }} đ</td>
             <td class="py-2.5 pr-4 text-red-600">−{{ p.insurance_amount|floatformat:0 }} đ</td>
             <td class="py-2.5 pr-4 text-red-600">−{{ p.tax_amount|floatformat:0 }} đ</td>

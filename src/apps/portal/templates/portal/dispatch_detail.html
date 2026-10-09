@@ -138,7 +138,7 @@
                 <div class="flex-1">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-gray-900">{{ t.actor.full_name }} — <span class="text-blue-600 font-normal">{{ t.action_type }}</span></span>
-                        <span class="text-[10px] text-gray-400">{{ t.action_date|date:"H:i d/m/Y" }}</span>
+                        <span class="text-xs text-gray-600">{{ t.action_date|date:"H:i d/m/Y" }}</span>
                     </div>
                     {% if t.comment %}
                     <p class="text-xs text-gray-600 mt-1 bg-gray-50 p-2 rounded-lg">{{ t.comment }}</p>

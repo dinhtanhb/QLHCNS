@@ -1,5 +1,7 @@
 # UI/UX SPECIFICATION DOCUMENT
 
+> Đây là đặc tả màn hình gốc. Bố cục, màu, font và hành vi menu đang triển khai được chốt tại [UI_DESIGN_SYSTEM.md](UI_DESIGN_SYSTEM.md); quyền thao tác theo [10_RBAC_Permission_Matrix.md](10_RBAC_Permission_Matrix.md). Dashboard Báo cáo hiện có lọc kỳ, nhóm chỉ số theo phân hệ và xuất Excel/Word/PowerPoint; mục REP-001 dưới đây là yêu cầu ban đầu, không phải danh sách chức năng đã triển khai.
+
 ## Project
 
 Internal Administration & Human Resource Management System (IHRMS)
@@ -1471,4 +1473,4 @@ Một màn hình được xem là hoàn thành khi:
 
 ✅ Export hoạt động
 
-✅ Không còn lỗi 
+✅ Không còn lỗi

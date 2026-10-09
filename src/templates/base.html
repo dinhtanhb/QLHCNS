@@ -10,6 +10,7 @@
     <link rel="apple-touch-icon" href="{% static 'img/ihrms-pwa-192.png' %}">
     <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
     <link rel="stylesheet" href="{% static 'css/ihrms.css' %}">
+    {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-gray-50 min-h-screen text-gray-800">
     <header class="bg-blue-700 text-white shadow">
@@ -32,7 +33,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
                     {% if unread_notification_count > 0 %}
-                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">{{ unread_notification_count }}</span>
+                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-5 h-5 px-1 flex items-center justify-center">{{ unread_notification_count }}</span>
                     {% endif %}
                 </a>
 
@@ -44,7 +45,7 @@
                         </div>
                         <div class="text-left hidden sm:block">
                             <div class="font-semibold text-xs leading-tight">{{ user.employee.full_name|default:user.username }}</div>
-                            <div class="text-[10px] text-blue-200 leading-tight">{{ user_role_name }}</div>
+                            <div class="text-xs text-blue-200 leading-tight">{{ user_role_name }}</div>
                         </div>
                         <svg class="w-3.5 h-3.5 text-blue-200 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -54,9 +55,9 @@
                     <!-- Dropdown List -->
                     <div id="userDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 z-50 text-gray-700">
                         <div class="px-4 py-3 border-b border-gray-100 bg-gray-50/70 rounded-t-xl">
-                            <p class="text-[11px] text-gray-500">Tài khoản</p>
+                            <p class="text-xs text-gray-500">Tài khoản</p>
                             <p class="text-sm font-semibold text-gray-900 truncate">{{ user.employee.full_name|default:user.username }}</p>
-                            <span class="inline-block mt-1 px-2 py-0.5 text-[10px] font-semibold rounded-full {% if is_admin_user %}bg-purple-100 text-purple-700 border border-purple-200{% else %}bg-blue-100 text-blue-700 border border-blue-200{% endif %}">
+                            <span class="inline-block mt-1 px-2 py-0.5 text-xs font-semibold rounded-full {% if is_admin_user %}bg-purple-100 text-purple-700 border border-purple-200{% else %}bg-blue-100 text-blue-700 border border-blue-200{% endif %}">
                                 {{ user_role_name }}
                             </span>
                         </div>
@@ -69,7 +70,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                                 <span>Trang Quản Trị (Admin)</span>
-                                <span class="ml-auto text-[10px] bg-indigo-200 text-indigo-800 px-1.5 py-0.5 rounded font-bold">ADMIN</span>
+                                <span class="ml-auto text-xs bg-indigo-200 text-indigo-800 px-1.5 py-0.5 rounded font-bold">ADMIN</span>
                             </a>
                             <a href="/reports/" class="flex items-center gap-2.5 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-50 transition">
                                 <svg class="w-4 h-4 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

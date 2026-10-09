@@ -88,16 +88,16 @@
                         <td class="py-3 px-4 font-semibold text-gray-900 whitespace-nowrap">
                             {{ d.dispatch_no }}
                             {% if d.original_doc_no %}
-                            <div class="text-[10px] text-gray-400">Gốc: {{ d.original_doc_no }}</div>
+                            <div class="text-xs text-gray-600">Gốc: {{ d.original_doc_no }}</div>
                             {% endif %}
                         </td>
                         <td class="py-3 px-4 whitespace-nowrap">
                             {% if d.dispatch_type == 'Incoming' %}
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-700">Đến</span>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Đến</span>
                             {% elif d.dispatch_type == 'Outgoing' %}
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700">Đi</span>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">Đi</span>
                             {% else %}
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-100 text-purple-700">Nội bộ</span>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">Nội bộ</span>
                             {% endif %}
                         </td>
                         <td class="py-3 px-4 max-w-xs font-medium text-gray-800">
@@ -122,24 +122,24 @@
                         </td>
                         <td class="py-3 px-4 whitespace-nowrap">
                             {% if d.urgency_level == 'TopUrgent' %}
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 animate-pulse">HỎA TỐC</span>
+                            <span class="px-2 py-0.5 rounded text-xs font-bold bg-red-100 text-red-700">HỎA TỐC</span>
                             {% elif d.urgency_level == 'VeryUrgent' %}
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">THƯỢNG KHẨN</span>
+                            <span class="px-2 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-800">THƯỢNG KHẨN</span>
                             {% elif d.urgency_level == 'Urgent' %}
-                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-orange-100 text-orange-700">Khẩn</span>
+                            <span class="px-2 py-0.5 rounded text-xs font-semibold bg-orange-100 text-orange-700">Khẩn</span>
                             {% else %}
                             <span class="text-gray-400">Thường</span>
                             {% endif %}
                         </td>
                         <td class="py-3 px-4 whitespace-nowrap">
                             {% if d.status == 'Completed' %}
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-green-100 text-green-700">Hoàn thành</span>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Hoàn thành</span>
                             {% elif d.status == 'Processing' %}
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-100 text-blue-700">Đang xử lý</span>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">Đang xử lý</span>
                             {% elif d.status == 'Overdue' %}
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-100 text-red-700">Quá hạn</span>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">Quá hạn</span>
                             {% else %}
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 text-gray-600">Chờ xử lý</span>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Chờ xử lý</span>
                             {% endif %}
                         </td>
                         <td class="py-3 px-4 text-center whitespace-nowrap">

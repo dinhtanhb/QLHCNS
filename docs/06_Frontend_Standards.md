@@ -1,5 +1,7 @@
 # FRONTEND DEVELOPMENT STANDARDS
 
+> Chuẩn triển khai giao diện hiện hành (token màu, chữ, component, accessibility và kiểm tra) nằm tại [UI_DESIGN_SYSTEM.md](UI_DESIGN_SYSTEM.md). Các ví dụ màu/menu trong bản đặc tả gốc bên dưới là thiết kế tham khảo; không thay thế mã portal và ma trận quyền đang vận hành.
+
 ## Project
 
 Internal Administration & Human Resource Management System (IHRMS)
@@ -38,7 +40,7 @@ Toàn bộ giao diện hệ thống phải tuân thủ tài liệu này.
 ## Framework
 
 ```text
-Django templates + Tailwind CSS 3 (local CLI build) + shared project CSS
+Django templates + Tailwind CSS 4 (local CLI build) + shared project CSS
 ```
 
 ---
@@ -1233,7 +1235,7 @@ Ready For:
 
 ## Tailwind CSS build
 
-Portal Django biên dịch Tailwind CSS 3 bằng CLI cục bộ. Không thêm Tailwind Play CDN vào trang. Node.js/npm chỉ cần ở bước build; khi chạy, hệ thống phục vụ `src/static/css/tailwind.css` như một static asset Django thông thường.
+Portal Django biên dịch Tailwind CSS 4 bằng CLI cục bộ. Không thêm Tailwind Play CDN vào trang. Node.js/npm chỉ cần ở bước build; khi chạy, hệ thống phục vụ `src/static/css/tailwind.css` như một static asset Django thông thường.
 
 Từ thư mục gốc dự án, cài đúng các phiên bản trong lockfile và build lại sau khi sửa class Tailwind trong template hoặc mã nguồn:
 

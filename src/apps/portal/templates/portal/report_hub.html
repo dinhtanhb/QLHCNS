@@ -1,23 +1,70 @@
 {% extends "base.html" %}
-{% block title %}Báo cáo{% endblock %}
+{% load static %}
+{% block title %}Báo cáo điều hành{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/report_dashboard.css' %}">{% endblock %}
 {% block content %}
-<h1 class="text-lg font-bold text-gray-900 mb-4">Báo cáo</h1>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <a href="{% url 'portal:report_timesheet' %}" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:border-blue-300 transition">
-        <p class="font-bold text-gray-900 mb-1">📊 Chấm công & Tồn phép</p>
-        <p class="text-gray-500 text-sm">Tổng giờ làm, giờ cần làm, số ngày phép còn lại của toàn công ty theo tháng.</p>
-    </a>
-    <a href="{% url 'portal:report_personnel_changes' %}" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:border-blue-300 transition">
-        <p class="font-bold text-gray-900 mb-1">🔄 Biến động nhân sự</p>
-        <p class="text-gray-500 text-sm">Tuyển mới, nghỉ việc, điều chuyển, bổ nhiệm trong khoảng thời gian.</p>
-    </a>
+<div class="report-shell">
+  <div class="report-toolbar">
+    <div><h1 class="report-title">Báo cáo điều hành</h1><p class="report-intro">Tổng hợp số liệu từ các phân hệ đang có trong IHRMS.</p></div>
+    <form method="get" class="report-filter" aria-label="Lọc kỳ báo cáo">
+      <div><label for="from_date">Từ ngày</label><input class="report-input" id="from_date" name="from_date" type="date" value="{{ from_date|date:'Y-m-d' }}"></div>
+      <div><label for="to_date">Đến ngày</label><input class="report-input" id="to_date" name="to_date" type="date" value="{{ to_date|date:'Y-m-d' }}"></div>
+      <button class="report-button report-button-primary" type="submit">Cập nhật</button>
+    </form>
+  </div>
+  <div class="report-actions" role="group" aria-label="Xuất báo cáo">
+    <a class="report-button report-button-secondary" href="{% url 'portal:report_hub_export' 'xlsx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Xuất Excel</a>
+    <a class="report-button report-button-secondary" href="{% url 'portal:report_hub_export' 'docx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Xuất Word</a>
+    <a class="report-button report-button-secondary" href="{% url 'portal:report_hub_export' 'pptx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Tạo slide</a>
+  </div>
+  <section class="report-hero" aria-label="Số liệu tổng quan">
+    <p class="report-period">Kỳ báo cáo {{ from_date|date:'d/m/Y' }} đến {{ to_date|date:'d/m/Y' }}</p>
+    <div class="report-headlines">
+      <div class="headline"><span class="headline-label">Nhân sự đang làm việc</span><strong class="headline-value">{{ headline.active }}</strong></div>
+      <div class="headline"><span class="headline-label">Tuyển mới trong kỳ</span><strong class="headline-value">{{ headline.new_hires }}</strong></div>
+      <div class="headline"><span class="headline-label">Nghỉ việc trong kỳ</span><strong class="headline-value">{{ headline.departures }}</strong></div>
+      <div class="headline"><span class="headline-label">Ứng viên đang xử lý</span><strong class="headline-value">{{ headline.candidates }}</strong></div>
+      <div class="headline"><span class="headline-label">Công việc quá hạn</span><strong class="headline-value">{{ headline.overdue_tasks }}</strong></div>
+      <div class="headline"><span class="headline-label">Công văn quá hạn</span><strong class="headline-value">{{ headline.overdue_dispatches }}</strong></div>
+    </div>
+  </section>
+  <div class="report-visuals">
+    <section class="report-panel" aria-labelledby="movement-heading">
+      <h2 id="movement-heading">Biến động nhân sự theo tháng</h2>
+      <p class="report-panel-note">Tuyển mới, nghỉ việc, điều chuyển và bổ nhiệm trong phạm vi đã chọn.</p>
+      <div class="movement-chart" role="region" tabindex="0" aria-label="Biểu đồ biến động nhân sự; dùng phím mũi tên để cuộn trên màn hình nhỏ. Số liệu chi tiết ở bảng bên dưới.">
+        {% for row in month_rows %}
+        <div class="movement-month" aria-hidden="true">
+          <div class="movement-bars"><span class="movement-bar bar-hire" style="height:{{ row.new_hires_height }}%"></span><span class="movement-bar bar-leave" style="height:{{ row.departures_height }}%"></span><span class="movement-bar bar-transfer" style="height:{{ row.transfers_height }}%"></span><span class="movement-bar bar-promotion" style="height:{{ row.promotions_height }}%"></span></div>
+          <span class="movement-label">{{ row.label }}</span>
+        </div>
+        {% empty %}<p class="report-panel-note">Chưa có kỳ dữ liệu phù hợp.</p>{% endfor %}
+      </div>
+      <div class="chart-legend" aria-hidden="true"><span><i class="legend-dot bar-hire"></i>Tuyển mới</span><span><i class="legend-dot bar-leave"></i>Nghỉ việc</span><span><i class="legend-dot bar-transfer"></i>Điều chuyển</span><span><i class="legend-dot bar-promotion"></i>Bổ nhiệm</span></div>
+      <details class="report-data-details">
+        <summary>Xem số liệu theo tháng</summary>
+        <div class="report-table-scroll" role="region" tabindex="0" aria-label="Bảng biến động nhân sự theo tháng">
+          <table class="report-data-table"><thead><tr><th scope="col">Tháng</th><th scope="col">Tuyển mới</th><th scope="col">Nghỉ việc</th><th scope="col">Điều chuyển</th><th scope="col">Bổ nhiệm</th></tr></thead>
+            <tbody>{% for row in month_rows %}<tr><th scope="row">{{ row.label }}</th><td>{{ row.new_hires }}</td><td>{{ row.departures }}</td><td>{{ row.transfers }}</td><td>{{ row.promotions }}</td></tr>{% endfor %}</tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+    <section class="report-panel" aria-labelledby="recruitment-heading">
+      <h2 id="recruitment-heading">Phễu tuyển dụng</h2><p class="report-panel-note">Trạng thái tổng hợp hiện tại của quy trình tuyển dụng.</p>
+      <ul class="funnel">{% for item in recruitment_funnel %}<li class="funnel-row"><span class="funnel-label">{{ item.label }}</span><span class="funnel-track" aria-hidden="true"><span class="funnel-fill" style="width:{{ item.width }}%"></span></span><strong class="funnel-value">{{ item.value }}</strong></li>{% endfor %}</ul>
+    </section>
+  </div>
+  <div class="report-section-grid">{% for section in sections %}
+    <section class="report-section" id="{{ section.key }}" aria-labelledby="section-{{ section.key }}">
+      <div class="section-heading"><div><h2 id="section-{{ section.key }}">{{ section.title }}</h2><p>{{ section.description }}</p></div>
+        {% if section.href or section.key == 'planning' %}<div class="section-links">
+          {% if section.href %}<a class="section-link" href="{% url section.href %}">{% if section.key == 'planning' %}Xem định biên{% else %}Xem chi tiết{% endif %}</a>{% endif %}
+          {% if section.key == 'planning' %}<a class="section-link" href="{% url 'portal:report_budget' %}">Xem ngân sách</a>{% endif %}
+        </div>{% endif %}
+      </div>
+      <div class="metric-grid">{% for metric in section.metrics %}<div class="metric" data-tone="{{ metric.tone }}"><span class="metric-label">{{ metric.label }}</span><strong class="metric-value">{{ metric.display }}</strong></div>{% endfor %}</div>
+    </section>
+  {% endfor %}</div>
 </div>
-    <a href="{% url 'portal:report_headcount' %}" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:border-blue-300 transition">
-        <p class="font-bold text-gray-900 mb-1">👥 Định biên nhân sự</p>
-        <p class="text-gray-500 text-sm">So sánh định biên kế hoạch với số lượng thực tế theo phòng ban.</p>
-    </a>
-    <a href="{% url 'portal:report_budget' %}" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:border-blue-300 transition">
-        <p class="font-bold text-gray-900 mb-1">💰 Ngân sách năm</p>
-        <p class="text-gray-500 text-sm">Ngân sách được duyệt so với chi tiêu thực tế theo hạng mục.</p>
-    </a>
 {% endblock %}

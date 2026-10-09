@@ -300,6 +300,8 @@ M365_SHAREPOINT_LIBRARY = os.getenv(
 )
 M365_FOLDER_MAP = {
     "documents": os.getenv("M365_FOLDER_DOCUMENTS", ""),
+    # CongVan is retained for legacy dispatch files and internal directives.
+    # New incoming/outgoing attachments use their direction-specific folders.
     "dispatches": os.getenv("M365_FOLDER_DISPATCHES", os.getenv("M365_LIBRARY_DISPATCHES", "CongVan")),
     "incoming_docs": os.getenv("M365_FOLDER_INCOMING", os.getenv("M365_LIBRARY_INCOMING", "CongVanDen")),
     "outgoing_docs": os.getenv("M365_FOLDER_OUTGOING", os.getenv("M365_LIBRARY_OUTGOING", "CongVanDi")),

@@ -79,6 +79,7 @@ urlpatterns = [
     path("holidays/", views.holiday_list, name="holiday_list"),
     path("holidays/<int:pk>/delete/", views.holiday_delete, name="holiday_delete"),
     path("reports/", views.report_hub, name="report_hub"),
+    path("reports/export/<str:export_format>/", views.report_hub_export, name="report_hub_export"),
     path("reports/timesheet/", views.report_timesheet, name="report_timesheet"),
     path("reports/personnel-changes/", views.report_personnel_changes, name="report_personnel_changes"),
     path("rooms/", views.room_booking_list, name="room_booking_list"),

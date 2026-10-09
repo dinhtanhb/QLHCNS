@@ -15,12 +15,10 @@ Cách dùng trong models.py:
         storage=get_storage("dispatches"),   # None nếu M365 chưa bật -> dùng đĩa cục bộ
     )
 
-`get_storage(kind)` tra cứu M365_FOLDER_MAP trong settings để biết thư mục
-nghiệp vụ trong thư viện M365_SHAREPOINT_LIBRARY. Nếu M365_STORAGE_ENABLED=False
-(mặc định, khi chưa có đủ
-Tenant ID/Client ID/Secret), get_storage trả về None và Django tự dùng
-FileSystemStorage mặc định — hệ thống vẫn chạy bình thường trong lúc chờ IT
-cấp thông tin Azure.
+`get_storage(kind)` trả về adapter ổn định cho migration và tra cứu
+M365_FOLDER_MAP trong settings khi thao tác tệp. Nếu M365_STORAGE_ENABLED=False,
+adapter dùng FileSystemStorage cục bộ. Tệp công văn đến/đi mới được định tuyến
+theo tiền tố upload; đường dẫn CongVan cũ vẫn được giữ để đọc lại.
 """
 from __future__ import annotations
 
@@ -92,6 +90,17 @@ class ConfiguredStorage(Storage):
 
     def _remote_name(self, name: str) -> str:
         name = name.lstrip("/")
+        if self.kind == "dispatches":
+            # The FileField keeps one migration-stable storage adapter, while
+            # the upload path identifies incoming and outgoing documents.
+            # Saved remote names must also resolve without adding CongVan/.
+            for route_kind in ("incoming_docs", "outgoing_docs"):
+                route_prefix = getattr(settings, "M365_UPLOAD_PREFIX_MAP", {}).get(route_kind, "")
+                route_folder = getattr(settings, "M365_FOLDER_MAP", {}).get(route_kind, "").strip("/")
+                if (route_prefix and name.startswith(route_prefix + "/")) or (
+                    route_folder and (name == route_folder or name.startswith(route_folder + "/"))
+                ):
+                    return ConfiguredStorage(route_kind)._remote_name(name)
         upload_prefix = getattr(settings, "M365_UPLOAD_PREFIX_MAP", {}).get(self.kind, "")
         if upload_prefix and name.startswith(upload_prefix + "/"):
             name = name[len(upload_prefix) + 1:]

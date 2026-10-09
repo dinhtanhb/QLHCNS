@@ -69,6 +69,10 @@ def upload_to_personnel_decisions(instance, filename):
 
 
 def upload_to_dispatches(instance, filename):
+    if instance.dispatch_type == "Incoming":
+        return upload_to_incoming_docs(instance, filename)
+    if instance.dispatch_type == "Outgoing":
+        return upload_to_outgoing_docs(instance, filename)
     return build_upload_path("dispatches", filename)
 
 
