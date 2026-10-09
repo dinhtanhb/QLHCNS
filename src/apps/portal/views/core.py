@@ -14,7 +14,6 @@ from apps.leave.models import LeaveRequest
 from apps.notification.services import notify
 import calendar as calendar_module
 from django.http import FileResponse, Http404, HttpResponse, HttpResponseForbidden
-from apps.payroll.models import Payroll
 from apps.asset.models import Asset
 from django.utils import timezone
 from apps.hrm.models import Employee
@@ -106,15 +105,6 @@ def dashboard(request):
     if employee:
         context["my_pending_leaves"] = LeaveRequest.objects.filter(employee=employee, status="Pending").count()
         context["my_open_tasks"] = Task.objects.filter(assigned_to_employee=employee).exclude(status__in=["Done", "Cancelled"]).count()
-        # Mục I8: chỉ hiện lương của kỳ đã "Locked" (đã chốt). Kỳ còn "Open" là số
-        # Kế toán đang tính/sửa, show ra cho nhân viên sẽ gây hoang mang khi số đổi qua lại.
-        latest_payroll = Payroll.objects.filter(
-            employee=employee, payroll_period__status="Locked"
-        ).select_related("payroll_period").order_by(
-            "-payroll_period__payroll_year", "-payroll_period__payroll_month"
-        ).first()
-        context["latest_payroll"] = latest_payroll
-
     # HR Manager / Director / Super Admin: bức tranh toàn công ty
     if is_super or role_code in ("HR_MANAGER", "DIRECTOR"):
         context["is_management_view"] = True

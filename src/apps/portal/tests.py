@@ -182,6 +182,12 @@ class PortalSensitiveWorkflowTests(TestCase):
         self.assertEqual(open_pdf.status_code, 404)
         self.assertNotEqual(locked_payslip.pk, open_payslip.pk)
 
+        dashboard = self.client.get(reverse("portal:dashboard"))
+        self.assertEqual(dashboard.status_code, 200)
+        self.assertNotContains(dashboard, "Lương kỳ gần nhất")
+        self.assertNotIn("latest_payroll", dashboard.context)
+        self.assertContains(dashboard, f'href="{reverse("portal:payslip_list")}"')
+
     def test_locking_payroll_issues_payslips_for_period_payrolls(self):
         employee = self.make_employee("PORTAL-PAYSLIP-ISSUE")
         finance_user = self.make_user("FINANCE_OFFICER", employee, "portal-payslip-issuer")
