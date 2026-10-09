@@ -2,6 +2,16 @@
 
 Đây là **nơi ghi nhận tập trung duy nhất** các đợt thay đổi lớn, thao tác kiểm tra, quyết định và việc cần chủ dự án thực hiện. Cập nhật tiếp vào tệp này thay vì tạo log mới cho từng lần làm việc. Không ghi secrets, dữ liệu cá nhân hoặc nội dung `.env`.
 
+## 2026-10-09 — Đồng bộ bố cục và màu Trang chủ/Báo cáo với tiến độ dự án
+
+**Mục tiêu/phạm vi:** căn lại lưới KPI Trang chủ, làm rõ KPI đầu trang Báo cáo, giữ hàng nhãn/số nhất quán và áp dụng bảng màu của trang Theo dõi tiến độ dự án cho hai dashboard này. Không đổi số liệu, quyền truy cập, xuất tệp hay cấu trúc dữ liệu.
+
+**Thay đổi:** thêm `src/static/css/home_dashboard.css` cho thẻ trắng viền rõ, chiều cao/vùng nhãn đồng đều, số neo ở đáy; điều chỉnh `dashboard.html` để nạp CSS và đưa kỳ lương vào vùng nhãn, giữ giá trị lương cùng hàng với KPI khác. Sau phản hồi qua hai bản demo, chủ dự án chọn phương án **Thẻ gọn một hàng**: giảm chiều cao/padding KPI, cố định sáu ô tổng quan và năm ô dự án trên một hàng ở màn hình rộng, xếp lại thành ba/hai/một cột theo breakpoint ở màn hình hẹp; thêm khoảng cách trước tiêu đề Tiến độ hoạt động dự án. Sửa `report_dashboard.css` để bỏ khối xanh/chữ trắng khó đọc, dùng nền trắng/chữ đậm, thẻ KPI đồng chiều cao, màu xanh–lục–đỏ–hổ phách như trang tiến độ và giới hạn chiều rộng nội dung. Theo yêu cầu tiếp theo, áp dụng cùng mẫu gọn cho Báo cáo: sáu KPI tổng quan trên một hàng ở màn hình rộng, bỏ viền khung bao chồng lên viền thẻ, thu chiều cao KPI trong từng nhóm và nới khoảng cách giữa tổng quan/biểu đồ/các nhóm; thu về ba/hai/một cột khi màn hình hẹp. Gắn phiên bản URL CSS ở hai template để trình duyệt/service worker lấy bản mới. Bổ sung assertion render CSS ở hai test hiện có.
+
+**Kiểm tra:** trước khi sửa xác nhận `main`, chỉ có thư mục `outputs/` untracked của người dùng, fetch `origin/main` và lệch 0/0; giữ nguyên `outputs/`. Lượt chỉnh tiếp theo cũng xác nhận `main` đồng bộ `origin/main`, giữ nguyên mọi sửa đổi chưa commit. `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.portal.tests_report_dashboard` đạt 5/5. Sau thay đổi, chạy `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.portal.tests.PortalSensitiveWorkflowTests.test_project_task_menu_is_listed_under_project_activities apps.portal.tests_report_dashboard.ReportDashboardTests.test_report_hub_renders_all_available_sections_and_export_actions` đạt 2/2; Django system check trong runner không cảnh báo. `git diff --check` đạt. Chưa kiểm tra bằng trình duyệt có đăng nhập hoặc chụp màn hình ở các độ rộng nên chưa xác nhận pixel-perfect trong môi trường người dùng.
+
+**Nhánh/commit:** `main`, chưa commit/push theo yêu cầu hiện tại. **Còn mở/hành động chủ dự án:** tải lại Trang chủ và Báo cáo (nếu tab cũ vẫn giữ CSS, dùng Ctrl+F5) rồi kiểm tra trên kích thước màn hình thực tế; gửi ảnh nếu còn thẻ lệch hoặc chữ mờ. Không cần thay đổi cấu hình hay dữ liệu.
+
 ## 2026-10-07 — Tạo tài liệu mô tả thiết kế giao diện quản trị
 
 **Mục tiêu/phạm vi:** tạo tài liệu riêng trong `docs/` để mô tả nguồn cấu hình giao diện admin của IHRMS và làm tài liệu tham khảo khi áp dụng ý tưởng cho QLHD, `nhaplieu_app`. Chỉ cập nhật tài liệu, không đổi mã ứng dụng hoặc cấu hình.

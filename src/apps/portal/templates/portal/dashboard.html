@@ -1,6 +1,9 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Trang chủ{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261009-2">{% endblock %}
 {% block content %}
+<div class="home-dashboard">
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
     {% if employee %}
         <h1 class="text-xl font-bold text-gray-900 mb-1">Xin chào, {{ employee.full_name }} 👋</h1>
@@ -11,7 +14,7 @@
 </div>
 
 {% if employee %}
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 home-kpi-grid">
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Đơn nghỉ đang chờ duyệt</p>
         <p class="text-2xl font-bold text-gray-900">{{ my_pending_leaves }}</p>
@@ -21,10 +24,9 @@
         <p class="text-2xl font-bold text-gray-900">{{ my_open_tasks }}</p>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-        <p class="text-gray-500 text-xs mb-1">Lương kỳ gần nhất</p>
+        <p class="text-gray-500 text-xs mb-1">Lương kỳ gần nhất{% if latest_payroll %}<span class="block">{{ latest_payroll.payroll_period }}</span>{% endif %}</p>
         {% if latest_payroll %}
         <p class="text-2xl font-bold text-green-700">{{ latest_payroll.net_income|floatformat:0 }} đ</p>
-        <p class="text-gray-400 text-xs">{{ latest_payroll.payroll_period }}</p>
         {% else %}
         <p class="text-gray-400 text-sm">Chưa có dữ liệu</p>
         {% endif %}
@@ -34,7 +36,7 @@
 
 {% if is_management_view %}
 <h2 class="text-sm font-bold text-gray-900 mb-3">Tổng quan VietHealth</h2>
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6 home-kpi-grid home-overview-kpis">
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Nhân viên đang làm việc</p>
         <p class="text-2xl font-bold text-blue-700">{{ total_employees }}</p>
@@ -60,7 +62,7 @@
         <p class="text-2xl font-bold text-gray-900">{{ assets_in_use }}</p>
     </div>{% endif %}
 </div>
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 home-department-panel">
     <h3 class="text-sm font-bold text-gray-900 mb-3">Nhân sự theo phòng ban</h3>
     <div class="space-y-2">
         {% for d in dept_counts %}
@@ -84,7 +86,7 @@
 {% endif %}
 
 {% if show_project_activity_summary %}
-<div class="mb-6">
+<div class="mb-6 home-project-summary">
     <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
         <div>
             <h2 class="text-sm font-bold text-gray-900">Tiến độ hoạt động dự án</h2>
@@ -95,7 +97,7 @@
             Mở Dashboard hoạt động →
         </a>
     </div>
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 home-kpi-grid home-project-kpis">
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <p class="text-gray-500 text-xs mb-1">Hoạt động trong tháng</p>
             <p class="text-2xl font-bold text-blue-700">{{ activity_total }}</p>
@@ -122,7 +124,7 @@
 
 {% if is_manager_view %}
 <h2 class="text-sm font-bold text-gray-900 mb-3">Tổng quan phòng ban</h2>
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 home-kpi-grid home-team-kpis">
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Nhân viên trong phòng</p>
         <p class="text-2xl font-bold text-blue-700">{{ dept_employee_count }}</p>
@@ -141,4 +143,5 @@
     </div>{% endif %}
 </div>
 {% endif %}
+</div>
 {% endblock %}
