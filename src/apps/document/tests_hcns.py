@@ -276,6 +276,10 @@ class HCNSFormTests(TestCase):
         self.assertEqual(response.status_code, 200)
         for slug, spec in FORMS.items():
             with self.subTest(slug=slug):
+                if slug == "salary-scale":
+                    self.assertNotContains(response, self.url(slug))
+                    self.assertEqual(self.client.get(self.url(slug), query).status_code, 403)
+                    continue
                 self.assertContains(response, self.url(slug) + "?employee_id=" + str(employee.pk))
                 draft = self.client.get(self.url(slug), query)
                 self.assertEqual(draft.status_code, 200)

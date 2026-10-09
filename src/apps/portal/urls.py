@@ -62,6 +62,7 @@ urlpatterns = [
     path("dispatches/<int:pk>/", views.dispatch_detail, name="dispatch_detail"),
     path("dispatches/create/", views.dispatch_create, name="dispatch_create"),
     path("assets/", views.asset_list, name="asset_list"),
+    path("recruitment/process/", views.recruitment_hub, name="recruitment_hub"),
     path("recruitment/", views.recruitment_list, name="recruitment_list"),
     path("recruitment/create/", views.recruitment_create, name="recruitment_create"),
     path("recruitment/<int:pk>/approve/", views.recruitment_approve, name="recruitment_approve"),

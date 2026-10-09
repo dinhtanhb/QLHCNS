@@ -21,7 +21,7 @@ def can_use(user, spec):
     if group == "asset":
         return has_permission(user, "view_asset")
     if group == "salary":
-        return has_permission(user, "manage_finance") or has_permission(user, "view_employee_compensation")
+        return has_permission(user, "use_salary_scale_form")
     if group == "decision":
         return has_permission(user, "view_employee_compensation")
     return has_permission(user, "manage_hr") or (group == "personnel" and has_permission(user, "view_employee_compensation"))

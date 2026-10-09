@@ -76,6 +76,8 @@ PERMISSION_MATRIX = {
     "export_compliance_report": (FINANCE_OFFICER, HR_MANAGER, DIRECTOR),
     # Tài chính, bảng lương
     "manage_finance": (FINANCE_OFFICER,),
+    # Biểu mẫu Thang bảng lương chỉ dành cho Kế toán và Ban giám đốc.
+    "use_salary_scale_form": (FINANCE_OFFICER, DIRECTOR),
     # Văn thư: công văn đến, phân công xử lý — chỉ Nhân sự và Quản trị hệ thống
     "manage_office": (HR_MANAGER, HR_OFFICER, SYS_ADMIN),
     # Sổ công văn đi — mọi vai trò TRỪ nhân viên thường

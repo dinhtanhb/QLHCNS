@@ -21,6 +21,7 @@ class HCNSChoiceTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         fixtures.HCNSFormTests.setUpTestData.__func__(cls)
+        cls.finance = cls.user('hcns-finance', 'FINANCE_OFFICER', None)
         cls.project = Project.objects.create(project_code='CHOICE', project_name='Synthetic project', department=cls.department)
         cls.candidates = [Candidate.objects.create(candidate_code=f'CHOICE-{i}', full_name='Same applicant name',
                                                   phone_number=f'000{i}', email=f'candidate{i}@example.test') for i in range(2)]
@@ -36,6 +37,7 @@ class HCNSChoiceTests(TestCase):
     def test_every_template_uses_reference_selectors_and_exports_selected_labels(self):
         for slug in FORMS:
             with self.subTest(slug=slug):
+                self.client.force_login(self.finance if slug == 'salary-scale' else self.hr)
                 response = self.client.get(self.url(slug))
                 self.assertEqual(response.status_code, 200)
                 form = response.context['form']

@@ -90,6 +90,10 @@ Quyền:
 - Hợp đồng
 - KPI nhân sự
 
+Không được:
+
+- Xem hoặc xuất biểu mẫu Thang bảng lương
+
 ---
 
 ## R04 - HR Officer
@@ -121,6 +125,7 @@ Quyền:
 
 - Xem bảng lương
 - Tính lương
+- Xem và xuất biểu mẫu Thang bảng lương
 - Kiểm tra thanh toán
 - Mua sắm
 
@@ -171,6 +176,7 @@ Quyền:
 - Xem KPI
 - Xem hợp đồng
 - Xem báo cáo điều hành
+- Xem và xuất biểu mẫu Thang bảng lương
 
 ---
 

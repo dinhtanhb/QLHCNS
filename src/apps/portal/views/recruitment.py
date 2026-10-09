@@ -27,6 +27,17 @@ def _can_approve_recruitment(request):
 
 
 @login_required
+def recruitment_hub(request):
+    if not (
+        has_permission(request.user, "manage_hr")
+        or has_permission(request.user, "request_recruitment")
+        or has_permission(request.user, "approve_recruitment")
+    ):
+        return HttpResponseForbidden("Anh/chị không có quyền truy cập mảng tuyển dụng.")
+    return render(request, "portal/recruitment_hub.html")
+
+
+@login_required
 def recruitment_list(request):
     departments = managed_departments_for(request.user, global_roles=(HR_MANAGER,))
     requests_qs = RecruitmentRequest.objects.filter(department__in=departments)

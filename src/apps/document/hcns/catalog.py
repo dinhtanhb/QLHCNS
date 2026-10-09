@@ -14,7 +14,7 @@ GROUPS = {
     "personnel": "Hồ sơ nhân sự và bàn giao",
     "decision": "Quyết định nhân sự",
     "leave": "Đơn nghỉ",
-    "salary": "Thang bảng lương",
+    "salary": "Kế toán",
     "recruitment": "Tuyển dụng và mô tả công việc",
     "asset": "Kiểm kê và xử lý tài sản",
 }

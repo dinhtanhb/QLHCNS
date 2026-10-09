@@ -1,6 +1,6 @@
 # Sử dụng biểu mẫu hành chính nhân sự
 
-Mở **Tài liệu → Biểu mẫu HCNS**, hoặc đường dẫn `/portal/hcns-forms/` trên máy chủ IHRMS. Bộ layout được xây dựng từ 26 tệp tham khảo chủ dự án cung cấp tại `docs/templates/hcns/`. Nội dung được chuyển thành các trường soạn thảo, bảng dữ liệu và vùng ký; đây không phải bản sao giữ nguyên từng pixel của Word/Excel gốc.
+Mở **Nhân sự → Biểu mẫu HCNS**, hoặc đường dẫn `/portal/hcns-forms/` trên máy chủ IHRMS. Biểu mẫu tuyển dụng có lối vào riêng tại **Tuyển dụng → Biểu mẫu tuyển dụng**; Thang bảng lương nằm trong **Kế toán**. Bộ layout được xây dựng từ 26 tệp tham khảo chủ dự án cung cấp tại `docs/templates/hcns/`. Nội dung được chuyển thành các trường soạn thảo, bảng dữ liệu và vùng ký; đây không phải bản sao giữ nguyên từng pixel của Word/Excel gốc.
 
 ## Soạn và xuất
 
@@ -22,7 +22,7 @@ Chuông thông báo nội bộ được cập nhật khi HR trình duyệt (báo
 - **Nhân sự:** phiếu thông tin cán bộ; danh mục hồ sơ nhân viên mới và nghỉ việc; đánh giá nhân viên với 60 tiêu chí; đơn xin nghỉ việc; bàn giao công việc; bảng kiểm bàn giao nghỉ việc; 12 câu hỏi phỏng vấn thôi việc.
 - **Quyết định:** tiếp nhận/bổ nhiệm/miễn nhiệm; chấm dứt hợp đồng; điều chỉnh vị trí và lương; nghỉ thai sản. Trường căn cứ và các điều được soạn lại trước khi xuất; người ký kiểm tra văn bản áp dụng, thẩm quyền và nội dung. Mẫu điều chỉnh lương được đánh số điều liên tục thay cho khoảng trống đánh số trong tài liệu tham khảo.
 - **Nghỉ:** nghỉ phép, nghỉ không lương và nghỉ bù; có thông tin bàn giao và ba vùng ký. Nút **In / Word** xuất hiện ở các đơn có mã loại `AL`, `UL`, `CO`; các loại nghỉ khác phải chọn mẫu thủ công nếu phù hợp.
-- **Lương:** ma trận chức vụ/cấp/bậc từ `BangLuong.xlsx`. Đây là thang bảng lương, không phải bảng tính lương tháng. Mẫu gốc chỉ chứa giá trị, không có công thức; thay tham số tham chiếu không tự tính lại ma trận. Không liên kết các mức lương trong mẫu vào payroll.
+- **Kế toán:** ma trận chức vụ/cấp/bậc từ `BangLuong.xlsx`. Đây là thang bảng lương, không phải bảng tính lương tháng. Mẫu chỉ hiển thị và cho truy cập với vai trò Kế toán, Ban giám đốc và superuser. Mẫu gốc chỉ chứa giá trị, không có công thức; thay tham số tham chiếu không tự tính lại ma trận. Không liên kết các mức lương trong mẫu vào payroll.
 - **Tuyển dụng:** phiếu phỏng vấn với thang điểm 20/20/20/15/15/10; tổng hợp kết quả phỏng vấn Excel; bốn TOR (cán bộ dự án, điều phối viên tỉnh, trợ lý tỉnh, kế toán dự án). Nội dung TOR mặc định lấy từ tài liệu tham khảo; cần rà lại địa bàn, nhà tài trợ và tên dự án.
 - **Tài sản:** bảng kiểm kê và nhãn thiết bị Excel; đề nghị, quyết định và biên bản xử lý tài sản Word. Tệp `.xlsm` tham khảo không được thực thi; bản xuất `.xlsx` không chứa macro. Các sheet nhãn lấy mã và tên thiết bị đang soạn. Không suy diễn quy tắc phân tích mã thiết bị từ các ví dụ cũ.
 
@@ -66,7 +66,7 @@ Quyết định chấm dứt điền số hợp đồng nếu có đúng một h
 
 Các liên kết được thêm tại trang chi tiết nhân viên, ứng viên, hồ sơ vòng đời, đơn nghỉ, đợt kiểm kê, đề nghị thanh lý và danh sách lương cơ bản. Máy chủ kiểm tra quyền và phạm vi hồ sơ mỗi lần xem/xuất; cờ `is_staff` không cấp quyền xuất nhân sự.
 
-Thông tin cá nhân chỉ lấy cho chính người dùng hoặc người có cả quyền xem toàn bộ nhân viên và xuất dữ liệu nhân sự. Tuyển dụng yêu cầu quyền HR; quyết định/lương yêu cầu quyền tương ứng; tài sản dùng quyền xem tài sản; đơn nghỉ áp dụng phạm vi đọc đơn hiện có. Hồ sơ nguồn bị xóa không được dùng. Tên trường, tiêu chí, nhãn và đường dẫn nguồn được xác định trong mã, không đọc tùy ý tệp từ tham số URL.
+Thông tin cá nhân chỉ lấy cho chính người dùng hoặc người có cả quyền xem toàn bộ nhân viên và xuất dữ liệu nhân sự. Tuyển dụng yêu cầu quyền HR; quyết định yêu cầu quyền tương ứng; riêng Thang bảng lương chỉ cho Kế toán, Ban giám đốc và superuser; tài sản dùng quyền xem tài sản; đơn nghỉ áp dụng phạm vi đọc đơn hiện có. Hồ sơ nguồn bị xóa không được dùng. Tên trường, tiêu chí, nhãn và đường dẫn nguồn được xác định trong mã, không đọc tùy ý tệp từ tham số URL.
 
 Loại đơn nguồn phải khớp mẫu: `AL` cho nghỉ phép, `CO` cho nghỉ bù, `UL` cho nghỉ không lương và `ML` cho quyết định thai sản. Ngày/giờ kết thúc phải từ ngày/giờ bắt đầu trở đi, kể cả dữ liệu lấy từ hồ sơ nguồn. Dòng nhập số 0 được giữ nguyên; dòng chấm điểm có điểm 0 vẫn phải có mã, tên ứng viên và người chấm.
 

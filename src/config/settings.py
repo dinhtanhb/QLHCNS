@@ -336,10 +336,13 @@ JAZZMIN_SETTINGS = {
     
     # Menu ngang phía trên (Top menu)
     "topmenu_links": [
-        {"name": "Về Cổng thông tin cá nhân", "url": "/portal/", "icon": "fas fa-desktop", "new_window": False},
+        {"name": "Về giao diện sử dụng", "url": "/portal/", "icon": "fas fa-arrow-left", "new_window": False},
         {"name": "Trung tâm Báo cáo", "url": "/reports/", "icon": "fas fa-chart-pie"},
         {"name": "Tổng quan Quản trị", "url": "admin:index", "icon": "fas fa-tachometer-alt"},
     ],
+
+    # Làm liên kết quay về portal thành nút nổi bật, luôn dễ thấy trên navbar.
+    "custom_css": "css/admin.css",
 
     # Menu tài khoản góc trên bên phải
     "usermenu_links": [

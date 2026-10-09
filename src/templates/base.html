@@ -154,7 +154,7 @@
             {% endif %}
 
             <!-- NHÂN SỰ -->
-            {% if can_manage_hr or can_request_recruitment or can_approve_recruitment %}
+            {% if can_manage_hr %}
             <div class="portal-nav-group">
                 <button type="button" data-menu-trigger aria-controls="menu-nhansu" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
                     Nhân sự <span class="text-xs">▾</span>
@@ -165,10 +165,25 @@
                     <a href="{% url 'portal:hcns_catalog' %}" class="block px-4 py-2 hover:bg-gray-50">Biểu mẫu HCNS</a>
                     <a href="{% url 'portal:lifecycle_case_list' %}" class="block px-4 py-2 hover:bg-gray-50">Quản lý checklist onboarding/offboarding</a>
                     <a href="{% url 'portal:hr_contract_list' %}" class="block px-4 py-2 hover:bg-gray-50">Hợp đồng</a>
-                    <a href="{% url 'portal:hr_candidate_list' %}" class="block px-4 py-2 hover:bg-gray-50">Ứng viên</a>
                     {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- TUYỂN DỤNG -->
+            {% if can_manage_hr or can_request_recruitment or can_approve_recruitment %}
+            <div class="portal-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-tuyendung" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
+                    Tuyển dụng <span class="text-xs">▾</span>
+                </button>
+                <div id="menu-tuyendung" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-56 py-1 z-30">
+                    <a href="{% url 'portal:recruitment_hub' %}" class="block px-4 py-2 hover:bg-gray-50">Quy trình tuyển dụng</a>
                     {% if can_request_recruitment or can_approve_recruitment %}
                     <a href="{% url 'portal:recruitment_list' %}" class="block px-4 py-2 hover:bg-gray-50">Đề xuất tuyển dụng</a>
+                    {% endif %}
+                    {% if can_manage_hr %}
+                    <a href="{% url 'portal:hr_candidate_list' %}" class="block px-4 py-2 hover:bg-gray-50">Ứng viên</a>
+                    <a href="{% url 'portal:hcns_catalog' %}?group=recruitment" class="block px-4 py-2 hover:bg-gray-50">Biểu mẫu tuyển dụng</a>
                     {% endif %}
                 </div>
             </div>
@@ -179,16 +194,21 @@
             <a href="{{ u_personnel_decisions }}" class="portal-nav-link border-b-2 {% if u_personnel_decisions in request.path %}border-blue-700 text-blue-700{% else %}border-transparent text-gray-600 hover:text-blue-700{% endif %}">Quyết định nhân sự</a>
             {% endif %}
 
-            {% if can_manage_finance %}
+            {% if can_manage_finance or can_use_salary_scale_form %}
             <div class="portal-nav-group">
                 <button type="button" data-menu-trigger aria-controls="menu-ketoan" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
-                    Tài chính <span class="text-xs">▾</span>
+                    Kế toán <span class="text-xs">▾</span>
                 </button>
                 <div id="menu-ketoan" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
+                    {% if can_manage_finance %}
                     <a href="{% url 'portal:finance_period_list' %}" class="block px-4 py-2 hover:bg-gray-50">Chạy lương hàng tháng</a>
                     <a href="{% url 'portal:finance_salary_list' %}" class="block px-4 py-2 hover:bg-gray-50">Lương cơ bản NV</a>
                     <a href="{% url 'portal:finance_dependent_list' %}" class="block px-4 py-2 hover:bg-gray-50">Người phụ thuộc</a>
                     <a href="{% url 'portal:finance_tax_config' %}" class="block px-4 py-2 hover:bg-gray-50">Cấu hình Thuế/BH</a>
+                    {% endif %}
+                    {% if can_use_salary_scale_form %}
+                    <a href="{% url 'portal:hcns_draft' 'salary-scale' %}" class="block px-4 py-2 hover:bg-gray-50">Thang bảng lương</a>
+                    {% endif %}
                 </div>
             </div>
             {% endif %}

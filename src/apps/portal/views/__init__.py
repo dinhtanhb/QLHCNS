@@ -147,6 +147,7 @@ from .office_procurement import (
 from .recruitment import (
     _can_request_recruitment,
     _can_approve_recruitment,
+    recruitment_hub,
     recruitment_list,
     recruitment_create,
     recruitment_approve,

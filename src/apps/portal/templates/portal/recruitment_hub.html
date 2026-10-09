@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Quy trình tuyển dụng{% endblock %}
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-xl font-bold text-gray-900">Quy trình tuyển dụng</h1>
+    <p class="mt-1 text-sm text-gray-600">Theo dõi từ nhu cầu tuyển dụng đến khi tiếp nhận nhân viên.</p>
+</div>
+
+<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <section class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">Bước 1</p>
+        <h2 class="mt-1 font-semibold text-gray-900">Đề xuất nhu cầu</h2>
+        <p class="mt-2 text-sm text-gray-600">Trưởng phòng hoặc Nhân sự tạo đề xuất vị trí, số lượng và thời hạn cần tuyển.</p>
+        {% if can_request_recruitment %}<a href="{% url 'portal:recruitment_create' %}" class="mt-3 inline-block text-sm font-medium text-blue-700 hover:underline">Tạo đề xuất →</a>{% endif %}
+    </section>
+    <section class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">Bước 2</p>
+        <h2 class="mt-1 font-semibold text-gray-900">Duyệt đề xuất</h2>
+        <p class="mt-2 text-sm text-gray-600">Nhân sự xem xét nhu cầu và duyệt hoặc từ chối đề xuất tuyển dụng.</p>
+        {% if can_request_recruitment or can_approve_recruitment %}<a href="{% url 'portal:recruitment_list' %}" class="mt-3 inline-block text-sm font-medium text-blue-700 hover:underline">Xem các đề xuất →</a>{% endif %}
+    </section>
+    <section class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">Bước 3</p>
+        <h2 class="mt-1 font-semibold text-gray-900">Tiếp nhận ứng viên</h2>
+        <p class="mt-2 text-sm text-gray-600">Nhân sự tạo hồ sơ ứng viên và cập nhật trạng thái trong quá trình tuyển chọn.</p>
+        {% if can_manage_hr %}<a href="{% url 'portal:hr_candidate_list' %}" class="mt-3 inline-block text-sm font-medium text-blue-700 hover:underline">Quản lý ứng viên →</a>{% endif %}
+    </section>
+    <section class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">Bước 4</p>
+        <h2 class="mt-1 font-semibold text-gray-900">Phỏng vấn và đánh giá</h2>
+        <p class="mt-2 text-sm text-gray-600">Lên lịch phỏng vấn, ghi nhận kết quả và sử dụng phiếu phỏng vấn, bảng tổng hợp điểm.</p>
+        {% if can_manage_hr %}<a href="{% url 'portal:hcns_catalog' %}?group=recruitment" class="mt-3 inline-block text-sm font-medium text-blue-700 hover:underline">Mở biểu mẫu tuyển dụng →</a>{% endif %}
+    </section>
+    <section class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">Bước 5</p>
+        <h2 class="mt-1 font-semibold text-gray-900">Gửi và theo dõi offer</h2>
+        <p class="mt-2 text-sm text-gray-600">Lập đề nghị công việc, ghi nhận trạng thái ứng viên chấp nhận hoặc từ chối.</p>
+        {% if can_manage_hr %}<a href="{% url 'portal:hr_candidate_list' %}" class="mt-3 inline-block text-sm font-medium text-blue-700 hover:underline">Theo dõi offer →</a>{% endif %}
+    </section>
+    <section class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">Bước 6</p>
+        <h2 class="mt-1 font-semibold text-gray-900">Tiếp nhận nhân viên</h2>
+        <p class="mt-2 text-sm text-gray-600">Khi offer đã được chấp nhận, Nhân sự chuyển hồ sơ ứng viên thành hồ sơ nhân viên.</p>
+        {% if can_manage_hr %}<a href="{% url 'portal:hr_candidate_list' %}" class="mt-3 inline-block text-sm font-medium text-blue-700 hover:underline">Tiếp nhận ứng viên →</a>{% endif %}
+    </section>
+</div>
+{% endblock %}
