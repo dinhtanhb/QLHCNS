@@ -12,7 +12,7 @@
 
 **Kiểm tra và giới hạn:** bản sửa bỏ lương khỏi Trang chủ của đợt trước được giữ nguyên; `ops/reset_qa_data.py` biên dịch Python đạt. Full SQLite trước reset phát hiện 408 test và kết thúc exit 0. Full SQL Server cô lập đạt **408/408** trong 381.214 giây, DB `test_ihrms_e58372a444ca4cdc839cec55cbc93034` đã được runner xóa; xác nhận không còn DB `test_ihrms_*` và DB `qlhcns` vẫn có 33 user/33 nhân viên. `git diff --check` đạt. Chưa kiểm thử đăng nhập trình duyệt từng vai trò, workflow ghi dữ liệu, SharePoint thật hoặc restore drill đầy đủ của bản backup cuối ngoài `RESTORE VERIFYONLY`. File CSV của lần thử vẫn ở thư mục riêng nhưng không thuộc DB đang dùng; không dùng nhầm với CSV chính thức.
 
-**Nhánh/commit/push:** `main`; chưa tạo commit/push ở thời điểm ghi mục này. **Hành động chủ dự án:** bảo quản file CSV tài khoản như bí mật; đổi mật khẩu trước khi dùng ngoài QA, khóa ACL bản backup đầu ở thư mục gốc bằng tài khoản có quyền quản trị, rồi xác nhận UAT bằng từng vai trò.
+**Nhánh/commit/push:** `main`; mã reset và thay đổi Trang chủ được commit tại `28f763b`, push `origin/main` thành công. ZIP mã nguồn của commit đó tại `D:\QLHCNS-Backups\private_sql_20261009\IHRMS-source-28f763b.zip` (5.542.337 byte, 635 mục, SHA-256 `01A8EF736B671B835E3ABEBB51774EC5459889C563B24DC9A2A93842DCE0100B`), đã kiểm tra không chứa `.env`, DB, bản `.bak` hoặc CSV tài khoản và ACL được giới hạn. **Hành động chủ dự án:** bảo quản file CSV tài khoản như bí mật; đổi mật khẩu trước khi dùng ngoài QA, khóa ACL bản backup đầu ở thư mục gốc bằng tài khoản có quyền quản trị, rồi xác nhận UAT bằng từng vai trò.
 
 ## 2026-10-09 — Bỏ thông tin lương nhạy cảm khỏi Trang chủ
 
@@ -22,7 +22,7 @@
 
 **Kiểm tra:** xác nhận nhánh `main` đồng bộ `origin/main` (0/0), giữ nguyên thay đổi nhật ký có sẵn trước lượt này. `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.portal.tests.PortalSensitiveWorkflowTests.test_employee_sees_only_issued_payslips_from_locked_periods apps.portal.tests.PortalSensitiveWorkflowTests.test_project_task_menu_is_listed_under_project_activities` đạt 2/2; system check không cảnh báo. `rg` xác nhận không còn tham chiếu `latest_payroll` trong mã ứng dụng. `git diff --check` đạt. Chưa chạy full suite/SQL Server hoặc UAT trình duyệt trong lượt này.
 
-**Nhánh/commit:** `main`, chưa commit/push thay đổi này. **Còn mở/hành động chủ dự án:** tải lại Trang chủ, xác nhận chỉ còn hai KPI cá nhân và xem thử Cá nhân → Phiếu lương bằng tài khoản phù hợp; báo lại nếu bố cục hoặc quyền thực tế khác dự kiến.
+**Nhánh/commit:** `main`, thay đổi được commit cùng reset QA tại `28f763b`. **Còn mở/hành động chủ dự án:** tải lại Trang chủ, xác nhận chỉ còn hai KPI cá nhân và xem thử Cá nhân → Phiếu lương bằng tài khoản phù hợp; báo lại nếu bố cục hoặc quyền thực tế khác dự kiến.
 
 ## 2026-10-09 — Đồng bộ bố cục và màu Trang chủ/Báo cáo với tiến độ dự án
 
