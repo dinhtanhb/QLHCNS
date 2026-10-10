@@ -1371,6 +1371,8 @@ Form sửa nhân viên trước đây chỉ nạp phòng ban đang hoạt độn
 
 **Kiểm tra cuối trước commit:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite` chạy đủ 417 test, đạt với 7 skipped theo backend, exit 0. Cùng lệnh với `--backend sqlserver` đạt 417/417, exit 0, DB tạm `test_ihrms_6ed83684777c47fa8329c6365b20000c` được runner xóa. Cả hai backend báo ba kịch bản HTTP PASS. `manage.py check`, `makemigrations --check --dry-run` trên SQLite preview riêng và `pip check` đạt; không có migration phát sinh ngoài `procurement.0002` đã chuẩn bị từ lượt trước.
 
+**Nhánh/commit:** bản mã và tài liệu chờ bàn giao đã commit `d16d280` trên `main` và push thành công lên `origin/main`. Bổ sung dòng xác nhận này bằng commit tài liệu cùng đợt; SHA HEAD/remote cuối được đối chiếu trong phản hồi bàn giao. Các ghi chú “chưa commit/push” ở mục trước là trạng thái lịch sử lúc kết thúc từng lượt, nay được thay thế bởi bàn giao này.
+
 **Bàn giao/còn mở:** kiểm tra danh sách tệp và mẫu bí mật không phát hiện `.env`, DB, CSV tài khoản, backup hoặc khóa riêng trong phạm vi đưa vào Git. Chưa deploy hoặc xác nhận CI/UAT đủ 11 vai trò/từng màn hình/Office/SharePoint thật. Migration `procurement.0002` vẫn chưa áp dụng vào DB `qlhcns`; DBA thực hiện trên bản sao UAT sau backup/restore và kiểm tra dữ liệu như kế hoạch. Khi triển khai, khởi động lại ứng dụng, chạy `venv\Scripts\python.exe src\manage.py collectstatic --noinput`, Ctrl+F5 để nhận CSS mới; dùng nút mặt trăng/mặt trời trên header để chọn mode.
 
 ## 2026-10-10 — Gom menu Nhân sự và thử UI theo DESIGN.md
