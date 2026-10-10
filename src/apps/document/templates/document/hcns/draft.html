@@ -3,7 +3,7 @@
 {% block title %}{% if document %}{{ document.filename_stem }}{% else %}{{ spec.title }}{% endif %}{% endblock %}
 {% block content %}
 {% if document %}<div id="hcns-export-name" data-filename="{{ document.filename_stem }}" hidden></div>{% endif %}
-<link rel="stylesheet" href="{% static 'css/hcns_forms.css' %}?v=20261006-5">
+<link rel="stylesheet" href="{% static 'css/hcns_forms.css' %}?v=20261010-design-2">
 {% if document %}<style>@page { {{ document.profile.page_css|escape }} }</style>{% endif %}
 <div class="hcns-heading no-print">
   <div><a href="{% url 'portal:hcns_catalog' %}{% if catalog_query %}?{{ catalog_query }}{% endif %}">← Biểu mẫu HCNS</a><h1>{{ spec.title }}</h1><p>Mẫu tham khảo: {{ spec.source }}</p></div>

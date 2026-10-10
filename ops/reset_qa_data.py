@@ -7,6 +7,7 @@ import argparse
 import csv
 import os
 from pathlib import Path
+import re
 import secrets
 import sys
 from datetime import date
@@ -24,6 +25,8 @@ def quoted(identifier):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--database", required=True)
+    parser.add_argument("--backup-file", type=Path, required=True,
+                        help="Existing non-empty .bak outside the repository; restore must be verified separately")
     parser.add_argument("--credentials", type=Path, required=True)
     parser.add_argument("--apply", action="store_true")
     args = parser.parse_args()
@@ -43,8 +46,15 @@ def main():
 
     if connection.vendor != "microsoft" or settings.DATABASES["default"]["NAME"] != args.database:
         raise RuntimeError("Refusing to reset a database other than the explicitly named SQL Server database")
-    if args.database not in ("qlhcns", "qlhcns_reset_preview_20261009"):
-        raise RuntimeError("Database name not in this QA reset allowlist")
+    if settings.APP_ENV != "test":
+        raise RuntimeError("QA reset requires APP_ENV=test on a disposable database copy")
+    if not re.fullmatch(r"(?:qlhcns|ihrms)_uat_[A-Za-z0-9_]+|qlhcns_reset_preview_20261009", args.database):
+        raise RuntimeError("Database name must explicitly identify a disposable QA/UAT copy")
+    backup_file = args.backup_file.resolve()
+    if (not args.backup_file.is_absolute() or backup_file.is_relative_to(ROOT)
+            or backup_file.suffix.lower() != ".bak" or not backup_file.is_file()
+            or backup_file.stat().st_size == 0):
+        raise RuntimeError("A non-empty .bak outside the repository is required")
     if not args.credentials.is_absolute() or args.credentials.exists():
         raise RuntimeError("Credentials path must be an unused absolute path")
     if args.credentials.resolve().is_relative_to(ROOT):
@@ -76,6 +86,13 @@ def main():
         "tblTrainingCourse", "tblDispatchBook",
     }
     with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT CAST(value AS nvarchar(50)) FROM sys.extended_properties
+            WHERE class = 0 AND name = 'IHRMS_DISPOSABLE_QA'
+        """)
+        marker = cursor.fetchone()
+        if not marker or marker[0] != "YES":
+            raise RuntimeError("Database must have IHRMS_DISPOSABLE_QA=YES marker")
         cursor.execute("SELECT name FROM sys.tables WHERE schema_id = SCHEMA_ID('dbo')")
         tables = {row[0] for row in cursor.fetchall()}
         if len(tables) != 107:
@@ -147,6 +164,11 @@ def main():
             raise RuntimeError("QA account count verification failed")
         if any(User.objects.filter(role__role_code=role).count() != 3 for role in roles):
             raise RuntimeError("QA role distribution verification failed")
+        # Give one synthetic department manager an explicit scope for workflow UAT.
+        department.manager = User.objects.get(
+            username="qa20261009_dept_manager_1"
+        ).employee
+        department.save(update_fields=("manager",))
     print("RESET_OK users=33 employees=33 roles=11; credentials stored outside Git")
 
 

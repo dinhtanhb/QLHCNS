@@ -1,0 +1,6 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% block extrahead %}
+{{ block.super }}
+<script src="{% static 'js/theme.js' %}?v=20261010-theme"></script>
+{% endblock %}

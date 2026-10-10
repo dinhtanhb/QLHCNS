@@ -1,2 +1,50 @@
 @import "tailwindcss" source(none);
 @source "../";
+
+/* Legacy brand utilities share DESIGN.md tokens; semantic status colors stay intact. */
+@theme {
+    --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-weight-bold: 600;
+    --font-weight-extrabold: 600;
+    --color-gray-50: #f5f3ff;
+    --color-gray-100: #ede9fe;
+    --color-gray-200: #ddd6fe;
+    --color-gray-300: #c4b5fd;
+    --color-gray-400: #76618f;
+    --color-gray-500: #65517a;
+    --color-gray-600: #4c1d95;
+    --color-gray-700: #4c1d95;
+    --color-gray-800: #2e1065;
+    --color-gray-900: #2e1065;
+    --color-slate-50: #f5f3ff;
+    --color-slate-100: #ede9fe;
+    --color-slate-200: #ddd6fe;
+    --color-slate-300: #c4b5fd;
+    --color-slate-400: #76618f;
+    --color-slate-500: #65517a;
+    --color-slate-600: #4c1d95;
+    --color-slate-700: #4c1d95;
+    --color-slate-800: #2e1065;
+    --color-slate-900: #2e1065;
+    --color-blue-50: #f5f3ff;
+    --color-blue-100: #ede9fe;
+    --color-blue-200: #ddd6fe;
+    --color-blue-300: #c4b5fd;
+    --color-blue-400: #a78bfa;
+    --color-blue-500: #8b5cf6;
+    --color-blue-600: #6d28d9;
+    --color-blue-700: #5b21b6;
+    --color-blue-800: #4c1d95;
+    --color-blue-900: #2e1065;
+    --color-indigo-50: #f5f3ff;
+    --color-indigo-100: #ede9fe;
+    --color-indigo-200: #ddd6fe;
+    --color-indigo-300: #c4b5fd;
+    --color-indigo-400: #a78bfa;
+    --color-indigo-500: #8b5cf6;
+    --color-indigo-600: #6d28d9;
+    --color-indigo-700: #5b21b6;
+    --color-indigo-800: #4c1d95;
+    --color-indigo-900: #2e1065;
+    --shadow-sm: 4px 4px 10px rgb(76 29 149 / .08), -4px -4px 10px #fff;
+}

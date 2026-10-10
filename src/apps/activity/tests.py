@@ -1,10 +1,12 @@
 from datetime import date, datetime, timedelta
 import tempfile
+import threading
 from urllib.parse import parse_qs, urlsplit
 
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, override_settings
+from django.db import close_old_connections, connection
+from django.test import Client, TestCase, TransactionTestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
@@ -439,6 +441,95 @@ class ActivityProposalWorkflowTests(ActivityTestDataMixin, TestCase):
         self.client.force_login(self.cbda_user)
         response = self.client.get(reverse("portal:activity_proposal_approval_list"))
         self.assertEqual(response.status_code, 403)
+
+    def test_decided_proposal_cannot_be_decided_again(self):
+        package = self.make_package()
+        package.status = "Submitted"
+        package.approver = self.director
+        package.submitted_by = self.coordinator_user
+        package.save(update_fields=("status", "approver", "submitted_by"))
+        self.client.force_login(self.director)
+        url = reverse("portal:activity_proposal_decide", args=(package.pk,))
+
+        first = self.client.post(url, {"decision": "Approved", "comment": "Đồng ý"})
+        self.assertEqual(first.status_code, 302)
+        second = self.client.post(url, {"decision": "ChangesRequested", "comment": "Sửa lại"})
+        self.assertEqual(second.status_code, 403)
+        package.refresh_from_db()
+        self.assertEqual(package.status, "Approved")
+        self.assertEqual(package.decision_comment, "Đồng ý")
+        self.assertEqual(Notification.objects.filter(
+            employee=self.coordinator, notification_type="ActivityProposalApproved"
+        ).count(), 1)
+        self.assertFalse(Notification.objects.filter(
+            employee=self.coordinator, notification_type="ActivityProposalChangesRequested"
+        ).exists())
+
+class ActivityProposalConcurrentDecisionTests(ActivityTestDataMixin, TransactionTestCase):
+    def test_only_one_of_two_simultaneous_decisions_is_saved(self):
+        if connection.vendor != "microsoft":
+            self.skipTest("Row-lock concurrency requires SQL Server")
+        director_role, _ = Role.objects.get_or_create(
+            role_code="DIRECTOR", defaults={"role_name": "Giám đốc"}
+        )
+        director_employee = self.make_employee("DIRECTOR")
+        director = User.objects.create_user(
+            username="activity-concurrent-director", role=director_role,
+            employee=director_employee,
+        )
+        activity = self.make_activity("ACT-CONCURRENT")
+        package = ActivityProposal.objects.create(
+            activity=activity, status="Submitted", approver=director,
+        )
+        first_reached_save = threading.Event()
+        release_first_save = threading.Event()
+        second_finished = threading.Event()
+        results = {}
+        original_save = ActivityProposal.save
+
+        def delayed_save(instance, *args, **kwargs):
+            if threading.current_thread().name == "first-decision":
+                first_reached_save.set()
+                if not release_first_save.wait(8):
+                    raise TimeoutError("First decision was not released")
+            return original_save(instance, *args, **kwargs)
+
+        def decide(name, decision):
+            close_old_connections()
+            try:
+                client = Client()
+                client.force_login(director)
+                response = client.post(
+                    reverse("portal:activity_proposal_decide", args=(package.pk,)),
+                    {"decision": decision, "comment": decision},
+                )
+                results[name] = response.status_code
+            except Exception as error:
+                results[name] = error
+            finally:
+                if name == "second":
+                    second_finished.set()
+                close_old_connections()
+
+        with patch.object(ActivityProposal, "save", delayed_save):
+            first = threading.Thread(target=decide, name="first-decision", args=("first", "Approved"))
+            second = threading.Thread(target=decide, name="second-decision", args=("second", "ChangesRequested"))
+            first.start()
+            try:
+                self.assertTrue(first_reached_save.wait(8))
+                second.start()
+                second_finished.wait(3)
+            finally:
+                release_first_save.set()
+                first.join(10)
+                if second.ident is not None:
+                    second.join(10)
+
+        self.assertFalse(first.is_alive() or second.is_alive())
+        self.assertEqual(results, {"first": 302, "second": 403})
+        package.refresh_from_db()
+        self.assertEqual(package.status, "Approved")
+
 
 class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
     def setUp(self):

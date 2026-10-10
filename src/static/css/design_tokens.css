@@ -1,0 +1,17 @@
+/* Shared portal/admin values from DESIGN.md. Tailwind brand aliases mirror these. */
+:root {
+    --ihrms-primary: #8b5cf6;
+    --ihrms-primary-strong: #4c1d95;
+    --ihrms-primary-hover: #5b21b6;
+    --ihrms-primary-soft: #ddd6fe;
+    --ihrms-surface: #f5f3ff;
+    --ihrms-heading: #2e1065;
+    --ihrms-text: #2e1065;
+    --ihrms-muted: #4c1d95;
+    --ihrms-border: #5b21b6;
+    --ihrms-focus: #5b21b6;
+    --ihrms-content-width: 64rem;
+    --ihrms-action-bg: #4c1d95;
+    --ihrms-header-bg: #4c1d95;
+    --ihrms-raised-shadow: 6px 6px 14px rgb(76 29 149 / .10), -6px -6px 14px #fff;
+}

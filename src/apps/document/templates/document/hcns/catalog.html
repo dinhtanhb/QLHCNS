@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}Biểu mẫu HCNS{% endblock %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/hcns_forms.css' %}?v=20261006-3">
+<link rel="stylesheet" href="{% static 'css/hcns_forms.css' %}?v=20261010-design-2">
 <div class="hcns-heading">
   <div><h1>Biểu mẫu hành chính nhân sự</h1><p>{{ available_count }} mẫu có thể sử dụng · soạn nội dung, xem trước và xuất tệp</p></div>
   {% if own_employee %}<a class="hcns-button" href="?employee_id={{ own_employee.pk }}">Điền từ hồ sơ của tôi</a>{% endif %}

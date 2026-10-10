@@ -96,6 +96,47 @@ class MobileTableTests(SimpleTestCase):
             with self.subTest(template=path.name):
                 self.assertNotIn("mobile-table-scroll", path.read_text(encoding="utf-8"))
 
+    def test_design_tokens_alignment_and_metric_hooks_are_shared(self):
+        root = Path(settings.BASE_DIR)
+        css_root = root / "static" / "css"
+        css = (css_root / "ihrms.css").read_text(encoding="utf-8")
+        tokens = (css_root / "design_tokens.css").read_text(encoding="utf-8")
+        admin = (css_root / "admin.css").read_text(encoding="utf-8")
+        self.assertTrue(css.startswith('@import url("design_tokens.css")'))
+        self.assertTrue(admin.startswith('@import url("design_tokens.css")'))
+        self.assertIn("--ihrms-content-width: 64rem", tokens)
+        self.assertIn("max-width: var(--ihrms-content-width)", css)
+        self.assertIn(".ihrms-kpi-value", css)
+        self.assertIn("font-variant-numeric: tabular-nums", css)
+        self.assertIn("prefers-reduced-motion", css)
+        for relative, expected in (
+            ("apps/activity/templates/activity/dashboard.html", 5),
+            ("apps/portal/templates/portal/leave_list.html", 2),
+            ("templates/reporting/dashboard.html", 4),
+        ):
+            with self.subTest(template=relative):
+                source = (root / relative).read_text(encoding="utf-8")
+                self.assertEqual(source.count("ihrms-kpi-value"), expected)
+        worker = (root / "static" / "js" / "service-worker.js").read_text(encoding="utf-8")
+        self.assertIn("ihrms-static-v4-theme-20261010", worker)
+        self.assertIn("/static/css/design_tokens.css", worker)
+
+    def test_theme_is_available_before_styles_and_in_admin(self):
+        root = Path(settings.BASE_DIR)
+        base = (root / "templates/base.html").read_text(encoding="utf-8")
+        self.assertLess(base.index("js/theme.js"), base.index("css/tailwind.css"))
+        self.assertIn("data-theme-toggle", base)
+        self.assertIn('aria-pressed="false"', base)
+        admin = (root / "templates/admin/base_site.html").read_text(encoding="utf-8")
+        self.assertIn('{% extends "admin/base_site.html" %}', admin)
+        self.assertIn("js/theme.js", admin)
+        theme = (root / "static/css/theme.css").read_text(encoding="utf-8")
+        self.assertIn("@media screen", theme)
+        self.assertIn("@media print", theme)
+        worker = (root / "static/js/service-worker.js").read_text(encoding="utf-8")
+        self.assertIn("/static/js/theme.js", worker)
+        self.assertIn("/static/css/theme.css", worker)
+
     def test_service_worker_endpoint_is_scoped_and_never_caches_html(self):
         path = reverse("portal:service_worker")
         self.assertEqual(resolve(path).url_name, "service_worker")

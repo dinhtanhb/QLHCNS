@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 from apps.common.models import BaseAuditModel
 
 
@@ -41,15 +42,23 @@ class ProcurementItem(BaseAuditModel):
         ProcurementRequest, on_delete=models.CASCADE, db_column="ProcurementRequestID", related_name="items"
     )
     item_name = models.CharField("Tên hàng hóa/dịch vụ", max_length=300, db_column="ItemName")
-    quantity = models.SmallIntegerField("Số lượng", default=1, db_column="Quantity")
+    quantity = models.SmallIntegerField("Số lượng", default=1, db_column="Quantity", validators=[MinValueValidator(1)])
     estimated_cost = models.DecimalField(
-        "Đơn giá dự kiến", max_digits=18, decimal_places=2, null=True, blank=True, db_column="EstimatedCost"
+        "Đơn giá dự kiến", max_digits=18, decimal_places=2, null=True, blank=True,
+        db_column="EstimatedCost", validators=[MinValueValidator(0)],
     )
 
     class Meta:
         db_table = "tblProcurementItem"
         verbose_name = "Hạng mục mua sắm"
         verbose_name_plural = "Hạng mục mua sắm"
+        constraints = [
+            models.CheckConstraint(condition=models.Q(quantity__gte=1), name="procurement_item_quantity_positive"),
+            models.CheckConstraint(
+                condition=models.Q(estimated_cost__gte=0) | models.Q(estimated_cost__isnull=True),
+                name="procurement_item_cost_nonnegative",
+            ),
+        ]
 
     def __str__(self):
         return f"{self.item_name} x{self.quantity}"

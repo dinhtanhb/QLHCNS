@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django import forms
 from django.db import transaction
 from django.views.decorators.http import require_POST
 from apps.security.permissions import has_permission
@@ -403,10 +404,21 @@ def procurement_request_create(request):
     item_names = request.POST.getlist("item_name")
     quantities = request.POST.getlist("quantity")
     costs = request.POST.getlist("estimated_cost")
-    valid_lines = [
-        (name.strip(), qty, cost) for name, qty, cost in zip(item_names, quantities, costs)
-        if name.strip() and qty and qty.isdigit() and int(qty) > 0
-    ]
+    if not item_names or len(item_names) != len(quantities) or len(item_names) != len(costs):
+        messages.error(request, "Các hạng mục mua sắm không đầy đủ hoặc không khớp số dòng.")
+        return redirect("portal:procurement_request_list")
+    name_field = forms.CharField(max_length=300)
+    quantity_field = forms.IntegerField(min_value=1, max_value=32767)
+    cost_field = forms.DecimalField(required=False, min_value=0, max_digits=18, decimal_places=2)
+    valid_lines = []
+    try:
+        for name, qty, cost in zip(item_names, quantities, costs):
+            valid_lines.append((
+                name_field.clean(name), quantity_field.clean(qty), cost_field.clean(cost),
+            ))
+    except ValidationError:
+        messages.error(request, "Hạng mục mua sắm phải có tên, số lượng hợp lệ và đơn giá không âm.")
+        return redirect("portal:procurement_request_list")
     if not valid_lines:
         messages.error(request, "Vui lòng nhập ít nhất 1 hạng mục với số lượng > 0.")
         return redirect("portal:procurement_request_list")

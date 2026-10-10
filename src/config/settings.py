@@ -72,15 +72,17 @@ if ENABLE_HTTPS_ENFORCEMENT:
     )
     SECURE_HSTS_PRELOAD = env_flag("SECURE_HSTS_PRELOAD")
 
-# Production must be explicitly configured; development remains HTTP-compatible.
+# Network-facing UAT and production must be explicitly configured; local tests
+# use APP_ENV=test and development remains HTTP-compatible.
 APP_ENV = os.getenv("APP_ENV", "development").lower()
-if APP_ENV == "production":
+if APP_ENV in ("uat", "production"):
+    environment_label = "UAT" if APP_ENV == "uat" else "Production"
     if DEBUG or not ENABLE_HTTPS_ENFORCEMENT:
-        raise ImproperlyConfigured("Production yêu cầu DEBUG=False và ENABLE_HTTPS_ENFORCEMENT=True.")
+        raise ImproperlyConfigured(f"{environment_label} yêu cầu DEBUG=False và ENABLE_HTTPS_ENFORCEMENT=True.")
     if len(SECRET_KEY) < 50 or len(set(SECRET_KEY)) < 5 or SECRET_KEY.startswith("django-insecure-"):
-        raise ImproperlyConfigured("Production yêu cầu SECRET_KEY ngẫu nhiên, riêng và dài ít nhất 50 ký tự.")
+        raise ImproperlyConfigured(f"{environment_label} yêu cầu SECRET_KEY ngẫu nhiên, riêng và dài ít nhất 50 ký tự.")
     if not ALLOWED_HOSTS or "*" in ALLOWED_HOSTS:
-        raise ImproperlyConfigured("Production yêu cầu ALLOWED_HOSTS cụ thể.")
+        raise ImproperlyConfigured(f"{environment_label} yêu cầu ALLOWED_HOSTS cụ thể.")
 
 # Các cờ này an toàn để bật ở MỌI môi trường (không phụ thuộc HTTPS):
 SECURE_CONTENT_TYPE_NOSNIFF = True  # chặn trình duyệt tự đoán sai loại tệp, giảm rủi ro XSS qua upload

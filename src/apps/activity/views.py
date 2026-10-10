@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import FileResponse
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from django.db.models import Prefetch, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -364,23 +365,24 @@ def activity_proposal(request, activity_id):
 
 @login_required
 def activity_proposal_decide(request, package_id):
-    package = get_object_or_404(ActivityProposal.objects.select_related("activity"), pk=package_id)
-    activity = get_object_or_404(visible_activities_for(request.user), pk=package.activity_id)
-    if (
-        request.method != "POST"
-        or get_role_code(request.user) != "DIRECTOR"
-        or package.approver_id != request.user.pk
-        or package.status != "Submitted"
-    ):
+    if request.method != "POST" or get_role_code(request.user) != "DIRECTOR":
         raise PermissionDenied
     form = ActivityProposalDecisionForm(request.POST)
     if form.is_valid():
-        package.status = form.cleaned_data["decision"]
-        package.decision_comment = form.cleaned_data["comment"].strip()
-        package.decision_by = request.user
-        package.decision_at = timezone.now()
-        package.modified_by = request.user
-        package.save(update_fields=("status", "decision_comment", "decision_by", "decision_at", "modified_by", "modified_date"))
+        with transaction.atomic():
+            package = get_object_or_404(
+                ActivityProposal.objects.select_for_update().select_related("activity"),
+                pk=package_id,
+            )
+            activity = get_object_or_404(visible_activities_for(request.user), pk=package.activity_id)
+            if package.approver_id != request.user.pk or package.status != "Submitted":
+                raise PermissionDenied
+            package.status = form.cleaned_data["decision"]
+            package.decision_comment = form.cleaned_data["comment"].strip()
+            package.decision_by = request.user
+            package.decision_at = timezone.now()
+            package.modified_by = request.user
+            package.save(update_fields=("status", "decision_comment", "decision_by", "decision_at", "modified_by", "modified_date"))
         is_changes_requested = package.status == "ChangesRequested"
         if is_changes_requested:
             recipients = [
@@ -415,6 +417,10 @@ def activity_proposal_decide(request, package_id):
         messages.success(request, "Đã ghi nhận quyết định hồ sơ.")
     else:
         messages.error(request, "Thông tin quyết định chưa hợp lệ. Vui lòng kiểm tra lại.")
+        package = get_object_or_404(ActivityProposal.objects.select_related("activity"), pk=package_id)
+        activity = get_object_or_404(visible_activities_for(request.user), pk=package.activity_id)
+        if package.approver_id != request.user.pk or package.status != "Submitted":
+            raise PermissionDenied
     return redirect("portal:activity_proposal", activity_id=activity.pk)
 
 

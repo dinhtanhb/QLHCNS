@@ -438,7 +438,7 @@ class PortalSensitiveWorkflowTests(TestCase):
         response = self.client.get(reverse("portal:dashboard"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "css/home_dashboard.css?v=20261009-2")
+        self.assertContains(response, "css/home_dashboard.css?v=20261010-design")
         self.assertContains(response, "home-kpi-grid")
         task_link = f'href="{reverse("portal:task_list")}"'
         html = response.content.decode()
@@ -463,7 +463,8 @@ class PortalSensitiveWorkflowTests(TestCase):
         response = self.client.get(reverse("portal:dashboard"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Quản lý checklist onboarding/offboarding")
+        self.assertContains(response, "Checklist tiếp nhận/nghỉ việc")
+        self.assertContains(response, reverse("portal:lifecycle_case_list"))
         self.assertNotContains(response, "Checklist &amp; việc được giao")
 
     def test_employee_action_menu_has_working_native_dropdown_markup(self):

@@ -3,7 +3,7 @@
 {% block title %}{{ decision.decision_no|default:decision.template_title }}{% endblock %}
 {% block content %}
 {% if document %}
-<link rel="stylesheet" href="{% static 'css/hcns_forms.css' %}?v=20261006-5">
+<link rel="stylesheet" href="{% static 'css/hcns_forms.css' %}?v=20261010-design-2">
 <style>@page { {{ document.profile.page_css|escape }} }</style>
 <div id="hcns-export-name" data-filename="{{ document.filename_stem }}" hidden></div>
 {% endif %}

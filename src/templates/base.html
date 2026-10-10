@@ -5,15 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Cổng thông tin nhân viên{% endblock %} — IHRMS</title>
-    <meta name="theme-color" content="#1d4ed8">
+    <meta name="theme-color" content="#4c1d95">
+    <script src="{% static 'js/theme.js' %}?v=20261010-theme"></script>
     <link rel="manifest" href="{% static 'manifest.json' %}">
     <link rel="apple-touch-icon" href="{% static 'img/ihrms-pwa-192.png' %}">
-    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
-    <link rel="stylesheet" href="{% static 'css/ihrms.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}?v=20261010-design-2">
+    <link rel="stylesheet" href="{% static 'css/ihrms.css' %}?v=20261010-theme">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}?v=20261010-theme-4">
     {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-gray-50 min-h-screen text-gray-800">
-    <header class="bg-blue-700 text-white shadow">
+<body class="portal-app bg-gray-50 min-h-screen text-gray-800">
+    <header class="portal-header bg-blue-700 text-white shadow">
         <div class="portal-header-inner max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
             <a href="{% url 'portal:dashboard' %}" class="portal-brand font-bold text-lg tracking-wide">
                 <span class="sm:hidden">IHRMS</span>
@@ -28,6 +30,7 @@
             {% endif %}
             {% if user.is_authenticated %}
             <div class="portal-header-actions flex items-center gap-4 text-sm">
+                <button type="button" class="ihrms-theme-toggle" data-theme-toggle aria-label="Chuyển sang chế độ tối" aria-pressed="false">☾</button>
                 <a href="{% url 'portal:notification_list' %}" class="relative p-1.5 rounded-full hover:bg-blue-600 transition" title="Thông báo">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -111,6 +114,8 @@
                     </div>
                 </div>
             </div>
+            {% else %}
+            <button type="button" class="ihrms-theme-toggle" data-theme-toggle aria-label="Chuyển sang chế độ tối" aria-pressed="false">☾</button>
             {% endif %}
         </div>
     </header>
@@ -137,35 +142,30 @@
                 </div>
             </div>
 
-            <!-- DUYỆT & XỬ LÝ -->
-            {% if can_approve or can_approve_timesheet or can_approve_document or can_approve_activity_proposals or can_approve_personnel_decision or can_manage_hr %}
-            <div class="portal-nav-group">
-                <button type="button" data-menu-trigger aria-controls="menu-duyet" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
-                    Cần duyệt <span class="text-xs">▾</span>
-                </button>
-                <div id="menu-duyet" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
-                    {% if can_approve %}<a href="{% url 'portal:leave_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt nghỉ phép</a>{% endif %}
-                    {% if can_approve_timesheet %}<a href="{% url 'portal:timesheet_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt chấm công</a>{% endif %}
-                    {% if can_approve_document %}<a href="{% url 'portal:document_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt tài liệu</a>{% endif %}
-                    {% if can_approve_personnel_decision %}<a href="{% url 'portal:personnel_decision_list' %}" class="block px-4 py-2 hover:bg-gray-50">Chờ duyệt quyết định</a>{% endif %}
-                    {% if can_manage_hr %}<a href="{% url 'portal:profile_change_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt cập nhật hồ sơ</a>{% endif %}
-                    {% if can_approve_activity_proposals %}<a href="{% url 'portal:activity_proposal_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt đề xuất hoạt động{% if pending_activity_proposal_count %} <span class="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{{ pending_activity_proposal_count }}</span>{% endif %}</a>{% endif %}
-                </div>
-            </div>
-            {% endif %}
-
             <!-- NHÂN SỰ -->
-            {% if can_manage_hr %}
+            {% if can_manage_hr or can_approve or can_approve_timesheet or can_approve_document or can_approve_activity_proposals or can_approve_personnel_decision %}
             <div class="portal-nav-group">
                 <button type="button" data-menu-trigger aria-controls="menu-nhansu" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
                     Nhân sự <span class="text-xs">▾</span>
                 </button>
-                <div id="menu-nhansu" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
+                <div id="menu-nhansu" class="portal-nav-dropdown hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-72 py-1 z-30">
                     {% if can_manage_hr %}
-                    <a href="{% url 'portal:hr_employee_list' %}" class="block px-4 py-2 hover:bg-gray-50">NV & Hồ sơ</a>
-                    <a href="{% url 'portal:hcns_catalog' %}" class="block px-4 py-2 hover:bg-gray-50">Biểu mẫu HCNS</a>
-                    <a href="{% url 'portal:lifecycle_case_list' %}" class="block px-4 py-2 hover:bg-gray-50">Quản lý checklist onboarding/offboarding</a>
+                    <p class="portal-nav-section-label">Hồ sơ &amp; quá trình</p>
+                    <a href="{% url 'portal:hr_employee_list' %}" class="block px-4 py-2 hover:bg-gray-50">Nhân viên &amp; hồ sơ</a>
                     <a href="{% url 'portal:hr_contract_list' %}" class="block px-4 py-2 hover:bg-gray-50">Hợp đồng</a>
+                    <a href="{% url 'portal:lifecycle_case_list' %}" class="block px-4 py-2 hover:bg-gray-50">Checklist tiếp nhận/nghỉ việc</a>
+                    <a href="{% url 'portal:hcns_catalog' %}" class="block px-4 py-2 hover:bg-gray-50">Biểu mẫu HCNS</a>
+                    {% endif %}
+                    {% if can_manage_hr or can_approve_personnel_decision %}
+                    <a href="{% url 'portal:personnel_decision_list' %}" class="block px-4 py-2 hover:bg-gray-50">Quyết định nhân sự</a>
+                    {% endif %}
+                    {% if can_approve or can_approve_timesheet or can_approve_document or can_approve_activity_proposals or can_manage_hr %}
+                    <p class="portal-nav-section-label">Cần duyệt &amp; xử lý</p>
+                    {% if can_manage_hr %}<a href="{% url 'portal:profile_change_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt cập nhật hồ sơ</a>{% endif %}
+                    {% if can_approve %}<a href="{% url 'portal:leave_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt nghỉ phép</a>{% endif %}
+                    {% if can_approve_timesheet %}<a href="{% url 'portal:timesheet_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt chấm công</a>{% endif %}
+                    {% if can_approve_document %}<a href="{% url 'portal:document_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt tài liệu</a>{% endif %}
+                    {% if can_approve_activity_proposals %}<a href="{% url 'portal:activity_proposal_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt đề xuất hoạt động{% if pending_activity_proposal_count %} <span class="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{{ pending_activity_proposal_count }}</span>{% endif %}</a>{% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -188,11 +188,6 @@
                     {% endif %}
                 </div>
             </div>
-            {% endif %}
-
-            {% if can_manage_hr or can_approve_personnel_decision %}
-            {% url 'portal:personnel_decision_list' as u_personnel_decisions %}
-            <a href="{{ u_personnel_decisions }}" class="portal-nav-link border-b-2 {% if u_personnel_decisions in request.path %}border-blue-700 text-blue-700{% else %}border-transparent text-gray-600 hover:text-blue-700{% endif %}">Quyết định nhân sự</a>
             {% endif %}
 
             {% if can_manage_finance or can_use_salary_scale_form %}

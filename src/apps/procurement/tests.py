@@ -1,6 +1,8 @@
 from datetime import date
 from decimal import Decimal
 
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
 from django.test import TestCase
 from django.urls import reverse
 
@@ -49,6 +51,29 @@ class ProcurementModelTests(ProcurementTestBase):
         )
 
         self.assertEqual(request.total_estimated_cost, Decimal("25750000"))
+
+    def test_item_rejects_negative_cost_and_nonpositive_quantity(self):
+        request = ProcurementRequest.objects.create(
+            request_no="PRO-REQ-INVALID", requested_by=self.employee,
+            department=self.department, request_date=date(2026, 9, 27),
+        )
+        negative = ProcurementItem(
+            procurement_request=request, item_name="Máy tính", quantity=1,
+            estimated_cost=Decimal("-1"),
+        )
+        with self.assertRaises(ValidationError):
+            negative.full_clean()
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            negative.save()
+
+        zero_quantity = ProcurementItem(
+            procurement_request=request, item_name="Máy tính", quantity=0,
+            estimated_cost=Decimal("1"),
+        )
+        with self.assertRaises(ValidationError):
+            zero_quantity.full_clean()
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            zero_quantity.save()
 
 
 class ProcurementViewPermissionTests(ProcurementTestBase):
@@ -102,3 +127,26 @@ class ProcurementViewPermissionTests(ProcurementTestBase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], reverse("portal:procurement_request_list"))
         self.assertFalse(ProcurementRequest.objects.exists())
+
+    def test_request_rejects_invalid_cost_quantity_and_mismatched_lines(self):
+        self.client.force_login(self.make_user("HR_OFFICER", "pro-validating-requester"))
+        base = {
+            "reason": "Thiết bị UAT", "item_name": ["Máy tính"],
+            "quantity": ["1"], "estimated_cost": ["1000000"],
+        }
+        invalid_posts = (
+            {**base, "estimated_cost": ["-100"]},
+            {**base, "estimated_cost": ["1.234"]},
+            {**base, "quantity": ["32768"]},
+            {**base, "item_name": ["Máy tính", "Chuột"]},
+        )
+        for data in invalid_posts:
+            with self.subTest(data=data):
+                response = self.client.post(reverse("portal:procurement_request_create"), data)
+                self.assertEqual(response.status_code, 302)
+                self.assertFalse(ProcurementRequest.objects.exists())
+
+        response = self.client.post(reverse("portal:procurement_request_create"), base)
+        self.assertEqual(response.status_code, 302)
+        created = ProcurementRequest.objects.get()
+        self.assertEqual(created.total_estimated_cost, Decimal("1000000"))

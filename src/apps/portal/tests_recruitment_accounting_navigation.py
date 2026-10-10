@@ -129,3 +129,31 @@ class RecruitmentAccountingNavigationTests(TestCase):
                 )
                 self.assertNotContains(catalog, "Thang bảng lương")
                 self.client.logout()
+
+    def test_hr_menu_contains_decisions_and_role_scoped_approvals(self):
+        expected = {
+            "HR_MANAGER": ("Nhân viên &amp; hồ sơ", "Quyết định nhân sự", "Duyệt cập nhật hồ sơ", "Duyệt nghỉ phép", "Duyệt chấm công", "Duyệt tài liệu"),
+            "HR_OFFICER": ("Nhân viên &amp; hồ sơ", "Quyết định nhân sự", "Duyệt cập nhật hồ sơ"),
+            "DIRECTOR": ("Quyết định nhân sự", "Duyệt nghỉ phép", "Duyệt chấm công", "Duyệt tài liệu", "Duyệt đề xuất hoạt động"),
+            "DEPT_MANAGER": ("Duyệt nghỉ phép", "Duyệt chấm công"),
+        }
+        for index, (role_code, labels) in enumerate(expected.items(), start=1):
+            with self.subTest(role=role_code):
+                self.client.force_login(self.make_user(role_code, f"HRNAV{index}"))
+                response = self.client.get(reverse("portal:dashboard"))
+                self.assertEqual(response.status_code, 200)
+                html = response.content.decode()
+                self.assertNotIn('aria-controls="menu-duyet"', html)
+                menu = re.search(r'id="menu-nhansu".*?</div>', html, re.DOTALL)
+                self.assertIsNotNone(menu)
+                for label in labels:
+                    self.assertIn(label, menu.group(0))
+                self.assertEqual(html.count('>Quyết định nhân sự</a>'), int(role_code != "DEPT_MANAGER"))
+                if role_code in ("DIRECTOR", "DEPT_MANAGER"):
+                    self.assertNotIn("Nhân viên &amp; hồ sơ", menu.group(0))
+                self.client.logout()
+
+        self.client.force_login(self.make_user("EMPLOYEE", "HRNAV5"))
+        response = self.client.get(reverse("portal:dashboard"))
+        self.assertNotContains(response, 'aria-controls="menu-nhansu"')
+        self.assertNotContains(response, 'aria-controls="menu-duyet"')

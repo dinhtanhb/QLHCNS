@@ -1,3 +1,6 @@
+@import url("design_tokens.css");
+@import url("theme.css?v=20261010-theme-4");
+
 /* Nút quay nhanh từ Django Admin về giao diện nghiệp vụ IHRMS. */
 #jazzy-navbar .navbar-nav:first-child > li:has(> a[href="/portal/"]) {
     display: list-item !important;
@@ -6,8 +9,8 @@
 
 #jazzy-navbar .navbar-nav:first-child > li > a[href="/portal/"] {
     align-items: center;
-    background-color: #0d6efd;
-    border: 1px solid #0d6efd;
+    background-color: #4c1d95;
+    border: 1px solid #4c1d95;
     border-radius: 0.375rem;
     color: #fff !important;
     display: inline-flex;
@@ -27,8 +30,8 @@
 
 #jazzy-navbar .navbar-nav:first-child > li > a[href="/portal/"]:hover,
 #jazzy-navbar .navbar-nav:first-child > li > a[href="/portal/"]:focus {
-    background-color: #0b5ed7;
-    border-color: #0a58ca;
+    background-color: #5b21b6;
+    border-color: #5b21b6;
     color: #fff !important;
 }
 
@@ -38,3 +41,27 @@
         padding: 0.4rem 0.55rem;
     }
 }
+/* Jazzmin/AdminLTE component adapters; preserve semantic status classes. */
+body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color:var(--ihrms-text); }
+.content-wrapper, .login-page { background:var(--ihrms-surface) !important; }
+.content-header h1, h2, h3, .card-title { font-weight:600; }
+.navbar-primary, [class*="sidebar-dark-"] { background:var(--ihrms-primary-strong) !important; }
+[class*="sidebar-dark-"] .nav-sidebar > .nav-item > .nav-link.active { background:var(--ihrms-primary-hover) !important; color:#fff !important; }
+.accent-primary .content-wrapper a:not(.btn):not(.nav-link):not(.dropdown-item) { color:var(--ihrms-primary-strong); }
+#jazzy-navbar .nav-link, #jazzy-sidebar .nav-link, #jazzy-sidebar .nav-header, #jazzy-sidebar .user-panel a { color:#fff !important; }
+#jazzy-navbar .input-group-append .btn { background:var(--ihrms-primary-soft); color:var(--ihrms-primary-strong); }
+.card { border:1px solid var(--ihrms-primary-soft); border-radius:12px; box-shadow:var(--ihrms-raised-shadow); }
+.card .card { box-shadow:none; }
+.btn-primary { background:var(--ihrms-primary-strong) !important; border-color:var(--ihrms-primary-strong) !important; color:#fff !important; }
+.btn-primary:hover, .btn-primary:active { background:var(--ihrms-primary-hover) !important; }
+.btn-info { background:var(--ihrms-primary-soft); border-color:var(--ihrms-border); color:var(--ihrms-text); }
+.btn-info:hover { background:#c4b5fd; border-color:var(--ihrms-border); color:var(--ihrms-text); }
+.btn { border-radius:8px; font-weight:600; }
+.form-control, .select2-container--default .select2-selection--single { border-color:var(--ihrms-border); border-radius:8px; box-shadow:inset 2px 2px 5px rgb(76 29 149 / .08); }
+.form-control:focus { border-color:var(--ihrms-focus); outline:2px solid var(--ihrms-focus); outline-offset:2px; box-shadow:0 0 0 3px rgb(91 33 182 / .2); }
+.page-item.active .page-link { background:var(--ihrms-primary-strong); border-color:var(--ihrms-primary-strong); }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline:3px solid var(--ihrms-focus); outline-offset:2px; }
+#jazzy-navbar a:focus-visible, [class*="sidebar-dark-"] a:focus-visible { outline-color:#fff; outline-offset:-3px; }
+.table { box-shadow:none; }
+.table th { font-weight:600; }
+@media (prefers-reduced-motion:reduce) { *, *::before, *::after { transition-duration:.01ms !important; animation-duration:.01ms !important; scroll-behavior:auto !important; } }
