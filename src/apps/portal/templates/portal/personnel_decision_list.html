@@ -1,35 +1,36 @@
-{% extends "base.html" %}
+{% extends "portal/hr_base.html" %}
+{% load ui_components %}
 {% block title %}Quản lý quyết định nhân sự{% endblock %}
-{% block content %}
-<div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-  <div><h1 class="text-xl font-bold text-gray-900">Quản lý quyết định nhân sự</h1><p class="mt-1 text-sm text-gray-600">Tra cứu bản nháp, trạng thái duyệt và quyết định đã ban hành.</p></div>
-  {% if can_manage_decisions %}<a href="{% url 'portal:hcns_catalog' %}?group=decision" class="rounded bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800">+ Soạn quyết định</a>{% endif %}
+{% block hr_content %}
+<div class="ui-page-actions">
+  <div><h1 class="ui-page-title">Quản lý quyết định nhân sự</h1><p class="ui-hr-text">Tra cứu bản nháp, trạng thái duyệt và quyết định đã ban hành.</p></div>
+  {% if can_manage_decisions %}<a href="{% url 'portal:hcns_catalog' %}?group=decision" class="ui-button ui-button--primary">+ Soạn quyết định</a>{% endif %}
 </div>
-<form method="get" class="mb-4 flex flex-wrap items-end gap-3">
-  <label class="text-sm">Tìm kiếm
-    <input name="q" value="{{ query }}" class="mt-1 block rounded border border-gray-300 px-3 py-2" placeholder="Số quyết định, mã hoặc họ tên">
+<form method="get" class="ui-hr-form">
+  <label class="ui-field-label">Tìm kiếm
+    <input name="q" value="{{ query }}" class="ui-hr-input" placeholder="Số quyết định, mã hoặc họ tên">
   </label>
-  {% if can_manage_decisions %}<label class="text-sm">Trạng thái
-    <select name="status" class="mt-1 block rounded border border-gray-300 px-3 py-2"><option value="">Tất cả</option>{% for value,label in status_choices %}<option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label|ui_number }}</option>{% endfor %}</select>
+  {% if can_manage_decisions %}<label class="ui-field-label">Trạng thái
+    <select name="status" class="ui-hr-input"><option value="">Tất cả</option>{% for value,label in status_choices %}<option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label|ui_number }}</option>{% endfor %}</select>
   </label>{% endif %}
-  <button class="rounded border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50">Lọc</button>
+  <button class="ui-button">Lọc</button>
 </form>
-<div class="overflow-x-auto rounded border border-gray-200 bg-white">
-  <table class="w-full min-w-[760px] text-left text-sm">
-    <thead class="border-b border-gray-200 bg-gray-50 text-gray-600"><tr><th class="px-3 py-2">Số quyết định</th><th class="px-3 py-2">Loại</th><th class="px-3 py-2">Nhân viên</th><th class="px-3 py-2">Ngày quyết định</th><th class="px-3 py-2">Trạng thái</th><th class="px-3 py-2">Ngày lưu</th></tr></thead>
-    <tbody class="divide-y divide-gray-100">
+<div class="ui-card ui-scroll" role="region" tabindex="0" aria-label="Danh sách quyết định nhân sự">
+  <table class="ui-table ui-hr-table"><caption>Quản lý quyết định nhân sự</caption>
+    <thead class="ui-hr-text"><tr><th scope="col" class="">Số quyết định</th><th scope="col" class="">Loại</th><th scope="col" class="">Nhân viên</th><th scope="col" class="">Ngày quyết định</th><th scope="col" class="">Trạng thái</th><th scope="col" class="">Ngày lưu</th></tr></thead>
+    <tbody>
       {% for decision in decisions %}
       <tr>
-        <td class="px-3 py-2"><a class="font-semibold text-blue-700 hover:underline" href="{% url 'portal:personnel_decision_detail' decision.pk %}">{{ decision.decision_no|default:"Chưa đánh số"|ui_number }}</a></td>
-        <td class="px-3 py-2">{{ decision.template_title|ui_number }}</td>
-        <td class="px-3 py-2">{{ decision.employee.full_name|ui_number }} <span class="text-gray-500">· {{ decision.employee.employee_code|ui_number }}</span></td>
-        <td class="px-3 py-2">{{ decision.decision_date|date:"d/m/Y"|default:"—" }}</td>
-        <td class="px-3 py-2">{{ decision.get_status_display|ui_number }}</td>
-        <td class="px-3 py-2">{{ decision.created_date|date:"d/m/Y H:i" }}</td>
+        <td class=""><a class="ui-button" href="{% url 'portal:personnel_decision_detail' decision.pk %}">{{ decision.decision_no|default:"Chưa đánh số"|ui_number }}</a></td>
+        <td class="">{{ decision.template_title|ui_number }}</td>
+        <td class="">{{ decision.employee.full_name|ui_number }} <span class="ui-hr-text">· {{ decision.employee.employee_code|ui_number }}</span></td>
+        <td class="">{{ decision.decision_date|date:"d/m/Y"|default:"—" }}</td>
+        <td class="">{% ui_badge "document.personneldecision:status" decision.status %}</td>
+        <td class="">{{ decision.created_date|date:"d/m/Y H:i" }}</td>
       </tr>
-      {% empty %}<tr><td colspan="6" class="px-3 py-8 text-center text-gray-500">Chưa có quyết định phù hợp.</td></tr>{% endfor %}
+      {% empty %}<tr><td colspan="6" class="">{% include "ui/empty_state.html" with title="Chưa có quyết định phù hợp." description="Kiểm tra phạm vi tài khoản và các bộ lọc hiện tại; liên hệ HCNS nếu cần hỗ trợ." %}</td></tr>{% endfor %}
     </tbody>
   </table>
 </div>
-{% if page_obj.has_other_pages %}<nav class="mt-4 flex items-center gap-3 text-sm" aria-label="Phân trang">{% if page_obj.has_previous %}<a class="text-blue-700 hover:underline" href="?q={{ query|urlencode }}&amp;status={{ selected_status|urlencode }}&amp;page={{ page_obj.previous_page_number }}">← Trước</a>{% endif %}<span>Trang {{ page_obj.number|ui_number }} / {{ page_obj.paginator.num_pages|ui_number }}</span>{% if page_obj.has_next %}<a class="text-blue-700 hover:underline" href="?q={{ query|urlencode }}&amp;status={{ selected_status|urlencode }}&amp;page={{ page_obj.next_page_number }}">Tiếp →</a>{% endif %}</nav>{% endif %}
+{% if page_obj.has_other_pages %}<nav class="ui-pagination" aria-label="Phân trang">{% if page_obj.has_previous %}<a class="ui-button" href="?q={{ query|urlencode }}&amp;status={{ selected_status|urlencode }}&amp;page={{ page_obj.previous_page_number }}">← Trước</a>{% endif %}<span>Trang {{ page_obj.number|ui_number }} / {{ page_obj.paginator.num_pages|ui_number }}</span>{% if page_obj.has_next %}<a class="ui-button" href="?q={{ query|urlencode }}&amp;status={{ selected_status|urlencode }}&amp;page={{ page_obj.next_page_number }}">Tiếp →</a>{% endif %}</nav>{% endif %}
 {% endblock %}

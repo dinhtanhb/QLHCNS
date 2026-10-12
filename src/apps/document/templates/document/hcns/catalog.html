@@ -1,17 +1,17 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends "portal/hr_base.html" %}
+{% load static ui_components %}
 {% block title %}Biểu mẫu HCNS{% endblock %}
-{% block content %}
+{% block hr_content %}
 <link rel="stylesheet" href="{% static 'css/hcns_forms.css' %}?v=20261012-ui-2c">
-<div class="hcns-heading">
+<div class="hcns-heading ui-page-header">
   <div><h1>Biểu mẫu hành chính nhân sự</h1><p>{{ available_count|ui_number }} mẫu có thể sử dụng · soạn nội dung, xem trước và xuất tệp</p></div>
-  {% if own_employee %}<a class="hcns-button" href="?employee_id={{ own_employee.pk }}">Điền từ hồ sơ của tôi</a>{% endif %}
+  {% if own_employee %}<a class="hcns-button ui-button" href="?employee_id={{ own_employee.pk }}">Điền từ hồ sơ của tôi</a>{% endif %}
 </div>
 {% if employees %}
-<form method="get" class="hcns-source-picker">
+<form method="get" class="hcns-source-picker ui-card ui-filter-bar">
   <label for="employee_id">Điền thông tin từ hồ sơ nhân viên</label>
   <select name="employee_id" id="employee_id" onchange="this.form.requestSubmit()"><option value="">Mẫu trắng</option>{% for employee in employees %}<option value="{{ employee.pk }}" {% if selected_employee == employee.pk|stringformat:"s" %}selected{% endif %}>{{ employee.employee_code|ui_number }} · {{ employee.full_name|ui_number }}</option>{% endfor %}</select>
-  <button class="hcns-button" type="submit">Chọn hồ sơ</button>
+  <button class="hcns-button ui-button" type="submit">Chọn hồ sơ</button>
 </form>
 {% endif %}
 {% if selected_employee %}<p class="hcns-notice">Đã chọn hồ sơ nhân viên. Mở mẫu để điền các trường tương ứng từ hồ sơ; những mục chưa có dữ liệu cần được bổ sung trước khi xuất.</p>{% endif %}
@@ -19,7 +19,7 @@
 {% for group in groups %}{% if group.forms %}
 <section class="hcns-catalog-group"><h2>{{ group.label|ui_number }}</h2>
   <div class="hcns-cards">{% for item in group.forms %}
-    <a class="hcns-card" href="{% url 'portal:hcns_draft' item.slug %}{% if item.source_query %}?{{ item.source_query }}{% endif %}">
+    <a class="hcns-card ui-card" href="{% url 'portal:hcns_draft' item.slug %}{% if item.source_query %}?{{ item.source_query }}{% endif %}">
       <span class="hcns-format">{% if item.kind == "xlsx" %}EXCEL{% else %}WORD{% endif %} · IN / PDF</span>
       <h3>{{ item.title|ui_number }}</h3><p>{{ item.source|ui_number }}</p><span class="hcns-card-action">Soạn biểu mẫu →</span>
     </a>

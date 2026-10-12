@@ -1,25 +1,26 @@
-{% extends "base.html" %}
+{% extends "portal/hr_base.html" %}
+{% load ui_components %}
 {% block title %}Hợp đồng lao động{% endblock %}
-{% block content %}
-<div class="flex items-center justify-between mb-4">
-    <h1 class="text-lg font-bold text-gray-900">Hợp đồng lao động</h1>
-    {% if can_manage_hr %}<a href="{% url 'portal:hr_contract_create' %}" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Tạo hợp đồng</a>{% endif %}
+{% block hr_content %}
+<div class="ui-page-actions">
+    <h1 class="ui-page-title">Hợp đồng lao động</h1>
+    {% if can_manage_hr %}<a href="{% url 'portal:hr_contract_create' %}" class="ui-button ui-button--primary">+ Tạo hợp đồng</a>{% endif %}
 </div>
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <div class="overflow-x-auto mobile-table-scroll">
-        <table class="w-full text-sm">
-        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Số HĐ</th><th class="py-2 pr-4">Nhân viên</th><th class="py-2 pr-4">Loại</th><th class="py-2 pr-4">Bắt đầu</th><th class="py-2 pr-4">Kết thúc</th><th class="py-2">Trạng thái</th></tr></thead>
-        <tbody class="divide-y divide-gray-100">
+<div class="ui-card">
+    <div class="ui-scroll overflow-x-auto mobile-table-scroll" tabindex="0" role="region" aria-label="Bảng dữ liệu nhân sự">
+        <table class="ui-table ui-hr-table"><caption>Hợp đồng lao động</caption>
+        <thead><tr class="ui-hr-text"><th scope="col" class="">Số HĐ</th><th scope="col" class="">Nhân viên</th><th scope="col" class="">Loại</th><th scope="col" class="">Bắt đầu</th><th scope="col" class="">Kết thúc</th><th scope="col" class="">Trạng thái</th></tr></thead>
+        <tbody>
         {% for c in contracts %}
         <tr>
-            <td class="py-2 pr-4 text-gray-500">{{ c.contract_no|ui_number }}</td>
-            <td class="py-2 pr-4"><a href="{% url 'portal:hr_employee_detail' c.employee.pk %}" class="text-blue-700 hover:underline">{{ c.employee|ui_number }}</a></td>
-            <td class="py-2 pr-4">{{ c.contract_type|ui_number }}</td>
-            <td class="py-2 pr-4">{{ c.start_date|ui_number }}</td>
-            <td class="py-2 pr-4">{{ c.end_date|default:"Không xác định"|ui_number }}</td>
-            <td class="py-2">{{ c.get_status_display|ui_number }}</td>
+            <td class="">{{ c.contract_no|ui_number }}</td>
+            <td class=""><a href="{% url 'portal:hr_employee_detail' c.employee.pk %}" class="ui-button">{{ c.employee|ui_number }}</a></td>
+            <td class="">{{ c.contract_type|ui_number }}</td>
+            <td class="">{{ c.start_date|ui_date }}</td>
+            <td class="">{{ c.end_date|default:"Không xác định"|ui_date }}</td>
+            <td class="">{% ui_badge "contract.contract:status" c.status %}</td>
         </tr>
-        {% empty %}<tr><td colspan="6" class="py-6 text-center text-gray-400">Chưa có hợp đồng nào.</td></tr>{% endfor %}
+        {% empty %}<tr><td colspan="6" class="">{% include "ui/empty_state.html" with title="Chưa có hợp đồng nào." description="Kiểm tra phạm vi tài khoản và các bộ lọc hiện tại; liên hệ HCNS nếu cần hỗ trợ." %}</td></tr>{% endfor %}
         </tbody>
     </table>
     </div>

@@ -269,7 +269,7 @@ class HRWorkflowTests(TestCase):
         self.assertContains(response, "js/hcns_forms.js")
         self.assertContains(response, decision.content_snapshot["rendered"]["profile"]["page_css"])
         self.assertContains(response, 'id="hcns-export-name"')
-        self.assertContains(response, '<section class="no-print border-t')
+        self.assertContains(response, 'aria-label="Lịch sử xử lý quyết định"')
 
     def test_decision_approval_issue_and_private_pdf_access(self):
         response = self._save_salary_decision(self.hr_manager)

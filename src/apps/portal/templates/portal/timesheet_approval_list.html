@@ -1,37 +1,39 @@
-{% extends "base.html" %}
+{% extends "portal/hr_base.html" %}
+{% load ui_components %}
 {% block title %}Duyệt chấm công{% endblock %}
-{% block content %}
-<h1 class="text-lg font-bold text-gray-900 mb-4">Tổng hợp chấm công tháng chờ duyệt</h1>
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <div class="overflow-x-auto">
-    <table class="w-full text-sm">
+{% block hr_content %}
+<h1 class="ui-page-title">Tổng hợp chấm công tháng chờ duyệt</h1>
+<div class="ui-card">
+    <div class="ui-scroll" tabindex="0" role="region" aria-label="Bảng dữ liệu nhân sự">
+    <table class="ui-table ui-hr-table"><caption>Duyệt chấm công</caption>
         <thead>
-            <tr class="text-left text-gray-500 border-b border-gray-200">
-                <th class="py-2 pr-4">Nhân viên</th><th class="py-2 pr-4">Tháng</th><th class="py-2 pr-4">Ốm</th><th class="py-2 pr-4">Thai sản</th><th class="py-2 pr-4">Nghỉ bù</th><th class="py-2 pr-4">Phép năm</th><th class="py-2 pr-4">Không lương</th><th class="py-2">Thao tác</th>
+            <tr class="ui-hr-text">
+                <th scope="col" class="">Nhân viên</th><th scope="col" class="">Tháng</th><th scope="col" class="">Ốm</th><th scope="col" class="">Thai sản</th><th scope="col" class="">Nghỉ bù</th><th scope="col" class="">Phép năm</th><th scope="col" class="">Không lương</th><th scope="col" class="">Thao tác</th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-gray-100">
+        <tbody>
         {% for s in summaries %}
         <tr>
-            <td class="py-2.5 pr-4 font-medium">{{ s.employee|ui_number }}</td>
-            <td class="py-2.5 pr-4">{{ s.month }}/{{ s.year }}</td>
-            <td class="py-2.5 pr-4">{{ s.sick_days|ui_number }}</td>
-            <td class="py-2.5 pr-4">{{ s.maternity_days|ui_number }}</td>
-            <td class="py-2.5 pr-4">{{ s.compensatory_days|ui_number }}</td>
-            <td class="py-2.5 pr-4">{{ s.annual_leave_days|ui_number }}</td>
-            <td class="py-2.5 pr-4">{{ s.unpaid_leave_days|ui_number }}</td>
-            <td class="py-2.5">
-                <form method="post" action="{% url 'portal:timesheet_summary_approve' s.pk %}">
-                    {% csrf_token %}
-                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white text-xs font-medium px-3 py-1.5 rounded-md transition">Duyệt</button>
+            <td class="">{{ s.employee|ui_number }}</td>
+            <td class="">{{ s.month }}/{{ s.year }}</td>
+            <td class="ui-number">{{ s.sick_days|ui_number }}</td>
+            <td class="ui-number">{{ s.maternity_days|ui_number }}</td>
+            <td class="ui-number">{{ s.compensatory_days|ui_number }}</td>
+            <td class="ui-number">{{ s.annual_leave_days|ui_number }}</td>
+            <td class="ui-number">{{ s.unpaid_leave_days|ui_number }}</td>
+            <td class="">
+                <form method="post" action="{% url 'portal:timesheet_summary_approve' s.pk %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">
+                    {% csrf_token %}{% include "ui/error_summary.html" %}
+                    <button type="submit" class="ui-button ui-button--primary">Duyệt</button>
                 </form>
             </td>
         </tr>
         {% empty %}
-        <tr><td colspan="8" class="py-6 text-center text-gray-400">Không có bảng chấm công nào chờ duyệt.</td></tr>
+        <tr><td colspan="8" class="">{% include "ui/empty_state.html" with title="Không có bảng chấm công nào chờ duyệt." description="Kiểm tra phạm vi tài khoản và các bộ lọc hiện tại; liên hệ HCNS nếu cần hỗ trợ." %}</td></tr>
         {% endfor %}
         </tbody>
     </table>
     </div>
 </div>
+{% include "ui/confirm_dialog.html" %}
 {% endblock %}

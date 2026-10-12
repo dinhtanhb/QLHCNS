@@ -1,15 +1,16 @@
-{% extends "base.html" %}
+{% extends "portal/hr_base.html" %}
+{% load ui_components %}
 {% block title %}Checklist nhân sự{% endblock %}
-{% block content %}
-<div class="max-w-5xl mx-auto space-y-5">
-  <div class="bg-white border border-gray-200 rounded-xl p-6 flex flex-wrap items-center justify-between gap-3">
-    <div><h1 class="text-2xl font-bold text-gray-900">Checklist thủ tục nhân sự</h1><p class="text-sm text-gray-600 mt-1">Dành riêng cho Phòng HCNS để theo dõi hồ sơ, giấy tờ và thủ tục tiếp nhận/nghỉ việc; không dùng để giao việc Trung tâm hoặc hoạt động dự án.</p></div>
-    {% if can_manage_lifecycle_case %}<a href="{% url 'portal:lifecycle_case_create' %}" class="rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white">Mở checklist mới</a>{% endif %}
+{% block hr_content %}
+<div class="ui-hr-stack">
+  <div class="ui-card">
+    <div><h1 class="ui-page-title">Checklist thủ tục nhân sự</h1><p class="ui-hr-text">Dành riêng cho Phòng HCNS để theo dõi hồ sơ, giấy tờ và thủ tục tiếp nhận/nghỉ việc; không dùng để giao việc Trung tâm hoặc hoạt động dự án.</p></div>
+    {% if can_manage_lifecycle_case %}<a href="{% url 'portal:lifecycle_case_create' %}" class="ui-button ui-button--primary">Mở checklist mới</a>{% endif %}
   </div>
-  <div class="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-    <table class="w-full text-left text-sm"><thead class="bg-gray-50 text-xs uppercase text-gray-600"><tr><th class="px-4 py-3">Nhân viên</th><th class="px-4 py-3">Loại</th><th class="px-4 py-3">Ngày hiệu lực</th><th class="px-4 py-3">Mẫu</th><th class="px-4 py-3">Trạng thái</th><th class="px-4 py-3"></th></tr></thead><tbody class="divide-y divide-gray-100">
-      {% for case in cases %}<tr><td class="px-4 py-3 font-medium">{{ case.employee.full_name|ui_number }}</td><td class="px-4 py-3">{{ case.get_case_type_display|ui_number }}</td><td class="px-4 py-3">{{ case.effective_date|date:"d/m/Y" }}</td><td class="px-4 py-3">{{ case.template.template_name|ui_number }}</td><td class="px-4 py-3">{{ case.get_status_display|ui_number }}</td><td class="px-4 py-3"><a class="text-blue-700 underline" href="{% url 'portal:lifecycle_case_detail' case.pk %}">Mở</a></td></tr>
-      {% empty %}<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">Chưa có hồ sơ onboarding/offboarding. HCNS có thể mở checklist theo mẫu đã được duyệt.</td></tr>{% endfor %}
+  <div class="ui-card ui-scroll" tabindex="0" role="region" aria-label="Checklist nhân sự">
+    <table class="ui-table ui-hr-table"><caption>Checklist nhân sự</caption><thead class="ui-hr-text"><tr><th scope="col" class="">Nhân viên</th><th scope="col" class="">Loại</th><th scope="col" class="">Ngày hiệu lực</th><th scope="col" class="">Mẫu</th><th scope="col" class="">Trạng thái</th><th scope="col" class="">Thao tác</th></tr></thead><tbody>
+      {% for case in cases %}<tr><td class="">{{ case.employee.full_name|ui_number }}</td><td class="">{{ case.get_case_type_display|ui_number }}</td><td class="">{{ case.effective_date|date:"d/m/Y" }}</td><td class="">{{ case.template.template_name|ui_number }}</td><td class="">{% ui_badge "lifecycle.employeelifecyclecase:status" case.status %}</td><td class=""><a class="ui-button" href="{% url 'portal:lifecycle_case_detail' case.pk %}">Mở</a></td></tr>
+      {% empty %}<tr><td colspan="6" class="">{% include "ui/empty_state.html" with title="Chưa có hồ sơ onboarding/offboarding. HCNS có thể mở checklist theo mẫu đã được duyệt." description="Kiểm tra phạm vi tài khoản và các bộ lọc hiện tại; liên hệ HCNS nếu cần hỗ trợ." %}</td></tr>{% endfor %}
     </tbody></table>
   </div>
 </div>
