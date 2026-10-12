@@ -1,39 +1,13 @@
-{% extends "base.html" %}
+{% extends "portal/personal_base.html" %}
+{% load ui_components %}
 {% block title %}Yêu cầu cập nhật hồ sơ{% endblock %}
-{% block content %}
-<div class="max-w-3xl mx-auto space-y-5">
-  <div class="bg-white border border-gray-200 rounded-xl p-6">
-    <h1 class="text-2xl font-bold text-gray-900">Yêu cầu cập nhật hồ sơ</h1>
-    <p class="text-sm text-gray-600 mt-2">Thông tin chỉ thay đổi sau khi Nhân sự duyệt.</p>
-  </div>
-  <form method="post" enctype="multipart/form-data" class="bg-white border border-gray-200 rounded-xl p-6 space-y-5">
-    {% csrf_token %}
-    <div>
-      <label for="field_name" class="block text-sm font-medium text-gray-800 mb-1">Thông tin cần thay đổi</label>
-      <select id="field_name" name="field_name" required class="w-full rounded-lg border border-gray-400 px-3 py-2">
-        <option value="">Chọn thông tin</option>
-        <option value="personal_email">Email cá nhân</option>
-        <option value="mobile_phone">Số điện thoại</option>
-        <option value="address">Địa chỉ</option>
-      </select>
-    </div>
-    <div>
-      <label for="new_value" class="block text-sm font-medium text-gray-800 mb-1">Thông tin mới</label>
-      <textarea id="new_value" name="new_value" rows="3" required maxlength="500" class="w-full rounded-lg border border-gray-400 px-3 py-2"></textarea>
-    </div>
-    <div>
-      <label for="reason" class="block text-sm font-medium text-gray-800 mb-1">Lý do</label>
-      <input id="reason" name="reason" maxlength="500" class="w-full rounded-lg border border-gray-400 px-3 py-2">
-    </div>
-    <div>
-      <label for="attachment" class="block text-sm font-medium text-gray-800 mb-1">Chứng từ (không bắt buộc)</label>
-      <input id="attachment" name="attachment" type="file" class="w-full rounded-lg border border-gray-400 px-3 py-2">
-      <p class="text-xs text-gray-500 mt-1">Tệp được kiểm tra định dạng và giới hạn dung lượng của hệ thống.</p>
-    </div>
-    <div class="flex flex-wrap gap-3">
-      <button class="rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white hover:bg-blue-800">Gửi Nhân sự duyệt</button>
-      <a href="{% url 'portal:profile_change_request_list' %}" class="rounded-lg border border-gray-300 px-4 py-2 text-gray-700">Quay lại</a>
-    </div>
-  </form>
-</div>
+{% block personal_content %}
+{% include "ui/page_header.html" with title="Yêu cầu cập nhật hồ sơ" description="Thông tin chỉ thay đổi sau khi Nhân sự duyệt." %}
+<form method="post" enctype="multipart/form-data" class="ui-card" data-ui-form>
+{% csrf_token %}{% include "ui/error_summary.html" %}<fieldset class="ui-form-fieldset"><legend>Thông tin cần cập nhật</legend><div class="ui-form-grid">
+<div class="ui-field"><label for="field_name">Thông tin cần thay đổi <span class="ui-required" aria-hidden="true">*</span></label><select id="field_name" name="field_name" required><option value="">Chọn thông tin</option><option value="personal_email">Email cá nhân</option><option value="mobile_phone">Số điện thoại</option><option value="address">Địa chỉ</option></select><p class="ui-field-error" id="field_name-error" hidden></p></div>
+<div class="ui-field"><label for="new_value">Thông tin mới <span class="ui-required" aria-hidden="true">*</span></label><textarea id="new_value" name="new_value" rows="3" required maxlength="500"></textarea><p class="ui-field-error" id="new_value-error" hidden></p></div>
+{% include "ui/field.html" with id="reason" name="reason" label="Lý do" maxlength=500 %}
+{% include "ui/field.html" with id="attachment" name="attachment" type="file" label="Chứng từ (không bắt buộc)" help="Tệp được kiểm tra định dạng và giới hạn dung lượng của hệ thống." %}
+</div></fieldset><div class="ui-form-actions"><button class="ui-button ui-button--primary">Gửi Nhân sự duyệt</button><a class="ui-button" href="{% url 'portal:profile_change_request_list' %}">Quay lại</a></div></form>
 {% endblock %}

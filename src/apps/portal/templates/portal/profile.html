@@ -1,54 +1,29 @@
-{% extends "base.html" %}
+{% extends "portal/personal_base.html" %}
+{% load ui_components %}
 {% block title %}Hồ sơ cá nhân{% endblock %}
-{% block content %}
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <h1 class="text-lg font-bold text-gray-900 mb-4">Hồ sơ cá nhân</h1>
-    {% if employee %}
-    <dl class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4 text-sm">
-        <div><dt class="text-gray-500 text-xs mb-0.5">Ngày sinh</dt><dd class="font-medium">{{ employee.date_of_birth|ui_number }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Giới tính</dt><dd class="font-medium">{{ employee.get_gender_display|ui_number }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Email Trung tâm</dt><dd class="font-medium break-all">{{ employee.company_email|ui_number }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Điện thoại</dt><dd class="font-medium">{{ employee.mobile_phone|ui_number }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Phòng ban</dt><dd class="font-medium">{{ employee.department|ui_number }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Vị trí</dt><dd class="font-medium">{{ employee.position|ui_number }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Quản lý trực tiếp</dt><dd class="font-medium">{{ employee.manager|default:"—"|ui_number }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Ngày vào làm</dt><dd class="font-medium">{{ employee.join_date|ui_number }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Trạng thái</dt><dd class="font-medium">{{ employee.get_employment_status_display|ui_number }}</dd></div>
-    </dl>
-    {% else %}
-        <p class="text-gray-500">Chưa có hồ sơ nhân viên gắn với tài khoản này.</p>
-    {% endif %}
-</div>
-{% if current_salary or current_contract %}
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-6">
-    <h2 class="text-sm font-bold text-gray-900 mb-3">Lương & Hợp đồng hiện tại</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-1 text-sm">
-        {% if current_salary %}
-        <div><p class="text-gray-500 text-xs">Lương cơ bản hiện tại</p><p class="font-semibold text-green-700">{{ current_salary.current_basic_salary|floatformat:"0g" }} đ</p><p class="text-gray-400 text-xs">Áp dụng từ {{ current_salary.effective_date|ui_number }}</p></div>
-        {% endif %}
-        {% if current_contract %}
-        <div><p class="text-gray-500 text-xs">Hợp đồng hiện tại</p><p class="font-semibold">{{ current_contract.contract_no|ui_number }} ({{ current_contract.contract_type|ui_number }})</p><p class="text-gray-400 text-xs">Hiệu lực đến {{ current_contract.end_date|default:"Không xác định thời hạn"|ui_number }}</p></div>
-        {% endif %}
-    </div>
-</div>
-{% endif %}
-{% if employee and transfers or promotions or rewards or disciplines %}
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-6">
-    <h2 class="text-sm font-bold text-gray-900 mb-3">Quá trình công tác</h2>
-    <div class="space-y-2 text-sm">
-        {% for t in transfers %}
-        <div class="flex gap-2"><span class="text-gray-400 w-24">{{ t.effective_date|ui_number }}</span><span>Điều chuyển: {{ t.from_department|ui_number }} → {{ t.to_department|ui_number }}</span></div>
-        {% endfor %}
-        {% for p in promotions %}
-        <div class="flex gap-2"><span class="text-gray-400 w-24">{{ p.effective_date|ui_number }}</span><span>Bổ nhiệm: {{ p.old_position|ui_number }} → {{ p.new_position|ui_number }}</span></div>
-        {% endfor %}
-        {% for r in rewards %}
-        <div class="flex gap-2"><span class="text-gray-400 w-24">{{ r.reward_date|ui_number }}</span><span class="text-green-700">Khen thưởng: {{ r.reward_type|ui_number }}{% if r.amount %} ({{ r.amount|floatformat:"0g" }} đ){% endif %}</span></div>
-        {% endfor %}
-        {% for d in disciplines %}
-        <div class="flex gap-2"><span class="text-gray-400 w-24">{{ d.discipline_date|ui_number }}</span><span class="text-red-700">Kỷ luật: {{ d.discipline_type|ui_number }}</span></div>
-        {% endfor %}
-    </div>
-</div>
-{% endif %}
+{% block personal_content %}
+{% include "ui/page_header.html" with title="Hồ sơ cá nhân" %}
+<section class="ui-card">
+{% if employee %}<dl class="ui-detail-grid">
+<div class="ui-detail-item"><dt>Ngày sinh</dt><dd>{{ employee.date_of_birth|ui_date }}</dd></div>
+<div class="ui-detail-item"><dt>Giới tính</dt><dd>{{ employee.get_gender_display }}</dd></div>
+<div class="ui-detail-item"><dt>Email Trung tâm</dt><dd>{{ employee.company_email }}</dd></div>
+<div class="ui-detail-item"><dt>Điện thoại</dt><dd>{{ employee.mobile_phone }}</dd></div>
+<div class="ui-detail-item"><dt>Phòng ban</dt><dd>{{ employee.department }}</dd></div>
+<div class="ui-detail-item"><dt>Vị trí</dt><dd>{{ employee.position }}</dd></div>
+<div class="ui-detail-item"><dt>Quản lý trực tiếp</dt><dd>{{ employee.manager|default:"—" }}</dd></div>
+<div class="ui-detail-item"><dt>Ngày vào làm</dt><dd>{{ employee.join_date|ui_date }}</dd></div>
+<div class="ui-detail-item"><dt>Trạng thái</dt><dd>{% ui_badge "hrm.employee:employment_status" employee.employment_status %}</dd></div>
+</dl>{% else %}{% include "ui/empty_state.html" with icon="person" title="Chưa có hồ sơ nhân viên gắn với tài khoản này." description="Liên hệ Phòng Nhân sự để được hỗ trợ gắn hồ sơ." %}{% endif %}
+</section>
+{% if current_salary or current_contract %}<section class="ui-card"><h2 class="ui-card-title">Lương &amp; Hợp đồng hiện tại</h2><dl class="ui-detail-grid">
+{% if current_salary %}<div class="ui-detail-item"><dt>Lương cơ bản hiện tại</dt><dd>{{ current_salary.current_basic_salary|ui_vnd }}<p class="ui-page-description">Áp dụng từ {{ current_salary.effective_date|ui_date }}</p></dd></div>{% endif %}
+{% if current_contract %}<div class="ui-detail-item"><dt>Hợp đồng hiện tại</dt><dd>{{ current_contract.contract_no }} ({{ current_contract.contract_type }})<p class="ui-page-description">Hiệu lực đến {{ current_contract.end_date|default:"Không xác định thời hạn"|ui_date }}</p></dd></div>{% endif %}
+</dl></section>{% endif %}
+{% if employee and transfers or promotions or rewards or disciplines %}<section class="ui-card"><h2 class="ui-card-title">Quá trình công tác</h2><ul class="ui-personal-history">
+{% for t in transfers %}<li><time>{{ t.effective_date|ui_date }}</time><span>Điều chuyển: {{ t.from_department }} → {{ t.to_department }}</span></li>{% endfor %}
+{% for p in promotions %}<li><time>{{ p.effective_date|ui_date }}</time><span>Bổ nhiệm: {{ p.old_position }} → {{ p.new_position }}</span></li>{% endfor %}
+{% for r in rewards %}<li><time>{{ r.reward_date|ui_date }}</time><span>Khen thưởng: {{ r.reward_type }}{% if r.amount %} ({{ r.amount|ui_vnd }}){% endif %}</span></li>{% endfor %}
+{% for d in disciplines %}<li><time>{{ d.discipline_date|ui_date }}</time><span>Kỷ luật: {{ d.discipline_type }}</span></li>{% endfor %}
+</ul></section>{% endif %}
 {% endblock %}

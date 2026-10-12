@@ -1,43 +1,10 @@
-{% extends "base.html" %}
+{% extends "portal/personal_base.html" %}
+{% load ui_components %}
 {% block title %}KPI của tôi{% endblock %}
-{% block content %}
-<div class="flex items-center justify-between mb-4">
-    <h1 class="text-lg font-bold text-gray-900">KPI của tôi</h1>
-    {% if can_score_kpi %}
-    <a href="{% url 'portal:kpi_score_list' %}" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Chấm điểm KPI nhân viên</a>
-    {% endif %}
-</div>
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <div class="overflow-x-auto">
-    <table class="w-full text-sm">
-        <thead>
-            <tr class="text-left text-gray-500 border-b border-gray-200">
-                <th class="py-2 pr-4">Kỳ</th><th class="py-2 pr-4">Chỉ số KPI</th><th class="py-2 pr-4">Trọng số</th><th class="py-2 pr-4">Chỉ tiêu</th><th class="py-2 pr-4">Thực tế</th><th class="py-2 pr-4">Tỷ lệ đạt</th><th class="py-2">Điểm</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-        {% for r in results %}
-        <tr>
-            <td class="py-2.5 pr-4">{{ r.kpi_period|ui_number }}</td>
-            <td class="py-2.5 pr-4 font-medium">{{ r.kpi_template|ui_number }}</td>
-            <td class="py-2.5 pr-4">{{ r.kpi_template.weight|ui_number }}%</td>
-            <td class="py-2.5 pr-4">{{ r.target|ui_number }}</td>
-            <td class="py-2.5 pr-4">{{ r.actual|default:"Chưa cập nhật"|ui_number }}</td>
-            <td class="py-2.5 pr-4">
-                <span class="px-2.5 py-1 rounded-full text-xs font-medium
-                    {% if r.achievement >= 100 %}bg-green-100 text-green-700
-                    {% elif r.achievement >= 70 %}bg-yellow-100 text-yellow-800
-                    {% else %}bg-red-100 text-red-700{% endif %}">
-                    {{ r.achievement|ui_number }}%
-                </span>
-            </td>
-            <td class="py-2.5 font-semibold">{{ r.score|ui_number }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="7" class="py-6 text-center text-gray-400">Chưa có dữ liệu KPI.</td></tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    </div>
-</div>
+{% block personal_content %}
+<header class="ui-page-header"><h1 class="ui-page-title">KPI của tôi</h1>{% if can_score_kpi %}<a class="ui-button ui-button--primary" href="{% url 'portal:kpi_score_list' %}">Chấm điểm KPI nhân viên</a>{% endif %}</header>
+<section class="ui-card"><div class="ui-scroll" role="region" tabindex="0" aria-label="KPI của tôi"><table class="ui-table ui-personal-kpi-table"><caption>Kết quả KPI cá nhân</caption><thead><tr><th scope="col">Kỳ</th><th scope="col">Chỉ số KPI</th><th scope="col" class="ui-number">Trọng số</th><th scope="col" class="ui-number">Chỉ tiêu</th><th scope="col" class="ui-number">Thực tế</th><th scope="col" class="ui-number">Tỷ lệ đạt</th><th scope="col" class="ui-number">Điểm</th></tr></thead><tbody>
+{% for r in results %}<tr><td>{{ r.kpi_period }}</td><th scope="row">{{ r.kpi_template }}</th><td class="ui-number">{{ r.kpi_template.weight|ui_number }}%</td><td class="ui-number">{{ r.target|ui_number }}</td><td class="ui-number">{{ r.actual|default_if_none:"Chưa cập nhật"|ui_number }}</td><td class="ui-number"><span class="ui-badge {% if r.achievement >= 100 %}ui-badge--success{% elif r.achievement >= 70 %}ui-badge--warning{% else %}ui-badge--danger{% endif %}">{% if r.achievement >= 100 %}{% include "_shell_icon.html" with name="success" %}{% elif r.achievement >= 70 %}{% include "_shell_icon.html" with name="warning" %}{% else %}{% include "_shell_icon.html" with name="danger" %}{% endif %}{{ r.achievement|ui_number }}%</span></td><td class="ui-number"><strong>{{ r.score|ui_number }}</strong></td></tr>
+{% empty %}<tr><td colspan="7">{% include "ui/empty_state.html" with title="Chưa có dữ liệu KPI." description="Liên hệ quản lý trực tiếp khi cần xác nhận chỉ tiêu KPI được giao." %}</td></tr>{% endfor %}
+</tbody></table></div></section>
 {% endblock %}

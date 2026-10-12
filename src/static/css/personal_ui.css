@@ -1,0 +1,68 @@
+/* Phase 5 personal module only. HCNS print rules remain in their templates. */
+@media screen {
+.ui-personal { max-width:var(--ui-content-max-width); margin-inline:auto; }
+.ui-personal :is(p,dl,dd) { margin-bottom:0; }
+.ui-personal .ui-form-actions { margin-top:var(--ui-space-4); }
+.ui-personal .ui-detail-grid { margin-top:var(--ui-space-4); }
+.ui-personal .ui-personal-history { list-style:none; padding:0; margin:0; display:grid; gap:var(--ui-space-3); }
+.ui-personal-history li { display:flex; flex-wrap:wrap; gap:var(--ui-space-4); font-size:var(--ui-font-size-small); }
+.ui-personal-history time { color:var(--ui-text-muted); }
+.ui-personal .ui-personal-decision { margin-top:var(--ui-space-4); padding-top:var(--ui-space-4); border-top:var(--ui-border-width) solid var(--ui-divider); }
+.ui-personal .ui-personal-info { padding:var(--ui-space-4); margin-bottom:var(--ui-space-4); border:var(--ui-border-width) solid var(--ui-info-border); border-radius:var(--ui-radius-control); background:var(--ui-info-bg); color:var(--ui-info-text); }
+.ui-personal-info p { margin:0; font-size:var(--ui-font-size-small); }
+.ui-personal .ui-personal-info .ui-field-help { color:inherit; }
+.ui-personal .ui-personal-balances { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.ui-personal .ui-personal-balances .ui-kpi-value { margin-top:auto; }
+.ui-personal .ui-personal-table { min-width:calc(var(--ui-table-col-small) * 6); }
+.ui-personal .ui-personal-payroll-table { min-width:calc(var(--ui-table-col-small) + var(--ui-table-col-medium) * 5); }
+.ui-personal .ui-personal-payroll-table .ui-number { white-space:nowrap; }
+.ui-personal .ui-personal-kpi-table { min-width:calc(var(--ui-table-col-small) * 7); }
+.ui-personal table:has(.ui-state) { min-width:0; }
+.ui-personal table:has(.ui-state) thead { display:none; }
+.ui-personal td .ui-button { margin-top:var(--ui-space-2); }
+.ui-personal .ui-personal-notification-link { display:block; color:var(--ui-text); text-decoration:none; min-height:var(--ui-target-min); margin-bottom:var(--ui-space-3); overflow-wrap:anywhere; border-radius:var(--ui-radius-small); }
+.portal-app .ui-main .ui-personal.ui-page .ui-personal-unread { border-color:var(--ui-info-border); }
+.ui-personal :is(.ui-personal-notification-link,.org-chart-viewport):focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:var(--ui-focus-offset); }
+.ui-personal .timesheet-leave-row { display:grid; grid-template-columns:minmax(0,1fr) calc(var(--ui-space-6) * 3); align-items:center; gap:var(--ui-space-3); margin-block:var(--ui-space-2); }
+.ui-personal .timesheet-leave-row label { font-size:var(--ui-font-size-small); color:var(--ui-text); }
+.ui-personal .timesheet-leave-row :is(.timesheet-leave-input,.ui-number-input) { width:100%!important; max-width:100%; height:var(--ui-control-height); min-height:var(--ui-control-height); padding:var(--ui-space-2)!important; text-align:right; }
+.ui-personal .timesheet-summary-layout { gap:var(--ui-space-6); margin-top:var(--ui-space-6); }
+.ui-personal .ui-personal-timesheet-table { min-width:calc(var(--ui-table-col-small) * 4); }
+.ui-personal .ui-personal-timesheet-table th:first-child { width:var(--ui-table-col-small); }
+.ui-personal .ui-personal-timesheet-table th:last-child { width:var(--ui-table-col-small); }
+.ui-personal .ui-personal-timesheet-table tr:has(.ui-button) td { vertical-align:top; }
+.ui-personal .timesheet-document .ui-badge { margin-bottom:var(--ui-space-3); }
+.ui-personal .ui-print-only { display:none; }
+.ui-personal .org-chart-viewport { max-width:100%; padding:var(--ui-space-3) var(--ui-space-1) var(--ui-space-6); }
+.ui-personal .org-chart-stage { width:100%; min-width:0; }
+.ui-personal .org-chart-stage > .org-chart-roots { width:100%; min-width:0; }
+.ui-personal .org-chart-roots { flex-wrap:wrap; justify-content:flex-start; gap:var(--ui-space-8); }
+.ui-personal .org-chart-card { width:calc(var(--ui-table-col-small) * 2); min-height:calc(var(--ui-space-8) * 3); gap:var(--ui-space-3); padding:var(--ui-space-4); border-width:var(--ui-border-width); border-top-width:var(--ui-active-marker-width); border-radius:var(--ui-radius-card); }
+.ui-personal .org-chart-avatar { width:var(--ui-target-min); height:var(--ui-target-min); border-radius:var(--ui-radius-pill); font-weight:var(--ui-font-weight-label); }
+.ui-personal .org-chart-children { padding:var(--ui-space-6) 0 0; }
+.ui-personal .org-chart-node { padding:var(--ui-space-6) var(--ui-space-3) 0; }
+.ui-personal .org-chart-node::before { height:var(--ui-space-6); border-left-width:var(--ui-border-width); }
+.ui-personal .org-chart-node::after { border-top-width:var(--ui-border-width); }
+.ui-personal .ui-personal-org-text { min-width:0; text-align:left; overflow-wrap:anywhere; }
+.ui-personal .ui-personal-org-name { font-size:var(--ui-font-size-body); color:var(--ui-text); font-weight:var(--ui-font-weight-label); margin:0; }
+.ui-personal .ui-personal-org-position { font-size:var(--ui-font-size-small); color:var(--ui-text); margin:var(--ui-space-1) 0 0; }
+.ui-personal .ui-personal-org-manager { font-size:var(--ui-font-size-small); color:var(--ui-text-muted); margin:var(--ui-space-2) 0 0; padding-top:var(--ui-space-2); border-top:var(--ui-border-width) solid var(--ui-divider); }
+.ui-personal .ui-personal-org-text .ui-badge { white-space:normal; margin-top:var(--ui-space-2); }
+.ui-personal #org-chart-no-results.hidden,.ui-personal [data-org-node][hidden] { display:none; }
+.ui-personal-org-empty { color:var(--ui-text-muted); padding:var(--ui-space-6); text-align:center; }
+@media(max-width:767px) { .ui-personal .ui-personal-balances { grid-template-columns:1fr; } .ui-personal .ui-page-actions .ui-button { white-space:normal; } }
+@media(max-width:1023px) {
+ .ui-personal :is(.org-chart-stage,.org-chart-stage > .org-chart-roots,.org-chart-children) { width:100%; min-width:0; }
+ .ui-personal .org-chart-roots { display:block; }
+ .ui-personal :is(.org-chart-root-node,.org-chart-node) { align-items:stretch; }
+ .ui-personal .org-chart-root-node + .org-chart-root-node { margin-top:var(--ui-space-6); }
+ .ui-personal .org-chart-card { width:100%; }
+ .ui-personal .org-chart-children { display:block; margin:0; padding:var(--ui-space-3) 0 0 var(--ui-space-3); border-left:var(--ui-border-width) solid var(--ui-border); }
+ .ui-personal .org-chart-node { padding:var(--ui-space-3) 0 0; }
+ .ui-personal .org-chart-node::before,.ui-personal .org-chart-node::after { display:none; }
+}
+}
+@media print {
+ .ui-personal .ui-screen-only,
+ .ui-personal .timesheet-document .ui-number-source { display:none!important; }
+}

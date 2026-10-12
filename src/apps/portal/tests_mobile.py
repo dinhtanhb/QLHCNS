@@ -113,12 +113,14 @@ class MobileTableTests(SimpleTestCase):
         self.assertIn("prefers-reduced-motion", css)
         for relative, expected in (
             ("apps/activity/templates/activity/dashboard.html", 5),
-            ("apps/portal/templates/portal/leave_list.html", 2),
             ("templates/reporting/dashboard.html", 4),
         ):
             with self.subTest(template=relative):
                 source = (root / relative).read_text(encoding="utf-8")
                 self.assertEqual(source.count("ihrms-kpi-value"), expected)
+        leave_source = (root / "apps/portal/templates/portal/leave_list.html").read_text(encoding="utf-8")
+        self.assertEqual(leave_source.count('class="ui-kpi-value"'), 2)
+        self.assertEqual(leave_source.count('class="ui-kpi-label"'), 2)
         worker = (root / "static" / "js" / "service-worker.js").read_text(encoding="utf-8")
         self.assertIn("ihrms-static-v8-components-20261012", worker)
         self.assertIn("/static/css/design_tokens.css", worker)

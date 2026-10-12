@@ -1,8 +1,10 @@
-{% extends "base.html" %}
-{% load l10n %}
+{% extends "portal/personal_base.html" %}
+{% load l10n ui_components %}
 {% block title %}Bảng chấm công{% endblock %}
-{% block content %}
+{% block personal_content %}
 <style>
+@media print {
+
     .timesheet-leave-row {
         display: grid;
         grid-template-columns: 8rem 4rem;
@@ -17,6 +19,7 @@
         padding: 0.2rem 0.35rem !important;
         text-align: right;
     }
+}
     @media print {
         @page { size: A4 portrait; margin: 12mm; }
         header, nav, .no-print { display: none !important; }
@@ -40,40 +43,15 @@
     }
 </style>
 
-<div class="flex items-center justify-between mb-4 no-print">
-    <h1 class="text-lg font-bold text-gray-900">Bảng chấm công</h1>
-    <div class="flex items-center gap-3">
-        <form method="get" class="flex gap-2">
-            <select name="month" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
-                {% for m in months %}<option value="{{ m }}" {% if m == month %}selected{% endif %}>Tháng {{ m|ui_number }}</option>{% endfor %}
-            </select>
-            <select name="year" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
-                {% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y|ui_number }}</option>{% endfor %}
-            </select>
-        </form>
-        <button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">🖨 In bảng công</button>
-    </div>
-</div>
-
-<!-- Form nhập nhanh giờ làm -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6 no-print">
-    <h2 class="text-sm font-bold text-gray-900 mb-3">Ghi nhận giờ làm việc</h2>
-    <form method="post" action="{% url 'portal:timesheet_entry_create' %}" class="grid grid-cols-1 md:grid-cols-5 gap-3">
-        {% csrf_token %}
-        <input type="date" name="work_date" required value="{{ year }}-{{ month|stringformat:'02d' }}-01"
-               min="{{ year }}-{{ month|stringformat:'02d' }}-01" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <select name="project" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-            <option value="">-- Không thuộc dự án --</option>
-            {% for p in projects %}<option value="{{ p.id }}">{{ p.project_name|ui_number }}</option>{% endfor %}
-        </select>
-        <input type="text" name="task_description" placeholder="Công việc thực hiện" class="rounded-md border border-gray-300 px-3 py-2 text-sm md:col-span-2">
-        <input type="number" step="0.5" name="hours" placeholder="Số giờ" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <button type="submit" class="md:col-span-5 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Thêm dòng chấm công</button>
-    </form>
-</div>
-
+<header class="ui-page-header no-print"><h1 class="ui-page-title">Bảng chấm công</h1><div class="ui-page-actions"><form method="get" class="ui-filter-bar"><div class="ui-field"><label for="timesheet-month">Tháng</label><select id="timesheet-month" name="month" onchange="this.form.submit()">{% for m in months %}<option value="{{ m }}" {% if m == month %}selected{% endif %}>Tháng {{ m|ui_number }}</option>{% endfor %}</select></div><div class="ui-field"><label for="timesheet-year">Năm</label><select id="timesheet-year" name="year" onchange="this.form.submit()">{% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y|ui_number }}</option>{% endfor %}</select></div></form><button onclick="window.print()" class="ui-button" type="button">{% include "_shell_icon.html" with name="office" %}In bảng công</button></div></header>
+<section class="ui-card no-print"><h2 class="ui-card-title">Ghi nhận giờ làm việc</h2><form method="post" action="{% url 'portal:timesheet_entry_create' %}" data-ui-form>{% csrf_token %}{% include "ui/error_summary.html" %}<div class="ui-form-grid">
+<div class="ui-field"><label for="timesheet-work-date">Ngày làm việc <span class="ui-required" aria-hidden="true">*</span></label><input id="timesheet-work-date" type="date" name="work_date" required value="{{ year }}-{{ month|stringformat:'02d' }}-01" min="{{ year }}-{{ month|stringformat:'02d' }}-01"><p class="ui-field-error" id="timesheet-work-date-error" hidden></p></div>
+<div class="ui-field"><label for="timesheet-project">Dự án</label><select id="timesheet-project" name="project"><option value="">-- Không thuộc dự án --</option>{% for p in projects %}<option value="{{ p.id }}">{{ p.project_name }}</option>{% endfor %}</select></div>
+{% include "ui/field.html" with id="timesheet-task" name="task_description" label="Công việc thực hiện" placeholder="Công việc thực hiện" %}
+{% include "ui/field.html" with id="timesheet-hours" name="hours" type="number" step="0.5" label="Số giờ" placeholder="Số giờ" required=True %}
+</div><div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm dòng chấm công</button></div></form></section>
 <!-- KHUNG BẢNG CHẤM CÔNG — theo đúng layout mẫu -->
-<div class="timesheet-document bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-10">
+<div class="timesheet-document ui-card bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-10">
     <div class="text-center mb-6">
         <h1 class="text-xl font-bold">BẢNG CHẤM CÔNG</h1>
     </div>
@@ -84,13 +62,13 @@
         <p><span class="font-semibold">Thời gian:</span> Tháng {{ month }} năm {{ year }}</p>
     </div>
 
-    <div class="overflow-x-auto mobile-table-scroll">
-        <table class="w-full text-sm border border-gray-300 border-collapse">
+    <div class="overflow-x-auto mobile-table-scroll ui-scroll" role="region" tabindex="0" aria-label="Bảng công trong tháng">
+        <table class="w-full text-sm border border-gray-300 border-collapse ui-table ui-personal-timesheet-table">
         <thead>
             <tr class="bg-gray-100">
-                <th class="border border-gray-300 px-2 py-1.5 w-24">Ngày</th>
-                <th class="border border-gray-300 px-2 py-1.5">Công việc</th>
-                <th class="border border-gray-300 px-2 py-1.5 w-28">Tổng giờ/ngày</th>
+                <th scope="col" class="border border-gray-300 px-2 py-1.5 w-24">Ngày</th>
+                <th scope="col" class="border border-gray-300 px-2 py-1.5">Công việc</th>
+                <th scope="col" class="border border-gray-300 px-2 py-1.5 w-28">Tổng giờ/ngày</th>
             </tr>
         </thead>
         <tbody>
@@ -114,9 +92,9 @@
                     {% for e in row.entries %}
                     <div class="flex items-center justify-between gap-2 {% if not forloop.last %}mb-1{% endif %}">
                         <span>+ {% if e.project %}[{{ e.project.project_code|ui_number }}] {% endif %}{{ e.task_description|default:""|ui_number }}</span>
-                        <form method="post" action="{% url 'portal:timesheet_entry_delete' e.pk %}" class="no-print" onsubmit="return confirm('Xóa dòng này?')">
+                        <form method="post" action="{% url 'portal:timesheet_entry_delete' e.pk %}" class="no-print" data-ui-confirm="Xóa dòng chấm công này?" data-ui-confirm-title="Xác nhận xóa dòng chấm công" data-ui-confirm-label="Xóa dòng">
                             {% csrf_token %}
-                            <button type="submit" class="text-red-500 hover:text-red-700 text-xs">Xóa</button>
+                            <button type="submit" class="ui-button">Xóa</button>
                         </form>
                     </div>
                     {% endfor %}
@@ -155,16 +133,16 @@
 
         <!-- Tổng hợp + Chữ ký: 2 cột song song -->
     <div class="timesheet-summary-layout grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
-        <form method="post" action="{% url 'portal:timesheet_summary_update' %}" class="text-sm">
+        <form method="post" action="{% url 'portal:timesheet_summary_update' %}" class="text-sm" data-ui-form>
             {% csrf_token %}
             <input type="hidden" name="year" value="{{ year }}">
             <input type="hidden" name="month" value="{{ month }}">
             {% if summary.status == "Approved" %}
-            <span class="inline-block bg-green-100 text-green-700 text-xs font-medium px-2 py-0.5 rounded mb-2">Đã duyệt — không thể tự sửa</span>
+            <span class="ui-print-only"><span class="inline-block bg-green-100 text-green-700 text-xs font-medium px-2 py-0.5 rounded mb-2">Đã duyệt — không thể tự sửa</span></span><span class="ui-screen-only ui-badge ui-badge--success">{% include "_shell_icon.html" with name="success" %}Đã duyệt — không thể tự sửa</span>
             {% else %}
-            <span class="inline-block bg-amber-100 text-amber-700 text-xs font-medium px-2 py-0.5 rounded mb-2">Chờ quản lý duyệt</span>
+            <span class="ui-print-only"><span class="inline-block bg-amber-100 text-amber-700 text-xs font-medium px-2 py-0.5 rounded mb-2">Chờ quản lý duyệt</span></span><span class="ui-screen-only ui-badge ui-badge--warning">{% include "_shell_icon.html" with name="warning" %}Chờ quản lý duyệt</span>
             {% endif %}
-            <fieldset {% if summary.status == "Approved" %}disabled{% endif %}>
+            <fieldset class="ui-form-fieldset" {% if summary.status == "Approved" %}disabled{% endif %}>
             <div class="space-y-1">
                 <div class="timesheet-leave-row py-0.5">
                     <label for="timesheet-sick-days" class="text-gray-700">Số ngày nghỉ ốm trong tháng:</label>
@@ -201,7 +179,7 @@
                 </div>
                 {% endif %}
             </div>
-            <button type="submit" class="no-print bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition mt-3">Lưu số ngày nghỉ</button>
+            <button type="submit" class="no-print ui-button ui-button--primary">Lưu số ngày nghỉ</button>
             </fieldset>
         </form>
 
@@ -217,4 +195,5 @@
         </div>
     </div>
 </div>
+{% include "ui/confirm_dialog.html" %}
 {% endblock %}

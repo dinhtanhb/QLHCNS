@@ -1,30 +1,10 @@
-{% extends "base.html" %}
+{% extends "portal/personal_base.html" %}
+{% load ui_components %}
 {% block title %}Phiếu lương{% endblock %}
-{% block content %}
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <h1 class="text-lg font-bold text-gray-900 mb-4">Phiếu lương của tôi</h1>
-    <div class="overflow-x-auto">
-    <table class="w-full text-sm">
-        <thead>
-            <tr class="text-left text-gray-500 border-b border-gray-200">
-                <th class="py-2 pr-4">Kỳ lương</th><th class="py-2 pr-4">Tổng thu nhập</th><th class="py-2 pr-4">Bảo hiểm</th><th class="py-2 pr-4">Thuế TNCN</th><th class="py-2 pr-4">Thực lãnh</th><th class="py-2">Phiếu PDF</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-        {% for p in payrolls %}
-        <tr>
-            <td class="py-2.5 pr-4">{{ p.payroll_period|ui_number }}<span class="ml-1 text-xs text-gray-600">(đã chốt)</span></td>
-            <td class="py-2.5 pr-4">{{ p.gross_income|floatformat:"0g" }} đ</td>
-            <td class="py-2.5 pr-4 text-red-600">−{{ p.insurance_amount|floatformat:"0g" }} đ</td>
-            <td class="py-2.5 pr-4 text-red-600">−{{ p.tax_amount|floatformat:"0g" }} đ</td>
-            <td class="py-2.5 font-semibold text-green-700">{{ p.net_income|floatformat:"0g" }} đ</td>
-            <td class="py-2.5"><a href="{% url 'portal:payslip_pdf' p.payslip.pk %}" class="inline-block rounded-md bg-blue-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-800">Tải PDF</a></td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="6" class="py-6 text-center text-gray-400">Chưa có phiếu lương đã phát hành. Phiếu PDF sẽ xuất hiện sau khi Kế toán chốt kỳ.</td></tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    </div>
-</div>
+{% block personal_content %}
+{% include "ui/page_header.html" with title="Phiếu lương của tôi" description="Chỉ hiển thị phiếu đã phát hành từ kỳ lương được chốt." %}
+<section class="ui-card"><div class="ui-scroll" role="region" tabindex="0" aria-label="Phiếu lương đã phát hành"><table class="ui-table ui-personal-payroll-table"><caption>Phiếu lương cá nhân — đơn vị đồng</caption><thead><tr><th scope="col">Kỳ lương</th><th scope="col" class="ui-number">Tổng thu nhập</th><th scope="col" class="ui-number">Bảo hiểm</th><th scope="col" class="ui-number">Thuế TNCN</th><th scope="col" class="ui-number">Thực lãnh</th><th scope="col">Phiếu PDF</th></tr></thead><tbody>
+{% for p in payrolls %}<tr><th scope="row">{{ p.payroll_period }} <span class="ui-badge">{% include "_shell_icon.html" with name="success" %}Đã chốt</span></th><td class="ui-number">{{ p.gross_income|ui_vnd }}</td><td class="ui-number">−{{ p.insurance_amount|ui_vnd }}</td><td class="ui-number">−{{ p.tax_amount|ui_vnd }}</td><td class="ui-number"><strong>{{ p.net_income|ui_vnd }}</strong></td><td><a class="ui-button" href="{% url 'portal:payslip_pdf' p.payslip.pk %}">Tải PDF</a></td></tr>
+{% empty %}<tr><td colspan="6">{% include "ui/empty_state.html" with title="Chưa có phiếu lương đã phát hành." description="Phiếu PDF sẽ xuất hiện sau khi Kế toán chốt kỳ." %}</td></tr>{% endfor %}
+</tbody></table></div></section>
 {% endblock %}
