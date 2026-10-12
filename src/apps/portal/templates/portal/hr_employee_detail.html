@@ -1,107 +1,94 @@
 {% extends "base.html" %}
+{% load ui_components %}
 {% block title %}{{ employee.full_name|ui_number }}{% endblock %}
-{% block content %}
-{% if can_export_employee_data and can_view_all_employees %}<p class="mb-4"><a href="{% url 'portal:hcns_catalog' %}?employee_id={{ employee.pk }}" class="text-blue-700 hover:underline">Soạn / xuất biểu mẫu từ hồ sơ nhân viên</a></p>{% endif %}
-<div class="flex items-center justify-between mb-4">
-    <h1 class="text-lg font-bold text-gray-900">{{ employee.full_name|ui_number }} <span class="text-gray-400 font-normal text-sm">({{ employee.employee_code|ui_number }})</span></h1>
-    {% if can_manage_hr %}
-    <a href="{% url 'portal:hr_employee_edit' employee.pk %}" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Sửa hồ sơ</a>
-    {% endif %}
-</div>
-
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-    <dl class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4 text-sm">
-        <div><dt class="text-gray-500 text-xs mb-0.5">Ngày sinh</dt><dd class="font-medium">{{ employee.date_of_birth|ui_number }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Giới tính</dt><dd class="font-medium">{{ employee.get_gender_display|ui_number }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Email Trung tâm</dt><dd class="font-medium break-all">{{ employee.company_email|ui_number }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Điện thoại</dt><dd class="font-medium">{{ employee.mobile_phone|ui_number }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Phòng ban</dt><dd class="font-medium">{{ employee.department|ui_number }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Vị trí</dt><dd class="font-medium">{{ employee.position|ui_number }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Quản lý trực tiếp</dt><dd class="font-medium">{{ employee.manager|default:"—"|ui_number }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Ngày vào làm</dt><dd class="font-medium">{{ employee.join_date|ui_number }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Trạng thái</dt><dd class="font-medium">{{ employee.get_employment_status_display|ui_number }}</dd></div>
-    </dl>
-</div>
-
+{% block content %}<div class="ui-page">
+{% include "ui/page_header.html" with title=employee.full_name description=employee.employee_code actions_template="portal/_hr_detail_actions.html" %}
+<section class="ui-card" aria-labelledby="employee-info-title"><h2 class="ui-card-title" id="employee-info-title">Thông tin nhân viên</h2><dl class="ui-detail-grid">
+{% include "ui/detail_item.html" with label="Ngày sinh" value=employee.date_of_birth|ui_date %}
+{% include "ui/detail_item.html" with label="Giới tính" value=employee.get_gender_display %}
+{% include "ui/detail_item.html" with label="Email Trung tâm" value=employee.company_email %}
+{% include "ui/detail_item.html" with label="Điện thoại" value=employee.mobile_phone %}
+{% include "ui/detail_item.html" with label="Phòng ban" value=employee.department %}
+{% include "ui/detail_item.html" with label="Vị trí" value=employee.position %}
+{% include "ui/detail_item.html" with label="Quản lý trực tiếp" value=employee.manager|default:"—" %}
+{% include "ui/detail_item.html" with label="Ngày vào làm" value=employee.join_date|ui_date %}
+<div class="ui-detail-item"><dt>Trạng thái</dt><dd>{% ui_badge "hrm.employee:employment_status" employee.employment_status %}</dd></div>
+</dl></section>
 {% if can_manage_hr %}
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6" id="dieuchuyen">
-        <h2 class="text-sm font-bold text-gray-900 mb-3">Điều chuyển phòng ban</h2>
-        <form method="post" action="{% url 'portal:hr_employee_history_create' employee.pk 'transfer' %}" class="space-y-2">
-            {% csrf_token %}
-            <select name="to_department" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-                {% for d in departments %}<option value="{{ d.id }}" {% if d.id == employee.department_id %}selected{% endif %}>{{ d.department_name|ui_number }}</option>{% endfor %}
-            </select>
-            <input type="date" name="effective_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-            <input type="text" name="reason" placeholder="Lý do" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Ghi nhận điều chuyển</button>
-            {% if can_draft_hr %}<button type="submit" name="next" value="hcns" class="text-blue-700 text-sm underline">Ghi nhận và soạn quyết định →</button>{% endif %}
-        </form>
+<div class="ui-detail-sections">
+    <div class="ui-card" id="dieuchuyen">
+        <h2 class="ui-card-title">Điều chuyển phòng ban</h2>
+        <form method="post" action="{% url 'portal:hr_employee_history_create' employee.pk 'transfer' %}" class="ui-history-form" data-ui-form>
+            {% csrf_token %}{% include "ui/error_summary.html" %}<fieldset class="ui-form-fieldset"><legend class="ui-field-label">Thông tin cần ghi nhận</legend>
+            {% include "ui/field.html" with id="hr-form-1-to_department" name="to_department" label="Phòng ban mới" required=True options_template="portal/_hr_department_options.html" %}
+            {% include "ui/field.html" with id="hr-form-1-effective_date" name="effective_date" label="Ngày hiệu lực" type="date" required=True value="" %}
+            {% include "ui/field.html" with id="hr-form-1-reason" name="reason" label="Lý do" type="text" value="" %}
+            <button type="submit" class="ui-button ui-button--primary">Ghi nhận điều chuyển</button>
+            {% if can_draft_hr %}<button type="submit" name="next" value="hcns" class="ui-button ui-button--secondary">Ghi nhận và soạn quyết định →</button>{% endif %}
+        </fieldset></form>
     </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6" id="bonhiem">
-        <h2 class="text-sm font-bold text-gray-900 mb-3">Bổ nhiệm / Thăng chức</h2>
-        <form method="post" action="{% url 'portal:hr_employee_history_create' employee.pk 'promotion' %}" class="space-y-2">
-            {% csrf_token %}
-            <select name="new_position" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-                {% for p in positions %}<option value="{{ p.id }}" {% if p.id == employee.position_id %}selected{% endif %}>{{ p.position_name|ui_number }}</option>{% endfor %}
-            </select>
-            <input type="date" name="effective_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-            <input type="text" name="reason" placeholder="Lý do" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Ghi nhận bổ nhiệm</button>
-            {% if can_draft_hr %}<button type="submit" name="next" value="hcns" class="text-blue-700 text-sm underline">Ghi nhận và soạn quyết định →</button>{% endif %}
-        </form>
+    <div class="ui-card" id="bonhiem">
+        <h2 class="ui-card-title">Bổ nhiệm / Thăng chức</h2>
+        <form method="post" action="{% url 'portal:hr_employee_history_create' employee.pk 'promotion' %}" class="ui-history-form" data-ui-form>
+            {% csrf_token %}{% include "ui/error_summary.html" %}<fieldset class="ui-form-fieldset"><legend class="ui-field-label">Thông tin cần ghi nhận</legend>
+            {% include "ui/field.html" with id="hr-form-2-new_position" name="new_position" label="Vị trí mới" required=True options_template="portal/_hr_position_options.html" %}
+            {% include "ui/field.html" with id="hr-form-2-effective_date" name="effective_date" label="Ngày hiệu lực" type="date" required=True value="" %}
+            {% include "ui/field.html" with id="hr-form-2-reason" name="reason" label="Lý do" type="text" value="" %}
+            <button type="submit" class="ui-button ui-button--primary">Ghi nhận bổ nhiệm</button>
+            {% if can_draft_hr %}<button type="submit" name="next" value="hcns" class="ui-button ui-button--secondary">Ghi nhận và soạn quyết định →</button>{% endif %}
+        </fieldset></form>
     </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 id="khenthuong" class="text-sm font-bold text-gray-900 mb-3">Khen thưởng</h2>
+    <div class="ui-card">
+        <h2 id="khenthuong" class="ui-card-title">Khen thưởng</h2>
         <p class="text-xs text-gray-500 mb-2">Bộ mẫu HCNS chưa có quyết định khen thưởng.</p>
-        <form method="post" action="{% url 'portal:hr_employee_history_create' employee.pk 'reward' %}" class="space-y-2">
-            {% csrf_token %}
-            <input type="text" name="reward_type" placeholder="Loại khen thưởng" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-            <input type="date" name="reward_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-            <input type="number" name="amount" placeholder="Số tiền thưởng (nếu có)" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-            <input type="text" name="description" placeholder="Nội dung" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md transition">Ghi nhận khen thưởng</button>
-        </form>
+        <form method="post" action="{% url 'portal:hr_employee_history_create' employee.pk 'reward' %}" class="ui-history-form" data-ui-form>
+            {% csrf_token %}{% include "ui/error_summary.html" %}<fieldset class="ui-form-fieldset"><legend class="ui-field-label">Thông tin cần ghi nhận</legend>
+            {% include "ui/field.html" with id="hr-form-3-reward_type" name="reward_type" label="Loại khen thưởng" type="text" required=True value="" %}
+            {% include "ui/field.html" with id="hr-form-3-reward_date" name="reward_date" label="Ngày khen thưởng" type="date" required=True value="" %}
+            {% include "ui/field.html" with id="hr-form-3-amount" name="amount" label="Số tiền thưởng (nếu có)" type="number" value="" %}
+            {% include "ui/field.html" with id="hr-form-3-description" name="description" label="Nội dung" type="text" value="" %}
+            <button type="submit" class="ui-button ui-button--primary">Ghi nhận khen thưởng</button>
+        </fieldset></form>
     </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 id="kyluat" class="text-sm font-bold text-gray-900 mb-3">Kỷ luật</h2>
+    <div class="ui-card">
+        <h2 id="kyluat" class="ui-card-title">Kỷ luật</h2>
         <p class="text-xs text-gray-500 mb-2">Bộ mẫu HCNS chưa có quyết định kỷ luật.</p>
-        <form method="post" action="{% url 'portal:hr_employee_history_create' employee.pk 'discipline' %}" class="space-y-2">
-            {% csrf_token %}
-            <input type="text" name="discipline_type" placeholder="Hình thức kỷ luật" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-            <input type="date" name="discipline_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-            <input type="text" name="description" placeholder="Nội dung" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-md transition">Ghi nhận kỷ luật</button>
-        </form>
+        <form method="post" action="{% url 'portal:hr_employee_history_create' employee.pk 'discipline' %}" class="ui-history-form" data-ui-form data-ui-confirm="Ghi nhận kỷ luật vào lịch sử nhân viên. Hãy kiểm tra nội dung trước khi xác nhận." data-ui-confirm-title="Xác nhận ghi nhận kỷ luật" data-ui-confirm-label="Ghi nhận kỷ luật">
+            {% csrf_token %}{% include "ui/error_summary.html" %}<fieldset class="ui-form-fieldset"><legend class="ui-field-label">Thông tin cần ghi nhận</legend>
+            {% include "ui/field.html" with id="hr-form-4-discipline_type" name="discipline_type" label="Hình thức kỷ luật" type="text" required=True value="" %}
+            {% include "ui/field.html" with id="hr-form-4-discipline_date" name="discipline_date" label="Ngày kỷ luật" type="date" required=True value="" %}
+            {% include "ui/field.html" with id="hr-form-4-description" name="description" label="Nội dung" type="text" value="" %}
+            <button type="submit" class="ui-button ui-button--danger">Ghi nhận kỷ luật</button>
+        </fieldset></form>
     </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6" id="luong">
-        <h2 class="text-sm font-bold text-gray-900 mb-3">Nâng lương</h2>
+    <div class="ui-card" id="luong">
+        <h2 class="ui-card-title">Nâng lương</h2>
         <p class="text-xs text-gray-400 mb-2">
             {% with latest=salaries.first %}
-            {% if latest %}Mức lương ghi nhận gần nhất: {{ latest.current_basic_salary|floatformat:"0g" }} đ (từ {{ latest.effective_date|ui_number }}){% else %}Chưa có dữ liệu lương{% endif %}
+            {% if latest %}Mức lương ghi nhận gần nhất: {{ latest.current_basic_salary|ui_vnd }} (từ {{ latest.effective_date|ui_date }}){% else %}Chưa có dữ liệu lương{% endif %}
             {% endwith %}
         </p>
-        <form method="post" action="{% url 'portal:hr_salary_create' employee.pk %}" class="space-y-2">
-            {% csrf_token %}
-            <input type="number" name="current_basic_salary" placeholder="Mức lương mới" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-            <input type="date" name="effective_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Ghi nhận nâng lương</button>
-            {% if can_draft_hr %}<button type="submit" name="next" value="hcns" class="text-blue-700 text-sm underline">Ghi nhận và soạn quyết định →</button>{% endif %}
-        </form>
+        <form method="post" action="{% url 'portal:hr_salary_create' employee.pk %}" class="ui-history-form" data-ui-form>
+            {% csrf_token %}{% include "ui/error_summary.html" %}<fieldset class="ui-form-fieldset"><legend class="ui-field-label">Thông tin cần ghi nhận</legend>
+            {% include "ui/field.html" with id="hr-form-5-current_basic_salary" name="current_basic_salary" label="Mức lương mới" type="number" required=True value="" %}
+            {% include "ui/field.html" with id="hr-form-5-effective_date" name="effective_date" label="Ngày hiệu lực" type="date" required=True value="" %}
+            <button type="submit" class="ui-button ui-button--primary">Ghi nhận nâng lương</button>
+            {% if can_draft_hr %}<button type="submit" name="next" value="hcns" class="ui-button ui-button--secondary">Ghi nhận và soạn quyết định →</button>{% endif %}
+        </fieldset></form>
     </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6" id="hopdong">
-        <h2 class="text-sm font-bold text-gray-900 mb-3">Gia hạn hợp đồng</h2>
+    <div class="ui-card" id="hopdong">
+        <h2 class="ui-card-title">Gia hạn hợp đồng</h2>
         <p class="text-xs text-gray-400 mb-2">
-            {% if current_contract %}Hợp đồng hiện tại: {{ current_contract.contract_no|ui_number }} (hết hạn {{ current_contract.end_date|default:"Không xác định"|ui_number }}){% else %}Chưa có hợp đồng nào{% endif %}
+            {% if current_contract %}Hợp đồng hiện tại: {{ current_contract.contract_no|ui_number }} (hết hạn {{ current_contract.end_date|default:"Không xác định"|ui_date }}){% else %}Chưa có hợp đồng nào{% endif %}
         </p>
         <p class="text-xs text-gray-500 mb-2">Bộ mẫu HCNS chưa có mẫu hợp đồng / phụ lục gia hạn.</p>
         <a href="{% url 'portal:hr_contract_list' %}" class="text-blue-700 text-sm underline">Quản lý hợp đồng / phụ lục →</a>
         {% if current_contract %}
-        <form method="post" action="{% url 'portal:hr_contract_renew' employee.pk %}" class="space-y-2">
-            {% csrf_token %}
-            <input type="date" name="new_end_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Gia hạn hợp đồng</button>
-        </form>
+        <form method="post" action="{% url 'portal:hr_contract_renew' employee.pk %}" class="ui-history-form" data-ui-form>
+            {% csrf_token %}{% include "ui/error_summary.html" %}<fieldset class="ui-form-fieldset"><legend class="ui-field-label">Thông tin cần ghi nhận</legend>
+            {% include "ui/field.html" with id="hr-form-6-new_end_date" name="new_end_date" label="Ngày kết thúc mới" type="date" required=True value="" %}
+            <button type="submit" class="ui-button ui-button--primary">Gia hạn hợp đồng</button>
+        </fieldset></form>
         {% else %}
         <a href="{% url 'portal:hr_contract_create' %}?employee_id={{ employee.pk }}" class="text-blue-700 text-sm hover:underline">+ Tạo hợp đồng mới</a>
         {% endif %}
@@ -109,25 +96,26 @@
 </div>
 {% endif %}
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <h2 class="text-sm font-bold text-gray-900 mb-3">Lịch sử & Hợp đồng</h2>
+<div class="ui-card">
+    <h2 class="ui-card-title">Lịch sử & Hợp đồng</h2>
     <div class="space-y-1 text-sm">
         {% for c in contracts %}
-        <details class="mb-3"><summary>Hợp đồng: {{ c.contract_no|ui_number }} ({{ c.contract_type|ui_number }}) — {{ c.start_date|ui_number }} → {{ c.end_date|default:"Không xác định"|ui_number }}</summary>
-            {% for appendix in c.appendices.all %}<p>Phụ lục {{ appendix.appendix_no|ui_number }} — {{ appendix.effective_date|ui_number }}: {{ appendix.description|ui_number }}</p>{% empty %}<p class="text-gray-500">Chưa có phụ lục.</p>{% endfor %}
-            {% if can_manage_hr %}<form method="post" action="{% url 'portal:hr_contract_appendix_create' c.pk %}" class="space-y-2 mt-2">
-                {% csrf_token %}
-                <label>Số phụ lục <input name="appendix_no" required maxlength="50" class="rounded-md border border-gray-300 px-3 py-2"></label>
-                <label>Ngày hiệu lực <input type="date" name="effective_date" required class="rounded-md border border-gray-300 px-3 py-2"></label>
-                <label>Nội dung <input name="description" class="rounded-md border border-gray-300 px-3 py-2"></label>
-                <button class="text-blue-700 underline" type="submit">Ghi nhận phụ lục</button>
-            </form>{% endif %}
+        <details class="mb-3"><summary>Hợp đồng: {{ c.contract_no|ui_number }} ({{ c.contract_type|ui_number }}) — {{ c.start_date|ui_date }} → {{ c.end_date|default:"Không xác định"|ui_date }}</summary>
+            {% for appendix in c.appendices.all %}<p>Phụ lục {{ appendix.appendix_no|ui_number }} — {{ appendix.effective_date|ui_date }}: {{ appendix.description|ui_number }}</p>{% empty %}<p class="text-gray-500">Chưa có phụ lục.</p>{% endfor %}
+            {% if can_manage_hr %}<form method="post" action="{% url 'portal:hr_contract_appendix_create' c.pk %}" class="ui-history-form" data-ui-form>
+                {% csrf_token %}{% include "ui/error_summary.html" %}<fieldset class="ui-form-fieldset"><legend class="ui-field-label">Thông tin cần ghi nhận</legend>
+                {% with fid=c.pk|stringformat:"s"|add:"-appendix-appendix_no" %}{% include "ui/field.html" with id=fid name="appendix_no" label="Số phụ lục" type="text" required=True maxlength=50 value="" %}{% endwith %}
+                {% with fid=c.pk|stringformat:"s"|add:"-appendix-effective_date" %}{% include "ui/field.html" with id=fid name="effective_date" label="Ngày hiệu lực" type="date" required=True value="" %}{% endwith %}
+                {% with fid=c.pk|stringformat:"s"|add:"-appendix-description" %}{% include "ui/field.html" with id=fid name="description" label="Nội dung" type="text" value="" %}{% endwith %}
+                <button class="ui-button ui-button--primary" type="submit">Ghi nhận phụ lục</button>
+            </fieldset></form>{% endif %}
         </details>{% endfor %}
-        {% for t in transfers %}<div class="flex flex-wrap gap-2"><span>{{ t.effective_date|ui_number }}</span><span>Điều chuyển: {{ t.from_department|ui_number }} → {{ t.to_department|ui_number }}</span>{% if can_draft_hr %}<a class="text-blue-700 underline" href="{% url 'portal:hcns_draft' 'salary-decision' %}?transfer_id={{ t.pk }}">Soạn QĐ điều chỉnh →</a>{% endif %}</div>{% endfor %}
-        {% for pr in promotions %}<div class="flex flex-wrap gap-2"><span>{{ pr.effective_date|ui_number }}</span><span>Bổ nhiệm: {{ pr.old_position|ui_number }} → {{ pr.new_position|ui_number }}</span>{% if can_draft_hr %}<a class="text-blue-700 underline" href="{% url 'portal:hcns_draft' 'appointment-decision' %}?promotion_id={{ pr.pk }}">Soạn QĐ bổ nhiệm →</a>{% endif %}</div>{% endfor %}
-        {% for salary in salaries %}<div class="flex flex-wrap gap-2"><span>{{ salary.effective_date|ui_number }}</span><span>Lương: {{ salary.current_basic_salary|floatformat:"0g" }} đ</span>{% if can_draft_hr %}<a class="text-blue-700 underline" href="{% url 'portal:hcns_draft' 'salary-decision' %}?salary_id={{ salary.pk }}">Soạn QĐ mức lương này →</a>{% endif %}</div>{% endfor %}
-        {% for r in rewards %}<div class="flex gap-2"><span class="text-gray-400 w-24">{{ r.reward_date|ui_number }}</span><span class="text-green-700">Khen thưởng: {{ r.reward_type|ui_number }}</span></div>{% endfor %}
-        {% for d in disciplines %}<div class="flex gap-2"><span class="text-gray-400 w-24">{{ d.discipline_date|ui_number }}</span><span class="text-red-700">Kỷ luật: {{ d.discipline_type|ui_number }}</span></div>{% endfor %}
+        {% for t in transfers %}<div class="flex flex-wrap gap-2"><span>{{ t.effective_date|ui_date }}</span><span>Điều chuyển: {{ t.from_department|ui_number }} → {{ t.to_department|ui_number }}</span>{% if can_draft_hr %}<a class="text-blue-700 underline" href="{% url 'portal:hcns_draft' 'salary-decision' %}?transfer_id={{ t.pk }}">Soạn QĐ điều chỉnh →</a>{% endif %}</div>{% endfor %}
+        {% for pr in promotions %}<div class="flex flex-wrap gap-2"><span>{{ pr.effective_date|ui_date }}</span><span>Bổ nhiệm: {{ pr.old_position|ui_number }} → {{ pr.new_position|ui_number }}</span>{% if can_draft_hr %}<a class="text-blue-700 underline" href="{% url 'portal:hcns_draft' 'appointment-decision' %}?promotion_id={{ pr.pk }}">Soạn QĐ bổ nhiệm →</a>{% endif %}</div>{% endfor %}
+        {% for salary in salaries %}<div class="flex flex-wrap gap-2"><span>{{ salary.effective_date|ui_date }}</span><span>Lương: {{ salary.current_basic_salary|ui_vnd }}</span>{% if can_draft_hr %}<a class="text-blue-700 underline" href="{% url 'portal:hcns_draft' 'salary-decision' %}?salary_id={{ salary.pk }}">Soạn QĐ mức lương này →</a>{% endif %}</div>{% endfor %}
+        {% for r in rewards %}<div class="flex gap-2"><span class="text-gray-400 w-24">{{ r.reward_date|ui_date }}</span><span class="text-green-700">Khen thưởng: {{ r.reward_type|ui_number }}</span></div>{% endfor %}
+        {% for d in disciplines %}<div class="flex gap-2"><span class="text-gray-400 w-24">{{ d.discipline_date|ui_date }}</span><span class="text-red-700">Kỷ luật: {{ d.discipline_type|ui_number }}</span></div>{% endfor %}
     </div>
 </div>
+{% include "ui/confirm_dialog.html" %}</div>
 {% endblock %}

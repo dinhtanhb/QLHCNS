@@ -475,7 +475,7 @@ class PortalSensitiveWorkflowTests(TestCase):
         response = self.client.get(reverse("portal:hr_employee_list"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "<details class=\"hr-action-menu relative inline-block\">")
+        self.assertContains(response, "<details class=\"ui-row-menu\">")
         self.assertContains(response, reverse("portal:hr_employee_edit", args=(employee.pk,)))
         self.assertNotContains(response, "toggleMenu(")
 

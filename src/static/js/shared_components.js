@@ -1,0 +1,57 @@
+/* Opt-in validation and confirmation. Native form names/actions/CSRF are preserved. */
+(() => {
+ 'use strict';
+ document.querySelectorAll('form[data-ui-form]').forEach(form => {
+  const summary=form.querySelector('[data-ui-errors]');
+  const controls=()=>Array.from(form.elements).filter(e=>e.matches?.('input,select,textarea')&&e.type!=='hidden'&&e.willValidate&&!e.classList.contains('ui-number-display'));
+  function errors(){
+   if(!summary)return;
+   const list=summary.querySelector('ul');list.replaceChildren();
+   controls().forEach(control=>{
+    const target=control.classList.contains('ui-number-source')?control.nextElementSibling:control;
+    if(!target?.id)return;
+    let error=document.getElementById(target.id+'-error');
+    if(!error){error=document.createElement('p');error.className='ui-field-error';error.id=target.id+'-error';target.after(error);}
+    const bad=!control.validity.valid||(target!==control&&!target.validity.valid);
+    const v=control.validity;
+    const display=value=>window.IhrmsNumbers?.format(String(value))||String(value);
+    const message=v.valueMissing?'Vui lòng nhập thông tin này.':v.rangeUnderflow?'Giá trị tối thiểu là '+display(control.min)+'.':v.rangeOverflow?'Giá trị tối đa là '+display(control.max)+'.':v.typeMismatch||v.badInput?'Thông tin chưa đúng định dạng.':v.stepMismatch?'Giá trị chưa đúng bước tăng cho phép.':v.tooLong?'Thông tin vượt quá độ dài cho phép.':v.patternMismatch?'Thông tin chưa đúng định dạng yêu cầu.':target.validationMessage||control.validationMessage;
+    target.setAttribute('aria-invalid',String(bad));
+    const described=(target.getAttribute('aria-describedby')||'').split(/\s+/).filter(x=>x&&x!==error.id);
+    if(bad)described.push(error.id);
+    if(described.length)target.setAttribute('aria-describedby',described.join(' '));else target.removeAttribute('aria-describedby');
+    error.hidden=!bad;error.textContent=bad?message:'';
+    if(bad){const item=document.createElement('li'),link=document.createElement('a');link.href='#'+target.id;const label=Array.from(form.querySelectorAll('label')).find(l=>l.htmlFor===target.id);link.textContent=(label?.textContent.trim().replace(/\s*\*$/, '')||target.getAttribute('aria-label')||target.name)+': '+message;item.append(link);list.append(item);}
+   });
+   summary.hidden=!list.children.length;
+  }
+  form.noValidate=true;
+  form.addEventListener('invalid',event=>event.preventDefault(),true);
+  form.addEventListener('submit',event=>{if(!form.checkValidity()){event.preventDefault();errors();summary?.focus();}});
+  form.addEventListener('input',()=>{if(summary&&!summary.hidden)errors();});
+  summary?.addEventListener('click',event=>{const link=event.target.closest('a[href^="#"]');if(link){const field=document.getElementById(link.hash.slice(1));if(field){event.preventDefault();(field.classList.contains('ui-number-source')?field.nextElementSibling:field).focus();}}});
+  if(summary&&!summary.hidden)summary.focus();
+ });
+ document.addEventListener('keydown',event=>{if(event.key==='Escape'){document.querySelectorAll('.ui-row-menu[open]').forEach(menu=>{if(menu.contains(document.activeElement)){menu.open=false;menu.querySelector('summary').focus();}});}});
+ const dialog=document.getElementById('ui-confirm-dialog');
+ if(!dialog||!dialog.showModal)return;
+ let pending=null,origin=null;
+ const approved=new WeakSet();
+ document.addEventListener('submit',event=>{
+  const form=event.target;
+  if(!form.matches('form[data-ui-confirm]'))return;
+  if(approved.has(form)){approved.delete(form);return;}
+  if(event.defaultPrevented)return;
+  event.preventDefault();pending={form,submitter:event.submitter};origin=event.submitter||document.activeElement;
+  document.getElementById('ui-confirm-title').textContent=form.dataset.uiConfirmTitle||'Xác nhận thao tác';
+  document.getElementById('ui-confirm-description').textContent=form.dataset.uiConfirm;
+  const accept=dialog.querySelector('[data-ui-confirm-accept]');
+  accept.textContent=form.dataset.uiConfirmLabel||'Xác nhận';
+  accept.className='ui-button '+(form.dataset.uiConfirmTone==='primary'?'ui-button--primary':'ui-button--danger');
+  dialog.showModal();dialog.querySelector('[data-ui-confirm-cancel]').focus();
+ });
+ dialog.addEventListener('keydown',event=>{if(event.key!=='Tab')return;const targets=Array.from(dialog.querySelectorAll('button,a[href],input,select,textarea,[tabindex="0"]')).filter(e=>!e.disabled&&e.getClientRects().length);const first=targets[0],last=targets.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}});
+ dialog.querySelector('[data-ui-confirm-cancel]').addEventListener('click',()=>dialog.close());
+ dialog.querySelector('[data-ui-confirm-accept]').addEventListener('click',()=>{const action=pending;if(!action)return;pending=null;approved.add(action.form);dialog.close();action.form.requestSubmit(action.submitter||undefined);});
+ dialog.addEventListener('close',()=>{pending=null;if(origin?.isConnected)origin.focus();});
+})();

@@ -1,0 +1,1 @@
+{% for p in positions %}<option value="{{ p.id }}" {% if p.id == employee.position_id %}selected{% endif %}>{{ p.position_name }}</option>{% endfor %}

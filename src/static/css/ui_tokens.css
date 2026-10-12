@@ -45,6 +45,13 @@
     --ui-layer-drawer: 40;
     --ui-layer-dialog: 50;
     --ui-layer-toast: 60;
+    --ui-table-col-small: 8rem;
+    --ui-table-col-medium: 12rem;
+    --ui-table-col-large: 18rem;
+    --ui-table-max-height: 36rem;
+    --ui-dialog-width: 32rem;
+    --ui-dialog-max-height: 85vh;
+    --ui-component-heading: 1.125rem;
     --ui-motion-feedback: 120ms;
     --ui-motion-panel: 180ms;
     --ui-motion-easing: ease-out;

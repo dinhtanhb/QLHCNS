@@ -1,0 +1,1 @@
+<div class="ui-alert ui-alert--{{ tone|default:'info' }}" role="{% if tone == 'danger' or tone == 'warning' %}alert{% else %}status{% endif %}">{% include "_shell_icon.html" with name=tone|default:"info" %}<div><strong>{{ title }}</strong>{% if message %}<p>{{ message }}</p>{% endif %}</div></div>

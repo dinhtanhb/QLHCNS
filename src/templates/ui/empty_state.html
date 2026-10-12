@@ -1,0 +1,1 @@
+<div class="ui-state"{% if state == "error" %} role="alert"{% elif state == "loading" %} role="status" aria-live="polite"{% endif %}>{% include "_shell_icon.html" with name=icon|default:"info" %}<h3>{{ title }}</h3><p>{{ description }}</p>{% if action_url and action_label %}<a class="ui-button ui-button--secondary" href="{{ action_url }}">{{ action_label }}</a>{% endif %}</div>

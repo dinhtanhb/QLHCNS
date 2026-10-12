@@ -1,35 +1,32 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static ui_components %}
 {% block title %}Báo cáo điều hành{% endblock %}
 {% block extra_css %}<link rel="stylesheet" href="{% static 'css/report_dashboard.css' %}?v=20261012-ui-2c">{% endblock %}
 {% block content %}
-<div class="report-shell">
-  <div class="report-toolbar">
-    <div><h1 class="report-title">Báo cáo điều hành</h1><p class="report-intro">Tổng hợp số liệu từ các phân hệ đang có trong IHRMS.</p></div>
-    <form method="get" class="report-filter" aria-label="Lọc kỳ báo cáo">
+<div class="ui-page ui-report report-shell">
+  <header class="ui-page-header">
+    <div><h1 class="ui-page-title">Báo cáo điều hành</h1><p class="ui-page-description">Tổng hợp số liệu từ các phân hệ đang có trong IHRMS.</p></div>
+    <form method="get" class="ui-filter-bar" aria-label="Lọc kỳ báo cáo">
       <div><label for="from_date">Từ ngày</label><input class="report-input" id="from_date" name="from_date" type="date" value="{{ from_date|date:'Y-m-d' }}"></div>
       <div><label for="to_date">Đến ngày</label><input class="report-input" id="to_date" name="to_date" type="date" value="{{ to_date|date:'Y-m-d' }}"></div>
-      <button class="report-button report-button-primary" type="submit">Cập nhật</button>
+      <button class="ui-button ui-button--primary" type="submit">Cập nhật</button>
     </form>
+  </header>
+  <div class="ui-page-actions" role="group" aria-label="Xuất báo cáo">
+    <a class="ui-button ui-button--secondary" href="{% url 'portal:report_hub_export' 'xlsx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Xuất Excel</a>
+    <a class="ui-button ui-button--secondary" href="{% url 'portal:report_hub_export' 'docx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Xuất Word</a>
+    <a class="ui-button ui-button--secondary" href="{% url 'portal:report_hub_export' 'pptx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Tạo slide</a>
   </div>
-  <div class="report-actions" role="group" aria-label="Xuất báo cáo">
-    <a class="report-button report-button-secondary" href="{% url 'portal:report_hub_export' 'xlsx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Xuất Excel</a>
-    <a class="report-button report-button-secondary" href="{% url 'portal:report_hub_export' 'docx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Xuất Word</a>
-    <a class="report-button report-button-secondary" href="{% url 'portal:report_hub_export' 'pptx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Tạo slide</a>
-  </div>
-  <section class="report-hero" aria-label="Số liệu tổng quan">
-    <p class="report-period">Kỳ báo cáo {{ from_date|date:'d/m/Y' }} đến {{ to_date|date:'d/m/Y' }}</p>
-    <div class="report-headlines">
-      <div class="headline"><span class="headline-label">Nhân sự đang làm việc</span><strong class="headline-value">{{ headline.active|ui_number }}</strong></div>
-      <div class="headline"><span class="headline-label">Tuyển mới trong kỳ</span><strong class="headline-value">{{ headline.new_hires|ui_number }}</strong></div>
-      <div class="headline"><span class="headline-label">Nghỉ việc trong kỳ</span><strong class="headline-value">{{ headline.departures|ui_number }}</strong></div>
-      <div class="headline"><span class="headline-label">Ứng viên đang xử lý</span><strong class="headline-value">{{ headline.candidates|ui_number }}</strong></div>
-      <div class="headline" {% if headline.overdue_tasks > 0 %}data-tone="danger"{% endif %}><span class="headline-label">Công việc quá hạn</span><strong class="headline-value">{{ headline.overdue_tasks|ui_number }}</strong></div>
-      <div class="headline" {% if headline.overdue_dispatches > 0 %}data-tone="danger"{% endif %}><span class="headline-label">Công văn quá hạn</span><strong class="headline-value">{{ headline.overdue_dispatches|ui_number }}</strong></div>
-    </div>
-  </section>
+  <section aria-label="Số liệu tổng quan"><p class="ui-page-description">Kỳ báo cáo {{ from_date|ui_date }} đến {{ to_date|ui_date }}</p><div class="ui-kpi-grid">
+{% include "ui/kpi.html" with label="Nhân sự đang làm việc" value=headline.active %}
+{% include "ui/kpi.html" with label="Tuyển mới trong kỳ" value=headline.new_hires %}
+{% include "ui/kpi.html" with label="Nghỉ việc trong kỳ" value=headline.departures %}
+{% include "ui/kpi.html" with label="Ứng viên đang xử lý" value=headline.candidates %}
+{% include "ui/kpi.html" with label="Công việc quá hạn" value=headline.overdue_tasks danger=True %}
+{% include "ui/kpi.html" with label="Công văn quá hạn" value=headline.overdue_dispatches danger=True %}
+</div></section>
   <div class="report-visuals">
-    <section class="report-panel" aria-labelledby="movement-heading">
+    <section class="report-panel ui-card" aria-labelledby="movement-heading">
       <h2 id="movement-heading">Biến động nhân sự theo tháng</h2>
       <p class="report-panel-note">Tuyển mới, nghỉ việc, điều chuyển và bổ nhiệm trong phạm vi đã chọn.</p>
       <div class="movement-chart" role="region" tabindex="0" aria-label="Biểu đồ biến động nhân sự; dùng phím mũi tên để cuộn trên màn hình nhỏ. Số liệu chi tiết ở bảng bên dưới.">
@@ -43,20 +40,20 @@
       <div class="chart-legend"><span><i aria-hidden="true" class="legend-dot bar-hire"></i>Tuyển mới</span><span><i aria-hidden="true" class="legend-dot bar-leave"></i>Nghỉ việc</span><span><i aria-hidden="true" class="legend-dot bar-transfer"></i>Điều chuyển</span><span><i aria-hidden="true" class="legend-dot bar-promotion"></i>Bổ nhiệm</span></div>
       <details class="report-data-details">
         <summary>Xem số liệu theo tháng</summary>
-        <div class="report-table-scroll" role="region" tabindex="0" aria-label="Bảng biến động nhân sự theo tháng">
-          <table class="report-data-table"><thead><tr><th scope="col">Tháng</th><th scope="col">Tuyển mới</th><th scope="col">Nghỉ việc</th><th scope="col">Điều chuyển</th><th scope="col">Bổ nhiệm</th></tr></thead>
-            <tbody>{% for row in month_rows %}<tr><th scope="row">{{ row.label|ui_number }}</th><td>{{ row.new_hires|ui_number }}</td><td>{{ row.departures|ui_number }}</td><td>{{ row.transfers|ui_number }}</td><td>{{ row.promotions|ui_number }}</td></tr>{% endfor %}</tbody>
+        <div class="ui-scroll report-table-scroll" role="region" tabindex="0" aria-label="Bảng biến động nhân sự theo tháng">
+          <table class="ui-table ui-table--movement report-data-table"><caption>Số liệu biến động nhân sự theo tháng</caption><colgroup><col class="ui-col-small"><col class="ui-col-small"><col class="ui-col-small"><col class="ui-col-small"><col class="ui-col-small"></colgroup><thead><tr><th scope="col">Tháng</th><th scope="col">Tuyển mới</th><th scope="col">Nghỉ việc</th><th scope="col">Điều chuyển</th><th scope="col">Bổ nhiệm</th></tr></thead>
+            <tbody>{% for row in month_rows %}<tr><th scope="row">{{ row.label|ui_number }}</th><td class="ui-number">{{ row.new_hires|ui_number }}</td><td class="ui-number">{{ row.departures|ui_number }}</td><td class="ui-number">{{ row.transfers|ui_number }}</td><td class="ui-number">{{ row.promotions|ui_number }}</td></tr>{% endfor %}</tbody>
           </table>
         </div>
       </details>
     </section>
-    <section class="report-panel" aria-labelledby="recruitment-heading">
+    <section class="report-panel ui-card" aria-labelledby="recruitment-heading">
       <h2 id="recruitment-heading">Phễu tuyển dụng</h2><p class="report-panel-note">Trạng thái tổng hợp hiện tại của quy trình tuyển dụng.</p>
       <ul class="funnel">{% for item in recruitment_funnel %}<li class="funnel-row"><span class="funnel-label">{{ item.label|ui_number }}</span><span class="funnel-track" aria-hidden="true"><span class="funnel-fill" data-empty="{% if item.value > 0 %}false{% else %}true{% endif %}" style="width:{{ item.width }}%"></span></span><strong class="funnel-value">{{ item.value|ui_number }}</strong></li>{% endfor %}</ul>
     </section>
   </div>
   <div class="report-section-grid">{% for section in sections %}
-    <section class="report-section" id="{{ section.key }}" aria-labelledby="section-{{ section.key }}">
+    <section class="report-section ui-card" id="{{ section.key }}" aria-labelledby="section-{{ section.key }}">
       <div class="section-heading"><div><h2 id="section-{{ section.key }}">{{ section.title|ui_number }}</h2><p>{{ section.description|ui_number }}</p></div>
         {% if section.href or section.key == 'planning' %}<div class="section-links">
           {% if section.href %}<a class="section-link" href="{% url section.href %}">{% if section.key == 'planning' %}Xem định biên{% else %}Xem chi tiết{% endif %}</a>{% endif %}

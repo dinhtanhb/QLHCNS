@@ -1,0 +1,589 @@
+<!DOCTYPE html><html lang="vi" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>IHRMS — thành phần dùng chung</title>
+<link rel="stylesheet" href="../src/static/css/ui_tokens.css"><link rel="stylesheet" href="../src/static/css/app_shell.css"><link rel="stylesheet" href="../src/static/css/ui_controls.css"><link rel="stylesheet" href="../src/static/css/shared_components.css"><script src="../src/static/js/theme.js"></script></head>
+<body class="portal-app"><main class="ui-main"><div class="ui-page">
+<header class="ui-page-header"><div><h1 class="ui-page-title">Thành phần dùng chung IHRMS</h1><p class="ui-page-description">Tài liệu dành cho phát triển. Dữ liệu mẫu, không nối DB và không có URL production.</p></div></header>
+
+<div><button type="button" class="ui-button" data-theme-toggle>Đổi theme</button></div>
+<section class="ui-card"><h2 class="ui-card-title">Nút và thẻ KPI</h2><div class="ui-page-actions"><button type="button" class="ui-button ui-button--primary">Hành động chính</button><button type="button" class="ui-button ui-button--secondary">Hành động phụ</button><button type="button" class="ui-button ui-button--danger">Hành động nguy hiểm</button><button type="button" class="ui-button" disabled>Không khả dụng</button></div><div class="ui-kpi-grid">
+<div class="ui-card ui-kpi"><span class="ui-kpi-label">Nhân viên mẫu</span><strong class="ui-kpi-value">1.234</strong></div>
+<div class="ui-card ui-kpi ui-kpi--danger"><span class="ui-kpi-label">Công việc quá hạn</span><strong class="ui-kpi-value">3</strong><span class="ui-kpi-note"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m8 8 8 8M8 16l8-8"/>
+
+</svg>
+Cần xử lý</span></div>
+<div class="ui-card ui-kpi"><span class="ui-kpi-label">Chưa có dữ liệu</span><strong class="ui-kpi-value">Chưa có dữ liệu</strong></div>
+</div></section>
+<section class="ui-card"><h2 class="ui-card-title">Form, trợ giúp và lỗi cạnh field</h2><form data-ui-form><div class="ui-error-summary" data-ui-errors tabindex="-1" hidden><h2>Kiểm tra thông tin đã nhập</h2><ul></ul></div>
+<fieldset class="ui-form-fieldset"><legend>Thông tin mẫu</legend><div class="ui-form-grid"><div class="ui-field"><label for="id_sample-title">Tên mẫu <span class="ui-required" aria-hidden="true">*</span></label><input type="text" name="sample-title" aria-describedby="id_sample-title-help" required id="id_sample-title"><p class="ui-field-help" id="id_sample-title-help">Dữ liệu giả, không lưu vào hệ thống.</p></div>
+<div class="ui-field"><label for="id_sample-amount">Số tiền <span class="ui-required" aria-hidden="true">*</span></label><input type="number" name="sample-amount" min="0" step="any" aria-describedby="id_sample-amount-help" required id="id_sample-amount"><p class="ui-field-help" id="id_sample-amount-help">Đơn vị VND.</p></div>
+</div></fieldset><div class="ui-form-actions"><button class="ui-button ui-button--primary" type="submit">Kiểm tra dữ liệu mẫu</button></div></form></section>
+<section class="ui-card"><h2 class="ui-card-title">Tóm tắt lỗi server-rendered (mẫu)</h2><div class="ui-error-summary" data-ui-errors tabindex="-1"><h2>Kiểm tra thông tin đã nhập</h2><ul><li><a href="#id_error-title">Tên mẫu: Trường này là bắt buộc.</a></li><li><a href="#id_error-amount">Số tiền: Trường này là bắt buộc.</a></li></ul></div>
+<div class="ui-field"><label for="id_error-title">Tên mẫu <span class="ui-required" aria-hidden="true">*</span></label><input type="text" name="error-title" aria-invalid="true" aria-describedby="id_error-title-help id_error-title-error" required id="id_error-title"><p class="ui-field-help" id="id_error-title-help">Dữ liệu giả, không lưu vào hệ thống.</p><div class="ui-field-error" id="id_error-title-error"><ul class="errorlist" id="id_error-title_error"><li>Trường này là bắt buộc.</li></ul></div></div>
+<div class="ui-field"><label for="id_error-amount">Số tiền <span class="ui-required" aria-hidden="true">*</span></label><input type="number" name="error-amount" min="0" step="any" aria-invalid="true" aria-describedby="id_error-amount-help id_error-amount-error" required id="id_error-amount"><p class="ui-field-help" id="id_error-amount-help">Đơn vị VND.</p><div class="ui-field-error" id="id_error-amount-error"><ul class="errorlist" id="id_error-amount_error"><li>Trường này là bắt buộc.</li></ul></div></div>
+</section>
+<section class="ui-card"><h2 class="ui-card-title">Bảng, vùng cuộn và phân trang</h2><div class="ui-scroll" role="region" tabindex="0" aria-label="Bảng dữ liệu mẫu"><table class="ui-table ui-table--periods"><caption>Chi phí giả định</caption><colgroup><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-small"></colgroup><thead><tr><th scope="col">Mục</th><th scope="col">Ngày</th><th scope="col" class="ui-number">Số tiền</th></tr></thead><tbody><tr><th scope="row">Mục mẫu</th><td>12/10/2026</td><td class="ui-number">5.000.000 đ</td></tr></tbody></table></div>
+<nav aria-label="Phân trang danh sách" class="ui-pagination"><span>Trang 2/3 · 45 mục</span><div class="ui-pagination-controls"><a class="ui-button" rel="prev" href="?q=du-lieu-gia&amp;page=1">Trang trước</a><span class="ui-button" aria-current="page" aria-label="Trang hiện tại 2">2</span><a class="ui-button" rel="next" href="?q=du-lieu-gia&amp;page=3">Trang sau</a></div></nav>
+
+</section>
+<section class="ui-card"><h2 class="ui-card-title">Nhãn–giá trị</h2><dl class="ui-detail-grid"><div class="ui-detail-item"><dt>Tên</dt><dd>Nhân viên giả</dd></div>
+<div class="ui-detail-item"><dt>Mã</dt><dd>UI-DEMO</dd></div>
+</dl></section>
+<section class="ui-card"><h2 class="ui-card-title">Alert / toast</h2><div class="ui-alert ui-alert--success" role="status"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<div><strong>Thao tác mẫu hoàn tất</strong><p>Thông báo thông thường dùng role=status; không tự giành focus.</p></div></div>
+<div class="ui-alert ui-alert--warning" role="alert"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<div><strong>Cần kiểm tra</strong><p>Cảnh báo còn hiển thị cho đến khi người dùng xử lý.</p></div></div>
+<div class="ui-alert ui-alert--danger" role="alert"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m8 8 8 8M8 16l8-8"/>
+
+</svg>
+<div><strong>Không thể hoàn tất</strong><p>Không tự đóng lỗi; thông báo cần hành động phải còn truy cập được.</p></div></div>
+</section>
+<section class="ui-card"><h2 class="ui-card-title">Trống / đang tải / lỗi</h2><div class="ui-state"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M3 7V4h7l3 3h8v13H3Z"/>
+
+</svg>
+<h3>Chưa có dữ liệu</h3><p>Tạo bản ghi khi có quyền hoặc liên hệ người phụ trách.</p></div>
+<div class="ui-state" role="status" aria-live="polite"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<h3>Đang tải dữ liệu</h3><p>Vui lòng chờ; đây là trạng thái mẫu tĩnh.</p></div>
+<div class="ui-state" role="alert"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<h3>Không tải được dữ liệu</h3><p>Thử lại thao tác hoặc liên hệ người phụ trách.</p></div>
+</section>
+<section class="ui-card"><h2 class="ui-card-title">Hộp xác nhận</h2><p>Chỉ mô phỏng giao diện; form không gửi đến nghiệp vụ.</p><form method="post" action="#" data-ui-confirm="Bạn đang kiểm tra hộp xác nhận mẫu. Không có bản ghi thật bị xóa." data-ui-confirm-title="Xác nhận xóa bản ghi mẫu" data-ui-confirm-label="Xóa bản ghi mẫu" data-demo-form><button type="submit" name="action" value="delete" class="ui-button ui-button--danger">Xóa bản ghi mẫu</button></form></section>
+<section class="ui-card"><h2 class="ui-card-title">Registry badge đầy đủ</h2><h3>hrm.employee:employment_status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đang làm việc</span></span>
+<span class="ui-badge ui-badge--info"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Thử việc</span></span>
+<span class="ui-badge ui-badge--info"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đang nghỉ dài hạn</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã nghỉ việc</span></span>
+</div><h3>hrm.employeeprofilechangerequest:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Chờ duyệt</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã duyệt</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Từ chối</span></span>
+<span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Yêu cầu bổ sung</span></span>
+</div><h3>attendance.attendance:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đủ công</span></span>
+<span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Đi muộn</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Vắng</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Nửa ngày</span></span>
+</div><h3>attendance.monthlyattendancesummary:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Chờ duyệt</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã duyệt</span></span>
+</div><h3>leave.leaverequest:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Chờ duyệt</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã duyệt</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Từ chối</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã hủy</span></span>
+</div><h3>contract.contract:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Nháp</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đang hiệu lực</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Hết hạn</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Chấm dứt trước hạn</span></span>
+</div><h3>payroll.employeesalary:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đang áp dụng</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã kết thúc</span></span>
+</div><h3>payroll.payrollperiod:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đang mở</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã khóa</span></span>
+</div><h3>task.task:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Chưa bắt đầu</span></span>
+<span class="ui-badge ui-badge--info"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đang thực hiện</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Hoàn thành</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã hủy</span></span>
+</div><h3>document.document:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Nháp</span></span>
+<span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Chờ phê duyệt</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã ban hành</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Từ chối</span></span>
+</div><h3>document.personneldecision:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Bản nháp</span></span>
+<span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Chờ duyệt</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã duyệt</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Từ chối</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã ban hành</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã hủy</span></span>
+</div><h3>document.officialdispatch:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Chờ phân công / xử lý</span></span>
+<span class="ui-badge ui-badge--info"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đang xử lý</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã hoàn thành</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã lưu trữ</span></span>
+<span class="ui-badge ui-badge--danger"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m8 8 8 8M8 16l8-8"/>
+
+</svg>
+<span>Quá hạn</span></span>
+</div><h3>asset.asset:condition</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Bình thường</span></span>
+<span class="ui-badge ui-badge--danger"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m8 8 8 8M8 16l8-8"/>
+
+</svg>
+<span>Hư hỏng</span></span>
+<span class="ui-badge ui-badge--danger"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m8 8 8 8M8 16l8-8"/>
+
+</svg>
+<span>Mất/Thất lạc</span></span>
+</div><h3>asset.asset:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Sẵn sàng cấp phát</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đang sử dụng</span></span>
+<span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Đang bảo trì</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã thanh lý</span></span>
+</div><h3>asset.inventorysession:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đang kiểm kê</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã hoàn tất</span></span>
+</div><h3>asset.assetdisposalrequest:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Chờ duyệt</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã duyệt</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Từ chối</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã hoàn tất</span></span>
+</div><h3>recruitment.recruitmentrequest:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Chờ duyệt</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã duyệt</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Từ chối</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã hoàn tất tuyển dụng</span></span>
+</div><h3>recruitment.jobposting:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đang tuyển</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã đóng</span></span>
+</div><h3>recruitment.candidate:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Mới ứng tuyển</span></span>
+<span class="ui-badge ui-badge--info"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đang sàng lọc</span></span>
+<span class="ui-badge ui-badge--info"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đang phỏng vấn</span></span>
+<span class="ui-badge ui-badge--info"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã gửi offer</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã tuyển</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Không phù hợp</span></span>
+</div><h3>recruitment.offer:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--info"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã gửi</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã chấp nhận</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã từ chối</span></span>
+</div><h3>procurement.procurementrequest:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Chờ duyệt</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã duyệt</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Từ chối</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã mua</span></span>
+</div><h3>notification.notificationemailoutbox:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Nháp — chưa gửi</span></span>
+<span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Đang chờ gửi</span></span>
+<span class="ui-badge ui-badge--info"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã gửi</span></span>
+<span class="ui-badge ui-badge--danger"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m8 8 8 8M8 16l8-8"/>
+
+</svg>
+<span>Gửi lỗi</span></span>
+</div><h3>office.incomingdocument:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Mới nhận</span></span>
+<span class="ui-badge ui-badge--info"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đang xử lý</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã xử lý xong</span></span>
+</div><h3>office.roombooking:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Chờ duyệt</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã duyệt</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Từ chối</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã hủy</span></span>
+</div><h3>office.vehiclebooking:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Chờ duyệt</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã đặt</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Từ chối</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã hủy</span></span>
+</div><h3>office.supplyrequest:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Chờ duyệt</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã duyệt</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã cấp phát</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Từ chối</span></span>
+</div><h3>planning.trainingcourse:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Kế hoạch</span></span>
+<span class="ui-badge ui-badge--info"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đang diễn ra</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã hoàn thành</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã hủy</span></span>
+</div><h3>planning.trainingenrollment:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--info"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã đăng ký</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã hoàn thành</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã hủy</span></span>
+</div><h3>activity.activity:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã lên kế hoạch</span></span>
+<span class="ui-badge ui-badge--info"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã có Công văn</span></span>
+<span class="ui-badge ui-badge--info"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đang triển khai</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã hoàn thành</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã hủy</span></span>
+</div><h3>activity.activityproposal:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Bản nháp</span></span>
+<span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Đã gửi xin phê duyệt</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Đã phê duyệt</span></span>
+<span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Yêu cầu chỉnh sửa</span></span>
+</div><h3>lifecycle.employeelifecyclecase:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đang xử lý</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Hoàn tất</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Đã hủy</span></span>
+</div><h3>lifecycle.lifecyclechecklistitem:status</h3><div class="ui-page-actions"><span class="ui-badge ui-badge--warning"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m12 3 10 18H2ZM12 9v4m0 4h.01"/>
+
+</svg>
+<span>Chưa làm</span></span>
+<span class="ui-badge ui-badge--success"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>
+
+</svg>
+<span>Hoàn tất</span></span>
+<span class="ui-badge ui-badge--neutral"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>
+</svg>
+<span>Bỏ qua</span></span>
+</div></section>
+<dialog id="ui-confirm-dialog" class="ui-dialog" aria-labelledby="ui-confirm-title" aria-describedby="ui-confirm-description"><div class="ui-dialog-content"><h2 id="ui-confirm-title">Xác nhận thao tác</h2><p id="ui-confirm-description"></p><div class="ui-dialog-actions"><button type="button" class="ui-button ui-button--secondary" data-ui-confirm-cancel autofocus>Quay lại</button><button type="button" class="ui-button ui-button--danger" data-ui-confirm-accept>Xác nhận</button></div></div></dialog>
+</div></main><script src="../src/static/js/ui_numbers.js"></script><script src="../src/static/js/shared_components.js"></script><script>document.addEventListener('submit', function(event) { if (event.target.matches('[data-demo-form]')) event.preventDefault(); });</script></body></html>

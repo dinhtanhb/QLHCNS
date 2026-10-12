@@ -1,35 +1,25 @@
 {% extends "base.html" %}
+{% load ui_components %}
 {% block title %}Kỳ lương{% endblock %}
 {% block content %}
-<h1 class="text-lg font-bold text-gray-900 mb-4">Chạy lương hàng tháng</h1>
-
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-    <h2 class="text-sm font-bold text-gray-900 mb-3">Tạo kỳ lương mới</h2>
-    <form method="post" action="{% url 'portal:finance_period_create' %}" class="flex flex-wrap gap-3">
-        {% csrf_token %}
-        <input type="number" name="payroll_month" min="1" max="12" placeholder="Tháng" required class="w-24 rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <input type="number" name="payroll_year" placeholder="Năm" required class="w-28 rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Tạo kỳ lương</button>
-    </form>
-</div>
-
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <div class="overflow-x-auto mobile-table-scroll">
-        <table class="w-full text-sm">
-        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Kỳ lương</th><th class="py-2 pr-4">Thời gian</th><th class="py-2 pr-4">Trạng thái</th><th class="py-2">Thao tác</th></tr></thead>
-        <tbody class="divide-y divide-gray-100">
-        {% for p in periods %}
-        <tr>
-            <td class="py-2 pr-4 font-medium">Tháng {{ p.payroll_month }}/{{ p.payroll_year }}</td>
-            <td class="py-2 pr-4">{{ p.start_date|ui_number }} - {{ p.end_date|ui_number }}</td>
-            <td class="py-2 pr-4">
-                <span class="px-2.5 py-1 rounded-full text-xs font-medium {% if p.status == 'Locked' %}bg-gray-100 text-gray-600{% else %}bg-green-100 text-green-700{% endif %}">{{ p.get_status_display|ui_number }}</span>
-            </td>
-            <td class="py-2"><a href="{% url 'portal:finance_payroll_run' p.pk %}" class="text-blue-700 hover:underline">Xem / Chạy lương</a></td>
-        </tr>
-        {% empty %}<tr><td colspan="4" class="py-6 text-center text-gray-400">Chưa có kỳ lương nào.</td></tr>{% endfor %}
-        </tbody>
-    </table>
-    </div>
-</div>
+<div class="ui-page">
+{% include "ui/page_header.html" with title="Chạy lương hàng tháng" description="Tạo kỳ lương và mở bảng lương theo tháng." %}
+<section class="ui-card" aria-labelledby="period-create-title">
+<h2 class="ui-card-title" id="period-create-title">Tạo kỳ lương mới</h2>
+<form method="post" action="{% url 'portal:finance_period_create' %}" data-ui-form>
+{% csrf_token %}{% include "ui/error_summary.html" %}
+<fieldset class="ui-form-fieldset"><legend class="ui-field-label">Tháng và năm của kỳ lương</legend><div class="ui-form-row">
+{% include "ui/field.html" with id="period-month" name="payroll_month" label="Tháng" type="number" min=1 max=12 required=True value="" %}
+{% include "ui/field.html" with id="period-year" name="payroll_year" label="Năm" type="number" min=2000 max=2100 required=True value="" %}
+<button type="submit" class="ui-button ui-button--primary">Tạo kỳ lương</button>
+</div></fieldset></form>
+</section>
+<section class="ui-card" aria-labelledby="period-list-title">
+<h2 id="period-list-title" class="ui-card-title">Kỳ lương đã tạo</h2>
+{% if periods %}<div class="ui-scroll overflow-x-auto mobile-table-scroll" role="region" tabindex="0" aria-label="Danh sách kỳ lương; cuộn ngang để xem đầy đủ cột">
+<table class="ui-table ui-table--periods"><caption>Danh sách kỳ lương</caption><colgroup><col class="ui-col-small"><col class="ui-col-medium"><col class="ui-col-small"><col class="ui-col-medium"></colgroup>
+<thead><tr><th scope="col">Kỳ lương</th><th scope="col">Thời gian</th><th scope="col">Trạng thái</th><th scope="col" class="ui-actions">Thao tác</th></tr></thead>
+<tbody>{% for p in periods %}<tr><th scope="row">Tháng {{ p.payroll_month }}/{{ p.payroll_year }}</th><td>{{ p.start_date|ui_date }} – {{ p.end_date|ui_date }}</td><td>{% ui_badge "payroll.payrollperiod:status" p.status %}</td><td class="ui-actions"><a href="{% url 'portal:finance_payroll_run' p.pk %}" class="ui-button ui-button--secondary">Xem / Chạy lương</a></td></tr>{% endfor %}</tbody></table></div>
+{% else %}{% include "ui/empty_state.html" with title="Chưa có kỳ lương" description="Nhập Tháng và Năm ở form phía trên để tạo kỳ lương đầu tiên." icon="finance" %}{% endif %}
+</section></div>
 {% endblock %}

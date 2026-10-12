@@ -1,0 +1,1 @@
+{% for d in departments %}<option value="{{ d.id }}" {% if d.id == employee.department_id %}selected{% endif %}>{{ d.department_name }}</option>{% endfor %}
