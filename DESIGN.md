@@ -1,309 +1,183 @@
 ---
-name: "QLHCNS Design System"
-description: "Framework-agnostic design rules for web and mobile app implementation."
+name: "QLHCNS / IHRMS Design System"
+description: "Quy tắc thiết kế giao diện cổng nhân sự nội bộ IHRMS (Django template, tiếng Việt). Khớp design-system/MASTER.md đã duyệt."
 
-# ─── Colors ───────────────────────────────────────────────
 colors:
-  # Brand
-  primary:       "#8b5cf6"
-  primaryStrong: "#4c1d95"
-  primarySoft:   "#ddd6fe"
-  accent:        "#8b5cf6"
+  # Giá trị nguồn; triển khai dùng token --ui-* trong ui_tokens.css, không rải mã hex trong template.
+  brandLight:     "#6d28d9"
+  brandDark:      "#c4b5fd"
+  bgLight:        "#f8fafc"
+  surfaceLight:   "#ffffff"
+  textLight:      "#0f172a"
+  textMutedLight: "#475569"
+  borderLight:    "#64748b"
+  bgDark:         "#0f172a"
+  surfaceDark:    "#1e293b"
+  textDark:       "#f8fafc"
+  textMutedDark:  "#cbd5e1"
+  borderDark:     "#94a3b8"
+  # 4 màu ngữ nghĩa (mỗi màu có text/bg/border cho cả light và dark trong tokens)
+  success: "xanh lá"
+  warning: "hổ phách"
+  danger:  "đỏ"
+  info:    "xanh dương"
 
-  # Surfaces
-  surface:       "#f5f3ff"
-  surfaceMuted:  "#ddd6fe"
-
-  # Text & Border
-  text:          "#2e1065"
-  border:        "#5b21b6"
-
-  # Feedback
-  success:       "#16A34A"
-  warning:       "#D97706"
-  danger:        "#DC2626"
-
-# ─── Typography ───────────────────────────────────────────
 typography:
-  family:        "system-ui, -apple-system, Segoe UI, sans-serif"
-  displayFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
-  monoFamily:    "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
-  source:        "system font stack"
-  weights:       "300, 400, 500, 600"
-  defaultWeight: 600
-  tone:          "sans"
+  family:   "\"Segoe UI\", system-ui, -apple-system, Roboto, Arial, sans-serif"
+  monoFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+  source:   "font hệ thống, không tải font ngoài"
+  weights:  "400 (thân), 600 (nhãn), 700 (tiêu đề)"
+  body: 16px
+  table: 14px
+  caption: 12px
+  lineHeightBody: 1.5
+  lineHeightHeading: 1.25
 
-# Spacing
-spacing:
-  xs:      4px
-  sm:      8px
-  md:      12px
-  lg:      16px
-  xl:      24px
-  xxl:     32px
-  section: 48px
-
-# Radius
-radius:
-  sm: 4px
-  md: 8px
-  lg: 12px
-
-# Motion
-motion:
-  fast:   120ms
-  normal: 180ms
-  slow:   260ms
+spacing: { xs: 4px, sm: 8px, md: 12px, lg: 16px, xl: 24px, xxl: 32px, section: 48px }
+radius:  { sm: 4px, md: 8px, lg: 12px }
+motion:  { feedback: 120ms, panel: 180ms }
 ---
 
-# Design System Rules
+# Quy tắc thiết kế IHRMS
 
-## Purpose
-QLHCNS Design System defines portable, framework-agnostic design rules for web and mobile product interfaces. Use it as the source of truth before changing layouts, components, color, typography, motion, or interaction states.
+## Mục đích và thứ bậc tài liệu
+Đây là nguồn quy tắc thiết kế cho mọi thay đổi giao diện của IHRMS. Thứ bậc khi có mâu thuẫn:
+1. `design-system/MASTER.md` (quyết định đã duyệt của chủ dự án) và `src/static/css/ui_tokens.css` (giá trị cụ thể).
+2. Tệp này (nguyên tắc chung, quy trình, điều nên/không nên).
+3. Hướng dẫn mặc định của skill UI UX Pro Max (chỉ dùng khi hai mục trên không nói tới).
 
-This file is a portable design skill. Any AI or engineer should be able to read it and improve a web or mobile interface without needing React, Vue, Svelte, Tailwind, native mobile, or any other specific technology.
+Nếu phát hiện mâu thuẫn, ghi vào `docs/PROJECT_WORK_LOG.md` và chọn phương án dễ tiếp cận, nhất quán hơn; không tự đổi quyết định thiết kế.
 
-## Operating Modes
+**Lịch sử:** bản cũ của tệp này định hướng Neumorphism (bóng nổi/chìm). Đã thay bằng card có viền + bóng nhẹ vì Neumorphism làm giảm độ rõ của bảng dữ liệu dày, trạng thái và focus. Không dùng lại quy tắc Neumorphism.
 
-### New Project Mode
-- Use these rules to create a coherent first implementation when no existing UI exists.
-- Build the information architecture, component system, and responsive behavior from the tokens and rules below.
+## Chế độ làm việc: cải tạo dự án có sẵn
+- Dự án hiện có là nguồn chân lý về nội dung, route, hành vi, dữ liệu, phân quyền và cấu trúc thông tin. Chỉ đổi lớp trình bày.
+- Vá theo từng phần (token, spacing, chữ, thứ bậc, trạng thái, responsive); không viết lại toàn bộ trang khi vá nhỏ là đủ.
+- Không thay nội dung thật bằng nội dung mẫu. Phần nào lệch hệ thiết kế thì chỉnh kiểu dáng, không xóa.
+- Nếu thấy cần xóa nội dung, route, tính năng hay logic dữ liệu: dừng lại và hỏi chủ dự án.
 
-### Existing Project Refactor Mode
-- Treat the existing product as the source of truth for content, routes, behavior, data, and information architecture.
-- Improve the visual system by patching styles, tokens, spacing, typography, hierarchy, responsive behavior, and component states.
-- Do not regenerate whole pages from scratch when a targeted patch can preserve the current experience.
-- Do not replace real content with placeholder, demo, lorem ipsum, or simplified content.
-- If a section looks inconsistent with this design system, restyle it first. Do not remove it.
-- If removing content, routes, features, media, or data logic seems necessary, stop and ask for approval.
+### Bảo toàn khi đổi giao diện
+- Giữ mọi tiêu đề, nhãn, nút, liên kết, biểu mẫu, mục menu, route, URL name, tên field, CSRF và logic lấy dữ liệu.
+- Giữ nguyên điều kiện hiển thị theo quyền (RBAC). CSS/JS không thay được kiểm tra quyền ở server; không thêm vai trò mới vào giao diện.
+- Giữ tương tác đang chạy: biểu mẫu, menu, chuyển light/dark, hộp thoại, phân trang.
+- Giữ tên sản phẩm/công ty (VietHealth) và thuật ngữ nghiệp vụ tiếng Việt.
+- Không áp token toàn cục lên biểu mẫu/giấy tờ in (HCNS). Cần in thì kiểm tra bản in riêng.
 
-## Preservation Rules For Existing Products
-- Preserve all existing headings, paragraphs, labels, buttons, links, images, icons, forms, navigation items, sections, routes, and data-fetching logic unless the user explicitly requests removal.
-- Preserve semantic meaning and section order unless the user asks for an information-architecture change.
-- Preserve working interactions: forms, menus, language toggles, theme toggles, dialogs, tabs, carousels, and scroll behavior.
-- Preserve real brand/product names and domain-specific copy. Design changes must not make the page generic.
-- Keep every original section represented after the refactor. A redesigned section is acceptable; a missing section is not.
-- Never leave the first viewport empty unless the existing product intentionally has an empty state.
+### Quy trình an toàn
+1. Đọc mã giao diện hiện có trước khi sửa: template, CSS, JS, thành phần dùng chung.
+2. Ánh xạ giá trị cũ sang token `--ui-*`; không thêm giá trị tùy ý ngoài thang.
+3. Làm từng phần nhỏ, sau mỗi phần xác nhận nội dung gốc vẫn còn, nhìn thấy được và bấm tới được.
+4. Sau khi đổi màu, đo lại tương phản các cặp bị ảnh hưởng (cả light và dark).
+5. Kiểm tra desktop, tablet, mobile trước khi báo xong.
 
-## Safe Refactor Workflow
-1. Read the existing UI code before editing. Identify sections, routes, state, data dependencies, and user actions.
-2. Inventory current colors, typography, spacing, radius, shadows, and component states.
-3. Map old visual values to the tokens in this file one-to-one where possible.
-4. Patch section by section. Avoid full-file rewrites when the current structure works.
-5. After each section, verify the original content is still present, visible, and reachable.
-6. After changing colors, check every affected text/background pair for contrast.
-7. Verify desktop and mobile before finishing.
+## Hướng thiết kế
+- **Màu:** một màu thương hiệu tím trên nền trung tính slate; bốn màu ngữ nghĩa success/warning/danger/info. Không gradient, không glow, không tím đơn sắc toàn trang.
+- **Chữ:** font hệ thống, đủ dấu tiếng Việt, không tải font từ CDN.
+- **Phong cách:** doanh nghiệp, dữ liệu dày, đáng tin cậy. Card có viền 1px và bóng nhẹ; bề mặt phẳng. Bảng, form dài và tài liệu luôn dùng bề mặt phẳng dễ đọc.
+- **Điều hướng:** desktop (từ 1024px) sidebar nhóm theo phân hệ, thu gọn được; dưới 1024px dùng drawer. Không dùng thanh menu ngang nhiều dropdown, không làm bottom bar.
 
-## Visual Direction
-- Color direction: Violet - Creative premium UI.
-- Typography direction: System Sans - Clean product UI.
-- Style direction: Neumorphism - Soft extruded surfaces with tactile shadows, inset states, and calm monochrome depth
-- References: Soft UI controls, enterprise no-code hero surfaces, soft split authentication panels, dark embossed portfolio heroes, tactile settings panels.
-- Visual style: Violet color direction, System Sans typography, Neumorphism style.
+## Token
+Dùng token ngữ nghĩa trước. Giá trị nguồn trong phần frontmatter chỉ để tham chiếu, không được rải mã hex hay kích thước lẻ trong template.
 
-## Style System: Neumorphism
-Use Neumorphism to create interfaces that feel carved from one material: raised buttons, inset form fields, embossed icon discs, soft navigation capsules, and abstract relief shapes share the same base surface. The style works best for enterprise landing pages, auth flows, dashboards, settings, wellness apps, tactile portfolios, and focused product tools. It can be light and industrial, clean and friendly, or dark and embossed, but it must never trade readability, contrast, or state clarity for soft shadows.
+### Màu
+- Nền `--ui-bg`, bề mặt `--ui-surface`, bề mặt nâng `--ui-surface-raised`.
+- Chữ `--ui-text`, chữ phụ `--ui-text-muted`. Viền control `--ui-border`; `--ui-divider` chỉ để chia nhóm trang trí, **không** dùng làm viền ô nhập.
+- Nút chính `--ui-brand` + chữ `--ui-on-brand`, hover/active dùng `--ui-brand-hover`/`--ui-brand-active`. Chọn/selected dùng `--ui-selected-bg`/`--ui-selected-text`.
+- Trạng thái: `--ui-{success,warning,danger,info}-{text,bg,border}`; lỗi dùng `--ui-error-*`.
+- Warning chỉ cho việc chờ xử lý; danger chỉ cho lỗi, quá hạn, hành động nguy hiểm.
+- Trạng thái luôn kèm chữ và icon, không chỉ dựa vào màu.
+- Khi đổi nền sáng/tối, đảm bảo không còn chữ trắng trên nền sáng hoặc ngược lại do lớp CSS cũ.
 
-### Layout Rules
-- start from one dominant material color: pale gray, cool off-white, muted blue-gray, charcoal, or dark graphite; depth comes from shadows on that base.
-- use simple compositions with large calm surfaces, generous margins, and few strong color accents; crowded layouts make neumorphic depth muddy.
-- use raised surfaces for navigation capsules, CTA buttons, icon discs, cards, split panels, abstract relief shapes, and selected controls.
-- use inset surfaces for input wells, active nav items, search fields, toggle tracks, pressed controls, progress channels, and recessed decoration.
-- enterprise landing pages can combine a soft raised nav, large typographic hero, orange or blue CTA, and embossed diagram or icon orbit on the side.
-- auth flows can use a split soft panel: one raised side for welcome/sign-in and one flatter side with inset fields and a strong primary button.
-- dark neumorphism should feel embossed and architectural: charcoal background, subtle raised geometry, deep shadows, and one warm or saturated accent.
-- keep dense reading sections, tables, long forms, and documentation flatter or lightly bordered; do not force every container into raised material.
-- collapse to cleaner solid or bordered surfaces on very small screens when shadows reduce clarity or waste space.
+### Chữ
+- Họ chữ: `"Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif`.
+- Thân 16px, bảng và nhãn 14px, chú thích 12px; không giảm root font-size, phải zoom được tới 200%.
+- Số dùng `tabular-nums`; tiền định dạng `vi-VN`, ngày `dd/MM/yyyy`; không đổi quy tắc làm tròn/dữ liệu backend.
+- Tiêu đề đúng cấp ngữ nghĩa; kích thước theo tầm quan trọng bố cục, không theo số h1–h6. Letter-spacing mặc định 0.
 
-### Component Patterns
-- buttons need visible labels, hover, active, pressed, focus-visible, disabled, loading, success, and error states beyond shadow alone.
-- primary CTAs should use color fill or a strong accent glow in addition to raised depth; orange, blue, or warm gold accents work well against neutral material.
-- secondary buttons can be pill-shaped raised or inset capsules, but the label must remain darker and sharper than the surface.
-- cards should feel like raised plates with clear internal spacing, readable headings, and one purpose such as status, metric, setting group, media control, or summary.
-- icon discs and orbital feature markers should use soft raised circles with crisp black or high-contrast icons; avoid fuzzy low-contrast symbols.
-- form fields should be inset wells with visible placeholder or label text, clear focus ring, and error state that cuts through the soft material.
-- toggles, segmented controls, sliders, steppers, and switches are strong fits because raised and pressed states map naturally to touch interaction.
-- use paired light and dark shadows tuned to the actual surface color; pale UIs need delicate gray shadows, dark UIs need restrained black shadows plus subtle highlights.
-- abstract relief shapes can decorate hero sections, but they must stay behind content and share the same material logic as the UI.
-- dialogs and menus should be more explicit than decorative surfaces, with clear borders, elevation, and dismissal controls.
+### Khoảng cách và bo góc
+- Thang 4/8/12/16/24/32/48px. Không thêm giá trị mới nếu thang giải quyết được.
+- Bo góc: 4px (control nhỏ), 8px (card, ô nhập chuẩn), 12px (khối lớn).
+- Control và dòng bảng cao tối thiểu 44px (có thể cao hơn khi chữ xuống dòng).
 
-### Existing Project Refactor Rules
-- inventory the existing interface first: controls, cards, forms, navigation, repeated items, metrics, dialogs, and user actions.
-- preserve every existing section and add soft depth only to meaningful containers, controls, or selected states.
-- do not replace real content with decorative raised blocks or empty soft panels.
-- patch shadows, radius, backgrounds, borders, and states section by section instead of rebuilding whole pages.
-- when restyling a landing page, keep the hero content, CTA path, and product/diagram visual intact; apply neumorphic depth to nav, CTAs, icon clusters, and supporting shapes.
-- when restyling auth or form flows, prioritize field clarity and form completion over soft shadow aesthetics.
-- when a current layout is already dense, improve grouping and spacing before adding neumorphic depth.
-- if old colors make shadows invisible or text low-contrast, prioritize semantic foreground and accessible contrast over the effect.
-- when applying to a dark UI, reduce shadow spread and use subtle borders or inner highlights so depth does not become smudgy.
-- when applying to a light UI, avoid low-contrast gray-on-gray text and make primary actions stronger than the soft material.
-- if decorative relief shapes compete with content, lower their contrast, move them behind the text, or remove them.
+### Chọn văn bản
+Dùng màu chọn từ token (`--ui-selected-bg` nền, `--ui-selected-text` chữ), không dùng `text-shadow` kiểu Neumorphism.
 
-### Spacing Rules
-- use 10px to 14px padding for compact controls, 16px to 24px for form fields and cards, and 32px to 56px for large hero panels.
-- keep enough outer spacing for shadows to render without clipping, especially inside scroll containers, sidebars, split panels, and hero cards.
-- use consistent gutters and alignment over many nested panels; neumorphism looks best when the grid is quiet and precise.
-- use compact but comfortable spacing for toolbars, settings rows, and forms so the soft style does not make the UI feel oversized.
-- keep radius consistent: small controls 8px to 12px, cards 16px to 24px, large hero/nav capsules 28px or fully pill-shaped.
-- avoid nested raised cards; use inset separators, row grouping, flat inner areas, or a split-panel layout instead.
-- give repeated controls stable dimensions so pressed, selected, loading, or hover states do not shift layout.
+## Bố cục
+- Mobile-first: viewport nhỏ nhất (360px) là nền tảng. Breakpoint bằng media query thật ở 360/768/1024/1440px; vùng nội dung rộng tối đa 1440px.
+- Trang không được tràn ngang. Bảng rộng cuộn ngang trong khung có nhãn và focus được, hoặc chuyển thành thẻ có nhãn cột.
+- Trạng thái trống, đang tải, lỗi giữ bố cục ổn định và nêu bước tiếp theo.
+- Dữ liệu dày: tiêu đề bảng sticky nhưng không che focus, bộ lọc có nhãn, nút áp dụng/xóa, hiển thị số kết quả.
 
-### Visual Hierarchy Rules
-- make primary actions obvious with color, weight, placement, and label clarity instead of shadow intensity alone.
-- use raised, flat, inset, and embossed depth levels to separate primary, secondary, selected, passive, and decorative surfaces.
-- large hero typography should be crisp and high contrast; soft material can surround it but must not soften the message.
-- keep focus-visible rings stronger and sharper than decorative shadows.
-- avoid low-contrast text on softly tinted backgrounds; neumorphism often fails when contrast is treated as optional.
-- let typography, alignment, and content order carry hierarchy before soft elevation.
-- use accent color sparingly for primary CTAs, active controls, progress, selected states, and important icons.
-- in dark neumorphism, use one warm or bright accent as the focal point while most relief shapes stay nearly monochrome.
-- do not let shadow softness blur the difference between enabled, disabled, selected, and pressed states.
+## Thành phần
+Mọi thành phần tương tác định nghĩa đủ: mặc định, hover, active, focus-visible, disabled (dùng thuộc tính thật, không chỉ làm mờ), đang tải, thành công, lỗi — khi áp dụng.
+- **Nút:** phân vai primary / secondary / tertiary / destructive / chỉ-icon. Nhãn nêu rõ hành động (tránh "Gửi" chung chung nếu gọi tên được).
+- **Form:** nhãn luôn hiện; trợ giúp gần ô; lỗi cụ thể, đặt cạnh field (`aria-describedby`, `aria-invalid`); form dài chia `fieldset/legend`; có tóm tắt lỗi dẫn tới field và nhận focus sau khi gửi lỗi.
+- **Card:** đại diện mục lặp hoặc công cụ độc lập, không lồng card trong card.
+- **Badge/alert:** có icon SVG outline (24 viewBox, stroke 2) và chữ. Cảnh báo nghiêm trọng không tự đóng.
+- **Toast:** thông tin thường `role="status"`, không giành focus, tự đóng sau ~5 giây chỉ khi không cần thao tác; lỗi và toast có hành động không tự đóng.
+- **Hộp thoại/drawer:** quản lý focus, đóng bằng Esc, có nút đóng rõ, trả focus về nút mở.
+- **Biểu đồ:** so sánh nhóm dùng thanh ngang, theo thời gian dùng đường; nhãn trực tiếp, đơn vị, tóm tắt chữ và bảng dữ liệu thay thế; một sắc thương hiệu cho cùng đại lượng. Không hiện biểu đồ rỗng hay thanh 100% cho một nhóm duy nhất.
+- **Icon:** một bộ SVG inline nhất quán; không dùng emoji làm icon; icon trang trí `aria-hidden`, nút icon có tên truy cập.
 
-### Style Anti-patterns
-- use low-contrast raised surfaces that hide boundaries, labels, or state.
-- apply inset shadows to every input, card, and button indiscriminately.
-- clip shadows with tight containers or overflow settings.
-- depend on shadow alone to communicate clickability, selection, errors, disabled state, or destructive actions.
-- use neumorphism for content-heavy articles, dense data tables, or documentation when simple readable surfaces would work better.
-- make everything pale gray, low opacity, and softly blurred until the product loses hierarchy.
-- nest multiple raised panels until the interface feels swollen or slow.
-- use decorative embossed shapes as a substitute for product content, diagrams, CTAs, or form clarity.
+## Chuyển động
+- Chuyển động chỉ để làm rõ thay đổi trạng thái: feedback 120ms, panel 180ms, dùng token motion.
+- Tôn trọng `prefers-reduced-motion` (về 0ms). Không shimmer liên tục, không chuyển màu khi đổi theme.
+- Không để hover là cách duy nhất để lộ điều khiển quan trọng.
 
-### Style Checklist
-- text remains readable on every soft surface.
-- primary actions are still easy to identify without relying on shadow.
-- pressed, selected, disabled, loading, focus-visible, success, and error states remain distinct.
-- existing sections, CTAs, forms, navigation, data, and media remain present.
-- the chosen mode is clear: light soft enterprise, split auth, tactile dashboard, or dark embossed hero.
-- focus-visible and error states are stronger than decorative elevation.
-- shadows are not clipped and do not blur dense content hierarchy.
-- the result feels tactile and calm, not washed out or randomly embossed.
+## Khả năng tiếp cận
+Mục tiêu tối thiểu: **WCAG 2.1 AA**; áp dụng thêm tiêu chí 2.2 (kích thước vùng chạm, focus không bị che) khi khả thi.
+- Chữ ≥ 4.5:1; thành phần UI và focus ≥ 3:1; đo cho cả light và dark.
+- Focus ring 3px, offset 3px, rõ ràng, không bị overflow hoặc sticky header che; nút filled có khoảng nền tương phản quanh ring.
+- Dùng được hoàn toàn bằng bàn phím, có skip-link, landmark (`header`, `nav`, `main`), `aria-current="page"` cho mục đang chọn.
+- Vùng chạm ≥ 44px.
+- HTML ngữ nghĩa trước, ARIA chỉ để bổ sung. Chỉ dùng `aria-sort` khi backend thật sự hỗ trợ sắp xếp.
+- Không tuyên bố "đạt WCAG" cho cả ứng dụng nếu chưa kiểm bằng công cụ và người; đo token không chứng minh toàn app.
 
-## Design Tokens
-Use semantic tokens first. Raw values from frontmatter are source values, not permission to scatter hex codes or one-off sizes through implementation.
+## Giọng điệu nội dung
+Rõ ràng, ngắn gọn, ít thuật ngữ, tiếng Việt tự nhiên.
+- Nhãn hành động trực tiếp.
+- Trạng thái trống hữu ích: chuyện gì đã xảy ra, vì sao quan trọng, người dùng làm gì tiếp.
+- Phân biệt: chưa có dữ liệu / bộ lọc không có kết quả / không có quyền / lỗi tải.
 
-### Color
-- Primary action color: #8b5cf6.
-- Strong primary: #4c1d95. Use for high-emphasis text, selected state, or strong borders.
-- Soft primary: #ddd6fe. Use for subtle surfaces, selected backgrounds, or calm highlights.
-- Surface: #f5f3ff.
-- Muted surface: #ddd6fe.
-- Text: #2e1065.
-- Border: #5b21b6.
-- Success, warning, and danger are semantic states. Pair them with labels, icons, or position; never rely on color alone.
-- When moving from a dark theme to a light or warm theme, update inherited light text classes such as white, muted-white, or low-opacity foregrounds.
-- Do not apply one warm/cream/brown palette across the entire page without contrast, hierarchy, and content anchors.
+## Nên
+- Dùng token ngữ nghĩa thay giá trị thô.
+- Giữ nội dung, route, hành vi và quyền khi áp dụng hệ thiết kế.
+- Tạo thứ bậc bằng khoảng cách, tương phản, chữ và trạng thái.
+- Thiết kế mobile-first rồi mở rộng cho tablet/desktop.
+- Dùng chung một ánh xạ trạng thái → màu/icon cho toàn app.
+- Tái sử dụng thành phần dùng chung (`{% include %}`/CSS component) khi đã có.
 
-### Text Selection
-- Use this style-specific `::selection` treatment for Neumorphism. It should follow the selected color tokens and stay readable.
-```css
-/* Neumorphism selection: pressed soft surface. */
-::selection {
-  background-color: #ddd6fe;
-  color: #4c1d95;
-  text-shadow: 1px 1px 0 #f5f3ff;
-}
-```
-- If the selected color changes, keep the same style behavior but re-check text/background contrast.
+## Không nên
+- Dùng chữ tương phản thấp, ẩn focus, hoặc truyền đạt trạng thái chỉ bằng màu.
+- Xóa/thay nội dung sản phẩm khi chưa được yêu cầu.
+- Thêm giá trị spacing/chữ/bo góc ngoài hệ token.
+- Dùng bóng nổi/chìm (Neumorphism), gradient, glow, hiệu ứng nặng.
+- Tải font hoặc script từ CDN ngoài; thêm dependency mà không ghi log.
+- Gán mỗi phòng ban một màu trong biểu đồ.
+- Biến mọi card thành liên kết khi chưa có trang đích hoặc người dùng không có quyền xem.
+- Thêm animation trang trí không có phương án reduced-motion.
 
-### Contrast And Visibility Gate
-- Every visible text node must remain readable after color changes.
-- Check hero text, navigation, buttons, card titles, form labels, helper text, icons, borders, and disabled states against their actual backgrounds.
-- If legacy classes or CSS keep text white on a light surface, replace them with semantic foreground tokens.
-- If content appears missing after a restyle, inspect contrast and visibility before deleting or rebuilding the section.
-- Do not finish with invisible text, hidden CTAs, empty hero areas, or decorative backgrounds replacing product content.
+## Danh sách kiểm cho AI trước khi báo xong
+- Đã đọc `MASTER.md`, tệp này và tokens trước khi đổi giao diện.
+- Mọi mục menu, nút, biểu mẫu, liên kết, route gốc vẫn còn và đúng quyền hiển thị.
+- Không có chữ vô hình do màu nền/độ mờ/kế thừa màu.
+- Màn hình đầu tiên có nội dung thật, không chỉ nền trang trí.
+- Đã kiểm tra bàn phím, focus-visible, responsive (360/768/1024/1440px), light/dark, tràn chữ, trạng thái tải/lỗi/trống.
+- Phần chưa kiểm tra được ghi rõ trong nhật ký, không báo đạt khi chưa có bằng chứng.
 
-### Typography
-- Primary family: system-ui, -apple-system, Segoe UI, sans-serif.
-- Display family: system-ui, -apple-system, Segoe UI, sans-serif.
-- Monospace family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace.
-- Allowed weights: 300, 400, 500, 600.
-- Default UI weight: 600.
-- Keep heading levels semantic. Visual size must follow layout importance, not HTML heading number.
-- Keep letter spacing at 0 by default. Use uppercase labels sparingly and only for short metadata.
+## Ngoại lệ điều hướng đã được chủ dự án duyệt — Đợt 2b
 
-### Spacing And Radius
-- Spacing scale: 4/8/12/16/24/32/48.
-- Prefer spacing and grouping over extra borders.
-- Use 4px radius for compact controls, 8px for standard cards/inputs, and 12px only for larger feature surfaces.
-- Do not invent new spacing values unless the layout cannot be solved with the scale.
+Sidebar được phép dùng nền thương hiệu nhạt `--ui-sidebar-hover-bg`, chữ `--ui-sidebar-hover-text`, vạch trái 3px `--ui-sidebar-marker`, viền thương hiệu mờ 1px `--ui-sidebar-hover-border` và bóng nhẹ `--ui-shadow-card` khi hover hoặc focus-visible. Viền mờ là trang trí; vạch và chữ cung cấp tín hiệu tương phản. Dùng `--ui-motion-feedback` 120ms, về 0ms khi reduced-motion; không gradient, blur hay glow. Pointer không hiện vòng focus; bàn phím giữ vòng focus-visible rõ. Mục con chỉ có chữ thụt vào, đường nối dọc mảnh, active đậm và `aria-current="page"`; nhóm chỉ giữ chevron bên phải.
 
-## Layout Rules
-- Start mobile-first. The smallest useful viewport defines the base layout.
-- Use content-driven breakpoints. Do not scale type directly with viewport width.
-- Keep navigation, primary actions, and form completion paths easy to reach on touch devices.
-- Prefer a clear grid, predictable alignment, and stable dimensions for controls, cards, tabs, and repeated items.
-- Empty, loading, and error states must preserve layout stability and explain the next action.
+Nền trang/card/control và track biểu đồ dùng slate; KPI mặc định `--ui-text`, cảnh báo chỉ khi giá trị > 0 và có nhãn. Biểu đồ bốn chuỗi dùng `--ui-chart-hire/departure/transfer/promotion`, chú giải chữ và bảng số liệu; giá trị 0 không vẽ thanh. Tím chỉ dùng cho hành động chính, link, selected/active, focus và dữ liệu chính; ngoại lệ hover sidebar nêu trên. Biểu mẫu HCNS giữ palette giấy/in đã có. Kết quả đo và giới hạn xác minh: [nhật ký dự án](docs/PROJECT_WORK_LOG.md).
 
-## Component Rules
-- Every interactive component must define default, hover, active, focus-visible, disabled, loading, success, and error behavior when those states apply.
-- Buttons must communicate hierarchy through role: primary, secondary, tertiary, destructive, or icon-only.
-- Forms must keep labels visible, helper text close to the field, and errors specific enough to fix.
-- Cards must represent repeated items or contained tools. Do not nest cards inside other cards.
-- Modals and popovers must include focus management, escape behavior, and clear dismissal affordances.
+## Mẫu bố cục trang chuẩn — triển khai ở Giai đoạn 4
 
-## Interaction And Motion
-- Motion must clarify state change, not decorate the screen.
-- Transitions should usually stay between 120ms and 260ms.
-- Provide reduced-motion behavior for animations, parallax, shimmer, and auto-moving content.
-- Pointer hover cannot be the only way to reveal important controls because touch devices do not have hover.
+Đây là quy chuẩn chuẩn bị; đợt 2b chưa áp dụng bố cục này trên toàn ứng dụng.
 
-## Accessibility Requirements
-WCAG 2.2 AA, keyboard-first interactions, visible focus states, semantic HTML before ARIA, reduced-motion support, accessible target sizes.
-
-- Text and meaningful non-text UI must meet WCAG 2.2 AA contrast.
-- Keyboard users must be able to reach, understand, and operate every interactive control.
-- Focus indicators must be visible, high-contrast, and not hidden by overflow or animation.
-- Semantic HTML or native platform semantics come before ARIA patches.
-- Touch targets should be at least 24px by WCAG 2.2 AA and should reach 44px when layout allows.
-
-## Content Tone
-Clear, concise, implementation-focused, low-jargon, and helpful without being decorative.
-
-- Use direct labels for actions.
-- Avoid vague UI copy like "Submit" when the action can be named.
-- Keep empty states useful: state what happened, why it matters, and what the user can do next.
-
-## Rules: Do
-- use semantic tokens before raw values in components.
-- preserve existing content, copy, media, routes, and behavior when applying this system to an existing project.
-- preserve hierarchy with spacing, contrast, typography, and component state.
-- define default, hover, active, focus-visible, disabled, loading, success, and error states.
-- design mobile-first, then enhance for tablet and desktop density.
-- keep implementation guidance portable across React, Vue, Svelte, plain HTML/CSS, and mobile UI stacks.
-- use soft tactile surfaces where they clarify grouping, repeated actions, selected state, or premium calm.
-- choose a clear mode: light enterprise soft UI, split auth panel, compact tactile dashboard, or dark embossed hero.
-- preserve accessible contrast and visible focus states above the depth effect.
-- pair shadows with semantic component states such as raised default, pressed active, inset selected, disabled flat, and error outlined.
-- keep the visual system calm, spacious, and readable.
-- tune shadows to the palette instead of copying generic black and white shadow recipes.
-- use neumorphism for controls, forms, dashboards, landing pages, and portfolios that benefit from a physical, touch-friendly feel.
-- use abstract embossed shapes only when they reinforce the brand atmosphere and remain behind the real content.
-
-## Rules: Don't
-- use low-contrast text, hidden focus indicators, or color-only state communication.
-- delete or replace existing product content unless the user explicitly asks for content removal.
-- introduce one-off spacing, typography, or radius values outside the token system.
-- mix unrelated visual metaphors in the same screen.
-- depend on framework-specific component names in design rules.
-- add decorative motion without reduced-motion fallbacks.
-- use low-contrast raised surfaces that hide boundaries, labels, or state.
-- apply inset shadows to every input, card, and button indiscriminately.
-- clip shadows with tight containers or overflow settings.
-- depend on shadow alone to communicate clickability, selection, errors, disabled state, or destructive actions.
-- use neumorphism for content-heavy articles, dense data tables, or documentation when simple readable surfaces would work better.
-- make everything pale gray, low opacity, and softly blurred until the product loses hierarchy.
-- nest multiple raised panels until the interface feels swollen or slow.
-- use decorative embossed shapes as a substitute for product content, diagrams, CTAs, or form clarity.
-
-## AI Implementation Checklist
-- Read this file before changing UI, layout, component styling, or interaction behavior.
-- Identify the target surface: mobile app, mobile web, desktop web, dashboard, landing page, form flow, or content-heavy view.
-- Map the design tokens to the project technology without changing the design intent.
-- Reuse existing project components when they can satisfy these rules.
-- If the current UI conflicts with this file, explain the conflict and choose the more accessible, consistent option.
-- Confirm all original navigation items, hero content, CTAs, media, sections, and forms still exist unless removal was requested.
-- Confirm no text became invisible from background, opacity, blend-mode, or inherited color changes.
-- Confirm the first viewport contains meaningful product content, not just a background treatment.
-- Verify keyboard navigation, focus-visible styling, responsive behavior, text overflow, loading state, and error state before finishing.
+- Mọi trang: breadcrumb (nếu có) → tiêu đề trang (h1, 24px, 700) + mô tả ngắn + nhóm hành động chính căn phải (xuống dòng gọn trên mobile) → các card nội dung cách nhau 24px. Lề trang và độ rộng tối đa giống nhau mọi nơi.
+- Card: viền 1px, bo 8–12px, đệm 24px, tiêu đề card 18px/600.
+- Form/bộ lọc: nhãn luôn hiện phía trên ô (không dùng placeholder thay nhãn), mọi ô cao 44px, bo 8px, viền `--ui-border`; lưới nhiều cột trên desktop, xếp dọc trên mobile; nút gửi cùng hàng, cao 44px, `white-space: nowrap`, có chiều rộng tối thiểu, không bao giờ bị bóp để chữ rớt dòng.
+- Bảng: đặt trong card; tiêu đề cột 14px/600 trên nền `--ui-surface-raised`; ô đệm 12px 16px, dòng cao tối thiểu 44px, kẻ ngang `--ui-divider`; hover dòng; cột số và tiền căn phải, `tabular-nums`; cột trạng thái dùng badge (chữ + icon); cột thao tác căn phải, cùng một kiểu nút; độ rộng cột đặt chủ động.
+- Trạng thái trống nằm trong chính card của bảng: icon, một câu giải thích, một hành động hợp lệ (nếu có quyền).
+- Trang chi tiết: card theo nhóm, dạng nhãn–giá trị 2 cột trên desktop, 1 cột trên mobile.

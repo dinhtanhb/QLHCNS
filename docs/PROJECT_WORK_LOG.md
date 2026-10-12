@@ -1,5 +1,259 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-12 — UI/UX Đợt 2b: menu, màu light/dark và quy chuẩn Giai đoạn 4
+
+**Phạm vi:** A–C theo phản hồi chủ dự án; D chỉ tài liệu. Skill UI UX Pro Max; không UI Styling/shadcn, không dependency mới. Chỉ `main`, đầu đợt fetch `origin/main` thành công, ahead/behind 4/0. Giữ nguyên DESIGN mới được chủ dự án cung cấp (được yêu cầu commit ở nhóm docs) và mục backup chưa commit trong log (không đưa vào commit đợt này). Không sửa model/migration/view/URL/field/guard, không dữ liệu thật, không push/deploy.
+
+**Tệp thay đổi:** `DESIGN.md`, `design-system/MASTER.md`, `docs/PROJECT_WORK_LOG.md`, `docs/UI_DESIGN_SYSTEM_PHASE1.md`, `ops/check_ui_contrast.py`, `ops/check_ui_menu_links.cjs`, `src/apps/activity/templates/activity/dashboard.html`, `src/apps/portal/templates/portal/dashboard.html`, `src/apps/portal/templates/portal/finance_period_list.html`, `src/apps/portal/templates/portal/leave_list.html`, `src/apps/portal/templates/portal/report_hub.html`, `src/apps/portal/tests_app_shell.py`, `src/apps/portal/tests_mobile.py`, `src/frontend/tailwind.input.css`, `src/static/css/admin.css`, `src/static/css/app_shell.css`, `src/static/css/design_tokens.css`, `src/static/css/hcns_forms.css`, `src/static/css/home_dashboard.css`, `src/static/css/ihrms.css`, `src/static/css/report_dashboard.css`, `src/static/css/tailwind.css`, `src/static/css/theme.css`, `src/static/css/ui_tokens.css`, `src/static/js/app_shell.js`, `src/static/js/service-worker.js`, `src/static/js/theme.js`, `src/templates/base.html`, `src/templates/reporting/dashboard.html`.
+
+**A — điều hướng:** bỏ SVG mũi tên ở toàn bộ link con; đường nối dọc, chữ thụt vào và active đậm. Hover/focus-visible có nền nhạt, marker 3px, viền trang trí 1px và bóng card; pointer không có keyboard ring. Nhóm đang thu gọn mở lại sidebar khi kích hoạt để link con dạng chữ không thành vùng trống. Giữ chevron, aria-current, drawer/keyboard/reduced-motion. Ngoại lệ hover được ghi trong DESIGN và MASTER.
+
+**B — màu:** ánh xạ palette Tailwind/alias cũ về token; CSS admin, theme, dashboard, report, HCNS editor dùng surface/border slate. KPI mặc định màu chữ; warning/danger có nhãn và chỉ khi > 0. Bốn chuỗi hires/departures/transfers/promotions có token phân biệt, chú giải chữ và bảng số liệu. Track trung tính; `data-empty=true` không vẽ thanh. Tăng phiên bản assets/service worker để tránh CSS/JS cache cũ. Chỉnh nhỏ form kỳ lương cho phép wrap và giữ nút không co chữ. `npm run build:css` (node_modules hiện có), exit 0; không cài package. Giữ palette giấy/in trước đợt 2b tại `.hcns-paper` và `@media print`.
+
+**C — tái hiện trước sửa và phân loại:** dùng SQLite/media/email/logs tạm, 8 ca Edge gồm sáu role yêu cầu và superuser có/không staff; các tài khoản không gắn employee. Href thực tế luôn `/admin/`, `/reports/`, `/portal/reports/`. Trước sửa, link user menu hiển thị nhưng click bằng Input.dispatchMouseEvent không tạo request document, URL vẫn `/portal/`, dropdown bị ẩn; sidebar report hoạt động. HTTP trực tiếp đúng guard bên dưới. Đối chiếu `git show 76021d8:src/templates/base.html` trước G2: đóng ngoài click, chưa có focusout microtask. G2 `app_shell.js` queueMicrotask đóng popup giữa blur/focus Chromium, làm mất click. Đã sửa (a) bằng relatedTarget và defer macrotask khi null; không đổi href/guard. Bảng HTTP đầu tiên (302 được thu từ redirectResponse, không nhầm final 200):
+
+| Vai trò, chưa gắn hồ sơ | Staff | Trực tiếp admin / Excel / điều hành | Click trước sửa | Click sau sửa |
+|---|---|---|---|---|
+| EMPLOYEE | Không | 302 / 403 / 302 | Cả 3 ẩn | Cả 3 ẩn |
+| DEPT_MANAGER | Không | 302 / 403 / 302 | Cả 3 ẩn | Cả 3 ẩn |
+| HR_OFFICER | Không | 302 / 200 / 302 | Cả 3 ẩn | Cả 3 ẩn |
+| HR_MANAGER | Không | 302 / 200 / 200 | Admin, Excel: không request; điều hành 200 | 302 / 200 / 200 |
+| DIRECTOR | Không | 302 / 200 / 200 | Admin, Excel: không request; điều hành 200 | 302 / 200 / 200 |
+| SYS_ADMIN | Có | 200 / 200 / 302 | Admin, Excel: không request; điều hành ẩn | 200 / 200 / ẩn |
+| superuser | Có | 200 / 200 / 200 | Admin, Excel: không request; điều hành 200 | 200 / 200 / 200 |
+| superuser | Không | 302 / 200 / 200 | Admin, Excel: không request; điều hành 200 | 302 / 200 / 200 |
+
+FINANCE_OFFICER bổ sung (HTTP trực tiếp): 302 / 200 / 302. Không đánh giá quyền dựa vào screenshot. (b) khác biệt sẵn có: HR_OFFICER được `/reports/` nhưng guard menu `view_admin_menu` không hiện; SYS_ADMIN được `/reports/` nhưng `view_reports` chặn `/portal/reports/` và link sidebar ẩn. (c) Django Admin yêu cầu active + is_staff: HR_MANAGER/DIRECTOR/superuser không staff được chuyển `/admin/login/?next=/admin/`. Guard `src/apps/reporting/views.py::_can_view_reports` dùng `view_report_center`; `src/apps/portal/views/reports_planning.py::report_hub` dùng `view_reports` và redirect khi không có quyền; ma trận `src/apps/security/permissions.py` không thay đổi. Đề xuất tối thiểu để chủ dự án quyết riêng (F-08/F-09): menu Excel theo `has_permission(user, "view_report_center")`, menu Admin theo `user.is_active and user.is_staff`, giữ nguyên view guard. Nếu muốn SYS_ADMIN có báo cáo điều hành, cần quyết định thêm role đó vào `view_reports` ở đợt quyền riêng; UI không tự nới quyền. Chỉ cấp is_staff cho tài khoản thực sự được phép vào Admin. Chưa áp dụng các đề xuất này, chưa ẩn/vô hiệu link ở đợt UI. Guard hiện tại: Excel `return has_permission(request.user, "view_report_center")`, không có quyền trả `HttpResponseForbidden`; điều hành `return has_permission(request.user, "view_reports")`, không có quyền `messages.error(...)` rồi `redirect("portal:dashboard")`.
+
+**Test hồi quy C:** `test_unlinked_account_menu_targets_keep_existing_http_permissions` trong `src/apps/portal/tests_app_shell.py` kiểm tra direct HTTP + guard menu sáu role và superuser. `venv/Scripts/python.exe ops/run_tests.py --backend sqlite apps.portal.tests_app_shell`: 5 tests, 34.383s, OK, exit 0. `node ops/check_ui_menu_links.cjs <TEMP>/ihrms-ui-phase2b-20261012/menu-cases.json`: cả 8 ca PASS, MENU_CLICK_EXIT=0; dùng Edge headless click tọa độ thật, cache tắt và HTTP redirectResponse. Input thông tin đăng nhập giả nằm ngoài Git; script không in credential.
+
+**Skill local:** `python C:/Users/dinht/.agents/skills/ui-ux-pro-max/scripts/search.py "focus visible keyboard pointer" --domain ux -n 1` → Focus States; `"navigation hover feedback" --domain ux -n 1` → Hover States. Query `"chart color labels comparison" --domain chart -n 1` trả Radar chưa sát, retry `"compare categories" --domain chart -n 1` → Compare Categories/Grouped Bar. Chỉ dùng hướng dẫn focus/feedback và không dựa riêng vào màu; giữ chart/bảng hiện có, không thêm sort/library/logic từ gợi ý skill. Các lệnh exit 0.
+
+**Đo và ảnh:** `python ops/check_ui_contrast.py --write-doc`: 168 cặp, 0 failures; light 84 cặp, min text 6.147:1/UI 3.860:1; dark 84 cặp, min text 5.599:1/UI 3.805:1. Bảng đầy đủ trong `docs/UI_DESIGN_SYSTEM_PHASE1.md`, gồm hover/active chữ ≥4.5:1 cả hai theme. Cụ thể hover và active cùng cặp: light `#4c1d95` / `#ede9fe` = 9.227:1; dark `#ddd6fe` / `#2e1065` = 10.974:1. Viền hover mờ/bóng chỉ trang trí, không tuyên bố đạt 3:1. `node <TEMP>/ihrms-ui-phase2b-20261012/visual_browser.cjs`: VISUAL_EXIT=0, 16 ảnh bốn trang home/executive-report/payroll/hr-list × 360/1440 × light/dark; thêm ảnh sidebar hover/focus. Kiểm tra không overflow, bốn màu + bảng dữ liệu, KPI 0 neutral, thanh 0 ẩn, toàn bộ `.ui-nav-panel .ui-nav-link` không có SVG (assert tập link không rỗng; đã sửa selector test cũ trước chạy cuối), pointer không focus-visible/bàn phím có focus-visible, collapsed submenu, drawer/Escape, reduced-motion=0ms. So sánh màu `.hcns-paper` light/dark với browser-report trước đợt 2b: khớp. Đối chiếu `git show 42ca287:src/static/css/hcns_forms.css`: phần CSS từ `.hcns-paper` tới adapter screen và phần `@page`/print giữ nguyên sau chuẩn hóa newline; scan RGB mở rộng trước sửa không có biến thể tím ngoài bảng gốc. Scan cuối có 140 dòng khớp, chỉ tại ui_tokens/design_tokens (nguồn chuẩn, alias mapping và palette giấy/in). Đã xem trực quan ảnh report dark, home mobile dark, payroll mobile light và sidebar hover dark, payroll desktop dark, HR list mobile dark và home desktop light. Ảnh/bằng chứng ở `C:/Users/dinht/AppData/Local/Temp/ihrms-ui-phase2b-20261012/screenshots/`, JSON/log cùng thư mục. Không đưa dữ liệu giả/DB/profile vào Git.
+
+**Kiểm tra cuối đợt:**
+
+- `venv/Scripts/python.exe -m pip check`: No broken requirements found, exit 0.
+- `venv/Scripts/python.exe <TEMP>/ihrms-ui-phase2b-20261012/django_checks.py`: chạy `check` và `makemigrations --check --dry-run` trên cấu hình SQLite/media/logs tạm; System check no issues; No changes detected; exit 0.
+- `git diff --check`: exit 0 sau bỏ blank EOF; cảnh báo Git LF→CRLF chỉ do cấu hình checkout. `node --check ops/check_ui_menu_links.cjs`, `node --check src/static/js/app_shell.js`, `node --check src/static/js/theme.js`: exit 0.
+- `venv/Scripts/python.exe ops/run_tests.py --backend sqlite`: 422 tests trong 401.384s, OK (skipped=7), exit 0, DB/media cô lập. Bảy ca bỏ qua thuộc kiểm tra row locking/concurrency chỉ chạy trên SQL Server.
+- `venv/Scripts/python.exe ops/run_tests.py --backend sqlserver`: 422 tests trong 402.418s, OK, không skip, exit 0; backend microsoft, DB test UUID riêng, runner đã Destroying test database. Chạy tuần tự sau SQLite.
+- Browser final: `node ops/check_ui_menu_links.cjs <TEMP>/ihrms-ui-phase2b-20261012/menu-cases.json` và `node <TEMP>/ihrms-ui-phase2b-20261012/visual_browser.cjs`: exit 0, 8 ca pointer PASS và VISUAL_EXIT=0. Có 23 ảnh (16 ảnh trang, 5 sidebar, 2 chi tiết chart mobile).
+
+**Warning riêng:** SQLite có 4 RuntimeWarning DateTimeField VehicleBooking.start_time/end_time nhận naive datetime trong fixture 05/10/2026, không có test failure. Log Axes WARNING/ERROR từ ca cố ý login/validation bị từ chối; không tính là failure khi runner OK. PowerShell NativeCommandError quanh dòng Creating test database là wrapper stderr, đánh giá theo exit của Python và runner, không lấy nhãn đó làm kết luận lỗi. SQL Server có cùng 4 RuntimeWarning naive datetime VehicleBooking; không có failure, không sửa fixture/backend ở đợt UI.
+
+**D — tài liệu:** chép mẫu bố cục chuẩn (h1 24px/700, card 18px/600/padding24, control44px, bảng14px/600/padding12×16, empty/detail) vào DESIGN và MASTER; chưa rollout toàn app.
+
+**Bảng kiểm kê màu:** 203 dòng khớp trước sửa trong 11 tệp; quét CSS/template/JS gồm inline/SVG/canvas, các hex được yêu cầu, biến `--ihrms-*` và RGB/RGBA tím. Dòng trong bảng là dòng nguồn trước đợt 2b; file generated được truy về source. Raw brand chỉ giữ ở nguồn chuẩn ui_tokens (bắt buộc có giá trị gốc), không phân tán. Legacy alias định nghĩa ở root chỉ trỏ `--ui-*`; raw palette cũ chỉ giữ cho giấy/in. Scan sau sửa không còn mã tím/legacy call trong source màn hình (ngoài định nghĩa token/alias); bảng sau đây liệt kê từng dòng gốc.
+
+| Tệp | Dòng trước sửa | Giá trị trước sửa | Token thay thế / lý do giữ |
+|---|---:|---|---|
+| `src/frontend/tailwind.input.css` | 9 | `#f5f3ff` | `--ui-bg` |
+| `src/frontend/tailwind.input.css` | 10 | `#ede9fe` | `--ui-surface-raised` |
+| `src/frontend/tailwind.input.css` | 11 | `#ddd6fe` | `--ui-divider` |
+| `src/frontend/tailwind.input.css` | 12 | `#c4b5fd` | `--ui-border` |
+| `src/frontend/tailwind.input.css` | 15 | `#4c1d95` | `--ui-text-muted` |
+| `src/frontend/tailwind.input.css` | 16 | `#4c1d95` | `--ui-text` |
+| `src/frontend/tailwind.input.css` | 17 | `#2e1065` | `--ui-text` |
+| `src/frontend/tailwind.input.css` | 18 | `#2e1065` | `--ui-text` |
+| `src/frontend/tailwind.input.css` | 19 | `#f5f3ff` | `--ui-bg` |
+| `src/frontend/tailwind.input.css` | 20 | `#ede9fe` | `--ui-surface-raised` |
+| `src/frontend/tailwind.input.css` | 21 | `#ddd6fe` | `--ui-divider` |
+| `src/frontend/tailwind.input.css` | 22 | `#c4b5fd` | `--ui-border` |
+| `src/frontend/tailwind.input.css` | 25 | `#4c1d95` | `--ui-text-muted` |
+| `src/frontend/tailwind.input.css` | 26 | `#4c1d95` | `--ui-text` |
+| `src/frontend/tailwind.input.css` | 27 | `#2e1065` | `--ui-text` |
+| `src/frontend/tailwind.input.css` | 28 | `#2e1065` | `--ui-text` |
+| `src/frontend/tailwind.input.css` | 29 | `#f5f3ff` | `--ui-surface-raised` |
+| `src/frontend/tailwind.input.css` | 30 | `#ede9fe` | `--ui-surface-raised` |
+| `src/frontend/tailwind.input.css` | 31 | `#ddd6fe` | `--ui-border` |
+| `src/frontend/tailwind.input.css` | 32 | `#c4b5fd` | `--ui-brand` |
+| `src/frontend/tailwind.input.css` | 33 | `#a78bfa` | `--ui-brand` |
+| `src/frontend/tailwind.input.css` | 34 | `#8b5cf6` | `--ui-brand` |
+| `src/frontend/tailwind.input.css` | 35 | `#6d28d9` | `--ui-brand` |
+| `src/frontend/tailwind.input.css` | 36 | `#5b21b6` | `--ui-brand` |
+| `src/frontend/tailwind.input.css` | 37 | `#4c1d95` | `--ui-brand-hover` |
+| `src/frontend/tailwind.input.css` | 38 | `#2e1065` | `--ui-brand-active` |
+| `src/frontend/tailwind.input.css` | 39 | `#f5f3ff` | `--ui-surface-raised` |
+| `src/frontend/tailwind.input.css` | 40 | `#ede9fe` | `--ui-surface-raised` |
+| `src/frontend/tailwind.input.css` | 41 | `#ddd6fe` | `--ui-border` |
+| `src/frontend/tailwind.input.css` | 42 | `#c4b5fd` | `--ui-brand` |
+| `src/frontend/tailwind.input.css` | 43 | `#a78bfa` | `--ui-brand` |
+| `src/frontend/tailwind.input.css` | 44 | `#8b5cf6` | `--ui-brand` |
+| `src/frontend/tailwind.input.css` | 45 | `#6d28d9` | `--ui-brand` |
+| `src/frontend/tailwind.input.css` | 46 | `#5b21b6` | `--ui-brand` |
+| `src/frontend/tailwind.input.css` | 47 | `#4c1d95` | `--ui-brand-hover` |
+| `src/frontend/tailwind.input.css` | 48 | `#2e1065` | `--ui-brand-active` |
+| `src/frontend/tailwind.input.css` | 49 | `rgb(76 29 149 / .08)` | `--ui-bg`, `--ui-surface-raised`, `--ui-divider`, `--ui-border`, `--ui-text-muted`, `--ui-text`, `--ui-brand`, `--ui-brand-hover`, `--ui-brand-active`, `--ui-shadow-card` |
+| `src/static/css/admin.css` | 12 | `#4c1d95` | `--ui-brand` |
+| `src/static/css/admin.css` | 13 | `#4c1d95` | `--ui-brand` |
+| `src/static/css/admin.css` | 33 | `#5b21b6` | `--ui-brand-hover`, `--ui-surface` |
+| `src/static/css/admin.css` | 34 | `#5b21b6` | `--ui-brand-hover`, `--ui-surface` |
+| `src/static/css/admin.css` | 45 | `--ihrms-text` | `--ui-text` |
+| `src/static/css/admin.css` | 46 | `--ihrms-surface` | `--ui-bg` |
+| `src/static/css/admin.css` | 48 | `--ihrms-primary-strong` | `--ui-link` |
+| `src/static/css/admin.css` | 49 | `--ihrms-primary-hover` | `--ui-brand-hover` |
+| `src/static/css/admin.css` | 50 | `--ihrms-primary-strong` | `--ui-link` |
+| `src/static/css/admin.css` | 52 | `--ihrms-primary-soft`, `--ihrms-primary-strong` | `--ui-surface-raised`, `--ui-link` |
+| `src/static/css/admin.css` | 53 | `--ihrms-primary-soft`, `--ihrms-raised-shadow` | `--ui-surface-raised`, `--ui-shadow-card` |
+| `src/static/css/admin.css` | 55 | `--ihrms-primary-strong` | `--ui-link` |
+| `src/static/css/admin.css` | 56 | `--ihrms-primary-hover` | `--ui-brand-hover` |
+| `src/static/css/admin.css` | 57 | `--ihrms-border`, `--ihrms-primary-soft`, `--ihrms-text` | `--ui-surface-raised`, `--ui-border`, `--ui-text` |
+| `src/static/css/admin.css` | 58 | `#c4b5fd`, `--ihrms-border`, `--ihrms-text` | `--ui-border`, `--ui-text` |
+| `src/static/css/admin.css` | 60 | `--ihrms-border`, `rgb(76 29 149 / .08)` | `--ui-border` |
+| `src/static/css/admin.css` | 61 | `--ihrms-focus`, `rgb(91 33 182 / .2)` | `--ui-focus` |
+| `src/static/css/admin.css` | 62 | `--ihrms-primary-strong` | `--ui-link` |
+| `src/static/css/admin.css` | 63 | `--ihrms-focus` | `--ui-focus` |
+| `src/static/css/design_tokens.css` | 4 | `#8b5cf6`, `--ihrms-primary` | `--ui-brand`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 5 | `#4c1d95`, `--ihrms-primary-strong` | `--ui-link`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 6 | `#5b21b6`, `--ihrms-primary-hover` | `--ui-brand-hover`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 7 | `#ddd6fe`, `--ihrms-primary-soft` | `--ui-surface-raised`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 8 | `#f5f3ff`, `--ihrms-surface` | `--ui-bg`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 9 | `#2e1065`, `--ihrms-heading` | `--ui-text`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 10 | `#2e1065`, `--ihrms-text` | `--ui-text`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 11 | `#4c1d95`, `--ihrms-muted` | `--ui-text-muted`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 12 | `#5b21b6`, `--ihrms-border` | `--ui-border`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 13 | `#5b21b6`, `--ihrms-focus` | `--ui-focus`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 14 | `--ihrms-content-width` | `--ui-content-max-width`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 15 | `#4c1d95`, `--ihrms-action-bg` | `--ui-brand`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 16 | `#4c1d95`, `--ihrms-header-bg` | `--ui-surface`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 17 | `--ihrms-raised-shadow`, `rgb(76 29 149 / .10)` | `--ui-shadow-card`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 22 | `--ihrms-content-width` | `--ui-content-max-width`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 23 | `--ihrms-primary` | `--ui-brand`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 24 | `--ihrms-primary-strong` | `--ui-link`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 25 | `--ihrms-primary-hover` | `--ui-brand-hover`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 26 | `--ihrms-primary-soft` | `--ui-surface-raised`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 27 | `--ihrms-surface` | `--ui-bg`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 28 | `--ihrms-heading` | `--ui-text`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 29 | `--ihrms-text` | `--ui-text`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 30 | `--ihrms-muted` | `--ui-text-muted`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 31 | `--ihrms-border` | `--ui-border`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 32 | `--ihrms-focus` | `--ui-focus`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 33 | `--ihrms-action-bg` | `--ui-brand`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 34 | `--ihrms-header-bg` | `--ui-surface`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/design_tokens.css` | 35 | `--ihrms-raised-shadow` | `--ui-shadow-card`; palette cũ chỉ giữ trong `.hcns-paper` và `@media print` để bảo toàn giấy/in. |
+| `src/static/css/hcns_forms.css` | 2 | `--ihrms-heading` | `--ui-text` |
+| `src/static/css/hcns_forms.css` | 7 | `--ihrms-primary-strong` | `--ui-link` |
+| `src/static/css/hcns_forms.css` | 76 | `--ihrms-muted` | `--ui-text-muted` |
+| `src/static/css/hcns_forms.css` | 77 | `--ihrms-primary-soft`, `--ihrms-surface` | `--ui-surface`, `--ui-border` |
+| `src/static/css/hcns_forms.css` | 78 | `--ihrms-border`, `--ihrms-primary-strong`, `--ihrms-raised-shadow` | `--ui-border`, `--ui-link`, `--ui-shadow-card` |
+| `src/static/css/hcns_forms.css` | 79 | `--ihrms-primary-soft` | `--ui-surface-raised` |
+| `src/static/css/hcns_forms.css` | 80 | `--ihrms-primary-hover` | `--ui-brand-hover` |
+| `src/static/css/hcns_forms.css` | 82 | `--ihrms-primary-soft`, `--ihrms-raised-shadow` | `--ui-border`, `--ui-shadow-card` |
+| `src/static/css/hcns_forms.css` | 83 | `--ihrms-border` | `--ui-border` |
+| `src/static/css/hcns_forms.css` | 84 | `--ihrms-primary-strong` | `--ui-link` |
+| `src/static/css/hcns_forms.css` | 86 | `--ihrms-primary-soft` | `--ui-border` |
+| `src/static/css/hcns_forms.css` | 87 | `--ihrms-surface` | `--ui-surface` |
+| `src/static/css/hcns_forms.css` | 88 | `--ihrms-focus` | `--ui-focus` |
+| `src/static/css/home_dashboard.css` | 2 | `--ihrms-text` | `--ui-text` |
+| `src/static/css/home_dashboard.css` | 5 | `--ihrms-primary-soft` | `--ui-surface-raised` |
+| `src/static/css/home_dashboard.css` | 7 | `--ihrms-raised-shadow` | `--ui-shadow-card` |
+| `src/static/css/home_dashboard.css` | 15 | `--ihrms-border` | `--ui-border` |
+| `src/static/css/home_dashboard.css` | 17 | `rgb(76 29 149 / .08)` | `--ui-border`, `--ui-surface`, `--ui-shadow-card` |
+| `src/static/css/home_dashboard.css` | 23 | `--ihrms-muted` | `--ui-text-muted` |
+| `src/static/css/home_dashboard.css` | 30 | `--ihrms-primary-hover` | `--ui-brand-hover` |
+| `src/static/css/home_dashboard.css` | 39 | `--ihrms-primary` | `--ui-brand` |
+| `src/static/css/ihrms.css` | 10 | `--ihrms-border` | `--ui-border` |
+| `src/static/css/ihrms.css` | 14 | `--ihrms-text` | `--ui-text` |
+| `src/static/css/ihrms.css` | 15 | `rgb(76 29 149 / 0.08)` | `--ui-text`, `--ui-shadow-card` |
+| `src/static/css/ihrms.css` | 24 | `--ihrms-border` | `--ui-border` |
+| `src/static/css/ihrms.css` | 33 | `--ihrms-focus` | `--ui-focus` |
+| `src/static/css/ihrms.css` | 34 | `--ihrms-focus` | `--ui-focus` |
+| `src/static/css/ihrms.css` | 36 | `rgb(91 33 182 / 0.2)` | `--ui-shadow-card` |
+| `src/static/css/ihrms.css` | 40 | `--ihrms-surface` | `--ui-bg` |
+| `src/static/css/ihrms.css` | 41 | `--ihrms-muted` | `--ui-text-muted` |
+| `src/static/css/ihrms.css` | 46 | `--ihrms-primary-hover` | `--ui-brand-hover` |
+| `src/static/css/ihrms.css` | 57 | `--ihrms-border`, `--ihrms-raised-shadow` | `--ui-border`, `--ui-shadow-card` |
+| `src/static/css/ihrms.css` | 132 | `--ihrms-primary-soft` | `--ui-surface-raised` |
+| `src/static/css/ihrms.css` | 133 | `--ihrms-primary-hover` | `--ui-brand-hover` |
+| `src/static/css/ihrms.css` | 138 | `--ihrms-raised-shadow` | `--ui-shadow-card` |
+| `src/static/css/ihrms.css` | 142 | `--ihrms-primary-strong` | `--ui-link` |
+| `src/static/css/ihrms.css` | 143 | `--ihrms-surface` | `--ui-bg` |
+| `src/static/css/ihrms.css` | 153 | `--ihrms-primary-soft` | `--ui-surface-raised` |
+| `src/static/css/ihrms.css` | 154 | `--ihrms-primary-strong` | `--ui-link` |
+| `src/static/css/ihrms.css` | 159 | `--ihrms-primary-soft` | `--ui-surface-raised` |
+| `src/static/css/ihrms.css` | 160 | `--ihrms-primary-strong` | `--ui-link` |
+| `src/static/css/ihrms.css` | 186 | `--ihrms-primary` | `--ui-brand` |
+| `src/static/css/ihrms.css` | 193 | `--ihrms-primary` | `--ui-brand` |
+| `src/static/css/report_dashboard.css` | 2 | `--ihrms-text` | `--ui-text` |
+| `src/static/css/report_dashboard.css` | 5 | `--ihrms-heading` | `--ui-text` |
+| `src/static/css/report_dashboard.css` | 6 | `--ihrms-muted` | `--ui-text-muted` |
+| `src/static/css/report_dashboard.css` | 8 | `--ihrms-text` | `--ui-text` |
+| `src/static/css/report_dashboard.css` | 11 | `--ihrms-border` | `--ui-border` |
+| `src/static/css/report_dashboard.css` | 12 | `--ihrms-primary-strong`, `rgb(76 29 149 / .16)` | `--ui-link` |
+| `src/static/css/report_dashboard.css` | 13 | `--ihrms-primary-hover` | `--ui-brand-hover` |
+| `src/static/css/report_dashboard.css` | 14 | `--ihrms-primary-strong`, `--ihrms-raised-shadow` | `--ui-link`, `--ui-shadow-card` |
+| `src/static/css/report_dashboard.css` | 15 | `--ihrms-primary-soft` | `--ui-surface-raised` |
+| `src/static/css/report_dashboard.css` | 16 | `--ihrms-focus` | `--ui-focus` |
+| `src/static/css/report_dashboard.css` | 17 | `--ihrms-text` | `--ui-text` |
+| `src/static/css/report_dashboard.css` | 18 | `--ihrms-muted` | `--ui-text-muted` |
+| `src/static/css/report_dashboard.css` | 20 | `--ihrms-border`, `rgb(76 29 149 / .08)` | `--ui-border` |
+| `src/static/css/report_dashboard.css` | 21 | `--ihrms-muted` | `--ui-text-muted` |
+| `src/static/css/report_dashboard.css` | 22 | `--ihrms-primary-hover` | `--ui-brand-hover` |
+| `src/static/css/report_dashboard.css` | 30 | `--ihrms-primary-soft`, `--ihrms-raised-shadow` | `--ui-surface-raised`, `--ui-shadow-card` |
+| `src/static/css/report_dashboard.css` | 31 | `--ihrms-heading` | `--ui-text` |
+| `src/static/css/report_dashboard.css` | 32 | `--ihrms-border` | `--ui-border` |
+| `src/static/css/report_dashboard.css` | 36 | `--ihrms-primary-hover` | `--ui-brand-hover` |
+| `src/static/css/report_dashboard.css` | 37 | `--ihrms-muted` | `--ui-text-muted` |
+| `src/static/css/report_dashboard.css` | 38 | `--ihrms-text` | `--ui-text` |
+| `src/static/css/report_dashboard.css` | 40 | `--ihrms-text` | `--ui-text` |
+| `src/static/css/report_dashboard.css` | 41 | `--ihrms-primary-strong` | `--ui-link` |
+| `src/static/css/report_dashboard.css` | 44 | `--ihrms-border` | `--ui-border` |
+| `src/static/css/report_dashboard.css` | 46 | `--ihrms-primary-soft` | `--ui-surface-raised` |
+| `src/static/css/report_dashboard.css` | 49 | `--ihrms-text` | `--ui-text` |
+| `src/static/css/report_dashboard.css` | 50 | `--ihrms-primary-soft`, `rgb(76 29 149 / .12)` | `--ui-surface-raised` |
+| `src/static/css/report_dashboard.css` | 51 | `--ihrms-primary` | `--ui-brand` |
+| `src/static/css/report_dashboard.css` | 52 | `--ihrms-heading` | `--ui-text` |
+| `src/static/css/report_dashboard.css` | 55 | `--ihrms-primary-strong` | `--ui-link` |
+| `src/static/css/report_dashboard.css` | 58 | `#ede9fe` | `--ui-border`, `--ui-surface`, `--ui-text-muted`, `--ui-text`, `--ui-danger-text`, `--ui-warning-text`, `--ui-success-text` |
+| `src/static/css/report_dashboard.css` | 59 | `--ihrms-muted` | `--ui-text-muted` |
+| `src/static/css/report_dashboard.css` | 60 | `--ihrms-primary-hover` | `--ui-brand-hover` |
+| `src/static/css/tailwind.css` | 2 | `#2e1065`, `#4c1d95`, `#5b21b6`, `#6d28d9`, `#8b5cf6`, `#c4b5fd`, `#ddd6fe`, `#ede9fe`, `#f5f3ff` | Sinh lại từ `src/frontend/tailwind.input.css`; palette `--color-*` → `--ui-*`, surface/slate và semantic. |
+| `src/static/css/theme.css` | 24 | `--ihrms-surface`, `--ihrms-text` | `--ui-bg`, `--ui-text` |
+| `src/static/css/theme.css` | 25 | `--ihrms-header-bg` | `--ui-surface` |
+| `src/static/css/theme.css` | 31 | `--ihrms-raised-shadow`, `--ihrms-text` | `--ui-text`, `--ui-shadow-card` |
+| `src/static/css/theme.css` | 37 | `--ihrms-primary-soft` | `--ui-surface-raised` |
+| `src/static/css/theme.css` | 39 | `--ihrms-text` | `--ui-text` |
+| `src/static/css/theme.css` | 41 | `--ihrms-muted` | `--ui-text-muted` |
+| `src/static/css/theme.css` | 45 | `--ihrms-action-bg`, `--ihrms-border` | `--ui-brand`, `--ui-border` |
+| `src/static/css/theme.css` | 62 | `--ihrms-header-bg` | `--ui-surface` |
+| `src/static/css/theme.css` | 63 | `--ihrms-text` | `--ui-text` |
+| `src/static/css/theme.css` | 69 | `--ihrms-text` | `--ui-text` |
+| `src/static/css/theme.css` | 71 | `--ihrms-primary-strong` | `--ui-link` |
+| `src/static/css/theme.css` | 72 | `--ihrms-text` | `--ui-text` |
+| `src/static/css/theme.css` | 74 | `--ihrms-text` | `--ui-text` |
+| `src/static/css/theme.css` | 75 | `--ihrms-text` | `--ui-text` |
+| `src/static/css/theme.css` | 76 | `--ihrms-action-bg`, `--ihrms-border` | `--ui-brand`, `--ui-border` |
+| `src/static/css/ui_tokens.css` | 62 | `#6d28d9` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 63 | `#5b21b6` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 64 | `#4c1d95` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 66 | `#f5f3ff` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 67 | `#6d28d9` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 68 | `#6d28d9` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 71 | `#ede9fe` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 72 | `#4c1d95` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 119 | `#c4b5fd` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 120 | `#ddd6fe` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 121 | `#a78bfa` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 122 | `#2e1065` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 123 | `#2e1065` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 124 | `#c4b5fd` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 125 | `#c4b5fd` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 128 | `#2e1065` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 129 | `#ddd6fe` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 167 | `#c4b5fd` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 168 | `#ddd6fe` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 169 | `#a78bfa` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 170 | `#2e1065` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 171 | `#2e1065` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 172 | `#c4b5fd` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 173 | `#c4b5fd` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 176 | `#2e1065` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/static/css/ui_tokens.css` | 177 | `#ddd6fe` | Giữ tại nguồn token chuẩn duy nhất; brand/selected/link/focus, không phải màu rải rác. |
+| `src/templates/base.html` | 8 | `#4c1d95` | `theme-color` lấy `--ui-bg` bằng `theme.js`, theo light/dark. |
+
+**Chưa kiểm tra:** UAT Edge tương tác trên dữ liệu/vai trò thật; in vật lý/đối chiếu từng mẫu HCNS; toàn bộ màn hình/luồng nghiệp vụ và chứng nhận WCAG. Headless/đo token không thay cho các bước này. Không push/deploy. Commit trên `main`: `97e4cf38452b5ae180696fbadc1ce4fd95478536` — `fix(ui): menu links`; `c8ba1931e5c256d5bc13ef96e7075cce3aefa8f9` — `ui: nav polish`; `3d6d3822060a7549182990b66888e554224bb6db` — `ui: unify colors light/dark`. Phần DESIGN mới của chủ dự án, MASTER và mục nhật ký này nằm trong commit `docs: ui design rules` (SHA xem Git log để tránh tự tham chiếu). Không push/deploy; giữ mục backup cũ chưa commit ngoài đợt này.
+
 ## 2026-10-12 — UI/UX Giai đoạn 2: nền tảng chính thức và khung ứng dụng
 
 **Phạm vi/đầu đợt:** dùng UI UX Pro Max đã đọc ở đợt trước; không dùng UI Styling/shadcn. Đọc AGENTS, hướng dẫn review, RBAC, MASTER, tokens, nhật ký và DESIGN mới do chủ dự án cập nhật. DESIGN không còn định hướng Neumorphism; giữ nguyên thay đổi cục bộ ở DESIGN và mục backup nhật ký, loại khỏi staging. `main`, `git fetch origin main` exit 0, `git rev-list --left-right --count HEAD...origin/main` = `2 0` (hai commit Giai đoạn 0–1 chưa push), không phân kỳ. Không push/deploy, không thay nghiệp vụ/URL/field/model/migration/RBAC.
