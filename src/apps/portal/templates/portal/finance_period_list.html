@@ -1,8 +1,7 @@
-{% extends "base.html" %}
+{% extends "portal/finance_base.html" %}
 {% load ui_components %}
 {% block title %}Kỳ lương{% endblock %}
-{% block content %}
-<div class="ui-page">
+{% block finance_content %}
 {% include "ui/page_header.html" with title="Chạy lương hàng tháng" description="Tạo kỳ lương và mở bảng lương theo tháng." %}
 <section class="ui-card" aria-labelledby="period-create-title">
 <h2 class="ui-card-title" id="period-create-title">Tạo kỳ lương mới</h2>
@@ -21,5 +20,5 @@
 <thead><tr><th scope="col">Kỳ lương</th><th scope="col">Thời gian</th><th scope="col">Trạng thái</th><th scope="col" class="ui-actions">Thao tác</th></tr></thead>
 <tbody>{% for p in periods %}<tr><th scope="row">Tháng {{ p.payroll_month }}/{{ p.payroll_year }}</th><td>{{ p.start_date|ui_date }} – {{ p.end_date|ui_date }}</td><td>{% ui_badge "payroll.payrollperiod:status" p.status %}</td><td class="ui-actions"><a href="{% url 'portal:finance_payroll_run' p.pk %}" class="ui-button ui-button--secondary">Xem / Chạy lương</a></td></tr>{% endfor %}</tbody></table></div>
 {% else %}{% include "ui/empty_state.html" with title="Chưa có kỳ lương" description="Nhập Tháng và Năm ở form phía trên để tạo kỳ lương đầu tiên." icon="finance" %}{% endif %}
-</section></div>
+</section>
 {% endblock %}

@@ -1,27 +1,28 @@
-{% extends "base.html" %}
+{% extends "portal/finance_base.html" %}
+{% load ui_components %}
 {% block title %}Người phụ thuộc{% endblock %}
-{% block content %}
-<h1 class="text-lg font-bold text-gray-900 mb-4">Người phụ thuộc (Giảm trừ thuế TNCN)</h1>
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-    <form method="post" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+{% block finance_content %}
+<header class="ui-page-header"><h1 class="ui-page-title">Người phụ thuộc (Giảm trừ thuế TNCN)</h1></header>
+<div class="ui-card">
+    <form data-ui-form method="post" class="ui-finance-form">{% include "ui/error_summary.html" %}
         {% csrf_token %}
-        <select name="employee" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <div class="ui-field"><label for="finance-1-employee">Nhân viên</label><select id="finance-1-employee" name="employee" required class="ui-finance-input">
             {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name|ui_number }}</option>{% endfor %}
-        </select>
-        <input type="text" name="full_name" placeholder="Họ tên người phụ thuộc" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <input type="text" name="relationship" placeholder="Quan hệ (Con, Cha, Mẹ...)" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <input type="date" name="registered_from" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <button type="submit" class="md:col-span-4 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Thêm người phụ thuộc</button>
+        </select></div>
+        <div class="ui-field"><label for="finance-1-full_name">Họ tên người phụ thuộc</label><input id="finance-1-full_name" type="text" name="full_name" placeholder="Họ tên người phụ thuộc" required class="ui-finance-input"></div>
+        <div class="ui-field"><label for="finance-1-relationship">Quan hệ</label><input id="finance-1-relationship" type="text" name="relationship" placeholder="Quan hệ (Con, Cha, Mẹ...)" required class="ui-finance-input"></div>
+        <div class="ui-field"><label for="finance-1-registered_from">Đăng ký từ</label><input id="finance-1-registered_from" type="date" name="registered_from" required class="ui-finance-input"></div>
+        <button type="submit" class="ui-button ui-button--primary">+ Thêm người phụ thuộc</button>
     </form>
 </div>
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <div class="overflow-x-auto mobile-table-scroll">
-        <table class="w-full text-sm">
-        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Nhân viên</th><th class="py-2 pr-4">Người phụ thuộc</th><th class="py-2 pr-4">Quan hệ</th><th class="py-2">Đăng ký từ</th></tr></thead>
-        <tbody class="divide-y divide-gray-100">
+<div class="ui-card">
+    <div class="ui-scroll overflow-x-auto mobile-table-scroll" tabindex="0" role="region" aria-label="Bảng Người phụ thuộc; cuộn ngang để xem đầy đủ">
+        <table class="ui-table ui-finance-table"><caption class="ui-sr-only">Người phụ thuộc</caption>
+        <thead><tr class=""><th scope="col" class="">Nhân viên</th><th scope="col" class="">Người phụ thuộc</th><th scope="col" class="">Quan hệ</th><th scope="col" class="">Đăng ký từ</th></tr></thead>
+        <tbody class="">
         {% for d in dependents %}
-        <tr><td class="py-2 pr-4">{{ d.employee|ui_number }}</td><td class="py-2 pr-4">{{ d.full_name|ui_number }}</td><td class="py-2 pr-4">{{ d.relationship|ui_number }}</td><td class="py-2">{{ d.registered_from|ui_number }}</td></tr>
-        {% empty %}<tr><td colspan="4" class="py-6 text-center text-gray-400">Chưa có người phụ thuộc nào đăng ký.</td></tr>{% endfor %}
+        <tr><td class="">{{ d.employee|ui_number }}</td><td class="">{{ d.full_name|ui_number }}</td><td class="">{{ d.relationship|ui_number }}</td><td class="">{{ d.registered_from|ui_date }}</td></tr>
+        {% empty %}<tr><td colspan="4" class="">{% include "ui/empty_state.html" with title="Chưa có người phụ thuộc" description="Danh sách sẽ hiển thị tại đây khi có dữ liệu." icon="finance" %}</td></tr>{% endfor %}
         </tbody>
     </table>
     </div>

@@ -1,109 +1,38 @@
-{% extends "base.html" %}
+{% extends "portal/finance_base.html" %}
+{% load ui_components %}
 {% block title %}Chạy lương{% endblock %}
-{% block content %}
-<div class="flex items-center justify-between mb-4">
-    <h1 class="text-lg font-bold text-gray-900">Bảng lương — Tháng {{ period.payroll_month }}/{{ period.payroll_year }}</h1>
-    <span class="px-3 py-1 rounded-full text-xs font-medium {% if period.status == 'Locked' %}bg-gray-100 text-gray-600{% else %}bg-green-100 text-green-700{% endif %}">{{ period.get_status_display|ui_number }}</span>
-</div>
-
+{% block finance_content %}
+<header class="ui-page-header"><div><h1 class="ui-page-title">Bảng lương — Tháng {{ period.payroll_month }}/{{ period.payroll_year }}</h1><p class="ui-page-description">Các khoản tiền tính bằng đồng Việt Nam.</p></div>{% ui_badge "payroll.payrollperiod:status" period.status period.get_status_display %}</header>
 {% if period.status != "Locked" %}
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6 flex flex-wrap gap-3">
-    <form method="post" action="{% url 'portal:finance_payroll_generate' period.pk %}">
-        {% csrf_token %}
-        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">
-            🔄 Tạo bảng lương cho {{ missing_employees|length|ui_number }} nhân viên còn thiếu
-        </button>
-    </form>
-    <form method="post" action="{% url 'portal:finance_payroll_calculate_all' period.pk %}">
-        {% csrf_token %}
-        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md transition">🧮 Tính lương toàn bộ kỳ này</button>
-    </form>
-    <form method="post" action="{% url 'portal:finance_payroll_lock' period.pk %}" onsubmit="return confirm('Khóa kỳ lương này? Sau khi khóa sẽ không sửa được nữa.')">
-        {% csrf_token %}
-        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-md transition">🔒 Khóa kỳ lương</button>
-    </form>
-</div>
+<section class="ui-card"><h2 class="ui-card-title">Xử lý kỳ lương</h2><div class="ui-page-actions">
+<form method="post" action="{% url 'portal:finance_payroll_generate' period.pk %}">{% csrf_token %}<button type="submit" class="ui-button ui-button--primary">Tạo bảng lương cho {{ missing_employees|length|ui_number }} nhân viên còn thiếu</button></form>
+<form method="post" action="{% url 'portal:finance_payroll_calculate_all' period.pk %}">{% csrf_token %}<button type="submit" class="ui-button ui-button--secondary">Tính lương toàn bộ kỳ này</button></form>
+<form method="post" action="{% url 'portal:finance_payroll_lock' period.pk %}" data-ui-confirm="Khóa kỳ lương này? Sau khi khóa sẽ không sửa được nữa." data-ui-confirm-title="Khóa kỳ lương" data-ui-confirm-label="Khóa kỳ lương">{% csrf_token %}<button type="submit" class="ui-button ui-button--danger">{% include "_shell_icon.html" with name="warning" %}Khóa kỳ lương</button></form>
+</div></section>
 {% endif %}
-
 {% if period.status == "Locked" and unissued_payslips %}
-<div class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-6">
-    <p class="text-sm text-blue-900 mb-3">Còn {{ unissued_payslips|ui_number }} phiếu lương của kỳ cũ chưa được phát hành.</p>
-    <form method="post" action="{% url 'portal:finance_payslip_issue' period.pk %}">
-        {% csrf_token %}
-        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md">Phát hành phiếu lương PDF</button>
-    </form>
-</div>
+<section class="ui-card"><div class="ui-alert ui-alert--info">{% include "_shell_icon.html" with name="info" %}<span>Còn {{ unissued_payslips|ui_number }} phiếu lương của kỳ cũ chưa được phát hành.</span></div><form method="post" action="{% url 'portal:finance_payslip_issue' period.pk %}" class="ui-finance-form">{% csrf_token %}<button type="submit" class="ui-button ui-button--primary">Phát hành phiếu lương PDF</button></form></section>
 {% endif %}
-
 {% if missing_salary_employees %}
-<div class="bg-red-50 border border-red-200 rounded-xl p-5 mb-6" role="alert">
-    <p class="font-semibold text-red-800">Chưa thể tạo bảng lương cho {{ missing_salary_employees|length|ui_number }} nhân viên chưa có mức lương hiệu lực:</p>
-    <ul class="mt-2 list-disc pl-5 text-sm text-red-700">
-        {% for employee in missing_salary_employees %}
-        <li>{{ employee.employee_code|ui_number }} — {{ employee.full_name|ui_number }}</li>
-        {% endfor %}
-    </ul>
-</div>
+<section class="ui-card"><div class="ui-alert ui-alert--danger" role="alert">{% include "_shell_icon.html" with name="danger" %}<div><p>Chưa thể tạo bảng lương cho {{ missing_salary_employees|length|ui_number }} nhân viên chưa có mức lương hiệu lực:</p><ul class="ui-finance-list">{% for employee in missing_salary_employees %}<li>{{ employee.employee_code|ui_number }} — {{ employee.full_name|ui_number }}</li>{% endfor %}</ul></div></div></section>
 {% endif %}
-
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <div class="overflow-x-auto">
-    <table class="w-full text-sm">
-        <thead><tr class="text-left text-gray-500 border-b border-gray-200">
-            <th class="py-2 pr-4">Nhân viên</th><th class="py-2 pr-4">Lương CB</th>
-            <th class="py-2 pr-4" title="Tiền lương ghi trong hợp đồng dùng làm căn cứ đóng BHXH/BHYT/BHTN. Để 0 thì hệ thống lấy bằng Lương CB.">Lương đóng BH</th>
-            <th class="py-2 pr-4">Phụ cấp</th><th class="py-2 pr-4">Tăng ca</th>
-            <th class="py-2 pr-4" title="Phần tiền làm thêm giờ trả cao hơn giờ thường — được miễn thuế TNCN.">TC miễn thuế</th>
-            <th class="py-2 pr-4">Khấu trừ khác</th><th class="py-2 pr-4">Gross</th><th class="py-2 pr-4">Bảo hiểm</th><th class="py-2 pr-4">Thuế</th><th class="py-2 pr-4">Net</th><th class="py-2"></th>
-        </tr></thead>
-        <tbody class="divide-y divide-gray-100">
-        {% for p in payrolls %}
-        <tr>
-            <td class="py-2 pr-4 font-medium">
-                {{ p.employee|ui_number }}
-                {% if period.status != "Locked" %}
-                <form method="post" id="pf{{ p.pk }}" action="{% url 'portal:finance_payroll_update_line' p.pk %}">{% csrf_token %}</form>
-                {% endif %}
-            </td>
-            <td class="py-2 pr-4">{{ p.basic_salary|floatformat:"0g" }}</td>
-            <td class="py-2 pr-4">
-                {% if period.status != "Locked" %}
-                <input form="pf{{ p.pk }}" type="number" step="1" min="0" name="insurance_salary" value="{{ p.insurance_salary|floatformat:"0u" }}" class="w-24 rounded border border-gray-300 px-1 py-0.5 text-xs">
-                {% else %}{{ p.insurance_salary|floatformat:"0g" }}{% endif %}
-            </td>
-            <td class="py-2 pr-4">
-                {% if period.status != "Locked" %}
-                <input form="pf{{ p.pk }}" type="number" step="1" min="0" name="allowance" value="{{ p.allowance|floatformat:"0u" }}" class="w-24 rounded border border-gray-300 px-1 py-0.5 text-xs">
-                {% else %}{{ p.allowance|floatformat:"0g" }}{% endif %}
-            </td>
-            <td class="py-2 pr-4">
-                {% if period.status != "Locked" %}
-                <input form="pf{{ p.pk }}" type="number" step="1" min="0" name="overtime_amount" value="{{ p.overtime_amount|floatformat:"0u" }}" class="w-24 rounded border border-gray-300 px-1 py-0.5 text-xs">
-                {% else %}{{ p.overtime_amount|floatformat:"0g" }}{% endif %}
-            </td>
-            <td class="py-2 pr-4">
-                {% if period.status != "Locked" %}
-                <input form="pf{{ p.pk }}" type="number" step="1" min="0" name="overtime_tax_exempt_amount" value="{{ p.overtime_tax_exempt_amount|floatformat:"0u" }}" class="w-24 rounded border border-gray-300 px-1 py-0.5 text-xs">
-                {% else %}{{ p.overtime_tax_exempt_amount|floatformat:"0g" }}{% endif %}
-            </td>
-            <td class="py-2 pr-4">
-                {% if period.status != "Locked" %}
-                <input form="pf{{ p.pk }}" type="number" step="1" min="0" name="deduction_amount" value="{{ p.deduction_amount|floatformat:"0u" }}" class="w-24 rounded border border-gray-300 px-1 py-0.5 text-xs">
-                {% else %}{{ p.deduction_amount|floatformat:"0g" }}{% endif %}
-            </td>
-            <td class="py-2 pr-4">{{ p.gross_income|floatformat:"0g" }}</td>
-            <td class="py-2 pr-4 text-red-600">{{ p.insurance_amount|floatformat:"0g" }}</td>
-            <td class="py-2 pr-4 text-red-600">{{ p.tax_amount|floatformat:"0g" }}</td>
-            <td class="py-2 pr-4 font-semibold text-green-700">{{ p.net_income|floatformat:"0g" }}</td>
-            <td class="py-2">
-                {% if period.status != "Locked" %}
-                <button form="pf{{ p.pk }}" type="submit" class="rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-700">Lưu</button>
-                {% endif %}
-            </td>
-        </tr>
-        {% empty %}<tr><td colspan="12" class="py-6 text-center text-gray-400">Chưa có dòng bảng lương nào — bấm "Tạo bảng lương" ở trên.</td></tr>{% endfor %}
-        </tbody>
-    </table>
-    </div>
-</div>
+<section class="ui-card"><h2 class="ui-card-title">Chi tiết bảng lương</h2>
+<div class="ui-scroll overflow-x-auto mobile-table-scroll" role="region" tabindex="0" aria-label="Bảng lương, đơn vị đồng; cuộn ngang để xem đầy đủ cột">
+<table class="ui-table ui-finance-payroll"><caption class="ui-sr-only">Chi tiết bảng lương — đơn vị đồng</caption><colgroup><col class="ui-col-large"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-small"></colgroup>
+<thead><tr><th scope="col">Nhân viên</th><th scope="col" class="ui-number">Lương CB</th><th scope="col" class="ui-number" title="Tiền lương ghi trong hợp đồng dùng làm căn cứ đóng BHXH/BHYT/BHTN. Để 0 thì hệ thống lấy bằng Lương CB.">Lương đóng BH</th><th scope="col" class="ui-number">Phụ cấp</th><th scope="col" class="ui-number">Tăng ca</th><th scope="col" class="ui-number" title="Phần tiền làm thêm giờ trả cao hơn giờ thường — được miễn thuế TNCN.">TC miễn thuế</th><th scope="col" class="ui-number">Khấu trừ khác</th><th scope="col" class="ui-number">Gross</th><th scope="col" class="ui-number">Bảo hiểm</th><th scope="col" class="ui-number">Thuế</th><th scope="col" class="ui-number">Net</th><th scope="col" class="ui-actions">Thao tác</th></tr></thead>
+<tbody>{% for p in payrolls %}<tr>
+<th scope="row">{{ p.employee|ui_number }}{% if period.status != "Locked" %}<form method="post" id="pf{{ p.pk }}" action="{% url 'portal:finance_payroll_update_line' p.pk %}" data-ui-form>{% csrf_token %}{% include "ui/error_summary.html" %}</form>{% endif %}</th>
+<td class="ui-number">{{ p.basic_salary|ui_vnd }}</td>
+<td class="ui-number">{% if period.status != "Locked" %}<label class="ui-sr-only" for="payroll-{{ p.pk }}-insurance_salary">Lương đóng bảo hiểm — {{ p.employee.full_name }}</label><input id="payroll-{{ p.pk }}-insurance_salary" form="pf{{ p.pk }}" type="number" step="1" min="0" name="insurance_salary" aria-label="Lương đóng bảo hiểm — {{ p.employee.full_name }}" value="{{ p.insurance_salary|floatformat:"0u" }}" class="ui-finance-input">{% else %}{{ p.insurance_salary|ui_vnd }}{% endif %}</td>
+<td class="ui-number">{% if period.status != "Locked" %}<label class="ui-sr-only" for="payroll-{{ p.pk }}-allowance">Phụ cấp — {{ p.employee.full_name }}</label><input id="payroll-{{ p.pk }}-allowance" form="pf{{ p.pk }}" type="number" step="1" min="0" name="allowance" aria-label="Phụ cấp — {{ p.employee.full_name }}" value="{{ p.allowance|floatformat:"0u" }}" class="ui-finance-input">{% else %}{{ p.allowance|ui_vnd }}{% endif %}</td>
+<td class="ui-number">{% if period.status != "Locked" %}<label class="ui-sr-only" for="payroll-{{ p.pk }}-overtime_amount">Tiền tăng ca — {{ p.employee.full_name }}</label><input id="payroll-{{ p.pk }}-overtime_amount" form="pf{{ p.pk }}" type="number" step="1" min="0" name="overtime_amount" aria-label="Tiền tăng ca — {{ p.employee.full_name }}" value="{{ p.overtime_amount|floatformat:"0u" }}" class="ui-finance-input">{% else %}{{ p.overtime_amount|ui_vnd }}{% endif %}</td>
+<td class="ui-number">{% if period.status != "Locked" %}<label class="ui-sr-only" for="payroll-{{ p.pk }}-overtime_tax_exempt_amount">Tăng ca miễn thuế — {{ p.employee.full_name }}</label><input id="payroll-{{ p.pk }}-overtime_tax_exempt_amount" form="pf{{ p.pk }}" type="number" step="1" min="0" name="overtime_tax_exempt_amount" aria-label="Tăng ca miễn thuế — {{ p.employee.full_name }}" value="{{ p.overtime_tax_exempt_amount|floatformat:"0u" }}" class="ui-finance-input">{% else %}{{ p.overtime_tax_exempt_amount|ui_vnd }}{% endif %}</td>
+<td class="ui-number">{% if period.status != "Locked" %}<label class="ui-sr-only" for="payroll-{{ p.pk }}-deduction_amount">Khấu trừ khác — {{ p.employee.full_name }}</label><input id="payroll-{{ p.pk }}-deduction_amount" form="pf{{ p.pk }}" type="number" step="1" min="0" name="deduction_amount" aria-label="Khấu trừ khác — {{ p.employee.full_name }}" value="{{ p.deduction_amount|floatformat:"0u" }}" class="ui-finance-input">{% else %}{{ p.deduction_amount|ui_vnd }}{% endif %}</td>
+<td class="ui-number">{{ p.gross_income|ui_vnd }}</td>
+<td class="ui-number">{{ p.insurance_amount|ui_vnd }}</td>
+<td class="ui-number">{{ p.tax_amount|ui_vnd }}</td>
+<td class="ui-number">{{ p.net_income|ui_vnd }}</td>
+<td class="ui-actions">{% if period.status != "Locked" %}<button form="pf{{ p.pk }}" type="submit" class="ui-button ui-button--secondary" aria-label="Lưu dòng lương của {{ p.employee.full_name }}">Lưu</button>{% endif %}</td>
+</tr>{% empty %}<tr><td colspan="12">{% include "ui/empty_state.html" with title="Chưa có dòng bảng lương" description="Khi kỳ đang mở, dùng Tạo bảng lương ở phía trên để tạo các dòng còn thiếu." icon="finance" %}</td></tr>{% endfor %}</tbody></table></div></section>
+{% include "ui/confirm_dialog.html" %}
 {% endblock %}
