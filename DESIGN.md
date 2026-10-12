@@ -4,18 +4,18 @@ description: "Quy tắc thiết kế giao diện cổng nhân sự nội bộ IH
 
 colors:
   # Giá trị nguồn; triển khai dùng token --ui-* trong ui_tokens.css, không rải mã hex trong template.
-  brandLight:     "#6d28d9"
-  brandDark:      "#c4b5fd"
-  bgLight:        "#f8fafc"
+  brandLight:     "#0b7461"
+  brandDark:      "#63dbc2"
+  bgLight:        "#f4f7f5"
   surfaceLight:   "#ffffff"
-  textLight:      "#0f172a"
-  textMutedLight: "#475569"
-  borderLight:    "#64748b"
-  bgDark:         "#0f172a"
-  surfaceDark:    "#1e293b"
-  textDark:       "#f8fafc"
-  textMutedDark:  "#cbd5e1"
-  borderDark:     "#94a3b8"
+  textLight:      "#0c233b"
+  textMutedLight: "#4b6171"
+  borderLight:    "#627d78"
+  bgDark:         "#0e1827"
+  surfaceDark:    "#162536"
+  textDark:       "#eef6f8"
+  textMutedDark:  "#b9cad5"
+  borderDark:     "#8aaba6"
   # 4 màu ngữ nghĩa (mỗi màu có text/bg/border cho cả light và dark trong tokens)
   success: "xanh lá"
   warning: "hổ phách"
@@ -39,6 +39,8 @@ motion:  { feedback: 120ms, panel: 180ms }
 ---
 
 # Quy tắc thiết kế IHRMS
+
+Điều chỉnh Atoms ngày12/10/2026 theo yêu cầu chủ dự án: navy–teal, card viền nhẹ và bố cục rõ thứ bậc. Giữ nguyên nghiệp vụ, quyền, control44px, typography, responsive và giấy HCNS. `--ui-card-border` là viền trang trí; `--ui-border` vẫn là viền control đủ3:1. Sidebar dùng focus riêng `--ui-sidebar-focus`.
 
 ## Mục đích và thứ bậc tài liệu
 Đây là nguồn quy tắc thiết kế cho mọi thay đổi giao diện của IHRMS. Thứ bậc khi có mâu thuẫn:
@@ -71,7 +73,7 @@ Nếu phát hiện mâu thuẫn, ghi vào `docs/PROJECT_WORK_LOG.md` và chọn 
 5. Kiểm tra desktop, tablet, mobile trước khi báo xong.
 
 ## Hướng thiết kế
-- **Màu:** một màu thương hiệu tím trên nền trung tính slate; bốn màu ngữ nghĩa success/warning/danger/info. Không gradient, không glow, không tím đơn sắc toàn trang.
+- **Màu:** một màu thương hiệu teal trên nền trung tính xanh nhẹ, sidebar navy; bốn màu ngữ nghĩa success/warning/danger/info. Không gradient, không glow, không teal đơn sắc toàn trang.
 - **Chữ:** font hệ thống, đủ dấu tiếng Việt, không tải font từ CDN.
 - **Phong cách:** doanh nghiệp, dữ liệu dày, đáng tin cậy. Card có viền 1px và bóng nhẹ; bề mặt phẳng. Bảng, form dài và tài liệu luôn dùng bề mặt phẳng dễ đọc.
 - **Điều hướng:** desktop (từ 1024px) sidebar nhóm theo phân hệ, thu gọn được; dưới 1024px dùng drawer. Không dùng thanh menu ngang nhiều dropdown, không làm bottom bar.
@@ -169,7 +171,7 @@ Rõ ràng, ngắn gọn, ít thuật ngữ, tiếng Việt tự nhiên.
 
 Sidebar được phép dùng nền thương hiệu nhạt `--ui-sidebar-hover-bg`, chữ `--ui-sidebar-hover-text`, vạch trái 3px `--ui-sidebar-marker`, viền thương hiệu mờ 1px `--ui-sidebar-hover-border` và bóng nhẹ `--ui-shadow-card` khi hover hoặc focus-visible. Viền mờ là trang trí; vạch và chữ cung cấp tín hiệu tương phản. Dùng `--ui-motion-feedback` 120ms, về 0ms khi reduced-motion; không gradient, blur hay glow. Pointer không hiện vòng focus; bàn phím giữ vòng focus-visible rõ. Mục con chỉ có chữ thụt vào, đường nối dọc mảnh, active đậm và `aria-current="page"`; nhóm chỉ giữ chevron bên phải.
 
-Nền trang/card/control và track biểu đồ dùng slate; KPI mặc định `--ui-text`, cảnh báo chỉ khi giá trị > 0 và có nhãn. Biểu đồ bốn chuỗi dùng `--ui-chart-hire/departure/transfer/promotion`, chú giải chữ và bảng số liệu; giá trị 0 không vẽ thanh. Tím chỉ dùng cho hành động chính, link, selected/active, focus và dữ liệu chính; ngoại lệ hover sidebar nêu trên. Biểu mẫu HCNS giữ palette giấy/in đã có. Kết quả đo và giới hạn xác minh: [nhật ký dự án](docs/PROJECT_WORK_LOG.md).
+Nền trang/card/control và track biểu đồ dùng neutral xanh theo palette Atoms; KPI mặc định `--ui-text`, cảnh báo chỉ khi giá trị > 0 và có nhãn. Biểu đồ bốn chuỗi dùng `--ui-chart-hire/departure/transfer/promotion`, chú giải chữ và bảng số liệu; giá trị 0 không vẽ thanh. Teal chỉ dùng cho hành động chính, link, selected/active, focus và dữ liệu chính; ngoại lệ hover sidebar nêu trên. Biểu mẫu HCNS giữ palette giấy/in đã có. Kết quả đo và giới hạn xác minh: [nhật ký dự án](docs/PROJECT_WORK_LOG.md).
 
 ## Mẫu bố cục trang chuẩn — triển khai ở Giai đoạn 4
 
@@ -187,7 +189,7 @@ Nền trang/card/control và track biểu đồ dùng slate; KPI mặc định `
 
 Hiển thị theo Việt Nam: `5.000.000`, `0,07`, số âm `-1.234,5`; số tiền/số lượng căn phải, tabular-nums. Năm/tháng, mã, ID, URL, JSON, thuộc tính máy và giá trị POST không phân nhóm. Ô số hiển thị qua proxy tiếng Việt; native NumberInput giữ tên trường, min/max/step và giá trị chuẩn, không dùng parseFloat cho chuỗi phân nhóm. Không đổi phép tính hay giá trị ô Excel số.
 
-Nút và input/select một dòng cao tối thiểu 44px, bo 8px, chữ 14px, padding theo token; nút không co hẹp, nhóm control có gap 8–12px và wrap trên mobile. Textarea nhiều dòng, checkbox/radio và nội dung giấy HCNS giữ loại control riêng. Bảng rộng cuộn trong vùng bảng, không ép tiêu đề thành từng ký tự. Editor/catalog/card/control dark dùng surface slate và chữ token; bản giấy HCNS giữ nền trắng/chữ đen ở cả hai theme. Dùng “Trung tâm” trong nội dung hiển thị nguồn; không thay dữ liệu nghiệp vụ đã lưu hay sửa lịch sử migration.
+Nút và input/select một dòng cao tối thiểu 44px, bo 8px, chữ 14px, padding theo token; nút không co hẹp, nhóm control có gap 8–12px và wrap trên mobile. Textarea nhiều dòng, checkbox/radio và nội dung giấy HCNS giữ loại control riêng. Bảng rộng cuộn trong vùng bảng, không ép tiêu đề thành từng ký tự. Editor/catalog/card/control dark dùng surface token và chữ token; bản giấy HCNS giữ nền trắng/chữ đen ở cả hai theme. Dùng “Trung tâm” trong nội dung hiển thị nguồn; không thay dữ liệu nghiệp vụ đã lưu hay sửa lịch sử migration.
 
 ## Component opt-in Giai đoạn 4
 

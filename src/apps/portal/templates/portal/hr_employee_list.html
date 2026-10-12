@@ -14,7 +14,7 @@
         {% for e in employees %}
         <tr>
             <th scope="row">{{ e.employee_code|ui_number }}</th>
-            <td ><a href="{% url 'portal:hr_employee_detail' e.pk %}" class="text-blue-700 hover:underline">{{ e.full_name|ui_number }}</a></td>
+            <td><div class="ui-person"><span class="ui-person-avatar" aria-hidden="true">{{ e.full_name|slice:":1"|upper }}</span><a href="{% url 'portal:hr_employee_detail' e.pk %}" class="ui-person-name">{{ e.full_name|ui_number }}</a></div></td>
             <td >{{ e.department|ui_number }}</td>
             <td >{{ e.position|ui_number }}</td>
             <td>{% ui_badge "hrm.employee:employment_status" e.employment_status %}</td>

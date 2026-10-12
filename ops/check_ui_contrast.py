@@ -63,11 +63,12 @@ def pairings():
                       (status + "-border", status + "-bg", 3),
                       (status + "-border", "surface", 3)))
     for bg in ("sidebar-bg", "sidebar-hover-bg"):
-        pairs.extend((("sidebar-text", bg, 4.5), ("sidebar-border", bg, 3), ("focus", bg, 3)))
+        pairs.extend((("sidebar-text", bg, 4.5), ("sidebar-border", bg, 3), ("sidebar-focus", bg, 3)))
     pairs.extend((("sidebar-active-text", "sidebar-active-bg", 4.5),
                   ("sidebar-marker", "sidebar-active-bg", 3),
                   ("sidebar-hover-text", "sidebar-hover-bg", 4.5),
                   ("sidebar-marker", "sidebar-hover-bg", 3)))
+    pairs.extend((("sidebar-muted", "sidebar-bg", 4.5), ("sidebar-focus", "sidebar-active-bg", 3)))
     for bg in ("bg", "surface", "surface-raised"):
         pairs.extend((fg, bg, 3) for fg in ("chart-series", "chart-series-soft", "chart-series-strong", "chart-grid", "chart-hire", "chart-departure", "chart-transfer", "chart-promotion"))
         pairs.extend((fg, bg, 4.5) for fg in ("chart-axis", "chart-label"))

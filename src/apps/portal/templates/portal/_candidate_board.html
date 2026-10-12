@@ -1,0 +1,25 @@
+{% load ui_components %}
+{% if candidates %}
+<section class="ui-card" aria-labelledby="candidate-board-title">
+ <h2 class="ui-card-title" id="candidate-board-title">Ứng viên theo giai đoạn</h2>
+ <p class="ui-page-description">Chỉ hiển thị ứng viên trong trang {{ page_obj.number }} hiện tại. Chọn tên để xem hồ sơ; chuyển trang ở cuối danh sách.</p>
+ <div class="ui-candidate-scroll" role="region" tabindex="0" aria-label="Ứng viên theo trạng thái trong trang hiện tại; cuộn ngang để xem các giai đoạn">
+  <div class="ui-candidate-board">
+   {% for group in candidates|ui_status_groups:"recruitment.candidate:status" %}
+   <section class="ui-candidate-column" aria-labelledby="candidate-stage-{{ forloop.counter }}">
+    <header class="ui-candidate-stage"><h3 id="candidate-stage-{{ forloop.counter }}">{% ui_badge "recruitment.candidate:status" group.code group.label %}</h3><span class="ui-candidate-count" aria-label="Số ứng viên trong trang hiện tại">{{ group.rows|length|ui_number }}</span></header>
+    <div class="ui-candidate-cards">
+    {% for c in group.rows %}
+     <article class="ui-candidate-card">
+      <a class="ui-candidate-link" href="{% url 'portal:hr_candidate_detail' c.pk %}"><span class="ui-person-avatar" aria-hidden="true">{{ c.full_name|slice:":1"|upper }}</span><span>{{ c.full_name|ui_number }}</span>{% include "_shell_icon.html" with name="arrow" %}</a>
+      <p class="ui-candidate-meta">{{ c.candidate_code|ui_number }}</p>
+      <dl class="ui-candidate-info"><div><dt>SĐT</dt><dd>{{ c.phone_number|ui_number }}</dd></div><div><dt>Nguồn</dt><dd>{{ c.source|default:"—"|ui_number }}</dd></div></dl>
+     </article>
+    {% empty %}<p class="ui-candidate-meta">Không có ứng viên thuộc giai đoạn này trong trang hiện tại.</p>{% endfor %}
+    </div>
+   </section>
+   {% endfor %}
+  </div>
+ </div>
+</section>
+{% endif %}

@@ -6,6 +6,7 @@
     <h1 class="ui-page-title">Quản lý Ứng viên</h1>
     {% if can_manage_hr %}<a href="{% url 'portal:hr_candidate_create' %}" class="ui-button ui-button--primary">+ Thêm ứng viên</a>{% endif %}
 </div>
+{% include "portal/_candidate_board.html" %}
 <div class="ui-card">
     <div class="ui-scroll overflow-x-auto mobile-table-scroll" tabindex="0" role="region" aria-label="Bảng ứng viên">
         <table class="ui-table ui-recruitment-table"><caption class="ui-sr-only">Danh sách ứng viên</caption>

@@ -2,7 +2,7 @@
 {% load ui_components %}
 {% block title %}{{ employee.full_name|ui_number }}{% endblock %}
 {% block content %}<div class="ui-page">
-{% include "ui/page_header.html" with title=employee.full_name description=employee.employee_code actions_template="portal/_hr_detail_actions.html" %}
+<header class="ui-page-header"><div class="ui-profile-heading"><span class="ui-person-avatar" aria-hidden="true">{{ employee.full_name|slice:":1"|upper }}</span><div><h1 class="ui-page-title">{{ employee.full_name }}</h1><p class="ui-page-description">{{ employee.employee_code }}</p></div></div><div class="ui-page-actions">{% include "portal/_hr_detail_actions.html" %}</div></header>
 <section class="ui-card" aria-labelledby="employee-info-title"><h2 class="ui-card-title" id="employee-info-title">Thông tin nhân viên</h2><dl class="ui-detail-grid">
 {% include "ui/detail_item.html" with label="Ngày sinh" value=employee.date_of_birth|ui_date %}
 {% include "ui/detail_item.html" with label="Giới tính" value=employee.get_gender_display %}

@@ -52,6 +52,7 @@
     --ui-dialog-width: 32rem;
     --ui-dialog-max-height: 85vh;
     --ui-component-heading: 1.125rem;
+    --ui-letter-spacing-label: 0.04em;
     --ui-motion-feedback: 120ms;
     --ui-motion-panel: 180ms;
     --ui-motion-easing: ease-out;
@@ -59,27 +60,27 @@
 
 :root,
 html[data-theme="light"] {
-    --ui-bg: #f8fafc;
+    --ui-bg: #f4f7f5;
     --ui-surface: #ffffff;
-    --ui-surface-raised: #f1f5f9;
-    --ui-text: #0f172a;
-    --ui-text-muted: #475569;
-    --ui-border: #64748b;
-    --ui-divider: #e2e8f0;
-    --ui-brand: #6d28d9;
-    --ui-brand-hover: #5b21b6;
-    --ui-brand-active: #4c1d95;
+    --ui-surface-raised: #f0f5f2;
+    --ui-text: #0c233b;
+    --ui-text-muted: #4b6171;
+    --ui-border: #627d78;
+    --ui-divider: #d9e3df;
+    --ui-brand: #0b7461;
+    --ui-brand-hover: #085e50;
+    --ui-brand-active: #064c41;
     --ui-on-brand: #ffffff;
-    --ui-brand-soft: #f5f3ff;
-    --ui-link: #6d28d9;
-    --ui-focus: #6d28d9;
+    --ui-brand-soft: #edf7f2;
+    --ui-link: #0b7461;
+    --ui-focus: #0b7461;
     --ui-focus-gap: #ffffff;
-    --ui-hover-bg: #f1f5f9;
-    --ui-selected-bg: #ede9fe;
-    --ui-selected-text: #4c1d95;
-    --ui-disabled-bg: #e2e8f0;
-    --ui-disabled-text: #475569;
-    --ui-disabled-border: #64748b;
+    --ui-hover-bg: #edf4f0;
+    --ui-selected-bg: #dff0e8;
+    --ui-selected-text: #085e50;
+    --ui-disabled-bg: #dce7e1;
+    --ui-disabled-text: #4b6171;
+    --ui-disabled-border: #627d78;
     --ui-success-text: #166534;
     --ui-success-bg: #f0fdf4;
     --ui-success-border: #166534;
@@ -92,15 +93,15 @@ html[data-theme="light"] {
     --ui-info-text: #075985;
     --ui-info-bg: #f0f9ff;
     --ui-info-border: #075985;
-    --ui-sidebar-bg: var(--ui-surface);
-    --ui-sidebar-text: var(--ui-text);
-    --ui-sidebar-hover-bg: var(--ui-selected-bg);
-    --ui-sidebar-hover-text: var(--ui-selected-text);
+    --ui-sidebar-bg: #0c233b;
+    --ui-sidebar-text: #d6e5ee;
+    --ui-sidebar-hover-bg: #133a43;
+    --ui-sidebar-hover-text: #ffffff;
     --ui-sidebar-hover-border: color-mix(in srgb, var(--ui-brand) 25%, var(--ui-transparent));
-    --ui-sidebar-active-bg: var(--ui-selected-bg);
-    --ui-sidebar-active-text: var(--ui-selected-text);
-    --ui-sidebar-marker: var(--ui-brand);
-    --ui-sidebar-border: var(--ui-border);
+    --ui-sidebar-active-bg: #174b43;
+    --ui-sidebar-active-text: #ffffff;
+    --ui-sidebar-marker: #6ee7c8;
+    --ui-sidebar-border: #8aa6ad;
     --ui-chart-series: var(--ui-brand);
     --ui-chart-series-soft: var(--ui-brand-hover);
     --ui-chart-series-strong: var(--ui-brand-active);
@@ -117,30 +118,34 @@ html[data-theme="light"] {
     --ui-shadow-card: 0 1px 3px rgb(15 23 42 / 0.08);
     --ui-shadow-overlay: 0 8px 24px rgb(15 23 42 / 0.18);
     --ui-scrim: rgb(15 23 42 / 0.65);
-}
+
+    --ui-card-border: #d9e3df;
+    --ui-sidebar-muted: #a9bdc9;
+    --ui-sidebar-divider: #294653;
+    --ui-sidebar-focus: #6ee7c8;}
 
 html[data-theme="dark"] {
-    --ui-bg: #0f172a;
-    --ui-surface: #1e293b;
-    --ui-surface-raised: #334155;
-    --ui-text: #f8fafc;
-    --ui-text-muted: #cbd5e1;
-    --ui-border: #94a3b8;
-    --ui-divider: #475569;
-    --ui-brand: #c4b5fd;
-    --ui-brand-hover: #ddd6fe;
-    --ui-brand-active: #a78bfa;
-    --ui-on-brand: #2e1065;
-    --ui-brand-soft: #2e1065;
-    --ui-link: #c4b5fd;
-    --ui-focus: #c4b5fd;
-    --ui-focus-gap: #0f172a;
-    --ui-hover-bg: #334155;
-    --ui-selected-bg: #2e1065;
-    --ui-selected-text: #ddd6fe;
-    --ui-disabled-bg: #334155;
-    --ui-disabled-text: #cbd5e1;
-    --ui-disabled-border: #94a3b8;
+    --ui-bg: #0e1827;
+    --ui-surface: #162536;
+    --ui-surface-raised: #223648;
+    --ui-text: #eef6f8;
+    --ui-text-muted: #b9cad5;
+    --ui-border: #8aaba6;
+    --ui-divider: #314955;
+    --ui-brand: #63dbc2;
+    --ui-brand-hover: #8ee7d4;
+    --ui-brand-active: #38c5a6;
+    --ui-on-brand: #092b26;
+    --ui-brand-soft: #123c35;
+    --ui-link: #63dbc2;
+    --ui-focus: #63dbc2;
+    --ui-focus-gap: #0e1827;
+    --ui-hover-bg: #223648;
+    --ui-selected-bg: #174b43;
+    --ui-selected-text: #a6f2df;
+    --ui-disabled-bg: #223648;
+    --ui-disabled-text: #b9cad5;
+    --ui-disabled-border: #8aaba6;
     --ui-success-text: #86efac;
     --ui-success-bg: #052e16;
     --ui-success-border: #86efac;
@@ -156,7 +161,8 @@ html[data-theme="dark"] {
     --ui-shadow-card: 0 1px 3px rgb(0 0 0 / 0.3);
     --ui-shadow-overlay: 0 8px 24px rgb(0 0 0 / 0.45);
     --ui-scrim: rgb(0 0 0 / 0.75);
-}
+
+    --ui-card-border: #314955;}
 
 /* Variables only; consumers must explicitly use these motion tokens. */
 @media (prefers-reduced-motion: reduce) {
@@ -168,27 +174,27 @@ html[data-theme="dark"] {
 
 @media screen and (prefers-color-scheme: dark) {
     :root:not([data-theme]) {
-    --ui-bg: #0f172a;
-    --ui-surface: #1e293b;
-    --ui-surface-raised: #334155;
-    --ui-text: #f8fafc;
-    --ui-text-muted: #cbd5e1;
-    --ui-border: #94a3b8;
-    --ui-divider: #475569;
-    --ui-brand: #c4b5fd;
-    --ui-brand-hover: #ddd6fe;
-    --ui-brand-active: #a78bfa;
-    --ui-on-brand: #2e1065;
-    --ui-brand-soft: #2e1065;
-    --ui-link: #c4b5fd;
-    --ui-focus: #c4b5fd;
-    --ui-focus-gap: #0f172a;
-    --ui-hover-bg: #334155;
-    --ui-selected-bg: #2e1065;
-    --ui-selected-text: #ddd6fe;
-    --ui-disabled-bg: #334155;
-    --ui-disabled-text: #cbd5e1;
-    --ui-disabled-border: #94a3b8;
+    --ui-bg: #0e1827;
+    --ui-surface: #162536;
+    --ui-surface-raised: #223648;
+    --ui-text: #eef6f8;
+    --ui-text-muted: #b9cad5;
+    --ui-border: #8aaba6;
+    --ui-divider: #314955;
+    --ui-brand: #63dbc2;
+    --ui-brand-hover: #8ee7d4;
+    --ui-brand-active: #38c5a6;
+    --ui-on-brand: #092b26;
+    --ui-brand-soft: #123c35;
+    --ui-link: #63dbc2;
+    --ui-focus: #63dbc2;
+    --ui-focus-gap: #0e1827;
+    --ui-hover-bg: #223648;
+    --ui-selected-bg: #174b43;
+    --ui-selected-text: #a6f2df;
+    --ui-disabled-bg: #223648;
+    --ui-disabled-text: #b9cad5;
+    --ui-disabled-border: #8aaba6;
     --ui-success-text: #86efac;
     --ui-success-bg: #052e16;
     --ui-success-border: #86efac;
@@ -204,5 +210,6 @@ html[data-theme="dark"] {
     --ui-shadow-card: 0 1px 3px rgb(0 0 0 / 0.3);
     --ui-shadow-overlay: 0 8px 24px rgb(0 0 0 / 0.45);
     --ui-scrim: rgb(0 0 0 / 0.75);
-    }
+
+    --ui-card-border: #314955;}
 }

@@ -14,7 +14,7 @@ Chọn Accessible & Ethical kết hợp Data-Dense Dashboard (tìm kiếm KPI). 
 
 Nguồn giá trị chính thức: [`ui_tokens.css`](../src/static/css/ui_tokens.css), namespace `--ui-*`. Base tải theme JS trước CSS, rồi Tailwind, legacy adapters, theme, tokens, CSS trang con, cuối cùng CSS khung. `design_tokens.css` import tokens để admin cũng dùng được; aliases cũ chỉ trỏ một chiều tới `--ui-*` trong `@media screen`, defaults in giữ nguyên. Không đổi tên utility hàng loạt hoặc recolor giấy HCNS. OS fallback CSS chỉ khi chưa có `data-theme`; theme JS ưu tiên lựa chọn đã lưu, nếu chưa chọn theo `prefers-color-scheme`.
 
-- Một màu thương hiệu tím: light `#6d28d9`, dark `#c4b5fd`. Giữ nhận diện tím hiện có; bỏ navy/blue CTA do skill gợi ý để tránh đổi thương hiệu chưa được yêu cầu. Bỏ gradient và glow, dùng neutral slate cho dữ liệu và surfaces.
+- Theo yêu cầu tham khảo Atoms ngày12/10/2026, chuyển màu thương hiệu sang teal: light `#0b7461`, dark `#63dbc2`; sidebar navy `#0c233b`, nền light `#f4f7f5`, dark `#0e1827`. Giữ bốn màu ngữ nghĩa và không gradient/glow. Viền card `--ui-card-border` nhẹ, tách viền control `--ui-border` đủ3:1; sidebar có `--ui-sidebar-focus` riêng. Quyết định này thay palette tím trước đó theo ủy quyền mới của chủ dự án.
 - Bốn màu ngữ nghĩa: success xanh lá, warning hổ phách, danger đỏ, info xanh dương; mỗi trạng thái có text/background/border riêng cho hai theme. Trạng thái luôn có chữ và SVG tương ứng. Warning chỉ việc chờ xử lý, danger chỉ lỗi/quá hạn/hành động nguy hiểm.
 - Dùng font hệ thống `"Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif`; không tải Google Fonts/CDN, không thêm asset/dependency. Cần kiểm tra glyph tiếng Việt ở máy đích; kết quả kiểm tra local ghi trong nhật ký. Bỏ Fira Code cho văn bản thường và Plus Jakarta Sans remote vì không cần font mạng hay phong cách kỹ thuật. Không tuyên bố đã kiểm Be Vietnam Pro/Inter khi chưa có font đó.
 - Body 16px (`1rem` với root mặc định), bảng/nhãn 14px, phụ chú 12px; line height 1.5, heading 1.25. Không giảm root font-size; hỗ trợ zoom. Số dùng tabular-nums, tiền `vi-VN`, ngày `dd/MM/yyyy`; giữ quy tắc làm tròn và dữ liệu backend hiện có.
@@ -54,7 +54,7 @@ Kiểm tra 360/768/1024/1440px, zoom 200%, bàn phím, screen reader, reduced mo
 
 Sidebar được phép dùng nền thương hiệu nhạt `--ui-sidebar-hover-bg`, chữ `--ui-sidebar-hover-text`, vạch trái 3px `--ui-sidebar-marker`, viền thương hiệu mờ 1px `--ui-sidebar-hover-border` và bóng nhẹ `--ui-shadow-card` khi hover hoặc focus-visible. Viền mờ là trang trí; vạch và chữ cung cấp tín hiệu tương phản. Dùng `--ui-motion-feedback` 120ms, về 0ms khi reduced-motion; không gradient, blur hay glow. Pointer không hiện vòng focus; bàn phím giữ vòng focus-visible rõ. Mục con chỉ có chữ thụt vào, đường nối dọc mảnh, active đậm và `aria-current="page"`; nhóm chỉ giữ chevron bên phải.
 
-Nền trang/card/control và track biểu đồ dùng slate; KPI mặc định `--ui-text`, cảnh báo chỉ khi giá trị > 0 và có nhãn. Biểu đồ bốn chuỗi dùng `--ui-chart-hire/departure/transfer/promotion`, chú giải chữ và bảng số liệu; giá trị 0 không vẽ thanh. Tím chỉ dùng cho hành động chính, link, selected/active, focus và dữ liệu chính; ngoại lệ hover sidebar nêu trên. Biểu mẫu HCNS giữ palette giấy/in đã có. Kết quả đo và giới hạn xác minh: [nhật ký dự án](../docs/PROJECT_WORK_LOG.md).
+Nền trang/card/control và track biểu đồ dùng neutral xanh theo palette Atoms; KPI mặc định `--ui-text`, cảnh báo chỉ khi giá trị > 0 và có nhãn. Biểu đồ bốn chuỗi dùng `--ui-chart-hire/departure/transfer/promotion`, chú giải chữ và bảng số liệu; giá trị 0 không vẽ thanh. Teal chỉ dùng cho hành động chính, link, selected/active, focus và dữ liệu chính; ngoại lệ hover sidebar nêu trên. Biểu mẫu HCNS giữ palette giấy/in đã có. Kết quả đo và giới hạn xác minh: [nhật ký dự án](../docs/PROJECT_WORK_LOG.md).
 
 ## Mẫu bố cục trang chuẩn — triển khai ở Giai đoạn 4
 
@@ -72,8 +72,16 @@ Nền trang/card/control và track biểu đồ dùng slate; KPI mặc định `
 
 Hiển thị theo Việt Nam: `5.000.000`, `0,07`, số âm `-1.234,5`; số tiền/số lượng căn phải, tabular-nums. Năm/tháng, mã, ID, URL, JSON, thuộc tính máy và giá trị POST không phân nhóm. Ô số hiển thị qua proxy tiếng Việt; native NumberInput giữ tên trường, min/max/step và giá trị chuẩn, không dùng parseFloat cho chuỗi phân nhóm. Không đổi phép tính hay giá trị ô Excel số.
 
-Nút và input/select một dòng cao tối thiểu 44px, bo 8px, chữ 14px, padding theo token; nút không co hẹp, nhóm control có gap 8–12px và wrap trên mobile. Textarea nhiều dòng, checkbox/radio và nội dung giấy HCNS giữ loại control riêng. Bảng rộng cuộn trong vùng bảng, không ép tiêu đề thành từng ký tự. Editor/catalog/card/control dark dùng surface slate và chữ token; bản giấy HCNS giữ nền trắng/chữ đen ở cả hai theme. Dùng “Trung tâm” trong nội dung hiển thị nguồn; không thay dữ liệu nghiệp vụ đã lưu hay sửa lịch sử migration.
+Nút và input/select một dòng cao tối thiểu 44px, bo 8px, chữ 14px, padding theo token; nút không co hẹp, nhóm control có gap 8–12px và wrap trên mobile. Textarea nhiều dòng, checkbox/radio và nội dung giấy HCNS giữ loại control riêng. Bảng rộng cuộn trong vùng bảng, không ép tiêu đề thành từng ký tự. Editor/catalog/card/control dark dùng surface token và chữ token; bản giấy HCNS giữ nền trắng/chữ đen ở cả hai theme. Dùng “Trung tâm” trong nội dung hiển thị nguồn; không thay dữ liệu nghiệp vụ đã lưu hay sửa lịch sử migration.
 
 ## Component opt-in Giai đoạn 4
 
 Quy chuẩn trang được triển khai qua `.ui-page`, `.ui-card`, `.ui-table`, `.ui-field`, `.ui-badge` và các partial dùng chung trên bốn trang mẫu. Các trang khác chưa chuyển layout. Cách dùng, registry trạng thái và kitchen sink xem [tài liệu thành phần](../docs/UI_SHARED_COMPONENTS_PHASE4.md). Kết quả kiểm tra/việc còn mở chỉ ghi trong nhật ký dự án.
+
+## Bố cục tham khảo Atoms — cập nhật ngày12/10/2026
+
+Phạm vi được chủ dự án chọn: khung chung, trang chủ và các trang đã hoàn tất G5 (Cá nhân/Nhân sự/Tuyển dụng/Kế toán). Tám ảnh trong design-system/reference/atoms chỉ là tham khảo. Giữ branding/dữ liệu IHRMS, không đưa người/tên/số liệu trong ảnh vào demo.
+
+Card có header ngăn bằng divider, bảng dùng hàng đọc được14px, hồ sơ có avatar chữ trang trí; KPI có icon và phạm vi số liệu. Bảng ứng viên theo giai đoạn chỉ nhóm các row của trang hiện tại theo registry trạng thái sẵn, có mô tả rõ phạm vi; giữ bảng danh sách, URL chi tiết và phân trang. Không thêm rating, kéo thả, chuyển trạng thái, tìm kiếm toàn cục, quỹ lương hay KPI không có context. Chữ body16px và control44px giữ nguyên. Card/connector viền nhẹ không được thay viền control hoặc focus.
+
+`atoms_ui.css` chỉ screen, opt-in `.ui-page`; palette/shell dùng chung cho portal. Giấy/Excel HCNS không recolor. Đo lại bằng check_ui_contrast.py và browser thật ở hai theme; nhật ký là nơi duy nhất ghi kết quả triển khai.
