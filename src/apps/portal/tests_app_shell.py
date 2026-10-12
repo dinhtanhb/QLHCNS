@@ -133,3 +133,27 @@ class AppShellTests(TestCase):
         self.assertEqual(html.count('role="status"'), 2)
         self.assertIn("ui-alert--danger", html)
         self.assertNotIn("data-auto-dismiss", html)
+
+    def test_unlinked_account_menu_targets_keep_existing_http_permissions(self):
+        expected = {
+            "EMPLOYEE": (302, 403, 302), "DEPT_MANAGER": (302, 403, 302),
+            "HR_OFFICER": (302, 200, 302), "HR_MANAGER": (302, 200, 200),
+            "DIRECTOR": (302, 200, 200), "SYS_ADMIN": (200, 200, 302),
+        }
+        for role, statuses in expected.items():
+            with self.subTest(role=role):
+                user = self.make_user(role, None, "shell-target-" + role)
+                user.is_staff = role == "SYS_ADMIN"
+                user.save(update_fields=("is_staff",))
+                self.client.force_login(user)
+                html = self.render_shell(user)
+                for url, status in zip(("/admin/", "/reports/", "/portal/reports/"), statuses):
+                    self.assertEqual(self.client.get(url).status_code, status)
+                self.assertEqual('href="/admin/"' in html, has_permission(user, "view_admin_menu"))
+                self.assertEqual('href="/reports/"' in html, has_permission(user, "view_admin_menu"))
+        admin = self.make_user("SUPER_ADMIN", None, "shell-unlinked-superuser")
+        admin.is_staff = admin.is_superuser = True
+        admin.save(update_fields=("is_staff", "is_superuser"))
+        self.client.force_login(admin)
+        for url in ("/admin/", "/reports/", "/portal/reports/"):
+            self.assertEqual(self.client.get(url).status_code, 200)

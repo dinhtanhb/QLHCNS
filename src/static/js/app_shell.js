@@ -135,9 +135,17 @@
     }
     if (userButton) {
         userButton.addEventListener('click', () => userOpen(userPanel.hidden));
-        userContainer.addEventListener('focusout', () => queueMicrotask(() => {
-            if (!userContainer.contains(document.activeElement)) userOpen(false);
-        }));
+        userContainer.addEventListener('focusout', event => {
+            // Chromium runs microtasks between blur and focus. Do not hide a
+            // link while a pointer is transferring focus inside this disclosure.
+            if (event.relatedTarget) {
+                if (!userContainer.contains(event.relatedTarget)) userOpen(false);
+                return;
+            }
+            setTimeout(() => {
+                if (!userContainer.contains(document.activeElement)) userOpen(false);
+            }, 0);
+        });
     }
     document.addEventListener('click', event => {
         if (userContainer && !userContainer.contains(event.target)) userOpen(false);
