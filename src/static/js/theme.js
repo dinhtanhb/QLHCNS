@@ -9,6 +9,11 @@
     function apply(mode) {
         root.dataset.theme = mode === 'dark' ? 'dark' : 'light';
         root.style.colorScheme = root.dataset.theme;
+        const themeMeta = document.querySelector('meta[name="theme-color"]');
+        if (themeMeta) {
+            const background = getComputedStyle(root).getPropertyValue('--ui-bg').trim();
+            if (background) themeMeta.content = background;
+        }
         document.querySelectorAll('[data-theme-toggle]').forEach(function (button) {
             const dark = root.dataset.theme === 'dark';
             button.setAttribute('aria-pressed', String(dark));

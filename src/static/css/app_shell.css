@@ -88,6 +88,16 @@
     .portal-app .ui-main .bg-white:not(.hcns-paper):not(.hcns-paper *),
     .portal-app .ui-main .home-kpi-grid > .bg-white:not(.hcns-paper *) { background:var(--ui-surface); box-shadow:var(--ui-shadow-card); }
     .portal-app .ui-main table:not(.hcns-paper *) { font-size:var(--ui-font-size-small); }
+    .portal-app .ui-main .ihrms-kpi-value:not(.hcns-paper *) { color:var(--ui-text); }
+    .portal-app .ui-main .ihrms-kpi-value.ui-kpi-warning { color:var(--ui-warning-text); }
+    .portal-app .ui-main .ihrms-kpi-value.ui-kpi-danger { color:var(--ui-danger-text); }
+    .portal-app .ui-main :is(a,button)[class*="text-white"][class*="bg-amber-"],
+    .portal-app .ui-main :is(a,button)[class*="text-white"][class*="bg-yellow-"] { background:var(--ui-warning-text); color:var(--ui-warning-bg); }
+    .portal-app .ui-main :is(a,button)[class*="text-white"][class*="bg-emerald-"] { background:var(--ui-success-text); color:var(--ui-success-bg); }
+    .portal-app .ui-main :is(a,button)[class*="text-white"] { white-space:nowrap; flex-shrink:0; }
+    .portal-app .ui-main :is([class*="text-blue-"],[class*="text-indigo-"],[class*="text-purple-"]):not(a):not(button):not(a *):not(button *):not(.hcns-paper *) { color:var(--ui-text); }
+    .portal-app .ui-main :is([class*="bg-blue-"],[class*="bg-indigo-"],[class*="bg-purple-"]):not(a):not(button):not(a *):not(button *):not(.ui-chart-series-fill):not(.hcns-paper *):not(.hcns-paper) { background:var(--ui-surface-raised); }
+    .portal-app .ui-main .ui-chart-series-fill { background:var(--ui-chart-series); }
     .portal-app .ui-main .mobile-table-scroll { min-width:0; }
     .portal-app .ui-main .home-overview-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); }
     .ui-drawer-lock { overflow:hidden; }

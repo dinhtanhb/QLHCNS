@@ -1,5 +1,5 @@
 /* Cache static assets only. Portal HTML and all business data stay network-only. */
-const STATIC_CACHE = "ihrms-static-v5-shell-20261012";
+const STATIC_CACHE = "ihrms-static-v6-polish-20261012";
 const PRECACHE_URLS = [
     "/static/manifest.json",
     "/static/css/tailwind.css",

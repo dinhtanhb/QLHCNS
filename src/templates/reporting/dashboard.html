@@ -39,7 +39,7 @@
                 <span class="p-2 rounded-lg bg-amber-50 text-amber-600 text-lg">📑</span>
             </div>
             <div class="mt-3 flex flex-col items-center gap-2">
-                <span class="ihrms-kpi-value text-2xl font-bold text-amber-600">{{ expiring_30_count }}</span>
+                <span class="ihrms-kpi-value text-2xl font-bold  {% if expiring_30_count > 0 %}ui-kpi-warning{% endif %}">{{ expiring_30_count }}</span>
                 <span class="text-xs text-gray-500">hợp đồng</span>
             </div>
             <p class="text-xs text-gray-400 mt-1">Trong 60 ngày tới: {{ expiring_60_count }} HĐ</p>
@@ -51,7 +51,7 @@
                 <span class="p-2 rounded-lg bg-indigo-50 text-indigo-600 text-lg">📨</span>
             </div>
             <div class="mt-3 flex flex-col items-center gap-2">
-                <span class="ihrms-kpi-value text-2xl font-bold text-indigo-600">{{ processing_dispatches }}</span>
+                <span class="ihrms-kpi-value text-2xl font-bold ">{{ processing_dispatches }}</span>
                 <span class="text-xs text-gray-500">văn bản</span>
             </div>
             <p class="text-xs text-gray-400 mt-1">{{ pending_dispatches }} văn bản chờ phân công</p>
@@ -63,7 +63,7 @@
                 <span class="p-2 rounded-lg bg-red-50 text-red-600 text-lg">⚠️</span>
             </div>
             <div class="mt-3 flex flex-col items-center gap-2">
-                <span class="ihrms-kpi-value text-2xl font-bold text-red-600">{{ overdue_dispatches }}</span>
+                <span class="ihrms-kpi-value text-2xl font-bold  {% if overdue_dispatches > 0 %}ui-kpi-danger{% endif %}">{{ overdue_dispatches }}</span>
                 <span class="text-xs text-gray-500">cần xử lý gấp</span>
             </div>
             <p class="text-xs text-red-400 mt-1">Chưa hoàn thành đúng hạn</p>

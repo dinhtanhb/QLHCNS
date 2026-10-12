@@ -36,9 +36,9 @@
     {% if is_overview %}
     <div class="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-5">
         <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Hoạt động trong kỳ</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold">{{ total_activities }}</p></div>
-        <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Task hoàn thành</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold text-green-700">{{ completed_count }}</p></div>
-        <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Task quá hạn</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold text-red-700">{{ overdue_count }}</p></div>
-        <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Thiếu báo cáo</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold text-amber-700">{{ report_missing_count }}</p></div>
+        <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Task hoàn thành</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold ">{{ completed_count }}</p></div>
+        <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Task quá hạn</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold  {% if overdue_count > 0 %}ui-kpi-danger{% endif %}">{{ overdue_count }}</p></div>
+        <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Thiếu báo cáo</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold  {% if report_missing_count > 0 %}ui-kpi-warning{% endif %}">{{ report_missing_count }}</p></div>
         <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Chưa có Task</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold">{{ without_task_count }}</p></div>
     </div>
     {% endif %}

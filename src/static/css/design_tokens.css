@@ -1,29 +1,11 @@
 @import url("ui_tokens.css");
-/* Shared portal/admin values from DESIGN.md. Tailwind brand aliases mirror these. */
+/* Compatibility aliases only. Active presentation uses ui-* directly. */
 :root {
-    --ihrms-primary: #8b5cf6;
-    --ihrms-primary-strong: #4c1d95;
-    --ihrms-primary-hover: #5b21b6;
-    --ihrms-primary-soft: #ddd6fe;
-    --ihrms-surface: #f5f3ff;
-    --ihrms-heading: #2e1065;
-    --ihrms-text: #2e1065;
-    --ihrms-muted: #4c1d95;
-    --ihrms-border: #5b21b6;
-    --ihrms-focus: #5b21b6;
-    --ihrms-content-width: 64rem;
-    --ihrms-action-bg: #4c1d95;
-    --ihrms-header-bg: #4c1d95;
-    --ihrms-raised-shadow: 6px 6px 14px rgb(76 29 149 / .10), -6px -6px 14px #fff;
-}
-
-@media screen {
-    :root {
         --ihrms-content-width: var(--ui-content-max-width);
         --ihrms-primary: var(--ui-brand);
         --ihrms-primary-strong: var(--ui-link);
         --ihrms-primary-hover: var(--ui-brand-hover);
-        --ihrms-primary-soft: var(--ui-brand-soft);
+        --ihrms-primary-soft: var(--ui-surface-raised);
         --ihrms-surface: var(--ui-bg);
         --ihrms-heading: var(--ui-text);
         --ihrms-text: var(--ui-text);
@@ -53,8 +35,8 @@
         --color-slate-700: var(--ui-text);
         --color-slate-800: var(--ui-text);
         --color-slate-900: var(--ui-text);
-        --color-blue-50: var(--ui-brand-soft);
-        --color-blue-100: var(--ui-selected-bg);
+        --color-blue-50: var(--ui-surface-raised);
+        --color-blue-100: var(--ui-surface-raised);
         --color-blue-200: var(--ui-border);
         --color-blue-300: var(--ui-brand);
         --color-blue-400: var(--ui-brand);
@@ -63,8 +45,8 @@
         --color-blue-700: var(--ui-brand);
         --color-blue-800: var(--ui-brand-hover);
         --color-blue-900: var(--ui-brand-active);
-        --color-indigo-50: var(--ui-brand-soft);
-        --color-indigo-100: var(--ui-selected-bg);
+        --color-indigo-50: var(--ui-surface-raised);
+        --color-indigo-100: var(--ui-surface-raised);
         --color-indigo-200: var(--ui-border);
         --color-indigo-300: var(--ui-brand);
         --color-indigo-400: var(--ui-brand);
@@ -73,8 +55,8 @@
         --color-indigo-700: var(--ui-brand);
         --color-indigo-800: var(--ui-brand-hover);
         --color-indigo-900: var(--ui-brand-active);
-        --color-purple-50: var(--ui-brand-soft);
-        --color-purple-100: var(--ui-selected-bg);
+        --color-purple-50: var(--ui-surface-raised);
+        --color-purple-100: var(--ui-surface-raised);
         --color-purple-200: var(--ui-border);
         --color-purple-300: var(--ui-brand);
         --color-purple-400: var(--ui-brand);
@@ -135,5 +117,134 @@
         --color-red-900: var(--ui-danger-text);
         --font-sans: var(--ui-font-family);
         --shadow-sm: var(--ui-shadow-card);
+    }
+
+/* Frozen pre-2b paper palette, scoped only to HCNS and print. */
+.hcns-paper {
+
+    --ihrms-primary: #8b5cf6;
+    --ihrms-primary-strong: #4c1d95;
+    --ihrms-primary-hover: #5b21b6;
+    --ihrms-primary-soft: #ddd6fe;
+    --ihrms-surface: #f5f3ff;
+    --ihrms-heading: #2e1065;
+    --ihrms-text: #2e1065;
+    --ihrms-muted: #4c1d95;
+    --ihrms-border: #5b21b6;
+    --ihrms-focus: #5b21b6;
+    --ihrms-content-width: 64rem;
+    --ihrms-action-bg: #4c1d95;
+    --ihrms-header-bg: #4c1d95;
+    --ihrms-raised-shadow: 6px 6px 14px rgb(76 29 149 / .10), -6px -6px 14px #fff;
+
+    --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-weight-bold: 600;
+    --font-weight-extrabold: 600;
+    --color-gray-50: #f5f3ff;
+    --color-gray-100: #ede9fe;
+    --color-gray-200: #ddd6fe;
+    --color-gray-300: #c4b5fd;
+    --color-gray-400: #76618f;
+    --color-gray-500: #65517a;
+    --color-gray-600: #4c1d95;
+    --color-gray-700: #4c1d95;
+    --color-gray-800: #2e1065;
+    --color-gray-900: #2e1065;
+    --color-slate-50: #f5f3ff;
+    --color-slate-100: #ede9fe;
+    --color-slate-200: #ddd6fe;
+    --color-slate-300: #c4b5fd;
+    --color-slate-400: #76618f;
+    --color-slate-500: #65517a;
+    --color-slate-600: #4c1d95;
+    --color-slate-700: #4c1d95;
+    --color-slate-800: #2e1065;
+    --color-slate-900: #2e1065;
+    --color-blue-50: #f5f3ff;
+    --color-blue-100: #ede9fe;
+    --color-blue-200: #ddd6fe;
+    --color-blue-300: #c4b5fd;
+    --color-blue-400: #a78bfa;
+    --color-blue-500: #8b5cf6;
+    --color-blue-600: #6d28d9;
+    --color-blue-700: #5b21b6;
+    --color-blue-800: #4c1d95;
+    --color-blue-900: #2e1065;
+    --color-indigo-50: #f5f3ff;
+    --color-indigo-100: #ede9fe;
+    --color-indigo-200: #ddd6fe;
+    --color-indigo-300: #c4b5fd;
+    --color-indigo-400: #a78bfa;
+    --color-indigo-500: #8b5cf6;
+    --color-indigo-600: #6d28d9;
+    --color-indigo-700: #5b21b6;
+    --color-indigo-800: #4c1d95;
+    --color-indigo-900: #2e1065;
+    --shadow-sm: 4px 4px 10px rgb(76 29 149 / .08), -4px -4px 10px #fff;
+
+}
+@media print {
+    :root {
+
+    --ihrms-primary: #8b5cf6;
+    --ihrms-primary-strong: #4c1d95;
+    --ihrms-primary-hover: #5b21b6;
+    --ihrms-primary-soft: #ddd6fe;
+    --ihrms-surface: #f5f3ff;
+    --ihrms-heading: #2e1065;
+    --ihrms-text: #2e1065;
+    --ihrms-muted: #4c1d95;
+    --ihrms-border: #5b21b6;
+    --ihrms-focus: #5b21b6;
+    --ihrms-content-width: 64rem;
+    --ihrms-action-bg: #4c1d95;
+    --ihrms-header-bg: #4c1d95;
+    --ihrms-raised-shadow: 6px 6px 14px rgb(76 29 149 / .10), -6px -6px 14px #fff;
+
+    --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-weight-bold: 600;
+    --font-weight-extrabold: 600;
+    --color-gray-50: #f5f3ff;
+    --color-gray-100: #ede9fe;
+    --color-gray-200: #ddd6fe;
+    --color-gray-300: #c4b5fd;
+    --color-gray-400: #76618f;
+    --color-gray-500: #65517a;
+    --color-gray-600: #4c1d95;
+    --color-gray-700: #4c1d95;
+    --color-gray-800: #2e1065;
+    --color-gray-900: #2e1065;
+    --color-slate-50: #f5f3ff;
+    --color-slate-100: #ede9fe;
+    --color-slate-200: #ddd6fe;
+    --color-slate-300: #c4b5fd;
+    --color-slate-400: #76618f;
+    --color-slate-500: #65517a;
+    --color-slate-600: #4c1d95;
+    --color-slate-700: #4c1d95;
+    --color-slate-800: #2e1065;
+    --color-slate-900: #2e1065;
+    --color-blue-50: #f5f3ff;
+    --color-blue-100: #ede9fe;
+    --color-blue-200: #ddd6fe;
+    --color-blue-300: #c4b5fd;
+    --color-blue-400: #a78bfa;
+    --color-blue-500: #8b5cf6;
+    --color-blue-600: #6d28d9;
+    --color-blue-700: #5b21b6;
+    --color-blue-800: #4c1d95;
+    --color-blue-900: #2e1065;
+    --color-indigo-50: #f5f3ff;
+    --color-indigo-100: #ede9fe;
+    --color-indigo-200: #ddd6fe;
+    --color-indigo-300: #c4b5fd;
+    --color-indigo-400: #a78bfa;
+    --color-indigo-500: #8b5cf6;
+    --color-indigo-600: #6d28d9;
+    --color-indigo-700: #5b21b6;
+    --color-indigo-800: #4c1d95;
+    --color-indigo-900: #2e1065;
+    --shadow-sm: 4px 4px 10px rgb(76 29 149 / .08), -4px -4px 10px #fff;
+
     }
 }

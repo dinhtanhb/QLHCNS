@@ -69,7 +69,7 @@ def pairings():
                   ("sidebar-hover-text", "sidebar-hover-bg", 4.5),
                   ("sidebar-marker", "sidebar-hover-bg", 3)))
     for bg in ("bg", "surface", "surface-raised"):
-        pairs.extend((fg, bg, 3) for fg in ("chart-series", "chart-series-soft", "chart-series-strong", "chart-grid"))
+        pairs.extend((fg, bg, 3) for fg in ("chart-series", "chart-series-soft", "chart-series-strong", "chart-grid", "chart-hire", "chart-departure", "chart-transfer", "chart-promotion"))
         pairs.extend((fg, bg, 4.5) for fg in ("chart-axis", "chart-label"))
     return pairs
 

@@ -9,12 +9,12 @@
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <div class="text-xs text-gray-500">Phép năm {{ current_year }} còn lại</div>
-        <div class="ihrms-kpi-value text-2xl font-bold text-blue-700">{{ balance.available_annual_days|floatformat:"-1" }} <span class="text-sm font-normal text-gray-500">ngày</span></div>
+        <div class="ihrms-kpi-value text-2xl font-bold ">{{ balance.available_annual_days|floatformat:"-1" }} <span class="text-sm font-normal text-gray-500">ngày</span></div>
         <div class="text-xs text-gray-400 mt-1">Được cấp {{ balance.allocated_days|floatformat:"-1" }} · đã nghỉ {{ balance.used_days|floatformat:"-1" }} · chờ duyệt {{ balance.pending_days|floatformat:"-1" }}</div>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <div class="text-xs text-gray-500">Nghỉ bù {{ current_year }} còn lại</div>
-        <div class="ihrms-kpi-value text-2xl font-bold text-green-700">{{ balance.compensatory_remaining|floatformat:"-1" }} <span class="text-sm font-normal text-gray-500">ngày</span></div>
+        <div class="ihrms-kpi-value text-2xl font-bold ">{{ balance.compensatory_remaining|floatformat:"-1" }} <span class="text-sm font-normal text-gray-500">ngày</span></div>
         <div class="text-xs text-gray-400 mt-1">Tích lũy {{ balance.compensatory_earned|floatformat:"-1" }} · đã nghỉ {{ balance.compensatory_used|floatformat:"-1" }} · chờ duyệt {{ balance.compensatory_pending|floatformat:"-1" }}</div>
     </div>
     <div class="bg-blue-50 rounded-xl border border-blue-100 p-4">

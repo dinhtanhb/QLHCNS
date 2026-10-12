@@ -100,6 +100,10 @@ html[data-theme="light"] {
     --ui-chart-axis: var(--ui-text-muted);
     --ui-chart-grid: var(--ui-border);
     --ui-chart-label: var(--ui-text);
+    --ui-chart-hire: var(--ui-chart-series);
+    --ui-chart-departure: var(--ui-danger-text);
+    --ui-chart-transfer: var(--ui-info-text);
+    --ui-chart-promotion: var(--ui-success-text);
     --ui-error-text: var(--ui-danger-text);
     --ui-error-bg: var(--ui-danger-bg);
     --ui-error-border: var(--ui-danger-border);

@@ -1,10 +1,10 @@
 /* DESIGN.md: compact tactile cards; status colors remain semantic. */
-.home-dashboard { max-width: 80rem; margin-inline: auto; color: var(--ihrms-text); }
+.home-dashboard { max-width: 80rem; margin-inline: auto; color: var(--ui-text); }
 .home-dashboard > .bg-white,
 .home-dashboard .home-department-panel {
-    border-color: var(--ihrms-primary-soft);
+    border-color: var(--ui-border);
     border-radius: .75rem;
-    box-shadow: var(--ihrms-raised-shadow);
+    box-shadow:var(--ui-shadow-card);
 }
 .home-dashboard .home-kpi-grid { align-items: stretch; }
 .home-dashboard .home-kpi-grid > .bg-white {
@@ -12,31 +12,26 @@
     min-width: 0;
     min-height: 5.75rem;
     flex-direction: column;
-    border-color: var(--ihrms-border);
-    background: #fff;
-    box-shadow: 4px 4px 9px rgb(76 29 149 / .08), -4px -4px 9px #fff;
+    border-color: var(--ui-border);
+    background: var(--ui-surface);
+    box-shadow:var(--ui-shadow-card);
     padding: .75rem;
 }
 .home-dashboard .home-kpi-grid > .bg-white > p:first-child {
     min-height: 2.8em;
     margin: 0;
-    color: var(--ihrms-muted);
+    color: var(--ui-text-muted);
     font-size: .8125rem;
     line-height: 1.4;
 }
 .home-dashboard .home-kpi-grid > .bg-white > p:nth-child(2) { margin-top: auto; text-align: center; font-variant-numeric: tabular-nums; }
 .home-dashboard .home-kpi-grid > .bg-white > p.text-2xl { font-size: 1.375rem; line-height: 1.2; }
-.home-dashboard .home-kpi-grid .text-yellow-600 { color: #b45309; }
-.home-dashboard .home-kpi-grid .text-blue-700 { color: var(--ihrms-primary-hover); }
-.home-dashboard .home-kpi-grid .text-green-700 { color: #15803d; }
-.home-dashboard .home-kpi-grid .text-red-700 { color: #b91c1c; }
-.home-dashboard .home-kpi-grid .text-amber-700 { color: #b45309; }
 .home-dashboard .home-overview-kpis { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 .home-dashboard .home-project-kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .home-dashboard .home-team-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .home-dashboard .home-project-summary { margin-top: 1.5rem; }
 .home-dashboard .home-department-panel .flex-1 { min-width: 0; }
-.home-dashboard .home-department-panel .bg-blue-600 { background: var(--ihrms-primary); }
+.home-dashboard .home-department-panel .bg-blue-600 { background: var(--ui-chart-series); }
 @media (max-width: 900px) {
     .home-dashboard .home-overview-kpis,
     .home-dashboard .home-project-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -53,3 +48,8 @@
     .home-dashboard .home-project-kpis,
     .home-dashboard .home-team-kpis { grid-template-columns: 1fr; }
 }
+
+.home-dashboard .home-kpi-grid > .bg-white > p:nth-child(2) { color:var(--ui-text); }
+.home-dashboard .home-kpi-grid > .bg-white > p.ui-kpi-warning { color:var(--ui-warning-text); }
+.home-dashboard .home-kpi-grid > .bg-white > p.ui-kpi-danger { color:var(--ui-danger-text); }
+.home-dashboard .home-department-panel .bg-gray-100 { background:var(--ui-surface-raised); }

@@ -5,16 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Cổng thông tin nhân viên{% endblock %} — IHRMS</title>
-    <meta name="theme-color" content="#4c1d95">
-    <script src="{% static 'js/theme.js' %}?v=20261012-shell"></script>
+    <meta name="theme-color" content="">
+    <script src="{% static 'js/theme.js' %}?v=20261012-shell-2b"></script>
     <link rel="manifest" href="{% static 'manifest.json' %}">
     <link rel="apple-touch-icon" href="{% static 'img/ihrms-pwa-192.png' %}">
-    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}?v=20261012-shell">
-    <link rel="stylesheet" href="{% static 'css/ihrms.css' %}?v=20261012-shell">
-    <link rel="stylesheet" href="{% static 'css/theme.css' %}?v=20261012-shell-4">
-    <link rel="stylesheet" href="{% static 'css/ui_tokens.css' %}?v=20261012-shell">
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}?v=20261012-shell-2b">
+    <link rel="stylesheet" href="{% static 'css/ihrms.css' %}?v=20261012-shell-2b">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}?v=20261012-shell-2b-4">
+    <link rel="stylesheet" href="{% static 'css/ui_tokens.css' %}?v=20261012-shell-2b">
     {% block extra_css %}{% endblock %}
-    <link rel="stylesheet" href="{% static 'css/app_shell.css' %}?v=20261012-shell">
+    <link rel="stylesheet" href="{% static 'css/app_shell.css' %}?v=20261012-shell-2b">
 </head>
 <body class="portal-app min-h-screen">
     <a class="ui-skip-link" href="#main-content">Bỏ qua đến nội dung chính</a>
@@ -195,7 +195,7 @@
         {% block content %}{% endblock %}
     </main>
     </div>
-    <script src="{% static 'js/app_shell.js' %}?v=20261012-shell" defer></script>
+    <script src="{% static 'js/app_shell.js' %}?v=20261012-shell-2b" defer></script>
     {% if user.is_authenticated and "/portal/" in request.path %}
     <script>
         if ('serviceWorker' in navigator) {
