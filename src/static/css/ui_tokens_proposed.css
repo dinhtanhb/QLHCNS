@@ -1,0 +1,139 @@
+/* Giai đoạn 1: proposal only. Do not import until MASTER.md is approved.
+   Separate namespace preserves the active ihrms-* and Tailwind variables. */
+:root {
+    --ui-font-family: "Segoe UI", Arial, sans-serif;
+    --ui-font-size-caption: 0.75rem;
+    --ui-font-size-small: 0.875rem;
+    --ui-font-size-body: 1rem;
+    --ui-font-size-title: 1.5rem;
+    --ui-font-size-display: 2rem;
+    --ui-line-height-body: 1.5;
+    --ui-line-height-heading: 1.25;
+    --ui-font-weight-body: 400;
+    --ui-font-weight-label: 600;
+    --ui-font-weight-heading: 700;
+    --ui-numeric-variant: tabular-nums;
+    --ui-space-1: 0.25rem;
+    --ui-space-2: 0.5rem;
+    --ui-space-3: 0.75rem;
+    --ui-space-4: 1rem;
+    --ui-space-6: 1.5rem;
+    --ui-space-8: 2rem;
+    --ui-space-12: 3rem;
+    --ui-radius-small: 0.25rem;
+    --ui-radius-control: 0.5rem;
+    --ui-radius-card: 0.75rem;
+    --ui-radius-pill: 999rem;
+    --ui-border-width: 1px;
+    --ui-focus-width: 3px;
+    --ui-focus-offset: 3px;
+    --ui-target-min: 2.75rem;
+    --ui-control-height: 2.75rem;
+    --ui-table-row-min: 2.75rem;
+    --ui-sidebar-width: 16rem;
+    --ui-sidebar-collapsed-width: 4.5rem;
+    --ui-header-min-height: 4rem;
+    --ui-content-max-width: 90rem;
+    --ui-icon-small: 1rem;
+    --ui-icon-medium: 1.25rem;
+    --ui-icon-large: 1.5rem;
+    --ui-icon-stroke-width: 2;
+    --ui-layer-sticky: 10;
+    --ui-layer-navigation: 20;
+    --ui-layer-drawer: 40;
+    --ui-layer-dialog: 50;
+    --ui-layer-toast: 60;
+    --ui-motion-feedback: 120ms;
+    --ui-motion-panel: 180ms;
+    --ui-motion-easing: ease-out;
+}
+
+:root,
+html[data-theme="light"] {
+    --ui-bg: #f8fafc;
+    --ui-surface: #ffffff;
+    --ui-surface-raised: #f1f5f9;
+    --ui-text: #0f172a;
+    --ui-text-muted: #475569;
+    --ui-border: #64748b;
+    --ui-divider: #e2e8f0;
+    --ui-brand: #6d28d9;
+    --ui-brand-hover: #5b21b6;
+    --ui-brand-active: #4c1d95;
+    --ui-on-brand: #ffffff;
+    --ui-brand-soft: #f5f3ff;
+    --ui-link: #6d28d9;
+    --ui-focus: #6d28d9;
+    --ui-focus-gap: #ffffff;
+    --ui-hover-bg: #f1f5f9;
+    --ui-selected-bg: #ede9fe;
+    --ui-selected-text: #4c1d95;
+    --ui-disabled-bg: #e2e8f0;
+    --ui-disabled-text: #475569;
+    --ui-disabled-border: #64748b;
+    --ui-success-text: #166534;
+    --ui-success-bg: #f0fdf4;
+    --ui-success-border: #166534;
+    --ui-warning-text: #854d0e;
+    --ui-warning-bg: #fffbeb;
+    --ui-warning-border: #854d0e;
+    --ui-danger-text: #991b1b;
+    --ui-danger-bg: #fef2f2;
+    --ui-danger-border: #991b1b;
+    --ui-info-text: #075985;
+    --ui-info-bg: #f0f9ff;
+    --ui-info-border: #075985;
+    --ui-error-text: var(--ui-danger-text);
+    --ui-error-bg: var(--ui-danger-bg);
+    --ui-error-border: var(--ui-danger-border);
+    --ui-shadow-card: 0 1px 3px rgb(15 23 42 / 0.08);
+    --ui-shadow-overlay: 0 8px 24px rgb(15 23 42 / 0.18);
+    --ui-scrim: rgb(15 23 42 / 0.65);
+}
+
+html[data-theme="dark"] {
+    --ui-bg: #0f172a;
+    --ui-surface: #1e293b;
+    --ui-surface-raised: #334155;
+    --ui-text: #f8fafc;
+    --ui-text-muted: #cbd5e1;
+    --ui-border: #94a3b8;
+    --ui-divider: #475569;
+    --ui-brand: #c4b5fd;
+    --ui-brand-hover: #ddd6fe;
+    --ui-brand-active: #a78bfa;
+    --ui-on-brand: #2e1065;
+    --ui-brand-soft: #2e1065;
+    --ui-link: #c4b5fd;
+    --ui-focus: #c4b5fd;
+    --ui-focus-gap: #0f172a;
+    --ui-hover-bg: #334155;
+    --ui-selected-bg: #2e1065;
+    --ui-selected-text: #ddd6fe;
+    --ui-disabled-bg: #334155;
+    --ui-disabled-text: #cbd5e1;
+    --ui-disabled-border: #94a3b8;
+    --ui-success-text: #86efac;
+    --ui-success-bg: #052e16;
+    --ui-success-border: #86efac;
+    --ui-warning-text: #fde68a;
+    --ui-warning-bg: #451a03;
+    --ui-warning-border: #fde68a;
+    --ui-danger-text: #fca5a5;
+    --ui-danger-bg: #450a0a;
+    --ui-danger-border: #fca5a5;
+    --ui-info-text: #7dd3fc;
+    --ui-info-bg: #082f49;
+    --ui-info-border: #7dd3fc;
+    --ui-shadow-card: 0 1px 3px rgb(0 0 0 / 0.3);
+    --ui-shadow-overlay: 0 8px 24px rgb(0 0 0 / 0.45);
+    --ui-scrim: rgb(0 0 0 / 0.75);
+}
+
+/* Variables only; consumers must explicitly use these motion tokens. */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --ui-motion-feedback: 0ms;
+        --ui-motion-panel: 0ms;
+    }
+}
