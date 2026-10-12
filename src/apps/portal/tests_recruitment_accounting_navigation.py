@@ -148,7 +148,11 @@ class RecruitmentAccountingNavigationTests(TestCase):
                 self.assertIsNotNone(menu)
                 for label in labels:
                     self.assertIn(label, menu.group(0))
-                self.assertEqual(html.count('>Quyết định nhân sự</a>'), int(role_code != "DEPT_MANAGER"))
+                decision_links = re.findall(
+                    r'<a\b[^>]*href="' + re.escape(reverse("portal:personnel_decision_list")) + r'"[^>]*>',
+                    html,
+                )
+                self.assertEqual(len(decision_links), int(role_code != "DEPT_MANAGER"))
                 if role_code in ("DIRECTOR", "DEPT_MANAGER"):
                     self.assertNotIn("Nhân viên &amp; hồ sơ", menu.group(0))
                 self.client.logout()

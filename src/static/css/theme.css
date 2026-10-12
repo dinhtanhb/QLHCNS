@@ -1,13 +1,14 @@
 /* Screen-only appearance: never recolor signed/print document surfaces. */
 .ihrms-theme-toggle {
     display:inline-flex; align-items:center; justify-content:center;
-    flex:0 0 auto; min-width:44px; min-height:44px; margin-inline:8px;
-    border:1px solid var(--ui-border); border-radius:8px; background:var(--ui-brand);
-    color:var(--ui-on-brand); font-size:22px; cursor:pointer;
+    flex:0 0 auto; min-width:var(--ui-target-min); min-height:var(--ui-target-min); margin-inline:var(--ui-space-2);
+    border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); background:var(--ui-brand);
+    color:var(--ui-on-brand); font-size:var(--ui-font-size-body); cursor:pointer;
 }
+.ihrms-theme-toggle svg { width:var(--ui-icon-medium); height:var(--ui-icon-medium); }
 .ihrms-theme-toggle:hover { background:var(--ui-brand-hover); }
 .portal-header .ihrms-theme-toggle:focus-visible,
-.ihrms-theme-toggle:focus-visible { outline:3px solid var(--ui-on-brand); outline-offset:2px; }
+.ihrms-theme-toggle:focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:var(--ui-focus-offset); }
 @media screen {
     html[data-theme="dark"] {
         --bs-body-bg: var(--ui-bg);

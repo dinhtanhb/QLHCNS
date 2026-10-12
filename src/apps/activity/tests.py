@@ -618,7 +618,12 @@ class ActivityDashboardPermissionTests(ActivityTestDataMixin, TestCase):
         self.assertContains(response, "overflow-hidden rounded-xl")
         self.assertContains(response, 'id="menu-hoatdongduan"')
         self.assertContains(response, "Theo dõi hoạt động")
-        self.assertContains(response, "Lịch hoạt động</a>")
+        import re
+        self.assertRegex(
+            response.content.decode(),
+            r'(?s)<a\b[^>]*href="' + re.escape(reverse("portal:activity_calendar")) +
+            r'"[^>]*>(?:(?!</a>).)*?Lịch hoạt động(?:(?!</a>).)*?</a>',
+        )
         self.assertNotContains(response, self.other_activity.activity_code)
 
     def test_director_shared_dashboard_includes_monthly_project_activity_metrics(self):

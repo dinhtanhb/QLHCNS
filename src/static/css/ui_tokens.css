@@ -24,6 +24,7 @@
     --ui-radius-card: 0.75rem;
     --ui-radius-pill: 999rem;
     --ui-border-width: 1px;
+    --ui-transparent: transparent;
     --ui-focus-width: 3px;
     --ui-focus-offset: 3px;
     --ui-target-min: 2.75rem;

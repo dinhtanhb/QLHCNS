@@ -1,10 +1,13 @@
 /* Cache static assets only. Portal HTML and all business data stay network-only. */
-const STATIC_CACHE = "ihrms-static-v4-theme-20261010";
+const STATIC_CACHE = "ihrms-static-v5-shell-20261012";
 const PRECACHE_URLS = [
     "/static/manifest.json",
     "/static/css/tailwind.css",
     "/static/css/ihrms.css",
     "/static/css/design_tokens.css",
+    "/static/css/ui_tokens.css",
+    "/static/css/app_shell.css",
+    "/static/js/app_shell.js",
     "/static/css/theme.css",
     "/static/js/theme.js",
     "/static/img/ihrms-pwa-192.png",

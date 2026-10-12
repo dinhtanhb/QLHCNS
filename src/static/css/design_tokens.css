@@ -19,6 +19,7 @@
 
 @media screen {
     :root {
+        --ihrms-content-width: var(--ui-content-max-width);
         --ihrms-primary: var(--ui-brand);
         --ihrms-primary-strong: var(--ui-link);
         --ihrms-primary-hover: var(--ui-brand-hover);

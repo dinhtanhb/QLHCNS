@@ -87,8 +87,9 @@ class MobileTableTests(SimpleTestCase):
         self.assertIn('name="theme-color"', base)
         self.assertTrue(built_css.is_file())
         self.assertIn('id="mobileNavToggle"', base)
-        self.assertIn('aria-controls="portalNavigationMenu"', base)
-        self.assertIn("(max-width: 767px)", base)
+        self.assertIn('aria-controls="portalSidebar"', base)
+        shell = (Path(settings.BASE_DIR) / "static/js/app_shell.js").read_text(encoding="utf-8")
+        self.assertIn("(min-width: 1024px)", shell)
 
     def test_print_templates_remain_outside_mobile_table_wrapping(self):
         portal_templates = Path(settings.BASE_DIR) / "apps" / "portal" / "templates" / "portal"
@@ -105,7 +106,8 @@ class MobileTableTests(SimpleTestCase):
         self.assertTrue(css.startswith('@import url("design_tokens.css")'))
         self.assertTrue(admin.startswith('@import url("design_tokens.css")'))
         self.assertIn("--ihrms-content-width: 64rem", tokens)
-        self.assertIn("max-width: var(--ihrms-content-width)", css)
+        shell_css = (css_root / "app_shell.css").read_text(encoding="utf-8")
+        self.assertIn("max-width:var(--ui-content-max-width)", shell_css)
         self.assertIn(".ihrms-kpi-value", css)
         self.assertIn("font-variant-numeric: tabular-nums", css)
         self.assertIn("prefers-reduced-motion", css)
@@ -118,7 +120,7 @@ class MobileTableTests(SimpleTestCase):
                 source = (root / relative).read_text(encoding="utf-8")
                 self.assertEqual(source.count("ihrms-kpi-value"), expected)
         worker = (root / "static" / "js" / "service-worker.js").read_text(encoding="utf-8")
-        self.assertIn("ihrms-static-v4-theme-20261010", worker)
+        self.assertIn("ihrms-static-v5-shell-20261012", worker)
         self.assertIn("/static/css/design_tokens.css", worker)
 
     def test_theme_is_available_before_styles_and_in_admin(self):

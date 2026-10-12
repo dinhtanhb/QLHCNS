@@ -45,6 +45,8 @@ Chạy `python ops/check_ui_contrast.py` bằng Python hệ thống (stdlib, kh�
 | light | `--ui-selected-text` | `--ui-selected-bg` | `#4c1d95` | `#ede9fe` | 9.227:1 | 4.5:1 | Đạt |
 | light | `--ui-disabled-text` | `--ui-disabled-bg` | `#475569` | `#e2e8f0` | 6.147:1 | 4.5:1 | Đạt |
 | light | `--ui-disabled-border` | `--ui-disabled-bg` | `#64748b` | `#e2e8f0` | 3.860:1 | 3:1 | Đạt |
+| light | `--ui-border` | `--ui-selected-bg` | `#64748b` | `#ede9fe` | 4.008:1 | 3:1 | Đạt |
+| light | `--ui-focus` | `--ui-selected-bg` | `#6d28d9` | `#ede9fe` | 5.984:1 | 3:1 | Đạt |
 | light | `--ui-success-text` | `--ui-success-bg` | `#166534` | `#f0fdf4` | 6.812:1 | 4.5:1 | Đạt |
 | light | `--ui-success-border` | `--ui-success-bg` | `#166534` | `#f0fdf4` | 6.812:1 | 3:1 | Đạt |
 | light | `--ui-success-border` | `--ui-surface` | `#166534` | `#ffffff` | 7.130:1 | 3:1 | Đạt |
@@ -113,6 +115,8 @@ Chạy `python ops/check_ui_contrast.py` bằng Python hệ thống (stdlib, kh�
 | dark | `--ui-selected-text` | `--ui-selected-bg` | `#ddd6fe` | `#2e1065` | 10.974:1 | 4.5:1 | Đạt |
 | dark | `--ui-disabled-text` | `--ui-disabled-bg` | `#cbd5e1` | `#334155` | 6.974:1 | 4.5:1 | Đạt |
 | dark | `--ui-disabled-border` | `--ui-disabled-bg` | `#94a3b8` | `#334155` | 4.038:1 | 3:1 | Đạt |
+| dark | `--ui-border` | `--ui-selected-bg` | `#94a3b8` | `#2e1065` | 5.943:1 | 3:1 | Đạt |
+| dark | `--ui-focus` | `--ui-selected-bg` | `#c4b5fd` | `#2e1065` | 8.254:1 | 3:1 | Đạt |
 | dark | `--ui-success-text` | `--ui-success-bg` | `#86efac` | `#052e16` | 10.616:1 | 4.5:1 | Đạt |
 | dark | `--ui-success-border` | `--ui-success-bg` | `#86efac` | `#052e16` | 10.616:1 | 3:1 | Đạt |
 | dark | `--ui-success-border` | `--ui-surface` | `#86efac` | `#1e293b` | 10.418:1 | 3:1 | Đạt |

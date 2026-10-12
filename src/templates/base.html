@@ -6,167 +6,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Cổng thông tin nhân viên{% endblock %} — IHRMS</title>
     <meta name="theme-color" content="#4c1d95">
-    <script src="{% static 'js/theme.js' %}?v=20261010-theme"></script>
+    <script src="{% static 'js/theme.js' %}?v=20261012-shell"></script>
     <link rel="manifest" href="{% static 'manifest.json' %}">
     <link rel="apple-touch-icon" href="{% static 'img/ihrms-pwa-192.png' %}">
-    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}?v=20261010-design-2">
-    <link rel="stylesheet" href="{% static 'css/ihrms.css' %}?v=20261010-theme">
-    <link rel="stylesheet" href="{% static 'css/theme.css' %}?v=20261010-theme-4">
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}?v=20261012-shell">
+    <link rel="stylesheet" href="{% static 'css/ihrms.css' %}?v=20261012-shell">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}?v=20261012-shell-4">
     <link rel="stylesheet" href="{% static 'css/ui_tokens.css' %}?v=20261012-shell">
     {% block extra_css %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/app_shell.css' %}?v=20261012-shell">
 </head>
-<body class="portal-app bg-gray-50 min-h-screen text-gray-800">
-    <header class="portal-header bg-blue-700 text-white shadow">
-        <div class="portal-header-inner max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="{% url 'portal:dashboard' %}" class="portal-brand font-bold text-lg tracking-wide">
-                <span class="sm:hidden">IHRMS</span>
-                <span class="hidden sm:inline">IHRMS — Cổng thông tin nhân viên</span>
-            </a>
-            {% if user.is_authenticated %}
-            <button type="button" id="mobileNavToggle" class="portal-mobile-nav-toggle" aria-controls="portalNavigationMenu" aria-expanded="false" aria-label="Mở menu điều hướng">
-                <svg aria-hidden="true" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
-            {% endif %}
-            {% if user.is_authenticated %}
-            <div class="portal-header-actions flex items-center gap-4 text-sm">
-                <button type="button" class="ihrms-theme-toggle" data-theme-toggle aria-label="Chuyển sang chế độ tối" aria-pressed="false">☾</button>
-                <a href="{% url 'portal:notification_list' %}" class="relative p-1.5 rounded-full hover:bg-blue-600 transition" title="Thông báo">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                    </svg>
-                    {% if unread_notification_count > 0 %}
-                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-5 h-5 px-1 flex items-center justify-center">{{ unread_notification_count }}</span>
-                    {% endif %}
-                </a>
-
-                <!-- User Account Dropdown -->
-                <div class="relative" id="userMenuContainer">
-                    <button type="button" id="userMenuButton" class="flex items-center gap-2.5 bg-blue-800 hover:bg-blue-900 px-3 py-1.5 rounded-lg transition focus:outline-none focus:ring-2 focus:ring-blue-300">
-                        <div class="w-7 h-7 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-xs shadow-inner">
-                            {{ user.first_name|default:user.username|slice:":1"|upper }}
-                        </div>
-                        <div class="text-left hidden sm:block">
-                            <div class="font-semibold text-xs leading-tight">{{ user.employee.full_name|default:user.username }}</div>
-                            <div class="text-xs text-blue-200 leading-tight">{{ user_role_name }}</div>
-                        </div>
-                        <svg class="w-3.5 h-3.5 text-blue-200 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-
-                    <!-- Dropdown List -->
-                    <div id="userDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 z-50 text-gray-700">
-                        <div class="px-4 py-3 border-b border-gray-100 bg-gray-50/70 rounded-t-xl">
-                            <p class="text-xs text-gray-500">Tài khoản</p>
-                            <p class="text-sm font-semibold text-gray-900 truncate">{{ user.employee.full_name|default:user.username }}</p>
-                            <span class="inline-block mt-1 px-2 py-0.5 text-xs font-semibold rounded-full {% if is_admin_user %}bg-purple-100 text-purple-700 border border-purple-200{% else %}bg-blue-100 text-blue-700 border border-blue-200{% endif %}">
-                                {{ user_role_name }}
-                            </span>
-                        </div>
-
+<body class="portal-app min-h-screen">
+    <a class="ui-skip-link" href="#main-content">Bỏ qua đến nội dung chính</a>
+    <header class="ui-topbar" id="ui-topbar">
+        <div class="ui-topbar-row">
+            {% if user.is_authenticated %}<button id="mobileNavToggle" class="ui-control" type="button" aria-label="Mở điều hướng" aria-controls="portalSidebar" aria-expanded="false">{% include '_shell_icon.html' with name='menu' %}</button>{% endif %}
+            <a class="ui-brand" href="{% url 'portal:dashboard' %}"><span class="ui-brand-short">IHRMS</span><span class="ui-brand-full">IHRMS — Cổng thông tin nhân viên</span></a>
+            <div class="ui-topbar-actions">
+                <button type="button" class="ui-control ihrms-theme-toggle" data-theme-toggle aria-label="Chuyển sang chế độ tối" aria-pressed="false"></button>
+                {% if user.is_authenticated %}
+                <a class="ui-control" href="{% url 'portal:notification_list' %}" aria-label="Thông báo, {{ unread_notification_count|default:0 }} thông báo chưa đọc">{% include '_shell_icon.html' with name='bell' %}{% if unread_notification_count > 0 %}<span class="ui-unread-badge" aria-hidden="true">{{ unread_notification_count }}</span>{% endif %}</a>
+                <div class="ui-user" id="userMenuContainer">
+                    <button type="button" id="userMenuButton" class="ui-control" aria-controls="userDropdown" aria-expanded="false" aria-label="Menu tài khoản {{ user.employee.full_name|default:user.username }}">{% include '_shell_icon.html' with name='person' %}<span class="ui-user-summary">{{ user.employee.full_name|default:user.username }}<small>{{ user_role_name }}</small></span></button>
+                    <div id="userDropdown" class="ui-user-dropdown" hidden>
+                        <div class="ui-user-details"><small>Tài khoản</small><p>{{ user.employee.full_name|default:user.username }}</p><small>{{ user_role_name }}</small></div>
                         {% if is_admin_user %}
-                        <div class="py-1">
-                            <a href="/admin/" class="flex items-center gap-2.5 px-4 py-2.5 text-sm font-semibold text-indigo-700 bg-indigo-50/60 hover:bg-indigo-100/80 transition">
-                                <svg class="w-4 h-4 text-indigo-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                <span>Trang Quản Trị (Admin)</span>
-                                <span class="ml-auto text-xs bg-indigo-200 text-indigo-800 px-1.5 py-0.5 rounded font-bold">ADMIN</span>
-                            </a>
-                            <a href="/reports/" class="flex items-center gap-2.5 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-50 transition">
-                                <svg class="w-4 h-4 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                </svg>
-                                <span>Trung tâm Báo cáo (Excel)</span>
-                            </a>
-                        </div>
-                        <div class="border-t border-gray-100"></div>
+                        <a href="/admin/">{% include '_shell_icon.html' with name='office' %}Trang Quản Trị (Admin) <span class="ui-role-badge">ADMIN</span></a>
+                        <a href="/reports/">{% include '_shell_icon.html' with name='chart' %}Trung tâm Báo cáo (Excel)</a>
                         {% endif %}
-
-                        <div class="py-1">
-                            <a href="{% url 'portal:profile' %}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
-                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                                <span>Hồ sơ cá nhân</span>
-                            </a>
-                            <a href="{% url 'portal:notification_list' %}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
-                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                </svg>
-                                <span>Thông báo</span>
-                            </a>
-                        </div>
-
-                        <div class="border-t border-gray-100 pt-1">
-                            <form method="post" action="{% url 'portal:logout' %}" class="m-0">
-                                {% csrf_token %}
-                                <button type="submit" class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">
-                                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                    </svg>
-                                    <span>Đăng xuất</span>
-                                </button>
-                            </form>
-                        </div>
+                        <a href="{% url 'portal:profile' %}">{% include '_shell_icon.html' with name='person' %}Hồ sơ cá nhân</a>
+                        <a href="{% url 'portal:notification_list' %}">{% include '_shell_icon.html' with name='bell' %}Thông báo</a>
+                        <form method="post" action="{% url 'portal:logout' %}">{% csrf_token %}<button type="submit">{% include '_shell_icon.html' with name='logout' %}Đăng xuất</button></form>
                     </div>
                 </div>
+                {% endif %}
             </div>
-            {% else %}
-            <button type="button" class="ihrms-theme-toggle" data-theme-toggle aria-label="Chuyển sang chế độ tối" aria-pressed="false">☾</button>
-            {% endif %}
         </div>
+        <nav class="ui-breadcrumb" aria-label="Vị trí hiện tại" data-breadcrumb hidden><a href="{% url 'portal:dashboard' %}">Trang chủ</a> <span aria-hidden="true">/</span> <span class="ui-breadcrumb-current" aria-current="page" data-breadcrumb-title></span></nav>
     </header>
-
     {% if user.is_authenticated %}
-    <nav class="portal-nav bg-white border-b border-gray-200 relative z-20" aria-label="Điều hướng chính">
-        <div class="portal-nav-inner text-sm font-medium" id="portalNavigationMenu">
+    <div class="ui-drawer-overlay" id="drawerOverlay" hidden></div>
+    <aside class="ui-sidebar" id="portalSidebar" aria-label="Điều hướng ứng dụng">
+        <div class="ui-drawer-heading"><span id="drawerTitle">Điều hướng</span><button type="button" class="ui-control" id="drawerClose" aria-label="Đóng điều hướng">{% include '_shell_icon.html' with name='close' %}</button></div>
+    <nav class="ui-sidebar-nav" aria-label="Điều hướng chính">
+        <div id="portalNavigationMenu">
             {% url 'portal:dashboard' as u_dash %}
-            <a href="{{ u_dash }}" class="portal-nav-link border-b-2 {% if request.path == u_dash %}border-blue-700 text-blue-700{% else %}border-transparent text-gray-600 hover:text-blue-700{% endif %}">Trang chủ</a>
+            <a href="{{ u_dash }}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'dashboard' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='home' %}<span class="ui-nav-label">Trang chủ</span></a>
 
             <!-- CÁ NHÂN -->
-            <div class="portal-nav-group">
-                <button type="button" data-menu-trigger aria-controls="menu-canhan" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
-                    Cá nhân <span class="text-xs">▾</span>
-                </button>
-                <div id="menu-canhan" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
-                    <a href="{% url 'portal:profile' %}" class="block px-4 py-2 hover:bg-gray-50">Hồ sơ cá nhân</a>
-                    <a href="{% url 'portal:profile_change_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">Yêu cầu cập nhật hồ sơ</a>
-                    <a href="{% url 'portal:org_chart' %}" class="block px-4 py-2 hover:bg-gray-50">Sơ đồ tổ chức</a>
-                    <a href="{% url 'portal:timesheet_month' %}" class="block px-4 py-2 hover:bg-gray-50">Bảng công</a>
-                    <a href="{% url 'portal:leave_list' %}" class="block px-4 py-2 hover:bg-gray-50">Nghỉ phép</a>
-                    <a href="{% url 'portal:kpi_my_list' %}" class="block px-4 py-2 hover:bg-gray-50">KPI</a>
-                    <a href="{% url 'portal:payslip_list' %}" class="block px-4 py-2 hover:bg-gray-50">Phiếu lương</a>
+            <div class="ui-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-canhan" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='person' %}<span class="ui-nav-label">Cá nhân</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
+                <div id="menu-canhan" class="ui-nav-panel" hidden>
+                    <a href="{% url 'portal:profile' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'profile' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Hồ sơ cá nhân</span></a>
+                    <a href="{% url 'portal:profile_change_request_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'profile_change_request_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Yêu cầu cập nhật hồ sơ</span></a>
+                    <a href="{% url 'portal:org_chart' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'org_chart' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Sơ đồ tổ chức</span></a>
+                    <a href="{% url 'portal:timesheet_month' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'timesheet_month' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Bảng công</span></a>
+                    <a href="{% url 'portal:leave_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'leave_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Nghỉ phép</span></a>
+                    <a href="{% url 'portal:kpi_my_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'kpi_my_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">KPI</span></a>
+                    <a href="{% url 'portal:payslip_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'payslip_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Phiếu lương</span></a>
                 </div>
             </div>
 
             <!-- NHÂN SỰ -->
             {% if can_manage_hr or can_approve or can_approve_timesheet or can_approve_document or can_approve_activity_proposals or can_approve_personnel_decision %}
-            <div class="portal-nav-group">
-                <button type="button" data-menu-trigger aria-controls="menu-nhansu" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
-                    Nhân sự <span class="text-xs">▾</span>
-                </button>
-                <div id="menu-nhansu" class="portal-nav-dropdown hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-72 py-1 z-30">
+            <div class="ui-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-nhansu" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='people' %}<span class="ui-nav-label">Nhân sự</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
+                <div id="menu-nhansu" class="ui-nav-panel" hidden>
                     {% if can_manage_hr %}
-                    <p class="portal-nav-section-label">Hồ sơ &amp; quá trình</p>
-                    <a href="{% url 'portal:hr_employee_list' %}" class="block px-4 py-2 hover:bg-gray-50">Nhân viên &amp; hồ sơ</a>
-                    <a href="{% url 'portal:hr_contract_list' %}" class="block px-4 py-2 hover:bg-gray-50">Hợp đồng</a>
-                    <a href="{% url 'portal:lifecycle_case_list' %}" class="block px-4 py-2 hover:bg-gray-50">Checklist tiếp nhận/nghỉ việc</a>
-                    <a href="{% url 'portal:hcns_catalog' %}" class="block px-4 py-2 hover:bg-gray-50">Biểu mẫu HCNS</a>
+                    <p class="ui-nav-section-label">Hồ sơ &amp; quá trình</p>
+                    <a href="{% url 'portal:hr_employee_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hr_employee_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Nhân viên &amp; hồ sơ</span></a>
+                    <a href="{% url 'portal:hr_contract_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hr_contract_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Hợp đồng</span></a>
+                    <a href="{% url 'portal:lifecycle_case_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'lifecycle_case_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Checklist tiếp nhận/nghỉ việc</span></a>
+                    <a href="{% url 'portal:hcns_catalog' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hcns_catalog' and not request.GET.group %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Biểu mẫu HCNS</span></a>
                     {% endif %}
                     {% if can_manage_hr or can_approve_personnel_decision %}
-                    <a href="{% url 'portal:personnel_decision_list' %}" class="block px-4 py-2 hover:bg-gray-50">Quyết định nhân sự</a>
+                    <a href="{% url 'portal:personnel_decision_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'personnel_decision_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Quyết định nhân sự</span></a>
                     {% endif %}
                     {% if can_approve or can_approve_timesheet or can_approve_document or can_approve_activity_proposals or can_manage_hr %}
-                    <p class="portal-nav-section-label">Cần duyệt &amp; xử lý</p>
-                    {% if can_manage_hr %}<a href="{% url 'portal:profile_change_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt cập nhật hồ sơ</a>{% endif %}
-                    {% if can_approve %}<a href="{% url 'portal:leave_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt nghỉ phép</a>{% endif %}
-                    {% if can_approve_timesheet %}<a href="{% url 'portal:timesheet_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt chấm công</a>{% endif %}
-                    {% if can_approve_document %}<a href="{% url 'portal:document_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt tài liệu</a>{% endif %}
-                    {% if can_approve_activity_proposals %}<a href="{% url 'portal:activity_proposal_approval_list' %}" class="block px-4 py-2 hover:bg-gray-50">Duyệt đề xuất hoạt động{% if pending_activity_proposal_count %} <span class="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">{{ pending_activity_proposal_count }}</span>{% endif %}</a>{% endif %}
+                    <p class="ui-nav-section-label">Cần duyệt &amp; xử lý</p>
+                    {% if can_manage_hr %}<a href="{% url 'portal:profile_change_request_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'profile_change_request_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Duyệt cập nhật hồ sơ</span></a>{% endif %}
+                    {% if can_approve %}<a href="{% url 'portal:leave_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'leave_approval_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Duyệt nghỉ phép</span></a>{% endif %}
+                    {% if can_approve_timesheet %}<a href="{% url 'portal:timesheet_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'timesheet_approval_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Duyệt chấm công</span></a>{% endif %}
+                    {% if can_approve_document %}<a href="{% url 'portal:document_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'document_approval_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Duyệt tài liệu</span></a>{% endif %}
+                    {% if can_approve_activity_proposals %}<a href="{% url 'portal:activity_proposal_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'activity_proposal_approval_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Duyệt đề xuất hoạt động{% if pending_activity_proposal_count %} <span class="ui-unread-badge ui-pending-badge">{{ pending_activity_proposal_count }}</span>{% endif %}</span></a>{% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -174,202 +96,106 @@
 
             <!-- TUYỂN DỤNG -->
             {% if can_manage_hr or can_request_recruitment or can_approve_recruitment %}
-            <div class="portal-nav-group">
-                <button type="button" data-menu-trigger aria-controls="menu-tuyendung" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
-                    Tuyển dụng <span class="text-xs">▾</span>
-                </button>
-                <div id="menu-tuyendung" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-56 py-1 z-30">
-                    <a href="{% url 'portal:recruitment_hub' %}" class="block px-4 py-2 hover:bg-gray-50">Quy trình tuyển dụng</a>
+            <div class="ui-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-tuyendung" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='briefcase' %}<span class="ui-nav-label">Tuyển dụng</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
+                <div id="menu-tuyendung" class="ui-nav-panel" hidden>
+                    <a href="{% url 'portal:recruitment_hub' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'recruitment_hub' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Quy trình tuyển dụng</span></a>
                     {% if can_request_recruitment or can_approve_recruitment %}
-                    <a href="{% url 'portal:recruitment_list' %}" class="block px-4 py-2 hover:bg-gray-50">Đề xuất tuyển dụng</a>
+                    <a href="{% url 'portal:recruitment_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'recruitment_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Đề xuất tuyển dụng</span></a>
                     {% endif %}
                     {% if can_manage_hr %}
-                    <a href="{% url 'portal:hr_candidate_list' %}" class="block px-4 py-2 hover:bg-gray-50">Ứng viên</a>
-                    <a href="{% url 'portal:hcns_catalog' %}?group=recruitment" class="block px-4 py-2 hover:bg-gray-50">Biểu mẫu tuyển dụng</a>
+                    <a href="{% url 'portal:hr_candidate_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hr_candidate_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Ứng viên</span></a>
+                    <a href="{% url 'portal:hcns_catalog' %}?group=recruitment" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hcns_catalog' and request.GET.group == 'recruitment' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Biểu mẫu tuyển dụng</span></a>
                     {% endif %}
                 </div>
             </div>
             {% endif %}
 
             {% if can_manage_finance or can_use_salary_scale_form %}
-            <div class="portal-nav-group">
-                <button type="button" data-menu-trigger aria-controls="menu-ketoan" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
-                    Kế toán <span class="text-xs">▾</span>
-                </button>
-                <div id="menu-ketoan" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
+            <div class="ui-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-ketoan" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='finance' %}<span class="ui-nav-label">Kế toán</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
+                <div id="menu-ketoan" class="ui-nav-panel" hidden>
                     {% if can_manage_finance %}
-                    <a href="{% url 'portal:finance_period_list' %}" class="block px-4 py-2 hover:bg-gray-50">Chạy lương hàng tháng</a>
-                    <a href="{% url 'portal:finance_salary_list' %}" class="block px-4 py-2 hover:bg-gray-50">Lương cơ bản NV</a>
-                    <a href="{% url 'portal:finance_dependent_list' %}" class="block px-4 py-2 hover:bg-gray-50">Người phụ thuộc</a>
-                    <a href="{% url 'portal:finance_tax_config' %}" class="block px-4 py-2 hover:bg-gray-50">Cấu hình Thuế/BH</a>
+                    <a href="{% url 'portal:finance_period_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'finance_period_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Chạy lương hàng tháng</span></a>
+                    <a href="{% url 'portal:finance_salary_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'finance_salary_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Lương cơ bản NV</span></a>
+                    <a href="{% url 'portal:finance_dependent_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'finance_dependent_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Người phụ thuộc</span></a>
+                    <a href="{% url 'portal:finance_tax_config' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'finance_tax_config' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Cấu hình Thuế/BH</span></a>
                     {% endif %}
                     {% if can_use_salary_scale_form %}
-                    <a href="{% url 'portal:hcns_draft' 'salary-scale' %}" class="block px-4 py-2 hover:bg-gray-50">Thang bảng lương</a>
+                    <a href="{% url 'portal:hcns_draft' 'salary-scale' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hcns_draft' and request.resolver_match.kwargs.slug == 'salary-scale' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Thang bảng lương</span></a>
                     {% endif %}
                 </div>
             </div>
             {% endif %}
 
             <!-- HÀNH CHÍNH -->
-            <div class="portal-nav-group">
-                <button type="button" data-menu-trigger aria-controls="menu-hc" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
-                    Hành chính <span class="text-xs">▾</span>
-                </button>
-                <div id="menu-hc" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
-                    <p class="px-4 pb-1 pt-2 text-xs font-semibold uppercase text-gray-500">Văn bản</p>
-                    <a href="{% url 'portal:document_list' %}" class="block px-4 py-2 hover:bg-gray-50">Tài liệu đã ban hành</a>
-                    <a href="{% url 'portal:dispatch_list' %}?type=Incoming" class="block px-4 py-2 hover:bg-gray-50">Công văn đến</a>
-                    <a href="{% url 'portal:dispatch_list' %}?type=Outgoing" class="block px-4 py-2 hover:bg-gray-50">Công văn đi</a>
+            <div class="ui-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-hc" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='office' %}<span class="ui-nav-label">Hành chính</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
+                <div id="menu-hc" class="ui-nav-panel" hidden>
+                    <p class="ui-nav-section-label">Văn bản</p>
+                    <a href="{% url 'portal:document_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'document_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Tài liệu đã ban hành</span></a>
+                    <a href="{% url 'portal:dispatch_list' %}?type=Incoming" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'dispatch_list' and request.GET.type != 'Outgoing' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Công văn đến</span></a>
+                    <a href="{% url 'portal:dispatch_list' %}?type=Outgoing" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'dispatch_list' and request.GET.type == 'Outgoing' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Công văn đi</span></a>
                     {% if can_view_asset %}
-                    <div class="border-t border-gray-100 my-1"></div>
-                    <p class="px-4 pb-1 pt-2 text-xs font-semibold uppercase text-gray-500">Tài sản</p>
-                    <a href="{% url 'portal:asset_list' %}" class="block px-4 py-2 hover:bg-gray-50">Tài sản của tôi</a>
-                    <a href="{% url 'portal:asset_admin_list' %}" class="block px-4 py-2 hover:bg-gray-50">Quản lý Tài sản</a>
-                    <a href="{% url 'portal:inventory_session_list' %}" class="block px-4 py-2 hover:bg-gray-50">Kiểm kê Tài sản</a>
-                    <a href="{% url 'portal:disposal_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">Thanh lý Tài sản</a>
+                    <div class="ui-nav-separator"></div>
+                    <p class="ui-nav-section-label">Tài sản</p>
+                    <a href="{% url 'portal:asset_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'asset_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Tài sản của tôi</span></a>
+                    <a href="{% url 'portal:asset_admin_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'asset_admin_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Quản lý Tài sản</span></a>
+                    <a href="{% url 'portal:inventory_session_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'inventory_session_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Kiểm kê Tài sản</span></a>
+                    <a href="{% url 'portal:disposal_request_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'disposal_request_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Thanh lý Tài sản</span></a>
                     {% endif %}
-                    <div class="border-t border-gray-100 my-1"></div>
-                    <p class="px-4 pb-1 pt-2 text-xs font-semibold uppercase text-gray-500">Đặt chỗ &amp; đề nghị</p>
-                    <a href="{% url 'portal:room_booking_list' %}" class="block px-4 py-2 hover:bg-gray-50">Phòng họp</a>
-                    <a href="{% url 'portal:vehicle_booking_list' %}" class="block px-4 py-2 hover:bg-gray-50">Đặt xe</a>
-                    <a href="{% url 'portal:supply_request_list' %}" class="block px-4 py-2 hover:bg-gray-50">VPP</a>
+                    <div class="ui-nav-separator"></div>
+                    <p class="ui-nav-section-label">Đặt chỗ &amp; đề nghị</p>
+                    <a href="{% url 'portal:room_booking_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'room_booking_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Phòng họp</span></a>
+                    <a href="{% url 'portal:vehicle_booking_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'vehicle_booking_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Đặt xe</span></a>
+                    <a href="{% url 'portal:supply_request_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'supply_request_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">VPP</span></a>
                 </div>
             </div>
 
             <!-- KẾ HOẠCH -->
-            <div class="portal-nav-group">
-                <button type="button" data-menu-trigger aria-controls="menu-kh" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
-                    Kế hoạch <span class="text-xs">▾</span>
-                </button>
-                <div id="menu-kh" class="hidden absolute left-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-52 py-1 z-30">
-                    <a href="{% url 'portal:event_list' %}" class="block px-4 py-2 hover:bg-gray-50">Lịch công tác</a>
-                    <a href="{% url 'portal:training_my_list' %}" class="block px-4 py-2 hover:bg-gray-50">Đào tạo</a>
-                    {% if can_manage_calendar %}<a href="{% url 'portal:holiday_list' %}" class="block px-4 py-2 hover:bg-gray-50">Quản lý ngày lễ</a>{% endif %}
+            <div class="ui-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-kh" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='calendar' %}<span class="ui-nav-label">Kế hoạch</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
+                <div id="menu-kh" class="ui-nav-panel" hidden>
+                    <a href="{% url 'portal:event_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'event_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Lịch công tác</span></a>
+                    <a href="{% url 'portal:training_my_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'training_my_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Đào tạo</span></a>
+                    {% if can_manage_calendar %}<a href="{% url 'portal:holiday_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'holiday_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Quản lý ngày lễ</span></a>{% endif %}
                 </div>
             </div>
 
             {% if can_view_reports %}
             {% url 'portal:report_hub' as u_report %}
-            <a href="{{ u_report }}" class="portal-nav-link border-b-2 {% if u_report in request.path %}border-blue-700 text-blue-700{% else %}border-transparent text-gray-600 hover:text-blue-700{% endif %}">Báo cáo</a>
+            <div class="ui-nav-group"><button type="button" class="ui-nav-trigger" data-menu-trigger aria-controls="menu-baocao" aria-expanded="false">{% include '_shell_icon.html' with name='chart' %}<span class="ui-nav-label">Báo cáo</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button><div id="menu-baocao" class="ui-nav-panel" hidden><a href="{{ u_report }}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'report_hub' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Báo cáo</span></a></div></div>
             {% endif %}
 
             {% if can_view_activity_dashboard %}
-            <div class="portal-nav-group portal-nav-group--right">
-                <button type="button" data-menu-trigger aria-controls="menu-hoatdongduan" aria-expanded="false" aria-haspopup="true" class="portal-nav-trigger text-gray-600 hover:text-blue-700">
-                    Dự án <span class="text-xs">▾</span>
-                </button>
-                <div id="menu-hoatdongduan" class="hidden absolute right-0 top-full bg-white border border-gray-200 shadow-lg rounded-md w-56 py-1 z-30">
-                    <a href="{% url 'portal:activity_dashboard' %}" class="block px-4 py-2 hover:bg-gray-50">Theo dõi hoạt động</a>
-                    <a href="{% url 'portal:activity_calendar' %}" class="block px-4 py-2 hover:bg-gray-50">Lịch hoạt động</a>
-                    <a href="{% url 'portal:task_list' %}" class="block px-4 py-2 hover:bg-gray-50">Giao việc &amp; hoàn tất</a>
+            <div class="ui-nav-group">
+                <button type="button" data-menu-trigger aria-controls="menu-hoatdongduan" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='folder' %}<span class="ui-nav-label">Dự án</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
+                <div id="menu-hoatdongduan" class="ui-nav-panel" hidden>
+                    <a href="{% url 'portal:activity_dashboard' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'activity_dashboard' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Theo dõi hoạt động</span></a>
+                    <a href="{% url 'portal:activity_calendar' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'activity_calendar' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Lịch hoạt động</span></a>
+                    <a href="{% url 'portal:task_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'task_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Giao việc &amp; hoàn tất</span></a>
                 </div>
             </div>
             {% endif %}
         </div>
     </nav>
 
-    <script>
-    (function () {
-        const nav = document.querySelector('.portal-nav');
-        const menuPanel = document.getElementById('portalNavigationMenu');
-        const mobileToggle = document.getElementById('mobileNavToggle');
-        if (!nav || !menuPanel) return;
-
-        function setMobileMenuOpen(isOpen) {
-            if (!mobileToggle) return;
-            menuPanel.classList.toggle('is-mobile-open', isOpen);
-            mobileToggle.setAttribute('aria-expanded', String(isOpen));
-            mobileToggle.setAttribute('aria-label', isOpen ? 'Đóng menu điều hướng' : 'Mở menu điều hướng');
-        }
-
-        function closeMenus(exceptId) {
-            nav.querySelectorAll('[data-menu-trigger]').forEach(function (button) {
-                const menu = document.getElementById(button.getAttribute('aria-controls'));
-                if (!menu || menu.id === exceptId) return;
-                menu.classList.add('hidden');
-                button.setAttribute('aria-expanded', 'false');
-            });
-        }
-
-        nav.querySelectorAll('[data-menu-trigger]').forEach(function (button) {
-            button.addEventListener('click', function () {
-                const menu = document.getElementById(button.getAttribute('aria-controls'));
-                if (!menu) return;
-                const willOpen = menu.classList.contains('hidden');
-                closeMenus(menu.id);
-                menu.classList.toggle('hidden', !willOpen);
-                button.setAttribute('aria-expanded', String(willOpen));
-            });
-        });
-
-        document.addEventListener('click', function (event) {
-            if (!nav.contains(event.target)) closeMenus();
-            if (!nav.contains(event.target) && !(mobileToggle && mobileToggle.contains(event.target))) {
-                setMobileMenuOpen(false);
-            }
-        });
-        document.addEventListener('keydown', function (event) {
-            if (event.key !== 'Escape') return;
-            const openButton = nav.querySelector('[data-menu-trigger][aria-expanded="true"]');
-            closeMenus();
-            if (openButton) {
-                openButton.focus();
-            } else if (mobileToggle && mobileToggle.getAttribute('aria-expanded') === 'true') {
-                setMobileMenuOpen(false);
-                mobileToggle.focus();
-            }
-        });
-
-        if (mobileToggle) {
-            mobileToggle.addEventListener('click', function () {
-                const willOpen = mobileToggle.getAttribute('aria-expanded') !== 'true';
-                if (!willOpen) closeMenus();
-                setMobileMenuOpen(willOpen);
-            });
-            menuPanel.querySelectorAll('a').forEach(function (link) {
-                link.addEventListener('click', function () {
-                    if (window.matchMedia('(max-width: 767px)').matches) setMobileMenuOpen(false);
-                });
-            });
-        }
-    }());
-    </script>
+    </aside>
+    <div class="ui-nav-tooltip" id="navTooltip" role="tooltip" hidden></div>
     {% endif %}
-
-    <main class="{% block main_container_class %}max-w-5xl{% endblock %} mx-auto px-6 py-8">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="mb-4 px-4 py-3 rounded-md text-sm font-medium
-                    {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200
-                    {% elif message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200
-                    {% else %}bg-gray-50 text-gray-800 border border-gray-200{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+    <div class="ui-main-wrap {% if user.is_authenticated %}has-sidebar{% endif %}" id="mainWrap">
+    <main id="main-content" tabindex="-1" class="ui-main {% block main_container_class %}max-w-5xl{% endblock %}">
+        {% if messages %}<div aria-label="Thông báo hệ thống">
+        {% for message in messages %}
+        <div class="ui-alert {% if message.level >= 40 %}ui-alert--danger{% elif message.level >= 30 %}ui-alert--warning{% elif message.level == 25 %}ui-alert--success{% endif %}" {% if message.level >= 30 %}role="alert"{% else %}role="status"{% endif %}>
+            {% if message.level >= 40 %}{% include '_shell_icon.html' with name='danger' %}{% elif message.level >= 30 %}{% include '_shell_icon.html' with name='warning' %}{% elif message.level == 25 %}{% include '_shell_icon.html' with name='success' %}{% else %}{% include '_shell_icon.html' with name='info' %}{% endif %}
+            <span class="ui-alert-content">{{ message }}</span>
+        </div>
+        {% endfor %}</div>{% endif %}
         {% block content %}{% endblock %}
     </main>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const userBtn = document.getElementById('userMenuButton');
-            const userDropdown = document.getElementById('userDropdown');
-            const container = document.getElementById('userMenuContainer');
-
-            if (userBtn && userDropdown) {
-                userBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    userDropdown.classList.toggle('hidden');
-                });
-
-                document.addEventListener('click', function(e) {
-                    if (container && !container.contains(e.target)) {
-                        userDropdown.classList.add('hidden');
-                    }
-                });
-            }
-        });
-    </script>
+    </div>
+    <script src="{% static 'js/app_shell.js' %}?v=20261012-shell" defer></script>
     {% if user.is_authenticated and "/portal/" in request.path %}
     <script>
         if ('serviceWorker' in navigator) {

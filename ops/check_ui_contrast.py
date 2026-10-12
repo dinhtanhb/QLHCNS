@@ -56,7 +56,8 @@ def pairings():
         pairs.extend((fg, bg, 3) for fg in ("border", "focus"))
     pairs.extend(("on-brand", bg, 4.5) for bg in ("brand", "brand-hover", "brand-active"))
     pairs.extend((("link", "brand-soft", 4.5), ("selected-text", "selected-bg", 4.5),
-                  ("disabled-text", "disabled-bg", 4.5), ("disabled-border", "disabled-bg", 3)))
+                  ("disabled-text", "disabled-bg", 4.5), ("disabled-border", "disabled-bg", 3),
+                  ("border", "selected-bg", 3), ("focus", "selected-bg", 3)))
     for status in ("success", "warning", "danger", "info", "error"):
         pairs.extend(((status + "-text", status + "-bg", 4.5),
                       (status + "-border", status + "-bg", 3),
