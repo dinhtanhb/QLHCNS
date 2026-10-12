@@ -1,6 +1,6 @@
-# IHRMS — Design system đề xuất, Giai đoạn 1
+# IHRMS — Design system đã duyệt
 
-Trạng thái: chờ chủ dự án duyệt trước Giai đoạn 2. Chỉ tài liệu và CSS variables; chưa áp dụng vào template. Nguồn quyết định: UI UX Pro Max, kiểm kê mã IHRMS và các ràng buộc của chủ dự án. Nhật ký duy nhất: [PROJECT_WORK_LOG](../docs/PROJECT_WORK_LOG.md).
+Trạng thái: đã duyệt bởi chủ dự án ngày 12/10/2026 kèm các điều kiện trong yêu cầu Giai đoạn 2. Nguồn quyết định: UI UX Pro Max, kiểm kê mã IHRMS và các ràng buộc của chủ dự án. Nhật ký duy nhất: [PROJECT_WORK_LOG](../docs/PROJECT_WORK_LOG.md). Thứ bậc: MASTER + tokens > DESIGN.md > mặc định skill. Giai đoạn 2 áp dụng khung; nội dung trang con chưa thiết kế lại.
 
 ## Phạm vi và nguồn của skill
 
@@ -8,15 +8,15 @@ Trạng thái: chờ chủ dự án duyệt trước Giai đoạn 2. Chỉ tài 
 
 Chọn Accessible & Ethical kết hợp Data-Dense Dashboard (tìm kiếm KPI). Giữ focus rõ, semantic HTML, responsive, labels, reduced motion. Các phần marketing/Contact Sales/hero/carousel không phù hợp cổng nhân sự đã đăng nhập nên bỏ. Không có stack Django trong skill; không chạy stack React/shadcn và không coi ví dụ Tailwind là yêu cầu thêm framework.
 
-`DESIGN.md` hiện định hướng violet/system sans/neumorphism. Đề xuất này giữ violet và system sans, giảm bóng nổi/inset thành card border và bóng nhẹ để đọc bảng dày rõ hơn. Đây là thay đổi thiết kế chờ duyệt, chưa thay thế quy tắc runtime trong `DESIGN.md`; khi chủ dự án duyệt Giai đoạn 2 cần thống nhất hai tài liệu trước áp dụng.
+Đã xác nhận `DESIGN.md` bản chủ dự án cập nhật: violet/system sans, card viền và bóng nhẹ, không dùng Neumorphism. Không ghi đè thay đổi cục bộ đó. Hai tài liệu thống nhất với quyết định đã duyệt.
 
 ## Hệ màu, typography và tokens
 
-Nguồn giá trị để triển khai sau duyệt: [`ui_tokens_proposed.css`](../src/static/css/ui_tokens_proposed.css), namespace `--ui-*`. Không import bộ này trong Giai đoạn 1. Giữ nguyên `design_tokens.css`, `theme.css`, theme JS và utilities đang chạy. Khi áp dụng, cần quyết định thứ tự stylesheet và chuyển từng component, không thay hàng loạt aliases Tailwind/admin hoặc recolor biểu mẫu in.
+Nguồn giá trị chính thức: [`ui_tokens.css`](../src/static/css/ui_tokens.css), namespace `--ui-*`. Base tải theme JS trước CSS, rồi Tailwind, legacy adapters, theme, tokens, CSS trang con, cuối cùng CSS khung. `design_tokens.css` import tokens để admin cũng dùng được; aliases cũ chỉ trỏ một chiều tới `--ui-*` trong `@media screen`, defaults in giữ nguyên. Không đổi tên utility hàng loạt hoặc recolor giấy HCNS. OS fallback CSS chỉ khi chưa có `data-theme`; theme JS ưu tiên lựa chọn đã lưu, nếu chưa chọn theo `prefers-color-scheme`.
 
 - Một màu thương hiệu tím: light `#6d28d9`, dark `#c4b5fd`. Giữ nhận diện tím hiện có; bỏ navy/blue CTA do skill gợi ý để tránh đổi thương hiệu chưa được yêu cầu. Bỏ gradient và glow, dùng neutral slate cho dữ liệu và surfaces.
 - Bốn màu ngữ nghĩa: success xanh lá, warning hổ phách, danger đỏ, info xanh dương; mỗi trạng thái có text/background/border riêng cho hai theme. Trạng thái luôn có chữ và SVG tương ứng. Warning chỉ việc chờ xử lý, danger chỉ lỗi/quá hạn/hành động nguy hiểm.
-- Dùng font hệ thống `Segoe UI`, Arial, sans-serif; không tải Google Fonts/CDN, không thêm asset/dependency. Cần kiểm tra glyph tiếng Việt ở máy đích; kết quả kiểm tra local ghi trong nhật ký. Bỏ Fira Code cho văn bản thường và Plus Jakarta Sans remote vì không cần font mạng hay phong cách kỹ thuật. Không tuyên bố đã kiểm Be Vietnam Pro/Inter khi chưa có font đó.
+- Dùng font hệ thống `"Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif`; không tải Google Fonts/CDN, không thêm asset/dependency. Cần kiểm tra glyph tiếng Việt ở máy đích; kết quả kiểm tra local ghi trong nhật ký. Bỏ Fira Code cho văn bản thường và Plus Jakarta Sans remote vì không cần font mạng hay phong cách kỹ thuật. Không tuyên bố đã kiểm Be Vietnam Pro/Inter khi chưa có font đó.
 - Body 16px (`1rem` với root mặc định), bảng/nhãn 14px, phụ chú 12px; line height 1.5, heading 1.25. Không giảm root font-size; hỗ trợ zoom. Số dùng tabular-nums, tiền `vi-VN`, ngày `dd/MM/yyyy`; giữ quy tắc làm tròn và dữ liệu backend hiện có.
 - Khoảng cách 4/8/12/16/24/32/48px; radius 4/8/12px; bóng nhẹ. Control/row min 44px nhưng có thể cao hơn khi chữ xuống dòng. Bỏ row 36px và thân chữ 12px trong đề xuất dashboard để đáp ứng vùng chạm và độ đọc.
 - Focus 3px, offset 3px, thêm khoảng nền tương phản quanh nút filled trước ring; hover/active/selected/disabled/error có tokens. Disabled dùng semantics thật, không chỉ đổi màu hay opacity.
@@ -26,7 +26,7 @@ Nguồn giá trị để triển khai sau duyệt: [`ui_tokens_proposed.css`](..
 
 Desktop từ 1024px: sidebar rộng 256px, thu gọn 72px; nhóm Cá nhân, Nhân sự, Tuyển dụng, Kế toán, Hành chính, Kế hoạch, Báo cáo, Dự án. Trang chủ là link riêng. Active có nền, nét đánh dấu và `aria-current`; trạng thái thu gọn có tên truy cập, tooltip dùng được bằng focus. Header giữ thương hiệu, chuông và tài khoản; vùng nội dung rộng tối đa 1440px.
 
-360–1023px: drawer thay sidebar, nút mở ≥44px. Drawer có nhãn, Escape/đóng, quản lý focus khi là modal, trả focus về nút mở; khóa tab nền chỉ khi modal. Chọn drawer cho tám phân hệ; chưa thêm bottom bar để tránh chia menu quá nhiều. Không dùng hover làm cách mở duy nhất; toàn bộ menu dùng bàn phím. Dùng media queries CSS thật ở 360/768/1024/1440px, không dùng CSS variable làm điều kiện breakpoint.
+360–1023px: drawer thay sidebar, nút mở ≥44px. Drawer có nhãn, Escape/đóng, quản lý focus khi là modal, trả focus về nút mở; khóa tab nền chỉ khi modal. Chọn drawer cho tám phân hệ; không dùng bottom bar. Không dùng hover làm cách mở duy nhất; toàn bộ menu dùng bàn phím. Dùng media queries CSS thật ở 360/768/1024/1440px, không dùng CSS variable làm điều kiện breakpoint.
 
 Trang chủ ưu tiên Việc của tôi, Cần duyệt, Thao tác nhanh rồi Hoạt động gần đây; mỗi khu vực chỉ hiển thị khi guard và dữ liệu hiện tại hỗ trợ. Đề xuất mới cần dữ liệu view bổ sung phải thành nhiệm vụ riêng; không bịa số hoặc đổi view ở đợt UI này. KPI có nhãn, giá trị, phạm vi/kỳ và link hợp lệ tới danh sách đã có quyền xem; không biến mọi card thành link nếu chưa có đích. Cảnh báo chưa gắn hồ sơ có SVG và hướng dẫn; nút xử lý cho admin chỉ dùng route/guard hiện có sau xác minh, nhân viên nhận hướng dẫn liên hệ HR.
 
@@ -45,4 +45,6 @@ Trang chủ ưu tiên Việc của tôi, Cần duyệt, Thao tác nhanh rồi Ho
 
 Đo các cặp màu token được quy định (text ≥4.5:1, control/focus ≥3:1) cho cả hai theme; cặp không nằm trong danh sách đã đo phải đo lại. `--ui-divider` chỉ chia nhóm trang trí, không dùng làm viền control cần nhận biết. Scrim/bóng có alpha phải đo trên nền thực khi render.
 
-Kiểm tra 360/768/1024/1440px, zoom 200%, bàn phím, screen reader, reduced motion, tất cả guards/RBAC và print HCNS khi áp dụng Giai đoạn 2. Đo tokens không chứng minh toàn ứng dụng đạt WCAG 2.1 AA. Cần chủ dự án duyệt MASTER và tokens trước khi đổi base layout/template.
+Sidebar dùng bộ `--ui-sidebar-{bg,text,hover-bg,active-bg,active-text,marker,border}`; chart dùng `--ui-chart-{series,series-soft,series-strong,axis,grid,label}`. Các thang chart phục vụ cùng đại lượng, không tự phân màu phòng ban. Script `python ops/check_ui_contrast.py` đo lại các cặp đã quy định; bảng đầy đủ ở `docs/UI_DESIGN_SYSTEM_PHASE1.md`.
+
+Kiểm tra 360/768/1024/1440px, zoom 200%, bàn phím, screen reader, reduced motion, tất cả guards/RBAC và print HCNS khi áp dụng Giai đoạn 2. Đo tokens không chứng minh toàn ứng dụng đạt WCAG 2.1 AA. Dừng cuối Giai đoạn 2 để chủ dự án xem giao diện trước giai đoạn kế tiếp.

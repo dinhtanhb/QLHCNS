@@ -1,7 +1,6 @@
-/* Giai đoạn 1: proposal only. Do not import until MASTER.md is approved.
-   Separate namespace preserves the active ihrms-* and Tailwind variables. */
+/* Approved IHRMS source tokens. Legacy variables point to ui-* in screen adapters. */
 :root {
-    --ui-font-family: "Segoe UI", Arial, sans-serif;
+    --ui-font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
     --ui-font-size-caption: 0.75rem;
     --ui-font-size-small: 0.875rem;
     --ui-font-size-body: 1rem;
@@ -38,6 +37,8 @@
     --ui-icon-medium: 1.25rem;
     --ui-icon-large: 1.5rem;
     --ui-icon-stroke-width: 2;
+    --ui-menu-width: 16rem;
+    --ui-active-marker-width: 3px;
     --ui-layer-sticky: 10;
     --ui-layer-navigation: 20;
     --ui-layer-drawer: 40;
@@ -83,6 +84,19 @@ html[data-theme="light"] {
     --ui-info-text: #075985;
     --ui-info-bg: #f0f9ff;
     --ui-info-border: #075985;
+    --ui-sidebar-bg: var(--ui-surface);
+    --ui-sidebar-text: var(--ui-text);
+    --ui-sidebar-hover-bg: var(--ui-hover-bg);
+    --ui-sidebar-active-bg: var(--ui-selected-bg);
+    --ui-sidebar-active-text: var(--ui-selected-text);
+    --ui-sidebar-marker: var(--ui-brand);
+    --ui-sidebar-border: var(--ui-border);
+    --ui-chart-series: var(--ui-brand);
+    --ui-chart-series-soft: var(--ui-brand-hover);
+    --ui-chart-series-strong: var(--ui-brand-active);
+    --ui-chart-axis: var(--ui-text-muted);
+    --ui-chart-grid: var(--ui-border);
+    --ui-chart-label: var(--ui-text);
     --ui-error-text: var(--ui-danger-text);
     --ui-error-bg: var(--ui-danger-bg);
     --ui-error-border: var(--ui-danger-border);
@@ -135,5 +149,46 @@ html[data-theme="dark"] {
     :root {
         --ui-motion-feedback: 0ms;
         --ui-motion-panel: 0ms;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+    --ui-bg: #0f172a;
+    --ui-surface: #1e293b;
+    --ui-surface-raised: #334155;
+    --ui-text: #f8fafc;
+    --ui-text-muted: #cbd5e1;
+    --ui-border: #94a3b8;
+    --ui-divider: #475569;
+    --ui-brand: #c4b5fd;
+    --ui-brand-hover: #ddd6fe;
+    --ui-brand-active: #a78bfa;
+    --ui-on-brand: #2e1065;
+    --ui-brand-soft: #2e1065;
+    --ui-link: #c4b5fd;
+    --ui-focus: #c4b5fd;
+    --ui-focus-gap: #0f172a;
+    --ui-hover-bg: #334155;
+    --ui-selected-bg: #2e1065;
+    --ui-selected-text: #ddd6fe;
+    --ui-disabled-bg: #334155;
+    --ui-disabled-text: #cbd5e1;
+    --ui-disabled-border: #94a3b8;
+    --ui-success-text: #86efac;
+    --ui-success-bg: #052e16;
+    --ui-success-border: #86efac;
+    --ui-warning-text: #fde68a;
+    --ui-warning-bg: #451a03;
+    --ui-warning-border: #fde68a;
+    --ui-danger-text: #fca5a5;
+    --ui-danger-bg: #450a0a;
+    --ui-danger-border: #fca5a5;
+    --ui-info-text: #7dd3fc;
+    --ui-info-bg: #082f49;
+    --ui-info-border: #7dd3fc;
+    --ui-shadow-card: 0 1px 3px rgb(0 0 0 / 0.3);
+    --ui-shadow-overlay: 0 8px 24px rgb(0 0 0 / 0.45);
+    --ui-scrim: rgb(0 0 0 / 0.75);
     }
 }

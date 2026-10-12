@@ -1,5 +1,16 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-12 — UI/UX Giai đoạn 2: nền tảng chính thức và khung ứng dụng
+
+**Phạm vi/đầu đợt:** dùng UI UX Pro Max đã đọc ở đợt trước; không dùng UI Styling/shadcn. Đọc AGENTS, hướng dẫn review, RBAC, MASTER, tokens, nhật ký và DESIGN mới do chủ dự án cập nhật. DESIGN không còn định hướng Neumorphism; giữ nguyên thay đổi cục bộ ở DESIGN và mục backup nhật ký, loại khỏi staging. `main`, `git fetch origin main` exit 0, `git rev-list --left-right --count HEAD...origin/main` = `2 0` (hai commit Giai đoạn 0–1 chưa push), không phân kỳ. Không push/deploy, không thay nghiệp vụ/URL/field/model/migration/RBAC.
+
+**Phần A — nền tảng:** đổi MASTER sang đã duyệt bởi chủ dự án theo yêu cầu 12/10/2026; cập nhật font stack đầy đủ và liên kết tên chính thức `ui_tokens.css`. CSS fallback OS dark chỉ với `:root:not([data-theme])`, explicit preference thắng. Bổ sung tokens sidebar/chart tham chiếu semantic light/dark. `design_tokens.css` import bộ chính thức và map `ihrms-*`/Tailwind một chiều trong screen; defaults print giữ nguyên. Theme bỏ root overrides tím cũ, Bootstrap theo ui tokens; admin adapter sửa paired foreground/background để tránh chữ trắng trên brand sáng dark. Base import tokens sau legacy/theme; phần B thêm CSS khung cuối cascade. Không recolor giấy HCNS.
+
+**Đo có thể chạy lại:** `python ops/check_ui_contrast.py --write-doc`, bảng từng cặp lưu trong `docs/UI_DESIGN_SYSTEM_PHASE1.md`; script Python standard library không dependency. Exit 0: 136 cặp, light text min 6.147:1/UI min 3.860:1; dark text min 5.599:1/UI min 3.805:1. `git diff --check` exit 0; tìm liên kết proposed trong docs/nguồn hiện hành không còn (rg exit 1). Đây là đo contract, chưa chứng nhận UI/WCAG. Phần A commit riêng `ui: finalize tokens and design docs`; kiểm tra full backend chạy cuối Giai đoạn 2.
+
+**Phần B:** đang thực hiện, chưa chuyển sang thiết kế nội dung trang con hoặc giai đoạn tiếp theo.
+
+
 ## 2026-10-12 — UI/UX Giai đoạn 0–1: kiểm kê và design system (UI UX Pro Max)
 
 **Phạm vi/Git:** UI và tài liệu trên `main`; ban đầu chỉ `M docs/PROJECT_WORK_LOG.md` (mục backup có sẵn được giữ nguyên và không đưa vào commit đợt này). `git fetch origin main` exit 0, `git rev-list --left-right --count HEAD...origin/main` = `0 0`. Đã đọc AGENTS, hướng dẫn review, nhật ký, ma trận RBAC và toàn bộ `C:/Users/dinht/.agents/skills/ui-ux-pro-max/SKILL.md`. Không dùng UI Styling/shadcn, không thêm dependency, không push/deploy. Shell mặc định lỗi `helper_unknown_error: setup refresh had errors`; Node REPL thoát; đường shell dự phòng được xét duyệt hoạt động.
