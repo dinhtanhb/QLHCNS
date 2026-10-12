@@ -1,48 +1,43 @@
-{% extends "base.html" %}
+{% extends "portal/recruitment_base.html" %}
+{% load ui_components %}
 {% block title %}Đề xuất tuyển dụng{% endblock %}
-{% block content %}
-<div class="flex items-center justify-between mb-4">
-    <h1 class="text-lg font-bold text-gray-900">Đề xuất tuyển dụng</h1>
+{% block recruitment_content %}
+<div class="ui-page-header">
+    <h1 class="ui-page-title">Đề xuất tuyển dụng</h1>
     {% if can_request %}
-    <a href="{% url 'portal:recruitment_create' %}" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Tạo đề xuất mới</a>
+    <a href="{% url 'portal:recruitment_create' %}" class="ui-button ui-button--primary">+ Tạo đề xuất mới</a>
     {% endif %}
 </div>
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <div class="overflow-x-auto">
-    <table class="w-full text-sm">
+<div class="ui-card">
+    <div class="ui-scroll overflow-x-auto mobile-table-scroll" tabindex="0" role="region" aria-label="Bảng đề xuất tuyển dụng">
+    <table class="ui-table ui-recruitment-table"><caption class="ui-sr-only">Đề xuất tuyển dụng</caption>
         <thead>
-            <tr class="text-left text-gray-500 border-b border-gray-200">
-                <th class="py-2 pr-4">Mã đề xuất</th><th class="py-2 pr-4">Phòng ban</th><th class="py-2 pr-4">Vị trí</th><th class="py-2 pr-4">SL</th><th class="py-2 pr-4">Cần có trước</th><th class="py-2 pr-4">Trạng thái</th>{% if can_approve %}<th class="py-2">Thao tác</th>{% endif %}
+            <tr class="">
+                <th scope="col" class="">Mã đề xuất</th><th scope="col" class="">Phòng ban</th><th scope="col" class="">Vị trí</th><th scope="col" class="ui-table-number">Số lượng</th><th scope="col" class="">Cần có trước</th><th scope="col" class="">Trạng thái</th>{% if can_approve %}<th scope="col" class="">Thao tác</th>{% endif %}
             </tr>
         </thead>
-        <tbody class="divide-y divide-gray-100">
+        <tbody class="">
         {% for r in requests %}
         <tr>
-            <td class="py-2.5 pr-4 text-gray-500">{{ r.request_code|ui_number }}</td>
-            <td class="py-2.5 pr-4">{{ r.department|ui_number }}</td>
-            <td class="py-2.5 pr-4 font-medium">{{ r.position|ui_number }}</td>
-            <td class="py-2.5 pr-4">{{ r.required_quantity|ui_number }}</td>
-            <td class="py-2.5 pr-4">{{ r.required_date|ui_number }}</td>
-            <td class="py-2.5 pr-4">
-                <span class="px-2.5 py-1 rounded-full text-xs font-medium
-                    {% if r.status == 'Approved' %}bg-green-100 text-green-700
-                    {% elif r.status == 'Rejected' %}bg-red-100 text-red-700
-                    {% elif r.status == 'Closed' %}bg-gray-100 text-gray-600
-                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
-                    {{ r.get_status_display|ui_number }}
-                </span>
+            <td class="">{{ r.request_code|ui_number }}</td>
+            <td class="">{{ r.department|ui_number }}</td>
+            <td class="">{{ r.position|ui_number }}</td>
+            <td class="ui-table-number">{{ r.required_quantity|ui_number }}</td>
+            <td class="">{{ r.required_date|ui_date }}</td>
+            <td class="">
+                {% ui_badge "recruitment.recruitmentrequest:status" r.status r.get_status_display %}
             </td>
             {% if can_approve %}
-            <td class="py-2.5">
+            <td class="">
                 {% if r.status == 'Pending' %}
-                <div class="flex gap-2">
-                    <form method="post" action="{% url 'portal:recruitment_approve' r.pk %}">
+                <div class="ui-page-actions">
+                    <form data-ui-confirm="Duyệt đề xuất tuyển dụng này?" data-ui-confirm-label="Duyệt" data-ui-confirm-tone="primary" method="post" action="{% url 'portal:recruitment_approve' r.pk %}">
                         {% csrf_token %}<input type="hidden" name="decision" value="Approved">
-                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white text-xs font-medium px-3 py-1.5 rounded-md transition">Duyệt</button>
+                        <button type="submit" class="ui-button ui-button--primary">Duyệt</button>
                     </form>
-                    <form method="post" action="{% url 'portal:recruitment_approve' r.pk %}">
+                    <form data-ui-confirm="Từ chối đề xuất tuyển dụng này?" data-ui-confirm-label="Từ chối" method="post" action="{% url 'portal:recruitment_approve' r.pk %}">
                         {% csrf_token %}<input type="hidden" name="decision" value="Rejected">
-                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-xs font-medium px-3 py-1.5 rounded-md transition">Từ chối</button>
+                        <button type="submit" class="ui-button ui-button--danger">Từ chối</button>
                     </form>
                 </div>
                 {% endif %}
@@ -50,10 +45,11 @@
             {% endif %}
         </tr>
         {% empty %}
-        <tr><td colspan="7" class="py-6 text-center text-gray-400">Chưa có đề xuất tuyển dụng nào.</td></tr>
+        <tr><td colspan="{% if can_approve %}7{% else %}6{% endif %}" class="ui-recruitment-empty">{% include "ui/empty_state.html" with title="Chưa có đề xuất tuyển dụng" description="Danh sách sẽ hiển thị tại đây khi có dữ liệu." %}</td></tr>
         {% endfor %}
         </tbody>
     </table>
     </div>
 </div>
+{% include "ui/confirm_dialog.html" %}
 {% endblock %}

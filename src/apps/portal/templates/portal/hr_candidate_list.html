@@ -1,27 +1,28 @@
-{% extends "base.html" %}
+{% extends "portal/recruitment_base.html" %}
+{% load ui_components %}
 {% block title %}Ứng viên{% endblock %}
-{% block content %}
-<div class="flex items-center justify-between mb-4">
-    <h1 class="text-lg font-bold text-gray-900">Quản lý Ứng viên</h1>
-    {% if can_manage_hr %}<a href="{% url 'portal:hr_candidate_create' %}" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Thêm ứng viên</a>{% endif %}
+{% block recruitment_content %}
+<div class="ui-page-header">
+    <h1 class="ui-page-title">Quản lý Ứng viên</h1>
+    {% if can_manage_hr %}<a href="{% url 'portal:hr_candidate_create' %}" class="ui-button ui-button--primary">+ Thêm ứng viên</a>{% endif %}
 </div>
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <div class="overflow-x-auto mobile-table-scroll">
-        <table class="w-full text-sm">
-        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Mã</th><th class="py-2 pr-4">Họ tên</th><th class="py-2 pr-4">SĐT</th><th class="py-2 pr-4">Nguồn</th><th class="py-2">Trạng thái</th></tr></thead>
-        <tbody class="divide-y divide-gray-100">
+<div class="ui-card">
+    <div class="ui-scroll overflow-x-auto mobile-table-scroll" tabindex="0" role="region" aria-label="Bảng ứng viên">
+        <table class="ui-table ui-recruitment-table"><caption class="ui-sr-only">Danh sách ứng viên</caption>
+        <thead><tr class=""><th scope="col" class="">Mã</th><th scope="col" class="">Họ tên</th><th scope="col" class="">SĐT</th><th scope="col" class="">Nguồn</th><th scope="col" class="">Trạng thái</th></tr></thead>
+        <tbody class="">
         {% for c in candidates %}
-        <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{% url 'portal:hr_candidate_detail' c.pk %}'">
-            <td class="py-2 pr-4 text-gray-500">{{ c.candidate_code|ui_number }}</td>
-            <td class="py-2 pr-4 font-medium text-blue-700">{{ c.full_name|ui_number }}</td>
-            <td class="py-2 pr-4">{{ c.phone_number|ui_number }}</td>
-            <td class="py-2 pr-4">{{ c.source|default:"—"|ui_number }}</td>
-            <td class="py-2">{{ c.get_status_display|ui_number }}</td>
+        <tr class="">
+            <td class="">{{ c.candidate_code|ui_number }}</td>
+            <td class=""><a class="ui-button ui-button--secondary" href="{% url 'portal:hr_candidate_detail' c.pk %}">{{ c.full_name|ui_number }}</a></td>
+            <td class="">{{ c.phone_number|ui_number }}</td>
+            <td class="">{{ c.source|default:"—"|ui_number }}</td>
+            <td class="">{% ui_badge "recruitment.candidate:status" c.status c.get_status_display %}</td>
         </tr>
-        {% empty %}<tr><td colspan="5" class="py-6 text-center text-gray-400">Chưa có ứng viên nào.</td></tr>{% endfor %}
+        {% empty %}<tr><td colspan="5" class="ui-recruitment-empty">{% include "ui/empty_state.html" with title="Chưa có ứng viên" description="Danh sách sẽ hiển thị tại đây khi có dữ liệu." %}</td></tr>{% endfor %}
         </tbody>
     </table>
     </div>
 </div>
-{% include "portal/_pagination.html" %}
+{% include "portal/_pagination.html" with standard=True %}
 {% endblock %}

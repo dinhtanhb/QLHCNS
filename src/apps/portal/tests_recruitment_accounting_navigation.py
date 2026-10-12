@@ -134,7 +134,7 @@ class RecruitmentAccountingNavigationTests(TestCase):
         expected = {
             "HR_MANAGER": ("Nhân viên &amp; hồ sơ", "Quyết định nhân sự", "Duyệt cập nhật hồ sơ", "Duyệt nghỉ phép", "Duyệt chấm công", "Duyệt tài liệu"),
             "HR_OFFICER": ("Nhân viên &amp; hồ sơ", "Quyết định nhân sự", "Duyệt cập nhật hồ sơ"),
-            "DIRECTOR": ("Quyết định nhân sự", "Duyệt nghỉ phép", "Duyệt chấm công", "Duyệt tài liệu", "Duyệt đề xuất hoạt động"),
+            "DIRECTOR": ("Quyết định nhân sự", "Duyệt nghỉ phép", "Duyệt chấm công", "Duyệt tài liệu"),
             "DEPT_MANAGER": ("Duyệt nghỉ phép", "Duyệt chấm công"),
         }
         for index, (role_code, labels) in enumerate(expected.items(), start=1):
@@ -148,6 +148,13 @@ class RecruitmentAccountingNavigationTests(TestCase):
                 self.assertIsNotNone(menu)
                 for label in labels:
                     self.assertIn(label, menu.group(0))
+                self.assertNotIn("Duyệt đề xuất hoạt động", menu.group(0))
+                project_menu = re.search(r'id="menu-hoatdongduan".*?</div>', html, re.DOTALL)
+                if role_code == "DIRECTOR":
+                    self.assertIsNotNone(project_menu)
+                    self.assertIn("Duyệt đề xuất hoạt động", project_menu.group(0))
+                elif project_menu:
+                    self.assertNotIn("Duyệt đề xuất hoạt động", project_menu.group(0))
                 decision_links = re.findall(
                     r'<a\b[^>]*href="' + re.escape(reverse("portal:personnel_decision_list")) + r'"[^>]*>',
                     html,
