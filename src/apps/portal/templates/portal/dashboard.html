@@ -1,139 +1,59 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Trang chủ{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261012-ui-2c">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261012-ui-3">{% endblock %}
 {% block content %}
-<div class="home-dashboard">
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-    {% if employee %}
-        <h1 class="text-xl font-bold text-gray-900 mb-1">Xin chào, {{ employee.full_name|ui_number }} 👋</h1>
-        <p class="text-gray-500 text-sm">{{ employee.employee_code|ui_number }} · {{ employee.department|ui_number }} · {{ employee.position|ui_number }}</p>
-    {% else %}
-        <p class="text-gray-600">Tài khoản của anh/chị chưa được gắn với hồ sơ nhân viên. Vui lòng liên hệ Phòng Nhân sự.</p>
-    {% endif %}
-</div>
-
-{% if employee %}
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 home-kpi-grid">
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-        <p class="text-gray-500 text-xs mb-1">Đơn nghỉ đang chờ duyệt</p>
-        <p class="text-2xl font-bold ui-kpi-value {% if my_pending_leaves > 0 %}ui-kpi-warning{% endif %}">{{ my_pending_leaves|ui_number }}</p>
-    </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-        <p class="text-gray-500 text-xs mb-1">Công việc chưa hoàn thành</p>
-        <p class="text-2xl font-bold ui-kpi-value">{{ my_open_tasks|ui_number }}</p>
-    </div>
-</div>
+<div class="ui-page home-dashboard">
+<header class="ui-page-header">
+ <div><h1 class="ui-page-title">{% if employee %}Xin chào, {{ employee.full_name }}{% else %}Trang chủ{% endif %}</h1>
+ <p class="ui-page-description">{% if employee %}{{ employee.employee_code }} · {{ employee.department }} · {{ employee.position }}{% else %}Chào mừng anh/chị đến cổng thông tin nhân viên.{% endif %}</p></div>
+ <p class="home-period">Số liệu hiện tại · {{ home_period }}</p>
+</header>
+{% if not employee %}
+<section class="ui-card home-profile-warning" aria-labelledby="profile-warning-title">
+ {% include "_shell_icon.html" with name="warning" %}<div><h2 id="profile-warning-title">Tài khoản chưa gắn hồ sơ nhân viên</h2>
+ <p>Các thông tin và thao tác cá nhân sẽ hiển thị sau khi tài khoản được gắn hồ sơ. Vui lòng liên hệ Phòng Nhân sự để được hỗ trợ.</p>
+ {% if profile_setup %}<p>Sử dụng màn hình có sẵn bên dưới; hồ sơ được tạo cần được quản trị viên có quyền gắn với tài khoản.</p><a class="ui-button" href="{{ profile_setup.href }}">{{ profile_setup.label }}{% include "_shell_icon.html" with name="arrow" %}</a>{% endif %}</div>
+</section>
 {% endif %}
-
+{% for group in home_groups %}
+<section aria-labelledby="home-group-{{ forloop.counter }}"><h2 class="ui-card-title" id="home-group-{{ forloop.counter }}">{{ group.title }}</h2>
+ <div class="ui-kpi-grid home-kpi-grid">{% for card in group.cards %}{% include "ui/kpi.html" with label=card.label value=card.value href=card.href warning=card.warning period=card.period only %}{% endfor %}</div>
+</section>
+{% endfor %}
+<div class="home-action-grid">
+<section class="ui-card" aria-labelledby="home-queue-title"><h2 class="ui-card-title" id="home-queue-title">Việc cần tôi xử lý</h2>
+ {% if home_queue or can_approve_activity_proposals %}
+ <ul class="home-queue">{% for item in home_queue %}<li><a href="{{ item.href }}"><span>{{ item.label }}</span><span class="ui-badge{% if item.value > 0 %} ui-badge--warning{% endif %}">{% if item.value > 0 %}{% include "_shell_icon.html" with name="warning" %}Cần xử lý · {% endif %}{{ item.value|ui_number }}</span></a></li>{% endfor %}
+ {% if can_approve_activity_proposals %}<li><a href="{% url 'portal:activity_proposal_approval_list' %}"><span>Đề xuất hoạt động chờ duyệt</span><span class="ui-badge{% if pending_activity_proposal_count > 0 %} ui-badge--warning{% endif %}">{% if pending_activity_proposal_count > 0 %}{% include "_shell_icon.html" with name="warning" %}Cần xử lý · {% endif %}{{ pending_activity_proposal_count|ui_number }}</span></a></li>{% endif %}</ul>
+ <p class="ui-page-description">Chọn một mục để xem danh sách trong phạm vi quyền của anh/chị. Số 0 nghĩa là không có mục cần xử lý.</p>
+ {% else %}<div class="ui-state">{% include "_shell_icon.html" with name="info" %}<p>Chưa có danh sách xử lý dành cho tài khoản này trên trang chủ.</p><p class="ui-page-description">{% if employee %}Xem công việc cá nhân ở các thẻ phía trên.{% else %}Liên hệ Phòng Nhân sự để hoàn tất việc gắn hồ sơ.{% endif %}</p></div>{% endif %}
+</section>
+<section class="ui-card" aria-labelledby="home-actions-title"><h2 class="ui-card-title" id="home-actions-title">Thao tác nhanh</h2>
+ <div class="ui-page-actions">{% for action in home_actions %}<a class="ui-button" href="{{ action.href }}">{{ action.label }}{% include "_shell_icon.html" with name="arrow" %}</a>{% empty %}<p class="ui-page-description">Chưa có thao tác nhanh phù hợp. Anh/chị có thể mở các mục được cấp quyền trong menu.</p>{% endfor %}</div>
+</section>
+</div>
 {% if is_management_view %}
-<h2 class="text-sm font-bold text-gray-900 mb-3">Tổng quan VietHealth</h2>
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6 home-kpi-grid home-overview-kpis">
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-        <p class="text-gray-500 text-xs mb-1">Nhân viên đang làm việc</p>
-        <p class="text-2xl font-bold ui-kpi-value">{{ total_employees|ui_number }}</p>
-    </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-        <p class="text-gray-500 text-xs mb-1">Đơn nghỉ chờ duyệt</p>
-        <p class="text-2xl font-bold ui-kpi-value {% if pending_leave_approvals > 0 %}ui-kpi-warning{% endif %}">{{ pending_leave_approvals|ui_number }}</p>
-    </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-        <p class="text-gray-500 text-xs mb-1">Đề xuất tuyển dụng chờ duyệt</p>
-        <p class="text-2xl font-bold ui-kpi-value {% if pending_recruitment > 0 %}ui-kpi-warning{% endif %}">{{ pending_recruitment|ui_number }}</p>
-    </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-        <p class="text-gray-500 text-xs mb-1">Tài liệu chờ ban hành</p>
-        <p class="text-2xl font-bold ui-kpi-value {% if pending_documents > 0 %}ui-kpi-warning{% endif %}">{{ pending_documents|ui_number }}</p>
-    </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-        <p class="text-gray-500 text-xs mb-1">Công việc đang mở (toàn Trung tâm)</p>
-        <p class="text-2xl font-bold ui-kpi-value">{{ open_tasks_company|ui_number }}</p>
-    </div>
-    {% if can_view_asset %}<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-        <p class="text-gray-500 text-xs mb-1">Tài sản đang cấp phát</p>
-        <p class="text-2xl font-bold ui-kpi-value">{{ assets_in_use|ui_number }}</p>
-    </div>{% endif %}
-</div>
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 home-department-panel">
-    <h3 class="text-sm font-bold text-gray-900 mb-3">Nhân sự theo phòng ban</h3>
-    <div class="space-y-2">
-        {% for d in dept_counts %}
-        <div class="flex items-center gap-3 text-sm">
-            <span class="w-40 text-gray-600">{{ d.department__department_name|default:"Chưa xác định"|ui_number }}</span>
-            <div class="flex-1 bg-gray-100 rounded-full h-3">
-                <div class="bg-blue-600 ui-chart-series-fill h-3 rounded-full" style="width: {% widthratio d.total total_employees 100 %}%"></div>
-            </div>
-            <span class="w-8 text-right font-medium">{{ d.total|ui_number }}</span>
-        </div>
-        {% endfor %}
-    </div>
-</div>
+<section class="ui-card home-department-panel" aria-labelledby="home-dept-title"><h2 class="ui-card-title" id="home-dept-title">Nhân sự theo phòng ban</h2>
+ {% if dept_counts|length == 1 %}{% for d in dept_counts %}<p class="home-dept-summary"><strong>{{ d.department__department_name|default:"Chưa xác định" }}</strong><span>{{ d.total|ui_number }} người · {% widthratio d.total total_employees 100 %}% nhân sự đang làm việc</span></p>{% endfor %}
+ {% elif dept_counts %}
+ <p class="ui-page-description">{{ total_employees|ui_number }} nhân viên đang làm việc; phòng ban được sắp xếp theo số người giảm dần.</p>
+ <ul class="home-dept-bars">{% for d in dept_counts %}<li><div><span>{{ d.department__department_name|default:"Chưa xác định" }}</span><strong>{{ d.total|ui_number }} người</strong></div><div class="home-bar-track" aria-hidden="true"><span style="width:{% widthratio d.total total_employees 100 %}%"></span></div></li>{% endfor %}</ul>
+ <details class="home-dept-data"><summary>Xem bảng dữ liệu nhân sự</summary><div class="ui-scroll" tabindex="0" role="region" aria-label="Bảng nhân sự theo phòng ban"><table class="ui-table"><caption>Số nhân viên đang làm việc theo phòng ban</caption><thead><tr><th scope="col">Phòng ban</th><th scope="col" class="ui-number">Số người</th></tr></thead><tbody>{% for d in dept_counts %}<tr><th scope="row">{{ d.department__department_name|default:"Chưa xác định" }}</th><td class="ui-number">{{ d.total|ui_number }}</td></tr>{% endfor %}</tbody></table></div></details>
+ {% else %}<div class="ui-state">{% include "_shell_icon.html" with name="people" %}<p>Chưa có nhân viên đang làm việc để thống kê.</p><p class="ui-page-description">Kiểm tra hồ sơ và trạng thái nhân viên trong danh sách nhân sự.</p>{% if can_view_all_employees %}<a class="ui-button" href="{% url 'portal:hr_employee_list' %}">Mở danh sách nhân viên</a>{% endif %}</div>{% endif %}
+</section>
 {% endif %}
-
-{% if lifecycle_overdue_count %}
-<a href="{% url 'portal:lifecycle_case_list' %}" class="mb-6 flex items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-red-900">
-    <span class="font-semibold">Checklist onboarding/offboarding quá hạn</span>
-    <span class="rounded-full bg-red-700 px-3 py-1 text-sm font-bold text-white">{{ lifecycle_overdue_count|ui_number }}</span>
-</a>
-{% endif %}
-
 {% if show_project_activity_summary %}
-<div class="mb-6 home-project-summary">
-    <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
-        <div>
-            <h2 class="text-sm font-bold text-gray-900">Tiến độ hoạt động dự án</h2>
-            <p class="text-xs text-gray-500 mt-1">Tháng {{ activity_month_label|ui_number }}</p>
-        </div>
-        <a href="{% url 'portal:activity_dashboard' %}?month={{ activity_month }}"
-           class="text-sm font-medium text-blue-700 hover:text-blue-900">
-            Mở Dashboard hoạt động →
-        </a>
-    </div>
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 home-kpi-grid home-project-kpis">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-            <p class="text-gray-500 text-xs mb-1">Hoạt động trong tháng</p>
-            <p class="text-2xl font-bold ui-kpi-value">{{ activity_total|ui_number }}</p>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-            <p class="text-gray-500 text-xs mb-1">Task báo cáo hoàn thành</p>
-            <p class="text-2xl font-bold ui-kpi-value">{{ activity_completed|ui_number }}</p>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-            <p class="text-gray-500 text-xs mb-1">Task quá hạn</p>
-            <p class="text-2xl font-bold ui-kpi-value {% if activity_overdue > 0 %}ui-kpi-danger{% endif %}">{{ activity_overdue|ui_number }}</p>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-            <p class="text-gray-500 text-xs mb-1">Task thiếu báo cáo</p>
-            <p class="text-2xl font-bold ui-kpi-value {% if activity_report_missing > 0 %}ui-kpi-warning{% endif %}">{{ activity_report_missing|ui_number }}</p>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-            <p class="text-gray-500 text-xs mb-1">Hoạt động chưa có Task</p>
-            <p class="text-2xl font-bold ui-kpi-value">{{ activity_without_task|ui_number }}</p>
-        </div>
-    </div>
-</div>
-{% endif %}
-
-{% if is_manager_view %}
-<h2 class="text-sm font-bold text-gray-900 mb-3">Tổng quan phòng ban</h2>
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4 home-kpi-grid home-team-kpis">
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-        <p class="text-gray-500 text-xs mb-1">Nhân viên trong phòng</p>
-        <p class="text-2xl font-bold ui-kpi-value">{{ dept_employee_count|ui_number }}</p>
-    </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-        <p class="text-gray-500 text-xs mb-1">Đơn nghỉ chờ duyệt</p>
-        <p class="text-2xl font-bold ui-kpi-value {% if dept_pending_leaves > 0 %}ui-kpi-warning{% endif %}">{{ dept_pending_leaves|ui_number }}</p>
-    </div>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-        <p class="text-gray-500 text-xs mb-1">Công việc chưa hoàn thành</p>
-        <p class="text-2xl font-bold ui-kpi-value">{{ dept_open_tasks|ui_number }}</p>
-    </div>
-        {% if can_view_asset %}<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-        <p class="text-gray-500 text-xs mb-1">Tài sản đang cấp phát (phòng)</p>
-        <p class="text-2xl font-bold ui-kpi-value">{{ dept_assets_in_use|ui_number }}</p>
-    </div>{% endif %}
-</div>
+<section class="ui-card home-project-summary" aria-labelledby="home-project-title"><div class="ui-page-header"><div><h2 class="ui-card-title" id="home-project-title">Tiến độ hoạt động dự án</h2><p class="ui-page-description">Tháng {{ activity_month_label }}</p></div><a class="ui-button" href="{% url 'portal:activity_dashboard' %}?month={{ activity_month }}">Mở Dashboard hoạt động{% include "_shell_icon.html" with name="arrow" %}</a></div>
+ {% if activity_total == 0 %}<p class="home-project-empty">Không có hoạt động trong tháng này thuộc phạm vi tài khoản. Mở Dashboard để chọn kỳ khác và kiểm tra các bộ lọc.</p>{% endif %}
+ <dl class="home-project-list">
+ <div><dt>{% include "_shell_icon.html" with name="folder" %}Hoạt động trong tháng</dt><dd>{{ activity_total|ui_number }}</dd></div>
+ <div><dt>{% include "_shell_icon.html" with name="success" %}Task báo cáo hoàn thành</dt><dd>{{ activity_completed|ui_number }}</dd></div>
+ <div{% if activity_overdue > 0 %} class="home-status-danger"{% endif %}><dt>{% include "_shell_icon.html" with name="danger" %}Task quá hạn</dt><dd>{{ activity_overdue|ui_number }}{% if activity_overdue > 0 %}<span class="ui-badge ui-badge--danger">Cần xử lý</span>{% endif %}</dd></div>
+ <div{% if activity_report_missing > 0 %} class="home-status-warning"{% endif %}><dt>{% include "_shell_icon.html" with name="warning" %}Task thiếu báo cáo</dt><dd>{{ activity_report_missing|ui_number }}{% if activity_report_missing > 0 %}<span class="ui-badge ui-badge--warning">Cần xử lý</span>{% endif %}</dd></div>
+ <div><dt>{% include "_shell_icon.html" with name="info" %}Hoạt động chưa có Task</dt><dd>{{ activity_without_task|ui_number }}</dd></div>
+ </dl>
+</section>
 {% endif %}
 </div>
 {% endblock %}

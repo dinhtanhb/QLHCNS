@@ -139,6 +139,8 @@ def dashboard(request):
                 allocations__employee__department_id__in=dept_ids, allocations__return_date__isnull=True
             ).distinct().count()
 
+    from apps.portal.home_presentation import home_presentation
+    context.update(home_presentation(request.user, context))
     return render(request, "portal/dashboard.html", context)
 
 
