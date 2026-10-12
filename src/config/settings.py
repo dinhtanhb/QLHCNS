@@ -174,6 +174,7 @@ TEMPLATES = [
         'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
+            'builtins': ['apps.common.templatetags.ui_numbers'],
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -246,6 +247,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'vi'
+NUMBER_GROUPING = 3
 
 TIME_ZONE = 'Asia/Ho_Chi_Minh'
 

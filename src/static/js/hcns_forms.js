@@ -8,7 +8,7 @@
   const references = referenceElement ? JSON.parse(referenceElement.textContent) : {};
   const setField = (scope, key, value) => {
     const input = scope === form ? form.elements[key] : scope.querySelector(`[name$="-${key}"]`);
-    if (input) input.value = value ?? '';
+    if (input) { input.value = value ?? ''; window.IhrmsNumbers?.refresh(); }
   };
   form?.addEventListener('change', event => {
     const select = event.target;

@@ -10,13 +10,13 @@
     {% for item in items %}
     <article class="bg-white border border-gray-200 rounded-xl p-5">
       <div class="flex flex-wrap justify-between gap-2">
-        <div><h2 class="font-semibold text-gray-900">{{ item.get_field_name_display|default:item.field_name }}</h2><p class="text-sm text-gray-600">{{ item.employee.full_name }} · {{ item.employee.employee_code }}</p></div>
-        <span class="rounded-full bg-blue-50 px-3 py-1 text-sm text-blue-800">{{ item.get_status_display }}</span>
+        <div><h2 class="font-semibold text-gray-900">{{ item.get_field_name_display|default:item.field_name|ui_number }}</h2><p class="text-sm text-gray-600">{{ item.employee.full_name|ui_number }} · {{ item.employee.employee_code|ui_number }}</p></div>
+        <span class="rounded-full bg-blue-50 px-3 py-1 text-sm text-blue-800">{{ item.get_status_display|ui_number }}</span>
       </div>
-      <dl class="grid gap-3 sm:grid-cols-2 mt-4 text-sm"><div><dt class="text-gray-500">Giá trị cũ</dt><dd class="break-words">{{ item.old_value|default:"(trống)" }}</dd></div><div><dt class="text-gray-500">Giá trị đề nghị</dt><dd class="break-words">{{ item.new_value }}</dd></div></dl>
-      {% if item.reason %}<p class="mt-3 text-sm"><span class="text-gray-500">Lý do:</span> {{ item.reason }}</p>{% endif %}
+      <dl class="grid gap-3 sm:grid-cols-2 mt-4 text-sm"><div><dt class="text-gray-500">Giá trị cũ</dt><dd class="break-words">{{ item.old_value|default:"(trống)"|ui_number }}</dd></div><div><dt class="text-gray-500">Giá trị đề nghị</dt><dd class="break-words">{{ item.new_value|ui_number }}</dd></div></dl>
+      {% if item.reason %}<p class="mt-3 text-sm"><span class="text-gray-500">Lý do:</span> {{ item.reason|ui_number }}</p>{% endif %}
       {% if item.attachment %}<a class="mt-3 inline-block text-sm text-blue-700 underline" href="{% url 'portal:profile_change_request_attachment' item.pk %}">Tải chứng từ</a>{% endif %}
-      {% if item.decision_note %}<p class="mt-3 text-sm text-gray-700"><span class="text-gray-500">Ý kiến Nhân sự:</span> {{ item.decision_note }}</p>{% endif %}
+      {% if item.decision_note %}<p class="mt-3 text-sm text-gray-700"><span class="text-gray-500">Ý kiến Nhân sự:</span> {{ item.decision_note|ui_number }}</p>{% endif %}
       {% if item.status == "Pending" and can_approve_profile_change_request %}
       <form method="post" action="{% url 'portal:profile_change_request_decide' item.pk %}" class="mt-4 border-t border-gray-100 pt-4 space-y-3">{% csrf_token %}
         <label class="block text-sm font-medium text-gray-800" for="note-{{ item.pk }}">Ý kiến xử lý</label><textarea id="note-{{ item.pk }}" name="note" maxlength="500" rows="2" class="w-full rounded-lg border border-gray-400 px-3 py-2"></textarea>

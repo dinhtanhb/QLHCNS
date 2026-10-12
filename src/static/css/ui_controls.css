@@ -1,0 +1,42 @@
+/* Shared screen controls; printed HCNS remains authoritative. */
+@media screen {
+ .portal-app .ui-main > p { overflow-wrap:anywhere; }
+ .portal-app .ui-main table:not(.hcns-paper *) { overflow-wrap:normal; }
+ .portal-app .ui-main table:not(.hcns-paper *) th { white-space:nowrap; }
+ .portal-app .hcns-editor,.portal-app .hcns-field,.portal-app .hcns-table-scroll { min-width:0; max-width:100%; }
+ .portal-app .ui-main :is(button,input[type=submit],input[type=button],.hcns-button,.report-button,a[class*=rounded],a[class*=border]):not(.hcns-paper *) {
+  display:inline-flex; align-items:center; justify-content:center; gap:var(--ui-space-2); min-height:var(--ui-control-height); min-width:var(--ui-target-min); padding:var(--ui-space-2) var(--ui-space-4); border-radius:var(--ui-radius-control); font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); line-height:1.5; white-space:nowrap; flex-shrink:0; vertical-align:middle;
+ }
+ .portal-app .ui-main :is(input,select):not([type=hidden]):not([type=checkbox]):not([type=radio]):not(.hcns-paper *):not(.ui-number-source) {
+  height:var(--ui-control-height); min-height:var(--ui-control-height); max-width:100%; padding:var(--ui-space-2) var(--ui-space-3); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); font:inherit; font-size:var(--ui-font-size-small); line-height:1.5; background:var(--ui-surface); color:var(--ui-text);
+ }
+ .portal-app .ui-main :is(a,button)[class*="bg-gray-"][class*="text-white"]:not(.hcns-paper *) { background:var(--ui-surface-raised); color:var(--ui-text); border:var(--ui-border-width) solid var(--ui-border); }
+ .portal-app .ui-main :is(a,button)[class*="bg-gray-"][class*="text-white"]:not(.hcns-paper *):not(:disabled):hover { background:var(--ui-hover-bg); }
+ .portal-app .ui-main textarea:not(.hcns-paper *) { padding:var(--ui-space-3); border-radius:var(--ui-radius-control); font-size:var(--ui-font-size-small); background:var(--ui-surface); color:var(--ui-text); }
+ .portal-app .ui-main :is(button,a,input,select,textarea):focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:var(--ui-focus-offset); }
+ .portal-app .ui-main :is(input[type=checkbox],input[type=radio]) { width:1.25rem; height:1.25rem; min-height:0; accent-color:var(--ui-brand); }
+ .portal-app .ui-main form.flex { flex-wrap:wrap; align-items:end; }
+ .portal-app .ui-main form.flex > :is(input,select):not([type=hidden]) { width:auto; min-width:0; flex:1 1 10rem; }
+ .portal-app .hcns-actions { display:flex; flex-wrap:wrap; gap:var(--ui-space-2); align-items:center; }
+ .portal-app .hcns-editor,.portal-app .hcns-source-picker,.portal-app .hcns-card { background:var(--ui-surface); color:var(--ui-text); border-color:var(--ui-border); box-shadow:var(--ui-shadow-card); }
+ .portal-app .hcns-editor :is(h2,h3,label,summary,td),.portal-app .hcns-card h3 { color:var(--ui-text); }
+ .portal-app .hcns-table-editor :is(th,td) { border-color:var(--ui-divider); }
+ .portal-app .hcns-table-editor th { background:var(--ui-surface-raised); color:var(--ui-text); }
+ .portal-app .hcns-table-editor td { background:var(--ui-surface); }
+ .portal-app .hcns-button { background:var(--ui-surface); color:var(--ui-text); border-color:var(--ui-border); }
+ .portal-app .hcns-button.primary { background:var(--ui-brand); color:var(--ui-on-brand); border-color:var(--ui-brand); }
+ .portal-app .hcns-button:hover { background:var(--ui-hover-bg); }
+ .portal-app .hcns-button.primary:hover { background:var(--ui-brand-hover); }
+ .ui-number-source { position:fixed!important; left:0; top:0; width:1px!important; height:1px!important; min-height:0!important; padding:0!important; border:0!important; opacity:0; pointer-events:none; }
+ .ui-number-display { text-align:right; font-variant-numeric:tabular-nums; }
+ .portal-app .hcns-table-editor .ui-number-display { min-width:8.5rem; }
+ .ui-number-display[aria-invalid=true] { border-color:var(--ui-error-border); }
+ .portal-app .ui-main :is(.report-panel,.report-section,.headline,.metric,.report-button-secondary) { background:var(--ui-surface); border-color:var(--ui-border); box-shadow:var(--ui-shadow-card); }
+ .portal-app .ui-main .report-button-secondary { color:var(--ui-link); }
+ .portal-app .ui-main .headline-value { color:var(--ui-text); }
+ .portal-app .ui-main .headline[data-tone=danger] .headline-value { color:var(--ui-danger-text); }
+ .portal-app .ui-main :is(input,select):disabled:not([type=hidden]):not([type=checkbox]):not([type=radio]):not(.hcns-paper *):not(.ui-number-source),
+ .portal-app .ui-main :is(button,.report-button,.hcns-button)[disabled]:disabled:not(.hcns-paper *) { background:var(--ui-disabled-bg); color:var(--ui-disabled-text); border-color:var(--ui-disabled-border); cursor:not-allowed; }
+ .portal-app .ui-main input[readonly]:not(.hcns-paper *):not(.ui-number-source) { background:var(--ui-surface-raised); }
+ @media(max-width:600px) { .portal-app .ui-main :is(button,.hcns-button,.report-button,a[class*=rounded]):not(.hcns-paper *) { max-width:100%; white-space:normal; text-align:center; } }
+}

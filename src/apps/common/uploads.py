@@ -9,6 +9,7 @@ nhiên ngắn để không ghi đè tệp trùng tên, đồng thời chỉ cho 
 tài liệu thông dụng và giới hạn dung lượng.
 """
 import os
+from apps.common.number_format import vi_number
 import re
 import unicodedata
 import uuid
@@ -27,7 +28,7 @@ ALLOWED_EXTENSIONS = {
 MAX_UPLOAD_SIZE_MB = 20
 MAX_UPLOAD_SIZE = MAX_UPLOAD_SIZE_MB * 1024 * 1024
 
-# Định dạng riêng cho thư viện ảnh/video công ty (rộng hơn ALLOWED_EXTENSIONS
+# Định dạng riêng cho thư viện ảnh/video Trung tâm (rộng hơn ALLOWED_EXTENSIONS
 # vì cần nhận thêm định dạng video). Dùng cho apps.m365.models.CompanyMedia.
 ALLOWED_MEDIA_EXTENSIONS = ALLOWED_EXTENSIONS | {".mp4", ".mov", ".avi", ".mkv", ".webm"}
 MAX_MEDIA_UPLOAD_SIZE_MB = 500
@@ -119,7 +120,7 @@ def validate_upload(uploaded_file):
     size = getattr(uploaded_file, "size", None)
     if size and size > MAX_UPLOAD_SIZE:
         raise ValidationError(
-            f"Tệp nặng {size / 1024 / 1024:.1f} MB, vượt quá giới hạn {MAX_UPLOAD_SIZE_MB} MB."
+            f"Tệp nặng {vi_number(size / 1024 / 1024, 1)} MB, vượt quá giới hạn {MAX_UPLOAD_SIZE_MB} MB."
         )
 
 
@@ -138,7 +139,7 @@ def validate_decision_pdf(uploaded_file):
 
 def validate_media_upload(uploaded_file):
     """Giống validate_upload nhưng cho phép thêm định dạng video và dung
-    lượng lớn hơn — dùng cho thư viện ảnh/video công ty (CompanyMedia)."""
+    lượng lớn hơn — dùng cho thư viện ảnh/video Trung tâm (CompanyMedia)."""
     if not uploaded_file:
         return
 
@@ -154,6 +155,6 @@ def validate_media_upload(uploaded_file):
     size = getattr(uploaded_file, "size", None)
     if size and size > MAX_MEDIA_UPLOAD_SIZE:
         raise ValidationError(
-            f"Tệp nặng {size / 1024 / 1024:.1f} MB, vượt quá giới hạn "
+            f"Tệp nặng {vi_number(size / 1024 / 1024, 1)} MB, vượt quá giới hạn "
             f"{MAX_MEDIA_UPLOAD_SIZE_MB} MB."
         )

@@ -5,5 +5,5 @@
     {% else %}
         <li><a href="?show_deleted=1">Bản ghi đã xóa mềm</a></li>
     {% endif %}
-    {{ block.super }}
+    {{ block.super|ui_number }}
 {% endblock %}

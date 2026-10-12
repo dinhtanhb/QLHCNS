@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}{{ decision.decision_no|default:decision.template_title }}{% endblock %}
+{% block title %}{{ decision.decision_no|default:decision.template_title|ui_number }}{% endblock %}
 {% block content %}
 {% if document %}
-<link rel="stylesheet" href="{% static 'css/hcns_forms.css' %}?v=20261010-design-2">
+<link rel="stylesheet" href="{% static 'css/hcns_forms.css' %}?v=20261012-ui-2c">
 <style>@page { {{ document.profile.page_css|escape }} }</style>
 <div id="hcns-export-name" data-filename="{{ document.filename_stem }}" hidden></div>
 {% endif %}
 <div class="no-print mb-5 flex flex-wrap items-start justify-between gap-4">
-  <div>{% if can_view_workflow %}<a href="{% url 'portal:personnel_decision_list' %}" class="text-sm text-blue-700 hover:underline">← Quản lý quyết định</a>{% else %}<a href="{% url 'portal:dashboard' %}" class="text-sm text-blue-700 hover:underline">← Trang chủ</a>{% endif %}<h1 class="mt-2 text-xl font-bold text-gray-900">{{ decision.decision_no|default:"Chưa đánh số" }} · {{ decision.template_title }}</h1><p class="mt-1 text-sm text-gray-600">{{ decision.employee.full_name }} · {{ decision.employee.employee_code }} · {{ decision.get_status_display }}</p></div>
+  <div>{% if can_view_workflow %}<a href="{% url 'portal:personnel_decision_list' %}" class="text-sm text-blue-700 hover:underline">← Quản lý quyết định</a>{% else %}<a href="{% url 'portal:dashboard' %}" class="text-sm text-blue-700 hover:underline">← Trang chủ</a>{% endif %}<h1 class="mt-2 text-xl font-bold text-gray-900">{{ decision.decision_no|default:"Chưa đánh số"|ui_number }} · {{ decision.template_title|ui_number }}</h1><p class="mt-1 text-sm text-gray-600">{{ decision.employee.full_name|ui_number }} · {{ decision.employee.employee_code|ui_number }} · {{ decision.get_status_display|ui_number }}</p></div>
   <div class="flex flex-wrap gap-2">
     {% if can_download_word %}<a class="rounded border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50" href="{% url 'portal:personnel_decision_word' decision.pk %}">Tải Word</a>{% endif %}
     {% if document %}<button id="hcns-print" type="button" class="rounded border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50">In / lưu PDF</button>{% endif %}
@@ -16,7 +16,7 @@
     {% if can_edit_decision %}<a class="rounded border border-blue-700 px-3 py-2 text-sm text-blue-700 hover:bg-blue-50" href="{% url 'portal:hcns_draft' decision.template_slug %}?decision_id={{ decision.pk }}">Sửa bản nháp</a>{% endif %}
   </div>
 </div>
-{% if messages %}{% for message in messages %}<p class="no-print mb-3 rounded border border-gray-200 bg-white px-3 py-2 text-sm">{{ message }}</p>{% endfor %}{% endif %}
+{% if messages %}{% for message in messages %}<p class="no-print mb-3 rounded border border-gray-200 bg-white px-3 py-2 text-sm">{{ message|ui_number }}</p>{% endfor %}{% endif %}
 {% if can_submit_decision %}<form class="no-print mb-5" method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'submit' %}">{% csrf_token %}<button class="rounded bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800">Trình duyệt</button></form>{% endif %}
 {% if can_approve_decision %}
 <div class="no-print mb-5 flex flex-wrap gap-4 border-y border-gray-200 py-4">
@@ -30,7 +30,7 @@
 {% if can_view_workflow %}<section class="no-print border-t border-gray-200 pt-5">
   <h2 class="mb-3 text-lg font-semibold text-gray-900">Lịch sử xử lý</h2>
   <ol class="space-y-3">
-    {% for event in history %}<li class="border-l-2 border-gray-300 pl-3"><p class="text-sm font-semibold">{{ event.get_action_display }} · {{ event.get_status_to_display|default:event.status_to }}</p><p class="text-xs text-gray-600">{{ event.created_date|date:"d/m/Y H:i" }} · {{ event.created_by|default:"Hệ thống" }}</p>{% if event.comment %}<p class="mt-1 whitespace-pre-line text-sm">{{ event.comment }}</p>{% endif %}</li>{% empty %}<li class="text-sm text-gray-500">Chưa có lịch sử.</li>{% endfor %}
+    {% for event in history %}<li class="border-l-2 border-gray-300 pl-3"><p class="text-sm font-semibold">{{ event.get_action_display|ui_number }} · {{ event.get_status_to_display|default:event.status_to|ui_number }}</p><p class="text-xs text-gray-600">{{ event.created_date|date:"d/m/Y H:i" }} · {{ event.created_by|default:"Hệ thống"|ui_number }}</p>{% if event.comment %}<p class="mt-1 whitespace-pre-line text-sm">{{ event.comment|ui_number }}</p>{% endif %}</li>{% empty %}<li class="text-sm text-gray-500">Chưa có lịch sử.</li>{% endfor %}
   </ol>
 </section>
 {% endif %}

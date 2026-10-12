@@ -33,17 +33,17 @@
         <tbody class="divide-y divide-gray-100">
         {% for d in docs %}
         <tr>
-            <td class="py-2 pr-4 text-gray-500">{{ d.incoming_no }}</td>
-            <td class="py-2 pr-4">{{ d.incoming_date }}</td>
-            <td class="py-2 pr-4">{{ d.sender }}</td>
-            <td class="py-2 pr-4 font-medium">{{ d.subject }}</td>
+            <td class="py-2 pr-4 text-gray-500">{{ d.incoming_no|ui_number }}</td>
+            <td class="py-2 pr-4">{{ d.incoming_date|ui_number }}</td>
+            <td class="py-2 pr-4">{{ d.sender|ui_number }}</td>
+            <td class="py-2 pr-4 font-medium">{{ d.subject|ui_number }}</td>
             <td class="py-2 pr-4">
                 {% if can_manage_office %}
                 <form method="post" action="{% url 'portal:office_incoming_assign' d.pk %}" class="flex gap-1 items-center">
                     {% csrf_token %}
                     <select name="handler" class="rounded border border-gray-300 px-1 py-0.5 text-xs">
                         <option value="">-- Chưa phân công --</option>
-                        {% for e in employees %}<option value="{{ e.id }}" {% if d.handler_id == e.id %}selected{% endif %}>{{ e.full_name }}</option>{% endfor %}
+                        {% for e in employees %}<option value="{{ e.id }}" {% if d.handler_id == e.id %}selected{% endif %}>{{ e.full_name|ui_number }}</option>{% endfor %}
                     </select>
                     <select name="status" class="rounded border border-gray-300 px-1 py-0.5 text-xs">
                         <option value="New" {% if d.status == "New" %}selected{% endif %}>Mới nhận</option>
@@ -52,9 +52,9 @@
                     </select>
                     <button type="submit" class="bg-blue-700 text-white text-xs px-2 py-0.5 rounded">Lưu</button>
                 </form>
-                {% else %}{{ d.handler|default:"Chưa phân công" }}{% endif %}
+                {% else %}{{ d.handler|default:"Chưa phân công"|ui_number }}{% endif %}
             </td>
-            <td class="py-2 pr-4">{{ d.get_status_display }}</td>
+            <td class="py-2 pr-4">{{ d.get_status_display|ui_number }}</td>
             <td class="py-2">{% if d.attachment %}<a href="{{ d.attachment.url }}" target="_blank" class="text-blue-700 hover:underline">Tải về</a>{% else %}—{% endif %}</td>
         </tr>
         {% empty %}<tr><td colspan="7" class="py-6 text-center text-gray-400">Chưa có công văn đến nào.</td></tr>{% endfor %}

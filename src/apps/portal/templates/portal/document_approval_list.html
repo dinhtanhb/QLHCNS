@@ -13,10 +13,10 @@
         <tbody class="divide-y divide-gray-100">
         {% for d in documents %}
         <tr>
-            <td class="py-2.5 pr-4 text-gray-500">{{ d.document_no }}</td>
-            <td class="py-2.5 pr-4 font-medium">{{ d.document_name }}</td>
-            <td class="py-2.5 pr-4">{{ d.category }}</td>
-            <td class="py-2.5 pr-4">v{{ d.version_no }}</td>
+            <td class="py-2.5 pr-4 text-gray-500">{{ d.document_no|ui_number }}</td>
+            <td class="py-2.5 pr-4 font-medium">{{ d.document_name|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ d.category|ui_number }}</td>
+            <td class="py-2.5 pr-4">v{{ d.version_no|ui_number }}</td>
             <td class="py-2.5">
                 <div class="flex gap-2">
                     <form method="post" action="{% url 'portal:document_approve' d.pk %}">

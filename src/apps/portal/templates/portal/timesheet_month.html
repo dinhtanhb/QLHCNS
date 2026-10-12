@@ -45,10 +45,10 @@
     <div class="flex items-center gap-3">
         <form method="get" class="flex gap-2">
             <select name="month" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
-                {% for m in months %}<option value="{{ m }}" {% if m == month %}selected{% endif %}>Tháng {{ m }}</option>{% endfor %}
+                {% for m in months %}<option value="{{ m }}" {% if m == month %}selected{% endif %}>Tháng {{ m|ui_number }}</option>{% endfor %}
             </select>
             <select name="year" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
-                {% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>{% endfor %}
+                {% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y|ui_number }}</option>{% endfor %}
             </select>
         </form>
         <button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">🖨 In bảng công</button>
@@ -64,7 +64,7 @@
                min="{{ year }}-{{ month|stringformat:'02d' }}-01" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
         <select name="project" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
             <option value="">-- Không thuộc dự án --</option>
-            {% for p in projects %}<option value="{{ p.id }}">{{ p.project_name }}</option>{% endfor %}
+            {% for p in projects %}<option value="{{ p.id }}">{{ p.project_name|ui_number }}</option>{% endfor %}
         </select>
         <input type="text" name="task_description" placeholder="Công việc thực hiện" class="rounded-md border border-gray-300 px-3 py-2 text-sm md:col-span-2">
         <input type="number" step="0.5" name="hours" placeholder="Số giờ" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
@@ -78,9 +78,9 @@
         <h1 class="text-xl font-bold">BẢNG CHẤM CÔNG</h1>
     </div>
     <div class="text-sm mb-4 space-y-0.5">
-        <p><span class="font-semibold">Họ và tên:</span> {{ summary.employee.full_name }}</p>
-        <p><span class="font-semibold">Chức vụ:</span> {{ summary.employee.position }}</p>
-        <p><span class="font-semibold">Phòng/Ban:</span> {{ summary.employee.department }}</p>
+        <p><span class="font-semibold">Họ và tên:</span> {{ summary.employee.full_name|ui_number }}</p>
+        <p><span class="font-semibold">Chức vụ:</span> {{ summary.employee.position|ui_number }}</p>
+        <p><span class="font-semibold">Phòng/Ban:</span> {{ summary.employee.department|ui_number }}</p>
         <p><span class="font-semibold">Thời gian:</span> Tháng {{ month }} năm {{ year }}</p>
     </div>
 
@@ -97,23 +97,23 @@
         {% for row in day_rows %}
             {% if row.is_weekend %}
             <tr class="bg-blue-100">
-                <td class="border border-gray-300 px-2 py-1.5 text-center">{{ row.day }}</td>
+                <td class="border border-gray-300 px-2 py-1.5 text-center">{{ row.day|ui_number }}</td>
                 <td class="border border-gray-300 px-2 py-1.5"></td>
                 <td class="border border-gray-300 px-2 py-1.5"></td>
             </tr>
             {% elif row.holiday %}
             <tr class="bg-yellow-50">
-                <td class="border border-gray-300 px-2 py-1.5 text-center">{{ row.day }}</td>
-                <td class="border border-gray-300 px-2 py-1.5">+ Nghỉ lễ: {{ row.holiday.holiday_name }}</td>
+                <td class="border border-gray-300 px-2 py-1.5 text-center">{{ row.day|ui_number }}</td>
+                <td class="border border-gray-300 px-2 py-1.5">+ Nghỉ lễ: {{ row.holiday.holiday_name|ui_number }}</td>
                 <td class="border border-gray-300 px-2 py-1.5 text-center">0</td>
             </tr>
             {% else %}
             <tr>
-                <td class="border border-gray-300 px-2 py-1.5 text-center align-top">{{ row.day }}</td>
+                <td class="border border-gray-300 px-2 py-1.5 text-center align-top">{{ row.day|ui_number }}</td>
                 <td class="border border-gray-300 px-2 py-1.5">
                     {% for e in row.entries %}
                     <div class="flex items-center justify-between gap-2 {% if not forloop.last %}mb-1{% endif %}">
-                        <span>+ {% if e.project %}[{{ e.project.project_code }}] {% endif %}{{ e.task_description|default:"" }}</span>
+                        <span>+ {% if e.project %}[{{ e.project.project_code|ui_number }}] {% endif %}{{ e.task_description|default:""|ui_number }}</span>
                         <form method="post" action="{% url 'portal:timesheet_entry_delete' e.pk %}" class="no-print" onsubmit="return confirm('Xóa dòng này?')">
                             {% csrf_token %}
                             <button type="submit" class="text-red-500 hover:text-red-700 text-xs">Xóa</button>
@@ -121,33 +121,33 @@
                     </div>
                     {% endfor %}
                 </td>
-                <td class="border border-gray-300 px-2 py-1.5 text-center align-top">{{ row.day_total }}</td>
+                <td class="border border-gray-300 px-2 py-1.5 text-center align-top">{{ row.day_total|ui_number }}</td>
             </tr>
             {% endif %}
         {% endfor %}
         <tr class="font-semibold">
             <td class="border border-gray-300 px-2 py-1.5" colspan="2">Tổng số giờ làm việc trong tháng</td>
-            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ total_hours }}</td>
+            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ total_hours|ui_number }}</td>
         </tr>
         <tr>
             <td class="border border-gray-300 px-2 py-1.5" colspan="3">
                 <strong>
-                Tổng số giờ cần làm trong tháng: {{ base_days }} ngày
-                {% if approved_leave_total %}- {{ approved_leave_total }} ngày nghỉ đã duyệt{% endif %}
-                = {{ required_days|floatformat:1 }} ngày × {{ hours_per_day|floatformat:1 }}h
-                = {{ required_hours|floatformat:"-2" }}h
+                Tổng số giờ cần làm trong tháng: {{ base_days|ui_number }} ngày
+                {% if approved_leave_total %}- {{ approved_leave_total|ui_number }} ngày nghỉ đã duyệt{% endif %}
+                = {{ required_days|floatformat:"1g" }} ngày × {{ hours_per_day|floatformat:"1g" }}h
+                = {{ required_hours|floatformat:"-2g" }}h
                 </strong>
             </td>
         </tr>
                 {% for a in allocations %}
         <tr class="font-semibold">
-            <td class="border border-gray-300 px-2 py-1.5" colspan="2">Phân bổ thời gian ({{ a.project.project_code }}) (%)</td>
-            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ a.allocation_percent }}%</td>
+            <td class="border border-gray-300 px-2 py-1.5" colspan="2">Phân bổ thời gian ({{ a.project.project_code|ui_number }}) (%)</td>
+            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ a.allocation_percent|ui_number }}%</td>
         </tr>
         {% endfor %}
         <tr class="font-semibold">
             <td class="border border-gray-300 px-2 py-1.5" colspan="2">Số thời gian ngoài giờ</td>
-            <td class="border border-gray-300 px-2 py-1.5 text-center {% if diff_hours < 0 %}text-red-600{% else %}text-green-700{% endif %}">{{ diff_hours }}</td>
+            <td class="border border-gray-300 px-2 py-1.5 text-center {% if diff_hours < 0 %}text-red-600{% else %}text-green-700{% endif %}">{{ diff_hours|ui_number }}</td>
         </tr>
         </tbody>
     </table>
@@ -189,15 +189,15 @@
                 {% if balance %}
                 <div class="flex items-center justify-between gap-3 py-0.5 pt-2 border-t border-gray-100 mt-2">
                     <label class="text-gray-700">Tổng ngày phép năm {{ year }}:</label>
-                    <span class="font-medium">{{ balance.allocated_days }}</span>
+                    <span class="font-medium">{{ balance.allocated_days|ui_number }}</span>
                 </div>
                 <div class="flex items-center justify-between gap-3 py-0.5">
                     <label class="text-gray-700">Số ngày phép đã sử dụng (lũy kế):</label>
-                    <span class="font-medium">{{ balance.used_days }}</span>
+                    <span class="font-medium">{{ balance.used_days|ui_number }}</span>
                 </div>
                 <div class="flex items-center justify-between gap-3 py-0.5">
                     <label class="text-gray-700">Số ngày phép còn lại:</label>
-                    <span class="font-bold text-green-700">{{ balance.remaining_days }}</span>
+                    <span class="font-bold text-green-700">{{ balance.remaining_days|ui_number }}</span>
                 </div>
                 {% endif %}
             </div>
@@ -208,11 +208,11 @@
         <div class="grid grid-cols-2 gap-6 text-sm text-center self-start">
             <div class="flex h-32 flex-col items-center">
                 <p class="font-semibold">Quản lý trực tiếp</p>
-                <p class="font-medium mt-auto">{{ summary.employee.manager.full_name|default:"—" }}</p>
+                <p class="font-medium mt-auto">{{ summary.employee.manager.full_name|default:"—"|ui_number }}</p>
             </div>
             <div class="flex h-32 flex-col items-center">
                 <p class="font-semibold">Chữ ký nhân viên</p>
-                <p class="font-medium mt-auto">{{ summary.employee.full_name }}</p>
+                <p class="font-medium mt-auto">{{ summary.employee.full_name|ui_number }}</p>
             </div>
         </div>
     </div>

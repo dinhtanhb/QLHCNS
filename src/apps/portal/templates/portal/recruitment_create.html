@@ -12,13 +12,13 @@
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Phòng ban</label>
             <select name="department" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-                {% for d in departments %}<option value="{{ d.id }}">{{ d.department_name }}</option>{% endfor %}
+                {% for d in departments %}<option value="{{ d.id }}">{{ d.department_name|ui_number }}</option>{% endfor %}
             </select>
         </div>
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Vị trí cần tuyển</label>
             <select name="position" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-                {% for p in positions %}<option value="{{ p.id }}">{{ p.position_name }}</option>{% endfor %}
+                {% for p in positions %}<option value="{{ p.id }}">{{ p.position_name|ui_number }}</option>{% endfor %}
             </select>
         </div>
         <div>

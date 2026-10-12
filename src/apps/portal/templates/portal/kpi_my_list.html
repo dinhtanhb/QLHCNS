@@ -18,20 +18,20 @@
         <tbody class="divide-y divide-gray-100">
         {% for r in results %}
         <tr>
-            <td class="py-2.5 pr-4">{{ r.kpi_period }}</td>
-            <td class="py-2.5 pr-4 font-medium">{{ r.kpi_template }}</td>
-            <td class="py-2.5 pr-4">{{ r.kpi_template.weight }}%</td>
-            <td class="py-2.5 pr-4">{{ r.target }}</td>
-            <td class="py-2.5 pr-4">{{ r.actual|default:"Chưa cập nhật" }}</td>
+            <td class="py-2.5 pr-4">{{ r.kpi_period|ui_number }}</td>
+            <td class="py-2.5 pr-4 font-medium">{{ r.kpi_template|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.kpi_template.weight|ui_number }}%</td>
+            <td class="py-2.5 pr-4">{{ r.target|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.actual|default:"Chưa cập nhật"|ui_number }}</td>
             <td class="py-2.5 pr-4">
                 <span class="px-2.5 py-1 rounded-full text-xs font-medium
                     {% if r.achievement >= 100 %}bg-green-100 text-green-700
                     {% elif r.achievement >= 70 %}bg-yellow-100 text-yellow-800
                     {% else %}bg-red-100 text-red-700{% endif %}">
-                    {{ r.achievement }}%
+                    {{ r.achievement|ui_number }}%
                 </span>
             </td>
-            <td class="py-2.5 font-semibold">{{ r.score }}</td>
+            <td class="py-2.5 font-semibold">{{ r.score|ui_number }}</td>
         </tr>
         {% empty %}
         <tr><td colspan="7" class="py-6 text-center text-gray-400">Chưa có dữ liệu KPI.</td></tr>

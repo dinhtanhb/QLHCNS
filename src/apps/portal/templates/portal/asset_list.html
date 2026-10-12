@@ -14,10 +14,10 @@
         <tbody class="divide-y divide-gray-100">
         {% for a in allocations %}
         <tr>
-            <td class="py-2.5 pr-4 text-gray-500">{{ a.asset.asset_code }}</td>
-            <td class="py-2.5 pr-4 font-medium">{{ a.asset.asset_name }}</td>
-            <td class="py-2.5 pr-4">{{ a.asset.asset_type }}</td>
-            <td class="py-2.5">{{ a.assigned_date }}</td>
+            <td class="py-2.5 pr-4 text-gray-500">{{ a.asset.asset_code|ui_number }}</td>
+            <td class="py-2.5 pr-4 font-medium">{{ a.asset.asset_name|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ a.asset.asset_type|ui_number }}</td>
+            <td class="py-2.5">{{ a.assigned_date|ui_number }}</td>
         </tr>
         {% empty %}
         <tr><td colspan="4" class="py-6 text-center text-gray-400">Hiện không có tài sản nào được cấp phát.</td></tr>

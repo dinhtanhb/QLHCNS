@@ -1,3 +1,4 @@
+from apps.common.number_format import vi_number
 import io
 from calendar import monthrange
 from datetime import date, datetime, time, timedelta
@@ -47,11 +48,11 @@ def _metric(label, value, *, unit="", tone="blue"):
     if value is None:
         display = "Chưa có dữ liệu"
     elif unit == "%":
-        display = f"{float(value):,.1f}%"
+        display = vi_number(value, 1) + "%"
     elif unit == "triệu đồng":
-        display = f"{float(value):,.1f} triệu đồng"
+        display = vi_number(value, 1) + " triệu đồng"
     else:
-        display = f"{int(value):,}".replace(",", ".") + (f" {unit}" if unit else "")
+        display = vi_number(int(value)) + (f" {unit}" if unit else "")
     return {"label": label, "value": value, "display": display, "unit": unit, "tone": tone}
 
 

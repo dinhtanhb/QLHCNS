@@ -120,7 +120,7 @@ class MobileTableTests(SimpleTestCase):
                 source = (root / relative).read_text(encoding="utf-8")
                 self.assertEqual(source.count("ihrms-kpi-value"), expected)
         worker = (root / "static" / "js" / "service-worker.js").read_text(encoding="utf-8")
-        self.assertIn("ihrms-static-v6-polish-20261012", worker)
+        self.assertIn("ihrms-static-v7-controls-20261012", worker)
         self.assertIn("/static/css/design_tokens.css", worker)
 
     def test_theme_is_available_before_styles_and_in_admin(self):

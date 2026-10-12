@@ -21,7 +21,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">Giao cho nhân viên</label>
             <select name="assigned_to_employee" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
                 {% for e in candidates %}
-                <option value="{{ e.id }}">{{ e.employee_code }} - {{ e.full_name }}</option>
+                <option value="{{ e.id }}">{{ e.employee_code|ui_number }} - {{ e.full_name|ui_number }}</option>
                 {% endfor %}
             </select>
         </div>

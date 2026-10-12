@@ -10,7 +10,7 @@
     <select name="period" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
         <option value="">-- Tất cả kỳ --</option>
         {% for p in periods %}
-        <option value="{{ p.id }}" {% if selected_period == p.id|stringformat:"s" %}selected{% endif %}>{{ p }}</option>
+        <option value="{{ p.id }}" {% if selected_period == p.id|stringformat:"s" %}selected{% endif %}>{{ p|ui_number }}</option>
         {% endfor %}
     </select>
 </form>
@@ -26,12 +26,12 @@
         <tbody class="divide-y divide-gray-100">
         {% for r in results %}
         <tr>
-            <td class="py-2.5 pr-4 font-medium">{{ r.employee }}</td>
-            <td class="py-2.5 pr-4">{{ r.kpi_period }}</td>
-            <td class="py-2.5 pr-4">{{ r.kpi_template }}</td>
-            <td class="py-2.5 pr-4">{{ r.target }}</td>
-            <td class="py-2.5 pr-4">{{ r.actual|default:"—" }}</td>
-            <td class="py-2.5 pr-4">{{ r.achievement }}%</td>
+            <td class="py-2.5 pr-4 font-medium">{{ r.employee|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.kpi_period|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.kpi_template|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.target|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.actual|default:"—"|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.achievement|ui_number }}%</td>
             <td class="py-2.5">
                 <form method="post" action="{% url 'portal:kpi_score_update' r.pk %}" class="flex gap-2">
                     {% csrf_token %}

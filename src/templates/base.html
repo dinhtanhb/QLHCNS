@@ -6,15 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Cổng thông tin nhân viên{% endblock %} — IHRMS</title>
     <meta name="theme-color" content="">
-    <script src="{% static 'js/theme.js' %}?v=20261012-shell-2b"></script>
+    <script src="{% static 'js/theme.js' %}?v=20261012-ui-2c"></script>
     <link rel="manifest" href="{% static 'manifest.json' %}">
     <link rel="apple-touch-icon" href="{% static 'img/ihrms-pwa-192.png' %}">
-    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}?v=20261012-shell-2b">
-    <link rel="stylesheet" href="{% static 'css/ihrms.css' %}?v=20261012-shell-2b">
-    <link rel="stylesheet" href="{% static 'css/theme.css' %}?v=20261012-shell-2b-4">
-    <link rel="stylesheet" href="{% static 'css/ui_tokens.css' %}?v=20261012-shell-2b">
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}?v=20261012-ui-2c">
+    <link rel="stylesheet" href="{% static 'css/ihrms.css' %}?v=20261012-ui-2c">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}?v=20261012-ui-2c-4">
+    <link rel="stylesheet" href="{% static 'css/ui_tokens.css' %}?v=20261012-ui-2c">
     {% block extra_css %}{% endblock %}
-    <link rel="stylesheet" href="{% static 'css/app_shell.css' %}?v=20261012-shell-2b">
+    <link rel="stylesheet" href="{% static 'css/app_shell.css' %}?v=20261012-ui-2c">
+    <link rel="stylesheet" href="{% static 'css/ui_controls.css' %}?v=20261012-ui-2c">
 </head>
 <body class="portal-app min-h-screen">
     <a class="ui-skip-link" href="#main-content">Bỏ qua đến nội dung chính</a>
@@ -25,11 +26,11 @@
             <div class="ui-topbar-actions">
                 <button type="button" class="ui-control ihrms-theme-toggle" data-theme-toggle aria-label="Chuyển sang chế độ tối" aria-pressed="false"></button>
                 {% if user.is_authenticated %}
-                <a class="ui-control" href="{% url 'portal:notification_list' %}" aria-label="Thông báo, {{ unread_notification_count|default:0 }} thông báo chưa đọc">{% include '_shell_icon.html' with name='bell' %}{% if unread_notification_count > 0 %}<span class="ui-unread-badge" aria-hidden="true">{{ unread_notification_count }}</span>{% endif %}</a>
+                <a class="ui-control" href="{% url 'portal:notification_list' %}" aria-label="Thông báo, {{ unread_notification_count|default:0 }} thông báo chưa đọc">{% include '_shell_icon.html' with name='bell' %}{% if unread_notification_count > 0 %}<span class="ui-unread-badge" aria-hidden="true">{{ unread_notification_count|ui_number }}</span>{% endif %}</a>
                 <div class="ui-user" id="userMenuContainer">
-                    <button type="button" id="userMenuButton" class="ui-control" aria-controls="userDropdown" aria-expanded="false" aria-label="Menu tài khoản {{ user.employee.full_name|default:user.username }}">{% include '_shell_icon.html' with name='person' %}<span class="ui-user-summary">{{ user.employee.full_name|default:user.username }}<small>{{ user_role_name }}</small></span></button>
+                    <button type="button" id="userMenuButton" class="ui-control" aria-controls="userDropdown" aria-expanded="false" aria-label="Menu tài khoản {{ user.employee.full_name|default:user.username }}">{% include '_shell_icon.html' with name='person' %}<span class="ui-user-summary">{{ user.employee.full_name|default:user.username|ui_number }}<small>{{ user_role_name|ui_number }}</small></span></button>
                     <div id="userDropdown" class="ui-user-dropdown" hidden>
-                        <div class="ui-user-details"><small>Tài khoản</small><p>{{ user.employee.full_name|default:user.username }}</p><small>{{ user_role_name }}</small></div>
+                        <div class="ui-user-details"><small>Tài khoản</small><p>{{ user.employee.full_name|default:user.username|ui_number }}</p><small>{{ user_role_name|ui_number }}</small></div>
                         {% if is_admin_user %}
                         <a href="/admin/">{% include '_shell_icon.html' with name='office' %}Trang Quản Trị (Admin) <span class="ui-role-badge">ADMIN</span></a>
                         <a href="/reports/">{% include '_shell_icon.html' with name='chart' %}Trung tâm Báo cáo (Excel)</a>
@@ -88,7 +89,7 @@
                     {% if can_approve %}<a href="{% url 'portal:leave_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'leave_approval_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Duyệt nghỉ phép</span></a>{% endif %}
                     {% if can_approve_timesheet %}<a href="{% url 'portal:timesheet_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'timesheet_approval_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Duyệt chấm công</span></a>{% endif %}
                     {% if can_approve_document %}<a href="{% url 'portal:document_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'document_approval_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Duyệt tài liệu</span></a>{% endif %}
-                    {% if can_approve_activity_proposals %}<a href="{% url 'portal:activity_proposal_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'activity_proposal_approval_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Duyệt đề xuất hoạt động{% if pending_activity_proposal_count %} <span class="ui-unread-badge ui-pending-badge">{{ pending_activity_proposal_count }}</span>{% endif %}</span></a>{% endif %}
+                    {% if can_approve_activity_proposals %}<a href="{% url 'portal:activity_proposal_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'activity_proposal_approval_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Duyệt đề xuất hoạt động{% if pending_activity_proposal_count %} <span class="ui-unread-badge ui-pending-badge">{{ pending_activity_proposal_count|ui_number }}</span>{% endif %}</span></a>{% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -189,13 +190,14 @@
         {% for message in messages %}
         <div class="ui-alert {% if message.level >= 40 %}ui-alert--danger{% elif message.level >= 30 %}ui-alert--warning{% elif message.level == 25 %}ui-alert--success{% endif %}" {% if message.level >= 30 %}role="alert"{% else %}role="status"{% endif %}>
             {% if message.level >= 40 %}{% include '_shell_icon.html' with name='danger' %}{% elif message.level >= 30 %}{% include '_shell_icon.html' with name='warning' %}{% elif message.level == 25 %}{% include '_shell_icon.html' with name='success' %}{% else %}{% include '_shell_icon.html' with name='info' %}{% endif %}
-            <span class="ui-alert-content">{{ message }}</span>
+            <span class="ui-alert-content">{{ message|ui_number }}</span>
         </div>
         {% endfor %}</div>{% endif %}
         {% block content %}{% endblock %}
     </main>
     </div>
-    <script src="{% static 'js/app_shell.js' %}?v=20261012-shell-2b" defer></script>
+    <script src="{% static 'js/app_shell.js' %}?v=20261012-ui-2c" defer></script>
+    <script src="{% static 'js/ui_numbers.js' %}?v=20261012-ui-2c" defer></script>
     {% if user.is_authenticated and "/portal/" in request.path %}
     <script>
         if ('serviceWorker' in navigator) {

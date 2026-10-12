@@ -86,9 +86,9 @@
                     {% for d in dispatches %}
                     <tr class="hover:bg-gray-50/80 transition">
                         <td class="py-3 px-4 font-semibold text-gray-900 whitespace-nowrap">
-                            {{ d.dispatch_no }}
+                            {{ d.dispatch_no|ui_number }}
                             {% if d.original_doc_no %}
-                            <div class="text-xs text-gray-600">Gốc: {{ d.original_doc_no }}</div>
+                            <div class="text-xs text-gray-600">Gốc: {{ d.original_doc_no|ui_number }}</div>
                             {% endif %}
                         </td>
                         <td class="py-3 px-4 whitespace-nowrap">
@@ -102,11 +102,11 @@
                         </td>
                         <td class="py-3 px-4 max-w-xs font-medium text-gray-800">
                             <a href="{% url 'portal:dispatch_detail' d.pk %}" class="hover:text-blue-600 line-clamp-2">
-                                {{ d.title }}
+                                {{ d.title|ui_number }}
                             </a>
                         </td>
                         <td class="py-3 px-4 whitespace-nowrap text-gray-700">
-                            {{ d.issuing_organization|truncatechars:25 }}
+                            {{ d.issuing_organization|truncatechars:25|ui_number }}
                         </td>
                         <td class="py-3 px-4 whitespace-nowrap text-gray-500">
                             {{ d.received_or_sent_date|date:"d/m/Y" }}

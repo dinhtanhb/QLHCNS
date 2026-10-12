@@ -6,7 +6,7 @@
     <form method="post" class="grid grid-cols-1 md:grid-cols-4 gap-3">
         {% csrf_token %}
         <select name="employee" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-            {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name }}</option>{% endfor %}
+            {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name|ui_number }}</option>{% endfor %}
         </select>
         <input type="text" name="full_name" placeholder="Họ tên người phụ thuộc" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
         <input type="text" name="relationship" placeholder="Quan hệ (Con, Cha, Mẹ...)" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
@@ -20,7 +20,7 @@
         <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Nhân viên</th><th class="py-2 pr-4">Người phụ thuộc</th><th class="py-2 pr-4">Quan hệ</th><th class="py-2">Đăng ký từ</th></tr></thead>
         <tbody class="divide-y divide-gray-100">
         {% for d in dependents %}
-        <tr><td class="py-2 pr-4">{{ d.employee }}</td><td class="py-2 pr-4">{{ d.full_name }}</td><td class="py-2 pr-4">{{ d.relationship }}</td><td class="py-2">{{ d.registered_from }}</td></tr>
+        <tr><td class="py-2 pr-4">{{ d.employee|ui_number }}</td><td class="py-2 pr-4">{{ d.full_name|ui_number }}</td><td class="py-2 pr-4">{{ d.relationship|ui_number }}</td><td class="py-2">{{ d.registered_from|ui_number }}</td></tr>
         {% empty %}<tr><td colspan="4" class="py-6 text-center text-gray-400">Chưa có người phụ thuộc nào đăng ký.</td></tr>{% endfor %}
         </tbody>
     </table>

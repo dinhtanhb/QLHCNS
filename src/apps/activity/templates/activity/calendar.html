@@ -5,7 +5,7 @@
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
             <p class="text-sm font-semibold uppercase tracking-wide text-blue-700">Hoạt động dự án</p>
-            <h1 class="mt-1 text-2xl font-bold text-gray-900">Lịch hoạt động tháng {{ month_label }}</h1>
+            <h1 class="mt-1 text-2xl font-bold text-gray-900">Lịch hoạt động tháng {{ month_label|ui_number }}</h1>
             <p class="mt-1 text-sm text-gray-600">Các ngày triển khai và hạn nộp báo cáo được hiển thị trực tiếp trên lịch.</p>
         </div>
         <div class="flex flex-wrap items-end gap-2">
@@ -20,7 +20,7 @@
                     <select name="cbda" class="mt-1 block text-sm">
                         <option value="">Tất cả CBDA</option>
                         {% for cbda in cbda_choices %}
-                        <option value="{{ cbda.pk }}" {% if selected_cbda == cbda.pk|stringformat:'s' %}selected{% endif %}>{{ cbda.full_name }}</option>
+                        <option value="{{ cbda.pk }}" {% if selected_cbda == cbda.pk|stringformat:'s' %}selected{% endif %}>{{ cbda.full_name|ui_number }}</option>
                         {% endfor %}
                     </select>
                 </label>
@@ -34,7 +34,7 @@
         <div class="w-full">
             <div class="grid grid-cols-7 border-b border-gray-200 bg-gray-50 text-[10px] font-semibold text-gray-700 sm:text-sm">
                 {% for weekday in weekdays %}
-                <div class="min-w-0 border-r border-gray-200 px-1 py-2 text-center leading-tight sm:px-3 sm:py-3 last:border-r-0">{{ weekday }}</div>
+                <div class="min-w-0 border-r border-gray-200 px-1 py-2 text-center leading-tight sm:px-3 sm:py-3 last:border-r-0">{{ weekday|ui_number }}</div>
                 {% endfor %}
             </div>
             {% for week in weeks %}
@@ -48,14 +48,14 @@
                             <a href="{% url 'portal:task_detail' item.task.pk %}"
                                title="Hạn báo cáo: {{ item.activity.activity_name }}"
                                class="block min-w-0 break-words rounded-md border border-amber-200 bg-amber-50 px-1 py-1 text-[9px] leading-tight text-amber-900 hover:bg-amber-100 sm:px-2 sm:text-xs">
-                                <span class="font-semibold">Hạn báo cáo</span><br>{{ item.activity.activity_code }}
+                                <span class="font-semibold">Hạn báo cáo</span><br>{{ item.activity.activity_code|ui_number }}
                             </a>
                             {% else %}
                             <div title="{{ item.activity.activity_name }} · {{ item.activity.lead_cbda.full_name }}"
                                  class="min-w-0 break-words rounded-md border border-blue-200 bg-blue-50 px-1 py-1 text-[9px] leading-tight text-blue-900 sm:px-2 sm:text-xs">
-                                <span class="font-semibold">{{ item.activity.activity_code }}</span><br>
-                                <span class="line-clamp-2">{{ item.activity.activity_name }}</span>
-                                <span class="mt-0.5 hidden break-words text-blue-700 sm:block">{{ item.activity.lead_cbda.full_name }}</span>
+                                <span class="font-semibold">{{ item.activity.activity_code|ui_number }}</span><br>
+                                <span class="line-clamp-2">{{ item.activity.activity_name|ui_number }}</span>
+                                <span class="mt-0.5 hidden break-words text-blue-700 sm:block">{{ item.activity.lead_cbda.full_name|ui_number }}</span>
                             </div>
                             {% endif %}
                         {% empty %}

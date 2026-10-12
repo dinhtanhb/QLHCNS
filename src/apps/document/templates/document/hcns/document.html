@@ -2,16 +2,16 @@
   {% include "document/hcns/appointment_document.html" with decision=document.appointment %}
 {% else %}
 <article class="hcns-paper {{ document.spec.orientation }}" style="{{ document.profile.paper_css }}">
-  {% if document.header_lines %}<div class="hcns-document-header{% if document.layout.header_kind == 'right' %} hcns-header-right{% endif %}">{% for line in document.header_lines %}<div>{{ line }}</div>{% endfor %}</div>{% endif %}
-  <h1>{{ document.layout.title }}</h1>
+  {% if document.header_lines %}<div class="hcns-document-header{% if document.layout.header_kind == 'right' %} hcns-header-right{% endif %}">{% for line in document.header_lines %}<div>{{ line|ui_number }}</div>{% endfor %}</div>{% endif %}
+  <h1>{{ document.layout.title|ui_number }}</h1>
   <p class="hcns-draft-mark">BẢN SOẠN THẢO – Chưa thay thế văn bản được ký / ban hành</p>
   <section class="hcns-document-section">
   {% for block in document.layout.blocks %}
-    {% if block.table %}<div class="hcns-document-table"><table><colgroup>{% for width in block.table.css_widths %}<col style="width:{{ width }}%">{% endfor %}</colgroup><thead>{% if block.table.header_groups %}<tr>{% for col in block.table.header_groups %}<th scope="col" colspan="{{ col.colspan|default:1 }}" rowspan="{{ col.rowspan|default:1 }}">{{ col.label }}</th>{% endfor %}</tr><tr>{% for col in block.table.subheaders %}<th scope="col">{{ col.label }}</th>{% endfor %}</tr>{% else %}<tr>{% for col in block.table.columns %}<th scope="col">{{ col.label }}</th>{% endfor %}</tr>{% endif %}</thead><tbody>{% for row in block.table.rows %}<tr>{% for cell in row %}<td>{{ cell|linebreaksbr }}</td>{% endfor %}</tr>{% endfor %}</tbody></table></div>
-    {% elif block.heading %}<h2{% if block.centered %} class="hcns-centered"{% endif %}>{{ block.text }}</h2>
-    {% else %}<p{% if block.right %} class="hcns-right"{% elif block.centered %} class="hcns-centered"{% endif %}>{{ block.text|linebreaksbr }}</p>{% endif %}
+    {% if block.table %}<div class="hcns-document-table"><table><colgroup>{% for width in block.table.css_widths %}<col style="width:{{ width }}%">{% endfor %}</colgroup><thead>{% if block.table.header_groups %}<tr>{% for col in block.table.header_groups %}<th scope="col" colspan="{{ col.colspan|default:1 }}" rowspan="{{ col.rowspan|default:1 }}">{{ col.label|ui_number }}</th>{% endfor %}</tr><tr>{% for col in block.table.subheaders %}<th scope="col">{{ col.label|ui_number }}</th>{% endfor %}</tr>{% else %}<tr>{% for col in block.table.columns %}<th scope="col">{{ col.label|ui_number }}</th>{% endfor %}</tr>{% endif %}</thead><tbody>{% for row in block.table.rows %}<tr>{% for cell in row %}<td>{{ cell|linebreaksbr|ui_number }}</td>{% endfor %}</tr>{% endfor %}</tbody></table></div>
+    {% elif block.heading %}<h2{% if block.centered %} class="hcns-centered"{% endif %}>{{ block.text|ui_number }}</h2>
+    {% else %}<p{% if block.right %} class="hcns-right"{% elif block.centered %} class="hcns-centered"{% endif %}>{{ block.text|linebreaksbr|ui_number }}</p>{% endif %}
   {% endfor %}
   </section>
-  {% if document.layout.signatures %}<div class="hcns-signatures" style="grid-template-columns:repeat({{ document.layout.signature_columns }}, minmax(0, 1fr))">{% for signature in document.layout.signatures %}<div><strong>{{ signature }}</strong><p>(Ký, ghi rõ họ tên)</p><div class="hcns-signature-space"></div></div>{% endfor %}</div>{% endif %}
+  {% if document.layout.signatures %}<div class="hcns-signatures" style="grid-template-columns:repeat({{ document.layout.signature_columns }}, minmax(0, 1fr))">{% for signature in document.layout.signatures %}<div><strong>{{ signature|ui_number }}</strong><p>(Ký, ghi rõ họ tên)</p><div class="hcns-signature-space"></div></div>{% endfor %}</div>{% endif %}
 </article>
 {% endif %}

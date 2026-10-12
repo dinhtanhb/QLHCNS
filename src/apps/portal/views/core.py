@@ -105,7 +105,7 @@ def dashboard(request):
     if employee:
         context["my_pending_leaves"] = LeaveRequest.objects.filter(employee=employee, status="Pending").count()
         context["my_open_tasks"] = Task.objects.filter(assigned_to_employee=employee).exclude(status__in=["Done", "Cancelled"]).count()
-    # HR Manager / Director / Super Admin: bức tranh toàn công ty
+    # HR Manager / Director / Super Admin: bức tranh toàn Trung tâm
     if is_super or role_code in ("HR_MANAGER", "DIRECTOR"):
         context["is_management_view"] = True
         context["total_employees"] = Employee.objects.filter(employment_status="Active").count()

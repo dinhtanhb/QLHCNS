@@ -33,7 +33,7 @@ class Employee(BaseAuditModel):
     personal_email = models.EmailField(
         "Email cá nhân", max_length=100, null=True, blank=True, db_column="PersonalEmail"
     )
-    company_email = models.EmailField("Email công ty", max_length=100, unique=True, db_column="CompanyEmail")
+    company_email = models.EmailField("Email Trung tâm", max_length=100, unique=True, db_column="CompanyEmail")
     mobile_phone = models.CharField("Số điện thoại", max_length=20, db_column="MobilePhone")
     address = models.CharField("Địa chỉ", max_length=500, null=True, blank=True, db_column="Address")
 

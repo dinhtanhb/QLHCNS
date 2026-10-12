@@ -106,8 +106,8 @@ class Vehicle(BaseAuditModel):
 
     class Meta:
         db_table = "tblVehicle"
-        verbose_name = "Xe công ty"
-        verbose_name_plural = "Xe công ty"
+        verbose_name = "Xe Trung tâm"
+        verbose_name_plural = "Xe Trung tâm"
 
     def __str__(self):
         return f"{self.vehicle_name} ({self.plate_number})"
@@ -274,7 +274,7 @@ class SupplyRequestItem(BaseAuditModel):
 # ============================================================
 
 class SealUsageLog(BaseAuditModel):
-    SEAL_TYPE_CHOICES = [("RoundSeal", "Dấu tròn công ty"), ("TitleSeal", "Dấu chức danh"), ("DigitalSignature", "Chữ ký số")]
+    SEAL_TYPE_CHOICES = [("RoundSeal", "Dấu tròn Trung tâm"), ("TitleSeal", "Dấu chức danh"), ("DigitalSignature", "Chữ ký số")]
 
     seal_type = models.CharField("Loại con dấu/chữ ký", max_length=30, choices=SEAL_TYPE_CHOICES, db_column="SealType")
     used_by = models.ForeignKey("hrm.Employee", verbose_name="Người sử dụng", on_delete=models.PROTECT, db_column="UsedBy", related_name="seal_usages")

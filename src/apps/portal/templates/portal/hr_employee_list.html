@@ -17,11 +17,11 @@
         <tbody class="divide-y divide-gray-100">
         {% for e in employees %}
         <tr class="hover:bg-gray-50">
-            <td class="py-2 pr-4 text-gray-500">{{ e.employee_code }}</td>
-            <td class="py-2 pr-4 font-medium"><a href="{% url 'portal:hr_employee_detail' e.pk %}" class="text-blue-700 hover:underline">{{ e.full_name }}</a></td>
-            <td class="py-2 pr-4">{{ e.department }}</td>
-            <td class="py-2 pr-4">{{ e.position }}</td>
-            <td class="py-2 pr-4">{{ e.get_employment_status_display }}</td>
+            <td class="py-2 pr-4 text-gray-500">{{ e.employee_code|ui_number }}</td>
+            <td class="py-2 pr-4 font-medium"><a href="{% url 'portal:hr_employee_detail' e.pk %}" class="text-blue-700 hover:underline">{{ e.full_name|ui_number }}</a></td>
+            <td class="py-2 pr-4">{{ e.department|ui_number }}</td>
+            <td class="py-2 pr-4">{{ e.position|ui_number }}</td>
+            <td class="py-2 pr-4">{{ e.get_employment_status_display|ui_number }}</td>
             {% if can_manage_hr %}
             <td class="py-2">
                 <details class="hr-action-menu relative inline-block">

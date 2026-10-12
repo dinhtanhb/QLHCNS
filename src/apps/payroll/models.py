@@ -1,3 +1,4 @@
+from apps.common.number_format import vi_number
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from dataclasses import dataclass
 import hashlib
@@ -49,7 +50,7 @@ class EmployeeSalary(BaseAuditModel):
         verbose_name_plural = "Lương nhân viên"
 
     def __str__(self):
-        return f"{self.employee} - {self.current_basic_salary:,.0f}đ (từ {self.effective_date})"
+        return f"{self.employee} - {vi_number(self.current_basic_salary, 0)}đ (từ {self.effective_date})"
 
     def clean(self):
         salary = _decimal_amount(self.current_basic_salary)
@@ -165,8 +166,8 @@ class PersonalIncomeTaxBracket(BaseAuditModel):
         ordering = ["effective_from", "bracket_no"]
 
     def __str__(self):
-        to_text = f"{self.income_to_monthly:,.0f}" if self.income_to_monthly else "trở lên"
-        return f"Bậc {self.bracket_no}: {self.income_from_monthly:,.0f} - {to_text} ({self.tax_rate}%)"
+        to_text = vi_number(self.income_to_monthly, 0) if self.income_to_monthly else "trở lên"
+        return f"Bậc {self.bracket_no}: {vi_number(self.income_from_monthly, 0)} - {to_text} ({vi_number(self.tax_rate)}%)"
 
 
 class TaxDeductionConfig(BaseAuditModel):

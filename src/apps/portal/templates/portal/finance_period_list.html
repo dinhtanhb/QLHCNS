@@ -21,9 +21,9 @@
         {% for p in periods %}
         <tr>
             <td class="py-2 pr-4 font-medium">Tháng {{ p.payroll_month }}/{{ p.payroll_year }}</td>
-            <td class="py-2 pr-4">{{ p.start_date }} - {{ p.end_date }}</td>
+            <td class="py-2 pr-4">{{ p.start_date|ui_number }} - {{ p.end_date|ui_number }}</td>
             <td class="py-2 pr-4">
-                <span class="px-2.5 py-1 rounded-full text-xs font-medium {% if p.status == 'Locked' %}bg-gray-100 text-gray-600{% else %}bg-green-100 text-green-700{% endif %}">{{ p.get_status_display }}</span>
+                <span class="px-2.5 py-1 rounded-full text-xs font-medium {% if p.status == 'Locked' %}bg-gray-100 text-gray-600{% else %}bg-green-100 text-green-700{% endif %}">{{ p.get_status_display|ui_number }}</span>
             </td>
             <td class="py-2"><a href="{% url 'portal:finance_payroll_run' p.pk %}" class="text-blue-700 hover:underline">Xem / Chạy lương</a></td>
         </tr>

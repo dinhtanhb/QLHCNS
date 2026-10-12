@@ -1,5 +1,5 @@
 @import url("design_tokens.css");
-@import url("theme.css?v=20261010-theme-4");
+@import url("theme.css?v=20261012-ui-2c");
 
 /* Nút quay nhanh từ Django Admin về giao diện nghiệp vụ IHRMS. */
 #jazzy-navbar .navbar-nav:first-child > li:has(> a[href="/portal/"]) {
@@ -91,4 +91,45 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     #jazzy-navbar .navbar-nav:first-child > li > a[href="/portal/"]:hover {
         background:var(--ui-brand-hover); color:var(--ui-on-brand) !important;
     }
+}
+
+@media screen {
+ .btn,.form-control,.custom-select,.select2-container--default .select2-selection--single { min-height:var(--ui-control-height); border-radius:var(--ui-radius-control); font-size:var(--ui-font-size-small); line-height:1.5; }
+ .btn { display:inline-flex; align-items:center; justify-content:center; gap:var(--ui-space-2); padding:var(--ui-space-2) var(--ui-space-4); white-space:nowrap; }
+ .select2-container--default .select2-selection--single .select2-selection__rendered { line-height:42px; }
+ .select2-container--default .select2-selection--single .select2-selection__arrow { height:42px; }
+}
+
+@media screen {
+ :is(.app-main,.content-wrapper) input.ui-number-display { height:var(--ui-control-height); padding:var(--ui-space-2) var(--ui-space-3); border:1px solid var(--ui-border); border-radius:var(--ui-radius-control); background:var(--ui-surface); color:var(--ui-text); }
+}
+
+@media screen {
+ .app-header,.app-sidebar { background:var(--ui-sidebar-bg); color:var(--ui-sidebar-text); }
+ .app-header .nav-link,.app-sidebar .nav-link { color:var(--ui-sidebar-text); }
+ .app-sidebar .nav-link.active { background:var(--ui-sidebar-active-bg); color:var(--ui-sidebar-active-text); }
+ .app-main :is(input,select):not([type=hidden]):not([type=checkbox]):not([type=radio]):not(.ui-number-source) { min-height:var(--ui-control-height); border-radius:var(--ui-radius-control); background:var(--ui-surface); color:var(--ui-text); border-color:var(--ui-border); }
+}
+
+/* AdminLTE and Select2 own higher-priority backgrounds; resolve them per theme. */
+@media screen {
+ .app-wrapper,.app-main,.app-content,.app-content-header { background:var(--ui-bg)!important; color:var(--ui-text); }
+ .breadcrumb .breadcrumb-item.active { color:var(--ui-text-muted)!important; }
+ .select2-container--default :is(.select2-selection--single,.select2-selection--multiple),.select2-dropdown { background:var(--ui-surface)!important; color:var(--ui-text)!important; border-color:var(--ui-border)!important; }
+ .select2-container--default .select2-selection--single .select2-selection__rendered { color:var(--ui-text)!important; }
+ .select2-container--default .select2-selection--single .select2-selection__arrow b { border-top-color:var(--ui-text-muted); }
+ .select2-results__option { background:var(--ui-surface); color:var(--ui-text); }
+ .select2-container--default .select2-results__option--highlighted[aria-selected],.select2-container--default .select2-results__option[aria-selected=true] { background:var(--ui-selected-bg)!important; color:var(--ui-selected-text)!important; }
+ .select2-container--default .select2-selection--multiple .select2-selection__choice { background:var(--ui-surface-raised); color:var(--ui-text); border-color:var(--ui-border); }
+}
+
+@media screen {
+ .app-main :is(input,select):disabled:not([type=hidden]):not([type=checkbox]):not([type=radio]):not(.ui-number-source) { background:var(--ui-disabled-bg); color:var(--ui-disabled-text); border-color:var(--ui-disabled-border); }
+}
+
+@media screen {
+ .related-widget-wrapper { display:flex; flex-wrap:wrap; align-items:center; gap:var(--ui-space-2); }
+ .related-widget-wrapper-link { display:inline-flex; align-items:center; justify-content:center; min-width:var(--ui-target-min); min-height:var(--ui-target-min); padding:var(--ui-space-2); }
+ .related-widget-wrapper .select2-container { flex:1 1 12rem; min-width:0; max-width:100%; }
+ .select2-container--default.select2-container--disabled :is(.select2-selection--single,.select2-selection--multiple) { background:var(--ui-disabled-bg)!important; color:var(--ui-disabled-text)!important; border-color:var(--ui-disabled-border)!important; }
 }

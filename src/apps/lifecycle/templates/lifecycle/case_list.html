@@ -3,12 +3,12 @@
 {% block content %}
 <div class="max-w-5xl mx-auto space-y-5">
   <div class="bg-white border border-gray-200 rounded-xl p-6 flex flex-wrap items-center justify-between gap-3">
-    <div><h1 class="text-2xl font-bold text-gray-900">Checklist thủ tục nhân sự</h1><p class="text-sm text-gray-600 mt-1">Dành riêng cho Phòng HCNS để theo dõi hồ sơ, giấy tờ và thủ tục tiếp nhận/nghỉ việc; không dùng để giao việc công ty hoặc hoạt động dự án.</p></div>
+    <div><h1 class="text-2xl font-bold text-gray-900">Checklist thủ tục nhân sự</h1><p class="text-sm text-gray-600 mt-1">Dành riêng cho Phòng HCNS để theo dõi hồ sơ, giấy tờ và thủ tục tiếp nhận/nghỉ việc; không dùng để giao việc Trung tâm hoặc hoạt động dự án.</p></div>
     {% if can_manage_lifecycle_case %}<a href="{% url 'portal:lifecycle_case_create' %}" class="rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white">Mở checklist mới</a>{% endif %}
   </div>
   <div class="overflow-x-auto rounded-xl border border-gray-200 bg-white">
     <table class="w-full text-left text-sm"><thead class="bg-gray-50 text-xs uppercase text-gray-600"><tr><th class="px-4 py-3">Nhân viên</th><th class="px-4 py-3">Loại</th><th class="px-4 py-3">Ngày hiệu lực</th><th class="px-4 py-3">Mẫu</th><th class="px-4 py-3">Trạng thái</th><th class="px-4 py-3"></th></tr></thead><tbody class="divide-y divide-gray-100">
-      {% for case in cases %}<tr><td class="px-4 py-3 font-medium">{{ case.employee.full_name }}</td><td class="px-4 py-3">{{ case.get_case_type_display }}</td><td class="px-4 py-3">{{ case.effective_date|date:"d/m/Y" }}</td><td class="px-4 py-3">{{ case.template.template_name }}</td><td class="px-4 py-3">{{ case.get_status_display }}</td><td class="px-4 py-3"><a class="text-blue-700 underline" href="{% url 'portal:lifecycle_case_detail' case.pk %}">Mở</a></td></tr>
+      {% for case in cases %}<tr><td class="px-4 py-3 font-medium">{{ case.employee.full_name|ui_number }}</td><td class="px-4 py-3">{{ case.get_case_type_display|ui_number }}</td><td class="px-4 py-3">{{ case.effective_date|date:"d/m/Y" }}</td><td class="px-4 py-3">{{ case.template.template_name|ui_number }}</td><td class="px-4 py-3">{{ case.get_status_display|ui_number }}</td><td class="px-4 py-3"><a class="text-blue-700 underline" href="{% url 'portal:lifecycle_case_detail' case.pk %}">Mở</a></td></tr>
       {% empty %}<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">Chưa có hồ sơ onboarding/offboarding. HCNS có thể mở checklist theo mẫu đã được duyệt.</td></tr>{% endfor %}
     </tbody></table>
   </div>

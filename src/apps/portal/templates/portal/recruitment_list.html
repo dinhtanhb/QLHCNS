@@ -18,18 +18,18 @@
         <tbody class="divide-y divide-gray-100">
         {% for r in requests %}
         <tr>
-            <td class="py-2.5 pr-4 text-gray-500">{{ r.request_code }}</td>
-            <td class="py-2.5 pr-4">{{ r.department }}</td>
-            <td class="py-2.5 pr-4 font-medium">{{ r.position }}</td>
-            <td class="py-2.5 pr-4">{{ r.required_quantity }}</td>
-            <td class="py-2.5 pr-4">{{ r.required_date }}</td>
+            <td class="py-2.5 pr-4 text-gray-500">{{ r.request_code|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.department|ui_number }}</td>
+            <td class="py-2.5 pr-4 font-medium">{{ r.position|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.required_quantity|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.required_date|ui_number }}</td>
             <td class="py-2.5 pr-4">
                 <span class="px-2.5 py-1 rounded-full text-xs font-medium
                     {% if r.status == 'Approved' %}bg-green-100 text-green-700
                     {% elif r.status == 'Rejected' %}bg-red-100 text-red-700
                     {% elif r.status == 'Closed' %}bg-gray-100 text-gray-600
                     {% else %}bg-yellow-100 text-yellow-800{% endif %}">
-                    {{ r.get_status_display }}
+                    {{ r.get_status_display|ui_number }}
                 </span>
             </td>
             {% if can_approve %}

@@ -10,8 +10,8 @@
     {% for n in items %}
     <article class="bg-white rounded-xl shadow-sm border border-gray-200 px-5 py-4 {% if not n.is_read %}ring-1 ring-blue-100{% endif %}">
         <a href="{{ n.link|default:'#' }}" class="block rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <p class="font-medium text-gray-900 text-sm">{{ n.title }}</p>
-            <p class="text-gray-600 text-sm mt-1">{{ n.message }}</p>
+            <p class="font-medium text-gray-900 text-sm">{{ n.title|ui_number }}</p>
+            <p class="text-gray-600 text-sm mt-1">{{ n.message|ui_number }}</p>
             <p class="text-gray-400 text-xs mt-1">{{ n.created_date|date:"d/m/Y H:i" }}</p>
         </a>
         {% if not n.is_read %}

@@ -3,7 +3,7 @@
 {% block content %}
 <div class="flex items-center justify-between mb-4">
     <h1 class="text-lg font-bold text-gray-900">Bảng lương — Tháng {{ period.payroll_month }}/{{ period.payroll_year }}</h1>
-    <span class="px-3 py-1 rounded-full text-xs font-medium {% if period.status == 'Locked' %}bg-gray-100 text-gray-600{% else %}bg-green-100 text-green-700{% endif %}">{{ period.get_status_display }}</span>
+    <span class="px-3 py-1 rounded-full text-xs font-medium {% if period.status == 'Locked' %}bg-gray-100 text-gray-600{% else %}bg-green-100 text-green-700{% endif %}">{{ period.get_status_display|ui_number }}</span>
 </div>
 
 {% if period.status != "Locked" %}
@@ -11,7 +11,7 @@
     <form method="post" action="{% url 'portal:finance_payroll_generate' period.pk %}">
         {% csrf_token %}
         <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">
-            🔄 Tạo bảng lương cho {{ missing_employees|length }} nhân viên còn thiếu
+            🔄 Tạo bảng lương cho {{ missing_employees|length|ui_number }} nhân viên còn thiếu
         </button>
     </form>
     <form method="post" action="{% url 'portal:finance_payroll_calculate_all' period.pk %}">
@@ -27,7 +27,7 @@
 
 {% if period.status == "Locked" and unissued_payslips %}
 <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-6">
-    <p class="text-sm text-blue-900 mb-3">Còn {{ unissued_payslips }} phiếu lương của kỳ cũ chưa được phát hành.</p>
+    <p class="text-sm text-blue-900 mb-3">Còn {{ unissued_payslips|ui_number }} phiếu lương của kỳ cũ chưa được phát hành.</p>
     <form method="post" action="{% url 'portal:finance_payslip_issue' period.pk %}">
         {% csrf_token %}
         <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md">Phát hành phiếu lương PDF</button>
@@ -37,10 +37,10 @@
 
 {% if missing_salary_employees %}
 <div class="bg-red-50 border border-red-200 rounded-xl p-5 mb-6" role="alert">
-    <p class="font-semibold text-red-800">Chưa thể tạo bảng lương cho {{ missing_salary_employees|length }} nhân viên chưa có mức lương hiệu lực:</p>
+    <p class="font-semibold text-red-800">Chưa thể tạo bảng lương cho {{ missing_salary_employees|length|ui_number }} nhân viên chưa có mức lương hiệu lực:</p>
     <ul class="mt-2 list-disc pl-5 text-sm text-red-700">
         {% for employee in missing_salary_employees %}
-        <li>{{ employee.employee_code }} — {{ employee.full_name }}</li>
+        <li>{{ employee.employee_code|ui_number }} — {{ employee.full_name|ui_number }}</li>
         {% endfor %}
     </ul>
 </div>
@@ -60,41 +60,41 @@
         {% for p in payrolls %}
         <tr>
             <td class="py-2 pr-4 font-medium">
-                {{ p.employee }}
+                {{ p.employee|ui_number }}
                 {% if period.status != "Locked" %}
                 <form method="post" id="pf{{ p.pk }}" action="{% url 'portal:finance_payroll_update_line' p.pk %}">{% csrf_token %}</form>
                 {% endif %}
             </td>
-            <td class="py-2 pr-4">{{ p.basic_salary|floatformat:0 }}</td>
+            <td class="py-2 pr-4">{{ p.basic_salary|floatformat:"0g" }}</td>
             <td class="py-2 pr-4">
                 {% if period.status != "Locked" %}
-                <input form="pf{{ p.pk }}" type="number" step="1" min="0" name="insurance_salary" value="{{ p.insurance_salary|floatformat:0 }}" class="w-24 rounded border border-gray-300 px-1 py-0.5 text-xs">
-                {% else %}{{ p.insurance_salary|floatformat:0 }}{% endif %}
+                <input form="pf{{ p.pk }}" type="number" step="1" min="0" name="insurance_salary" value="{{ p.insurance_salary|floatformat:"0u" }}" class="w-24 rounded border border-gray-300 px-1 py-0.5 text-xs">
+                {% else %}{{ p.insurance_salary|floatformat:"0g" }}{% endif %}
             </td>
             <td class="py-2 pr-4">
                 {% if period.status != "Locked" %}
-                <input form="pf{{ p.pk }}" type="number" step="1" min="0" name="allowance" value="{{ p.allowance|floatformat:0 }}" class="w-24 rounded border border-gray-300 px-1 py-0.5 text-xs">
-                {% else %}{{ p.allowance|floatformat:0 }}{% endif %}
+                <input form="pf{{ p.pk }}" type="number" step="1" min="0" name="allowance" value="{{ p.allowance|floatformat:"0u" }}" class="w-24 rounded border border-gray-300 px-1 py-0.5 text-xs">
+                {% else %}{{ p.allowance|floatformat:"0g" }}{% endif %}
             </td>
             <td class="py-2 pr-4">
                 {% if period.status != "Locked" %}
-                <input form="pf{{ p.pk }}" type="number" step="1" min="0" name="overtime_amount" value="{{ p.overtime_amount|floatformat:0 }}" class="w-24 rounded border border-gray-300 px-1 py-0.5 text-xs">
-                {% else %}{{ p.overtime_amount|floatformat:0 }}{% endif %}
+                <input form="pf{{ p.pk }}" type="number" step="1" min="0" name="overtime_amount" value="{{ p.overtime_amount|floatformat:"0u" }}" class="w-24 rounded border border-gray-300 px-1 py-0.5 text-xs">
+                {% else %}{{ p.overtime_amount|floatformat:"0g" }}{% endif %}
             </td>
             <td class="py-2 pr-4">
                 {% if period.status != "Locked" %}
-                <input form="pf{{ p.pk }}" type="number" step="1" min="0" name="overtime_tax_exempt_amount" value="{{ p.overtime_tax_exempt_amount|floatformat:0 }}" class="w-24 rounded border border-gray-300 px-1 py-0.5 text-xs">
-                {% else %}{{ p.overtime_tax_exempt_amount|floatformat:0 }}{% endif %}
+                <input form="pf{{ p.pk }}" type="number" step="1" min="0" name="overtime_tax_exempt_amount" value="{{ p.overtime_tax_exempt_amount|floatformat:"0u" }}" class="w-24 rounded border border-gray-300 px-1 py-0.5 text-xs">
+                {% else %}{{ p.overtime_tax_exempt_amount|floatformat:"0g" }}{% endif %}
             </td>
             <td class="py-2 pr-4">
                 {% if period.status != "Locked" %}
-                <input form="pf{{ p.pk }}" type="number" step="1" min="0" name="deduction_amount" value="{{ p.deduction_amount|floatformat:0 }}" class="w-24 rounded border border-gray-300 px-1 py-0.5 text-xs">
-                {% else %}{{ p.deduction_amount|floatformat:0 }}{% endif %}
+                <input form="pf{{ p.pk }}" type="number" step="1" min="0" name="deduction_amount" value="{{ p.deduction_amount|floatformat:"0u" }}" class="w-24 rounded border border-gray-300 px-1 py-0.5 text-xs">
+                {% else %}{{ p.deduction_amount|floatformat:"0g" }}{% endif %}
             </td>
-            <td class="py-2 pr-4">{{ p.gross_income|floatformat:0 }}</td>
-            <td class="py-2 pr-4 text-red-600">{{ p.insurance_amount|floatformat:0 }}</td>
-            <td class="py-2 pr-4 text-red-600">{{ p.tax_amount|floatformat:0 }}</td>
-            <td class="py-2 pr-4 font-semibold text-green-700">{{ p.net_income|floatformat:0 }}</td>
+            <td class="py-2 pr-4">{{ p.gross_income|floatformat:"0g" }}</td>
+            <td class="py-2 pr-4 text-red-600">{{ p.insurance_amount|floatformat:"0g" }}</td>
+            <td class="py-2 pr-4 text-red-600">{{ p.tax_amount|floatformat:"0g" }}</td>
+            <td class="py-2 pr-4 font-semibold text-green-700">{{ p.net_income|floatformat:"0g" }}</td>
             <td class="py-2">
                 {% if period.status != "Locked" %}
                 <button form="pf{{ p.pk }}" type="submit" class="rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-700">Lưu</button>

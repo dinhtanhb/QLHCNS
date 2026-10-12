@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}{{ req.request_no }}{% endblock %}
+{% block title %}{{ req.request_no|ui_number }}{% endblock %}
 {% block content %}
 <div class="flex flex-wrap gap-4 mb-4"><a href="{% url 'portal:hcns_draft' 'asset-disposal-proposal' %}?disposal_id={{ req.pk }}" class="text-blue-700 hover:underline">Đề nghị / Word</a><a href="{% url 'portal:hcns_draft' 'asset-disposal-decision' %}?disposal_id={{ req.pk }}" class="text-blue-700 hover:underline">Quyết định / Word</a><a href="{% url 'portal:hcns_draft' 'asset-destruction-minutes' %}?disposal_id={{ req.pk }}" class="text-blue-700 hover:underline">Biên bản xử lý / Word</a></div>
 <div class="flex items-center justify-between mb-4">
-    <h1 class="text-lg font-bold text-gray-900">{{ req.request_no }} <span class="text-sm font-normal text-gray-400">({{ req.get_status_display }})</span></h1>
+    <h1 class="text-lg font-bold text-gray-900">{{ req.request_no|ui_number }} <span class="text-sm font-normal text-gray-400">({{ req.get_status_display|ui_number }})</span></h1>
     <div class="flex gap-2">
         <a href="{% url 'portal:disposal_request_print' req.pk %}" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Xem/In đề nghị</a>
         {% if req.status == "Pending" and can_approve %}
@@ -19,11 +19,11 @@
 <div class="{% if can_manage_asset %}grid grid-cols-1 md:grid-cols-2 gap-6{% else %}max-w-2xl{% endif %} mb-6">
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h2 class="text-sm font-bold text-gray-900 mb-3">Thành viên kiểm tra</h2>
-        {% for m in members %}<p class="text-sm">{{ m.employee.full_name }} — {{ m.get_participation_display }}</p>{% endfor %}
+        {% for m in members %}<p class="text-sm">{{ m.employee.full_name|ui_number }} — {{ m.get_participation_display|ui_number }}</p>{% endfor %}
         {% if can_manage_asset %}<form method="post" class="flex flex-wrap gap-2 mt-3">
             {% csrf_token %}<input type="hidden" name="action" value="add_member">
             <select name="employee" required class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
-                {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name }}</option>{% endfor %}
+                {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name|ui_number }}</option>{% endfor %}
             </select>
             <select name="role" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
                 <option value="DeptInCharge">Phụ trách bộ phận</option>
@@ -43,7 +43,7 @@
         <form method="post" class="space-y-2">
             {% csrf_token %}<input type="hidden" name="action" value="add_item">
             <select name="asset" required class="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm">
-                {% for a in assets %}<option value="{{ a.id }}">{{ a.asset_code }} - {{ a.asset_name }}</option>{% endfor %}
+                {% for a in assets %}<option value="{{ a.id }}">{{ a.asset_code|ui_number }} - {{ a.asset_name|ui_number }}</option>{% endfor %}
             </select>
             <input type="text" name="damage_description" placeholder="Tình trạng hư hỏng" required class="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm">
             <button type="submit" class="bg-blue-700 text-white text-xs px-3 py-1.5 rounded">+ Thêm tài sản</button>
@@ -59,8 +59,8 @@
         <tbody class="divide-y divide-gray-100">
         {% for it in items %}
         <tr>
-            <td class="py-2 pr-4 font-medium">{{ it.asset }}</td>
-            <td class="py-2 pr-4 text-gray-500">{{ it.damage_description }}</td>
+            <td class="py-2 pr-4 font-medium">{{ it.asset|ui_number }}</td>
+            <td class="py-2 pr-4 text-gray-500">{{ it.damage_description|ui_number }}</td>
             <td class="py-2">
                 {% if it.minutes %}
                 <a href="{% url 'portal:disposal_minutes_print' it.minutes.pk %}" class="text-blue-700 hover:underline">Xem biên bản</a>
@@ -94,7 +94,7 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h2 class="text-sm font-bold text-gray-900 mb-3">Ban hành Quyết định</h2>
         {% if req.decision_no %}
-        <p class="text-sm mb-2">Số {{ req.decision_no }} ngày {{ req.decision_date }}</p>
+        <p class="text-sm mb-2">Số {{ req.decision_no|ui_number }} ngày {{ req.decision_date|ui_number }}</p>
         <a href="{% url 'portal:disposal_decision_print' req.pk %}" class="text-blue-700 hover:underline text-sm">Xem/In Quyết định</a>
         {% elif can_manage_asset %}
         <form method="post" class="space-y-2">
@@ -104,7 +104,7 @@
             <input type="text" name="committee_decision_no" placeholder="Số QĐ thành lập Hội đồng (VD: 01b-26/QĐ-VH)" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
             <select name="decided_by" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
                 <option value="">-- Người ký (GĐ/PGĐ) --</option>
-                {% for d in directors %}<option value="{{ d.id }}">{{ d.full_name }}</option>{% endfor %}
+                {% for d in directors %}<option value="{{ d.id }}">{{ d.full_name|ui_number }}</option>{% endfor %}
             </select>
             <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Ban hành Quyết định</button>
         </form>

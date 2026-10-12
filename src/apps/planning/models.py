@@ -119,7 +119,7 @@ class AnnualBudget(BaseAuditModel):
         constraints = [models.UniqueConstraint(fields=["year", "department", "category"], name="UX_Budget_Year_Dept_Cat")]
 
     def __str__(self):
-        return f"{self.get_category_display()} - {self.department or 'Toàn công ty'} - {self.year}"
+        return f"{self.get_category_display()} - {self.department or 'Toàn Trung tâm'} - {self.year}"
 
 
 # ============================================================
@@ -127,14 +127,14 @@ class AnnualBudget(BaseAuditModel):
 # ============================================================
 
 class Event(BaseAuditModel):
-    EVENT_TYPE_CHOICES = [("Meeting", "Họp"), ("Training", "Đào tạo"), ("FieldTrip", "Công tác"), ("Company", "Sự kiện công ty"), ("Other", "Khác")]
+    EVENT_TYPE_CHOICES = [("Meeting", "Họp"), ("Training", "Đào tạo"), ("FieldTrip", "Công tác"), ("Company", "Sự kiện Trung tâm"), ("Other", "Khác")]
 
     title = models.CharField("Tiêu đề", max_length=300, db_column="Title")
     event_type = models.CharField("Loại sự kiện", max_length=30, choices=EVENT_TYPE_CHOICES, default="Meeting", db_column="EventType")
     department = models.ForeignKey(
         "organization.Department", verbose_name="Phòng ban", null=True, blank=True,
         on_delete=models.SET_NULL, db_column="DepartmentID", related_name="events",
-        help_text="Để trống nếu là sự kiện toàn công ty",
+        help_text="Để trống nếu là sự kiện toàn Trung tâm",
     )
     start_time = models.DateTimeField("Bắt đầu", db_column="StartTime")
     end_time = models.DateTimeField("Kết thúc", db_column="EndTime")

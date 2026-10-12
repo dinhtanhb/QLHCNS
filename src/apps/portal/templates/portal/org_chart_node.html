@@ -4,13 +4,13 @@
 <li class="org-chart-node" data-org-node data-search-text="{{ node.employee.full_name }} {{ node.employee.position.position_name }} {{ node.employee.department.department_name }}">
 {% endif %}
   <article class="org-chart-card">
-    <div class="org-chart-avatar" aria-hidden="true">{{ node.employee.full_name|slice:":1"|upper }}</div>
+    <div class="org-chart-avatar" aria-hidden="true">{{ node.employee.full_name|slice:":1"|upper|ui_number }}</div>
     <div class="min-w-0 text-left">
-      <h2 class="truncate font-semibold text-slate-900" title="{{ node.employee.full_name }}">{{ node.employee.full_name }}</h2>
-      <p class="mt-0.5 text-sm text-slate-700">{{ node.employee.position.position_name|default:"Chưa cập nhật chức vụ" }}</p>
-      <p class="mt-1 text-xs text-slate-500">{{ node.employee.department.department_name|default:"Chưa phân phòng ban" }}</p>
-      {% if node.manager %}<p class="mt-2 border-t border-slate-100 pt-2 text-xs text-slate-500">Báo cáo cho: <span class="font-medium text-slate-700">{{ node.manager.full_name }}</span></p>{% endif %}
-      {% if node.children %}<p class="mt-2 inline-flex rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800">{{ node.children|length }} báo cáo trực tiếp</p>{% endif %}
+      <h2 class="truncate font-semibold text-slate-900" title="{{ node.employee.full_name }}">{{ node.employee.full_name|ui_number }}</h2>
+      <p class="mt-0.5 text-sm text-slate-700">{{ node.employee.position.position_name|default:"Chưa cập nhật chức vụ"|ui_number }}</p>
+      <p class="mt-1 text-xs text-slate-500">{{ node.employee.department.department_name|default:"Chưa phân phòng ban"|ui_number }}</p>
+      {% if node.manager %}<p class="mt-2 border-t border-slate-100 pt-2 text-xs text-slate-500">Báo cáo cho: <span class="font-medium text-slate-700">{{ node.manager.full_name|ui_number }}</span></p>{% endif %}
+      {% if node.children %}<p class="mt-2 inline-flex rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800">{{ node.children|length|ui_number }} báo cáo trực tiếp</p>{% endif %}
     </div>
   </article>
   {% if node.children %}

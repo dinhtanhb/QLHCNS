@@ -5,7 +5,7 @@
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
             <p class="text-sm font-semibold uppercase tracking-wide text-blue-700">Hoạt động dự án</p>
-            <h1 class="mt-1 text-2xl font-bold text-gray-900">Theo dõi tiến độ tháng {{ month_label }}</h1>
+            <h1 class="mt-1 text-2xl font-bold text-gray-900">Theo dõi tiến độ tháng {{ month_label|ui_number }}</h1>
             <p class="mt-1 text-sm text-gray-500">Theo dõi người phụ trách, hạn báo cáo, trạng thái Task và tệp báo cáo trên SharePoint.</p>
         </div>
         <div class="flex flex-wrap items-end gap-2">
@@ -23,7 +23,7 @@
                 <select name="cbda" class="mt-1 block text-sm">
                     <option value="">Tất cả CBDA</option>
                     {% for cbda in cbda_choices %}
-                    <option value="{{ cbda.pk }}" {% if selected_cbda == cbda.pk|stringformat:'s' %}selected{% endif %}>{{ cbda.full_name }}</option>
+                    <option value="{{ cbda.pk }}" {% if selected_cbda == cbda.pk|stringformat:'s' %}selected{% endif %}>{{ cbda.full_name|ui_number }}</option>
                     {% endfor %}
                 </select>
             </label>
@@ -35,11 +35,11 @@
 
     {% if is_overview %}
     <div class="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-5">
-        <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Hoạt động trong kỳ</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold">{{ total_activities }}</p></div>
-        <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Task hoàn thành</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold ">{{ completed_count }}</p></div>
-        <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Task quá hạn</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold  {% if overdue_count > 0 %}ui-kpi-danger{% endif %}">{{ overdue_count }}</p></div>
-        <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Thiếu báo cáo</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold  {% if report_missing_count > 0 %}ui-kpi-warning{% endif %}">{{ report_missing_count }}</p></div>
-        <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Chưa có Task</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold">{{ without_task_count }}</p></div>
+        <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Hoạt động trong kỳ</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold">{{ total_activities|ui_number }}</p></div>
+        <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Task hoàn thành</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold ">{{ completed_count|ui_number }}</p></div>
+        <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Task quá hạn</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold  {% if overdue_count > 0 %}ui-kpi-danger{% endif %}">{{ overdue_count|ui_number }}</p></div>
+        <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Thiếu báo cáo</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold  {% if report_missing_count > 0 %}ui-kpi-warning{% endif %}">{{ report_missing_count|ui_number }}</p></div>
+        <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Chưa có Task</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold">{{ without_task_count|ui_number }}</p></div>
     </div>
     {% endif %}
 
@@ -60,18 +60,18 @@
                     {% for row in rows %}
                     <tr class="align-top hover:bg-gray-50">
                         <td class="px-4 py-3">
-                            <p class="font-semibold text-gray-900">{{ row.activity.activity_name }}</p>
-                            <p class="mt-0.5 text-xs text-gray-500">{{ row.activity.activity_code }} · {{ row.activity.project.project_name }}</p>
-                            {% if row.proposal %}<p class="mt-1 text-xs font-semibold {% if row.proposal.status == 'ChangesRequested' %}text-amber-800{% elif row.proposal.status == 'Approved' %}text-green-700{% elif row.proposal.status == 'Submitted' %}text-blue-700{% else %}text-gray-600{% endif %}">Hồ sơ: {{ row.proposal.get_status_display }}</p>{% if row.proposal.status == "ChangesRequested" and row.proposal.decision_comment %}<p class="mt-1 max-w-sm whitespace-pre-line text-xs text-amber-900">Ý kiến Giám đốc: {{ row.proposal.decision_comment }}</p>{% endif %}{% endif %}
-                            {% if row.activity.outgoing_document %}<p class="mt-1 text-xs text-gray-500">Công văn: {{ row.activity.outgoing_document.dispatch_no }}</p>{% endif %}
+                            <p class="font-semibold text-gray-900">{{ row.activity.activity_name|ui_number }}</p>
+                            <p class="mt-0.5 text-xs text-gray-500">{{ row.activity.activity_code|ui_number }} · {{ row.activity.project.project_name|ui_number }}</p>
+                            {% if row.proposal %}<p class="mt-1 text-xs font-semibold {% if row.proposal.status == 'ChangesRequested' %}text-amber-800{% elif row.proposal.status == 'Approved' %}text-green-700{% elif row.proposal.status == 'Submitted' %}text-blue-700{% else %}text-gray-600{% endif %}">Hồ sơ: {{ row.proposal.get_status_display|ui_number }}</p>{% if row.proposal.status == "ChangesRequested" and row.proposal.decision_comment %}<p class="mt-1 max-w-sm whitespace-pre-line text-xs text-amber-900">Ý kiến Giám đốc: {{ row.proposal.decision_comment|ui_number }}</p>{% endif %}{% endif %}
+                            {% if row.activity.outgoing_document %}<p class="mt-1 text-xs text-gray-500">Công văn: {{ row.activity.outgoing_document.dispatch_no|ui_number }}</p>{% endif %}
                             {% if can_manage_activities %}<a href="{% url 'portal:activity_update' row.activity.pk %}" class="mt-2 inline-block text-xs font-semibold text-blue-700 hover:underline">Chỉnh sửa</a>{% endif %}
                             <a href="{% url 'portal:activity_proposal' row.activity.pk %}" class="mt-2 ml-2 inline-block text-xs font-semibold text-indigo-700 hover:underline">Đề xuất &amp; dự trù</a>
                         </td>
-                        <td class="px-4 py-3">{{ row.activity.lead_cbda.full_name }}</td>
+                        <td class="px-4 py-3">{{ row.activity.lead_cbda.full_name|ui_number }}</td>
                         <td class="whitespace-nowrap px-4 py-3">{{ row.activity.start_date|date:"d/m/Y" }}–{{ row.activity.end_date|date:"d/m/Y" }}</td>
                         <td class="px-4 py-3">
                             {% if row.task %}
-                            <a class="font-medium text-blue-700 hover:underline" href="{% url 'portal:task_detail' row.task.pk %}">{{ row.task.get_status_display }}</a>
+                            <a class="font-medium text-blue-700 hover:underline" href="{% url 'portal:task_detail' row.task.pk %}">{{ row.task.get_status_display|ui_number }}</a>
                             {% if row.is_overdue %}<span class="ml-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">Quá hạn</span>{% endif %}
                             {% else %}<span class="text-amber-700">Chờ công văn đi</span>{% endif %}
                         </td>

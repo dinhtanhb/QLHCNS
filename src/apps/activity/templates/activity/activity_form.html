@@ -1,18 +1,18 @@
 {% extends "base.html" %}
-{% block title %}{{ page_title }}{% endblock %}
+{% block title %}{{ page_title|ui_number }}{% endblock %}
 {% block content %}
 <div class="mx-auto max-w-4xl px-4 py-6 sm:px-6">
     <div class="mb-6">
         <a href="{% url 'portal:activity_dashboard' %}" class="text-sm font-medium text-blue-700 hover:underline">← Quay lại dashboard hoạt động</a>
         <p class="mt-4 text-sm font-semibold uppercase tracking-wide text-blue-700">Hoạt động dự án</p>
-        <h1 class="mt-1 text-2xl font-bold text-gray-900">{{ page_title }}</h1>
+        <h1 class="mt-1 text-2xl font-bold text-gray-900">{{ page_title|ui_number }}</h1>
         <p class="mt-1 text-sm text-gray-600">Nhập thông tin kế hoạch và phân công CBDA. Gắn công văn đi đã phát hành để tự tạo Task báo cáo.</p>
     </div>
 
     <form method="post" class="space-y-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm sm:p-7">
         {% csrf_token %}
         {% if form.non_field_errors %}
-        <div class="rounded-lg bg-red-50 p-3 text-sm text-red-700">{{ form.non_field_errors }}</div>
+        <div class="rounded-lg bg-red-50 p-3 text-sm text-red-700">{{ form.non_field_errors|ui_number }}</div>
         {% endif %}
 
         <section>
@@ -21,10 +21,10 @@
                 {% for field in form %}
                     {% if field.name == "activity_code" or field.name == "activity_name" or field.name == "project" or field.name == "location" or field.name == "participants" or field.name == "status" %}
                     <div class="{% if field.name == 'activity_name' or field.name == 'participants' %}sm:col-span-2{% endif %}">
-                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label }}{% if field.field.required %} <span class="text-red-600">*</span>{% endif %}</label>
-                        {{ field }}
-                        {% if field.help_text %}<p {% if field.name == "activity_name" %}id="activity-name-help"{% endif %} class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>{% endif %}
-                        {% for error in field.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label|ui_number }}{% if field.field.required %} <span class="text-red-600">*</span>{% endif %}</label>
+                        {{ field|ui_number }}
+                        {% if field.help_text %}<p {% if field.name == "activity_name" %}id="activity-name-help"{% endif %} class="mt-1 text-xs text-gray-500">{{ field.help_text|ui_number }}</p>{% endif %}
+                        {% for error in field.errors %}<p class="mt-1 text-xs text-red-600">{{ error|ui_number }}</p>{% endfor %}
                     </div>
                     {% endif %}
                 {% endfor %}
@@ -37,9 +37,9 @@
                 {% for field in form %}
                     {% if field.name == "purpose" or field.name == "expected_output" %}
                     <div>
-                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
-                        {{ field }}
-                        {% for error in field.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label|ui_number }}</label>
+                        {{ field|ui_number }}
+                        {% for error in field.errors %}<p class="mt-1 text-xs text-red-600">{{ error|ui_number }}</p>{% endfor %}
                     </div>
                     {% endif %}
                 {% endfor %}
@@ -52,10 +52,10 @@
                 {% for field in form %}
                     {% if field.name == "start_date" or field.name == "end_date" or field.name == "lead_cbda" or field.name == "coordinator" or field.name == "outgoing_document" %}
                     <div class="{% if field.name == 'outgoing_document' %}sm:col-span-2{% endif %}">
-                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label }}{% if field.field.required %} <span class="text-red-600">*</span>{% endif %}</label>
-                        {{ field }}
-                        {% if field.help_text %}<p {% if field.name == "outgoing_document" %}id="{{ field.id_for_label }}_helptext"{% endif %} class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>{% endif %}
-                        {% for error in field.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label|ui_number }}{% if field.field.required %} <span class="text-red-600">*</span>{% endif %}</label>
+                        {{ field|ui_number }}
+                        {% if field.help_text %}<p {% if field.name == "outgoing_document" %}id="{{ field.id_for_label }}_helptext"{% endif %} class="mt-1 text-xs text-gray-500">{{ field.help_text|ui_number }}</p>{% endif %}
+                        {% for error in field.errors %}<p class="mt-1 text-xs text-red-600">{{ error|ui_number }}</p>{% endfor %}
                     </div>
                     {% endif %}
                 {% endfor %}
@@ -65,7 +65,7 @@
 
         <div class="flex flex-wrap justify-end gap-3 border-t pt-5">
             <a href="{% url 'portal:activity_dashboard' %}" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Hủy</a>
-            <button type="submit" class="rounded-lg bg-blue-700 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-800">{{ submit_label }}</button>
+            <button type="submit" class="rounded-lg bg-blue-700 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-800">{{ submit_label|ui_number }}</button>
         </div>
     </form>
 </div>

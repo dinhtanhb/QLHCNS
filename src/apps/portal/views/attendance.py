@@ -33,7 +33,7 @@ def _can_approve(request):
 
 
 def _leave_approvers_for(employee):
-    """Những nhân viên có quyền duyệt đơn nghỉ phép của `employee` (HR/Director toàn công ty + Trưởng phòng của họ)."""
+    """Những nhân viên có quyền duyệt đơn nghỉ phép của `employee` (HR/Director toàn Trung tâm + Trưởng phòng của họ)."""
     q = models.Q(user_account__role__role_code__in=["HR_MANAGER", "DIRECTOR"])
     if employee.department_id:
         q |= models.Q(managed_departments=employee.department_id)

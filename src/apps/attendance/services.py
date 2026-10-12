@@ -1,6 +1,6 @@
 """Các hàm dùng chung cho chấm công, ngày công chuẩn và nghỉ bù.
 
-Quy ước của công ty (dự án cộng đồng):
+Quy ước của Trung tâm (dự án cộng đồng):
 - Ngày công chuẩn là Thứ 2 đến Thứ 6, trừ các ngày lễ đã khai báo.
 - Làm việc vào Thứ 7, Chủ nhật hoặc ngày lễ KHÔNG tính là ngày công chuẩn,
   mà được quy đổi thành ngày nghỉ bù.

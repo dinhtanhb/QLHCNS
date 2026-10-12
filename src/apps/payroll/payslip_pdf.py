@@ -4,6 +4,8 @@ from html import escape
 from io import BytesIO
 from pathlib import Path
 
+from apps.common.number_format import vi_number
+
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from reportlab.lib import colors
@@ -48,7 +50,7 @@ def _register_fonts():
 
 
 def _money(value):
-    return f"{value:,.0f} đ"
+    return vi_number(value, 0) + " đ"
 
 
 def render_payslip_pdf(payslip):
@@ -94,7 +96,7 @@ def render_payslip_pdf(payslip):
         [Paragraph("Phòng ban", styles["PayText"]), Paragraph(escape(employee.department.department_name if employee.department_id else "—"), styles["PayText"])],
         [Paragraph("Vị trí", styles["PayText"]), Paragraph(escape(employee.position.position_name if employee.position_id else "—"), styles["PayText"])],
         [Paragraph("Ngày công", styles["PayText"]), Paragraph(
-            f"{payroll.actual_working_days:,.1f} / {payroll.standard_working_days:,.1f} ngày", styles["PayText"]
+            f"{vi_number(payroll.actual_working_days, 1)} / {vi_number(payroll.standard_working_days, 1)} ngày", styles["PayText"]
         )],
         [Paragraph("Ngày phát hành", styles["PayText"]), Paragraph(payslip.generated_date.strftime("%d/%m/%Y"), styles["PayText"])],
     ]

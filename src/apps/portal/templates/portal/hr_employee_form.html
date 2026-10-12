@@ -2,7 +2,7 @@
 {% block title %}{% if employee %}Sửa hồ sơ{% else %}Thêm nhân viên{% endif %}{% endblock %}
 {% block content %}
 <div class="max-w-3xl bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <h1 class="text-lg font-bold text-gray-900 mb-4">{% if employee %}Sửa hồ sơ: {{ employee.full_name }}{% else %}Thêm nhân viên mới{% endif %}</h1>
+    <h1 class="text-lg font-bold text-gray-900 mb-4">{% if employee %}Sửa hồ sơ: {{ employee.full_name|ui_number }}{% else %}Thêm nhân viên mới{% endif %}</h1>
     <form method="post" class="space-y-4">
         {% csrf_token %}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -35,7 +35,7 @@
                 <input type="text" name="social_insurance_no" value="{{ employee.social_insurance_no|default:'' }}" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div><label class="block text-xs font-medium text-gray-700 mb-1">Email công ty</label>
+            <div><label class="block text-xs font-medium text-gray-700 mb-1">Email Trung tâm</label>
                 <input type="email" name="company_email" value="{{ employee.company_email|default:'' }}" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
             <div><label class="block text-xs font-medium text-gray-700 mb-1">Email cá nhân</label>
                 <input type="email" name="personal_email" value="{{ employee.personal_email|default:initial.personal_email }}" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
@@ -53,24 +53,24 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div><label class="block text-xs font-medium text-gray-700 mb-1">Phòng ban</label>
                 <select name="department" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-                    {% for d in departments %}<option value="{{ d.id }}" {% if employee.department_id == d.id %}selected{% endif %}>{{ d.department_name }}</option>{% endfor %}
+                    {% for d in departments %}<option value="{{ d.id }}" {% if employee.department_id == d.id %}selected{% endif %}>{{ d.department_name|ui_number }}</option>{% endfor %}
                 </select></div>
             {% if current_department_inactive %}<p class="md:col-span-3 -mt-2 text-xs text-amber-700">Phòng ban hiện tại đã ngừng hoạt động — vui lòng chọn phòng ban mới nếu cần điều chuyển nhân viên.</p>{% endif %}
             <div><label class="block text-xs font-medium text-gray-700 mb-1">Vị trí</label>
                 <select name="position" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-                    {% for p in positions %}<option value="{{ p.id }}" {% if employee.position_id == p.id %}selected{% endif %}>{{ p.position_name }}</option>{% endfor %}
+                    {% for p in positions %}<option value="{{ p.id }}" {% if employee.position_id == p.id %}selected{% endif %}>{{ p.position_name|ui_number }}</option>{% endfor %}
                 </select></div>
             <div><label class="block text-xs font-medium text-gray-700 mb-1">Chức danh</label>
                 <select name="job_title" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
                     <option value="">-- Không có --</option>
-                    {% for j in job_titles %}<option value="{{ j.id }}" {% if employee.job_title_id == j.id %}selected{% endif %}>{{ j.job_title_name }}</option>{% endfor %}
+                    {% for j in job_titles %}<option value="{{ j.id }}" {% if employee.job_title_id == j.id %}selected{% endif %}>{{ j.job_title_name|ui_number }}</option>{% endfor %}
                 </select></div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div><label class="block text-xs font-medium text-gray-700 mb-1">Quản lý trực tiếp</label>
                 <select name="manager" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
                     <option value="">-- Không có --</option>
-                    {% for m in managers %}<option value="{{ m.id }}" {% if employee.manager_id == m.id %}selected{% endif %}>{{ m.full_name }}</option>{% endfor %}
+                    {% for m in managers %}<option value="{{ m.id }}" {% if employee.manager_id == m.id %}selected{% endif %}>{{ m.full_name|ui_number }}</option>{% endfor %}
                 </select></div>
             <div><label class="block text-xs font-medium text-gray-700 mb-1">Trạng thái làm việc</label>
                 <select name="employment_status" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">

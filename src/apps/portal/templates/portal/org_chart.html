@@ -13,11 +13,11 @@
       </div>
       <div class="flex gap-3">
         <div class="min-w-28 rounded-xl bg-blue-50 px-4 py-3 text-center">
-          <p class="text-xl font-bold text-blue-800">{{ employee_count }}</p>
+          <p class="text-xl font-bold text-blue-800">{{ employee_count|ui_number }}</p>
           <p class="text-xs text-slate-600">Nhân viên</p>
         </div>
         <div class="min-w-28 rounded-xl bg-slate-100 px-4 py-3 text-center">
-          <p class="text-xl font-bold text-slate-800">{{ department_count }}</p>
+          <p class="text-xl font-bold text-slate-800">{{ department_count|ui_number }}</p>
           <p class="text-xs text-slate-600">Phòng ban</p>
         </div>
       </div>
@@ -26,7 +26,7 @@
       <div class="w-full max-w-lg">
         <label for="org-chart-search" class="mb-1 block text-sm font-medium text-slate-700">Tìm nhân viên</label>
         <input id="org-chart-search" type="search" autocomplete="off" placeholder="Nhập họ tên, chức vụ hoặc phòng ban" class="w-full rounded-lg border border-slate-300 px-3 py-2">
-        <p id="org-chart-search-count" class="mt-1 text-xs text-slate-500" aria-live="polite">{{ employee_count }} nhân viên đang hiển thị</p>
+        <p id="org-chart-search-count" class="mt-1 text-xs text-slate-500" aria-live="polite">{{ employee_count|ui_number }} nhân viên đang hiển thị</p>
       </div>
       <div class="flex items-center gap-2" aria-label="Điều khiển thu phóng sơ đồ">
         <button id="org-chart-zoom-out" type="button" class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold" aria-label="Thu nhỏ">−</button>

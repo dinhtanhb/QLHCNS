@@ -287,7 +287,7 @@ def build_activity_proposal_email_draft(package, approver, sender, approval_url=
     """Build a mailto draft for the coordinator to review and send in Outlook."""
     recipient = _user_email(approver)
     if not recipient:
-        raise ValueError("Tài khoản Giám đốc chưa có email công ty để nhận hồ sơ.")
+        raise ValueError("Tài khoản Giám đốc chưa có email Trung tâm để nhận hồ sơ.")
     if not package.has_required_files():
         raise ValueError("Cần tải đủ 2 tệp PDF: đề xuất hoạt động và dự trù kinh phí.")
 

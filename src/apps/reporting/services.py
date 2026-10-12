@@ -67,7 +67,7 @@ def _auto_fit_columns(ws):
 
 
 def generate_employee_list_excel():
-    """Xuất danh sách nhân sự toàn công ty sang Excel."""
+    """Xuất danh sách nhân sự toàn Trung tâm sang Excel."""
     wb = Workbook()
     ws = wb.active
     ws.title = "Danh sách nhân viên"

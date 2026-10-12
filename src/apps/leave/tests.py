@@ -2,7 +2,7 @@
 
 Chạy:  python manage.py test apps.leave
 
-Quy ước của công ty đang áp dụng:
+Quy ước của Trung tâm đang áp dụng:
   - Ngày nghỉ phép chỉ đếm Thứ 2 → Thứ 6, đã trừ ngày lễ.
   - Đơn nghỉ vắt qua Thứ 7 / Chủ nhật thì hai ngày đó KHÔNG bị trừ phép.
   - Nghỉ bù được tính tự động từ bảng chấm công dự án: giờ làm vào
@@ -32,7 +32,7 @@ D = Decimal
 class LeaveTestBase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        org = Organization.objects.create(organization_code="ORG", organization_name="Công ty Thử Nghiệm")
+        org = Organization.objects.create(organization_code="ORG", organization_name="Trung tâm Thử Nghiệm")
         cls.department = Department.objects.create(
             department_code="IT", department_name="Công nghệ thông tin", organization=org
         )

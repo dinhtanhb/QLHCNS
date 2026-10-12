@@ -12,12 +12,12 @@
         <tbody class="divide-y divide-gray-100">
         {% for c in contracts %}
         <tr>
-            <td class="py-2 pr-4 text-gray-500">{{ c.contract_no }}</td>
-            <td class="py-2 pr-4"><a href="{% url 'portal:hr_employee_detail' c.employee.pk %}" class="text-blue-700 hover:underline">{{ c.employee }}</a></td>
-            <td class="py-2 pr-4">{{ c.contract_type }}</td>
-            <td class="py-2 pr-4">{{ c.start_date }}</td>
-            <td class="py-2 pr-4">{{ c.end_date|default:"Không xác định" }}</td>
-            <td class="py-2">{{ c.get_status_display }}</td>
+            <td class="py-2 pr-4 text-gray-500">{{ c.contract_no|ui_number }}</td>
+            <td class="py-2 pr-4"><a href="{% url 'portal:hr_employee_detail' c.employee.pk %}" class="text-blue-700 hover:underline">{{ c.employee|ui_number }}</a></td>
+            <td class="py-2 pr-4">{{ c.contract_type|ui_number }}</td>
+            <td class="py-2 pr-4">{{ c.start_date|ui_number }}</td>
+            <td class="py-2 pr-4">{{ c.end_date|default:"Không xác định"|ui_number }}</td>
+            <td class="py-2">{{ c.get_status_display|ui_number }}</td>
         </tr>
         {% empty %}<tr><td colspan="6" class="py-6 text-center text-gray-400">Chưa có hợp đồng nào.</td></tr>{% endfor %}
         </tbody>

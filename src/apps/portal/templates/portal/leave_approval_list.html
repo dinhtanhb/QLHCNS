@@ -13,12 +13,12 @@
         <tbody class="divide-y divide-gray-100">
         {% for r in requests %}
         <tr>
-            <td class="py-2.5 pr-4 font-medium">{{ r.employee }}</td>
-            <td class="py-2.5 pr-4">{{ r.leave_type }}</td>
-            <td class="py-2.5 pr-4">{{ r.from_date }}</td>
-            <td class="py-2.5 pr-4">{{ r.to_date }}</td>
-            <td class="py-2.5 pr-4">{{ r.total_days }}</td>
-            <td class="py-2.5 pr-4 text-gray-500">{{ r.reason|default:"—" }}</td>
+            <td class="py-2.5 pr-4 font-medium">{{ r.employee|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.leave_type|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.from_date|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.to_date|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.total_days|ui_number }}</td>
+            <td class="py-2.5 pr-4 text-gray-500">{{ r.reason|default:"—"|ui_number }}</td>
             <td class="py-2.5">
                 <div class="flex gap-2">
                     <form method="post" action="{% url 'portal:leave_approve' r.pk %}">

@@ -64,8 +64,8 @@ class CompanyKPI(BaseKPIResult):
 
     class Meta:
         db_table = "tblCompanyKPI"
-        verbose_name = "KPI Công ty"
-        verbose_name_plural = "KPI Công ty"
+        verbose_name = "KPI Trung tâm"
+        verbose_name_plural = "KPI Trung tâm"
 
     def save(self, *args, **kwargs):
         self.calculate_achievement()

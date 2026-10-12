@@ -8,9 +8,9 @@
         <p class="mt-2 text-gray-700">IHRMS chưa gửi thư. Outlook sẽ mở một thư nháp để bạn kiểm tra, thêm CC, chỉnh nội dung và tự gửi.</p>
 
         <dl class="mt-5 grid gap-3 rounded-lg bg-gray-50 p-4 text-sm sm:grid-cols-2">
-            <div><dt class="font-semibold text-gray-600">Người gửi dự kiến</dt><dd>{{ draft.sender_email|default:"Tài khoản Outlook đang mặc định" }}</dd></div>
-            <div><dt class="font-semibold text-gray-600">Người nhận</dt><dd>{{ draft.recipient }}</dd></div>
-            <div class="sm:col-span-2"><dt class="font-semibold text-gray-600">Tiêu đề</dt><dd>{{ draft.subject }}</dd></div>
+            <div><dt class="font-semibold text-gray-600">Người gửi dự kiến</dt><dd>{{ draft.sender_email|default:"Tài khoản Outlook đang mặc định"|ui_number }}</dd></div>
+            <div><dt class="font-semibold text-gray-600">Người nhận</dt><dd>{{ draft.recipient|ui_number }}</dd></div>
+            <div class="sm:col-span-2"><dt class="font-semibold text-gray-600">Tiêu đề</dt><dd>{{ draft.subject|ui_number }}</dd></div>
         </dl>
         <p class="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
             Outlook dùng tài khoản gửi mặc định trên máy. Hãy kiểm tra trường From và chọn đúng địa chỉ của Điều phối viên nếu cần. CC có thể thêm trực tiếp trong Outlook.
@@ -20,7 +20,7 @@
             <h2 class="font-semibold">1. Tải hai PDF để đính kèm</h2>
             <ul class="mt-2 list-inside list-disc space-y-2 text-sm">
                 {% for item in pdf_files %}
-                <li><a class="font-semibold text-blue-700 underline" href="{{ item.url }}">Tải {{ item.label }}</a></li>
+                <li><a class="font-semibold text-blue-700 underline" href="{{ item.url }}">Tải {{ item.label|ui_number }}</a></li>
                 {% endfor %}
             </ul>
         </div>
@@ -31,7 +31,7 @@
             <a href="{{ draft.mailto_url }}" class="mt-3 inline-flex rounded-lg bg-indigo-700 px-4 py-2 font-semibold text-white hover:bg-indigo-800">Mở thư trong Outlook</a>
             <details class="mt-4 text-sm">
                 <summary class="cursor-pointer font-semibold text-gray-700">Xem nội dung thư mẫu</summary>
-                <pre class="mt-2 whitespace-pre-wrap rounded-lg bg-gray-50 p-4 font-sans">{{ draft.body }}</pre>
+                <pre class="mt-2 whitespace-pre-wrap rounded-lg bg-gray-50 p-4 font-sans">{{ draft.body|ui_number }}</pre>
             </details>
         </div>
 

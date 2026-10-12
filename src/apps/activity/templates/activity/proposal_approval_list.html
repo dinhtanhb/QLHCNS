@@ -16,10 +16,10 @@
             <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-600"><tr><th class="px-4 py-3">Hoạt động</th><th class="px-4 py-3">Dự án</th><th class="px-4 py-3">CBDA / ĐPV</th><th class="px-4 py-3">Người gửi</th><th class="px-4 py-3">Ngày gửi</th><th class="px-4 py-3">Hồ sơ</th></tr></thead>
             <tbody class="divide-y divide-gray-100">
             {% for package in packages %}<tr class="align-top hover:bg-gray-50">
-                <td class="px-4 py-4"><strong>{{ package.activity.activity_code }}</strong><span class="mt-1 block">{{ package.activity.activity_name }}</span><span class="mt-1 block text-xs text-gray-500">Phiên bản {{ package.version }}</span></td>
-                <td class="px-4 py-4">{{ package.activity.project.project_name }}</td>
-                <td class="px-4 py-4">{{ package.activity.lead_cbda.full_name }}<span class="mt-1 block text-xs text-gray-500">ĐPV: {{ package.activity.coordinator.full_name|default:"Chưa phân công" }}</span></td>
-                <td class="px-4 py-4">{{ package.submitted_by.get_full_name|default:package.submitted_by.username }}</td>
+                <td class="px-4 py-4"><strong>{{ package.activity.activity_code|ui_number }}</strong><span class="mt-1 block">{{ package.activity.activity_name|ui_number }}</span><span class="mt-1 block text-xs text-gray-500">Phiên bản {{ package.version|ui_number }}</span></td>
+                <td class="px-4 py-4">{{ package.activity.project.project_name|ui_number }}</td>
+                <td class="px-4 py-4">{{ package.activity.lead_cbda.full_name|ui_number }}<span class="mt-1 block text-xs text-gray-500">ĐPV: {{ package.activity.coordinator.full_name|default:"Chưa phân công"|ui_number }}</span></td>
+                <td class="px-4 py-4">{{ package.submitted_by.get_full_name|default:package.submitted_by.username|ui_number }}</td>
                 <td class="whitespace-nowrap px-4 py-4">{{ package.submitted_at|date:"d/m/Y H:i" }}</td>
                 <td class="px-4 py-4"><a class="font-semibold text-blue-700 underline" href="{% url 'portal:activity_proposal' package.activity_id %}">Xem và xử lý</a></td>
             </tr>{% endfor %}

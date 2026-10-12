@@ -21,7 +21,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         org, _ = Organization.objects.get_or_create(
-            organization_code="HQ", defaults={"organization_name": "Công ty demo"}
+            organization_code="HQ", defaults={"organization_name": "Trung tâm demo"}
         )
         for code, name in [("NV", "Nhân viên"), ("TP", "Trưởng phòng"), ("GD", "Giám đốc")]:
             Position.objects.get_or_create(position_code=code, defaults={"position_name": name})

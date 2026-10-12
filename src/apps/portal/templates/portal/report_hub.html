@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Báo cáo điều hành{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/report_dashboard.css' %}?v=20261010-design-2">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/report_dashboard.css' %}?v=20261012-ui-2c">{% endblock %}
 {% block content %}
 <div class="report-shell">
   <div class="report-toolbar">
@@ -20,12 +20,12 @@
   <section class="report-hero" aria-label="Số liệu tổng quan">
     <p class="report-period">Kỳ báo cáo {{ from_date|date:'d/m/Y' }} đến {{ to_date|date:'d/m/Y' }}</p>
     <div class="report-headlines">
-      <div class="headline"><span class="headline-label">Nhân sự đang làm việc</span><strong class="headline-value">{{ headline.active }}</strong></div>
-      <div class="headline"><span class="headline-label">Tuyển mới trong kỳ</span><strong class="headline-value">{{ headline.new_hires }}</strong></div>
-      <div class="headline"><span class="headline-label">Nghỉ việc trong kỳ</span><strong class="headline-value">{{ headline.departures }}</strong></div>
-      <div class="headline"><span class="headline-label">Ứng viên đang xử lý</span><strong class="headline-value">{{ headline.candidates }}</strong></div>
-      <div class="headline" {% if headline.overdue_tasks > 0 %}data-tone="danger"{% endif %}><span class="headline-label">Công việc quá hạn</span><strong class="headline-value">{{ headline.overdue_tasks }}</strong></div>
-      <div class="headline" {% if headline.overdue_dispatches > 0 %}data-tone="danger"{% endif %}><span class="headline-label">Công văn quá hạn</span><strong class="headline-value">{{ headline.overdue_dispatches }}</strong></div>
+      <div class="headline"><span class="headline-label">Nhân sự đang làm việc</span><strong class="headline-value">{{ headline.active|ui_number }}</strong></div>
+      <div class="headline"><span class="headline-label">Tuyển mới trong kỳ</span><strong class="headline-value">{{ headline.new_hires|ui_number }}</strong></div>
+      <div class="headline"><span class="headline-label">Nghỉ việc trong kỳ</span><strong class="headline-value">{{ headline.departures|ui_number }}</strong></div>
+      <div class="headline"><span class="headline-label">Ứng viên đang xử lý</span><strong class="headline-value">{{ headline.candidates|ui_number }}</strong></div>
+      <div class="headline" {% if headline.overdue_tasks > 0 %}data-tone="danger"{% endif %}><span class="headline-label">Công việc quá hạn</span><strong class="headline-value">{{ headline.overdue_tasks|ui_number }}</strong></div>
+      <div class="headline" {% if headline.overdue_dispatches > 0 %}data-tone="danger"{% endif %}><span class="headline-label">Công văn quá hạn</span><strong class="headline-value">{{ headline.overdue_dispatches|ui_number }}</strong></div>
     </div>
   </section>
   <div class="report-visuals">
@@ -36,7 +36,7 @@
         {% for row in month_rows %}
         <div class="movement-month" aria-hidden="true">
           <div class="movement-bars"><span class="movement-bar bar-hire" data-empty="{% if row.new_hires > 0 %}false{% else %}true{% endif %}" style="height:{{ row.new_hires_height }}%"></span><span class="movement-bar bar-leave" data-empty="{% if row.departures > 0 %}false{% else %}true{% endif %}" style="height:{{ row.departures_height }}%"></span><span class="movement-bar bar-transfer" data-empty="{% if row.transfers > 0 %}false{% else %}true{% endif %}" style="height:{{ row.transfers_height }}%"></span><span class="movement-bar bar-promotion" data-empty="{% if row.promotions > 0 %}false{% else %}true{% endif %}" style="height:{{ row.promotions_height }}%"></span></div>
-          <span class="movement-label">{{ row.label }}</span>
+          <span class="movement-label">{{ row.label|ui_number }}</span>
         </div>
         {% empty %}<p class="report-panel-note">Chưa có kỳ dữ liệu phù hợp.</p>{% endfor %}
       </div>
@@ -45,25 +45,25 @@
         <summary>Xem số liệu theo tháng</summary>
         <div class="report-table-scroll" role="region" tabindex="0" aria-label="Bảng biến động nhân sự theo tháng">
           <table class="report-data-table"><thead><tr><th scope="col">Tháng</th><th scope="col">Tuyển mới</th><th scope="col">Nghỉ việc</th><th scope="col">Điều chuyển</th><th scope="col">Bổ nhiệm</th></tr></thead>
-            <tbody>{% for row in month_rows %}<tr><th scope="row">{{ row.label }}</th><td>{{ row.new_hires }}</td><td>{{ row.departures }}</td><td>{{ row.transfers }}</td><td>{{ row.promotions }}</td></tr>{% endfor %}</tbody>
+            <tbody>{% for row in month_rows %}<tr><th scope="row">{{ row.label|ui_number }}</th><td>{{ row.new_hires|ui_number }}</td><td>{{ row.departures|ui_number }}</td><td>{{ row.transfers|ui_number }}</td><td>{{ row.promotions|ui_number }}</td></tr>{% endfor %}</tbody>
           </table>
         </div>
       </details>
     </section>
     <section class="report-panel" aria-labelledby="recruitment-heading">
       <h2 id="recruitment-heading">Phễu tuyển dụng</h2><p class="report-panel-note">Trạng thái tổng hợp hiện tại của quy trình tuyển dụng.</p>
-      <ul class="funnel">{% for item in recruitment_funnel %}<li class="funnel-row"><span class="funnel-label">{{ item.label }}</span><span class="funnel-track" aria-hidden="true"><span class="funnel-fill" data-empty="{% if item.value > 0 %}false{% else %}true{% endif %}" style="width:{{ item.width }}%"></span></span><strong class="funnel-value">{{ item.value }}</strong></li>{% endfor %}</ul>
+      <ul class="funnel">{% for item in recruitment_funnel %}<li class="funnel-row"><span class="funnel-label">{{ item.label|ui_number }}</span><span class="funnel-track" aria-hidden="true"><span class="funnel-fill" data-empty="{% if item.value > 0 %}false{% else %}true{% endif %}" style="width:{{ item.width }}%"></span></span><strong class="funnel-value">{{ item.value|ui_number }}</strong></li>{% endfor %}</ul>
     </section>
   </div>
   <div class="report-section-grid">{% for section in sections %}
     <section class="report-section" id="{{ section.key }}" aria-labelledby="section-{{ section.key }}">
-      <div class="section-heading"><div><h2 id="section-{{ section.key }}">{{ section.title }}</h2><p>{{ section.description }}</p></div>
+      <div class="section-heading"><div><h2 id="section-{{ section.key }}">{{ section.title|ui_number }}</h2><p>{{ section.description|ui_number }}</p></div>
         {% if section.href or section.key == 'planning' %}<div class="section-links">
           {% if section.href %}<a class="section-link" href="{% url section.href %}">{% if section.key == 'planning' %}Xem định biên{% else %}Xem chi tiết{% endif %}</a>{% endif %}
           {% if section.key == 'planning' %}<a class="section-link" href="{% url 'portal:report_budget' %}">Xem ngân sách</a>{% endif %}
         </div>{% endif %}
       </div>
-      <div class="metric-grid">{% for metric in section.metrics %}<div class="metric" data-tone="{% if metric.value > 0 %}{{ metric.tone }}{% else %}neutral{% endif %}"><span class="metric-label">{{ metric.label }}</span><strong class="metric-value">{{ metric.display }}</strong></div>{% endfor %}</div>
+      <div class="metric-grid">{% for metric in section.metrics %}<div class="metric" data-tone="{% if metric.value > 0 %}{{ metric.tone }}{% else %}neutral{% endif %}"><span class="metric-label">{{ metric.label|ui_number }}</span><strong class="metric-value">{{ metric.display|ui_number }}</strong></div>{% endfor %}</div>
     </section>
   {% endfor %}</div>
 </div>

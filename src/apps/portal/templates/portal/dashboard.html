@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Trang chủ{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261010-design-2">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261012-ui-2c">{% endblock %}
 {% block content %}
 <div class="home-dashboard">
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
     {% if employee %}
-        <h1 class="text-xl font-bold text-gray-900 mb-1">Xin chào, {{ employee.full_name }} 👋</h1>
-        <p class="text-gray-500 text-sm">{{ employee.employee_code }} · {{ employee.department }} · {{ employee.position }}</p>
+        <h1 class="text-xl font-bold text-gray-900 mb-1">Xin chào, {{ employee.full_name|ui_number }} 👋</h1>
+        <p class="text-gray-500 text-sm">{{ employee.employee_code|ui_number }} · {{ employee.department|ui_number }} · {{ employee.position|ui_number }}</p>
     {% else %}
         <p class="text-gray-600">Tài khoản của anh/chị chưa được gắn với hồ sơ nhân viên. Vui lòng liên hệ Phòng Nhân sự.</p>
     {% endif %}
@@ -17,11 +17,11 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 home-kpi-grid">
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Đơn nghỉ đang chờ duyệt</p>
-        <p class="text-2xl font-bold ui-kpi-value {% if my_pending_leaves > 0 %}ui-kpi-warning{% endif %}">{{ my_pending_leaves }}</p>
+        <p class="text-2xl font-bold ui-kpi-value {% if my_pending_leaves > 0 %}ui-kpi-warning{% endif %}">{{ my_pending_leaves|ui_number }}</p>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Công việc chưa hoàn thành</p>
-        <p class="text-2xl font-bold ui-kpi-value">{{ my_open_tasks }}</p>
+        <p class="text-2xl font-bold ui-kpi-value">{{ my_open_tasks|ui_number }}</p>
     </div>
 </div>
 {% endif %}
@@ -31,27 +31,27 @@
 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6 home-kpi-grid home-overview-kpis">
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Nhân viên đang làm việc</p>
-        <p class="text-2xl font-bold ui-kpi-value">{{ total_employees }}</p>
+        <p class="text-2xl font-bold ui-kpi-value">{{ total_employees|ui_number }}</p>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Đơn nghỉ chờ duyệt</p>
-        <p class="text-2xl font-bold ui-kpi-value {% if pending_leave_approvals > 0 %}ui-kpi-warning{% endif %}">{{ pending_leave_approvals }}</p>
+        <p class="text-2xl font-bold ui-kpi-value {% if pending_leave_approvals > 0 %}ui-kpi-warning{% endif %}">{{ pending_leave_approvals|ui_number }}</p>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Đề xuất tuyển dụng chờ duyệt</p>
-        <p class="text-2xl font-bold ui-kpi-value {% if pending_recruitment > 0 %}ui-kpi-warning{% endif %}">{{ pending_recruitment }}</p>
+        <p class="text-2xl font-bold ui-kpi-value {% if pending_recruitment > 0 %}ui-kpi-warning{% endif %}">{{ pending_recruitment|ui_number }}</p>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Tài liệu chờ ban hành</p>
-        <p class="text-2xl font-bold ui-kpi-value {% if pending_documents > 0 %}ui-kpi-warning{% endif %}">{{ pending_documents }}</p>
+        <p class="text-2xl font-bold ui-kpi-value {% if pending_documents > 0 %}ui-kpi-warning{% endif %}">{{ pending_documents|ui_number }}</p>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-        <p class="text-gray-500 text-xs mb-1">Công việc đang mở (toàn công ty)</p>
-        <p class="text-2xl font-bold ui-kpi-value">{{ open_tasks_company }}</p>
+        <p class="text-gray-500 text-xs mb-1">Công việc đang mở (toàn Trung tâm)</p>
+        <p class="text-2xl font-bold ui-kpi-value">{{ open_tasks_company|ui_number }}</p>
     </div>
     {% if can_view_asset %}<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Tài sản đang cấp phát</p>
-        <p class="text-2xl font-bold ui-kpi-value">{{ assets_in_use }}</p>
+        <p class="text-2xl font-bold ui-kpi-value">{{ assets_in_use|ui_number }}</p>
     </div>{% endif %}
 </div>
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 home-department-panel">
@@ -59,11 +59,11 @@
     <div class="space-y-2">
         {% for d in dept_counts %}
         <div class="flex items-center gap-3 text-sm">
-            <span class="w-40 text-gray-600">{{ d.department__department_name|default:"Chưa xác định" }}</span>
+            <span class="w-40 text-gray-600">{{ d.department__department_name|default:"Chưa xác định"|ui_number }}</span>
             <div class="flex-1 bg-gray-100 rounded-full h-3">
                 <div class="bg-blue-600 ui-chart-series-fill h-3 rounded-full" style="width: {% widthratio d.total total_employees 100 %}%"></div>
             </div>
-            <span class="w-8 text-right font-medium">{{ d.total }}</span>
+            <span class="w-8 text-right font-medium">{{ d.total|ui_number }}</span>
         </div>
         {% endfor %}
     </div>
@@ -73,7 +73,7 @@
 {% if lifecycle_overdue_count %}
 <a href="{% url 'portal:lifecycle_case_list' %}" class="mb-6 flex items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-red-900">
     <span class="font-semibold">Checklist onboarding/offboarding quá hạn</span>
-    <span class="rounded-full bg-red-700 px-3 py-1 text-sm font-bold text-white">{{ lifecycle_overdue_count }}</span>
+    <span class="rounded-full bg-red-700 px-3 py-1 text-sm font-bold text-white">{{ lifecycle_overdue_count|ui_number }}</span>
 </a>
 {% endif %}
 
@@ -82,7 +82,7 @@
     <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
         <div>
             <h2 class="text-sm font-bold text-gray-900">Tiến độ hoạt động dự án</h2>
-            <p class="text-xs text-gray-500 mt-1">Tháng {{ activity_month_label }}</p>
+            <p class="text-xs text-gray-500 mt-1">Tháng {{ activity_month_label|ui_number }}</p>
         </div>
         <a href="{% url 'portal:activity_dashboard' %}?month={{ activity_month }}"
            class="text-sm font-medium text-blue-700 hover:text-blue-900">
@@ -92,23 +92,23 @@
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 home-kpi-grid home-project-kpis">
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <p class="text-gray-500 text-xs mb-1">Hoạt động trong tháng</p>
-            <p class="text-2xl font-bold ui-kpi-value">{{ activity_total }}</p>
+            <p class="text-2xl font-bold ui-kpi-value">{{ activity_total|ui_number }}</p>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <p class="text-gray-500 text-xs mb-1">Task báo cáo hoàn thành</p>
-            <p class="text-2xl font-bold ui-kpi-value">{{ activity_completed }}</p>
+            <p class="text-2xl font-bold ui-kpi-value">{{ activity_completed|ui_number }}</p>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <p class="text-gray-500 text-xs mb-1">Task quá hạn</p>
-            <p class="text-2xl font-bold ui-kpi-value {% if activity_overdue > 0 %}ui-kpi-danger{% endif %}">{{ activity_overdue }}</p>
+            <p class="text-2xl font-bold ui-kpi-value {% if activity_overdue > 0 %}ui-kpi-danger{% endif %}">{{ activity_overdue|ui_number }}</p>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <p class="text-gray-500 text-xs mb-1">Task thiếu báo cáo</p>
-            <p class="text-2xl font-bold ui-kpi-value {% if activity_report_missing > 0 %}ui-kpi-warning{% endif %}">{{ activity_report_missing }}</p>
+            <p class="text-2xl font-bold ui-kpi-value {% if activity_report_missing > 0 %}ui-kpi-warning{% endif %}">{{ activity_report_missing|ui_number }}</p>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <p class="text-gray-500 text-xs mb-1">Hoạt động chưa có Task</p>
-            <p class="text-2xl font-bold ui-kpi-value">{{ activity_without_task }}</p>
+            <p class="text-2xl font-bold ui-kpi-value">{{ activity_without_task|ui_number }}</p>
         </div>
     </div>
 </div>
@@ -119,19 +119,19 @@
 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 home-kpi-grid home-team-kpis">
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Nhân viên trong phòng</p>
-        <p class="text-2xl font-bold ui-kpi-value">{{ dept_employee_count }}</p>
+        <p class="text-2xl font-bold ui-kpi-value">{{ dept_employee_count|ui_number }}</p>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Đơn nghỉ chờ duyệt</p>
-        <p class="text-2xl font-bold ui-kpi-value {% if dept_pending_leaves > 0 %}ui-kpi-warning{% endif %}">{{ dept_pending_leaves }}</p>
+        <p class="text-2xl font-bold ui-kpi-value {% if dept_pending_leaves > 0 %}ui-kpi-warning{% endif %}">{{ dept_pending_leaves|ui_number }}</p>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Công việc chưa hoàn thành</p>
-        <p class="text-2xl font-bold ui-kpi-value">{{ dept_open_tasks }}</p>
+        <p class="text-2xl font-bold ui-kpi-value">{{ dept_open_tasks|ui_number }}</p>
     </div>
         {% if can_view_asset %}<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
         <p class="text-gray-500 text-xs mb-1">Tài sản đang cấp phát (phòng)</p>
-        <p class="text-2xl font-bold ui-kpi-value">{{ dept_assets_in_use }}</p>
+        <p class="text-2xl font-bold ui-kpi-value">{{ dept_assets_in_use|ui_number }}</p>
     </div>{% endif %}
 </div>
 {% endif %}

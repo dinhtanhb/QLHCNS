@@ -9,13 +9,13 @@
         <p class="font-bold">Trung tâm Phát triển Sức khoẻ Bền vững</p>
         <p class="font-bold">VietHealth</p>
         <h1 class="text-lg font-bold mt-4">BIÊN BẢN KIỂM KÊ TRANG THIẾT BỊ VĂN PHÒNG</h1>
-        <p class="font-medium">{{ session.office_name }}</p>
+        <p class="font-medium">{{ session.office_name|ui_number }}</p>
         <p class="mt-2">Thời điểm kiểm kê: {{ session.inventory_datetime|date:"H \g\i\ờ i, \\n\g\à\y d \\t\h\á\n\g m \\n\ă\m Y" }}</p>
     </div>
 
     <table class="w-full text-sm mb-4">
         {% for m in all_members %}
-        <tr><td class="py-1 pr-4">{{ m.employee.full_name }}</td><td class="py-1 pr-4">{{ m.employee.position }}</td><td class="py-1">{{ m.get_role_display }}</td></tr>
+        <tr><td class="py-1 pr-4">{{ m.employee.full_name|ui_number }}</td><td class="py-1 pr-4">{{ m.employee.position|ui_number }}</td><td class="py-1">{{ m.get_role_display|ui_number }}</td></tr>
         {% endfor %}
     </table>
 
@@ -35,48 +35,48 @@
         {% for l in machinery %}
         <tr>
             <td class="border border-gray-300 px-1 py-1 text-center">{{ forloop.counter }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.asset.asset_name }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.asset.asset_code }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.asset.location }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.asset.brand }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.asset.serial_number }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.asset.funding_source }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.asset.asset_name|ui_number }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.asset.asset_code|ui_number }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.asset.location|ui_number }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.asset.brand|ui_number }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.asset.serial_number|ui_number }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.asset.funding_source|ui_number }}</td>
             <td class="border border-gray-300 px-1 py-1">{{ l.asset.purchase_date|date:"d/m/Y" }}</td>
-            <td class="border border-gray-300 px-1 py-1 text-center">{{ l.asset.quantity }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.asset.unit }}</td>
-            <td class="border border-gray-300 px-1 py-1 text-right">{{ l.asset.purchase_value|floatformat:0 }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.get_actual_condition_display }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.note }}</td>
+            <td class="border border-gray-300 px-1 py-1 text-center">{{ l.asset.quantity|ui_number }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.asset.unit|ui_number }}</td>
+            <td class="border border-gray-300 px-1 py-1 text-right">{{ l.asset.purchase_value|floatformat:"0g" }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.get_actual_condition_display|ui_number }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.note|ui_number }}</td>
         </tr>
         {% endfor %}
         <tr><td class="border border-gray-300 px-1 py-1 font-bold" colspan="13">II. Thiết bị khác</td></tr>
         {% for l in other %}
         <tr>
             <td class="border border-gray-300 px-1 py-1 text-center">{{ forloop.counter }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.asset.asset_name }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.asset.asset_code }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.asset.location }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.asset.brand }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.asset.serial_number }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.asset.funding_source }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.asset.asset_name|ui_number }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.asset.asset_code|ui_number }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.asset.location|ui_number }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.asset.brand|ui_number }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.asset.serial_number|ui_number }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.asset.funding_source|ui_number }}</td>
             <td class="border border-gray-300 px-1 py-1">{{ l.asset.purchase_date|date:"d/m/Y" }}</td>
-            <td class="border border-gray-300 px-1 py-1 text-center">{{ l.asset.quantity }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.asset.unit }}</td>
-            <td class="border border-gray-300 px-1 py-1 text-right">{{ l.asset.purchase_value|floatformat:0 }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.get_actual_condition_display }}</td>
-            <td class="border border-gray-300 px-1 py-1">{{ l.note }}</td>
+            <td class="border border-gray-300 px-1 py-1 text-center">{{ l.asset.quantity|ui_number }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.asset.unit|ui_number }}</td>
+            <td class="border border-gray-300 px-1 py-1 text-right">{{ l.asset.purchase_value|floatformat:"0g" }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.get_actual_condition_display|ui_number }}</td>
+            <td class="border border-gray-300 px-1 py-1">{{ l.note|ui_number }}</td>
         </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <p class="mt-4 text-sm">* Kết quả kiểm kê TBVP: Có {{ machinery|length }} máy móc thiết bị và {{ other|length }} thiết bị khác.</p>
-    <p class="text-sm">* Kiến nghị: {{ session.recommendation }}</p>
+    <p class="mt-4 text-sm">* Kết quả kiểm kê TBVP: Có {{ machinery|length|ui_number }} máy móc thiết bị và {{ other|length|ui_number }} thiết bị khác.</p>
+    <p class="text-sm">* Kiến nghị: {{ session.recommendation|ui_number }}</p>
 
     <div class="grid grid-cols-3 gap-4 mt-12 text-sm text-center">
-        <div><p class="font-semibold">Người lập</p><p class="text-xs text-gray-400 mb-14">(Ký, họ tên)</p><p class="font-medium">{{ recorder.employee.full_name|default:"" }}</p></div>
-        <div><p class="font-semibold">Thành viên kiểm kê</p><p class="text-xs text-gray-400 mb-14">(Ký, họ tên)</p>{% for m in member_list %}<p class="font-medium">{{ m.employee.full_name }}</p>{% endfor %}</div>
-        <div><p class="font-semibold">Trưởng Ban kiểm kê</p><p class="text-xs text-gray-400 mb-14">(Ký, họ tên)</p><p class="font-medium">{{ chairman.employee.full_name|default:"" }}</p></div>
+        <div><p class="font-semibold">Người lập</p><p class="text-xs text-gray-400 mb-14">(Ký, họ tên)</p><p class="font-medium">{{ recorder.employee.full_name|default:""|ui_number }}</p></div>
+        <div><p class="font-semibold">Thành viên kiểm kê</p><p class="text-xs text-gray-400 mb-14">(Ký, họ tên)</p>{% for m in member_list %}<p class="font-medium">{{ m.employee.full_name|ui_number }}</p>{% endfor %}</div>
+        <div><p class="font-semibold">Trưởng Ban kiểm kê</p><p class="text-xs text-gray-400 mb-14">(Ký, họ tên)</p><p class="font-medium">{{ chairman.employee.full_name|default:""|ui_number }}</p></div>
     </div>
 </div>
 {% endblock %}

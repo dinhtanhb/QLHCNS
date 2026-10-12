@@ -38,20 +38,20 @@
         <tbody class="divide-y divide-gray-100">
         {% for t in tasks %}
         <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{% url 'portal:task_detail' t.pk %}'">
-            <td class="py-2.5 pr-4 text-gray-500">{{ t.task_code }}</td>
-            <td class="py-2.5 pr-4 font-medium text-blue-700">{{ t.task_name }}</td>
-            {% if is_project_overview %}<td class="py-2.5 pr-4">{{ t.assigned_to_employee.full_name }}</td><td class="py-2.5 pr-4">{{ t.activity.activity_code|default:"—" }}</td>{% endif %}
+            <td class="py-2.5 pr-4 text-gray-500">{{ t.task_code|ui_number }}</td>
+            <td class="py-2.5 pr-4 font-medium text-blue-700">{{ t.task_name|ui_number }}</td>
+            {% if is_project_overview %}<td class="py-2.5 pr-4">{{ t.assigned_to_employee.full_name|ui_number }}</td><td class="py-2.5 pr-4">{{ t.activity.activity_code|default:"—"|ui_number }}</td>{% endif %}
             <td class="py-2.5 pr-4">{{ t.start_date|date:"d/m/Y"|default:"—" }}</td>
             <td class="py-2.5 pr-4">{{ t.due_date|date:"d/m/Y"|default:"—" }}</td>
             <td class="py-2.5 pr-4">{{ t.completed_date|date:"d/m/Y"|default:"—" }}</td>
-            <td class="py-2.5 pr-4">{{ t.get_priority_display }}</td>
+            <td class="py-2.5 pr-4">{{ t.get_priority_display|ui_number }}</td>
             <td class="py-2.5">
                 <span class="px-2.5 py-1 rounded-full text-xs font-medium
                     {% if t.status == 'Done' %}bg-green-100 text-green-700
                     {% elif t.status == 'InProgress' %}bg-blue-100 text-blue-700
                     {% elif t.status == 'Cancelled' %}bg-gray-100 text-gray-600
                     {% else %}bg-yellow-100 text-yellow-800{% endif %}">
-                    {{ t.get_status_display }}
+                    {{ t.get_status_display|ui_number }}
                 </span>
             </td>
         </tr>

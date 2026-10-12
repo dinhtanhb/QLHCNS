@@ -40,7 +40,7 @@ D = Decimal
 class PayrollTestBase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        org = Organization.objects.create(organization_code="ORG", organization_name="Công ty TNHH Thử Nghiệm")
+        org = Organization.objects.create(organization_code="ORG", organization_name="Trung tâm TNHH Thử Nghiệm")
         cls.department = Department.objects.create(
             department_code="IT", department_name="Công nghệ thông tin", organization=org
         )

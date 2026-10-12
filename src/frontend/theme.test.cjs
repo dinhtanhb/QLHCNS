@@ -22,7 +22,7 @@ function fixture(saved, blocked = false) {
             querySelector: () => null,
             addEventListener: (event, fn) => { listeners[event] = fn; },
         },
-        window: { addEventListener: (event, fn) => { listeners[event] = fn; } },
+        window: { addEventListener: (event, fn) => { listeners[event] = fn; }, matchMedia: () => ({matches:false, addEventListener:()=>{}}) },
         localStorage: {
             getItem: () => { if (blocked) throw Error('denied'); return saved; },
             setItem: (key, value) => { if (blocked) throw Error('denied'); writes.push([key, value]); },

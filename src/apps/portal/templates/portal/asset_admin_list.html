@@ -10,7 +10,7 @@
         <input type="text" name="asset_code" placeholder="Mã số thiết bị" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
         <input type="text" name="asset_name" placeholder="Tên thiết bị" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
         <select name="asset_type" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-            {% for t in asset_types %}<option value="{{ t.id }}">{{ t.get_asset_group_display }} — {{ t.asset_type_name }}</option>{% endfor %}
+            {% for t in asset_types %}<option value="{{ t.id }}">{{ t.get_asset_group_display|ui_number }} — {{ t.asset_type_name|ui_number }}</option>{% endfor %}
         </select>
         <input type="text" name="location" placeholder="Nơi sử dụng" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
         <input type="text" name="brand" placeholder="Nhãn hiệu" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
@@ -31,7 +31,7 @@
         <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Mã số</th><th class="py-2 pr-4">Tên</th><th class="py-2 pr-4">Loại</th><th class="py-2 pr-4">Nơi SD</th><th class="py-2">Trạng thái</th></tr></thead>
         <tbody class="divide-y divide-gray-100">
         {% for a in assets %}
-        <tr><td class="py-2 pr-4 text-gray-500">{{ a.asset_code }}</td><td class="py-2 pr-4 font-medium">{{ a.asset_name }}</td><td class="py-2 pr-4">{{ a.asset_type }}</td><td class="py-2 pr-4">{{ a.location }}</td><td class="py-2">{{ a.get_status_display }}</td></tr>
+        <tr><td class="py-2 pr-4 text-gray-500">{{ a.asset_code|ui_number }}</td><td class="py-2 pr-4 font-medium">{{ a.asset_name|ui_number }}</td><td class="py-2 pr-4">{{ a.asset_type|ui_number }}</td><td class="py-2 pr-4">{{ a.location|ui_number }}</td><td class="py-2">{{ a.get_status_display|ui_number }}</td></tr>
         {% empty %}<tr><td colspan="5" class="py-6 text-center text-gray-400">Chưa có tài sản nào.</td></tr>{% endfor %}
         </tbody>
     </table>

@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}{{ employee.full_name }}{% endblock %}
+{% block title %}{{ employee.full_name|ui_number }}{% endblock %}
 {% block content %}
 {% if can_export_employee_data and can_view_all_employees %}<p class="mb-4"><a href="{% url 'portal:hcns_catalog' %}?employee_id={{ employee.pk }}" class="text-blue-700 hover:underline">Soạn / xuất biểu mẫu từ hồ sơ nhân viên</a></p>{% endif %}
 <div class="flex items-center justify-between mb-4">
-    <h1 class="text-lg font-bold text-gray-900">{{ employee.full_name }} <span class="text-gray-400 font-normal text-sm">({{ employee.employee_code }})</span></h1>
+    <h1 class="text-lg font-bold text-gray-900">{{ employee.full_name|ui_number }} <span class="text-gray-400 font-normal text-sm">({{ employee.employee_code|ui_number }})</span></h1>
     {% if can_manage_hr %}
     <a href="{% url 'portal:hr_employee_edit' employee.pk %}" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Sửa hồ sơ</a>
     {% endif %}
@@ -11,15 +11,15 @@
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
     <dl class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4 text-sm">
-        <div><dt class="text-gray-500 text-xs mb-0.5">Ngày sinh</dt><dd class="font-medium">{{ employee.date_of_birth }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Giới tính</dt><dd class="font-medium">{{ employee.get_gender_display }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Email công ty</dt><dd class="font-medium break-all">{{ employee.company_email }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Điện thoại</dt><dd class="font-medium">{{ employee.mobile_phone }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Phòng ban</dt><dd class="font-medium">{{ employee.department }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Vị trí</dt><dd class="font-medium">{{ employee.position }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Quản lý trực tiếp</dt><dd class="font-medium">{{ employee.manager|default:"—" }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Ngày vào làm</dt><dd class="font-medium">{{ employee.join_date }}</dd></div>
-        <div><dt class="text-gray-500 text-xs mb-0.5">Trạng thái</dt><dd class="font-medium">{{ employee.get_employment_status_display }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Ngày sinh</dt><dd class="font-medium">{{ employee.date_of_birth|ui_number }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Giới tính</dt><dd class="font-medium">{{ employee.get_gender_display|ui_number }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Email Trung tâm</dt><dd class="font-medium break-all">{{ employee.company_email|ui_number }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Điện thoại</dt><dd class="font-medium">{{ employee.mobile_phone|ui_number }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Phòng ban</dt><dd class="font-medium">{{ employee.department|ui_number }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Vị trí</dt><dd class="font-medium">{{ employee.position|ui_number }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Quản lý trực tiếp</dt><dd class="font-medium">{{ employee.manager|default:"—"|ui_number }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Ngày vào làm</dt><dd class="font-medium">{{ employee.join_date|ui_number }}</dd></div>
+        <div><dt class="text-gray-500 text-xs mb-0.5">Trạng thái</dt><dd class="font-medium">{{ employee.get_employment_status_display|ui_number }}</dd></div>
     </dl>
 </div>
 
@@ -30,7 +30,7 @@
         <form method="post" action="{% url 'portal:hr_employee_history_create' employee.pk 'transfer' %}" class="space-y-2">
             {% csrf_token %}
             <select name="to_department" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-                {% for d in departments %}<option value="{{ d.id }}" {% if d.id == employee.department_id %}selected{% endif %}>{{ d.department_name }}</option>{% endfor %}
+                {% for d in departments %}<option value="{{ d.id }}" {% if d.id == employee.department_id %}selected{% endif %}>{{ d.department_name|ui_number }}</option>{% endfor %}
             </select>
             <input type="date" name="effective_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
             <input type="text" name="reason" placeholder="Lý do" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
@@ -43,7 +43,7 @@
         <form method="post" action="{% url 'portal:hr_employee_history_create' employee.pk 'promotion' %}" class="space-y-2">
             {% csrf_token %}
             <select name="new_position" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-                {% for p in positions %}<option value="{{ p.id }}" {% if p.id == employee.position_id %}selected{% endif %}>{{ p.position_name }}</option>{% endfor %}
+                {% for p in positions %}<option value="{{ p.id }}" {% if p.id == employee.position_id %}selected{% endif %}>{{ p.position_name|ui_number }}</option>{% endfor %}
             </select>
             <input type="date" name="effective_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
             <input type="text" name="reason" placeholder="Lý do" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
@@ -78,7 +78,7 @@
         <h2 class="text-sm font-bold text-gray-900 mb-3">Nâng lương</h2>
         <p class="text-xs text-gray-400 mb-2">
             {% with latest=salaries.first %}
-            {% if latest %}Mức lương ghi nhận gần nhất: {{ latest.current_basic_salary|floatformat:0 }} đ (từ {{ latest.effective_date }}){% else %}Chưa có dữ liệu lương{% endif %}
+            {% if latest %}Mức lương ghi nhận gần nhất: {{ latest.current_basic_salary|floatformat:"0g" }} đ (từ {{ latest.effective_date|ui_number }}){% else %}Chưa có dữ liệu lương{% endif %}
             {% endwith %}
         </p>
         <form method="post" action="{% url 'portal:hr_salary_create' employee.pk %}" class="space-y-2">
@@ -92,7 +92,7 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6" id="hopdong">
         <h2 class="text-sm font-bold text-gray-900 mb-3">Gia hạn hợp đồng</h2>
         <p class="text-xs text-gray-400 mb-2">
-            {% if current_contract %}Hợp đồng hiện tại: {{ current_contract.contract_no }} (hết hạn {{ current_contract.end_date|default:"Không xác định" }}){% else %}Chưa có hợp đồng nào{% endif %}
+            {% if current_contract %}Hợp đồng hiện tại: {{ current_contract.contract_no|ui_number }} (hết hạn {{ current_contract.end_date|default:"Không xác định"|ui_number }}){% else %}Chưa có hợp đồng nào{% endif %}
         </p>
         <p class="text-xs text-gray-500 mb-2">Bộ mẫu HCNS chưa có mẫu hợp đồng / phụ lục gia hạn.</p>
         <a href="{% url 'portal:hr_contract_list' %}" class="text-blue-700 text-sm underline">Quản lý hợp đồng / phụ lục →</a>
@@ -113,8 +113,8 @@
     <h2 class="text-sm font-bold text-gray-900 mb-3">Lịch sử & Hợp đồng</h2>
     <div class="space-y-1 text-sm">
         {% for c in contracts %}
-        <details class="mb-3"><summary>Hợp đồng: {{ c.contract_no }} ({{ c.contract_type }}) — {{ c.start_date }} → {{ c.end_date|default:"Không xác định" }}</summary>
-            {% for appendix in c.appendices.all %}<p>Phụ lục {{ appendix.appendix_no }} — {{ appendix.effective_date }}: {{ appendix.description }}</p>{% empty %}<p class="text-gray-500">Chưa có phụ lục.</p>{% endfor %}
+        <details class="mb-3"><summary>Hợp đồng: {{ c.contract_no|ui_number }} ({{ c.contract_type|ui_number }}) — {{ c.start_date|ui_number }} → {{ c.end_date|default:"Không xác định"|ui_number }}</summary>
+            {% for appendix in c.appendices.all %}<p>Phụ lục {{ appendix.appendix_no|ui_number }} — {{ appendix.effective_date|ui_number }}: {{ appendix.description|ui_number }}</p>{% empty %}<p class="text-gray-500">Chưa có phụ lục.</p>{% endfor %}
             {% if can_manage_hr %}<form method="post" action="{% url 'portal:hr_contract_appendix_create' c.pk %}" class="space-y-2 mt-2">
                 {% csrf_token %}
                 <label>Số phụ lục <input name="appendix_no" required maxlength="50" class="rounded-md border border-gray-300 px-3 py-2"></label>
@@ -123,11 +123,11 @@
                 <button class="text-blue-700 underline" type="submit">Ghi nhận phụ lục</button>
             </form>{% endif %}
         </details>{% endfor %}
-        {% for t in transfers %}<div class="flex flex-wrap gap-2"><span>{{ t.effective_date }}</span><span>Điều chuyển: {{ t.from_department }} → {{ t.to_department }}</span>{% if can_draft_hr %}<a class="text-blue-700 underline" href="{% url 'portal:hcns_draft' 'salary-decision' %}?transfer_id={{ t.pk }}">Soạn QĐ điều chỉnh →</a>{% endif %}</div>{% endfor %}
-        {% for pr in promotions %}<div class="flex flex-wrap gap-2"><span>{{ pr.effective_date }}</span><span>Bổ nhiệm: {{ pr.old_position }} → {{ pr.new_position }}</span>{% if can_draft_hr %}<a class="text-blue-700 underline" href="{% url 'portal:hcns_draft' 'appointment-decision' %}?promotion_id={{ pr.pk }}">Soạn QĐ bổ nhiệm →</a>{% endif %}</div>{% endfor %}
-        {% for salary in salaries %}<div class="flex flex-wrap gap-2"><span>{{ salary.effective_date }}</span><span>Lương: {{ salary.current_basic_salary|floatformat:0 }} đ</span>{% if can_draft_hr %}<a class="text-blue-700 underline" href="{% url 'portal:hcns_draft' 'salary-decision' %}?salary_id={{ salary.pk }}">Soạn QĐ mức lương này →</a>{% endif %}</div>{% endfor %}
-        {% for r in rewards %}<div class="flex gap-2"><span class="text-gray-400 w-24">{{ r.reward_date }}</span><span class="text-green-700">Khen thưởng: {{ r.reward_type }}</span></div>{% endfor %}
-        {% for d in disciplines %}<div class="flex gap-2"><span class="text-gray-400 w-24">{{ d.discipline_date }}</span><span class="text-red-700">Kỷ luật: {{ d.discipline_type }}</span></div>{% endfor %}
+        {% for t in transfers %}<div class="flex flex-wrap gap-2"><span>{{ t.effective_date|ui_number }}</span><span>Điều chuyển: {{ t.from_department|ui_number }} → {{ t.to_department|ui_number }}</span>{% if can_draft_hr %}<a class="text-blue-700 underline" href="{% url 'portal:hcns_draft' 'salary-decision' %}?transfer_id={{ t.pk }}">Soạn QĐ điều chỉnh →</a>{% endif %}</div>{% endfor %}
+        {% for pr in promotions %}<div class="flex flex-wrap gap-2"><span>{{ pr.effective_date|ui_number }}</span><span>Bổ nhiệm: {{ pr.old_position|ui_number }} → {{ pr.new_position|ui_number }}</span>{% if can_draft_hr %}<a class="text-blue-700 underline" href="{% url 'portal:hcns_draft' 'appointment-decision' %}?promotion_id={{ pr.pk }}">Soạn QĐ bổ nhiệm →</a>{% endif %}</div>{% endfor %}
+        {% for salary in salaries %}<div class="flex flex-wrap gap-2"><span>{{ salary.effective_date|ui_number }}</span><span>Lương: {{ salary.current_basic_salary|floatformat:"0g" }} đ</span>{% if can_draft_hr %}<a class="text-blue-700 underline" href="{% url 'portal:hcns_draft' 'salary-decision' %}?salary_id={{ salary.pk }}">Soạn QĐ mức lương này →</a>{% endif %}</div>{% endfor %}
+        {% for r in rewards %}<div class="flex gap-2"><span class="text-gray-400 w-24">{{ r.reward_date|ui_number }}</span><span class="text-green-700">Khen thưởng: {{ r.reward_type|ui_number }}</span></div>{% endfor %}
+        {% for d in disciplines %}<div class="flex gap-2"><span class="text-gray-400 w-24">{{ d.discipline_date|ui_number }}</span><span class="text-red-700">Kỷ luật: {{ d.discipline_type|ui_number }}</span></div>{% endfor %}
     </div>
 </div>
 {% endblock %}

@@ -13,13 +13,13 @@
         <tbody class="divide-y divide-gray-100">
         {% for s in summaries %}
         <tr>
-            <td class="py-2.5 pr-4 font-medium">{{ s.employee }}</td>
+            <td class="py-2.5 pr-4 font-medium">{{ s.employee|ui_number }}</td>
             <td class="py-2.5 pr-4">{{ s.month }}/{{ s.year }}</td>
-            <td class="py-2.5 pr-4">{{ s.sick_days }}</td>
-            <td class="py-2.5 pr-4">{{ s.maternity_days }}</td>
-            <td class="py-2.5 pr-4">{{ s.compensatory_days }}</td>
-            <td class="py-2.5 pr-4">{{ s.annual_leave_days }}</td>
-            <td class="py-2.5 pr-4">{{ s.unpaid_leave_days }}</td>
+            <td class="py-2.5 pr-4">{{ s.sick_days|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ s.maternity_days|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ s.compensatory_days|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ s.annual_leave_days|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ s.unpaid_leave_days|ui_number }}</td>
             <td class="py-2.5">
                 <form method="post" action="{% url 'portal:timesheet_summary_approve' s.pk %}">
                     {% csrf_token %}

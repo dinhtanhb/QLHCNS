@@ -13,11 +13,11 @@
         <tbody class="divide-y divide-gray-100">
         {% for r in records %}
         <tr>
-            <td class="py-2.5 pr-4">{{ r.attendance_date }}</td>
-            <td class="py-2.5 pr-4">{{ r.check_in_time|default:"—" }}</td>
-            <td class="py-2.5 pr-4">{{ r.check_out_time|default:"—" }}</td>
-            <td class="py-2.5 pr-4">{{ r.working_hours|default:"—" }}</td>
-            <td class="py-2.5">{{ r.get_status_display }}</td>
+            <td class="py-2.5 pr-4">{{ r.attendance_date|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.check_in_time|default:"—"|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.check_out_time|default:"—"|ui_number }}</td>
+            <td class="py-2.5 pr-4">{{ r.working_hours|default:"—"|ui_number }}</td>
+            <td class="py-2.5">{{ r.get_status_display|ui_number }}</td>
         </tr>
         {% empty %}
         <tr><td colspan="5" class="py-6 text-center text-gray-400">Chưa có dữ liệu chấm công.</td></tr>

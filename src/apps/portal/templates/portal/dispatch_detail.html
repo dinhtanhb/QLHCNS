@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Chi tiết công văn {{ dispatch.dispatch_no }}{% endblock %}
+{% block title %}Chi tiết công văn {{ dispatch.dispatch_no|ui_number }}{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto space-y-6">
@@ -33,19 +33,19 @@
                 {% else %}
                 <span class="px-2 py-0.5 rounded text-xs font-bold bg-purple-100 text-purple-700">CHỈ ĐẠO NỘI BỘ</span>
                 {% endif %}
-                <span class="text-sm font-semibold text-gray-600">Số: {{ dispatch.dispatch_no }}</span>
+                <span class="text-sm font-semibold text-gray-600">Số: {{ dispatch.dispatch_no|ui_number }}</span>
                 {% if dispatch.original_doc_no %}
-                <span class="text-xs text-gray-400">(Số gốc: {{ dispatch.original_doc_no }})</span>
+                <span class="text-xs text-gray-400">(Số gốc: {{ dispatch.original_doc_no|ui_number }})</span>
                 {% endif %}
             </div>
-            <h1 class="text-xl font-bold text-gray-900 leading-snug">{{ dispatch.title }}</h1>
+            <h1 class="text-xl font-bold text-gray-900 leading-snug">{{ dispatch.title|ui_number }}</h1>
         </div>
 
         <!-- Lưới metadata -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50/70 p-4 rounded-xl text-xs text-gray-700">
             <div>
                 <span class="text-gray-400 block mb-0.5">Cơ quan / Đơn vị ban hành:</span>
-                <span class="font-semibold text-gray-900">{{ dispatch.issuing_organization }}</span>
+                <span class="font-semibold text-gray-900">{{ dispatch.issuing_organization|ui_number }}</span>
             </div>
             <div>
                 <span class="text-gray-400 block mb-0.5">Ngày ban hành / Ngày đến:</span>
@@ -53,11 +53,11 @@
             </div>
             <div>
                 <span class="text-gray-400 block mb-0.5">Phòng ban chủ trì xử lý:</span>
-                <span class="font-semibold text-gray-900">{{ dispatch.department.department_name|default:"Chưa phân công" }}</span>
+                <span class="font-semibold text-gray-900">{{ dispatch.department.department_name|default:"Chưa phân công"|ui_number }}</span>
             </div>
             <div>
                 <span class="text-gray-400 block mb-0.5">Cán bộ phụ trách chính:</span>
-                <span class="font-semibold text-gray-900">{{ dispatch.assigned_to.full_name|default:"Chưa phân công" }}</span>
+                <span class="font-semibold text-gray-900">{{ dispatch.assigned_to.full_name|default:"Chưa phân công"|ui_number }}</span>
             </div>
             <div>
                 <span class="text-gray-400 block mb-0.5">Hạn xử lý (Deadline):</span>
@@ -67,7 +67,7 @@
             </div>
             <div>
                 <span class="text-gray-400 block mb-0.5">Độ khẩn / Độ mật:</span>
-                <span class="font-semibold text-gray-900">{{ dispatch.get_urgency_level_display }} / {{ dispatch.get_security_level_display }}</span>
+                <span class="font-semibold text-gray-900">{{ dispatch.get_urgency_level_display|ui_number }} / {{ dispatch.get_security_level_display|ui_number }}</span>
             </div>
         </div>
 
@@ -77,7 +77,7 @@
             <h3 class="text-xs font-bold text-amber-800 uppercase tracking-wide mb-1 flex items-center gap-1.5">
                 <span>✍️</span> Bút phê / Ý kiến chỉ đạo của Lãnh đạo
             </h3>
-            <p class="text-sm text-amber-900 whitespace-pre-line">{{ dispatch.leadership_directive }}</p>
+            <p class="text-sm text-amber-900 whitespace-pre-line">{{ dispatch.leadership_directive|ui_number }}</p>
         </div>
         {% endif %}
 
@@ -110,7 +110,7 @@
                     <label class="block text-xs font-medium text-gray-600 mb-1">Cập nhật trạng thái văn bản</label>
                     <select name="new_status" class="w-full text-xs rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         {% for val, label in status_choices %}
-                        <option value="{{ val }}" {% if dispatch.status == val %}selected{% endif %}>{{ label }}</option>
+                        <option value="{{ val }}" {% if dispatch.status == val %}selected{% endif %}>{{ label|ui_number }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -137,11 +137,11 @@
             <div class="flex gap-3 border-l-2 border-blue-500 pl-4 py-1">
                 <div class="flex-1">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-gray-900">{{ t.actor.full_name }} — <span class="text-blue-600 font-normal">{{ t.action_type }}</span></span>
+                        <span class="text-xs font-bold text-gray-900">{{ t.actor.full_name|ui_number }} — <span class="text-blue-600 font-normal">{{ t.action_type|ui_number }}</span></span>
                         <span class="text-xs text-gray-600">{{ t.action_date|date:"H:i d/m/Y" }}</span>
                     </div>
                     {% if t.comment %}
-                    <p class="text-xs text-gray-600 mt-1 bg-gray-50 p-2 rounded-lg">{{ t.comment }}</p>
+                    <p class="text-xs text-gray-600 mt-1 bg-gray-50 p-2 rounded-lg">{{ t.comment|ui_number }}</p>
                     {% endif %}
                 </div>
             </div>

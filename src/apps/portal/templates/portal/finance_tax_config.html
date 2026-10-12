@@ -24,7 +24,7 @@
             <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Thêm cấu hình</button>
         </form>
         <div class="mt-4 space-y-1 text-xs text-gray-500 border-t border-gray-100 pt-3">
-            {% for c in insurance_configs %}<p>Từ {{ c.effective_from }}: NLĐ {{ c.total_employee_rate }}%</p>{% endfor %}
+            {% for c in insurance_configs %}<p>Từ {{ c.effective_from|ui_number }}: NLĐ {{ c.total_employee_rate|ui_number }}%</p>{% endfor %}
         </div>
     </div>
 
@@ -42,7 +42,7 @@
             <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Thêm cấu hình</button>
         </form>
         <div class="mt-4 space-y-1 text-xs text-gray-500 border-t border-gray-100 pt-3">
-            {% for d in deduction_configs %}<p>Từ {{ d.effective_from }}: Bản thân {{ d.self_deduction_monthly|floatformat:0 }}đ / Phụ thuộc {{ d.dependent_deduction_monthly|floatformat:0 }}đ</p>{% endfor %}
+            {% for d in deduction_configs %}<p>Từ {{ d.effective_from|ui_number }}: Bản thân {{ d.self_deduction_monthly|floatformat:"0g" }}đ / Phụ thuộc {{ d.dependent_deduction_monthly|floatformat:"0g" }}đ</p>{% endfor %}
         </div>
     </div>
 </div>
@@ -65,11 +65,11 @@
         <tbody class="divide-y divide-gray-100">
         {% for b in tax_brackets %}
         <tr>
-            <td class="py-2 pr-4">{{ b.effective_from }}</td>
-            <td class="py-2 pr-4">{{ b.bracket_no }}</td>
-            <td class="py-2 pr-4">{{ b.income_from_monthly|floatformat:0 }}</td>
-            <td class="py-2 pr-4">{{ b.income_to_monthly|floatformat:0|default:"Trở lên" }}</td>
-            <td class="py-2">{{ b.tax_rate }}%</td>
+            <td class="py-2 pr-4">{{ b.effective_from|ui_number }}</td>
+            <td class="py-2 pr-4">{{ b.bracket_no|ui_number }}</td>
+            <td class="py-2 pr-4">{{ b.income_from_monthly|floatformat:"0g" }}</td>
+            <td class="py-2 pr-4">{{ b.income_to_monthly|floatformat:"0g"|default:"Trở lên" }}</td>
+            <td class="py-2">{{ b.tax_rate|ui_number }}%</td>
         </tr>
         {% empty %}<tr><td colspan="5" class="py-6 text-center text-gray-400">Chưa có bậc thuế nào.</td></tr>{% endfor %}
         </tbody>

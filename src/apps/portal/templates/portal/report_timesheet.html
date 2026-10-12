@@ -9,10 +9,10 @@
     <div class="flex gap-3">
         <form method="get" class="flex gap-2">
             <select name="month" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
-                {% for m in months %}<option value="{{ m }}" {% if m == month %}selected{% endif %}>Tháng {{ m }}</option>{% endfor %}
+                {% for m in months %}<option value="{{ m }}" {% if m == month %}selected{% endif %}>Tháng {{ m|ui_number }}</option>{% endfor %}
             </select>
             <select name="year" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
-                {% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>{% endfor %}
+                {% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y|ui_number }}</option>{% endfor %}
             </select>
         </form>
         <button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">🖨 In</button>
@@ -36,14 +36,14 @@
         {% for r in rows %}
         <tr>
             <td class="border border-gray-300 px-2 py-1.5">
-                {{ r.employee.employee_code }} - {{ r.employee.full_name }}
+                {{ r.employee.employee_code|ui_number }} - {{ r.employee.full_name|ui_number }}
                 {% if r.has_pending_summary %}<span class="inline-block bg-amber-100 text-amber-700 text-xs font-medium px-1.5 py-0.5 rounded ml-1">chờ duyệt</span>{% endif %}
             </td>
-            <td class="border border-gray-300 px-2 py-1.5">{{ r.employee.department }}</td>
-            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ r.total_hours }}</td>
-            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ r.required_hours }}</td>
-            <td class="border border-gray-300 px-2 py-1.5 text-center {% if r.diff_hours < 0 %}text-red-600{% else %}text-green-700{% endif %}">{{ r.diff_hours }}</td>
-            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ r.leave_remaining|default:"—" }}</td>
+            <td class="border border-gray-300 px-2 py-1.5">{{ r.employee.department|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ r.total_hours|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ r.required_hours|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1.5 text-center {% if r.diff_hours < 0 %}text-red-600{% else %}text-green-700{% endif %}">{{ r.diff_hours|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ r.leave_remaining|default:"—"|ui_number }}</td>
         </tr>
         {% empty %}
         <tr><td colspan="6" class="py-6 text-center text-gray-400">Không có dữ liệu.</td></tr>

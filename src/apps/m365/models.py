@@ -6,7 +6,7 @@ from apps.m365.storage import get_storage
 
 
 class CompanyMedia(BaseAuditModel):
-    """Thư viện ảnh / video chung của công ty (sự kiện, đào tạo, quảng bá...).
+    """Thư viện ảnh / video chung của Trung tâm (sự kiện, đào tạo, quảng bá...).
 
     Tệp thật lưu trên SharePoint/OneDrive qua SharePointStorage; bảng này chỉ
     giữ metadata trong SQL Server, đúng kiến trúc mục 13 của
@@ -27,7 +27,7 @@ class CompanyMedia(BaseAuditModel):
     )
     category = models.CharField(
         "Chủ đề / Sự kiện", max_length=200, null=True, blank=True, db_column="Category",
-        help_text="Ví dụ: Sự kiện công ty, Đào tạo, Team building, Quảng bá...",
+        help_text="Ví dụ: Sự kiện Trung tâm, Đào tạo, Team building, Quảng bá...",
     )
     file = models.FileField(
         "Tệp ảnh/video", upload_to=upload_to_company_media,
@@ -41,8 +41,8 @@ class CompanyMedia(BaseAuditModel):
 
     class Meta:
         db_table = "tblCompanyMedia"
-        verbose_name = "Ảnh / Video công ty"
-        verbose_name_plural = "Thư viện Ảnh / Video công ty"
+        verbose_name = "Ảnh / Video Trung tâm"
+        verbose_name_plural = "Thư viện Ảnh / Video Trung tâm"
         ordering = ["-created_date"]
 
     def __str__(self):

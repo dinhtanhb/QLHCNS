@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}{{ candidate.full_name }}{% endblock %}
+{% block title %}{{ candidate.full_name|ui_number }}{% endblock %}
 {% block content %}
 {% if can_manage_hr %}<div class="flex flex-wrap gap-4 mb-4"><a href="{% url 'portal:hcns_draft' 'candidate-interview' %}?candidate_id={{ candidate.pk }}" class="text-blue-700 hover:underline">Phiếu phỏng vấn / Word</a><a href="{% url 'portal:hcns_draft' 'candidate-score-summary' %}?candidate_id={{ candidate.pk }}" class="text-blue-700 hover:underline">Tổng hợp điểm / Excel</a></div>{% endif %}
-<h1 class="text-lg font-bold text-gray-900 mb-1">{{ candidate.full_name }} <span class="text-gray-400 font-normal text-sm">({{ candidate.candidate_code }})</span></h1>
-<p class="text-gray-500 text-sm mb-4">{{ candidate.phone_number }} · {{ candidate.email }} · Trạng thái: <strong>{{ candidate.get_status_display }}</strong></p>
+<h1 class="text-lg font-bold text-gray-900 mb-1">{{ candidate.full_name|ui_number }} <span class="text-gray-400 font-normal text-sm">({{ candidate.candidate_code|ui_number }})</span></h1>
+<p class="text-gray-500 text-sm mb-4">{{ candidate.phone_number|ui_number }} · {{ candidate.email|ui_number }} · Trạng thái: <strong>{{ candidate.get_status_display|ui_number }}</strong></p>
 
 {% if candidate.status == "Hired" %}
 <div class="bg-green-50 border border-green-200 text-green-800 text-sm rounded-md px-4 py-3 mb-6">✅ Ứng viên đã trúng tuyển.</div>
@@ -19,8 +19,8 @@
         <h2 class="text-sm font-bold text-gray-900 mb-3">Phỏng vấn</h2>
         {% for i in interviews %}
         <div class="border-b border-gray-50 py-2 text-sm">
-            <p>{{ i.interview_date|date:"d/m/Y H:i" }} — {{ i.interview_type }} — PV: {{ i.interviewer }}</p>
-            <p class="text-gray-500">Kết quả: {{ i.get_result_display }} {% if i.comments %}— {{ i.comments }}{% endif %}</p>
+            <p>{{ i.interview_date|date:"d/m/Y H:i" }} — {{ i.interview_type|ui_number }} — PV: {{ i.interviewer|ui_number }}</p>
+            <p class="text-gray-500">Kết quả: {{ i.get_result_display|ui_number }} {% if i.comments %}— {{ i.comments|ui_number }}{% endif %}</p>
             {% if can_manage_hr and i.result == "Pending" %}
             <form method="post" action="{% url 'portal:hr_interview_result' i.pk %}" class="flex gap-2 mt-1">
                 {% csrf_token %}
@@ -42,7 +42,7 @@
                 <option value="Qua điện thoại">Qua điện thoại</option>
             </select>
             <select name="interviewer" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-                {% for e in interviewers %}<option value="{{ e.id }}">{{ e.full_name }}</option>{% endfor %}
+                {% for e in interviewers %}<option value="{{ e.id }}">{{ e.full_name|ui_number }}</option>{% endfor %}
             </select>
             <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Lên lịch phỏng vấn</button>
         </form>
@@ -53,8 +53,8 @@
         <h2 class="text-sm font-bold text-gray-900 mb-3">Thư mời làm việc (Offer)</h2>
         {% for o in offers %}
         <div class="border-b border-gray-50 py-2 text-sm">
-            <p>Ngày gửi: {{ o.offer_date }} — Lương đề nghị: {{ o.salary_offer|floatformat:0 }} đ — Dự kiến vào làm: {{ o.expected_join_date }}</p>
-            <p class="text-gray-500">Trạng thái: {{ o.get_status_display }}</p>
+            <p>Ngày gửi: {{ o.offer_date|ui_number }} — Lương đề nghị: {{ o.salary_offer|floatformat:"0g" }} đ — Dự kiến vào làm: {{ o.expected_join_date|ui_number }}</p>
+            <p class="text-gray-500">Trạng thái: {{ o.get_status_display|ui_number }}</p>
             {% if can_manage_hr and o.status == "Sent" %}
             <form method="post" action="{% url 'portal:hr_offer_update_status' o.pk %}" class="flex gap-2 mt-1">
                 {% csrf_token %}

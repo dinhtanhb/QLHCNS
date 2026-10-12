@@ -4,19 +4,19 @@
 <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6">
     <a href="{% url 'portal:activity_dashboard' %}" class="text-sm font-semibold text-blue-700 hover:underline">← Dashboard hoạt động</a>
     <header class="mt-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <p class="text-sm font-semibold uppercase tracking-wide text-blue-700">{{ activity.activity_code }} · {{ activity.project.project_name }}</p>
-        <h1 class="mt-1 text-2xl font-bold text-gray-900">{{ activity.activity_name }}</h1>
-        <p class="mt-2 text-sm text-gray-600">CBDA: {{ activity.lead_cbda.full_name }} · ĐPV: {{ activity.coordinator.full_name|default:"Chưa phân công" }}</p>
+        <p class="text-sm font-semibold uppercase tracking-wide text-blue-700">{{ activity.activity_code|ui_number }} · {{ activity.project.project_name|ui_number }}</p>
+        <h1 class="mt-1 text-2xl font-bold text-gray-900">{{ activity.activity_name|ui_number }}</h1>
+        <p class="mt-2 text-sm text-gray-600">CBDA: {{ activity.lead_cbda.full_name|ui_number }} · ĐPV: {{ activity.coordinator.full_name|default:"Chưa phân công"|ui_number }}</p>
     </header>
 
     {% if package %}
     <section class="mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div class="flex flex-wrap items-center justify-between gap-3">
-            <h2 class="text-lg font-semibold">Hồ sơ phiên bản {{ package.version }}</h2>
-            <span class="rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-800">{{ package.get_status_display }}</span>
+            <h2 class="text-lg font-semibold">Hồ sơ phiên bản {{ package.version|ui_number }}</h2>
+            <span class="rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-800">{{ package.get_status_display|ui_number }}</span>
         </div>
-        {% if package.sent_to %}<p class="mt-3 text-sm text-gray-700">Đã gửi tới: {{ package.sent_to }}{% if package.submitted_at %} · {{ package.submitted_at|date:"d/m/Y H:i" }}{% endif %}</p>{% endif %}
-        {% if package.decision_comment %}<div class="mt-3 rounded-lg bg-gray-50 p-4 text-sm"><strong>Ý kiến:</strong> {{ package.decision_comment|linebreaksbr }}</div>{% endif %}
+        {% if package.sent_to %}<p class="mt-3 text-sm text-gray-700">Đã gửi tới: {{ package.sent_to|ui_number }}{% if package.submitted_at %} · {{ package.submitted_at|date:"d/m/Y H:i" }}{% endif %}</p>{% endif %}
+        {% if package.decision_comment %}<div class="mt-3 rounded-lg bg-gray-50 p-4 text-sm"><strong>Ý kiến:</strong> {{ package.decision_comment|linebreaksbr|ui_number }}</div>{% endif %}
         <ul class="mt-4 grid gap-2 text-sm sm:grid-cols-2">
             <li>Đề xuất PDF: {% if package.proposal_pdf %}<a class="text-blue-700 underline" href="{% url 'portal:activity_proposal_file' package.pk 'proposal_pdf' %}" target="_blank" rel="noopener">Xem PDF</a>{% else %}<span class="text-amber-700">Chưa tải</span>{% endif %}</li>
             <li>Dự trù PDF: {% if package.budget_pdf %}<a class="text-blue-700 underline" href="{% url 'portal:activity_proposal_file' package.pk 'budget_pdf' %}" target="_blank" rel="noopener">Xem PDF</a>{% else %}<span class="text-amber-700">Chưa tải</span>{% endif %}</li>
@@ -29,7 +29,7 @@
         <h2 class="font-semibold">Lịch sử phiên bản và quyết định</h2>
         <ol class="mt-3 space-y-2 text-sm">
             {% for item in package_history %}
-            <li class="border-l-2 border-gray-200 pl-3">v{{ item.version }} · {{ item.get_status_display }}{% if item.decision_at %} · {{ item.decision_at|date:"d/m/Y H:i" }}{% endif %}{% if item.decision_comment %}<span class="block text-gray-600">{{ item.decision_comment }}</span>{% endif %}</li>
+            <li class="border-l-2 border-gray-200 pl-3">v{{ item.version|ui_number }} · {{ item.get_status_display|ui_number }}{% if item.decision_at %} · {{ item.decision_at|date:"d/m/Y H:i" }}{% endif %}{% if item.decision_comment %}<span class="block text-gray-600">{{ item.decision_comment|ui_number }}</span>{% endif %}</li>
             {% endfor %}
         </ol>
     </section>
@@ -37,17 +37,17 @@
 
     {% if can_edit %}
     <section class="mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 class="text-lg font-semibold">Tải bộ hồ sơ theo mẫu của công ty</h2>
+        <h2 class="text-lg font-semibold">Tải bộ hồ sơ theo mẫu của Trung tâm</h2>
         <p class="mt-1 text-sm text-gray-600">CBDA hoàn thiện biểu mẫu Excel trên máy tính, xuất thành 2 tệp PDF (đề xuất hoạt động và dự trù kinh phí), sau đó tải hai PDF lên SharePoint. Excel không cần tải lên IHRMS.</p>
         <form method="post" enctype="multipart/form-data" class="mt-5 space-y-4">
             {% csrf_token %}<input type="hidden" name="action" value="upload">
-            {% if upload_form.non_field_errors %}<div class="text-sm text-red-700">{{ upload_form.non_field_errors }}</div>{% endif %}
+            {% if upload_form.non_field_errors %}<div class="text-sm text-red-700">{{ upload_form.non_field_errors|ui_number }}</div>{% endif %}
             <div class="grid gap-4 md:grid-cols-2">
                 {% for field in upload_form %}
-                <label class="block text-sm font-medium text-gray-800">{{ field.label }}{% if field.field.required %} <span class="text-red-600">*</span>{% endif %}
-                    {{ field }}
-                    {% if field.help_text %}<span class="mt-1 block text-xs text-gray-500">{{ field.help_text }}</span>{% endif %}
-                    {% for error in field.errors %}<span class="mt-1 block text-xs text-red-700">{{ error }}</span>{% endfor %}
+                <label class="block text-sm font-medium text-gray-800">{{ field.label|ui_number }}{% if field.field.required %} <span class="text-red-600">*</span>{% endif %}
+                    {{ field|ui_number }}
+                    {% if field.help_text %}<span class="mt-1 block text-xs text-gray-500">{{ field.help_text|ui_number }}</span>{% endif %}
+                    {% for error in field.errors %}<span class="mt-1 block text-xs text-red-700">{{ error|ui_number }}</span>{% endfor %}
                 </label>
                 {% endfor %}
             </div>
@@ -64,8 +64,8 @@
         <p class="mt-1 text-sm text-indigo-900">IHRMS sẽ mở thư nháp trong Outlook. Tải hai PDF bên dưới, đính kèm vào thư, thêm CC hoặc sửa nội dung nếu cần, kiểm tra rồi tự bấm Gửi.</p>
         <form method="post" class="mt-4 flex flex-wrap items-end gap-3">
             {% csrf_token %}<input type="hidden" name="action" value="prepare_email">
-            <label class="block min-w-72 flex-1 text-sm font-medium">{{ send_form.approver.label }}{{ send_form.approver }}</label>
-            {% for error in send_form.approver.errors %}<span class="text-sm text-red-700">{{ error }}</span>{% endfor %}
+            <label class="block min-w-72 flex-1 text-sm font-medium">{{ send_form.approver.label|ui_number }}{{ send_form.approver|ui_number }}</label>
+            {% for error in send_form.approver.errors %}<span class="text-sm text-red-700">{{ error|ui_number }}</span>{% endfor %}
             <button class="rounded-lg bg-indigo-700 px-4 py-2 font-semibold text-white hover:bg-indigo-800">Soạn thư trong Outlook</button>
         </form>
     </section>
@@ -79,7 +79,7 @@
         <form method="post" action="{% url 'portal:activity_proposal_decide' package.pk %}" class="mt-4 space-y-4">
             {% csrf_token %}
             {% for field in decision_form %}
-            <label class="block text-sm font-medium">{{ field.label }}{{ field }}{% for error in field.errors %}<span class="block text-xs text-red-700">{{ error }}</span>{% endfor %}</label>
+            <label class="block text-sm font-medium">{{ field.label|ui_number }}{{ field|ui_number }}{% for error in field.errors %}<span class="block text-xs text-red-700">{{ error|ui_number }}</span>{% endfor %}</label>
             {% endfor %}
             <button class="rounded-lg bg-green-700 px-4 py-2 font-semibold text-white hover:bg-green-800">Ghi nhận quyết định</button>
         </form>
