@@ -57,13 +57,13 @@
             <div class="ui-nav-group">
                 <button type="button" data-menu-trigger aria-controls="menu-canhan" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='person' %}<span class="ui-nav-label">Cá nhân</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
                 <div id="menu-canhan" class="ui-nav-panel" hidden>
-                    <a href="{% url 'portal:profile' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'profile' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Hồ sơ cá nhân</span></a>
-                    <a href="{% url 'portal:profile_change_request_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'profile_change_request_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Yêu cầu cập nhật hồ sơ</span></a>
-                    <a href="{% url 'portal:org_chart' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'org_chart' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Sơ đồ tổ chức</span></a>
-                    <a href="{% url 'portal:timesheet_month' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'timesheet_month' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Bảng công</span></a>
-                    <a href="{% url 'portal:leave_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'leave_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Nghỉ phép</span></a>
-                    <a href="{% url 'portal:kpi_my_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'kpi_my_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">KPI</span></a>
-                    <a href="{% url 'portal:payslip_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'payslip_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Phiếu lương</span></a>
+                    <a href="{% url 'portal:profile' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'profile' %}aria-current="page"{% endif %}><span class="ui-nav-label">Hồ sơ cá nhân</span></a>
+                    <a href="{% url 'portal:profile_change_request_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'profile_change_request_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Yêu cầu cập nhật hồ sơ</span></a>
+                    <a href="{% url 'portal:org_chart' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'org_chart' %}aria-current="page"{% endif %}><span class="ui-nav-label">Sơ đồ tổ chức</span></a>
+                    <a href="{% url 'portal:timesheet_month' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'timesheet_month' %}aria-current="page"{% endif %}><span class="ui-nav-label">Bảng công</span></a>
+                    <a href="{% url 'portal:leave_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'leave_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Nghỉ phép</span></a>
+                    <a href="{% url 'portal:kpi_my_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'kpi_my_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">KPI</span></a>
+                    <a href="{% url 'portal:payslip_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'payslip_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Phiếu lương</span></a>
                 </div>
             </div>
 
@@ -74,21 +74,21 @@
                 <div id="menu-nhansu" class="ui-nav-panel" hidden>
                     {% if can_manage_hr %}
                     <p class="ui-nav-section-label">Hồ sơ &amp; quá trình</p>
-                    <a href="{% url 'portal:hr_employee_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hr_employee_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Nhân viên &amp; hồ sơ</span></a>
-                    <a href="{% url 'portal:hr_contract_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hr_contract_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Hợp đồng</span></a>
-                    <a href="{% url 'portal:lifecycle_case_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'lifecycle_case_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Checklist tiếp nhận/nghỉ việc</span></a>
-                    <a href="{% url 'portal:hcns_catalog' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hcns_catalog' and not request.GET.group %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Biểu mẫu HCNS</span></a>
+                    <a href="{% url 'portal:hr_employee_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hr_employee_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Nhân viên &amp; hồ sơ</span></a>
+                    <a href="{% url 'portal:hr_contract_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hr_contract_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Hợp đồng</span></a>
+                    <a href="{% url 'portal:lifecycle_case_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'lifecycle_case_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Checklist tiếp nhận/nghỉ việc</span></a>
+                    <a href="{% url 'portal:hcns_catalog' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hcns_catalog' and not request.GET.group %}aria-current="page"{% endif %}><span class="ui-nav-label">Biểu mẫu HCNS</span></a>
                     {% endif %}
                     {% if can_manage_hr or can_approve_personnel_decision %}
-                    <a href="{% url 'portal:personnel_decision_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'personnel_decision_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Quyết định nhân sự</span></a>
+                    <a href="{% url 'portal:personnel_decision_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'personnel_decision_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Quyết định nhân sự</span></a>
                     {% endif %}
                     {% if can_approve or can_approve_timesheet or can_approve_document or can_approve_activity_proposals or can_manage_hr %}
                     <p class="ui-nav-section-label">Cần duyệt &amp; xử lý</p>
-                    {% if can_manage_hr %}<a href="{% url 'portal:profile_change_request_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'profile_change_request_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Duyệt cập nhật hồ sơ</span></a>{% endif %}
-                    {% if can_approve %}<a href="{% url 'portal:leave_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'leave_approval_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Duyệt nghỉ phép</span></a>{% endif %}
-                    {% if can_approve_timesheet %}<a href="{% url 'portal:timesheet_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'timesheet_approval_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Duyệt chấm công</span></a>{% endif %}
-                    {% if can_approve_document %}<a href="{% url 'portal:document_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'document_approval_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Duyệt tài liệu</span></a>{% endif %}
-                    {% if can_approve_activity_proposals %}<a href="{% url 'portal:activity_proposal_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'activity_proposal_approval_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Duyệt đề xuất hoạt động{% if pending_activity_proposal_count %} <span class="ui-unread-badge ui-pending-badge">{{ pending_activity_proposal_count }}</span>{% endif %}</span></a>{% endif %}
+                    {% if can_manage_hr %}<a href="{% url 'portal:profile_change_request_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'profile_change_request_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Duyệt cập nhật hồ sơ</span></a>{% endif %}
+                    {% if can_approve %}<a href="{% url 'portal:leave_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'leave_approval_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Duyệt nghỉ phép</span></a>{% endif %}
+                    {% if can_approve_timesheet %}<a href="{% url 'portal:timesheet_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'timesheet_approval_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Duyệt chấm công</span></a>{% endif %}
+                    {% if can_approve_document %}<a href="{% url 'portal:document_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'document_approval_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Duyệt tài liệu</span></a>{% endif %}
+                    {% if can_approve_activity_proposals %}<a href="{% url 'portal:activity_proposal_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'activity_proposal_approval_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Duyệt đề xuất hoạt động{% if pending_activity_proposal_count %} <span class="ui-unread-badge ui-pending-badge">{{ pending_activity_proposal_count }}</span>{% endif %}</span></a>{% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -99,13 +99,13 @@
             <div class="ui-nav-group">
                 <button type="button" data-menu-trigger aria-controls="menu-tuyendung" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='briefcase' %}<span class="ui-nav-label">Tuyển dụng</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
                 <div id="menu-tuyendung" class="ui-nav-panel" hidden>
-                    <a href="{% url 'portal:recruitment_hub' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'recruitment_hub' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Quy trình tuyển dụng</span></a>
+                    <a href="{% url 'portal:recruitment_hub' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'recruitment_hub' %}aria-current="page"{% endif %}><span class="ui-nav-label">Quy trình tuyển dụng</span></a>
                     {% if can_request_recruitment or can_approve_recruitment %}
-                    <a href="{% url 'portal:recruitment_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'recruitment_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Đề xuất tuyển dụng</span></a>
+                    <a href="{% url 'portal:recruitment_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'recruitment_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Đề xuất tuyển dụng</span></a>
                     {% endif %}
                     {% if can_manage_hr %}
-                    <a href="{% url 'portal:hr_candidate_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hr_candidate_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Ứng viên</span></a>
-                    <a href="{% url 'portal:hcns_catalog' %}?group=recruitment" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hcns_catalog' and request.GET.group == 'recruitment' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Biểu mẫu tuyển dụng</span></a>
+                    <a href="{% url 'portal:hr_candidate_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hr_candidate_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Ứng viên</span></a>
+                    <a href="{% url 'portal:hcns_catalog' %}?group=recruitment" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hcns_catalog' and request.GET.group == 'recruitment' %}aria-current="page"{% endif %}><span class="ui-nav-label">Biểu mẫu tuyển dụng</span></a>
                     {% endif %}
                 </div>
             </div>
@@ -116,13 +116,13 @@
                 <button type="button" data-menu-trigger aria-controls="menu-ketoan" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='finance' %}<span class="ui-nav-label">Kế toán</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
                 <div id="menu-ketoan" class="ui-nav-panel" hidden>
                     {% if can_manage_finance %}
-                    <a href="{% url 'portal:finance_period_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'finance_period_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Chạy lương hàng tháng</span></a>
-                    <a href="{% url 'portal:finance_salary_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'finance_salary_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Lương cơ bản NV</span></a>
-                    <a href="{% url 'portal:finance_dependent_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'finance_dependent_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Người phụ thuộc</span></a>
-                    <a href="{% url 'portal:finance_tax_config' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'finance_tax_config' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Cấu hình Thuế/BH</span></a>
+                    <a href="{% url 'portal:finance_period_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'finance_period_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Chạy lương hàng tháng</span></a>
+                    <a href="{% url 'portal:finance_salary_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'finance_salary_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Lương cơ bản NV</span></a>
+                    <a href="{% url 'portal:finance_dependent_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'finance_dependent_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Người phụ thuộc</span></a>
+                    <a href="{% url 'portal:finance_tax_config' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'finance_tax_config' %}aria-current="page"{% endif %}><span class="ui-nav-label">Cấu hình Thuế/BH</span></a>
                     {% endif %}
                     {% if can_use_salary_scale_form %}
-                    <a href="{% url 'portal:hcns_draft' 'salary-scale' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hcns_draft' and request.resolver_match.kwargs.slug == 'salary-scale' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Thang bảng lương</span></a>
+                    <a href="{% url 'portal:hcns_draft' 'salary-scale' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hcns_draft' and request.resolver_match.kwargs.slug == 'salary-scale' %}aria-current="page"{% endif %}><span class="ui-nav-label">Thang bảng lương</span></a>
                     {% endif %}
                 </div>
             </div>
@@ -133,22 +133,22 @@
                 <button type="button" data-menu-trigger aria-controls="menu-hc" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='office' %}<span class="ui-nav-label">Hành chính</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
                 <div id="menu-hc" class="ui-nav-panel" hidden>
                     <p class="ui-nav-section-label">Văn bản</p>
-                    <a href="{% url 'portal:document_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'document_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Tài liệu đã ban hành</span></a>
-                    <a href="{% url 'portal:dispatch_list' %}?type=Incoming" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'dispatch_list' and request.GET.type != 'Outgoing' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Công văn đến</span></a>
-                    <a href="{% url 'portal:dispatch_list' %}?type=Outgoing" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'dispatch_list' and request.GET.type == 'Outgoing' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Công văn đi</span></a>
+                    <a href="{% url 'portal:document_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'document_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Tài liệu đã ban hành</span></a>
+                    <a href="{% url 'portal:dispatch_list' %}?type=Incoming" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'dispatch_list' and request.GET.type != 'Outgoing' %}aria-current="page"{% endif %}><span class="ui-nav-label">Công văn đến</span></a>
+                    <a href="{% url 'portal:dispatch_list' %}?type=Outgoing" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'dispatch_list' and request.GET.type == 'Outgoing' %}aria-current="page"{% endif %}><span class="ui-nav-label">Công văn đi</span></a>
                     {% if can_view_asset %}
                     <div class="ui-nav-separator"></div>
                     <p class="ui-nav-section-label">Tài sản</p>
-                    <a href="{% url 'portal:asset_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'asset_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Tài sản của tôi</span></a>
-                    <a href="{% url 'portal:asset_admin_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'asset_admin_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Quản lý Tài sản</span></a>
-                    <a href="{% url 'portal:inventory_session_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'inventory_session_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Kiểm kê Tài sản</span></a>
-                    <a href="{% url 'portal:disposal_request_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'disposal_request_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Thanh lý Tài sản</span></a>
+                    <a href="{% url 'portal:asset_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'asset_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Tài sản của tôi</span></a>
+                    <a href="{% url 'portal:asset_admin_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'asset_admin_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Quản lý Tài sản</span></a>
+                    <a href="{% url 'portal:inventory_session_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'inventory_session_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Kiểm kê Tài sản</span></a>
+                    <a href="{% url 'portal:disposal_request_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'disposal_request_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Thanh lý Tài sản</span></a>
                     {% endif %}
                     <div class="ui-nav-separator"></div>
                     <p class="ui-nav-section-label">Đặt chỗ &amp; đề nghị</p>
-                    <a href="{% url 'portal:room_booking_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'room_booking_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Phòng họp</span></a>
-                    <a href="{% url 'portal:vehicle_booking_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'vehicle_booking_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Đặt xe</span></a>
-                    <a href="{% url 'portal:supply_request_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'supply_request_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">VPP</span></a>
+                    <a href="{% url 'portal:room_booking_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'room_booking_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Phòng họp</span></a>
+                    <a href="{% url 'portal:vehicle_booking_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'vehicle_booking_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Đặt xe</span></a>
+                    <a href="{% url 'portal:supply_request_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'supply_request_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">VPP</span></a>
                 </div>
             </div>
 
@@ -156,24 +156,24 @@
             <div class="ui-nav-group">
                 <button type="button" data-menu-trigger aria-controls="menu-kh" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='calendar' %}<span class="ui-nav-label">Kế hoạch</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
                 <div id="menu-kh" class="ui-nav-panel" hidden>
-                    <a href="{% url 'portal:event_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'event_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Lịch công tác</span></a>
-                    <a href="{% url 'portal:training_my_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'training_my_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Đào tạo</span></a>
-                    {% if can_manage_calendar %}<a href="{% url 'portal:holiday_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'holiday_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Quản lý ngày lễ</span></a>{% endif %}
+                    <a href="{% url 'portal:event_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'event_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Lịch công tác</span></a>
+                    <a href="{% url 'portal:training_my_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'training_my_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Đào tạo</span></a>
+                    {% if can_manage_calendar %}<a href="{% url 'portal:holiday_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'holiday_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Quản lý ngày lễ</span></a>{% endif %}
                 </div>
             </div>
 
             {% if can_view_reports %}
             {% url 'portal:report_hub' as u_report %}
-            <div class="ui-nav-group"><button type="button" class="ui-nav-trigger" data-menu-trigger aria-controls="menu-baocao" aria-expanded="false">{% include '_shell_icon.html' with name='chart' %}<span class="ui-nav-label">Báo cáo</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button><div id="menu-baocao" class="ui-nav-panel" hidden><a href="{{ u_report }}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'report_hub' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Báo cáo</span></a></div></div>
+            <div class="ui-nav-group"><button type="button" class="ui-nav-trigger" data-menu-trigger aria-controls="menu-baocao" aria-expanded="false">{% include '_shell_icon.html' with name='chart' %}<span class="ui-nav-label">Báo cáo</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button><div id="menu-baocao" class="ui-nav-panel" hidden><a href="{{ u_report }}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'report_hub' %}aria-current="page"{% endif %}><span class="ui-nav-label">Báo cáo</span></a></div></div>
             {% endif %}
 
             {% if can_view_activity_dashboard %}
             <div class="ui-nav-group">
                 <button type="button" data-menu-trigger aria-controls="menu-hoatdongduan" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='folder' %}<span class="ui-nav-label">Dự án</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
                 <div id="menu-hoatdongduan" class="ui-nav-panel" hidden>
-                    <a href="{% url 'portal:activity_dashboard' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'activity_dashboard' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Theo dõi hoạt động</span></a>
-                    <a href="{% url 'portal:activity_calendar' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'activity_calendar' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Lịch hoạt động</span></a>
-                    <a href="{% url 'portal:task_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'task_list' %}aria-current="page"{% endif %}>{% include '_shell_icon.html' with name='arrow' %}<span class="ui-nav-label">Giao việc &amp; hoàn tất</span></a>
+                    <a href="{% url 'portal:activity_dashboard' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'activity_dashboard' %}aria-current="page"{% endif %}><span class="ui-nav-label">Theo dõi hoạt động</span></a>
+                    <a href="{% url 'portal:activity_calendar' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'activity_calendar' %}aria-current="page"{% endif %}><span class="ui-nav-label">Lịch hoạt động</span></a>
+                    <a href="{% url 'portal:task_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'task_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Giao việc &amp; hoàn tất</span></a>
                 </div>
             </div>
             {% endif %}

@@ -50,14 +50,22 @@
     .ui-drawer-heading { display:flex; align-items:center; justify-content:space-between; gap:var(--ui-space-2); padding:var(--ui-space-2); font-weight:var(--ui-font-weight-heading); }
     .ui-sidebar-nav { padding:var(--ui-space-2); }
     .ui-nav-group { margin:var(--ui-space-1) 0; }
-    .ui-nav-trigger, .ui-nav-link { display:flex; align-items:center; gap:var(--ui-space-3); width:100%; min-height:var(--ui-target-min); padding:var(--ui-space-2) var(--ui-space-3); border:0; border-inline-start:var(--ui-active-marker-width) solid var(--ui-transparent); border-radius:var(--ui-radius-control); background:var(--ui-transparent); color:var(--ui-sidebar-text); font:inherit; font-size:var(--ui-font-size-small); text-align:left; text-decoration:none; cursor:pointer; overflow-wrap:anywhere; }
+    .ui-nav-trigger, .ui-nav-link { display:flex; align-items:center; gap:var(--ui-space-3); width:100%; min-height:var(--ui-target-min); padding:var(--ui-space-2) var(--ui-space-3); border:var(--ui-border-width) solid var(--ui-transparent); border-inline-start-width:var(--ui-active-marker-width); border-radius:var(--ui-radius-control); background:var(--ui-transparent); color:var(--ui-sidebar-text); font:inherit; font-size:var(--ui-font-size-small); text-align:left; text-decoration:none; cursor:pointer; overflow-wrap:anywhere; transition:background-color var(--ui-motion-feedback),color var(--ui-motion-feedback),border-color var(--ui-motion-feedback),box-shadow var(--ui-motion-feedback); }
     .ui-nav-trigger { font-weight:var(--ui-font-weight-label); }
-    .ui-nav-trigger:hover, .ui-nav-link:hover { background:var(--ui-sidebar-hover-bg); }
+    .ui-nav-trigger:hover, .ui-nav-link:hover,
+    .ui-nav-trigger:focus-visible, .ui-nav-link:focus-visible {
+        background:var(--ui-sidebar-hover-bg); color:var(--ui-sidebar-hover-text);
+        border-color:var(--ui-sidebar-hover-border); border-inline-start-color:var(--ui-sidebar-marker);
+        box-shadow:var(--ui-shadow-card);
+    }
+    .ui-nav-trigger:focus:not(:focus-visible), .ui-nav-link:focus:not(:focus-visible) { outline:none; }
     .ui-nav-label { min-width:0; flex:1; }
     .ui-nav-chevron { display:flex; flex:none; }
     .ui-nav-trigger[aria-expanded="true"] .ui-nav-chevron { transform:rotate(180deg); }
     .ui-nav-link[aria-current="page"], .ui-nav-trigger.is-current-group { background:var(--ui-sidebar-active-bg); color:var(--ui-sidebar-active-text); border-inline-start-color:var(--ui-sidebar-marker); }
-    .ui-nav-panel .ui-nav-link { padding-inline-start:var(--ui-space-6); }
+    .ui-nav-panel { margin-inline-start:var(--ui-space-4); border-inline-start:var(--ui-border-width) solid var(--ui-divider); }
+    .ui-nav-panel .ui-nav-link { padding-inline-start:var(--ui-space-4); }
+    .ui-nav-panel .ui-nav-link[aria-current="page"] { font-weight:var(--ui-font-weight-label); }
     .ui-nav-section-label { margin:var(--ui-space-3) var(--ui-space-3) var(--ui-space-1); color:var(--ui-text-muted); font-size:var(--ui-font-size-caption); }
     .ui-nav-separator { border-top:var(--ui-border-width) solid var(--ui-divider); margin:var(--ui-space-2) 0; }
     .ui-nav-tooltip { position:fixed; z-index:var(--ui-layer-toast); max-width:var(--ui-sidebar-width); padding:var(--ui-space-2) var(--ui-space-3); background:var(--ui-surface); color:var(--ui-text); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); box-shadow:var(--ui-shadow-card); font-size:var(--ui-font-size-small); overflow-wrap:anywhere; }
@@ -99,6 +107,7 @@
         .portal-app[data-sidebar-collapsed="true"] .ui-sidebar-nav { padding:0; }
         .portal-app[data-sidebar-collapsed="true"] :is(.ui-nav-trigger,.ui-nav-link) { padding:var(--ui-space-2); justify-content:center; }
         .portal-app[data-sidebar-collapsed="true"] :is(.ui-nav-label,.ui-nav-chevron,.ui-nav-section-label) { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+        .portal-app[data-sidebar-collapsed="true"] .ui-nav-panel { display:none; }
         .portal-app .ui-main .home-overview-kpis { grid-template-columns:repeat(3,minmax(0,1fr)); }
     }
     @media (min-width:1440px) {

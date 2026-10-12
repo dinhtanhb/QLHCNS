@@ -87,7 +87,9 @@ html[data-theme="light"] {
     --ui-info-border: #075985;
     --ui-sidebar-bg: var(--ui-surface);
     --ui-sidebar-text: var(--ui-text);
-    --ui-sidebar-hover-bg: var(--ui-hover-bg);
+    --ui-sidebar-hover-bg: var(--ui-selected-bg);
+    --ui-sidebar-hover-text: var(--ui-selected-text);
+    --ui-sidebar-hover-border: color-mix(in srgb, var(--ui-brand) 25%, var(--ui-transparent));
     --ui-sidebar-active-bg: var(--ui-selected-bg);
     --ui-sidebar-active-text: var(--ui-selected-text);
     --ui-sidebar-marker: var(--ui-brand);

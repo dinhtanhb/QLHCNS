@@ -76,6 +76,14 @@
         sidebar.querySelectorAll('[data-menu-trigger]').forEach(button => {
             const panel = document.getElementById(button.getAttribute('aria-controls'));
             button.addEventListener('click', () => {
+                if (desktop.matches && collapsed) {
+                    collapsed = false;
+                    try { localStorage.setItem('ihrms-sidebar-collapsed', 'false'); } catch (_) { /* Optional storage. */ }
+                    panel.hidden = false;
+                    button.setAttribute('aria-expanded', 'true');
+                    hideTooltip(); state();
+                    return;
+                }
                 panel.hidden = !panel.hidden;
                 button.setAttribute('aria-expanded', String(!panel.hidden));
             });
