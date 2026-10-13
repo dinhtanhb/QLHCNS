@@ -2,6 +2,91 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-13 — Triển khai Dashboard Đợt 2 đã duyệt
+
+**Tóm tắt cho chủ dự án**
+
+- Bật nghỉ gần đây, chỉ số tuyển dụng/vào làm và lịch sử quyết định theo quyền thật.
+- HR Officer/Trưởng phòng chỉ nghỉ của mình; loại nghỉ chi tiết chỉ manage_hr.
+- Đã gộp truy vấn để superuser SQL Server không vượt trần24; không mở tiền/Đợt3.
+- Full501test đạt mỗi backend; Edge996check và luồng SQL416check trên dữ liệu giả cách ly.
+- Nguồn đã dọn; bản sao/commit/push và SHA remote có metadata bàn giao kèm nhật ký.
+- Chưa screen reader/zoom200%/UAT tài khoản thật; không deploy.
+
+**Phạm vi/Git/nguồn:** main sạch đầu lượt, fetch origin/main, rev-list0/0, HEAD/remote `27a79d7075f8e557b3a412754d636f8f78f891fc`. Đã đọc yêu cầu a004c144, AGENTS, ba mục mới nhất, đặc tả/nguồn/tests/quyền/selector/model/view và nạp UI UX Pro Max; không UI Styling/shadcn. Ba PNG `design-system/reference/atoms/01_dashboard.png`,02/03 không tồn tại trong workspace, Downloads/atoms cũng không có PNG; lần view_image trả file not found. Dùng ảnh Atoms chủ dự án đã gửi và component hiện có; không khẳng định đã đọc ba tệp thiếu. Tiên quyết search.py ba mục trả manage_hr/request/approve đúng sidebar, mục5.5/7.2 đã đánh dấu lịch sử. Không model/migration/quyền/guard/URL name/CSRF/middleware/field/form/lương/nghỉ/giấy HCNS/dependency/topbar; không dữ liệu vận hành.
+
+**Quyền đã in trước sửa (has_permission):**
+
+| Vai trò | Nghỉ tôi linked | Nghỉ global | Tin Open | Candidate | Vào làm | History | Đề xuất |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| EMPLOYEE | Có, chung | Không | Không | Không | Không | Không | Không |
+| DEPT_MANAGER | Có, chung | Không | Không | Không | Phòng quản lý | Không | Phòng quản lý linked |
+| HR_OFFICER | Có, chi tiết | Không | Không | Global | Global | Global | Không |
+| HR_MANAGER | Có, chi tiết | Có, chi tiết | Có | Có | Global | Global | Global |
+| DIRECTOR | Có, chung | Có, chung | Có | Không | Global | PendingApproval hoặc history tự tạo | Không |
+| FINANCE_OFFICER/SYS_ADMIN | Có, chung | Không | Không | Không | Không | Không | Không |
+| SUPER_ADMIN không cờ | Có, chung | Không | Không | Không | Không | Không | Không |
+| Superuser active | Có, chi tiết | Có, chi tiết | Có | Có | Global | Global | Global |
+
+approve_leave_all_departments thật chỉ HR_MANAGER/DIRECTOR ngoài superuser; không cần dừng D2-2. request_recruitment thật DEPT_MANAGER/HR_MANAGER, approve_recruitment HR_MANAGER; recruitment_list global HR_MANAGER/superuser, DEPT_MANAGER phòng quản lý khi Employee live, unlinked none; role khác none. Không chênh bảng quyền mong đợi. Own ẩn unlinked, global giữ theo quyền. D2-9 theo scope trang đích, không tự loại position đã xóa vì view chưa loại; posting loại parent theo D2-7. Đã ghi sự khác nhau vào đặc tả.
+
+**Thực hiện:** thêm dashboard_phase2 service chỉ đọc với projection tối thiểu, 30ngày local midnight/6đơn/8history/sortpk. Gate trước query/DTO/HTML; không actor/reason/file/snapshot/contact/CV/lương. Loại chi tiết chỉ manage_hr, Director generic kể cả toàn Trung tâm. History Exists giữ tập decision được đọc đúng view, sự kiện hiển thị live; recipient không timeline. Candidate grouped6, tổng4, Hired/Closed ghi là trạng thái, không người đã nhận việc. Joined Count distinct gộp aggregate trạng thái cũ, metric=joined cùng selector/drill-down, không đổi bốn KPI hay điều kiện hợp đồng. Nghỉ global+own cùng bật dùng ROW_NUMBER global/partition Employee trong một SELECT, tối đa6 từng danh sách độc lập. Không filter trạng thái đích chưa có; CTA chung riêng, count không link. Template/CSS/SVG/token/UI component SSR mới đặt sau các khối cũ, không đổi thứ tự Đợt1.
+
+**Probe và vòng sửa:** test_approved_blocks_present trên mã trước sửa thất bại thật 1/1 exit1 (thiếu own_leave), TEMP/phase2-probe.log. Focused SQLite vòng đầu38test lỗi2: trần cũ20 và assertion FROM/JOIN parent; sửa test theo trần đã duyệt24, phân biệt JOIN parent posting với truy vấn nguồn đề xuất. Sau sửa39test đạt. SQL lần đầu39test lỗi1 do superuserlinked25SELECT; không báo đạt. Gộp hai danh sách nghỉ, SQL phase2 10test đạt, superuser24. Test độc lập own ngoài top6global được bổ sung, không giảm coverage để qua trần. Existing test_followup baseline before_note chỉ đo ghi chú hợp đồng, không baseline Đợt2; baseline thật đầu lượt nằm bảng dưới.
+
+**Baseline đo lại trước sửa:** CaptureQueriesContext toàn GET/render, login/warm-up ngoài đo, fixed HomeDashboardTests fixture, SQLite in-memory/SQL Server DB dùng một lần; hai lệnh wrapper `TEMP/ihrms-ui-refinements-20261013/runner.py --backend sqlite|sqlserver apps.portal.test_dashboard_followup.DashboardFollowupTests.test_eight_role_query_matrix` exit0; log TEMP/phase2-baseline-{sqlite,sqlserver}.log. Không lấy số của lượt trước.
+
+| Vai trò | SQLite trước unlinked/linked | SQL Server trước unlinked/linked |
+| --- | --- | --- |
+| EMPLOYEE | 3/7 | 4/8 |
+| DEPT_MANAGER | 3/10 | 4/11 |
+| HR_OFFICER | 9/13 | 10/14 |
+| HR_MANAGER | 12/16 | 13/17 |
+| DIRECTOR | 9/13 | 10/14 |
+| FINANCE_OFFICER | 3/7 | 4/8 |
+| SYS_ADMIN | 3/7 | 4/8 |
+| SUPER_ADMIN không cờ | 4/8 | 5/9 |
+
+**Máy/đo:** Intel Core i7-1185G7@3GHz,4core/8logical,15,7GiB RAM; fixture cùng test class trên hai backend, warm20GET/role/profile, p95 nearest rank (19/20), coldGET ghi riêng; không suy năng lực server sản xuất. +100phòng/+1.000Employee/+1.000Candidate/+1.000history trên synthetic fixture; service SELECT không ghi, middleware idle session hiện có chỉ ghi django_session ở integration hồi quy. Không trừ SELECT transaction SQL Server. Bảng cuối và log gate/full/UI ở phần nghiệm thu bên dưới.
+
+**Demo/Edge:** ops/dashboard_demo.py mở rộng seed loại Thai sản mồi, bốn trạng thái nghỉ, Candidate6/Open/request4/joined/history thật trên SQLite giả; không copy DB/media thật. Runtime mới `TEMP/ihrms-dashboard-phase2-demo-20261013`, server http://127.0.0.1:8767/portal/; thông tin đăng nhập ở DEMO_ACCOUNTS.txt ngoài Git. Edge headless đọc dữ liệu/live navigation; ops/run_dashboard_phase2_uat.py kiểm5role×5width×2theme, chữ14/control44/keyboard/reduced-motion/scope/privacy/drill-down/detail, ảnh ngoài Git. Vòng đầu996check/50ảnh/0JSerror; đã xem ảnh1440light. Runner vòng đầu lỗi strict locator summary vì hai summary; sửa .first rồi chạy lại, không lỗi ứng dụng. Bản guard cuối đã chạy lại đạt trên tên giả dài; kết quả cuối bên dưới. Chưa phiên Edge tương tác của người dùng, screenreader/zoom200%/UAT thật.
+
+**Commit tài liệu:** `f46bf5b` — `docs: record dashboard phase 2 decisions`; mục16 đã chốt D2-1…9, bảng7.2 đối chiếu quyết định mới, không đổi công thức Đợt1. Commit mã/test/nhật ký `ui: dashboard phase 2` sau test cuối. SHA commit tự chứa nhật ký được ghi tại bàn giao/verification ngoài repo để tránh tự tham chiếu. CI chưa theo dõi; không deploy. Chủ dự án dùng demo8767 Ctrl+F5 và đăng nhập HR Manager/Officer/Trưởng phòng/Giám đốc/Nhân viên, kiểm loại nghỉ chi tiết chỉ HR; trưởng phòng hiện chỉ nghỉ của mình theo quyết định đã duyệt, mở lịch sử phòng cần giao yêu cầu riêng.
+
+
+**Truy vấn cuối / p95 (toàn GET+render):**
+
+| Role | SQLite cuối unlinked/linked | SQL cuối unlinked/linked | p95 SQLite lớn nhất(s) | p95 SQL lớn nhất(s) |
+| --- | --- | --- | ---: | ---: |
+| EMPLOYEE | 3/8 | 4/9 | 0.0394 | 0.0380 |
+| DEPT_MANAGER | 3/12 | 4/13 | 0.0452 | 0.1259 |
+| HR_OFFICER | 11/16 | 12/17 | 0.0773 | 0.0985 |
+| HR_MANAGER | 17/21 | 18/22 | 0.0757 | 0.1175 |
+| DIRECTOR | 12/16 | 13/17 | 0.0667 | 0.1153 |
+| FINANCE_OFFICER | 3/8 | 4/9 | 0.0288 | 0.0362 |
+| SYS_ADMIN | 3/8 | 4/9 | 0.0316 | 0.0834 |
+| SUPER_ADMIN | 4/9 | 5/10 | 0.0399 | 0.1025 |
+| SUPERUSER | 19/23 | 20/24 | 0.1006 | 1.3452 |
+
+Trần24 đạt cả9nhóm/profile; baseline8role trước sửa ở bảng trên, superuser đo riêng cuối (không gán baseline chưa đo). p95 cuối lớn nhất SQLite0,1006s/SQL1,3452s (superuserunlinked), đều≤1,5s; ghi cả outlier thật, không chọn riêng số focused nhỏ hơn. Hai full suite chạy đồng thời trên máy đã nêu; đây là fixture test, không chứng nhận tải sản xuất. ColdGET và20mẫu/p95 mỗi role/profile nằm trong PHASE2_QUERY_MATRIX của log. N+1 growth SQLite17→17/SQL18→18 với100phòng/1.000Employee/Candidate/history, không tăng query.
+
+**Nghiệm thu cuối:** các lệnh dưới đây chạy trên nguồn guard cuối; lấy native exit ngay sau Python, không coi stderr PowerShell NativeCommandError là exit test. M365 off/APP_ENV=test, DB/media/log dùng một lần; SQL connection chỉ resolve trong memory, không ghi/echo thông tin đăng nhập.
+
+- `git diff --check` và `git diff --cached --check`: exit0.
+- `venv/Scripts/python.exe -m pip check`: exit0, No broken requirements found.
+- `venv/Scripts/python.exe "$env:TEMP/ihrms-dashboard-phase2-guard-index-gates.py"`: exit0; gọi check, makemigrations --check --dry-run và ops/check_ui_contrast.py trên stage-source: no issues/no changes,198cặp/0lỗi; min text5,100(light)/7,007(dark), min UI3,506/3,982.
+- Focused `venv/Scripts/python.exe "$env:TEMP/ihrms-ui-refinements-20261013/runner.py" --backend sqlite|sqlserver apps.portal.test_home_dashboard_phase2 apps.portal.test_home_dashboard apps.portal.test_dashboard_followup apps.portal.test_dashboard_drilldown apps.portal.test_global_search`:43/43 mỗi backend, exit0; TEMP/phase2-focused-{sqlite,sqlserver}-guard-final.log. SQLite40,790s; SQL75,344s. Probe thiếu khối và link403 cũ đều thất bại thật exit1 như đã ghi; sau sửa đều đạt.
+- Full `venv/Scripts/python.exe "$env:TEMP/ihrms-dashboard-phase2-guard-index-runner.py" --backend sqlite` và `--backend sqlserver`: SQLite501test OK(7skip),549,922s, nativeexit0; SQLServer501/501 OK(0skip),593,601s, nativeexit0; logs TEMP/phase2-full-{sqlite,sqlserver}-guard-final.log. Nguồn test xuất Git index bằng git archive tree `78cbc2866a038f845a9a473c72bfa48bea3dacc9` vào TEMP/ihrms-dashboard-phase2-guard-final-20261013/stage-source. Đối chiếu14tệp mã/test/CSS/runner đang stage với nguồn test khớp sau chuẩn hóaLF/CRLF. Chỉ bổ sung kết quả vào nhật ký sau test, không đổi mã/test; không dùng full500test trước guard để nghiệm thu nguồn501test cuối.
+- `venv/Scripts/python.exe ops/run_dashboard_phase2_uat.py --directory "$env:TEMP/ihrms-dashboard-phase2-demo-20261013" --packages-dir "$env:TEMP/ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/packages"`: exit0,996check/50ảnh/0JSerror trên bản guard cuối,5role×5width×2theme, tên giả dài; TEMP/phase2-edge-guard-final.log. Legacy bổ sung4check/2ảnh: Director giữ metadata nhưng không link và detail403 đúng guard; HR có link/detail200. Login Edge tại localhost8767 cũng đạt,1ảnh. Bằng chứng dashboard-phase2-uat trong thư mục demo; đã xem ảnh HRdesktop sáng và HR Officer360 tối.
+- `venv/Scripts/python.exe ops/run_browser_uat.py --backend sqlserver --packages-dir "$env:TEMP/ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/packages" --output-dir "$env:TEMP/ihrms-dashboard-phase2-business-guard-uat"`: exit0,416check/32ảnh/0JSerror, DBdestroyed=true; TEMP/phase2-business-edge-guard.log. Tạo/sửa hồ sơ, tạo hợp đồng, thông báo/trang đích/dữ liệu lưu, bốn KPI và gửi→duyệt nghỉ→Dashboard đều kiểm lại qua Edge thật headless. Không phải UAT phiên trình duyệt/tài khoản thật của chủ dự án.
+
+**Bản sao và bàn giao:** `D:/QLHCNS-Backups/IHRMS_Review_20261013_Dashboard_Phase2_Final.zip` từ Git index cuối, loại env/runtime/database/media/uploads/log/accountCSV/credentials, giữ .env.example. REVIEW_SNAPSHOT.txt có tree/parent/hash mỗi nguồn; mở lại kiểm số tệp và toàn bộSHA256. Không phải backup phục hồi DB/media. `.zip.sha256` và `.verification.json` cạnh ZIP chứa bằng chứng hash/commit/push/remote thực tế; dùng metadata ngoài repo để ghi SHA của commit tự chứa nhật ký mà không tạo commit thứ ba. Hai commit main theo yêu cầu: docs `d04239084481bb3187b62e09034374386d60517f`, UI `ui: dashboard phase 2`; không force-push/deploy. Trước bàn giao main ahead1/behind0 sau docs, origin/main còn baseline27a79d7; bước push/remote HEAD cụ thể xác minh và bổ sung vào verification khi bàn giao. Không tự ghi “CI đạt”: `gh run list --branch main --limit 3 --json status,conclusion,headSha` exit1 HTTP401 Bad credentials, **chưa theo dõi CI**. Chủ dự án xem GitHub Actions sau khi tự xác thực CLI hoặc qua trình duyệt; không cần gửi token qua chat.
+
+**Việc chủ dự án:** mở http://localhost:8767/portal/, tài khoản giả trong TEMP/ihrms-dashboard-phase2-demo-20261013/DEMO_ACCOUNTS.txt (URL runtime đã chỉnh đúng server đang chạy, không chép mật khẩu vào Git); Ctrl+F5, xem HR Manager/Officer/Trưởng phòng/Giám đốc/Nhân viên. Tên loại nghỉ chi tiết chỉ HR, trưởng phòng chỉ “của tôi” theo quyết định đã chốt; mở lịch sử phòng cần nhiệm vụ/policy riêng. Chưa screen reader, zoom200%, UAT tài khoản thật hoặc theo dõi CI; không mở Đợt3/tiền/header ca/kỳ lương. Skill tra cứu UX/Web bàn phím/focus phù hợp đã đối chiếu; không có stack Django trong dữ liệu, kết quả domain web off-topic không dùng/persist, dùng checklist web và component SSR của dự án.
+
+**Ghi nhận dọn bàn giao:** log PowerShell chuyển hướng là UTF-16; lần tổng hợp đầu đọc UTF-8 bị lỗi giải mã trước khi ghi nhật ký. Đã đọc theo BOM và ghi Markdown UTF-8 đúng. ZIP Phase2 không hậu tố Final là nguồn test trước bổ sung kết quả nhật ký, không dùng bàn giao; ZIP Final chứa cùng mã đã kiểm và nhật ký cuối.
+
+
 ## 2026-10-13 — Đồng bộ tìm kiếm với sidebar và dọn đặc tả Đợt 2
 
 **Tóm tắt cho chủ dự án**

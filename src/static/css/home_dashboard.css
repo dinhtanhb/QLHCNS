@@ -1,5 +1,23 @@
 /* Role-based homepage: semantic tokens; shared phase-4 components. */
 @media screen {
+ .phase2-list-grid,.phase2-leave-stack,.phase2-metric-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--ui-space-6); align-items:start; }
+ .phase2-list-grid > *,.phase2-metric-grid > * { min-width:0; }
+ .phase2-list .ui-page-description { margin-block:var(--ui-space-3); }
+ .phase2-list .ui-scroll { max-height:26rem; overflow:auto; }
+ .phase2-leave-table { min-width:34rem; }
+ .phase2-secondary { display:block; color:var(--ui-text-muted); font-size:var(--ui-font-size-small); overflow-wrap:anywhere; }
+ .phase2-history { list-style:none; margin:0; padding:0; }
+ .phase2-history li { display:flex; flex-wrap:wrap; align-items:center; gap:var(--ui-space-3); padding-block:var(--ui-space-3); border-top:var(--ui-border-width) solid var(--ui-divider); }
+ .phase2-history li > div { flex:1; min-width:10rem; overflow-wrap:anywhere; }
+ .phase2-history time { font-size:var(--ui-font-size-small); color:var(--ui-text-muted); font-variant-numeric:var(--ui-numeric-variant); }
+ .phase2-metric { display:grid; gap:var(--ui-space-3); }
+ .phase2-counts { margin:0; padding:var(--ui-space-3); background:var(--ui-surface); border:var(--ui-border-width) solid var(--ui-divider); border-radius:var(--ui-radius-card); }
+ .phase2-counts > div { display:flex; justify-content:space-between; gap:var(--ui-space-3); padding-block:var(--ui-space-1); font-size:var(--ui-font-size-small); }
+ .phase2-counts dd { margin:0; font-variant-numeric:var(--ui-numeric-variant); }
+ @media(min-width:768px) { .phase2-metric-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+ @media(min-width:1280px) { .phase2-list-grid:has(> :nth-child(2)) { grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); } .phase2-metric-grid { grid-template-columns:repeat(4,minmax(0,1fr)); } .phase2-metric-grid:has(> :last-child:nth-child(2)) { grid-template-columns:repeat(2,minmax(0,1fr)); } .phase2-metric-grid:has(> :last-child:nth-child(3)) { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+}
+@media screen {
  .home-dashboard { --chart-1:#087f6b; --chart-2:#45a68f; --chart-3:#d38a1b; --chart-4:#2870b5; --chart-5:#bd4540; --chart-6:#717b84; }
  [data-theme="dark"] .home-dashboard { --chart-1:#34c5aa; --chart-2:#80d6c1; --chart-3:#edb653; --chart-4:#78b6ef; --chart-5:#f48982; --chart-6:#b6c2cc; }
  .chart-color-1 { --chart-color:var(--chart-1); } .chart-color-2 { --chart-color:var(--chart-2); } .chart-color-3 { --chart-color:var(--chart-3); } .chart-color-4 { --chart-color:var(--chart-4); } .chart-color-5 { --chart-color:var(--chart-5); } .chart-color-6 { --chart-color:var(--chart-6); }

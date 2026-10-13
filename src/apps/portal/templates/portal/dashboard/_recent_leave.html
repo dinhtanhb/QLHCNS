@@ -1,0 +1,14 @@
+{% load ui_components %}
+<section class="ui-card phase2-list" id="phase2-{{ key }}" aria-labelledby="phase2-{{ key }}-title">
+<h2 class="ui-card-title" id="phase2-{{ key }}-title">{% include "_shell_icon.html" with name="calendar" %}{% if key == 'global_leave' %}Đơn nghỉ gần đây toàn Trung tâm{% else %}Đơn nghỉ gần đây của tôi{% endif %}</h2>
+<p class="ui-page-description">Tối đa 6 đơn mới nhất trong 30 ngày</p>
+{% if data.state == 'error' %}{% include 'ui/empty_state.html' with state='error' title='Không tải được dữ liệu' description='Vui lòng thử lại sau.' %}
+{% elif data.rows %}
+<div class="ui-scroll" tabindex="0" role="region" aria-labelledby="phase2-{{ key }}-title"><table class="ui-table phase2-leave-table">
+<caption class="ui-sr-only">Đơn theo ngày tạo; trạng thái hiện tại</caption>
+<thead><tr>{% if data.global_scope %}<th scope="col">Nhân viên</th>{% endif %}<th scope="col">Loại nghỉ</th><th scope="col">Thời gian</th><th scope="col">Số ngày</th><th scope="col">Trạng thái</th></tr></thead>
+<tbody>{% for row in data.rows %}<tr>{% if data.global_scope %}<td>{{ row.employee__full_name }}<span class="phase2-secondary">{{ row.employee__employee_code }}</span></td>{% endif %}<td>{{ row.type_label }}</td><td>{{ row.from_date|ui_date }}<span class="phase2-secondary">đến {{ row.to_date|ui_date }}</span></td><td>{{ row.total_days|ui_number }}</td><td>{% ui_badge 'leave.leaverequest:status' row.status %}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% else %}{% include 'ui/empty_state.html' with title='Chưa có đơn trong kỳ' description='Theo ngày tạo trong 30 ngày gần đây.' %}{% endif %}
+{% if data.href %}<a class="ui-button" href="{{ data.href }}">Mở đơn nghỉ của tôi{% include '_shell_icon.html' with name='arrow' %}</a>{% endif %}
+</section>

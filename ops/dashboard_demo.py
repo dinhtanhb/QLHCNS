@@ -122,6 +122,31 @@ def seed(folder):
             if code == "DEPT_MANAGER":
                 people[index].managed_departments.add(people[index].department)
             account_lines.append(f"{user.username}: {label}")
+        # Phase-two synthetic boundaries and privacy sentinels. No operational copy.
+        from apps.recruitment.models import RecruitmentRequest, JobPosting, Candidate
+        from apps.document.models import PersonnelDecision, PersonnelDecisionHistory
+        sensitive_type = LeaveType.objects.create(leave_type_code="DEMO-SENSITIVE", leave_type_name="Thai sản")
+        for index, status in enumerate(("Pending", "Approved", "Rejected", "Cancelled")):
+            LeaveRequest.objects.create(employee=people[index], leave_type=sensitive_type,
+                from_date=today+timedelta(days=20+index), to_date=today+timedelta(days=20+index),
+                total_days=1, status=status, reason="SYNTHETIC_PRIVATE_REASON", attachment="SYNTHETIC_PRIVATE_ATTACHMENT")
+        Employee.objects.filter(pk__in=[people[i].pk for i in (0,3,18)]).update(join_date=today.replace(day=1))
+        Employee.objects.filter(pk=people[3].pk).update(full_name="Nhân viên giả lập có họ tên dài để kiểm tra bố cục bảng và điều hướng trên màn hình hẹp")
+        for index, status in enumerate(("Pending", "Approved", "Rejected", "Closed")):
+            request = RecruitmentRequest.objects.create(request_code=f"DEMO-REQ-{index}",
+                department=departments[index%2], position=position, required_quantity=2,
+                required_date=today, status=status, request_reason="SYNTHETIC_PRIVATE_REQUEST")
+            JobPosting.objects.create(recruitment_request=request, posting_title=f"Tin giả lập {index}",
+                open_date=today-timedelta(days=3), status="Open" if index<3 else "Closed")
+        for index, (status, _) in enumerate(Candidate.STATUS_CHOICES):
+            for number in range(index+1):
+                Candidate.objects.create(candidate_code=f"DEMO-C-{index}-{number}", full_name="SYNTHETIC_PRIVATE_CANDIDATE",
+                    email="synthetic@example.test", phone_number="0000000000", status=status)
+        for index, status in enumerate(("PendingApproval", "Issued", "Draft")):
+            decision = PersonnelDecision.objects.create(employee=people[4], template_slug="qd_bo_nhiem",
+                decision_no=f"DEMO-QD-{index+1:03}", status=status, content_snapshot={"private":"SYNTHETIC_PRIVATE_SNAPSHOT"})
+            PersonnelDecisionHistory.objects.create(decision=decision, action="Submitted" if index==0 else "Issued" if index==1 else "DraftCreated",
+                status_to=status, created_by=accounts["director"] if index==1 else accounts["hr"], comment="SYNTHETIC_PRIVATE_COMMENT")
         snapshot = dashboard_snapshot(accounts["hr"], people[0])
         manifest = {"synthetic_only": True, "date": today.isoformat(), "employees": len(people), "contracts": Contract.objects.count(),
                     "expected_kpis": {m["key"]:m["value"] for m in snapshot["metrics"]},

@@ -18,6 +18,7 @@ from apps.security.permissions import get_role_code, has_permission
 from apps.portal.selectors import approvable_leave_requests
 from apps.common.number_format import vi_number
 from urllib.parse import urlencode
+from apps.portal.dashboard_phase2 import phase2_sections
 
 logger = logging.getLogger(__name__)
 LIVE_PARENT = Q(department__is_deleted=False) | Q(department__isnull=True)
@@ -39,7 +40,7 @@ def dashboard_employee_scope(user, employee=None):
 
 def dashboard_metric_employees(user, employee, key, today):
     qs, scope = dashboard_employee_scope(user, employee)
-    if qs is None or key not in ("managed", "active", "approved", "probation"):
+    if qs is None or key not in ("managed", "active", "approved", "probation", "joined"):
         return None, scope
     if key == "approved":
         if not has_permission(user, "view_reports"):
@@ -47,6 +48,9 @@ def dashboard_metric_employees(user, employee, key, today):
         qs = qs.filter(leave_requests__is_deleted=False, leave_requests__leave_type__is_deleted=False,
                        leave_requests__status="Approved", leave_requests__from_date__lte=today,
                        leave_requests__to_date__gte=today).distinct()
+    elif key == "joined":
+        qs = qs.filter(join_date__gte=today.replace(day=1), join_date__lte=today,
+                       employment_status__in=("Active", "Probation", "OnLeave"))
     else:
         statuses = {"managed": ("Active", "Probation", "OnLeave"), "active": ("Active",), "probation": ("Probation",)}
         qs = qs.filter(employment_status__in=statuses[key])
@@ -162,6 +166,8 @@ def dashboard_snapshot(user, employee=None):
         result["scope_label"] = scope
         def status_block():
             counts = {s.lower(): Count("pk", filter=Q(employment_status=s), distinct=True) for s in ("Active", "Probation", "OnLeave")}
+            counts["joined"] = Count("pk", distinct=True, filter=Q(join_date__gte=today.replace(day=1),
+                join_date__lte=today, employment_status__in=("Active", "Probation", "OnLeave")))
             if has_permission(user, "view_reports"):
                 counts["approved"] = Count("pk", distinct=True, filter=Q(
                     leave_requests__is_deleted=False, leave_requests__leave_type__is_deleted=False,
@@ -173,6 +179,10 @@ def dashboard_snapshot(user, employee=None):
         status = _read_block(status_block)
         result["sections"]["status"] = status
         c = status.get("counts")
+        result["sections"]["joined"] = dict(state=status["state"], label="Nhân sự vào làm trong tháng",
+            value=c["joined"] if c is not None else None, icon="person", rows=[],
+            note="Theo ngày vào làm của hồ sơ nhân sự", href=reverse("portal:dashboard_people") + "?" +
+            urlencode({"metric": "joined", "on_date": today.isoformat()}))
         if c is not None:
             result["metrics"] = [metric("managed", "Nhân sự đang quản lý", c["active"] + c["probation"] + c["onleave"], scope,
                 f'Active {vi_number(c["active"])} · Thử việc {vi_number(c["probation"])} · Nghỉ dài hạn {vi_number(c["onleave"])}; không gồm Resigned.'),
@@ -199,4 +209,5 @@ def dashboard_snapshot(user, employee=None):
         (employee is not None and not employee.is_deleted)
     ):
         result["sections"]["queue"] = _read_block(lambda: _queue(user))
+    result["sections"].update(phase2_sections(user, employee, today, _read_block))
     return result

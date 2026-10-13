@@ -78,6 +78,9 @@ def pairings():
     for status in ("danger", "warning", "info"):
         pairs.extend(((status + "-text", status + "-bg", 4.5),
                       (status + "-border", status + "-bg", 3)))
+    # Phase-two bounded lists and timestamp/count text reuse the same tokens.
+    pairs.extend((("text", "surface", 4.5), ("text-muted", "surface", 4.5),
+                  ("link", "surface", 4.5), ("focus", "surface", 3)))
     return pairs
 
 

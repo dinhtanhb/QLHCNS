@@ -1,0 +1,8 @@
+{% load ui_components %}
+<section class="ui-card phase2-list" id="phase2-history" aria-labelledby="phase2-history-title">
+<h2 class="ui-card-title" id="phase2-history-title">{% include '_shell_icon.html' with name='document' %}Cập nhật quyết định nhân sự</h2>
+<p class="ui-page-description">Tối đa 8 cập nhật mới nhất trong 30 ngày</p>
+{% if data.state == 'error' %}{% include 'ui/empty_state.html' with state='error' title='Không tải được dữ liệu' description='Vui lòng thử lại sau.' %}
+{% elif data.rows %}<ol class="phase2-history">{% for row in data.rows %}<li><time datetime="{{ row.created_date|date:'c' }}">{{ row.created_date|ui_date }} · {{ row.created_date|date:'H:i' }}</time><div>{% if row.href %}<a class="dashboard-text-link" href="{{ row.href }}">{{ row.decision__decision_no|default:'Quyết định chưa có số' }}</a>{% else %}<span>{{ row.decision__decision_no|default:'Quyết định chưa có số' }}</span>{% endif %}<span class="phase2-secondary">{{ row.action_label }}</span></div>{% ui_badge 'document.personneldecision:status' row.status_to %}</li>{% endfor %}</ol>
+{% else %}{% include 'ui/empty_state.html' with title='Chưa có cập nhật trong kỳ' description='Chỉ các quyết định trong phạm vi được đọc.' %}{% endif %}
+</section>

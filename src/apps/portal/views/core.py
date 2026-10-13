@@ -35,12 +35,13 @@ def dashboard_people(request):
         day = parse_date(raw_date) if raw_date else timezone.localdate()
     except ValueError:
         day = None
-    if day is None or key not in ("managed", "active", "approved", "probation"):
+    if day is None or key not in ("managed", "active", "approved", "probation", "joined"):
         return HttpResponse("Bộ lọc không hợp lệ.", status=400)
     qs, scope = dashboard_metric_employees(request.user, _get_employee(request), key, day)
     if qs is None:
         return HttpResponseForbidden("Bạn không có quyền xem chỉ số này.")
     labels = {"managed": "Nhân sự đang quản lý", "active": "Đang làm việc", "approved": "Nghỉ được duyệt trong ngày", "probation": "Thử việc"}
+    labels["joined"] = "Nhân sự vào làm trong tháng"
     q = request.GET.get("q", "").strip()
     if q:
         qs = qs.filter(Q(full_name__icontains=q) | Q(employee_code__icontains=q))

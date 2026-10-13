@@ -134,7 +134,7 @@ class DashboardFollowupTests(TestCase):
                 with CaptureQueriesContext(connection) as queries:
                     self.client.get(reverse('portal:dashboard'))
                 count=sum(q['sql'].lstrip().upper().startswith('SELECT') for q in queries)
-                self.assertLessEqual(count,17,(role,linked))
+                self.assertLessEqual(count,24,(role,linked))  # Approved phase-two whole-page ceiling.
                 old=sum(q['sql'].lstrip().upper().startswith('SELECT') for q in baseline)
                 matrix[f'{role}-{linked}']={'before_note':old,'after':count}
         print('FOLLOWUP_QUERY_MATRIX='+json.dumps(matrix))
