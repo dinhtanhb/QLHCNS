@@ -45,6 +45,8 @@ Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết qu�
 
 **Bản sao/commit:** bản mã review cuối `D:/QLHCNS-Backups/IHRMS_Review_20261013_Sidebar_Spec.zip` lấy nguồn index trước commit tài liệu, có manifest/tree/parent và SHA256 từng tệp; loại runtime/secret/database/media/credentials, giữ .env.example. Mở lại kiểm từng hash và ZIP integrity trước commit, đối chiếu tree với commit sau push; báo cáo `.verification.json` và `.zip.sha256` ngoài repo. Bản nguồn Phần A trước commit ở `IHRMS_Review_20261013_Sidebar_Code.zip`. Đây là nguồn review, không backup dữ liệu vận hành. SHA hai commit/kết quả remote cuối ghi trong báo cáo kiểm chứng cạnh bản sao và câu trả lời bàn giao; bản nhật ký commit không tự chứa SHA của chính nó. Bước push mặc định theo AGENTS; không force/deploy, không sửa mã sau test.
 
+**Commit A đã tạo:** `9f9aa83c833c6c3d3a872bfd22f2d704db29cf20` — `fix(search): align page catalog with sidebar visibility`. Commit B `docs: dashboard phase 2 spec cleanup` là commit ngay sau A, chứa riêng đặc tả/nhật ký; SHA thực tế và kết quả remote được ghi trong verification cuối để giữ working tree sạch và đúng hai commit. Kiểm CI theo SHA push cuối nếu CLI vẫn401: ghi chưa theo dõi CI trong verification/bàn giao, không ngụ ý CI đạt.
+
 ## 2026-10-13 — Quy trình dọn nguồn, tạo bản sao và commit/push mặc định
 
 **Tóm tắt cho chủ dự án**
