@@ -24,7 +24,10 @@ Khi được giao review, đọc [hướng dẫn review dự án](docs/Huong_Dan
 2. Thực hiện thay đổi trong phạm vi đã yêu cầu; không đưa `.env`, database, dữ liệu thật hay bí mật vào Git.
 3. Chạy kiểm tra phù hợp và ghi chính xác lệnh/kết quả trong nhật ký.
 4. Cập nhật `docs/PROJECT_WORK_LOG.md` cùng đợt thay đổi.
-5. Báo rõ tệp đã đổi, kiểm tra đạt/chưa đạt, commit/push nếu có, và bước tiếp theo cần người dùng làm.
+5. Sau mỗi đợt sửa mã, làm sạch tệp, mã và nội dung trong phạm vi: sửa lỗi mã hóa/định dạng, bỏ phần thừa do đợt đó tạo; giữ nguyên thay đổi ngoài phạm vi và dữ liệu vận hành. Không dọn bằng reset hoặc xóa hàng loạt.
+6. Kiểm thử trên nguồn cuối sau khi dọn. Tạo bản sao mã nguồn review ngoài repository từ các tệp nguồn được theo dõi/stage; loại `.env` (giữ `.env.example`), database, media/uploads, log, đầu ra runtime và thông tin đăng nhập/bí mật. Thêm manifest nguồn/commit hoặc tree, mở lại bản sao và xác minh SHA-256 từng tệp. Đây không phải backup phục hồi dữ liệu.
+7. Commit các thay đổi đã kiểm và nhật ký trên `main`, push `origin main`, rồi xác minh SHA remote khớp HEAD và trạng thái ahead/behind. Theo yêu cầu chủ dự án ngày 13/10/2026, đây là bước mặc định đã được cho phép sau mỗi đợt sửa mã; không hỏi lại. Chỉ bỏ commit/push khi chủ dự án yêu cầu rõ trong đợt đó. Không force-push hoặc deploy theo quyền này.
+8. Báo tệp đã đổi, kết quả kiểm tra/giới hạn, đường dẫn bản sao, SHA commit/push và việc cần người dùng làm. Nếu kiểm tra hoặc push không hoàn tất, ghi lỗi và hướng xử lý trong nhật ký; không báo hoàn tất sai.
 
 ## Kiểm thử luồng nghiệp vụ trên trình duyệt
 

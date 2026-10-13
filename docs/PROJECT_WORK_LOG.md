@@ -2,6 +2,21 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-13 — Quy trình dọn nguồn, tạo bản sao và commit/push mặc định
+
+**Tóm tắt cho chủ dự án**
+
+- Đã ghi quy trình bắt buộc sau mỗi đợt sửa mã vào hướng dẫn dự án.
+- Dọn nguồn, kiểm thử cuối, tạo bản sao sạch, commit và push là các bước mặc định.
+- Chỉ hoãn push khi chủ dự án yêu cầu rõ trong đợt tương ứng; không tự deploy.
+- Hoàn tất bàn giao hai commit tìm kiếm/đặc tả đang chờ theo chỉ đạo mới.
+
+**Phạm vi:** dùng Create Rule, cập nhật AGENTS.md thay vì tạo quy tắc trùng. Main đầu lượt ahead2/behind0, remote `2c47252`; giữ dòng SHA bổ sung của nhật ký. Yêu cầu mới cho phép hoàn tất push mặc định, thay việc giữ local của lượt trước. Không sửa mã ứng dụng hoặc triển khai khối Đợt 2.
+
+**Quy tắc:** dọn trong phạm vi, giữ dữ liệu/thay đổi khác; kiểm thử nguồn cuối; bản sao review ngoài repo có manifest/hash, không runtime/bí mật; commit/push main và kiểm SHA remote. Không force-push/deploy. Khi lỗi phải báo đúng kết quả và cách xử lý.
+
+**Bàn giao:** bản sao `D:/QLHCNS-Backups/IHRMS_Review_20261013_Phase2_Process.zip`, nguồn staged kèm quy trình và nhật ký cuối, manifest parent commit/tree và SHA từng tệp. Mở lại kiểm hash/số tệp, báo cáo `.verification.json` và `.zip.sha256` cạnh ZIP. Hai commit ứng dụng/đặc tả đã kiểm ở lượt trước được push cùng commit hướng dẫn này; không thay mã sau full suite 488 test mỗi backend/Edge130 đã ghi. Lượt này chỉ tài liệu: diff check và kiểm bản sao; không chạy lại nghiệp vụ. SHA push/kết quả remote báo trong bàn giao và verification ngoài repo để tránh tự tham chiếu commit. Không theo dõi CI do GitHub CLI401 từ lượt trước.
+
 ## 2026-10-13 — Kiểm chứng tìm kiếm và đặc tả Dashboard Đợt 2
 
 **Tóm tắt cho chủ dự án**
@@ -43,6 +58,8 @@ Ma trận search đã đạt trên cả hai backend trong lượt full đầu (c
 **Kết quả full cuối:** `venv/Scripts/python.exe "$env:TEMP/ihrms-phase2-index-runner.py" --backend sqlite` trên stage-source cuối: 488 test, OK (7 skip), 525.294 giây, exit native0; `--backend sqlserver`: 488/488 OK, không skip, 568.245 giây, exit native0. Log TEMP/ihrms-phase2-full-sqlite-final.log và ihrms-phase2-full-sqlserver-final.log; database dùng một lần đã hủy. Đây là full suite của chính thay đổi A1/A2/route/demo/bố cục hiện tại, không lấy kết quả commit 9eba8ca. Cây stage cuối `2324a80745f963a32bac27967f8265fa8402ee29`; đối chiếu tất cả tệp mã stage với snapshot khớp sau chuẩn hóa LF/CRLF. Chỉ tài liệu/nhật ký bổ sung sau test, không thay nguồn ứng dụng. Cả log cuối đều SEARCH_PAGE_GUARD_MISMATCHES=[] và query matrix đúng bảng trên. Lần đầu SQL cũng chỉ lỗi assertion CSS cũ; không dùng làm kết quả đạt, đã chạy lại full cuối sau sửa test. Gate/migration/contrast/pip và diff check đều đạt; Edge cuối 130/24 ảnh vẫn khớp nguồn cuối. `gh run list --commit 2c47252...` trả HTTP401 Bad credentials; **chưa theo dõi CI**, không ghi token. SHA mới local không push nên chưa có run CI remote theo hai SHA; chủ dự án có thể xem Actions sau khi tự cho phép push, không cần gửi token qua chat.
 
 **Commit Phần A:** `ea9b9b655d6785dae12774c6866b4b11264dae60` — `fix(search): accent-insensitive people search and page permission tests`. Phần B chỉ đặc tả và cùng mục nhật ký, commit `docs: dashboard phase 2 specification`; SHA thực tế bổ sung sau commit để tránh tự tham chiếu. Giữ đúng hai commit, không push/deploy.
+
+**Commit Phần B và remote cuối:** `07305f0e161534fed839e1bc3efa91e27eb14a97` — `docs: dashboard phase 2 specification`. Xác minh `main` ahead2/behind0; `git ls-remote origin refs/heads/main` vẫn `2c47252b712c5af3de2149654e3053190fb28bf6`, chưa push. Dòng SHA Phần B này được bổ sung vào working tree sau commit, chưa commit, để ghi đúng hai SHA mà không tạo commit thứ ba; mọi mã và đặc tả đã nằm trong hai commit. Chủ dự án duyệt mục 16/D2-1..D2-8, yêu cầu triển khai phần được duyệt hoặc cho phép push riêng; chưa triển khai Đợt 2.
 
 ## 2026-10-13 — Làm sạch nhật ký và bàn giao mã nguồn
 
