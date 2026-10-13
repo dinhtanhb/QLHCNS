@@ -7,17 +7,16 @@
 <div class="flex items-center justify-between mb-4 no-print">
     <h1 class="text-lg font-bold text-gray-900">Báo cáo Chấm công & Tồn phép</h1>
     <div class="flex gap-3">
-        <form method="get" class="flex gap-2">
-            <select name="month" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
-                {% for m in months %}<option value="{{ m }}" {% if m == month %}selected{% endif %}>Tháng {{ m|ui_number }}</option>{% endfor %}
-            </select>
-            <select name="year" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
-                {% for y in years %}<option value="{{ y|ui_year }}" {% if y == year %}selected{% endif %}>{{ y|ui_year }}</option>{% endfor %}
-            </select>
-        </form>
+
         <button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">🖨 In</button>
     </div>
 </div>
+<form method="get" class="ui-query-bar"><div class="ui-query-fields"><label>Tháng<select name="month" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
+                {% for m in months %}<option value="{{ m }}" {% if m == month %}selected{% endif %}>Tháng {{ m|ui_number }}</option>{% endfor %}
+            </select></label><label>Năm<select name="year" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
+                {% for y in years %}<option value="{{ y|ui_year }}" {% if y == year %}selected{% endif %}>{{ y|ui_year }}</option>{% endfor %}
+            </select></label></div><div class="ui-query-actions"><button type="submit" class="ui-button ui-button--primary">Lọc</button></div></form>
+
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
     <h2 class="text-center font-bold mb-4">Báo cáo Chấm công tháng {{ month }}/{{ year|ui_year }}</h2>
     <div class="overflow-x-auto">

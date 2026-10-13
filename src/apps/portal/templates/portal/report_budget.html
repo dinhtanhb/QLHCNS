@@ -3,10 +3,12 @@
 {% block content %}
 <div class="flex items-center justify-between mb-4">
     <h1 class="text-lg font-bold text-gray-900">Báo cáo Ngân sách năm</h1>
-    <form method="get"><select name="year" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
-        {% for y in years %}<option value="{{ y|ui_year }}" {% if y == year %}selected{% endif %}>{{ y|ui_year }}</option>{% endfor %}
-    </select></form>
+
 </div>
+<form method="get" class="ui-query-bar"><div class="ui-query-fields"><label class="ui-field-label">Năm<select name="year" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
+        {% for y in years %}<option value="{{ y|ui_year }}" {% if y == year %}selected{% endif %}>{{ y|ui_year }}</option>{% endfor %}
+    </select></label></div><div class="ui-query-actions"><button type="submit" class="ui-button ui-button--primary">Lọc</button></div></form>
+
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
     <div class="overflow-x-auto mobile-table-scroll">
         <table class="w-full text-sm">

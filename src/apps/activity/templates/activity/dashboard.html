@@ -14,7 +14,10 @@
         {% endif %}
         <a href="{% url 'portal:activity_calendar' %}?month={{ month }}{% if selected_cbda %}&amp;cbda={{ selected_cbda }}{% endif %}"
            class="rounded-md border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50">Xem lịch</a>
-        <form method="get" class="flex flex-wrap items-end gap-2">
+
+        </div>
+    </div>
+<form method="get" class="ui-query-bar"><div class="ui-query-fields">
             <label class="text-sm text-gray-600">Tháng
                 <input type="month" name="month" value="{{ month }}" class="mt-1 block text-sm">
             </label>
@@ -28,10 +31,9 @@
                 </select>
             </label>
             {% endif %}
-            <button class="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800">Xem</button>
-        </form>
-        </div>
-    </div>
+            </div><div class="ui-query-actions"><button class="ui-button rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800">Xem</button>
+        </div></form>
+
 
     {% if is_overview %}
     <div class="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-5">

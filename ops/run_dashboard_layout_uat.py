@@ -129,7 +129,7 @@ def main():
                                 }''')
                                 check(abs(bounds['page']-bounds['heading'])<2,label+' '+slug+' left-aligned heading')
                                 if slug=='decisions' and width>=768 and role!='director':
-                                    controls=page.locator('.decision-filter-bar :is(input,select,button)').evaluate_all('xs=>xs.map(x=>x.getBoundingClientRect().bottom)')
+                                    controls=page.locator('.ui-query-bar :is(input,select,button)').evaluate_all('xs=>xs.map(x=>x.getBoundingClientRect().bottom)')
                                     check(max(controls)-min(controls)<2,label+' filter controls share baseline')
                                 if slug=='decision-detail' and page.locator('.decision-workflow').count():
                                     check(page.locator('.decision-workflow').evaluate('x=>x.getBoundingClientRect().left')<bounds['page']+2,label+' workflow anchored left')

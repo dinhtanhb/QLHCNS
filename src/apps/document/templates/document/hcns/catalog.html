@@ -8,11 +8,11 @@
   {% if own_employee %}<a class="hcns-button ui-button" href="?employee_id={{ own_employee.pk }}">Điền từ hồ sơ của tôi</a>{% endif %}
 </div>
 {% if employees %}
-<form method="get" class="hcns-source-picker ui-card ui-filter-bar">
+<form method="get" class="ui-query-bar"><div class="ui-query-fields"><div class="ui-field">
   <label for="employee_id">Điền thông tin từ hồ sơ nhân viên</label>
-  <select name="employee_id" id="employee_id" onchange="this.form.requestSubmit()"><option value="">Mẫu trắng</option>{% for employee in employees %}<option value="{{ employee.pk }}" {% if selected_employee == employee.pk|stringformat:"s" %}selected{% endif %}>{{ employee.employee_code|ui_number }} · {{ employee.full_name|ui_number }}</option>{% endfor %}</select>
-  <button class="hcns-button ui-button" type="submit">Chọn hồ sơ</button>
-</form>
+  <select name="employee_id" id="employee_id"><option value="">Mẫu trắng</option>{% for employee in employees %}<option value="{{ employee.pk }}" {% if selected_employee == employee.pk|stringformat:"s" %}selected{% endif %}>{{ employee.employee_code|ui_number }} · {{ employee.full_name|ui_number }}</option>{% endfor %}</select>
+  </div></div><div class="ui-query-actions"><button class="hcns-button ui-button" type="submit">Chọn hồ sơ</button>
+</div></form>
 {% endif %}
 {% if selected_employee %}<p class="hcns-notice">Đã chọn hồ sơ nhân viên. Mở mẫu để điền các trường tương ứng từ hồ sơ; những mục chưa có dữ liệu cần được bổ sung trước khi xuất.</p>{% endif %}
 <p class="hcns-notice">Các bản xuất là bản soạn thảo để kiểm tra và ký. Soạn hoặc xuất mẫu không tự lưu thay đổi vào hồ sơ, không gửi đơn và không thực hiện phê duyệt.</p>

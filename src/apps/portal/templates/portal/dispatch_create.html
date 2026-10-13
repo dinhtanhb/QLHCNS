@@ -13,7 +13,7 @@
                 <option value="InternalDirective">Chỉ đạo nội bộ</option>
             </select>
         </div>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="ui-layout-split grid grid-cols-2 gap-3">
             <div><label class="block text-sm font-medium text-gray-700 mb-1">Số công văn</label>
                 <input type="text" name="dispatch_no" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
             <div><label class="block text-sm font-medium text-gray-700 mb-1">Số hiệu gốc (nếu là CV đến)</label>
@@ -23,13 +23,13 @@
             <input type="text" name="title" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
         <div><label class="block text-sm font-medium text-gray-700 mb-1">Cơ quan / Đơn vị ban hành</label>
             <input type="text" name="issuing_organization" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="ui-layout-split grid grid-cols-2 gap-3">
             <div><label class="block text-sm font-medium text-gray-700 mb-1">Ngày ban hành</label>
                 <input type="date" name="issue_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
             <div><label class="block text-sm font-medium text-gray-700 mb-1">Ngày đến / Ngày gửi</label>
                 <input type="date" name="received_or_sent_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
         </div>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="ui-layout-split grid grid-cols-2 gap-3">
             <div><label class="block text-sm font-medium text-gray-700 mb-1">Độ khẩn</label>
                 <select name="urgency_level" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
                     <option value="Normal">Thường</option><option value="Urgent">Khẩn</option>
@@ -40,7 +40,7 @@
                     <option value="Normal">Thường</option><option value="Confidential">Mật</option><option value="TopSecret">Tuyệt mật</option>
                 </select></div>
         </div>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="ui-layout-split grid grid-cols-2 gap-3">
             <div><label class="block text-sm font-medium text-gray-700 mb-1">Phòng ban chủ trì</label>
                 <select name="department" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
                     <option value="">-- Chọn --</option>
@@ -52,7 +52,7 @@
                     {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name|ui_number }}</option>{% endfor %}
                 </select></div>
         </div>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="ui-layout-split grid grid-cols-2 gap-3">
             <div><label class="block text-sm font-medium text-gray-700 mb-1">Người ký phát hành (nếu CV đi)</label>
                 <select name="signer" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
                     <option value="">-- Chọn --</option>

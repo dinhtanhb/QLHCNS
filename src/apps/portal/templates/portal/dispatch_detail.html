@@ -42,7 +42,7 @@
         </div>
 
         <!-- Lưới metadata -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50/70 p-4 rounded-xl text-xs text-gray-700">
+        <div class="ui-layout-split grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50/70 p-4 rounded-xl text-xs text-gray-700">
             <div>
                 <span class="text-gray-400 block mb-0.5">Cơ quan / Đơn vị ban hành:</span>
                 <span class="font-semibold text-gray-900">{{ dispatch.issuing_organization|ui_number }}</span>
@@ -101,7 +101,7 @@
         </h2>
         <form method="post" class="space-y-3">
             {% csrf_token %}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="ui-layout-split grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                     <label class="block text-xs font-medium text-gray-600 mb-1">Loại hành động</label>
                     <input type="text" name="action_type" value="Báo cáo tiến độ" class="w-full text-xs rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">

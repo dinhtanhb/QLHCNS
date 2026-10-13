@@ -7,14 +7,12 @@
 <div class="flex items-center justify-between mb-4 no-print">
     <h1 class="text-lg font-bold text-gray-900">Báo cáo Biến động nhân sự</h1>
     <div class="flex gap-3">
-        <form method="get" class="flex gap-2 items-center text-sm">
-            <input type="date" name="from_date" value="{{ from_date }}" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-2 py-1.5">
-            <span>đến</span>
-            <input type="date" name="to_date" value="{{ to_date }}" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-2 py-1.5">
-        </form>
+
         <button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">🖨 In</button>
     </div>
 </div>
+<form method="get" class="ui-query-bar"><div class="ui-query-fields"><label>Từ ngày<input type="date" name="from_date" value="{{ from_date }}" class="rounded-md border border-gray-300 px-2 py-1.5"></label><label>Đến ngày<input type="date" name="to_date" value="{{ to_date }}" class="rounded-md border border-gray-300 px-2 py-1.5"></label></div><div class="ui-query-actions"><button type="submit" class="ui-button ui-button--primary">Lọc</button></div></form>
+
 <h2 class="text-center font-bold mb-4">Từ {{ from_date|ui_number }} đến {{ to_date|ui_number }}</h2>
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">

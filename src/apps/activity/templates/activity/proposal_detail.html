@@ -17,7 +17,7 @@
         </div>
         {% if package.sent_to %}<p class="mt-3 text-sm text-gray-700">Đã gửi tới: {{ package.sent_to|ui_number }}{% if package.submitted_at %} · {{ package.submitted_at|date:"d/m/Y H:i" }}{% endif %}</p>{% endif %}
         {% if package.decision_comment %}<div class="mt-3 rounded-lg bg-gray-50 p-4 text-sm"><strong>Ý kiến:</strong> {{ package.decision_comment|linebreaksbr|ui_number }}</div>{% endif %}
-        <ul class="mt-4 grid gap-2 text-sm sm:grid-cols-2">
+        <ul class="ui-layout-split mt-4 grid gap-2 text-sm sm:grid-cols-2">
             <li>Đề xuất PDF: {% if package.proposal_pdf %}<a class="text-blue-700 underline" href="{% url 'portal:activity_proposal_file' package.pk 'proposal_pdf' %}" target="_blank" rel="noopener">Xem PDF</a>{% else %}<span class="text-amber-700">Chưa tải</span>{% endif %}</li>
             <li>Dự trù PDF: {% if package.budget_pdf %}<a class="text-blue-700 underline" href="{% url 'portal:activity_proposal_file' package.pk 'budget_pdf' %}" target="_blank" rel="noopener">Xem PDF</a>{% else %}<span class="text-amber-700">Chưa tải</span>{% endif %}</li>
         </ul>
@@ -42,7 +42,7 @@
         <form method="post" enctype="multipart/form-data" class="mt-5 space-y-4">
             {% csrf_token %}<input type="hidden" name="action" value="upload">
             {% if upload_form.non_field_errors %}<div class="text-sm text-red-700">{{ upload_form.non_field_errors|ui_number }}</div>{% endif %}
-            <div class="grid gap-4 md:grid-cols-2">
+            <div class="ui-layout-split grid gap-4 md:grid-cols-2">
                 {% for field in upload_form %}
                 <label class="block text-sm font-medium text-gray-800">{{ field.label|ui_number }}{% if field.field.required %} <span class="text-red-600">*</span>{% endif %}
                     {{ field|ui_number }}

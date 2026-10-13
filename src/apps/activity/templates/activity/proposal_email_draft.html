@@ -7,7 +7,7 @@
         <h1 class="text-2xl font-bold text-gray-900">Chuẩn bị email xin phê duyệt</h1>
         <p class="mt-2 text-gray-700">IHRMS chưa gửi thư. Outlook sẽ mở một thư nháp để bạn kiểm tra, thêm CC, chỉnh nội dung và tự gửi.</p>
 
-        <dl class="mt-5 grid gap-3 rounded-lg bg-gray-50 p-4 text-sm sm:grid-cols-2">
+        <dl class="ui-layout-split mt-5 grid gap-3 rounded-lg bg-gray-50 p-4 text-sm sm:grid-cols-2">
             <div><dt class="font-semibold text-gray-600">Người gửi dự kiến</dt><dd>{{ draft.sender_email|default:"Tài khoản Outlook đang mặc định"|ui_number }}</dd></div>
             <div><dt class="font-semibold text-gray-600">Người nhận</dt><dd>{{ draft.recipient|ui_number }}</dd></div>
             <div class="sm:col-span-2"><dt class="font-semibold text-gray-600">Tiêu đề</dt><dd>{{ draft.subject|ui_number }}</dd></div>

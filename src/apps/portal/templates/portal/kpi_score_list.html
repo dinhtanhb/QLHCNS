@@ -6,14 +6,14 @@
     <a href="{% url 'portal:kpi_assign_create' %}" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Tạo chỉ tiêu mới</a>
 </div>
 
-<form method="get" class="mb-4">
-    <select name="period" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+<form method="get" class="ui-query-bar"><div class="ui-query-fields"><label class="ui-field-label">Kỳ KPI
+    <select name="period" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
         <option value="">-- Tất cả kỳ --</option>
         {% for p in periods %}
         <option value="{{ p.id }}" {% if selected_period == p.id|stringformat:"s" %}selected{% endif %}>{{ p|ui_number }}</option>
         {% endfor %}
     </select>
-</form>
+</label></div><div class="ui-query-actions"><button type="submit" class="ui-button ui-button--primary">Lọc</button></div></form>
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
     <div class="overflow-x-auto">

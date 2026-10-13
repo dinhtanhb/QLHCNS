@@ -17,7 +17,7 @@
 
         <section>
             <h2 class="mb-4 text-base font-semibold text-gray-900">Thông tin hoạt động</h2>
-            <div class="grid gap-4 sm:grid-cols-2">
+            <div class="ui-layout-split grid gap-4 sm:grid-cols-2">
                 {% for field in form %}
                     {% if field.name == "activity_code" or field.name == "activity_name" or field.name == "project" or field.name == "location" or field.name == "participants" or field.name == "status" %}
                     <div class="{% if field.name == 'activity_name' or field.name == 'participants' %}sm:col-span-2{% endif %}">
@@ -48,7 +48,7 @@
 
         <section>
             <h2 class="mb-4 text-base font-semibold text-gray-900">Lịch và người phụ trách</h2>
-            <div class="grid gap-4 sm:grid-cols-2">
+            <div class="ui-layout-split grid gap-4 sm:grid-cols-2">
                 {% for field in form %}
                     {% if field.name == "start_date" or field.name == "end_date" or field.name == "lead_cbda" or field.name == "coordinator" or field.name == "outgoing_document" %}
                     <div class="{% if field.name == 'outgoing_document' %}sm:col-span-2{% endif %}">

@@ -6,15 +6,15 @@
   <div><h1 class="ui-page-title">Quản lý quyết định nhân sự</h1><p class="ui-hr-text">Tra cứu bản nháp, trạng thái duyệt và quyết định đã ban hành.</p></div>
   {% if can_manage_decisions %}<a href="{% url 'portal:hcns_catalog' %}?group=decision" class="ui-button ui-button--primary">+ Soạn quyết định</a>{% endif %}
 </div>
-<form method="get" class="ui-card ui-hr-form decision-filter-bar">
+<form method="get" class="ui-query-bar"><div class="ui-query-fields">
   <label class="ui-field-label">Tìm kiếm
     <input name="q" value="{{ query }}" class="ui-hr-input" placeholder="Số quyết định, mã hoặc họ tên">
   </label>
   {% if can_manage_decisions %}<label class="ui-field-label">Trạng thái
     <select name="status" class="ui-hr-input"><option value="">Tất cả</option>{% for value,label in status_choices %}<option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label|ui_number }}</option>{% endfor %}</select>
   </label>{% endif %}
-  <button class="ui-button">Lọc</button>
-</form>
+  </div><div class="ui-query-actions"><button class="ui-button">Lọc</button>
+</div></form>
 <div class="ui-card ui-scroll" role="region" tabindex="0" aria-label="Danh sách quyết định nhân sự">
   <table class="ui-table ui-hr-table"><caption>Quản lý quyết định nhân sự</caption>
     <thead class="ui-hr-text"><tr><th scope="col" class="">Số quyết định</th><th scope="col" class="">Loại</th><th scope="col" class="">Nhân viên</th><th scope="col" class="">Ngày quyết định</th><th scope="col" class="">Trạng thái</th><th scope="col" class="">Ngày lưu</th></tr></thead>

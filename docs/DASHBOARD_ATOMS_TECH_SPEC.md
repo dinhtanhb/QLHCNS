@@ -485,3 +485,15 @@ Nghỉ toàn Trung tâm và history là hai khối ngang hàng. Khi cùng có ng
 Tiêu đề quyết định căn trái cùng mép nội dung; nút ở bên phải. Bộ lọc tìm kiếm/trạng thái/nút cùng đường căn, xuống một cột trên màn hình hẹp. Form duyệt/từ chối ở đầu trang trong cùng panel, lịch sử ở panel kế tiếp; giữ action/field/CSRF/guard/xuất Word/PDF và giấy HCNS. Header legacy dùng ui-page-actions có h1 được căn như page-header chung. Chỉ CSS màn hình; không sửa bố cục giấy in.
 
 Nghiệm thu hình học Edge: khối đơn rộng bằng grid (sai số2px); panel cùng hàng căn đỉnh; giá trị KPI phụ căn cùng đường và thẻ cao bằng nhau (sai số2px ở desktop). Kiểm5role×5width×2theme, trang quyết định theo quyền, dữ liệu/tên dài, nooverflow, chữ14/control44, bàn phím/disclosure/confirmation. ops/run_dashboard_layout_uat.py và ops/run_decision_layout_uat.py dùng demo có marker synthetic ngoài source; các luồng hồ sơ/hợp đồng/nghỉ vẫn kiểm qua ops/run_browser_uat.py. Không coi screenshot hoặc HTTP200 đủ để kết luận cân đối; ghi số đo/ảnh/giới hạn vào nhật ký.
+
+## 18. Quy chuẩn bố cục toàn ứng dụng ngày 13/10/2026
+
+Theo yêu cầu tiếp theo, tỷ lệ trái60%/phải40% áp dụng cho các cặp khối nội dung, form hai cột và nhóm chỉ có hai KPI ở desktop từ1280px. Quy tắc này thay phần “KPI chia đều” trong mục17 đối với nhóm đúng hai ô; nhóm ba/bốn/năm KPI vẫn giữ số cột tương ứng. Khoảng cách giữa cột16px, tỷ lệ tính sau trừ khoảng cách. Màn hình nhỏ hơn xếp một cột; khối đơn dùng toàn chiều rộng. Lịch tuần, bảng dữ liệu, các nhóm ba trường và chữ ký/giấy HCNS giữ cấu trúc theo ý nghĩa nội dung.
+
+`project_layout.css` là lớp quy chuẩn màn hình dùng chung, nạp sau CSS phân hệ. `ui-layout-split` đánh dấu các grid legacy hai cột. Ô nhập trong form dùng chiều rộng cột để tránh khoảng trống lớn giữa hai bên; ô lọc vẫn giới hạn kích thước theo loại dữ liệu. Không thay đổi schema, công thức, quyền hoặc trường gửi về backend.
+
+Mọi dải lọc GET dùng `ui-query-bar`, chứa `ui-query-fields` bên trái và `ui-query-actions` bên phải. Nút tìm kiếm/lọc/xóa lọc luôn nằm trong cột thao tác phải, kể cả màn hình hẹp; các trường được xuống dòng trong cột trái. Dải lọc nằm dưới tiêu đề, không nhét trong nhóm thao tác tiêu đề. Chọn điều kiện rồi bấm nút để gửi; không tự gửi khi đổi select. Giữ nguyên query parameter, giá trị năm và action hiện có. Nút in/xuất/tạo mới thuộc nhóm thao tác trang, tách khỏi nút lọc.
+
+Kiểm kê dùng form tạo gọn có nhãn, nút bên phải trên desktop và căn phải khi xuống dòng trên mobile. Ba trang duyệt phòng họp/xe/VPP dùng bảng cuộn và các action/CSRF/backend hiện hữu; không thêm quyền hoặc trạng thái nghiệp vụ.
+
+Nghiệm thu bổ sung: `ops/run_project_layout_uat.py` kiểm các đường dẫn màn hình không có tham số bằng Edge,1440/1024/390px và sáng/tối; đo tỷ lệ grid, tràn trang, vị trí nút, gửi GET bằng bàn phím, tạo kiểm kê, duyệt/từ chối phòng/xe/VPP và cấp phát tồn kho. Chỉ chạy với marker synthetic ngoài repository. HTTP405 của endpoint chỉ POST được ghi riêng, không tính là màn hình đã UAT; trang chi tiết có tham số và các role Dashboard được kiểm bằng bộ hồi quy liên quan. Không suy rộng thành đã thử mọi trạng thái hoặc phiên tài khoản thật.

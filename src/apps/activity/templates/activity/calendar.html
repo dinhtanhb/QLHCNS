@@ -11,7 +11,10 @@
         <div class="flex flex-wrap items-end gap-2">
             <a href="{% url 'portal:activity_dashboard' %}?month={{ month }}{% if selected_cbda %}&amp;cbda={{ selected_cbda }}{% endif %}"
                class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">Danh sách hoạt động</a>
-            <form method="get" class="flex flex-wrap items-end gap-2">
+
+        </div>
+    </div>
+<form method="get" class="ui-query-bar"><div class="ui-query-fields">
                 <label class="text-sm text-gray-600">Tháng
                     <input type="month" name="month" value="{{ month }}" class="mt-1 block text-sm">
                 </label>
@@ -25,10 +28,9 @@
                     </select>
                 </label>
                 {% endif %}
-                <button type="submit" class="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800">Lọc lịch</button>
-            </form>
-        </div>
-    </div>
+                </div><div class="ui-query-actions"><button type="submit" class="ui-button rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800">Lọc lịch</button>
+            </div></form>
+
 
     <div class="w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         <div class="w-full">

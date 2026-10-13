@@ -8,21 +8,21 @@
     <form method="post" action="{% url 'portal:supply_request_create' %}">
         {% csrf_token %}
         <div id="supply-lines" class="space-y-2 mb-3">
-            <div class="grid grid-cols-2 gap-3">
+            <div class="ui-layout-split grid grid-cols-2 gap-3">
                 <select name="item" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
                     <option value="">-- Chọn vật tư --</option>
                     {% for i in items %}<option value="{{ i.id }}">{{ i.item_name|ui_number }} ({{ i.unit|ui_number }})</option>{% endfor %}
                 </select>
                 <input type="number" name="quantity" min="1" placeholder="Số lượng" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
             </div>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="ui-layout-split grid grid-cols-2 gap-3">
                 <select name="item" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
                     <option value="">-- Chọn vật tư (dòng 2, tùy chọn) --</option>
                     {% for i in items %}<option value="{{ i.id }}">{{ i.item_name|ui_number }} ({{ i.unit|ui_number }})</option>{% endfor %}
                 </select>
                 <input type="number" name="quantity" min="1" placeholder="Số lượng" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
             </div>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="ui-layout-split grid grid-cols-2 gap-3">
                 <select name="item" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
                     <option value="">-- Chọn vật tư (dòng 3, tùy chọn) --</option>
                     {% for i in items %}<option value="{{ i.id }}">{{ i.item_name|ui_number }} ({{ i.unit|ui_number }})</option>{% endfor %}

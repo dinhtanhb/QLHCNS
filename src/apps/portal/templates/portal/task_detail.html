@@ -16,7 +16,7 @@
         </span>
     </div>
     <p class="text-gray-600 text-sm mb-4">{{ task.description|default:"Không có mô tả."|linebreaks|ui_number }}</p>
-    <dl class="grid grid-cols-2 gap-y-2 text-sm text-gray-600 border-t border-gray-100 pt-4">
+    <dl class="ui-layout-split grid grid-cols-2 gap-y-2 text-sm text-gray-600 border-t border-gray-100 pt-4">
         <div><dt class="inline text-gray-400">Người giao việc: </dt><dd class="inline font-medium">{{ task.assigned_by_employee|ui_number }}</dd></div>
         <div><dt class="inline text-gray-400">Người phụ trách: </dt><dd class="inline font-medium">{{ task.assigned_to_employee|ui_number }}</dd></div>
         <div><dt class="inline text-gray-400">Ngày bắt đầu: </dt><dd class="inline font-medium">{{ task.start_date|date:"d/m/Y"|default:"—" }}</dd></div>

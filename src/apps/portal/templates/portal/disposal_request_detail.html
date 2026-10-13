@@ -16,7 +16,7 @@
 </div>
 {% if not can_manage_asset %}<p class="mb-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">Chế độ chỉ xem. Anh/chị vẫn có thể duyệt đề nghị nếu được giao thẩm quyền Giám đốc.</p>{% endif %}
 
-<div class="{% if can_manage_asset %}grid grid-cols-1 md:grid-cols-2 gap-6{% else %}max-w-2xl{% endif %} mb-6">
+<div class="ui-layout-split {% if can_manage_asset %}grid grid-cols-1 md:grid-cols-2 gap-6{% else %}max-w-2xl{% endif %} mb-6">
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h2 class="text-sm font-bold text-gray-900 mb-3">Thành viên kiểm tra</h2>
         {% for m in members %}<p class="text-sm">{{ m.employee.full_name|ui_number }} — {{ m.get_participation_display|ui_number }}</p>{% endfor %}
@@ -66,7 +66,7 @@
                 <a href="{% url 'portal:disposal_minutes_print' it.minutes.pk %}" class="text-blue-700 hover:underline">Xem biên bản</a>
                 {% elif req.status == "Approved" and can_manage_asset %}
                 <details><summary class="text-blue-700 cursor-pointer text-xs">+ Lập biên bản thanh lý</summary>
-                <form method="post" action="{% url 'portal:disposal_minutes_create' it.pk %}" class="mt-2 grid grid-cols-2 gap-2 text-xs">
+                <form method="post" action="{% url 'portal:disposal_minutes_create' it.pk %}" class="ui-layout-split mt-2 grid grid-cols-2 gap-2 text-xs">
                     {% csrf_token %}
                     <input type="date" name="decision_date" required placeholder="Ngày lập BB" class="rounded border border-gray-300 px-2 py-1">
                     <input type="text" name="origin_country" placeholder="Nước sản xuất" class="rounded border border-gray-300 px-2 py-1">
@@ -90,7 +90,7 @@
 </div>
 
 {% if req.status == "Approved" %}
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+<div class="ui-layout-split grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h2 class="text-sm font-bold text-gray-900 mb-3">Ban hành Quyết định</h2>
         {% if req.decision_no %}

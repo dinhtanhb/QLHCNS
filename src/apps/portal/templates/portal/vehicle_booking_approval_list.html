@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Duyệt đặt xe{% endblock %}
+{% block content %}{% include "portal/_office_booking_approvals.html" with page_title="Duyệt đặt xe" approve_url_name="portal:vehicle_booking_approve" resource_kind="vehicle" %}{% endblock %}
