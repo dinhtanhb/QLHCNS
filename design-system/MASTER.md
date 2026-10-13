@@ -8,7 +8,7 @@ Trạng thái: đã duyệt bởi chủ dự án ngày 12/10/2026 kèm các đi�
 
 Chọn Accessible & Ethical kết hợp Data-Dense Dashboard (tìm kiếm KPI). Giữ focus rõ, semantic HTML, responsive, labels, reduced motion. Các phần marketing/Contact Sales/hero/carousel không phù hợp cổng nhân sự đã đăng nhập nên bỏ. Không có stack Django trong skill; không chạy stack React/shadcn và không coi ví dụ Tailwind là yêu cầu thêm framework.
 
-Đã xác nhận `DESIGN.md` bản chủ dự án cập nhật: violet/system sans, card viền và bóng nhẹ, không dùng Neumorphism. Không ghi đè thay đổi cục bộ đó. Hai tài liệu thống nhất với quyết định đã duyệt.
+Đã xác nhận `DESIGN.md` và tokens hiện hành dùng navy–teal theo quyết định Atoms ngày 12/10/2026: font hệ thống, card có viền và bóng nhẹ, không dùng Neumorphism. Chủ dự án xác nhận giữ palette này trong Đợt 1 ngày 13/10/2026; không thay đổi tokens.
 
 ## Hệ màu, typography và tokens
 
