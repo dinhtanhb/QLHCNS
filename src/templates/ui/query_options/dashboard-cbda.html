@@ -1,0 +1,4 @@
+<option value="">Tất cả CBDA</option>
+                    {% for cbda in cbda_choices %}
+                    <option value="{{ cbda.pk }}" {% if selected_cbda == cbda.pk|stringformat:'s' %}selected{% endif %}>{{ cbda.full_name|ui_number }}</option>
+                    {% endfor %}

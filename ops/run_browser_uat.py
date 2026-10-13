@@ -265,7 +265,7 @@ def main():
                 go(page, 'portal:dashboard')
                 with page.expect_navigation(wait_until='networkidle') as navigation:
                     page.locator('#dashboard-status a.ui-kpi').filter(has=page.locator('strong')).all()[links.index(href)].click()
-                check(navigation.value.status == 200 and page.locator('.ui-results-count').inner_text() == f'{expected} người', 'KPI destination equals displayed count: ' + href)
+                check(navigation.value.status == 200 and page.locator('.ui-results-count').inner_text() == f'Có {expected} người phù hợp.', 'KPI destination equals displayed count: ' + href)
                 check(page.locator('tbody tr').count() == expected, 'KPI detail rows match count')
             go(page, 'portal:dashboard')
 

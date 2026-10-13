@@ -1,0 +1,1 @@
+{% for y in years %}<option value="{{ y|ui_year }}" {% if y == year %}selected{% endif %}>{{ y|ui_year }}</option>{% endfor %}

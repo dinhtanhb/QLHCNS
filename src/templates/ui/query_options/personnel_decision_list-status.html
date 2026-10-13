@@ -1,0 +1,1 @@
+<option value="">Tất cả</option>{% for value,label in status_choices %}<option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label|ui_number }}</option>{% endfor %}

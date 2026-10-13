@@ -1,0 +1,4 @@
+<option value="">-- Tất cả kỳ --</option>
+        {% for p in periods %}
+        <option value="{{ p.id }}" {% if selected_period == p.id %}selected{% endif %}>{{ p|ui_number }}</option>
+        {% endfor %}

@@ -8,6 +8,11 @@ from apps.common.ui_status import STATUS_BADGES, status_badge
 register = template.Library()
 
 @register.filter
+def ui_has_filters(query, names):
+    """Read only the declared filter parameters, ignoring pagination/scope."""
+    return any(str(query.get(name, '')).strip() for name in names.split(','))
+
+@register.filter
 def ui_status_groups(rows, family):
     """Group only the supplied page rows; no query, sorting or workflow changes."""
     groups = {code: {"code": code, "label": value["label"], "rows": []}

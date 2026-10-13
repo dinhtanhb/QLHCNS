@@ -3,11 +3,15 @@
 {% block title %}Hồ sơ Nhân viên{% endblock %}
 {% block content %}<div class="ui-page">
 {% include "ui/page_header.html" with title="Hồ sơ Nhân viên" description="Tra cứu nhân viên trong phạm vi tài khoản được phép xem." actions_template="portal/_hr_list_actions.html" %}
-<section class="ui-card" aria-labelledby="employee-filter-title"><h2 id="employee-filter-title" class="ui-card-title">Tìm nhân viên</h2>
-<form method="get" class="ui-query-bar"><div class="ui-query-fields">
-{% include "ui/field.html" with id="employee-search" name="q" label="Tên hoặc mã nhân viên" value=q %}
-</div><div class="ui-query-actions"><button class="ui-button ui-button--primary" type="submit">Áp dụng</button><a class="ui-button ui-button--secondary" href="{% url 'portal:hr_employee_list' %}">Xóa lọc</a>
-</div></form><p class="ui-results-count">{{ page_obj.paginator.count|ui_number }} nhân viên phù hợp{% if q %} với “{{ q }}”{% endif %}. Chỉ gồm hồ sơ đã có hợp đồng chưa xóa.</p>{% if can_manage_hr %}<p class="ui-page-description">Hồ sơ mới xuất hiện ở đây sau khi có hợp đồng. <a href="{% url 'portal:hr_contract_create' %}">Tạo hợp đồng cho hồ sơ mới</a></p>{% endif %}</section>
+<section class="ui-card ui-query-card no-print">
+<form method="get" class="ui-query-bar" aria-label="Tìm nhân viên" role="search">
+<div class="ui-query-fields">
+{% include "ui/field.html" with id="hr-employee-list-q" name="q" label="Tìm kiếm" value=q %}
+</div>
+{% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"q" %}
+</form>
+<p class="ui-results-count" aria-live="polite">Có {{ page_obj.paginator.count|ui_number }} nhân viên phù hợp.</p>
+</section>{% if can_manage_hr %}<p class="ui-page-description">Hồ sơ mới xuất hiện ở đây sau khi có hợp đồng. <a href="{% url 'portal:hr_contract_create' %}">Tạo hợp đồng cho hồ sơ mới</a></p>{% endif %}
 <section class="ui-card" aria-labelledby="employee-list-title"><h2 id="employee-list-title" class="ui-card-title">Danh sách nhân viên</h2>
 {% if employees %}<div class="ui-scroll overflow-x-auto mobile-table-scroll" role="region" tabindex="0" aria-label="Danh sách nhân viên; cuộn ngang để xem đầy đủ cột">
 <table class="ui-table ui-table--employees{% if not can_manage_hr %} ui-table--employees-readonly{% endif %}"><caption>Hồ sơ nhân viên trong phạm vi được xem</caption><colgroup><col class="ui-col-small"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium">{% if can_manage_hr %}<col class="ui-col-medium">{% endif %}</colgroup><thead><tr><th scope="col">Mã NV</th><th scope="col">Họ tên</th><th scope="col">Phòng ban</th><th scope="col">Vị trí</th><th scope="col">Trạng thái</th>{% if can_manage_hr %}<th scope="col" class="ui-actions">Thao tác</th>{% endif %}</tr></thead><tbody>

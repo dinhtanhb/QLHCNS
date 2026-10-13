@@ -1,13 +1,13 @@
 @import url("design_tokens.css");
 @import url("theme.css?v=20261012-ui-2c");
 
-/* Keep admin list search/filter actions on the right, including narrow screens. */
+/* Admin list search actions follow the final field, including narrow screens. */
 @media screen {
  #jazzy-navbar { flex-wrap:wrap; gap:var(--ui-space-1); }
  #jazzy-navbar > .navbar-nav { min-width:0; flex-wrap:wrap; }
  #changelist-search { display:flex; flex-wrap:wrap; align-items:end; gap:var(--ui-space-3); min-width:0; }
  #changelist-search #searchbar { flex:1 1 12rem; width:auto!important; min-width:0!important; max-width:28rem; }
- #changelist-search > button[type=submit] { margin-left:auto; min-height:var(--ui-control-height); flex:0 0 auto; }
+ #changelist-search > :is(button,input)[type=submit] { margin-left:0; min-height:var(--ui-control-height); flex:0 0 auto; }
  #changelist-search .small.quiet { flex-basis:100%; order:1; margin-left:0; font-size:var(--ui-font-size-small); }
  #changelist-search .select2-container { max-width:100%; }
 }

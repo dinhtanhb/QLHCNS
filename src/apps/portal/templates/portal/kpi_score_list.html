@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load ui_components %}
 {% block title %}Chấm điểm KPI{% endblock %}
 {% block content %}
 <div class="flex items-center justify-between mb-4">
@@ -6,14 +7,15 @@
     <a href="{% url 'portal:kpi_assign_create' %}" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Tạo chỉ tiêu mới</a>
 </div>
 
-<form method="get" class="ui-query-bar"><div class="ui-query-fields"><label class="ui-field-label">Kỳ KPI
-    <select name="period" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <option value="">-- Tất cả kỳ --</option>
-        {% for p in periods %}
-        <option value="{{ p.id }}" {% if selected_period == p.id|stringformat:"s" %}selected{% endif %}>{{ p|ui_number }}</option>
-        {% endfor %}
-    </select>
-</label></div><div class="ui-query-actions"><button type="submit" class="ui-button ui-button--primary">Lọc</button></div></form>
+<section class="ui-card ui-query-card no-print">
+<form method="get" class="ui-query-bar" aria-label="Lọc kỳ KPI">
+<div class="ui-query-fields">
+{% include "ui/field.html" with id="kpi-score-list-period" name="period" label="Kỳ KPI" options_template="ui/query_options/kpi_score_list-period.html" %}
+</div>
+{% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"period" %}
+</form>
+<p class="ui-results-count" aria-live="polite">Có {{ results|length|ui_number }} chỉ tiêu phù hợp.</p>
+</section>
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
     <div class="overflow-x-auto">

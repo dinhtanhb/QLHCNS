@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load ui_components %}
 
 {% block title %}Quản lý Công văn & Văn bản Hành chính{% endblock %}
 
@@ -27,43 +28,17 @@
     </div>
 
     <!-- Bộ lọc tìm kiếm -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-        <form method="get" class="ui-query-bar"><div class="ui-query-fields">
-            <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">Loại văn bản</label>
-                <select name="type" class="w-full text-xs rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <option value="">-- Tất cả loại --</option>
-                    <option value="Incoming" {% if selected_type == "Incoming" %}selected{% endif %}>Công văn đến</option>
-                    <option value="Outgoing" {% if selected_type == "Outgoing" %}selected{% endif %}>Công văn đi</option>
-                    <option value="InternalDirective" {% if selected_type == "InternalDirective" %}selected{% endif %}>Chỉ đạo nội bộ</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">Trạng thái</label>
-                <select name="status" class="w-full text-xs rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <option value="">-- Tất cả trạng thái --</option>
-                    <option value="Pending" {% if selected_status == "Pending" %}selected{% endif %}>Chờ xử lý</option>
-                    <option value="Processing" {% if selected_status == "Processing" %}selected{% endif %}>Đang xử lý</option>
-                    <option value="Completed" {% if selected_status == "Completed" %}selected{% endif %}>Đã hoàn thành</option>
-                    <option value="Overdue" {% if selected_status == "Overdue" %}selected{% endif %}>Quá hạn</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">Tìm kiếm từ khóa</label>
-                <input type="text" name="q" value="{{ search_query }}" placeholder="Số CV, trích yếu, cơ quan..." class="w-full text-xs rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-            </div>
-            </div><div class="ui-query-actions"><div class="flex items-end gap-2">
-                <button type="submit" class="ui-button w-full bg-gray-800 hover:bg-gray-900 text-white text-xs font-semibold py-2 px-4 rounded-lg transition">
-                    Lọc dữ liệu
-                </button>
-                {% if selected_type or selected_status or search_query %}
-                <a href="{% url 'portal:dispatch_list' %}" class="ui-button bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-semibold py-2 px-3 rounded-lg transition">
-                    Xóa lọc
-                </a>
-                {% endif %}
-            </div>
-        </div></form>
-    </div>
+    <section class="ui-card ui-query-card no-print">
+<form method="get" class="ui-query-bar" aria-label="Tìm và lọc công văn" role="search">
+<div class="ui-query-fields">
+{% include "ui/field.html" with id="dispatch-list-q" name="q" label="Tìm kiếm" value=search_query %}
+{% include "ui/field.html" with id="dispatch-list-type" name="type" label="Loại văn bản" options_template="ui/query_options/dispatch_list-type.html" %}
+{% include "ui/field.html" with id="dispatch-list-status" name="status" label="Trạng thái" options_template="ui/query_options/dispatch_list-status.html" %}
+</div>
+{% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"q,type,status" %}
+</form>
+<p class="ui-results-count" aria-live="polite">Có {{ page_obj.paginator.count|ui_number }} công văn phù hợp.</p>
+</section>
 
     <!-- Bảng danh sách công văn -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">

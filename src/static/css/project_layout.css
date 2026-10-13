@@ -1,26 +1,8 @@
 /* Application screen layout. Paper templates and admin navigation are separate. */
 @media screen {
  .portal-app .ui-main { --ui-split-columns:minmax(0,3fr) minmax(0,2fr); }
- .portal-app .ui-main .ui-query-bar { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:var(--ui-space-4); align-items:end; width:100%; margin-block:var(--ui-space-4); }
- .portal-app .ui-main .ui-query-fields { display:flex; flex-wrap:wrap; align-items:end; gap:var(--ui-space-3); min-width:0; }
- .portal-app .ui-main .ui-query-fields > :not([type=hidden]) { flex:1 1 12rem; min-width:0; max-width:28rem; }
- .portal-app .ui-main .ui-query-fields > :has(> :is(select,input[type=date],input[type=month],input[type=number])) { flex:0 1 14rem; max-width:14rem; }
- .portal-app .ui-main .ui-query-fields > input[type=hidden] { display:none; }
- .portal-app .ui-main .ui-query-fields :is(label,.ui-field-label) { display:block; margin:0; font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); color:var(--ui-text); }
- .portal-app .ui-main .ui-query-fields :is(input,select) { width:100%; max-width:100%; min-width:0; margin-top:var(--ui-space-2); }
- .portal-app .ui-main .ui-query-fields .ui-field-help { margin:var(--ui-space-1) 0 0; }
- .portal-app .ui-main .ui-query-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:var(--ui-space-2); max-width:14rem; }
- .portal-app .ui-main .ui-query-actions :is(button,a) { margin:0; width:auto; min-height:var(--ui-control-height); white-space:normal; }
- .portal-app .ui-main .ui-query-actions .ui-button { display:inline-flex; align-items:center; justify-content:center; gap:var(--ui-space-2); min-width:var(--ui-target-min); padding:var(--ui-space-2) var(--ui-space-4); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); font-size:var(--ui-font-size-small); color:var(--ui-text); background:var(--ui-surface); text-decoration:none; }
- .portal-app .ui-main .ui-query-actions .ui-button--primary { color:var(--ui-on-brand); background:var(--ui-brand); border-color:var(--ui-brand); }
- .portal-app .ui-main .ui-query-actions > div { display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:end; gap:var(--ui-space-2); }
- .portal-app .ui-main .ui-query-actions :is(button,a):focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:var(--ui-focus-offset); }
- .portal-app .ui-main .ui-query-bar .ui-query-actions { grid-column:2; grid-row:1; align-self:end; }
- .portal-app .ui-main .ui-query-bar .ui-query-fields { grid-column:1; grid-row:1; }
- .portal-app .ui-main .ui-query-bar.ui-card { padding:var(--ui-space-4); }
  .portal-app .ui-main .ui-form-actions { justify-content:flex-end; }
  .portal-app .ui-main .ui-page .ui-form-grid .ui-field :is(input,select,textarea):not([type=hidden]):not([type=checkbox]):not([type=radio]):not(.ui-number-source):not(.hcns-paper *):not(.hcns-editor *) { max-width:100%; }
- .portal-app .ui-main .ui-layout-split > *, .portal-app .ui-main .ui-query-bar > * { min-width:0; }
  .portal-app .ui-main :is(.text-xs,[class~="text-[10px]"],[class~="text-[11px]"],[class~="text-[12px]"],small):not(.hcns-paper *):not(svg *):not(.hcns-editor *) { font-size:var(--ui-font-size-small); }
  .portal-app .ui-main :is(.ui-layout-split,.ui-form-grid) > :is(.col-span-2,[class~="md:col-span-2"],[class~="sm:col-span-2"]) { grid-column:1 / -1; }
  .portal-app .ui-main .ui-layout-split { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--ui-space-4); }
@@ -39,12 +21,8 @@
  .portal-app .ui-main .ui-layout-split:has(> :only-child) { grid-template-columns:minmax(0,1fr); }
  .portal-app .ui-main :is(.ui-detail-sections,.ui-finance-grid,.ui-recruitment-grid,.ui-report-export-grid,.report-visuals,.report-section-grid):has(> :only-child) { grid-template-columns:minmax(0,1fr); }
  @media(max-width:600px) {
-  .portal-app .ui-main .ui-query-bar { gap:var(--ui-space-2); }
-  .portal-app .ui-main .ui-query-actions { max-width:7.5rem; flex-direction:column; align-items:stretch; }
-  .portal-app .ui-main .ui-query-actions > div { flex-direction:column; align-items:stretch; }
-  .portal-app .ui-main .ui-query-actions :is(button,a) { padding-inline:var(--ui-space-2); }
-  .portal-app .ui-main .ui-query-fields > :not([type=hidden]) { flex-basis:100%; }
   .portal-app .ui-main .ui-inline-create { grid-template-columns:minmax(0,1fr); }
  }
 }
-@media print { .ui-query-bar,.ui-inline-create { display:none; } }
+
+@media print { .ui-inline-create { display:none; } }

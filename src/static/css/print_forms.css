@@ -7,7 +7,7 @@
   .portal-app :is(.ui-topbar,.ui-sidebar,.ui-drawer-overlay,.ui-skip-link,.ui-nav-tooltip,.ui-alert,.ui-demo-banner,.ui-dialog,.ui-query-bar,.ui-inline-create,.no-print,.ui-screen-only,.hcns-editor,.hcns-heading,.hcns-preview-label) { display:none !important; }
   .portal-app svg.ui-icon { display:none !important; }
   .portal-app :is(.ui-main-wrap,.ui-main,.ui-page,.ui-card) { width:auto !important; max-width:none !important; min-width:0 !important; min-height:0 !important; margin:0 !important; padding:0 !important; box-shadow:none !important; border:0; border-radius:0; }
-  .portal-app :is(.ui-scroll,.mobile-table-scroll,.overflow-x-auto) { max-height:none !important; height:auto !important; max-width:100% !important; min-width:0 !important; overflow:visible !important; border:0; }
+  .portal-app :is(.ui-scroll,.mobile-table-scroll,.overflow-x-auto) { width:100% !important; margin:0 !important; padding:0 !important; max-height:none !important; height:auto !important; max-width:100% !important; min-width:0 !important; overflow:visible !important; border:0; }
   .portal-app :is(.ui-button,.ui-page-actions,.ui-form-actions,.ui-query-actions) { display:none !important; }
   .portal-app form:not(.timesheet-summary-form):not(.hcns-paper *) { display:none !important; }
   .portal-app .ui-print-only { display:inline !important; }

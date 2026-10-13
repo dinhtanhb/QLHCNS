@@ -85,7 +85,7 @@ def main():
             check(response.status in (200, 403, 405), route + ' response ' + str(response.status))
             if response.status != 200:
                 continue
-            for width in (1440, 1024, 390):
+            for width in (1920, 1440, 1024, 768, 390):
                 page.set_viewport_size({'width': width, 'height': 1000})
                 for theme in ('light', 'dark'):
                     page.evaluate('(t)=>document.documentElement.dataset.theme=t', theme)
@@ -98,12 +98,23 @@ def main():
                             const r=x.getBoundingClientRect();return r.width&&r.right>innerWidth+1 && getComputedStyle(x).position!=='fixed';
                         }).slice(0,12).map(x=>({tag:x.tagName,classes:x.className,width:x.getBoundingClientRect().width,right:x.getBoundingClientRect().right}))''')
                     geometry = page.locator('.ui-query-bar').evaluate_all('''forms=>forms.map(f=>{
-                        const a=f.querySelector('.ui-query-actions').getBoundingClientRect();
-                        const b=f.querySelector('.ui-query-fields').getBoundingClientRect();
-                        return {right:a.x>=b.right-1,fit:a.right<=innerWidth+1};
+                        const button=f.querySelector('.ui-query-actions button');
+                        const a=button.getBoundingClientRect();
+                        const fields=[...f.querySelectorAll('.ui-field input,.ui-field select')].filter(x=>x.type!=='hidden');
+                        const b=fields.at(-1).getBoundingClientRect();
+                        const sameRow=Math.abs(a.bottom-b.bottom)<=1;
+                        const gap=a.left-b.right;
+                        const links=[...f.querySelectorAll('.ui-query-actions a')];
+                        return {gap,baseline:Math.abs(a.bottom-b.bottom),height:a.height,
+                            close:!sameRow || gap>=0&&gap<=17,
+                            fit:a.right<=innerWidth+1,stack:innerWidth>=1024||a.top>=b.bottom,
+                            labels:fields.every(x=>!!f.querySelector('label[for="'+x.id+'"]')),
+                            mobile:innerWidth>=600||links.every(x=>Math.abs(x.getBoundingClientRect().top-a.top)<1),
+                            font:parseFloat(getComputedStyle(button).fontSize)>=14};
                     })''')
                     for row in geometry:
-                        check(row['right'] and row['fit'], label + ' filter buttons at right')
+                        report.setdefault('filter_geometry', {})[label]=row
+                        check(row['close'] and row['fit'] and row['stack'] and row['mobile'] and row['labels'] and row['font'] and row['height']>=44, label + ' inline filter controls')
                     if width == 1440:
                         grids = page.locator('.ui-layout-split,.ui-detail-grid,.ui-detail-sections,.ui-finance-grid,.ui-recruitment-grid,.ui-report-export-grid,.report-visuals,.report-section-grid,.timesheet-summary-layout,.ui-form-grid:not(.ui-form-grid--three)').evaluate_all('''xs=>xs.filter(x=>x.getBoundingClientRect().width && !x.closest('.hcns-paper,.hcns-editor')).map(x=>getComputedStyle(x).gridTemplateColumns.split(' ').map(parseFloat))''')
                         for cols in grids:

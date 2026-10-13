@@ -1,0 +1,1 @@
+{% for m in months %}<option value="{{ m }}" {% if m == month %}selected{% endif %}>Tháng {{ m|ui_number }}</option>{% endfor %}

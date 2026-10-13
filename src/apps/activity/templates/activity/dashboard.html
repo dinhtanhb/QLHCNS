@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load ui_components %}
 {% block title %}Tiến độ hoạt động dự án{% endblock %}
 {% block content %}
 <div class="mx-auto max-w-6xl px-4 py-6 sm:px-6">
@@ -17,22 +18,16 @@
 
         </div>
     </div>
-<form method="get" class="ui-query-bar"><div class="ui-query-fields">
-            <label class="text-sm text-gray-600">Tháng
-                <input type="month" name="month" value="{{ month }}" class="mt-1 block text-sm">
-            </label>
-            {% if is_overview %}
-            <label class="text-sm text-gray-600">CBDA phụ trách
-                <select name="cbda" class="mt-1 block text-sm">
-                    <option value="">Tất cả CBDA</option>
-                    {% for cbda in cbda_choices %}
-                    <option value="{{ cbda.pk }}" {% if selected_cbda == cbda.pk|stringformat:'s' %}selected{% endif %}>{{ cbda.full_name|ui_number }}</option>
-                    {% endfor %}
-                </select>
-            </label>
-            {% endif %}
-            </div><div class="ui-query-actions"><button class="ui-button rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800">Xem</button>
-        </div></form>
+<section class="ui-card ui-query-card no-print">
+<form method="get" class="ui-query-bar" aria-label="Lọc hoạt động">
+<div class="ui-query-fields">
+{% include "ui/field.html" with id="dashboard-month" name="month" label="Tháng" type="month" value=month %}
+{% if is_overview %}{% include "ui/field.html" with id="dashboard-cbda" name="cbda" label="CBDA phụ trách" options_template="ui/query_options/dashboard-cbda.html" %}{% endif %}
+</div>
+{% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"month,cbda" %}
+</form>
+<p class="ui-results-count" aria-live="polite">Có {{ total_activities|ui_number }} hoạt động phù hợp.</p>
+</section>
 
 
     {% if is_overview %}

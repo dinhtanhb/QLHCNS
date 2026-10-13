@@ -111,6 +111,7 @@ def main():
             if name == 'timesheet':
                 table = page.locator('.ui-personal-timesheet-table')
                 check(table.evaluate('x=>getComputedStyle(x).borderCollapse==="collapse" && x.getBoundingClientRect().width > document.querySelector("main").getBoundingClientRect().width*.95'), 'timesheet full-width paper table')
+                check(table.evaluate('x=>{const a=x.getBoundingClientRect(),b=document.querySelector("main").getBoundingClientRect();return a.left>=b.left-1&&a.right<=b.right+1}'), 'timesheet borders stay inside paper margins')
                 check(table.locator('tbody tr').count() >= 34, 'timesheet all days and totals retained')
                 check(page.locator('.timesheet-summary-layout').evaluate('x=>getComputedStyle(x).display==="grid"'), 'timesheet summary and signatures in columns')
                 check(page.locator('.timesheet-leave-row input,.timesheet-leave-row .ui-number-display').evaluate_all('xs=>xs.every(x=>!x.checkVisibility())'), 'timesheet controls excluded')

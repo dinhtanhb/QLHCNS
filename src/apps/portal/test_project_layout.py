@@ -51,6 +51,80 @@ class ProjectLayoutTests(TestCase):
             with self.subTest(template=str(path.relative_to(root))):
                 engine.from_string(path.read_text(encoding='utf-8'))
 
+    def test_all_query_bars_share_actions_labels_and_reset_contract(self):
+        admin = self.user('SUPER_ADMIN', True)
+        admin.is_superuser = True
+        admin.save(update_fields=['is_superuser'])
+        self.client.force_login(admin)
+        pages = {
+            'activity_calendar':['month','cbda'], 'activity_dashboard':['month','cbda'],
+            'hcns_catalog':['employee_id'], 'dashboard_people':['metric','on_date','q'],
+            'dispatch_list':['q','type','status'], 'hr_employee_list':['q'],
+            'kpi_score_list':['period'], 'personnel_decision_list':['q','status'],
+            'report_budget':['year'], 'report_headcount':['year'],
+            'report_hub':['from_date','to_date'], 'report_personnel_changes':['from_date','to_date'],
+            'report_timesheet':['month','year'], 'timesheet_month':['month','year'],
+        }
+        import re
+        for name, expected in pages.items():
+            with self.subTest(page=name):
+                response = self.client.get(reverse('portal:' + name))
+                self.assertEqual(response.status_code,200)
+                forms=QueryForms();forms.feed(response.content.decode())
+                self.assertEqual(forms.forms,[{'names':expected,'submit':1}])
+                html=response.content.decode()
+                form=re.search(r'<form[^>]*class="ui-query-bar".*?</form>',html,re.S)[0]
+                self.assertIn('>Áp dụng</button>',form)
+                self.assertNotIn('>Xóa lọc</a>',form)
+                self.assertIn('ui-query-card',html)
+                for field in expected:
+                    if field in ('metric','on_date'):continue
+                    ident=re.search(r'<(?:input|select)[^>]*id="([^"]+)"[^>]*name="'+field+'"',form)[1]
+                    self.assertIn('for="'+ident+'"',form)
+                value={'q':'SYNTHETIC','year':'2026','month':'2026-10' if name.startswith('activity') else '10','from_date':'2026-01-01','employee_id':str(admin.employee_id),'period':'1'}
+                parameter=next(x for x in expected if x not in ('metric','on_date','cbda','type','status'))
+                filtered=self.client.get(reverse('portal:'+name),{parameter:value[parameter]})
+                self.assertEqual(filtered.status_code,200)
+                self.assertContains(filtered,'>Xóa lọc</a>')
+
+    def test_query_css_has_one_owner_and_inline_actions(self):
+        from pathlib import Path
+        root=Path(__file__).resolve().parents[2]
+        css=(root/'static/css/shared_components.css').read_text()
+        self.assertIn('.ui-query-bar { display:flex;',css)
+        self.assertNotIn('ui-query-',(root/'static/css/project_layout.css').read_text())
+        self.assertNotIn('justify-content:flex-end',css[css.index('.ui-query-actions {'):css.index('.ui-page {')])
+
+    def test_reset_filter_excludes_scope_and_empty_values(self):
+        from django.http import QueryDict
+        from apps.common.templatetags.ui_components import ui_has_filters
+        self.assertFalse(ui_has_filters(QueryDict('metric=active&page=2&q='),'q,status'))
+        self.assertTrue(ui_has_filters(QueryDict('metric=active&q=abc'),'q,status'))
+
+    def test_decision_filters_keep_recipient_scope_and_pagination_parameters(self):
+        from apps.document.models import PersonnelDecision
+        hr=self.user('HR_MANAGER',True)
+        recipient=self.user('EMPLOYEE',True)
+        for i in range(26):
+            PersonnelDecision.objects.create(employee=hr.employee,template_slug='salary-decision',
+                decision_no='needle & '+str(i),decision_date=date(2026,10,13),status='Draft')
+        self.client.force_login(hr)
+        response=self.client.get(reverse('portal:personnel_decision_list'),{'q':'needle &','status':'Draft'})
+        self.assertEqual(response.context['page_obj'].paginator.count,26)
+        self.assertContains(response,'q=needle%20%26&amp;status=Draft&amp;page=2')
+        self.client.force_login(recipient)
+        response=self.client.get(reverse('portal:personnel_decision_list'))
+        self.assertEqual(response.status_code,403)
+        director=self.user('DIRECTOR',True)
+        self.client.force_login(director)
+        response=self.client.get(reverse('portal:personnel_decision_list'))
+        self.assertEqual(response.status_code,200)
+        self.assertNotContains(response,'name="status"')
+        self.assertNotContains(response,'needle &amp;')
+        self.client.force_login(recipient)
+        for name in ('report_hub','report_budget','report_headcount'):
+            self.assertEqual(self.client.get(reverse('portal:'+name)).status_code,302)
+
     def test_employee_filter_roundtrip_preserves_scope_and_parameter(self):
         hr = self.user('HR_MANAGER',True)
         from apps.contract.models import Contract, ContractType

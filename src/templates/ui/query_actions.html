@@ -1,0 +1,4 @@
+<div class="ui-query-actions">
+  <button type="submit" class="ui-button ui-button--primary">{{ submit_label|default:"Áp dụng" }}</button>
+  {% if has_filters %}<a class="ui-button ui-button--secondary" href="{{ reset_url }}">Xóa lọc</a>{% endif %}
+</div>

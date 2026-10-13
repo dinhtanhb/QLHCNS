@@ -33,10 +33,18 @@ Trang chủ ưu tiên Việc của tôi, Cần duyệt, Thao tác nhanh rồi Ho
 ## Component contracts
 
 - Card/KPI: tiêu đề 14–16px, số 24–32px, căn thống nhất; trạng thái chờ duyệt nhấn bằng chữ/icon, không chỉ màu. Số 0 hợp lệ giữ hiển thị; thiếu dữ liệu dùng “Chưa có dữ liệu”.
-- Bảng: caption/heading, `scope`, link thực cho chi tiết; header sticky không che focus. Bộ lọc có labels, nút áp dụng/xóa và số kết quả; giữ GET, URL names, CSRF và field names. Chỉ dùng `aria-sort` khi backend đã hỗ trợ sort. 360px dùng vùng cuộn ngang có nhãn/focus hoặc card với nhãn cột; trang không tràn ngang. Không thêm bulk action/sort mới chỉ vì skill gợi ý.
+- Bảng: caption/heading, `scope`, link thực cho chi tiết; header sticky không che focus. Bộ lọc dùng mẫu “Dải lọc với thao tác liền kề” dưới đây; giữ GET, URL names, CSRF và field names. Chỉ dùng `aria-sort` khi backend đã hỗ trợ sort. 360px dùng vùng cuộn ngang có nhãn/focus hoặc card với nhãn cột; trang không tràn ngang. Không thêm bulk action/sort mới chỉ vì skill gợi ý.
 - Form dài: chia nhóm `fieldset/legend`, một submit chính, errors cạnh field qua `aria-describedby`/`aria-invalid`; error summary có link tới field và nhận focus sau submit lỗi. Giữ dữ liệu đã nhập, CSRF, field name, validation và quyền hiện hành. Không thêm autosave/multi-step nghiệp vụ.
 - Badge/alert: SVG outline 24 viewBox, stroke 2, dùng cùng hệ Heroicons-style inline sẵn có; icon trang trí `aria-hidden`, nút icon có accessible name. Sau duyệt chọn một bộ paths nhất quán; chưa thêm thư viện. Alert nguy cấp tồn tại đến khi giải quyết, không auto-dismiss.
 - Empty state: phân biệt chưa tạo dữ liệu, bộ lọc không có kết quả, không có quyền và lỗi tải; thông điệp + một hành động hợp lệ. Không hiển thị chart rỗng hoặc thanh 100% cho một phòng ban; một nhóm dùng số/tóm tắt, nhiều nhóm dùng bar ngang và bảng dữ liệu thay thế.
+
+### Dải lọc với thao tác liền kề — ngày 13/10/2026
+
+Mẫu: `[Tìm kiếm] [Lọc phụ…] [Áp dụng] [Xóa lọc]`, khoảng trống dư nằm sau nút. Form GET có aria-label, role=search khi tìm kiếm, nằm trong card phẳng padding16px, không tiêu đề h2 riêng. Trường dùng partial `ui/field.html`, thao tác dùng `ui/query_actions.html`; CSS duy nhất ở `shared_components.css`. Ô văn bản basis16rem/max24rem, select13rem, ngày/tháng/năm/số10rem; gap12px/16px. Nút44px căn đáy ô nhập, nhãn/nút≥14px, focus3px. Không margin-left:auto/justify-content:flex-end để đẩy thao tác ra xa.
+
+Chỉ hiện Xóa lọc khi ít nhất một tham số lọc khai báo khác rỗng; bỏ page, giữ scope metric/ngày của drill-down và group catalog. Nút chính luôn Áp dụng và đứng trước liên kết Xóa lọc. Số kết quả dùng tổng paginator hoặc độ dài tập dữ liệu đã có, aria-live=polite, ngay dưới form trong card; không tạo số tổng giả cho báo cáo nhiều nguồn hay lặp hoạt động theo ngày.
+
+≥1024px flex một hàng nếu đủ, wrap khi thiếu;600–1023px trường hai cột/nút dưới căn trái; <600px mỗi trường toàn hàng, hai nút cùng hàng và chia rộng đều. Tab theo trường→Áp dụng→Xóa lọc; Enter gửi native GET, không onchange tự gửi. Dải lọc/card ẩn khi in;60/40 chỉ cho các khối nội dung khác. Ảnh trước/sau và số đo xem metadata/ảnh của đợt trong PROJECT_WORK_LOG, không lưu dữ liệu giả hoặc ảnh tài khoản thật vào Git.
 - Toast: thông tin thường `role=status`, không giành focus; 5 giây chỉ cho thông báo không cần hành động, có bản lưu trong thông báo/messages. Pause khi hover/focus. Lỗi và toast có thao tác không tự đóng; ghi đè hướng dẫn auto-dismiss 3–5 giây của skill để không mất thông tin quan trọng.
 - Chart: so sánh phòng ban dùng bar, thời gian dùng line, có labels trực tiếp, đơn vị, tóm tắt và bảng dữ liệu. Một hue brand cho cùng đại lượng, không gán mỗi phòng ban một màu. Tooltip phải có đường truy cập bằng bàn phím; không thêm chart library ở đợt này.
 - Pagination: dùng partial hiện có; giữ filters/scope, `aria-current`, labels nút trước/sau, mục tiêu 44px. Hành động sửa/duyệt/xóa chỉ xuất hiện theo guard hiện hành; CSS không thay được kiểm tra quyền server.

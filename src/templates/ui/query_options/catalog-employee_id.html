@@ -1,0 +1,1 @@
+<option value="">Mẫu trắng</option>{% for employee in employees %}<option value="{{ employee.pk }}" {% if selected_employee == employee.pk|stringformat:"s" %}selected{% endif %}>{{ employee.employee_code|ui_number }} · {{ employee.full_name|ui_number }}</option>{% endfor %}

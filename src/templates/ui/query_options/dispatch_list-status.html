@@ -1,0 +1,5 @@
+<option value="">-- Tất cả trạng thái --</option>
+                    <option value="Pending" {% if selected_status == "Pending" %}selected{% endif %}>Chờ xử lý</option>
+                    <option value="Processing" {% if selected_status == "Processing" %}selected{% endif %}>Đang xử lý</option>
+                    <option value="Completed" {% if selected_status == "Completed" %}selected{% endif %}>Đã hoàn thành</option>
+                    <option value="Overdue" {% if selected_status == "Overdue" %}selected{% endif %}>Quá hạn</option>

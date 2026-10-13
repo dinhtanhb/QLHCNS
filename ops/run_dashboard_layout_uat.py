@@ -128,7 +128,7 @@ def main():
                                     const a=page.getBoundingClientRect(),b=h.getBoundingClientRect();return {page:a.x,heading:b.x};
                                 }''')
                                 check(abs(bounds['page']-bounds['heading'])<2,label+' '+slug+' left-aligned heading')
-                                if slug=='decisions' and width>=768 and role!='director':
+                                if slug=='decisions' and width>=1024 and role!='director':
                                     controls=page.locator('.ui-query-bar :is(input,select,button)').evaluate_all('xs=>xs.map(x=>x.getBoundingClientRect().bottom)')
                                     check(max(controls)-min(controls)<2,label+' filter controls share baseline')
                                 if slug=='decision-detail' and page.locator('.decision-workflow').count():

@@ -1,13 +1,20 @@
 {% extends "base.html" %}
+{% load ui_components %}
 {% block title %}Báo cáo Định biên{% endblock %}
 {% block content %}
 <div class="flex items-center justify-between mb-4">
     <h1 class="text-lg font-bold text-gray-900">Báo cáo Định biên nhân sự</h1>
 
 </div>
-<form method="get" class="ui-query-bar"><div class="ui-query-fields"><label class="ui-field-label">Năm<select name="year" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
-        {% for y in years %}<option value="{{ y|ui_year }}" {% if y == year %}selected{% endif %}>{{ y|ui_year }}</option>{% endfor %}
-    </select></label></div><div class="ui-query-actions"><button type="submit" class="ui-button ui-button--primary">Lọc</button></div></form>
+<section class="ui-card ui-query-card no-print">
+<form method="get" class="ui-query-bar" aria-label="Lọc năm định biên">
+<div class="ui-query-fields">
+{% include "ui/field.html" with id="report-headcount-year" name="year" label="Năm" options_template="ui/query_options/report_headcount-year.html" %}
+</div>
+{% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"year" %}
+</form>
+<p class="ui-results-count" aria-live="polite">Có {{ plans|length|ui_number }} phòng ban phù hợp.</p>
+</section>
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
     <div class="overflow-x-auto mobile-table-scroll">
