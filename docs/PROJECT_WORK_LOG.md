@@ -2,6 +2,49 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-13 — Đồng bộ tìm kiếm với sidebar và dọn đặc tả Đợt 2
+
+**Tóm tắt cho chủ dự án**
+
+- Đã sửa tìm kiếm theo điều kiện sidebar, không coi trang rỗng200 là quyền dùng chức năng.
+- Giữ quyền dữ liệu và tìm không dấu; số truy vấn không tăng so với đầu lượt.
+- Kiểm tra Edge đạt 421 bước và 32 ảnh cho bốn vai trò, cả sáng/tối và màn hình rộng/hẹp.
+- Đặc tả đề xuất trần24 có điều kiện và khối đề xuất tuyển dụng D2-9, chưa áp dụng.
+- Full suite cuối đạt cả hai backend; chưa kiểm screen reader, zoom200% hoặc tài khoản thật; chưa theo dõi CI.
+
+**Phạm vi/nguồn:** đọc AGENTS, hai mục mới nhất, search/test/base/context processor/permissions và 5.5/7.2/16 đặc tả; nạp UI UX Pro Max, không UI Styling/shadcn. Main sạch đầu lượt; fetch origin/main, rev-list0/0; HEAD/remote cùng `59dcff84717172104fb0c4b055076cd8bb0ab10a`. Không reset/stash/đổi nhánh, không sửa guard/quyền/model/migration/URL/field/CSRF/middleware/selector/giấy HCNS/dependency. Quy trình dọn nguồn/bản sao/commit/push có hiệu lực; không deploy.
+
+**A1 — sửa điều kiện liệt kê:** `views/search.py` trả hr_employee_list và hcns_catalog về manage_hr; recruitment_list về request_recruitment hoặc approve_recruitment. Sửa thêm task_list thành view_activity_dashboard đúng điều kiện menu Dự án. Lượt trước nhầm chiều “GET200 thì phải xuất hiện”; trang scope none() vẫn200 không đồng nghĩa được thấy chức năng trong điều hướng. Không sửa view hoặc queryset dữ liệu. Rà toàn bộ entry PAGES với base.html/context flags: các mục còn lại giữ nguyên điều kiện đúng; notification_list ở topbar và report_headcount ở link báo cáo/Dashboard là ngoại lệ ngoài sidebar, dùng guard thật. Các biến thể cùng route trong sidebar có GET nhóm/forms không tự mở group ngoài quyền. Giữ hai nguồn điều kiện trong base/PAGES vì đổi toàn sidebar vượt phạm vi an toàn; test HTML tự động khóa sự đồng bộ, không thêm query/header hoặc đổi context processor.
+
+**A2 — test và probe:** `test_page_sidebar_and_guard_matrix` dùng HomeDashboardTests fixture, HTMLParser chỉ đọc link trong aside#portalSidebar và kiểm toàn bộ entry PAGES. Chín nhóm role (tám yêu cầu kể cả superuser + SUPER_ADMIN không cờ) × linked/unlinked: listed⇒GET200; entry có sidebar⇒listed với ngoại lệ hồ sơ đã ghi, không có phép suy GET200⇒listed. Test thường không thấy ba mục HR; HR Manager/Officer thấy hai mục, request/approve role thấy đề xuất theo menu. Probe trên mã cũ `test_ordinary_roles_do_not_discover_empty_hr_pages` thất bại thật tại EMPLOYEE/hr_employee_list, 2 test baseline chạy, exit1; test đo query vẫn đạt. Log TEMP/ihrms-sidebar-baseline-sqlite.log. Lần focused đầu sau sửa phát hiện SUPER_ADMIN linked thiếu submit_profile_change_request nhưng sidebar cá nhân vẫn có link; thêm ngoại lệ đúng guard thật vào test, không nới page_visible hoặc view. Test cuối giữ route resolve, accent/scope/ceiling/escape/no-store; không nhân bản test.
+
+**A3:** `User.employee` được khai báo OneToOneField trực tiếp trong security/models.py, nên `employee_id` luôn có ở mọi User, giá trị None nếu unlinked; không là reverse relation. _get_employee dùng getattr(user,'employee',None); hai cách kiểm sự hiện diện tương đương ở gate submit khi relation khai báo này. AnonymousUser bị login_required trước page_visible. Không có lỗi AttributeError cần sửa. Gate approve_profile_change_request vẫn cho HR unlinked; linked còn phải submit; SUPER_ADMIN không cờ bị view403 dù sidebar cá nhân hiện link. Search giữ ẩn để listed không dẫn403. Test linked/unlinked, approve và SUPER_ADMIN đã chạy; giữ ngoại lệ link cá nhân này trong test/nhật ký, không sửa sidebar hoặc quyền.
+
+**Đo truy vấn đầu/cuối (linked, toàn GET/render):** baseline probe dùng cùng matcher/fixture/warm-up; final có thêm assertion không vượt số đầu lượt. Sửa catalogue chỉ kiểm quyền trong memory, không SELECT mới. Các số before/after-matcher trong log vẫn là phép so icontains với accent scan; bảng sau so **đầu lượt với cuối lượt**, không nhầm hai phép đo.
+
+| Vai trò | SQLite đầu → cuối | SQL Server đầu → cuối |
+| --- | --- | --- |
+| EMPLOYEE | 7 → 7 | 8 → 8 |
+| DEPT_MANAGER | 7 → 7 | 8 → 8 |
+| HR_OFFICER | 7 → 7 | 8 → 8 |
+| HR_MANAGER | 7 → 7 | 8 → 8 |
+| DIRECTOR | 8 → 8 | 9 → 9 |
+| FINANCE_OFFICER | 7 → 7 | 8 → 8 |
+| SYS_ADMIN | 7 → 7 | 8 → 8 |
+| Superuser | 8 → 8 | 9 → 9 |
+
+**Kiểm thử nguồn cuối:** stage tree `b938415936ec9bdb3ec636271b4b77b2d8b6787b`, xuất `git archive` vào TEMP/ihrms-sidebar-20261013/stage-source. Wrapper TEMP/ihrms-sidebar-index-runner.py gọi ops/run_tests.py ở snapshot; APP_ENVtest, media/log riêng, SQL connection chỉ memory, database test UUID không dùng dữ liệu vận hành. Nhãn focused `--backend sqlite|sqlserver apps.portal.test_global_search`: 9/9 mỗi backend, SEARCH_PAGE_GUARD_MISMATCHES=[], query đúng bảng. Full suite hai backend đang chạy cùng wrapper không nhãn, lấy `$LASTEXITCODE` ngay sau Python và exit; kết quả cuối bổ sung dưới đây. Gate TEMP/ihrms-sidebar-index-gates.py: check/makemigrations --check --dry-run đạt, không migration; contrast190 cặp/0 lỗi, exit0; pip check exit0; diff/index diff --check đạt. Không dùng full488 đợt trước thay kết quả nguồn này.
+
+**UI nghiệp vụ đọc:** `venv/Scripts/python.exe ops/run_search_sidebar_uat.py --directory "$env:TEMP/ihrms-atoms-demo-20261013" --packages-dir "$env:TEMP/ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/packages"`: exit0, 421 kiểm tra/32 ảnh, errors=[]; Edge live login HR_MANAGER/EMPLOYEE/DEPT_MANAGER/DIRECTOR, search chính xác ba chức năng theo quyền/sidebar, 360/768/1024/1440 × sáng/tối, không overflow, chữ≥14px/control≥44px, gửi tìm bằng Enter. Demo SQLite/media/accounts cách ly, không sửa dữ liệu thật; chỉ đọc search nên không làm lại create/approve không bị ảnh hưởng. Bằng chứng demo/sidebar-search-uat/browser-result.json và ảnh; log TEMP/ihrms-sidebar-browser.log. Đã xem employee1440dark; không claim UAT phiên trình duyệt thật của chủ dự án.
+
+**B — chỉ tài liệu:** thêm câu chuyển tiếp ở 5.5/7.2, bảng đối chiếu7.2↔16.4 giữ bản cũ, xác định mục16 là đề xuất hiện hành/chờ D2. Không đổi Đợt1. Trần20 là mục tiêu tự đặt, không giới hạn kỹ thuật; D2-8 đề xuất≤24 và không N+1 khi100 phòng/1.000 hồ sơ, denied+0/nguồn ẩn không query, đo p95/máy UAT; vượt thì chia rollout/gộp query; thay thế giữ20 và bỏ một khối. HR Manager17+4=21, D2-9 thành22 là dự toán chưa đo. D2-9 chờ duyệt/mặc địnhẩn, RecruitmentRequest grouped current status trong managed_departments_for, request/approve gate, không reason/lương/đã tuyển; hrefNone khi thiếu filter và CTAchung riêng, +1SELECT/test đề xuất; bổ sung bảng tóm tắt/quyền/quyết định. Không viết mã/template/view/CSS của Đợt2, không chốt D2-1..9 thay chủ dự án.
+
+**Bàn giao/giới hạn:** hai commit theo yêu cầu, bản sao review mã nguồn sạch ngoài repo, mở lại/hash trước commit và kiểm SHA sau push. Không force-push/deploy. `gh run list` đầu lượt theo SHA59dcff8 vẫn HTTP401 Bad credentials; chưa theo dõi CI, không ghi token. Chưa screen reader/zoom200%/tài khoản thật. Chủ dự án duyệt D2-1..9 trước giao triển khai; lượt này dừng ở sửa catalogue và đặc tả.
+
+**Full suite cuối:** `venv/Scripts/python.exe "$env:TEMP/ihrms-sidebar-index-runner.py" --backend sqlite` không nhãn: 489 test, OK (7 skip), 557.569 giây, exit0; `--backend sqlserver`: 489/489 OK, không skip, 614.513 giây, exit0. Log TEMP/ihrms-sidebar-full-sqlite.log và ihrms-sidebar-full-sqlserver.log; DB test được Destroying, media/log cách ly. Cả hai log SEARCH_PAGE_GUARD_MISMATCHES=[]; đầu/cuối query giữ nguyên bảng trên. Tất cả mã ứng dụng/test staged đã đối chiếu snapshot khớp sau chuẩn hóa CRLF/LF; chỉ tài liệu và nhật ký thêm sau test. Không dùng full488 của lượt trước. Gate/diff/pip và Edge421/32 ảnh đạt trên nguồn này.
+
+**Bản sao/commit:** bản mã review cuối `D:/QLHCNS-Backups/IHRMS_Review_20261013_Sidebar_Spec.zip` lấy nguồn index trước commit tài liệu, có manifest/tree/parent và SHA256 từng tệp; loại runtime/secret/database/media/credentials, giữ .env.example. Mở lại kiểm từng hash và ZIP integrity trước commit, đối chiếu tree với commit sau push; báo cáo `.verification.json` và `.zip.sha256` ngoài repo. Bản nguồn Phần A trước commit ở `IHRMS_Review_20261013_Sidebar_Code.zip`. Đây là nguồn review, không backup dữ liệu vận hành. SHA hai commit/kết quả remote cuối ghi trong báo cáo kiểm chứng cạnh bản sao và câu trả lời bàn giao; bản nhật ký commit không tự chứa SHA của chính nó. Bước push mặc định theo AGENTS; không force/deploy, không sửa mã sau test.
+
 ## 2026-10-13 — Quy trình dọn nguồn, tạo bản sao và commit/push mặc định
 
 **Tóm tắt cho chủ dự án**

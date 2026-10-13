@@ -14,16 +14,16 @@ from apps.security.permissions import has_permission
 from .common import _get_employee
 
 # Destinations are read pages, never actions. Permission names use the shared matrix.
-# The client guard matrix in test_global_search.py must accompany any catalog
-# update. None means the view is authenticated and applies its own record scope.
+# Visibility follows base.html, verified by its rendered sidebar in tests.
+# HTTP200 with an empty scoped list does not grant navigation visibility.
 PAGES = (
     ("Bảng điều khiển Dashboard", "dashboard", None),
     ("Hồ sơ cá nhân", "profile", None),
     ("Nghỉ phép", "leave_list", None),
     ("Bảng công chấm công", "timesheet_month", None),
-    ("Công việc Task", "task_list", None),
+    ("Công việc Task", "task_list", "view_activity_dashboard"),
     ("Thông báo", "notification_list", None),
-    ("Nhân viên & hồ sơ nhân sự", "hr_employee_list", None),
+    ("Nhân viên & hồ sơ nhân sự", "hr_employee_list", "manage_hr"),
     ("Hợp đồng lao động", "hr_contract_list", "manage_hr"),
     ("Tuyển dụng", "recruitment_hub", ("request_recruitment", "approve_recruitment", "manage_hr")),
     ("Báo cáo điều hành", "report_hub", "view_reports"),
@@ -41,12 +41,12 @@ PAGES = (
     ("Lịch công tác", "event_list", None),
     ("Đào tạo", "training_my_list", None),
     ("Checklist tiếp nhận nghỉ việc", "lifecycle_case_list", "manage_hr"),
-    ("Biểu mẫu HCNS", "hcns_catalog", None),
+    ("Biểu mẫu HCNS", "hcns_catalog", "manage_hr"),
     ("Quyết định nhân sự", "personnel_decision_list", ("manage_hr", "approve_personnel_decision")),
     ("Duyệt nghỉ phép", "leave_approval_list", "approve_leave"),
     ("Duyệt chấm công", "timesheet_approval_list", "approve_timesheet"),
     ("Duyệt tài liệu", "document_approval_list", "approve_document"),
-    ("Đề xuất tuyển dụng", "recruitment_list", None),
+    ("Đề xuất tuyển dụng", "recruitment_list", ("request_recruitment", "approve_recruitment")),
     ("Ứng viên tuyển dụng", "hr_candidate_list", "manage_hr"),
     ("Chạy lương hàng tháng", "finance_period_list", "manage_finance"),
     ("Lương cơ bản nhân viên", "finance_salary_list", "manage_finance"),

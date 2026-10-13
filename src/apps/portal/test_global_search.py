@@ -11,6 +11,7 @@ from django.db.models import Q
 from unittest.mock import patch
 import json
 from apps.portal.views import search as search_views
+from html.parser import HTMLParser
 
 
 class GlobalSearchTests(TestCase):
@@ -67,26 +68,61 @@ class GlobalSearchTests(TestCase):
         self.assertEqual(len(result.context['search_people']), 20)
         self.assertTrue(result.context['search_more'])
 
-    def test_page_guard_matrix(self):
+    def test_page_sidebar_and_guard_matrix(self):
         mismatches = []
         roles = ('EMPLOYEE', 'DEPT_MANAGER', 'HR_OFFICER', 'HR_MANAGER',
-                 'DIRECTOR', 'FINANCE_OFFICER', 'SYS_ADMIN', 'SUPERUSER')
+                 'DIRECTOR', 'FINANCE_OFFICER', 'SYS_ADMIN', 'SUPER_ADMIN', 'SUPERUSER')
+        class SidebarLinks(HTMLParser):
+            def __init__(self):
+                super().__init__(); self.in_sidebar = False; self.links = set()
+            def handle_starttag(self, tag, attrs):
+                attrs = dict(attrs)
+                if tag == 'aside' and attrs.get('id') == 'portalSidebar':
+                    self.in_sidebar = True
+                if self.in_sidebar and tag == 'a':
+                    self.links.add(attrs.get('href', '').split('?')[0])
+            def handle_endtag(self, tag):
+                if tag == 'aside': self.in_sidebar = False
+        # These are outside the sidebar: notification topbar and headcount
+        # report linked from Dashboard/report pages. Keep their view gates.
+        outside_sidebar = {'notification_list', 'report_headcount'}
         for role in roles:
-            user = self.user(role, True)
-            if role == 'SUPERUSER':
-                user.is_superuser = True
-                user.save(update_fields=['is_superuser'])
-            self.client.force_login(user)
-            for label, route, permission in PAGES:
-                url = reverse('portal:' + route)
-                result = self.client.get(reverse('portal:global_search'), {'q': label})
-                listed = any(p['href'] == url for p in result.context['search_pages'])
-                target = self.client.get(url)
-                if listed != (target.status_code == 200):
-                    mismatches.append([role, route, listed, target.status_code])
-                with self.subTest(role=role, route=route):
-                    self.assertEqual(listed, target.status_code == 200)
+            for linked in (False, True):
+                user = self.user(role, linked)
+                if role == 'SUPERUSER':
+                    user.is_superuser = True
+                    user.save(update_fields=['is_superuser'])
+                self.client.force_login(user)
+                parser = SidebarLinks()
+                parser.feed(self.client.get(reverse('portal:dashboard')).content.decode())
+                for label, route, _ in PAGES:
+                    url = reverse('portal:' + route)
+                    result = self.client.get(reverse('portal:global_search'), {'q':label})
+                    listed = any(p['href'] == url for p in result.context['search_pages'])
+                    with self.subTest(role=role, linked=linked, route=route):
+                        # One-way access check: HTTP200 does not grant menu visibility.
+                        if listed:
+                            self.assertEqual(self.client.get(url).status_code, 200)
+                        if route not in outside_sidebar:
+                            expected = url in parser.links
+                            # Sidebar retains the personal profile link unlinked;
+                            # search suppresses it when the real view rejects it.
+                            if route == 'profile_change_request_list':
+                                expected = expected and (has_permission(user, 'approve_profile_change_request') or (
+                                    linked and has_permission(user, 'submit_profile_change_request')))
+                            if listed != expected:
+                                mismatches.append([role, linked, route, listed, expected])
+                            self.assertEqual(listed, expected)
         print('SEARCH_PAGE_GUARD_MISMATCHES=' + json.dumps(mismatches))
+
+    def test_ordinary_roles_do_not_discover_empty_hr_pages(self):
+        for role in ('EMPLOYEE','FINANCE_OFFICER','SYS_ADMIN','SUPER_ADMIN'):
+            user = self.user(role, True)
+            self.client.force_login(user)
+            for label, route in (('Nhân viên & hồ sơ nhân sự','hr_employee_list'),
+                                 ('Biểu mẫu HCNS','hcns_catalog'), ('Đề xuất tuyển dụng','recruitment_list')):
+                result = self.client.get(reverse('portal:global_search'), {'q':label})
+                self.assertNotIn(reverse('portal:'+route), [p['href'] for p in result.context['search_pages']])
 
     def test_query_measurement(self):
         counts = {}
@@ -110,6 +146,9 @@ class GlobalSearchTests(TestCase):
                         self.client.get(reverse('portal:global_search'), {'q': 'gia'})
                 measured[version] = sum(q['sql'].lstrip().upper().startswith('SELECT') for q in queries)
             self.assertLessEqual(measured['after'], measured['before'] + 1)
+            ceiling = 8 if role in ('DIRECTOR', 'SUPERUSER') else 7
+            if connection.vendor == 'microsoft': ceiling += 1
+            self.assertLessEqual(measured['after'], ceiling, role)
             counts[role] = measured
         print('SEARCH_QUERY_COUNTS=' + json.dumps(counts))
 
