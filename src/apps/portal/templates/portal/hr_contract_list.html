@@ -2,19 +2,19 @@
 {% load ui_components %}
 {% block title %}Hợp đồng lao động{% endblock %}
 {% block hr_content %}
-<div class="ui-page-actions">
-    <h1 class="ui-page-title">Hợp đồng lao động</h1>
-    {% if can_manage_hr %}<a href="{% url 'portal:hr_contract_create' %}" class="ui-button ui-button--primary">+ Tạo hợp đồng</a>{% endif %}
-</div>
+<header class="ui-page-header"><div><h1 class="ui-page-title">Hợp đồng lao động</h1></div>
+    {% if can_manage_hr %}<div class="ui-page-actions"><a href="{% url 'portal:hr_contract_create' %}" class="ui-button ui-button--primary">+ Tạo hợp đồng</a></div>{% endif %}
+</header>
 <div class="ui-card">
     <div class="ui-scroll overflow-x-auto mobile-table-scroll" tabindex="0" role="region" aria-label="Bảng dữ liệu nhân sự">
-        <table class="ui-table ui-hr-table"><caption>Hợp đồng lao động</caption>
+        <table class="ui-table ui-hr-table ui-table--contracts"><caption>Hợp đồng lao động</caption>
+        <colgroup><col class="ui-col-medium"><col class="ui-col-large"><col class="ui-col-medium"><col class="ui-col-small"><col class="ui-col-small"><col class="ui-col-medium"></colgroup>
         <thead><tr class="ui-hr-text"><th scope="col" class="">Số HĐ</th><th scope="col" class="">Nhân viên</th><th scope="col" class="">Loại</th><th scope="col" class="">Bắt đầu</th><th scope="col" class="">Kết thúc</th><th scope="col" class="">Trạng thái</th></tr></thead>
         <tbody>
         {% for c in contracts %}
         <tr>
             <td class="">{{ c.contract_no|ui_number }}</td>
-            <td class=""><a href="{% url 'portal:hr_employee_detail' c.employee.pk %}" class="ui-button">{{ c.employee|ui_number }}</a></td>
+            <td><a href="{% url 'portal:hr_employee_detail' c.employee.pk %}" class="ui-table-link">{{ c.employee.employee_code }} · {{ c.employee.full_name }}</a></td>
             <td class="">{{ c.contract_type|ui_number }}</td>
             <td class="">{{ c.start_date|ui_date }}</td>
             <td class="">{{ c.end_date|default:"Không xác định"|ui_date }}</td>

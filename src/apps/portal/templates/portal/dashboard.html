@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static ui_components %}
 {% block title %}Trang chủ{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261013-phase1-followup">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261013-search-demo">{% endblock %}
 {% block content %}
 <div class="ui-page home-dashboard">
 {% include "ui/page_header.html" with title="Bảng điều khiển" description="Tình hình nhân sự và công việc trong phạm vi được cấp quyền." %}
@@ -18,7 +18,7 @@
 {% if dashboard_snapshot.sections.status.state == 'error' %}{% include "ui/empty_state.html" with state="error" title="Không tải được dữ liệu" description="Vui lòng thử lại sau." %}{% endif %}
 <div class="ui-kpi-grid dashboard-metric-grid">{% for item in dashboard_snapshot.metrics %}<div class="dashboard-metric">{% include "ui/kpi.html" with label=item.label value=item.value period=item.period_label href=item.href icon=item.icon only %}</div>{% endfor %}</div>
 <details class="dashboard-explanation"><summary>Cách tính chỉ số</summary><ul>{% for item in dashboard_snapshot.metrics %}<li><strong>{{ item.label }}</strong>: {{ item.note }}</li>{% endfor %}</ul></details></section>
-{% if dashboard_snapshot.uncontracted %}<p class="ui-page-description">Có {{ dashboard_snapshot.uncontracted.value|ui_number }} hồ sơ chưa có hợp đồng. <a class="dashboard-text-link" href="{{ dashboard_snapshot.uncontracted.href }}">Tạo hợp đồng</a></p>{% endif %}
+{% if dashboard_snapshot.uncontracted.value %}<p class="ui-page-description">Có {{ dashboard_snapshot.uncontracted.value|ui_number }} hồ sơ chưa có hợp đồng. <a class="dashboard-text-link" href="{{ dashboard_snapshot.uncontracted.href }}">Tạo hợp đồng</a></p>{% endif %}
 {% endif %}
 {% if dashboard_snapshot.sections.headcount or dashboard_snapshot.sections.contracts %}<div class="dashboard-panel-grid">
 {% if dashboard_snapshot.sections.headcount %}{% include "portal/dashboard/_headcount_chart.html" with data=dashboard_snapshot.sections.headcount %}{% endif %}

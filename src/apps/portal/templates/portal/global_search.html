@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Tìm kiếm{% endblock %}
+{% block content %}
+<div class="ui-page">
+{% include "ui/page_header.html" with title="Tìm kiếm" %}
+<p class="ui-page-description">Tìm trang chức năng, tên nhân viên, mã NV hoặc email công việc trong phạm vi được phép xem.</p>
+{% if search_query|length < 2 %}<p>Nhập ít nhất 2 ký tự để tìm kiếm.</p>{% else %}
+<p>Kết quả cho “{{ search_query }}”</p>
+<section class="ui-card"><h2 class="ui-card-title">Trang chức năng</h2>
+<ul class="ui-search-results">{% for item in search_pages %}<li><a href="{{ item.href }}">{{ item.label }}</a></li>{% empty %}<li>Không tìm thấy trang phù hợp.</li>{% endfor %}</ul></section>
+<section class="ui-card"><h2 class="ui-card-title">Nhân viên</h2>
+<ul class="ui-search-results">{% for item in search_people %}<li>{% if item.href %}<a href="{{ item.href }}">{{ item.name }}</a>{% else %}<strong>{{ item.name }}</strong>{% endif %}<span>{{ item.code }} · {{ item.department }}</span><span>{{ item.email|default:"—" }}</span></li>{% empty %}<li>Không tìm thấy nhân viên trong phạm vi được xem.</li>{% endfor %}</ul>
+{% if search_more %}<p>Hiển thị 20 kết quả đầu tiên. Hãy nhập cụ thể hơn.</p>{% endif %}</section>
+{% endif %}
+</div>
+{% endblock %}

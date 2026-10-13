@@ -21,6 +21,34 @@ from apps.task.models import Task
 from apps.document.models import Document
 from apps.recruitment.models import RecruitmentRequest
 from .common import _get_employee, _role_code
+from django.core.paginator import Paginator
+from django.utils.dateparse import parse_date
+from apps.portal.dashboard_data import dashboard_metric_employees
+from urllib.parse import urlencode
+
+
+@login_required
+def dashboard_people(request):
+    key = request.GET.get("metric", "managed")
+    raw_date = request.GET.get("on_date", "")
+    try:
+        day = parse_date(raw_date) if raw_date else timezone.localdate()
+    except ValueError:
+        day = None
+    if day is None or key not in ("managed", "active", "approved", "probation"):
+        return HttpResponse("Bộ lọc không hợp lệ.", status=400)
+    qs, scope = dashboard_metric_employees(request.user, _get_employee(request), key, day)
+    if qs is None:
+        return HttpResponseForbidden("Bạn không có quyền xem chỉ số này.")
+    labels = {"managed": "Nhân sự đang quản lý", "active": "Đang làm việc", "approved": "Nghỉ được duyệt trong ngày", "probation": "Thử việc"}
+    q = request.GET.get("q", "").strip()
+    if q:
+        qs = qs.filter(Q(full_name__icontains=q) | Q(employee_code__icontains=q))
+    page = Paginator(qs.select_related("department", "position").order_by("full_name", "pk"), 20).get_page(request.GET.get("page"))
+    return render(request, "portal/dashboard_people.html", dict(title=labels[key], metric=key,
+        on_date=day, scope=scope, q=q, page_obj=page,
+        pagination_query=urlencode({"metric": key, "on_date": day.isoformat(), "q": q}),
+        can_open_profile=has_permission(request.user, "manage_hr") or has_permission(request.user, "view_all_employees")))
 
 
 
@@ -124,7 +152,7 @@ def dashboard(request):
 
     from apps.portal.home_presentation import home_presentation
     context.update(home_presentation(request.user, context))
-    # Presentation removes only verified duplicate cards and preserves fallbacks.
+    # Phase one replaces administrative cards/queues, while retaining personal actions.
     context["home_queue"] = snapshot["sections"].get("queue", {}).get("rows", [])
     return render(request, "portal/dashboard.html", context)
 

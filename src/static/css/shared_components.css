@@ -26,8 +26,6 @@
  .ui-filter-bar .ui-field:has(select) { flex-basis:18rem; }
  .ui-filter-bar .ui-field:has(input:is([type=date],[type=month],[type=number])) { flex-basis:12rem; }
  .ui-field { min-width:0; }
- .ui-table-link { display:inline-flex; align-items:center; min-height:var(--ui-target-min); max-width:100%; color:var(--ui-link); overflow-wrap:anywhere; }
- .ui-table-link:focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:var(--ui-focus-offset); }
  .ui-followup-page { min-width:0; max-width:100%; }
  .portal-app .ui-main .ui-page .ui-followup-page :is(p,span,td,th,label,summary,a,button,input,select,textarea),
  .portal-app .ui-main .ui-page.ui-followup-page :is(p,span,td,th,label,summary,a,button,input,select,textarea) { font-size:var(--ui-font-size-small); }
@@ -85,6 +83,9 @@
  .ui-table--periods { min-width:calc(var(--ui-table-col-small) * 2 + var(--ui-table-col-medium) * 2); }
  .ui-table--employees { min-width:calc(var(--ui-table-col-small) + var(--ui-table-col-medium) * 5); }
  .ui-table--employees-readonly { min-width:calc(var(--ui-table-col-small) + var(--ui-table-col-medium) * 4); }
+ .ui-table--contracts { min-width:calc(var(--ui-table-col-small) * 2 + var(--ui-table-col-medium) * 3 + var(--ui-table-col-large)); }
+ .portal-app .ui-main .ui-table .ui-table-link { display:flex; align-items:center; min-height:var(--ui-target-min); max-width:100%; white-space:normal; overflow-wrap:anywhere; color:var(--ui-link); text-decoration:underline; text-underline-offset:.2em; }
+ .ui-table-link:focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:var(--ui-focus-offset); }
  .ui-badge { display:inline-flex; align-items:center; gap:var(--ui-space-1); min-height:var(--ui-space-6); padding:var(--ui-space-1) var(--ui-space-2); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-pill); background:var(--ui-surface-raised); color:var(--ui-text); font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); white-space:nowrap; }
  .ui-badge .ui-icon { width:var(--ui-icon-small); height:var(--ui-icon-small); flex:none; }
  .ui-badge--success { background:var(--ui-success-bg); color:var(--ui-success-text); border-color:var(--ui-success-border); }

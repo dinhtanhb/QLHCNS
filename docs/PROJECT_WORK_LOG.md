@@ -1,24 +1,90 @@
 # Nhật ký công việc IHRMS
 
-## 2026-10-13 ? Ho?n thi?n Dashboard ??t 1 sau review
+Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
-**M?c ti?u:** s?a c?c ph?n review y?u c?u, tr?n main. ??u l??t fetch origin/main th?nh c?ng, ahead 0/behind 0. D?ng UI UX Pro Max. Kh?ng l?m ??t 2, kh?ng ??i model, migration, quy?n, form, CSRF, logic l??ng/ngh?/duy?t ho?c gi?y HCNS. M?t commit ui: dashboard phase 1 follow-up; kh?ng push, kh?ng deploy.
+## 2026-10-13 — Làm sạch nhật ký và bàn giao mã nguồn
 
-**Th? v? li?n k?t:** ch? b? th? c? khi kh?i m?i ready/empty, c? c?ng s? ??m. Active c? so v?i Active m?i, kh?ng so v?i t?ng g?m th? vi?c/ngh? d?i h?n. H?ng ch? ngh? c? so v?i ??ng t?ng Pending c?a selector. Partial/error/thi?u kh?i ho?c s? kh?c gi? th?; s? kh?c ??i nh?n t?ng quan c?. Gi? ?? xu?t tuy?n d?ng, t?i li?u, c?ng vi?c, t?i s?n v? checklist. C?c kh?a context c? kh?ng b? ??i. M?t s? kh?a c? ch?a ???c view cung c?p s?; th? fallback gi? Ch?a c? d? li?u, kh?ng gi? th?nh 0. B? link hr_employee_list c?a t?ng Active/global/ph?ng v? danh s?ch ch? c? h?p ??ng v? kh?ng c? b? l?c tr?ng th?i t??ng ?ng. Kh?ng g?n link g?n ??ng. Ghi ch? managed/Active: G?m c? h? s? ch?a c? h?p ??ng; danh s?ch H? s? nh?n vi?n ch? hi?n h? s? ?? c? h?p ??ng. Manage HR c? ghi ch? C? N h? s? ch?a c? h?p ??ng v? link t?o h?p ??ng c?; m?t COUNT/EXISTS ri?ng, kh?ng t?i h? s? ?? ??m. Ng??i kh?ng c? quy?n kh?ng tr? truy v?n ho?c ghi ch? n?y. Gi? tr? 0 c? state ready.
+**Yêu cầu/phạm vi:** làm sạch nhật ký, tạo bản sao review, commit và push. Chỉ làm trên `main`; đầu lượt fetch `origin/main` thành công, ahead 1/behind 0, HEAD `9eba8cadf3d9e2a239c7a8582e22b63fc7e2114d`. Gom 26 tệp liên quan còn chờ của Dashboard/chi tiết KPI/bảng hợp đồng/tìm kiếm/demo/kiểm thử và tài liệu. Giữ `design-system/reference/` chưa theo dõi ngoài commit; không đụng dữ liệu vận hành hoặc tài khoản demo.
 
-**Ph?m vi commit:** gi? c?c ch?nh s?a Dashboard v? icon v? b? c?c ?ang c? v? thu?c ph?n ho?n thi?n UI. URL/trang chi ti?t KPI v? tham s? GET t? l??t tr??c v?n nguy?n trong working tree nh?ng kh?ng ??a v?o commit n?y; kh?ng th?m route/filter trong b?n commit. Gi? ngo?i commit AGENTS.md, b? sung ??c t? l??t tr??c, b?ng h?p ??ng l??t tr??c, runner tr?nh duy?t l??t tr??c, reference v? nh?t k? c?. core.py ch? b? vi?c lo?i to?n b? nh?m qu?n tr?; dashboard_data.py ch? state/ghi ch?/count v? icon, gi? route hi?n c?. B?n m? stage ?? ???c xu?t ra TEMP/committed-source-test ?? ki?m tra ??ng n?i dung s? commit; kh?ng t?o nh?nh hay ghi ?? working tree.
+**Nhật ký:** sửa mục Hoàn thiện Dashboard Đợt 1 mất dấu thành tiếng Việt UTF-8, chuẩn hóa tiêu đề ngày dd/mm/yyyy sang ISO, sửa dấu phân cách tiêu đề Word, chuyển ba tiểu mục công cụ/hướng dẫn thành heading cấp 3 của mục tương ứng; xếp 116 mục lịch sử theo ngày mới đến cũ và chuẩn hóa dòng trống. Đối chiếu từng dòng nội dung lịch sử ngoài mục lỗi: giữ đủ, không xóa kết quả/giới hạn/lệnh kiểm tra. Bản gốc trước dọn tại `D:/QLHCNS-Backups/PROJECT_WORK_LOG_before_cleanup_20261013.md`, ngoài Git; không đưa bản gốc này vào ZIP review.
 
-**Ba trang:** h? s? nh?n vi?n, b?ng c?ng v? Trung t?m b?o c?o d?ng th?nh ph?n/token ui. T?o h?p ??ng m?i v? li?n k?t l?ch s? c? v?ng b?m/focus. B?ng c?ng gi? field, action, th? t? c?t, ng?y/status nghi?p v?; s?a kh?i b?c ?? kh?ng tr?n 360 px. Trung t?m b?o c?o d?ng page_header/card/button, SVG thay emoji. C?c href t?i Excel, s? c?ng v?n v? link qu?n tr? gi? nguy?n; ki?m HTML tr??c/sau kh?p. ?o class Tailwind c?/hex/emoji trong ba t?p: 29/132/158 match tr??c, ??u 0 sau (l?nh venv/Scripts/python.exe TEMP/ihrms-followup-style-audit.py, exit 0; style-audit.json, regex thu?c t?nh class v? Unicode codepoint ngo?i Git). C?c l?n d? ??u l?i encoding shell ???c s?a, kh?ng d?ng l?m b?ng ch?ng. Kh?ng ??i template HCNS. C? ch? ki?m tr?n m?n h?nh, kh?ng ??i c? in 9 pt c? s?n c?a b?ng c?ng.
+**Bản sao review:** `D:/QLHCNS-Backups/IHRMS_Review_20261013_Search_Dashboard.zip`, xuất toàn bộ mã nguồn đã stage theo `git ls-files` và blob index; manifest `REVIEW_SNAPSHOT.txt` ghi parent commit, tree ID, branch, danh sách loại trừ và SHA-256 từng tệp. Có 610 tệp nguồn được chọn từ 617 tệp theo dõi, loại 7 tệp runtime/đầu ra. Không kèm `.env` (giữ `.env.example`), database, media/uploads, log, CSV tài khoản, credentials/secret demo hoặc lịch sử Git. Quy trình bàn giao mở lại ZIP, kiểm số entry và đối chiếu hash từng tệp; SHA-256 ZIP được ghi trong file `.sha256` bên cạnh và báo cùng kết quả bàn giao. Đây là bản mã nguồn review, không phải bản sao phục hồi database/media. ZIP và commit dùng cùng tree; kết quả đối chiếu cuối được lưu ngoài repo tại `IHRMS_Review_20261013_Search_Dashboard.verification.json`.
 
-**Truy v?n:** ch?y l?i 8 role x linked/unlinked tr?n c? hai backend. SQL Server: EMPLOYEE 4 -> 4 v? 8 -> 8; DEPT_MANAGER 4 -> 4 v? 11 -> 11; HR_OFFICER 9 -> 10 v? 13 -> 14; HR_MANAGER 13 -> 13 v? 17 -> 17; DIRECTOR 11 -> 10 v? 15 -> 14; FINANCE_OFFICER 4 -> 4 v? 8 -> 8; SYS_ADMIN 4 -> 4 v? 8 -> 8; SUPER_ADMIN kh?ng c? 5 -> 5 v? 9 -> 9. Tr??c ghi ch? l? ngu?n tr??c thay ??i COUNT/skip NULL d?ng c?ng fixture trong test, kh?ng l?y s? l??t tr??c. L??t SQL ??u t?ng l?n 18 SELECT; ?? b? ph?p ??m WHERE DepartmentID IS NULL khi model/schema b?t bu?c ph?ng ban. K?t qu? v?n l? 0; khi field nullable v?n gi? ph?p ??m c?. Kh?ng ??i model ho?c c?ng th?c. Ghi ch? v?n th?m m?t COUNT r? cho manage_hr, b? l?i m?t SELECT kh?ng th? c? k?t qu? ? ng??i ???c xem ??nh bi?n; max SQL cu?i 17. SQLite cu?i: HR Manager 12 -> 12 (ch?a h? s?), 16 -> 16 (c? h? s?); Director 10 -> 9 v? 14 -> 13; HR Officer 8 -> 9 v? 12 -> 13. Vai tr? kh?c kh?ng t?ng, max 16. SQL Server c? th?m SELECT ki?m tra transaction c?a backend n?n s? t?ng cao h?n 1. Kh?ng tr? c?u n?y kh?i m?c ?? b?o. Kh?ng N+1. Ba trang tr?n SQLite: h? s? 18 -> 18, b?ng c?ng 15 -> 15, b?o c?o 13 -> 13; SQL Server: 19 -> 19, 16 -> 16, 14 -> 14 SELECT c? render. Template c? n?p t? TEMP b?ng locmem, kh?ng thay t?p th?t. Test Active hai ngu?n so c?/kh?ng k? ho?ch, 0 ng??i, ?? x?a, Probation/OnLeave/Resigned. DepartmentID kh?ng nullable ? schema hi?n t?i; tr??ng h?p ng??i kh?ng ph?ng ki?m nh?nh nullable b?ng count stub, kh?ng t?o record sai ho?c ??i schema.
+**Kiểm tra:** `git diff --check` và `git diff --cached --check`; xác nhận UTF-8/không còn mục mất dấu/giữ nguyên nội dung lịch sử ngoài phần sửa. Đọc lại bằng chứng JSON của nguồn ứng dụng đã kiểm ở đợt trước: demo 42 kiểm tra, SQLite/SQL Server mỗi backend 399 kiểm tra và 32 ảnh, `errors=[]`, DB dùng một lần đã hủy; các kết quả 29 test mỗi backend nằm trong mục đợt đó. Lượt này chỉ sửa nhật ký, không thay mã ứng dụng sau kiểm thử nên không chạy lại luồng nghiệp vụ để tránh tạo bằng chứng lặp không cần thiết. Không dùng full suite của commit cũ để kết luận toàn bộ nguồn mới đã chạy full suite. Kiểm tra stage/ZIP không có runtime hoặc bí mật trước bàn giao.
 
-**Test m?i:** test_dashboard_followup.py c? gi?/b?/??i nh?n, zero ready, ghi ch? ??ng s?/quy?n, ba template kh?ng class c?/hex/emoji, href v? query kh?ng t?ng, hai ngu?n Active v? query matrix. Probe ch?y m? HEAD tr??c s?a trong memory x?c nh?n 3 assertion th?t b?i nh? mong ??i: zero state, link directory l?ch, th? tr?ng c?n gi?. Probe exit 0 ngh?a ph?t hi?n ?? 3 l?i, kh?ng ngh?a m? c? ??t. C?p nh?t test nh?n/cache/component theo UI hi?n t?i; full ??u t?ng c?n nh?n/cache c?, ch?a d?ng k?t qu? ?? b?o ??t.
+**Git/bàn giao:** commit dự kiến `feat(portal): add scoped search and Atoms dashboard demo`, chứa mã nguồn đã kiểm và nhật ký đã dọn; sau đó `git push origin main`, đối chiếu SHA local với `git ls-remote origin refs/heads/main` và ahead/behind. SHA commit/tree thực tế cùng kết quả remote được ghi trong manifest/báo cáo kiểm chứng và câu trả lời bàn giao, tránh tự tham chiếu SHA trong chính commit. Nếu push lỗi phải ghi rõ lỗi và xử lý trước khi báo hoàn tất; không deploy. Chủ dự án có thể dùng ZIP review và bản demo đang chạy như hướng dẫn trong mục trước; CI và UAT phiên trình duyệt của chủ dự án chưa được xác nhận trong lượt này.
 
-**K?t qu? cu?i:** bản stage cuối sau guard giảm SELECT, xuất mã vào TEMP/ihrms-followup-20261013/committed-source-test. Lệnh venv/Scripts/python.exe TEMP/ihrms-followup-index-runner.py --backend sqlite (wrapper gọi ops/run_tests.py của đúng bản stage): 477 test, OK (7 skip), 539.332 s, exit 0; --backend sqlserver: 477/477 OK, không skip, 568.401 s, exit 0. Log TEMP/ihrms-followup-delivery-full-sqlite.log và ihrms-followup-delivery-full-sqlserver.log. DB/media riêng, M365 off, APP_ENV=test; SQL kết nối được lấy trong memory để tạo DB dùng một lần, không ghi bí mật ra file. Test mới và dashboard/mobile focused cùng wrapper + nhãn apps.portal.test_home_dashboard apps.portal.test_dashboard_followup apps.portal.tests_mobile đạt 26/26 SQLite trước guard và 26/26 SQL Server trên guard cuối, exit 0. Full cuối chạy lại cả nhãn trên; không dùng kết quả full trước guard. Lệnh venv/Scripts/python.exe TEMP/ihrms-followup-index-gates.py gọi Django check/makemigrations --check --dry-run và ops/check_ui_contrast.py trên bản stage: exit 0, không migration, 190 cặp/0 lỗi. venv/Scripts/python.exe -m pip check exit 0. git diff --check và git diff --cached --check exit 0. Không có file .env/database/media trong stage.
+## 2026-10-13 — Tìm kiếm dùng chung và dữ liệu demo Dashboard Atoms
 
-**Giao di?n:** Edge headless trên HTML Django render từ fixture giả, đúng bản stage sau guard cuối. Lệnh venv/Scripts/python.exe -u TEMP/ihrms-followup-index-ui.py: exit 0, 80 ảnh/401 checks, không pageerror; kết quả ui-delivery-final/ui-result.json, ảnh cùng thư mục dưới TEMP/ihrms-followup-20261013. 5 Trang chủ (HR Manager, HR Officer, Trưởng phòng, Giám đốc, Nhân viên) +3 trang sửa x1920/1440/1024/768/360 x light/dark. Không page overflow, control >=44 px, chữ màn hình >=14 px, Tab focus và reduced-motion; link directory của tổng rộng bị bỏ, số trùng loại theo trạng thái/định nghĩa bằng test backend. Đã xem ảnh báo cáo dark và bảng công 360 light, xem lại ảnh Trang chủ/detail bản stage cuối. Lệnh TEMP/ihrms-followup-role-pages.py trên fixture riêng: exit 0, 3 trang x8 role trả đúng 200/403/404 theo guard cũ, không nới quyền. Các lần probe lỗi selector/DisallowedHost/overflow được sửa; không lấy kết quả lỗi báo đạt. Chưa chứng nhận WCAG; đây là HTML fixture và Edge riêng, không UAT tài khoản thật.
+**Phạm vi:** theo yêu cầu tạo ô tìm kiếm toàn app và tài khoản/hợp đồng giả để kiểm KPI, biểu đồ. Dùng UI UX Pro Max; tiếp tục trên `main`, đầu lượt fetch `origin/main` thành công, ahead 1/behind 0. Giữ toàn bộ thay đổi cục bộ có sẵn; lượt này chưa commit/push/deploy. Không đổi schema, quyền, cách tính KPI, hợp đồng hay quy trình duyệt.
 
-**C?n m?:** middleware ghi django_session khi GET, selector Pending c? h? s? cha ?? x?a v? b? l?c ch?a c? h?p ??ng l? ngo?i ph?m vi, ch? ghi nh?n. C?c guard/quy?n hi?n c? ???c gi?; role pages test b?o 200/403/404 theo ??ng ngu?n c?, kh?ng n?ng quy?n ?? ??t UI. Ch?a screen reader, zoom 200% th?c t?, UAT t?i kho?n th?t ho?c CI theo SHA. Kh?ng push n?n kh?ng k?ch ho?t CI c?a commit n?y. Ch? d? ?n Ctrl+F5 Trang ch? v?i HR Manager, HR Officer, Tr??ng ph?ng, Gi?m ??c; quy?t ??nh c? c?n b? l?c ch?a c? h?p ??ng v? c? push kh?ng. SHA commit ???c ghi v?o m?c n?y khi commit ho?n t?t v? b?o ? b?n giao.
+**Mã đã sửa:** `views/search.py`, `urls.py`, facade views, `global_search.html`, `base.html`, `_shell_icon.html`, `context_processors.py`, `app_shell.css`; tìm kiếm chung tên/mã/email nhân viên và trang chức năng được phép mở. Scope toàn Trung tâm/phòng quản lý/chính mình được áp trước truy vấn; không tìm định danh nhạy cảm/lương/nội dung đơn. Tối thiểu 2, tối đa 100 ký tự; tối đa 20 nhân viên, có thông báo thu hẹp nếu còn kết quả; escape HTML, chỉ GET, yêu cầu đăng nhập và no-store. Tìm kiếm không phải tìm toàn văn mọi bản ghi của mọi phân hệ. Không thêm truy vấn cho header ngoài trang kết quả.
+
+**Dashboard:** `_headcount_chart.html`, `_contract_distribution.html`, `dashboard_data.py`, `home_dashboard.css`, `dashboard.html`; nhóm có màu riêng, tên/số/ký hiệu và bảng thay thế, thanh tỷ trọng hợp đồng, thực tế/kế hoạch cùng thang đo, hai khối cân chiều rộng, hiển thị đủ 6 phòng demo. Bỏ ghi chú hồ sơ chưa hợp đồng khi số là 0. Bump cache stylesheet/service worker. Giữ KPI thử việc: quỹ lương, xu hướng và tỷ lệ có mặt trong ảnh mẫu chưa có chính sách/nguồn được duyệt. Cập nhật bổ sung phạm vi trong đặc tả.
+
+**Demo cách ly:** `ops/dashboard_demo.py` từ chối ghi đè thư mục không rỗng và không tạo runtime trong repository; luôn chọn SQLite `synthetic.sqlite3` riêng, media/log/email riêng, M365 tắt, server chỉ bind loopback, có banner dữ liệu giả. Đã tạo `%TEMP%/ihrms-atoms-demo-20261013`: 22 nhân viên, 6 phòng, 4 loại/27 hợp đồng, các trạng thái Draft/Active/Expired/Terminated và biên hôm nay/7/30/60 ngày, quá hạn, bắt đầu tương lai; 6 tài khoản vai trò, 2 đơn nghỉ Approved hôm nay và 2 Pending. KPI ngày 13/10/2026: managed 22, Active 17, Approved 2, Probation 3; 22 hợp đồng hiệu lực. Credentials, secret, database và media ở thư mục demo ngoài Git, không ghi vào nhật ký. Chưa sửa/xóa dữ liệu vận hành.
+
+**Cách review:** server demo đang chạy tại `http://127.0.0.1:8766/portal/`; đăng nhập `demo-hr`, mật khẩu đọc tại `%TEMP%/ihrms-atoms-demo-20261013/DEMO_ACCOUNTS.txt`. Các role khác cùng file. Khi cần chạy lại: `venv/Scripts/python.exe ops/dashboard_demo.py serve --directory "$env:TEMP/ihrms-atoms-demo-20261013" --port 8766`. Tạo bản mới dùng `create` với một thư mục ngoài repo chưa có dữ liệu. Demo giữ lại cho review; ngày hiệu lực là ngày thực tế nên số có thể thay đổi khi mở vào ngày khác, đối chiếu `DEMO_EXPECTATIONS.json` với ngày tạo.
+
+**Kiểm tra trên nguồn cuối:** `venv/Scripts/python.exe "$env:TEMP/ihrms-ui-refinements-20261013/runner.py" --backend sqlite apps.portal.test_global_search apps.portal.test_home_dashboard apps.portal.test_dashboard_drilldown apps.portal.test_dashboard_followup apps.portal.test_ui_refinements`: 29/29 đạt. Wrapper chuyển log ra TEMP và gọi `ops/run_tests.py`, DB/media cách ly. `py_compile` các runner/search/tests và `git diff --check` đạt. `test_global_search.py` kiểm đăng nhập/GET, phạm vi theo role, email, tên chức năng không dấu, route resolve, xóa mềm, escape/no-store, giới hạn ký tự và 20 kết quả.
+
+**Edge live demo:** `venv/Scripts/python.exe ops/run_dashboard_demo_uat.py --directory "$env:TEMP/ihrms-atoms-demo-20261013" --packages-dir "$env:TEMP/ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/packages"`: 42 kiểm tra đạt, 10 ảnh, không lỗi JavaScript. Đăng nhập thật 6 role, email search scope, mở điểm đến tìm kiếm hợp đồng, 4 KPI đối chiếu số/điểm đến, 6 phòng/4 loại/thanh tỷ trọng; 360/390/768/1024/1440 px × sáng/tối, không tràn ngang, gửi tìm kiếm bằng bàn phím. Bằng chứng `browser-result.json` và `screenshots/` trong thư mục demo; đã xem ảnh desktop sáng và mobile tối. Playwright chỉ cài trong TEMP, không thêm dependency dự án.
+
+**SQL Server và hồi quy nghiệp vụ — kết quả cuối:** cùng lệnh 29 test ở trên đổi `--backend sqlserver`: 29/29 đạt, 285,182 giây, database SQL Server riêng đã hủy. Edge live chạy `venv/Scripts/python.exe ops/run_browser_uat.py --backend sqlite --packages-dir "$env:TEMP/ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/packages" --output-dir "$env:TEMP/ihrms-search-live-uat-sqlite-20261013"` và cùng lệnh đổi `--backend sqlserver`, output `ihrms-search-live-uat-sql-final-20261013`: mỗi backend 399 kiểm tra/32 ảnh đạt, `errors=[]`, bước cuối `No uncaught browser JavaScript errors`, `db_destroyed=true`, không Traceback ở log cuối. Có đăng nhập thật/CSRF, tạo hồ sơ rồi hợp đồng, nhập số Việt Nam lưu chuẩn, tên dài không đè cột, dropdown hồ sơ, 4 KPI/scope/ngày/điểm đến, 5 độ rộng × sáng/tối trên Dashboard/hợp đồng/nhân viên, gửi đơn nghỉ rồi duyệt qua dialog; kiểm DB lưu đúng và một lần, queue tăng sau gửi/giảm sau duyệt, 17 trường hợp tài khoản linked/unlinked/superuser và link được đọc, không tiền trên Dashboard. Demo review giữ nguyên; chỉ DB/media hồi quy dùng một lần được cách ly.
+
+**Các lần chạy chưa đạt và sửa runner:** lần đầu `[name=q]` trùng giữa header và bộ lọc nhân viên, đổi thành `main [name=q]`. Lần tiếp theo kiểm tra cũ đòi hai biểu đồ rộng bằng nhau; cập nhật assertion tỷ lệ 1,2:1 theo bố cục Atoms vừa triển khai. Hai lần chưa đạt đã hủy DB, không dùng làm bằng chứng hoàn tất. Chạy lại cuối trên cả hai backend đạt như trên. PowerShell chuyển logging stderr của Python thành `NativeCommandError` khi dùng `> log 2>&1`, khiến exit của shell là 1 dù script hoàn tất: đã tái hiện bằng một Python chỉ in stderr, xác nhận `$LASTEXITCODE=0` trong probe và cùng lệnh không có Write-Output trả shell 1. Vì vậy dùng kết quả assertion/JSON cuối + không Traceback, không coi nhãn lỗi redirection là lỗi nghiệp vụ; khi chạy lại qua PowerShell nên in/lấy `$LASTEXITCODE` ngay sau Python và `exit $LASTEXITCODE` để bảo toàn exit native.
+
+**Giới hạn:** `cua.getState()` lỗi `failed to write kernel assets: The system cannot find the path specified. (os error 3)`; chưa UAT phiên trình duyệt đang mở của chủ dự án. Bằng chứng trên là Edge tự động trên ứng dụng thật với dữ liệu giả cách ly. Không tuyên bố đã chạy toàn bộ suite hoặc CI trong lượt này. Các thẻ fallback cũ chưa có nguồn vẫn hiện “Chưa có dữ liệu”; không bịa số để khớp ảnh Atoms.
+
+## 2026-10-13 — Hoàn thiện Dashboard Đợt 1 sau review
+
+**Mục tiêu/phạm vi:** sửa các phần review yêu cầu trên main; đầu lượt fetch origin/main thành công, ahead 0/behind 0. Dùng UI UX Pro Max. Không làm Đợt 2, không đổi model, migration, quyền, form, CSRF, logic lương/nghỉ/duyệt hoặc giấy HCNS. Commit `ui: dashboard phase 1 follow-up`; tại thời điểm ghi mục này chưa push/deploy.
+
+**Thẻ và liên kết:** chỉ bỏ thẻ cũ khi khối mới ready/empty và cùng số đếm. So Active cũ với Active mới, không so với tổng gồm thử việc/nghỉ dài hạn; hàng chờ nghỉ so đúng tổng Pending của selector. Partial/error/thiếu khối hoặc số khác thì giữ thẻ; số khác đổi nhãn “theo tổng quan cũ”. Giữ đề xuất tuyển dụng, tài liệu, công việc, tài sản và checklist; các khóa context cũ không đổi. Khóa chưa được view cung cấp số vẫn hiện “Chưa có dữ liệu”, không giả thành 0. Bỏ link hr_employee_list của tổng Active/global/phòng vì danh sách yêu cầu hợp đồng và không có bộ lọc trạng thái tương ứng. Ghi rõ managed/Active gồm cả hồ sơ chưa có hợp đồng. Manage HR có ghi chú số hồ sơ chưa có hợp đồng và link tạo hợp đồng; một COUNT/EXISTS riêng, không tải hồ sơ để đếm; người không có quyền không nhận truy vấn/ghi chú này. Giá trị 0 có state ready.
+
+**Phạm vi commit:** gồm chỉnh Dashboard/icon/bố cục và ba trang đã hoàn thiện UI. URL/trang chi tiết KPI và tham số GET từ lượt trước được giữ trong working tree, chưa đưa vào commit này. AGENTS.md, bổ sung đặc tả, bảng hợp đồng, runner trình duyệt, reference và nhật ký cũ giữ ngoài commit. core.py chỉ bỏ việc loại toàn bộ nhóm quản trị; dashboard_data.py chỉ sửa state/ghi chú/count/icon, giữ route hiện có. Xuất bản stage vào TEMP/committed-source-test để kiểm đúng mã sẽ commit; không tạo nhánh hoặc ghi đè working tree.
+
+**Ba trang:** hồ sơ nhân viên, bảng công và Trung tâm báo cáo dùng component/token ui. Tạo hợp đồng và liên kết lịch sử có vùng bấm/focus. Bảng công giữ field/action/thứ tự cột/ngày/status, sửa khối bọc tránh tràn 360 px. Báo cáo dùng page_header/card/button và SVG thay emoji; href Excel/sổ công văn/quản trị giữ nguyên, HTML trước/sau khớp. Quét class Tailwind cũ/hex/emoji: 29/132/158 match trước, đều 0 sau (`venv/Scripts/python.exe TEMP/ihrms-followup-style-audit.py`, exit 0; style-audit.json, regex thuộc tính class và Unicode codepoint ngoài Git). Lỗi encoding shell ban đầu đã sửa, không dùng làm bằng chứng đạt. Không đổi template HCNS; giữ cỡ in 9 pt của bảng công, chỉ kiểm màn hình.
+
+**Truy vấn:** 8 role × linked/unlinked trên cả hai backend. SQL Server: EMPLOYEE 4 → 4 và 8 → 8; DEPT_MANAGER 4 → 4 và 11 → 11; HR_OFFICER 9 → 10 và 13 → 14; HR_MANAGER 13 → 13 và 17 → 17; DIRECTOR 11 → 10 và 15 → 14; FINANCE_OFFICER 4 → 4 và 8 → 8; SYS_ADMIN 4 → 4 và 8 → 8; SUPER_ADMIN 5 → 5 và 9 → 9. Baseline lấy từ nguồn trước COUNT/skip NULL trên cùng fixture, không lấy số lượt trước. Lần đầu SQL tăng 18 SELECT; bỏ phép đếm DepartmentID IS NULL khi schema bắt buộc phòng ban. Khi nullable vẫn giữ phép đếm cũ; không đổi model/công thức. Ghi chú thêm một COUNT cho manage_hr, bù một SELECT không thể có kết quả ở người được xem định biên; max SQL cuối 17. SQLite: HR Manager 12 → 12 (chưa gắn hồ sơ), 16 → 16 (đã gắn); Director 10 → 9 và 14 → 13; HR Officer 8 → 9 và 12 → 13; vai trò khác không tăng, max 16. SQL có thêm SELECT kiểm tra transaction, vẫn tính trong báo cáo; không N+1. Ba trang SQLite: hồ sơ 18 → 18, bảng công 15 → 15, báo cáo 13 → 13; SQL: 19 → 19, 16 → 16, 14 → 14 gồm render. Template cũ nạp từ TEMP bằng locmem, không thay tệp thật. Test Active hai nguồn có/không kế hoạch, 0 người, đã xóa, Probation/OnLeave/Resigned; nhánh nullable kiểm bằng count stub vì DepartmentID thực tế không nullable, không tạo record sai.
+
+**Test mới:** test_dashboard_followup.py kiểm giữ/bỏ/đổi nhãn, zero ready, ghi chú đúng số/quyền, ba template không class cũ/hex/emoji, href/query không tăng, hai nguồn Active và query matrix. Probe mã HEAD trước sửa trong memory phát hiện đúng 3 assertion lỗi: zero state, link directory lệch, thẻ trùng còn giữ. Probe exit 0 là phát hiện đủ lỗi, không phải mã cũ đạt. Cập nhật test nhãn/cache/component theo UI; full đầu còn nhãn/cache cũ chưa được dùng để báo đạt.
+
+**Kết quả cuối:** bản stage sau guard giảm SELECT ở TEMP/ihrms-followup-20261013/committed-source-test. `venv/Scripts/python.exe TEMP/ihrms-followup-index-runner.py --backend sqlite` gọi ops/run_tests.py của bản stage: 477 test, OK (7 skip), 539.332 s, exit 0; đổi `--backend sqlserver`: 477/477 OK, không skip, 568.401 s, exit 0. Log TEMP/ihrms-followup-delivery-full-sqlite.log và ihrms-followup-delivery-full-sqlserver.log. DB/media riêng, M365 off, APP_ENV=test; SQL connection lấy trong memory để tạo DB dùng một lần, không ghi bí mật ra file. Cùng wrapper với nhãn apps.portal.test_home_dashboard apps.portal.test_dashboard_followup apps.portal.tests_mobile: 26/26 SQLite trước guard, 26/26 SQL Server trên guard cuối, exit 0; full cuối chạy lại các nhãn đó. `TEMP/ihrms-followup-index-gates.py` chạy Django check/makemigrations --check --dry-run và ops/check_ui_contrast.py: exit 0, không migration, 190 cặp/0 lỗi. pip check, git diff --check và git diff --cached --check đạt; stage không có .env/database/media.
+
+**Giao diện:** Edge headless trên HTML Django render từ fixture giả, đúng stage cuối. `venv/Scripts/python.exe -u TEMP/ihrms-followup-index-ui.py`: exit 0, 80 ảnh/401 checks, không pageerror; ui-delivery-final/ui-result.json dưới TEMP/ihrms-followup-20261013. Năm Trang chủ (HR Manager, HR Officer, Trưởng phòng, Giám đốc, Nhân viên) và ba trang sửa × 1920/1440/1024/768/360 × light/dark. Không overflow; control ≥44 px, chữ màn hình ≥14 px, Tab focus và reduced-motion. Đã xem ảnh báo cáo dark, bảng công 360 light, Trang chủ/detail stage cuối. TEMP/ihrms-followup-role-pages.py: exit 0, ba trang × tám role trả đúng 200/403/404 theo guard cũ, không nới quyền. Probe lỗi selector/DisallowedHost/overflow đã sửa; không dùng kết quả lỗi báo đạt. Đây là HTML fixture và Edge riêng, chưa UAT tài khoản thật hoặc chứng nhận WCAG.
+
+**Còn mở/commit:** middleware ghi django_session khi GET, selector Pending có hồ sơ cha đã xóa và bộ lọc chưa hợp đồng nằm ngoài phạm vi. Chưa screen reader, zoom 200%, UAT tài khoản thật hoặc CI theo SHA. Chủ dự án Ctrl+F5 Trang chủ với các vai trò HR Manager, HR Officer, Trưởng phòng, Giám đốc; quyết định bộ lọc chưa hợp đồng và push. Commit `9eba8cadf3d9e2a239c7a8582e22b63fc7e2114d`; main ahead 1/behind 0 sau commit, lúc đó chưa push. Đối chiếu hash 601 tệp commit với nguồn đã chạy full suite khớp (ngoại trừ nhật ký bổ sung sau test). SHA được ghi vào working tree sau commit để giữ một commit duy nhất của đợt đó. Các yêu cầu push về sau được ghi trong mục bàn giao tương ứng.
+
+## 2026-10-13 — Tinh gọn Dashboard và mở chi tiết bốn KPI nhân sự
+
+**Phạm vi:** theo yêu cầu mới, main b0954e5, fetch origin/main đầu lượt ahead/behind 0/0. Dùng UI UX Pro Max, giữ toàn bộ thay đổi chưa commit lượt kiểm thử trước và reference. Tinh gọn Dashboard Đợt 1, icon và liên kết chi tiết; không mở tiền/lịch sử giả, không đổi tính lương/phép/quyền, model/migration/HCNS. Chưa commit/push đợt này.
+
+**Giao diện:** dashboard.html và các partial gom công thức/nguồn dài vào Cách tính chỉ số/Phạm vi dữ liệu, bỏ mô tả kỹ thuật lặp dưới từng KPI; giữ ngày/phạm vi ở đầu, đơn vị/legend/0 và thiếu kế hoạch rõ. Bảng loại hợp đồng nằm trong disclosure để không lặp thông tin biểu đồ, có table truy cập bàn phím. home_dashboard.css thu khoảng đệm/chiều cao KPI, hai cột biểu đồ bằng nhau, thanh định biên gọn, vùng danh sách hợp đồng dài cuộn có focus. Không hiện riêng nhóm quá hạn rỗng. Cột phải gồm Việc cần xử lý + Checklist + Thao tác nhanh qua _quick_actions.html, tránh khoảng trắng lớn cạnh danh sách hợp đồng. Khu Công việc của tôi giữ hai cột cân bằng. Icon KPI people/briefcase/calendar/person, checklist/checklist, khối hợp đồng/contract và phân bố/pie, thêm SVG trong _shell_icon.html. home_presentation truyền icon theo nội dung; bump CSS version/service worker v11.
+
+**Chi tiết KPI:** dashboard_data.py dùng chung dashboard_employee_scope cho card và selector đích; metric icon/href thực. Route portal:dashboard_people ở /portal/dashboard/people/, core.py + dashboard_people.html, metric managed/active/approved/probation và on_date ISO. managed Active+Probation+OnLeave, active/Probation trạng thái hiện tại, approved distinct người có đơn Approved bao gồm ngày chọn (không lấy lý do/chứng từ/lương). view_all_employees global; DEPT_MANAGER linked chỉ phòng quản lý; approved thêm view_reports. GET chỉ đọc, search tên/mã, pagination giữ metric/on_date/q, sai metric/ngày 400, không quyền 403, department giả không mở scope. Khi có quyền hồ sơ, link tên sang chi tiết có sẵn. Đây là danh sách thống kê đúng người KPI đã tính, không đổi điều kiện hợp đồng của Nhân viên & hồ sơ; không liên kết KPI tới danh sách có số khác. Thêm test_dashboard_drilldown.py cho count/đích, không hợp đồng, Approved trùng, ngày, scope/quyền, tìm kiếm và phân trang. Bổ sung mục 14 đặc tả theo chính yêu cầu mới; không thay công thức duyệt trước.
+
+**Kiểm thử backend trên nguồn cuối:** wrapper TEMP/ihrms-ui-refinements-20261013/runner.py gọi ops/run_tests.py --backend sqlite apps.portal.test_home_dashboard apps.portal.test_dashboard_drilldown apps.portal.tests_mobile: 24/24 OK, exit 0, log TEMP/ihrms-dashboard-balanced-focused.log. Cùng nhãn --backend sqlserver: 24/24 OK, exit 0, log ihrms-dashboard-balanced-focused-sqlserver.log. Test dashboard có ma trận role/profile, GET/query budget, lỗi/thiếu/rỗng và biên ngày. py_compile dashboard_data/core/runner, git diff --check đạt; contrast 190 cặp/0 lỗi. Không chạy full suite trong đợt này và không dùng 472 test lượt cũ làm bằng chứng nguồn này.
+
+**Kiểm thử ứng dụng chạy thật/Edge:** ops/run_browser_uat.py trên DB/media dùng một lần, tài khoản giả và POST/CSRF thật. Lượt đầy đủ --backend sqlite/sqlserver với --packages-dir "C:\Users\dinht\AppData\Local\Temp\ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/packages" --output-dir "C:\Users\dinht\AppData\Local\Temp\ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/compact-final-sqlite|compact-final-sqlserver" đều exit 0: mỗi backend 351 checks +32 ảnh, không pageerror, db_destroyed=true. Bao gồm tạo/sửa hồ sơ/hợp đồng, tiền Việt Nam lưu số chuẩn, chỉ số/đích KPI count bằng row, duyệt nghỉ -> queue cập nhật, 17 tài khoản role linked/unlinked +superuser, toàn bộ đích Dashboard HTTP200 cùng tài khoản, không tiền/lộ khối bị chặn; ba trang x 5 rộng x light/dark. Sau khi chuyển Thao tác nhanh/Checklist vào cột phải, chạy thêm chính nguồn cuối `--backend sqlite|sqlserver --layout-only --output-dir "C:\Users\dinht\AppData\Local\Temp\ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/balanced-sqlite|balanced-sqlserver"` cùng packages-dir: mỗi backend 127 checks +32 ảnh, exit 0, không pageerror, db_destroyed=true. Lượt này tạo/sửa hồ sơ/hợp đồng, bấm trực tiếp từng KPI bằng Playwright click, số/row đích đúng 12/10/1/1 trên fixture, 4 card đều link ở mọi rộng/theme, kiểm hai cột biểu đồ bằng nhau và không page overflow. Flag layout-only chỉ bỏ vòng duyệt/17 tài khoản đã chạy đầy đủ; không báo đã chạy lại hai phần đó sau thay vị trí partial. Backend 24 tests đã chạy lại toàn nguồn cuối, gồm render từng role và đích liên kết.
+
+**Bằng chứng/giới hạn:** browser-result.json và screenshots trong bốn thư mục trên, log cùng thư mục cha. Đã xem ảnh balanced-sqlite/dashboard-1440-light.png và ảnh dark/màn hình hẹp tương ứng khi kiểm lại; ảnh trước tinh chỉnh chiều cao không làm bằng chứng bố cục cuối. DB giả được dọn; không sửa/xóa dữ liệu vận hành. Chưa UAT phiên trình duyệt của chủ dự án (lỗi kết nối os error 3 lượt trước), screen reader/zoom/máy in và tất cả workflow khác. Không chứng nhận WCAG toàn ứng dụng, chưa deploy, chưa commit/push. Chủ dự án Ctrl+F5, bấm từng KPI để xem chi tiết; dữ liệu có thể thay đổi giữa lúc mở Dashboard và trang đích nên số được tính lại theo ngày/quyền, không snapshot lịch sử trạng thái.
+
+## 2026-10-13 — Kiểm thử luồng trình duyệt và sửa bảng hợp đồng theo Dashboard Đợt 1
+
+**Yêu cầu/phạm vi:** chủ dự án mở quyền test trình duyệt, cho phép dữ liệu giả và yêu cầu sau mỗi lần sửa code kiểm lại luồng nghiệp vụ/Dashboard theo đặc tả duyệt. Main đầu đợt b0954e5, fetch origin và ahead/behind 0/0. Giữ nguyên 30 dòng nhật ký cũ chưa commit và design-system/reference/ ngoài phạm vi. Dùng UI UX Pro Max; thêm yêu cầu kiểm thử trình duyệt vào AGENTS.md bằng Create Rule. Không thay nghiệp vụ, quyền, model, migration hoặc giấy HCNS; chưa commit/push trong đợt này.
+
+**Tái hiện/sửa:** đăng nhập HR_MANAGER qua Edge, tạo hồ sơ giả tên dài, tạo hợp đồng bằng POST thật/CSRF; lỗi tên nhân viên vượt bounding box ô bảng tái hiện trước sửa (baseline-sqlite-3, assertion Long employee contract link stays inside its table cell). hr_contract_list.html dùng header trái/nút phải, colgroup rõ chiều rộng và ui-table-link xuống dòng trong ô thay ui-button nowrap; shared_components.css giữ vùng bấm 44 px/focus, bảng có scroll trong wrapper ở màn hình hẹp. Đổi phiên bản CSS/base/service-worker v10 và kiểm tra cache tương ứng tests_mobile. Đã xem ảnh sau tạo hợp đồng light, hợp đồng dark SQL Server và Dashboard dark; tên/mã dài không chồng cột Loại.
+
+**Bộ chạy lại:** ops/run_browser_uat.py dựng Django LiveServer + Edge Playwright trên SQL Server database test_ihrms_browser_UUID hoặc SQLite file mới trong TEMP; không dùng DB/media ứng dụng, email locmem, M365 off, mật khẩu giả ngẫu nhiên không ghi log. Chỉ trong process test cho phép ORM tuần tự cạnh sync driver Playwright; không đổi settings ứng dụng. Playwright 1.63.0 cài vào TEMP/packages, không đổi requirements hoặc venv. Cuối lượt đóng server/connection và xóa DB giả; JSON báo db_destroyed. Các lỗi khi dựng runner ban đầu (CCCD fixture quá dài, selector nút trùng nút đăng xuất, ORM/event loop, DepartmentID không nullable và connection SQLite bị giữ) đã sửa trong runner; ba SQLite giả sót ở lượt lỗi đã dọn bằng đường dẫn xác nhận trong TEMP. Không dùng kết quả lượt lỗi làm kết quả đạt.
+
+**Lệnh/kết quả trình duyệt:** `venv/Scripts/python.exe -u ops/run_browser_uat.py --backend sqlite --packages-dir "C:\Users\dinht\AppData\Local\Temp\ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/packages" --output-dir "C:\Users\dinht\AppData\Local\Temp\ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/fixed-sqlite-2"`: exit 0, 298 checks, 32 ảnh, không pageerror, db_destroyed=true. Cùng lệnh `--backend sqlserver --output-dir "C:\Users\dinht\AppData\Local\Temp\ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/fixed-sqlserver"`: exit 0, 298 checks, 32 ảnh, không pageerror, db_destroyed=true. Log fixed-sqlite-2.log/fixed-sqlserver.log và browser-result.json/screenshots trong hai thư mục này. Trình duyệt là Edge headless thật, có HTTP/POST/CSRF và database thật riêng; không HTML tĩnh.
+
+**Các luồng đã đạt:** đăng nhập; tạo hồ sơ -> chưa hợp đồng không trong danh sách -> tạo hợp đồng/nhập 5.000.000 lưu 5000000 -> mở đúng hồ sơ từ hợp đồng -> tìm nhân viên -> Enter/Escape dropdown -> Sửa hồ sơ và đối chiếu DB. Gửi nghỉ phép bằng EMPLOYEE -> ngày nghiệp vụ tính đúng -> Dashboard HR_MANAGER queue 1 -> mở đúng đơn Pending -> dialog xác nhận -> duyệt -> DB Approved/1 LeaveApproval -> queue 0. Kiểm Dashboard fixture độc lập: Active=10, tổng Active+Probation+OnLeave=12, Probation=1, hai Approved cùng người chỉ tính 1; 5 hợp đồng D..D+60, D+61/start tương lai/non-Active loại khỏi nhóm; quá hạn riêng 1; hiệu lực 7 hợp đồng không đếm người, hai loại có donut/bảng; kế hoạch thiếu khác 0, actual/phòng vượt kế hoạch vẫn 450%; GET không sửa status/ngày hợp đồng. Tám role linked/unlinked và superuser (17 tài khoản) giữ gate status/contracts/headcount/profile; không tiền Dashboard; tất cả link render trong Dashboard mở HTTP 200 bằng cùng tài khoản. Ba trang Dashboard/hợp đồng/nhân viên x 5 rộng 1920/1440/1024/768/360 x light/dark không overflow toàn trang; mọi link tên hợp đồng nằm trong ô, cộng 2 ảnh luồng =32 ảnh mỗi backend.
+
+**Kiểm tra backend/khác:** wrapper TEMP/ihrms-ui-refinements-20261013/runner.py gọi ops/run_tests.py với `--backend sqlite apps.portal.test_home_dashboard apps.portal.test_ui_refinements apps.portal.tests_mobile apps.portal.test_hr_ui`: 29/29 OK, 6.483 s, exit 0. Cùng nhãn `--backend sqlserver`: 29/29 OK, 28.524 s, exit 0. Nhãn dashboard gồm ma trận quyền, dữ liệu rỗng/thiếu/lỗi, biên ngày, count không nhân đôi, GET chỉ đọc/query budget/N+1. Không chạy lại full suite trong đợt CSS/template/test runner này; không dùng 472 test đợt trước làm bằng chứng nguồn này. py_compile runner, git diff --check và contrast 190 cặp/0 lỗi đạt; không tuyên bố WCAG toàn ứng dụng.
+
+**Giới hạn/kết nối:** cua.getState và Computer Use @oai/sky qua node_repl đều lỗi failed to write kernel assets / system cannot find path (os error 3), thử reset cua/retry vẫn lỗi. Vì vậy chưa UAT phiên Edge được người dùng cấp quyền; các kiểm tra đã đạt là phiên Edge riêng kể trên. Chưa UAT tương tác có người dùng/zoom/screen reader/máy in, mọi luồng tuyển dụng/kế toán/dự án hoặc Đợt 2/3 chưa triển khai. Không mở policy tiền hay thêm KPI lịch sử. Chủ dự án tải lại Ctrl+F5; để kiểm tiếp tab đang mở, khởi động lại Codex/plugin trình duyệt và chia sẻ lại tab/URL ứng dụng, sau đó kiểm lại kết nối cua.getState. Từ nay mỗi sửa mã chạy luồng ảnh hưởng như AGENTS.md; mở rộng runner cho phân hệ khác khi sửa.
 
 ## 2026-10-13 — Đồng bộ theme, dropdown nhân viên, ô nhập gọn và năm không nhóm số
 
@@ -95,6 +161,18 @@ Mốc đo exit 0; max sau sửa 17 SELECT, dưới 20. Test thêm 100 phòng và
 
 **Bàn giao:** được phép commit riêng `docs: revise dashboard spec` trên `main`; không push/deploy. Chủ dự án đọc mục 1 và chốt Q1–Q8 ở mục 14: thương hiệu, policy tiền, Director đọc hợp đồng, mẫu số có mặt, nguồn lịch sử/ngày tuyển, nghĩa tổng nhân sự, shell/search/ca và các lệch quyền còn lại. Mặc định ẩn/hoãn phần chưa rõ. Dừng trước khi triển khai; không cần người dùng tự chạy lệnh cho lượt tài liệu.
 
+## 2026-10-13 — Đặc tả dashboard tường minh theo Atoms
+
+**Mục tiêu/phạm vi:** theo yêu cầu tham khảo https://r7rc1s.atoms.world/, viết docs/DASHBOARD_ATOMS_TECH_SPEC.md; chưa sửa dashboard hay phân quyền. main, ahead7/behind0 sau fetch origin/main; giữ các mục backup/export chưa commit và reference PNG untracked. Dùng UI UX Pro Max và tài liệu MASTER/token hiện hành; đọc DESIGN tham chiếu tại Downloads/atoms, không ghi đè DESIGN.md dự án.
+
+**Đã làm:** đối chiếu views/core.py/dashboard, home_presentation.py, Employee/Contract/LeaveRequest/Attendance/WorkShift/HeadcountPlan/Payroll/Recruitment và permission matrix/endpoint đích. Đặc tả bố cục4 KPI, lưới7/5, header2 tầng, panel hợp đồng/queue/tuyển dụng/nghỉ phép/timeline và giữ khu vực cá nhân/dự án. Mỗi chỉ số có nhãn/nguồn/công thức/kỳ/scope/state/drill-down. Có DTO/service read-only đề xuất, yêu cầu query/Decimal/cache/performance, role matrix và acceptance cases. Phân biệt source đã có với phần chưa có context/lịch sử; HeadcountPlan có sẵn nhưng không approval state; Gross không là tổng chi phí; Active không là có mặt; hired status không chứng minh đã tạo Employee. Quyền quỹ lương giữ manage_finance; không suy ra quyền lương từ view_reports. Chỉ rõ hr_contract_list chặn DIRECTOR, attendance là cá nhân và filters nhiều route chưa có để tránh link403 hoặc giả drill-down.
+
+**Nguồn/giới hạn:** web.open không đọc được URL; browser tích hợp khởi tạo lỗi thiếu kernel assets (os error3), chưa xem tương tác live. Sau đó Python urllib đọc HTML HTTP200 và bundle công khai /assets/index-CfxoekPe.js, xác nhận tên các khối/route; SHA bundle 0a6e78dadc448d4664a3f7abf9a015f29dd148704d8d5d1be2ca1c2ed29dac11. Tệp nguồn tải về tại TEMP/ihrms-atoms-spec-20261013, ngoài Git. Cấu trúc hình dựa8 ảnh tham chiếu đã có và DESIGN do chủ dự án cung cấp; không tuyên bố đã UAT website live.
+
+**Kiểm tra/kết quả:** script stdlib xác minh link Markdown cục bộ và13 URL name hiện có, code fences cân bằng, exit0; git diff --check exit0. Không chạy Django/backend suites vì chỉ bổ sung đặc tả/nhật ký, không thay code/model/DB. Không dùng456 tests đợt UI trước làm kết quả cho dashboard mới. Chưa commit/push. Gặp schema/permission gap đã ghi trong spec, không tự thêm migration hoặc nới quyền.
+
+**Bàn giao/còn mở:** chủ dự án đọc spec, đặc biệt công thức mục4 và phân kỳ/quyết định mục10; sau đó giao triển khai các section đủ nguồn/quyền ở đợt1. Muốn HR/lãnh đạo xem quỹ lương, danh sách hợp đồng đọc-only mới hoặc trend/timeline tuyển dụng đầy đủ cần chốt policy/nguồn lịch sử trước. Những section đủ dữ liệu không cần chờ các gap này. Không thay dữ liệu thật hay dừng/chạy server ứng dụng trong đợt đặc tả.
+
 ## 2026-10-12 — Thiết kế Atoms cho khung chung và các trang đã hoàn tất G5
 
 **Kiểm kê và phạm vi:** main, ahead6/behind0 sau fetch origin/main. Giữ nguyên các mục backup/export trước trong nhật ký và thư mục reference chưa theo dõi. Đã xem đủ8 ảnh design-system/reference/atoms bằng UI UX Pro Max; không dùng UI Styling/shadcn, không thêm dependency/CDN. Chủ dự án chọn “Khung chung + các trang đã hoàn tất G5”: trang chủ, Cá nhân, Nhân sự, Tuyển dụng, Kế toán. Yêu cầu mới cho phép đổi palette, thay quyết định tím trước đó; nguyên tắc nghiệp vụ/RBAC/CSRF/field constraints/44px/14px bảng/16px body/responsive/giấy HCNS vẫn giữ.
@@ -114,6 +192,16 @@ Mốc đo exit 0; max sau sửa 17 SELECT, dưới 20. Test thêm 100 phòng và
 **Bàn giao và giới hạn:** 15 tệp mã/tài liệu cùng1 mục nhật ký, hash nguồn cuối khớp bản đã kiểm. Preview server giả dừng đúng PID/commandline. Commit `ui: adopt Atoms portal design` trên main; SHA lấy từ Git khi bàn giao, không push/deploy. Giữ reference PNG untracked và các mục backup/export cũ ngoài index. Chứng cứ `C:/Users/dinht/AppData/Local/Temp/ihrms-ui-atoms-20261012`, ngoài Git. Lượt đọc log trước bị auto-review quota nên không thực thi, không phải kết luận unsafe; chủ dự án yêu cầu tiếp tục, tool nay hoạt động và đã đối chiếu kết quả thực.
 
 Chưa UAT người dùng có giao diện, screen reader, zoom200%, máy in/Office/SharePoint thật hoặc CI theo SHA; chưa kiểm tra riêng admin và các trang legacy chưa rollout. Không tuyên bố WCAG toàn app. Palette/khung tác động portal chung; bố cục G5 Hành chính/Kế hoạch/Báo cáo/Dự án vẫn chờ các đợt sau. Chủ dự án Ctrl+F5 xem khung/trang chủ/hồ sơ/ứng viên/Kế toán, thử sidebar/drawer, xem hai theme và quyết định push.
+
+## 2026-10-12 — Tạo bản sao review sau G5 Kế toán
+
+**Phạm vi:** snapshot mã nguồn để FULL/REVIEW, không phải backup DB hay bản khôi phục. Nhánh main, commit nền `62c8f964646ca62f8cf2e4449592aec8957e93d3`, ahead6/behind0 sau `git fetch origin main`. Tại lúc chụp có thay đổi chưa commit trong docs/PROJECT_WORK_LOG.md (mục backup trước) và8 ảnh chưa theo dõi trong design-system/reference/. Giữ nguyên các thay đổi này; ZIP lấy bytes working tree của tệp theo dõi, gồm nhật ký cục bộ lúc chụp; ảnh reference chưa theo dõi không đưa vào.
+
+**Đã làm:** tạo `D:\QLHCNS-Backups\IHRMS_Review_2026-10-12_230000_62c8f96.zip` và checksum kèm theo. Kiểm kê bằng `git ls-files -z`; Python hệ thống/zipfile đóng gói579 tệp nguồn + REVIEW_SNAPSHOT.txt =580 entry. Loại14 tệp theo dõi thuộc outputs/dữ liệu cùng các loại .env (giữ .env.example), database, media/uploads, CSV, keys/credentials, logs/backups; mọi tệp ignored/untracked và Git history không đưa vào. Manifest ghi commit/nhánh/phạm vi/exclusions/dirty paths và SHA-256 từng entry. Quét mẫu credential/private key phổ biến không phát hiện nghi vấn; đây không phải chứng nhận đã rà mọi dữ liệu nhạy cảm trong mã.
+
+**Kiểm tra:** mở lại ZIP, kiểm entry count/duplicate/CRC bằng zipfile.testzip; đọc toàn bộ579 entry nguồn, so SHA-256 với bytes captured và nguồn hiện tại đều khớp; manifest cũng khớp. Dung lượng 5,207,257 byte. SHA-256 ZIP `F451A8135D7087C5EFC0A7FC793C8B25867F4862659C97F5C365AD9022D06F1C`; có tệp `.zip.sha256`. Lệnh đóng gói/verify inline Python exit0. Không chạy test mới, sửa nghiệp vụ hoặc ghi DB. Các kết quả test trước trong nhật ký không được coi là chạy lại ở đợt export.
+
+**Bàn giao:** bản ZIP được tạo trước mục nhật ký này nên không chứa chính mục ghi export sau cùng. Chưa review mã trong đợt này, không commit/push. Người review giải nén ra thư mục riêng, đọc AGENTS.md và docs/Huong_Dan_Review_Du_An.md, chọn FULL/REVIEW; dùng DB/media cách ly nếu kiểm thử, không cần nhận secrets/data thật. Thư mục reference và mục backup cũ vẫn giữ trong workspace.
 
 ## 2026-10-12 — G5 Kế toán
 
@@ -649,7 +737,6 @@ CSS khung tải sau CSS trang con; bổ sung compatibility cho font/nền/contro
 
 **Rà cuối và tiếp tục:** sau yêu cầu tiếp tục, xác nhận `main`, fetch exit 0 và `3 0` trước commit B (origin chưa có ba commit local). Shell mặc định vẫn lỗi khởi tạo; đường thực thi xét duyệt hoạt động trở lại sau lần auto-review lỗi hạn mức ở lượt trước. `python ops/check_ui_contrast.py`, hai `node --check`, `git diff --check`, `git diff --cached --check` đều exit 0. Snapshot đối chiếu xác nhận DESIGN nguyên byte và nội dung nhật ký có sẵn không bị sửa, loại khỏi staging. Rà staged chỉ UI/test/docs, không có secret pattern phổ biến hoặc backend/model/migration/dependency. Server preview PID do đợt này tạo đã đóng sau khi đối chiếu command line `ui_server.py` trong TEMP; ảnh/DB/media/scripts preview giữ ngoài Git. Commit B có tiêu đề `ui: app shell (sidebar/topbar/drawer)`, SHA lấy bằng `git log -2 --oneline`; không push/deploy. Dừng Giai đoạn 2, chờ chủ dự án xem và duyệt giao diện.
 
-
 ## 2026-10-12 — UI/UX Giai đoạn 0–1: kiểm kê và design system (UI UX Pro Max)
 
 **Phạm vi/Git:** UI và tài liệu trên `main`; ban đầu chỉ `M docs/PROJECT_WORK_LOG.md` (mục backup có sẵn được giữ nguyên và không đưa vào commit đợt này). `git fetch origin main` exit 0, `git rev-list --left-right --count HEAD...origin/main` = `0 0`. Đã đọc AGENTS, hướng dẫn review, nhật ký, ma trận RBAC và toàn bộ `C:/Users/dinht/.agents/skills/ui-ux-pro-max/SKILL.md`. Không dùng UI Styling/shadcn, không thêm dependency, không push/deploy. Shell mặc định lỗi `helper_unknown_error: setup refresh had errors`; Node REPL thoát; đường shell dự phòng được xét duyệt hoạt động.
@@ -708,8 +795,59 @@ Các tìm kiếm bổ sung đều exit 0 (exit 0 không có nghĩa kết quả k
 
 **Commit/bàn giao:** Giai đoạn 0 `0a8cee85cef5966c3cc9b74b9663e38d93a31b3f` chỉ chứa kiểm kê nhật ký. Giai đoạn 1 gom MASTER/tokens/hướng dẫn và cập nhật cùng mục nhật ký trong commit `feat(ui): define proposed accessible IHRMS design system`; xem SHA bằng `git log -2 --oneline`. Stage riêng nội dung đợt này, giữ nguyên mục backup ngoài index. Không push/deploy. Chủ dự án cần duyệt MASTER/tokens, quyết định thống nhất DESIGN.md trước Giai đoạn 2; kiểm thử browser dữ liệu giả ở 360/768/1024/1440px, keyboard/screen reader, zoom 200%, reduced motion, từng vai trò và print HCNS sau khi áp dụng. Không tuyên bố đã đạt WCAG hoặc đã UAT giao diện.
 
+## 2026-10-12 — Tạo bản sao mã nguồn để review
+
+**Phạm vi/đã làm:** tạo `D:\QLHCNS-Backups\IHRMS_Review_2026-10-12_101204_d1af082.zip` từ 527 tệp được Git theo dõi, kèm manifest ghi nhánh `main`, commit `d1af082f1c813baabd9c052753724648df73ce7f`. Trước tạo, fetch origin, xác nhận local/remote `0 0` và working tree sạch. Loại trừ `outputs/`, Git history và các tệp local bị ignore như `.env`, DB, media, CSV tài khoản, backup, venv/node_modules; giữ `.env.example` là mẫu cấu hình. Đây là snapshot mã nguồn, không phải backup DB/khôi phục toàn hệ thống.
+
+**Kiểm tra/kết quả:** rà danh sách tệp và mẫu khóa/token phổ biến không phát hiện nghi vấn; mở lại ZIP, xác nhận 528 entry (527 nguồn + manifest), đọc và so SHA-256 từng tệp với nguồn đều khớp. Dung lượng 5.080.864 byte; SHA-256 ZIP `B4F5B14602E26D932AE8C8890626AA31BA2135FA8D4885FBAB919749F5A06EB0`. Không xóa tệp, không sửa nghiệp vụ, không chạy test hoặc ghi DB.
+
+**Bàn giao:** ZIP chụp commit trên, không bao gồm mục nhật ký thêm sau khi tạo ZIP này. Chưa review mã trong lượt này, chưa commit/push vì chỉ được yêu cầu tạo bản sao; người review dùng FULL/REVIEW, không cần nhận `.env` hay dữ liệu thật.
 
 Đây là **nơi ghi nhận tập trung duy nhất** các đợt thay đổi lớn, thao tác kiểm tra, quyết định và việc cần chủ dự án thực hiện. Cập nhật tiếp vào tệp này thay vì tạo log mới cho từng lần làm việc. Không ghi secrets, dữ liệu cá nhân hoặc nội dung `.env`.
+
+## 2026-10-10 — Căn menu/KPI và áp dụng DESIGN.md toàn giao diện
+
+**Mục tiêu/phạm vi:** sửa menu lệch khung, căn giữa giá trị toàn bộ thẻ KPI hiện có, mở rộng theme sang toàn portal và quản trị. Xác nhận `main`, fetch origin và `HEAD...origin/main` là `0 0` lúc bắt đầu; bảo toàn các thay đổi UI/UAT/bốn finding chưa commit. Không thay đổi nghiệp vụ, phân quyền, schema, dữ liệu thật hay `.env`.
+
+**Đã làm:** menu trước đó rộng 80rem nhưng header/main mặc định 64rem; nay ba vùng dùng chung token chiều rộng, gồm ngoại lệ trang sơ đồ tổ chức rộng. Tách `design_tokens.css` dùng chung portal/Jazzmin; theme Tailwind ánh xạ blue/indigo và gray/slate sang palette DESIGN.md, giữ màu thành công/cảnh báo/lỗi. Font system, weight nhấn mạnh 600, card raised nhẹ, input inset, focus rõ và reduced-motion. Áp dụng adapter cho Jazzmin, HCNS và sơ đồ tổ chức; bảng giữ phẳng, bản giấy/Word/Excel giữ bố cục nghiệp vụ. KPI Trang chủ, Báo cáo, tiến độ dự án, số dư phép và trung tâm báo cáo dùng căn giữa/tabular-nums; không thay đổi căn cột số trong bảng. Đổi phiên bản URL CSS và cache static PWA để tránh CSS cũ; vẫn không cache HTML/dữ liệu nghiệp vụ. Login có label gắn với input/autocomplete. Cập nhật `docs/UI_DESIGN_SYSTEM.md`, test phiên bản CSS/menu và thêm regression token/menu/KPI.
+
+**Kiểm tra đã xác nhận:** `npm run build:css`, `venv\Scripts\python.exe src\manage.py check` đạt. Edge trên DB SQLite preview riêng, dữ liệu giả lập, SMTP locmem và M365 tắt: header/nav/main cùng left 436.5px và width 1024px ở viewport desktop; mọi số KPI Trang chủ/Báo cáo/tiến độ đã kiểm tra có computed text-align center. Xem thêm HCNS và Jazzmin; sửa chữ người dùng/sidebar trắng trên nền tím để tránh chìm. Mobile 390px và tablet 768px không tràn ngang toàn trang (scrollWidth lần lượt 375/753px), menu dùng được và đã khôi phục viewport. Screenshot minh chứng lưu ngoài repo trong thư mục preview tạm, không chứa dữ liệu thật. Test mới bắt class KPI gắn nhầm thẻ cha, đã sửa và test mobile đạt 6/6 SQLite. Các lượt full ban đầu bắt assertion phiên bản CSS/nhãn checklist cũ; đã cập nhật theo UI mới. Full suite cuối bằng `venv\Scripts\python.exe ops\run_tests.py --backend sqlite` đạt 416 test, 7 skipped theo backend, exit 0; cùng lệnh với `--backend sqlserver` đạt 416/416, exit 0. DB test tạm được runner xóa; cả hai backend báo ba kịch bản HTTP PASS. Các lượt lỗi ban đầu không được coi là đạt. `node --check src/static/js/service-worker.js` và `git diff --check` đạt (Git chỉ cảnh báo LF/CRLF). Khung rộng org chart cũng xác nhận cả ba vùng cùng width 1536px. Tính tương phản năm cặp chữ/nền chính đạt 4.94–13.89:1; ô tìm kiếm có outline tím 2px/offset 2px. Bản giấy HCNS xác nhận Times New Roman, chữ đen; nút primary chữ trắng/nền #4c1d95.
+
+**Bàn giao/còn mở:** chưa commit/push/deploy. Theme đã áp dụng qua nguồn CSS chung cho toàn giao diện, nhưng chưa UAT trực quan từng trang/11 vai trò, zoom 200%, tương tác quản trị toàn bộ hay tích hợp Office/SharePoint thật. Chủ dự án khởi động lại ứng dụng để nạp template mới; khi triển khai chạy `venv\Scripts\python.exe src\manage.py collectstatic --noinput`, mở lại portal và Ctrl+F5 để nhận CSS/cache mới. Không cần xóa cookie/dữ liệu nghiệp vụ. Tiếp tục UAT theo kế hoạch trên bản sao cô lập; các điều kiện GO/NO-GO và migration từ lượt trước không thay đổi.
+
+## 2026-10-10 — Chế độ sáng/tối và bàn giao các thay đổi đang chờ
+
+**Mục tiêu/phạm vi:** thêm hai chế độ sáng/tối và commit/push theo yêu cầu chủ dự án. Xác nhận nhánh `main`, fetch origin và so sánh `HEAD...origin/main` là `0 0`; giữ nguyên, đưa vào bàn giao các thay đổi giao diện DESIGN.md, menu/KPI và bốn sửa lỗi UAT từ các mục trước. Không sửa `.env`, không reset dữ liệu, không áp dụng migration vào DB nghiệp vụ.
+
+**Đã làm:** thêm `src/static/js/theme.js`, `src/static/css/theme.css`, override `src/templates/admin/base_site.html`; nút chuyển ở header portal/đăng nhập và navbar quản trị, mặc định sáng, chỉ lưu lựa chọn giao diện trong localStorage, đồng bộ tab, xử lý storage bị chặn. CSS tối dùng bảng màu tím, tương phản chữ/KPI và màu trạng thái sáng hơn; adapter Bootstrap cho quản trị, không đổi định dạng xuất Office và giấy HCNS. Theme được đọc trước stylesheet để giảm nháy nền, cache service worker tăng phiên bản và chỉ cache static. Thêm unit test JavaScript và regression Django, cập nhật `docs/UI_DESIGN_SYSTEM.md`.
+
+**Kiểm tra:** `npm run build:css` đạt; `node --test src/frontend/theme.test.cjs` đạt 3/3 (lưu lựa chọn, storage bị chặn, dữ liệu không hợp lệ/đồng bộ tab); `ops/run_tests.py --backend sqlite apps.portal.tests_mobile` đạt 7/7. `node --check` cho theme/service worker và `git diff --check` đạt. Edge trên SQLite preview riêng, dữ liệu giả, M365 tắt/email locmem: xác nhận Trang chủ, Báo cáo và quản trị chuyển sáng/tối, tải lại vẫn giữ lựa chọn; mobile 390px không tràn ngang, khôi phục viewport sau kiểm tra. Đã sửa các nền Bootstrap còn trắng khi rà trực quan. Không coi các lượt full suite bị mất phiên công cụ lúc chuyển lượt chat là kết quả đạt; chạy lại có log ngoài repository để xác minh trước bàn giao.
+
+**Kiểm tra cuối trước commit:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite` chạy đủ 417 test, đạt với 7 skipped theo backend, exit 0. Cùng lệnh với `--backend sqlserver` đạt 417/417, exit 0, DB tạm `test_ihrms_6ed83684777c47fa8329c6365b20000c` được runner xóa. Cả hai backend báo ba kịch bản HTTP PASS. `manage.py check`, `makemigrations --check --dry-run` trên SQLite preview riêng và `pip check` đạt; không có migration phát sinh ngoài `procurement.0002` đã chuẩn bị từ lượt trước.
+
+**Nhánh/commit:** bản mã và tài liệu chờ bàn giao đã commit `d16d280` trên `main` và push thành công lên `origin/main`. Bổ sung dòng xác nhận này bằng commit tài liệu cùng đợt; SHA HEAD/remote cuối được đối chiếu trong phản hồi bàn giao. Các ghi chú “chưa commit/push” ở mục trước là trạng thái lịch sử lúc kết thúc từng lượt, nay được thay thế bởi bàn giao này.
+
+**Bàn giao/còn mở:** kiểm tra danh sách tệp và mẫu bí mật không phát hiện `.env`, DB, CSV tài khoản, backup hoặc khóa riêng trong phạm vi đưa vào Git. Chưa deploy hoặc xác nhận CI/UAT đủ 11 vai trò/từng màn hình/Office/SharePoint thật. Migration `procurement.0002` vẫn chưa áp dụng vào DB `qlhcns`; DBA thực hiện trên bản sao UAT sau backup/restore và kiểm tra dữ liệu như kế hoạch. Khi triển khai, khởi động lại ứng dụng, chạy `venv\Scripts\python.exe src\manage.py collectstatic --noinput`, Ctrl+F5 để nhận CSS mới; dùng nút mặt trăng/mặt trời trên header để chọn mode.
+
+## 2026-10-10 — Gom menu Nhân sự và thử UI theo DESIGN.md
+
+**Mục tiêu/phạm vi:** gom Cần duyệt và Quyết định nhân sự vào Nhân sự; thử thiết kế theo `DESIGN.md` cho khung portal, Trang chủ và dashboard Báo cáo. Làm trên `main`, đã fetch origin và xác nhận `HEAD...origin/main` là `0 0`; bảo toàn các thay đổi bốn finding/UAT đang có. Không sửa dữ liệu thật, schema, quyền backend hay `.env`.
+
+**Đã làm:** `src/templates/base.html` bỏ hai mục điều hướng cấp một, gom Nhân sự thành “Hồ sơ & quá trình” và “Cần duyệt & xử lý”. Điều kiện hiển thị menu bao gồm người chỉ có quyền duyệt; từng link vẫn theo quyền cũ, Tuyển dụng và Kế toán giữ riêng. `src/static/css/ihrms.css`, `home_dashboard.css`, `report_dashboard.css` dùng bảng màu tím, system font, card raised nhẹ, form inset, focus và reduced-motion; giữ màu trạng thái và hàng KPI cân đối. Nút chính dùng primaryStrong thay vì primary nhạt để chữ trắng rõ. Build lại `tailwind.css`; cập nhật `docs/UI_DESIGN_SYSTEM.md` để đồng nhất với DESIGN.md và nêu rõ phạm vi bản thử. Thêm regression role/menu trong `tests_recruitment_accounting_navigation.py`.
+
+**Kiểm tra:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.portal.tests_recruitment_accounting_navigation apps.portal.tests_report_dashboard apps.portal.tests_mobile` đạt 14/14, exit 0. Cùng bộ test với `--backend sqlserver` đạt 14/14, exit 0; DB SQL Server test tạm đã được runner xóa. `npm run build:css` đạt; `git diff --check` không có lỗi whitespace (chỉ cảnh báo chuyển LF/CRLF). Edge đăng nhập tài khoản HR_MANAGER giả lập trên SQLite preview riêng, SMTP locmem và M365 tắt: đã xem Trang chủ, submenu Nhân sự và Báo cáo trên desktop; kiểm tra mobile viewport 390px, menu nằm trong vùng nội dung, không tràn ngang (scrollWidth 375px), Escape đóng submenu và trả focus về nút Nhân sự. Khôi phục viewport sau kiểm tra. Không dùng session/dữ liệu nghiệp vụ thật.
+
+**Còn mở/bàn giao:** đây là bản UI thử trong mã, chưa chuyển đổi toàn bộ form nghiệp vụ, org chart, Jazzmin hay bản in; chưa UAT trực quan đủ 11 vai trò, zoom 200%, toàn bộ breakpoint và Office/SharePoint thật. Chưa commit/push/deploy. Chủ dự án mở Trang chủ/Báo cáo, hard refresh (Ctrl+F5) và đánh giá bảng màu/bóng nổi trước khi nhân rộng sang các màn hình còn lại. Bốn finding và migration từ mục bên dưới vẫn giữ nguyên trạng thái bàn giao riêng.
+
+## 2026-10-09–10 — Khắc phục bốn finding trước UAT máy chủ
+
+**Mục tiêu/phạm vi:** theo yêu cầu xử lý bốn vấn đề của lượt review FULL ngay trước: guard cấu hình UAT, an toàn script reset QA, quyết định hồ sơ hoạt động đồng thời, và dữ liệu đề nghị mua sắm. Xác nhận nhánh `main`, local khớp `origin/main` (`0 0`) lúc bắt đầu; giữ nguyên phần sửa sẵn có trong `docs/PROJECT_WORK_LOG.md`, `ops/reset_qa_data.py` và bản kế hoạch UAT chưa theo dõi. Không reset DB, không dùng dữ liệu thật, không sửa `.env`.
+
+**Đã làm:** `APP_ENV=uat` nay bắt buộc tắt DEBUG, ép HTTPS, dùng secret mạnh và hostname cụ thể như production; runner test dùng `APP_ENV=test` vẫn cô lập. Script `ops/reset_qa_data.py` chỉ cho chạy với `APP_ENV=test`, từ chối DB tên chung `qlhcns`, chỉ chấp nhận tên bản sao QA/UAT rõ ràng, tệp `.bak` không rỗng ngoài repo và extended property `IHRMS_DISPOSABLE_QA=YES` trước khi có thể xóa; việc tệp tồn tại **không** chứng minh restore thành công. Quyết định hồ sơ hoạt động được khóa dòng và kiểm tra lại trạng thái trong transaction, thông báo gửi sau khi lưu thành công. Đề nghị mua sắm kiểm tra số dòng, tên, số lượng, đơn giá phía server; model có validator và migration `procurement.0002` thêm check constraint không cho số lượng <=0/đơn giá âm. Cập nhật kế hoạch UAT yêu cầu khai báo `APP_ENV=uat` rõ ràng.
+
+**Kiểm tra đã xác nhận:** test tập trung mua sắm/duyệt đạt 14/14 SQLite và 15/15 SQL Server; test guard UAT đạt 1/1 SQLite; test tranh chấp duyệt SQL Server cùng guard đạt 3/3. Sau migration, test tập trung mua sắm/guard đạt 9/9 trên cả SQLite và SQL Server; sau khi siết `APP_ENV=test`, test guard đạt 2/2 SQLite. Full suite trên mã cuối bằng `ops/run_tests.py` đạt **414/414 SQL Server**, exit 0, trên DB tạm `test_ihrms_9e491a4c290040c289aec784e979204a` đã xóa; **414 SQLite**, 7 skipped theo backend, exit 0. Cả hai backend báo ba kịch bản HTTP PASS. `manage.py check`, `makemigrations --check --dry-run`, `pip check`, `git diff --check` đều đạt; `migrate procurement --plan` chỉ liệt kê `0002`. Truy vấn chỉ đọc trên DB `qlhcns` đếm 0 hạng mục mua sắm có số lượng <=0 hoặc đơn giá âm. Thử `--apply` với DB tên `qlhcns` bị chặn trước mọi ghi. Kiểm tra `check --deploy` trên cấu hình UAT giả lập còn duy nhất cảnh báo HSTS W004 do chủ ý chưa bật HSTS trước khi IT xác nhận HTTPS mọi hostname; đây không phải kiểm tra trên máy chủ thật. Test có cảnh báo timezone từ fixture đặt xe cũ, không làm thất bại.
+
+**Nhánh/commit, việc còn mở và hành động chủ dự án:** chưa commit/push/deploy vì yêu cầu lần này là sửa và kiểm thử; migration `0002` **chưa áp dụng** lên DB `qlhcns`. Trước triển khai UAT, DBA kiểm tra dữ liệu mua sắm không hợp lệ trên DB đích, backup và restore thử, rồi mới chạy migration trên bản sao UAT được duyệt. IT đặt `APP_ENV=uat` cùng TLS/hostname/secret riêng và chạy `check --deploy` trên máy chủ; không copy/chạy script reset QA trên máy chủ UAT. Chưa xác nhận secret M365 cũ được thu hồi, tích hợp thật, CI theo SHA hoặc GO/NO-GO hạ tầng.
 
 ## 2026-10-09 — Lập cổng rủi ro và kế hoạch UAT trên máy chủ công ty đến 16/10
 
@@ -762,6 +900,7 @@ Các tìm kiếm bổ sung đều exit 0 (exit 0 không có nghĩa kết quả k
 **Kiểm tra:** trước khi sửa xác nhận `main`, chỉ có thư mục `outputs/` untracked của người dùng, fetch `origin/main` và lệch 0/0; giữ nguyên `outputs/`. Lượt chỉnh tiếp theo cũng xác nhận `main` đồng bộ `origin/main`, giữ nguyên mọi sửa đổi chưa commit. `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.portal.tests_report_dashboard` đạt 5/5; sau lượt tinh chỉnh Báo cáo chạy lại cùng lệnh, đạt 5/5. Chạy `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.portal.tests.PortalSensitiveWorkflowTests.test_project_task_menu_is_listed_under_project_activities apps.portal.tests_report_dashboard.ReportDashboardTests.test_report_hub_renders_all_available_sections_and_export_actions` đạt 2/2; Django system check trong runner không cảnh báo. `git diff --check` đạt. Chưa kiểm tra bằng trình duyệt có đăng nhập hoặc chụp màn hình ở các độ rộng nên chưa xác nhận pixel-perfect trong môi trường người dùng.
 
 **Nhánh/commit:** `main`. Trong lúc kiểm thử, một thao tác khác đã commit/push các thay đổi giao diện ở `988324d` và cập nhật tiếp ở `5c2caae`; đã xác nhận `origin/main` trỏ tới `5c2caae`. Các commit đó không do lượt kiểm thử này tạo. Mục nhật ký bổ sung trạng thái này hiện chưa commit/push. **Còn mở/hành động chủ dự án:** tải lại Trang chủ và Báo cáo (nếu tab cũ vẫn giữ CSS, dùng Ctrl+F5) rồi kiểm tra trên kích thước màn hình thực tế; gửi ảnh nếu còn thẻ lệch hoặc chữ mờ. Không cần thay đổi cấu hình hay dữ liệu.
+
 ## 2026-10-09 — Khởi tạo SQL Server local sau clone và xác minh HEAD mới
 
 **Mục tiêu/phạm vi:** tiếp tục bootstrap clone sau khi chủ dự án bật TCP/IP, restart SQL Server và tạo database `qlhcns`. Chỉ áp dụng schema lên DB mới đã kiểm tra trống; không thay đổi dữ liệu nghiệp vụ, không sửa nội dung `.env`, không deploy.
@@ -779,6 +918,102 @@ Các tìm kiếm bổ sung đều exit 0 (exit 0 không có nghĩa kết quả k
 **Còn mở/hành động chủ dự án:** `.env` chưa được chỉnh nên lệnh Django thông thường vẫn cần giải quyết SQL Browser/cổng: đặt cổng TCP static cho `SQLEXPRESS` rồi cấu hình `DB_HOST=localhost`, `DB_PORT=<cổng static>` trong `.env`, hoặc bật SQL Browser để phân giải tên instance. Cổng `59299` hiện tại là cổng động và có thể đổi sau restart. Sau đó tạo tài khoản bằng `venv\Scripts\python.exe src\manage.py createsuperuser` và chạy server nếu cần. Không kiểm thử tích hợp M365/SharePoint thật.
 
 **Commit/push:** không tạo commit/push; HEAD tại thời điểm hoàn tất là `6859e3c`.
+
+## 2026-10-09 — Làm lại dashboard Báo cáo và xuất Excel/Word/PowerPoint
+
+**Mục tiêu/phạm vi:** làm lại trang Báo cáo thành dashboard điều hành tổng hợp theo khoảng ngày, bao phủ các mảng đang có trên hệ thống và bổ sung ba định dạng xuất. Đầu đợt xác nhận nhánh `main`, working tree chỉ có thư mục `outputs/` không thuộc phạm vi và local khớp `origin/main` (`0 0`); giữ nguyên thư mục này. Không thay đổi schema, quyền nghiệp vụ hiện hành hoặc dữ liệu thật.
+
+**Đã làm:** thay trang `portal/report_hub.html` bằng dashboard responsive có bộ lọc ngày, sáu chỉ số tổng quan, biểu đồ biến động nhân sự theo tháng, phễu tuyển dụng và các nhóm Nhân sự, Tuyển dụng, Chấm công/nghỉ phép, Hành chính, Tài sản/mua sắm, Công việc/KPI, Hợp đồng/lương, Hồ sơ/quyết định nhân sự, Kế hoạch/ngân sách/đào tạo/sự kiện, Dự án/hoạt động. Dữ liệu được tổng hợp tập trung trong `portal/reporting_dashboard.py` và dùng chung cho HTML cùng ba định dạng xuất; không đưa định danh cá nhân, CCCD, liên hệ hoặc số tiền lương vào báo cáo. Thêm endpoint tải Excel `.xlsx`, Word `.docx` và slide `.pptx`; giữ cùng quyền xem báo cáo hiện có (HR Manager, Ban giám đốc và superuser), trả 403 khi không có quyền, kiểm tra khoảng ngày tối đa 1095 ngày và ghi `SecurityEvent` khi xuất thành công. Excel có ba sheet và hai biểu đồ gốc; Word dùng trang ngang và bảng theo nhóm; PowerPoint 16:9 có 12 slide, hai biểu đồ gốc và các bảng tóm tắt. Bổ sung `python-docx==1.2.0`, `python-pptx==1.0.2` và test hồi quy `tests_report_dashboard.py`.
+
+**Kiểm tra/kết quả:** `venv\Scripts\python.exe src\manage.py check` đạt, 0 lỗi. `venv\Scripts\python.exe src\manage.py test apps.portal.tests_report_dashboard --verbosity 1` đạt **5/5** sau thay đổi cuối; kiểm tra render, quyền, tham số, ba MIME/tệp có thể mở và audit xuất. Cùng 5 test đạt trên SQL Server dùng database tạm `test_ihrms_4e00dba9b4b64fddabc14548c9931a9d`, runner đã xóa database sau kiểm tra. `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.portal.tests_report_dashboard apps.portal.tests_review_hardening apps.portal.tests_mobile` đạt **35 test, 1 skipped**. Full `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.portal` đạt **120 test, 3 skipped**, exit 0. `makemigrations --check --dry-run` báo `No changes detected`; `pip check` và `git diff --check` đạt. Mẫu tổng hợp chỉ đọc được tạo trong thư mục tạm: Excel mở bằng openpyxl có 3 sheet/2 chart, Word mở bằng python-docx có 10 bảng, PowerPoint mở bằng python-pptx có 12 slide/2 chart; kiểm tra hình học không có shape vượt khung slide.
+
+**Phần chưa kiểm thử/bàn giao:** chưa render trực quan Word/PowerPoint vì bộ công cụ tài liệu không tìm thấy LibreOffice đóng gói; chưa UAT trang Báo cáo trong Edge đã đăng nhập, chưa chạy full suite SQL Server/CI và chưa kiểm tra số liệu với dữ liệu nghiệp vụ đại diện. Chủ dự án cần cài dependency từ `requirements.txt`, tải lại ứng dụng, đăng nhập tài khoản HR Manager/Ban giám đốc để đối chiếu từng chỉ số và mở ba tệp xuất bằng Microsoft Office. Không commit/push/deploy trong đợt này vì chưa được yêu cầu.
+
+## 2026-10-09 — Bugbot giao diện, đồng bộ kiểu chữ/màu và dọn tệp tạm
+
+**Mục tiêu/phạm vi:** theo yêu cầu rà lại bố cục, font, màu, giao diện toàn dự án và sửa mã; chủ dự án chọn Bugbot. Đầu đợt xác nhận `main`, local khớp `origin/main` (`0 0`); giữ nguyên thay đổi dashboard/export chưa commit và thư mục `outputs/` từ lượt trước. Bugbot chạy review diff hiện tại, phát hiện bốn finding: mất link Ngân sách (P1), biểu đồ thiếu số liệu cho trình đọc màn hình (P2), vùng cuộn mobile không nhận focus (P2), nhãn 10–12px (P3). Phần rà thêm đọc `base.html`, CSS chung, các template công văn/phiếu lương, tiêu chuẩn frontend và đặc tả UI; chưa tuyên bố đã UAT tất cả màn hình.
+
+**Bản sao trước sửa:** tạo `D:\QLHCNS-Backups\QLHCNS-before-ui-cleanup-20261009-090318.zip` (15.229.192 byte, 1.299 mục), SHA-256 `97F11BA577D0CD209AD2DB99DC0BC34D7ED75D58F6C2108D8C4A8DEB3A18A041`. Danh sách ZIP đã được kiểm tra không có `.env`, database, media, `venv`, `node_modules` hoặc `outputs`; bản sao nằm ngoài repository. Không chép nội dung bí mật từ cấu hình cục bộ vào tài liệu hoặc Git.
+
+**Đã sửa:** khôi phục link riêng “Xem ngân sách” và đổi link còn lại thành “Xem định biên”; đưa CSS Báo cáo khỏi template sang `src/static/css/report_dashboard.css`, bổ sung token màu/font dùng chung trong `ihrms.css` và `extra_css` trong layout gốc. Biểu đồ tháng có vùng cuộn focusable và bảng số liệu truy cập bằng bàn phím; phễu tuyển dụng là danh sách có nhãn/số đọc được. Tăng cỡ chữ của nhãn quan trọng ở Dashboard, header, công văn và phiếu lương; bỏ hiệu ứng nhấp nháy của mức Hỏa tốc. Thêm regression HTML cho link và khả năng truy cập. Tạo [UI_DESIGN_SYSTEM.md](UI_DESIGN_SYSTEM.md), liên kết từ README và gắn chú thích hiện trạng vào tiêu chuẩn frontend/đặc tả UI; sửa tài liệu Tailwind từ 3 thành đúng 4.3.0 đang ghim. Build lại `tailwind.css`.
+
+**Dọn tệp:** xác nhận `.tmp-ihrms-dashboard` chỉ chứa một junction `node_modules` trỏ tới cache công cụ ngoài dự án và không có tham chiếu trong mã. Lệnh xóa junction bị chính sách máy từ chối; đã chuyển nguyên thư mục sang `%TEMP%\ihrms-dashboard-junction-20261009`, nên workspace sạch mục tạm này và có thể khôi phục. Không xóa `outputs/` vì đó là sản phẩm chưa theo dõi từ lượt trước và chưa có bằng chứng là tệp thừa.
+
+**Kiểm tra/kết quả:** `venv\Scripts\python.exe src\manage.py test apps.portal.tests_report_dashboard --verbosity 1` đạt 5/5 trên SQLite; cùng 5 test đạt với `ops\run_tests.py --backend sqlserver` trên DB tạm `test_ihrms_f3f363b2644846909c05cf100cd7d9c0`, runner đã xóa DB tạm. `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.portal` đạt 120 test, 3 skipped, exit 0. `manage.py check` đạt 0 lỗi; `makemigrations --check --dry-run` báo không đổi schema; `findstatic css/report_dashboard.css` tìm thấy asset; `npm run build:css` đạt với Tailwind 4.3.0; `git diff --check` đạt. Phép thử parse CSS tùy chọn qua Node không chạy được vì `postcss` không được cài làm dependency độc lập; build Tailwind vẫn thành công. Chưa có UAT trình duyệt xác thực ở 375/768/1440px, kiểm tra zoom 200%, so khớp số liệu thật hoặc full suite SQL Server sau đợt UI này. Chủ dự án cần tải lại portal, mở Báo cáo và các màn hình công văn/phiếu lương trên các cỡ màn hình, thử bàn phím, rồi đối chiếu xuất Office. Chưa commit/push/deploy trong đợt này.
+
+## 2026-10-09 — Tách thư mục SharePoint cho Công văn đến và Công văn đi
+
+**Mục tiêu/phạm vi:** người dùng báo cả hai loại công văn đều vào `CongVan`. Đối chiếu mã xác nhận `OfficialDispatch.attachment` dùng chung `upload_to_dispatches` và `ConfiguredStorage("dispatches")`, mặc dù settings đã có `incoming_docs=CongVanDen` và `outgoing_docs=CongVanDi`. Làm trên `main`, local khớp `origin/main` (`0 0`); giữ nguyên các thay đổi dashboard/UI và `outputs/` chưa commit. Không đổi schema hoặc di chuyển tệp nghiệp vụ thật.
+
+**Đã sửa:** `upload_to_dispatches` chọn tiền tố `incoming_docs` hoặc `outgoing_docs` theo `dispatch_type`; `ConfiguredStorage` định tuyến hai tiền tố qua cấu hình thư mục tương ứng trong cùng thư viện SharePoint. Văn bản nội bộ tiếp tục vào `CongVan`. Đường dẫn đã lưu có tiền tố `CongVan`, `CongVanDen`, `CongVanDi` được nhận dạng idempotent để mở lại đúng nơi; tệp cũ ở `CongVan` không tự chuyển và không bị đổi tên DB. Giữ nguyên hàm `upload_to_dispatches` và adapter storage để migration hiện có không drift. Bổ sung kiểm thử đường dẫn/saving/mở tệp cũ, cập nhật `.env.example`, chú thích settings, tài liệu sử dụng và storage docstring.
+
+**Kiểm tra/kết quả:** test mới thất bại đúng hai nhánh Incoming/Outgoing trên mã cũ, sau sửa đạt. `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.m365.tests apps.document.tests apps.portal.tests_review_hardening`: 37 test, 1 skipped, exit 0. `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver apps.m365.tests apps.document.tests`: 11 test, exit 0; DB thử `test_ihrms_dc16d7cc87bb4c4b80b6f32a46ab7cea` đã được runner xóa. `manage.py check` đạt 0 lỗi, `makemigrations --check --dry-run` báo `No changes detected`, `git diff --check` đạt. Test SharePoint dùng mock, không truy cập site/tệp thật.
+
+**Còn mở/hành động chủ dự án:** khởi động lại ứng dụng sau cập nhật mã, tạo một Công văn đến và một Công văn đi với tệp thử không nhạy cảm, kiểm tra chúng nằm đúng `CongVanDen`/`CongVanDi` và mở lại qua IHRMS; mở thêm một công văn cũ ở `CongVan`. Nếu có cấu hình `M365_FOLDER_INCOMING`/`M365_FOLDER_OUTGOING` tùy chỉnh, kiểm tra tên thư mục thực tế theo cấu hình đó. Chưa commit/push/deploy, chưa thực hiện smoke test SharePoint thật.
+
+**Bàn giao Git sau yêu cầu commit/push:** 25 tệp mã, CSS, test và tài liệu của ba mục ngày 09/10 được commit trên `main` tại `442b8482e180cc2e0d655d65d0319e4a4adb0f8d` và push thành công; `git ls-remote origin refs/heads/main` khớp SHA này ngay sau push. `outputs/` vẫn untracked và không được stage; `.env`, backup, DB/media và secret không nằm trong commit. Lệnh `gh run list --branch main --commit 442b8482e180cc2e0d655d65d0319e4a4adb0f8d --limit 5` trả HTTP 401 Bad credentials, nên chưa xác nhận ba job Actions cho commit này. Chủ dự án cần đăng nhập lại GitHub CLI bằng tài khoản có quyền hoặc mở Actions của repository và kiểm tra đúng SHA cùng trạng thái `backend`, `frontend`, `backup-command-tests`. Mục nhật ký bàn giao này được commit/push tiếp sau commit mã; SHA cuối được báo trong phản hồi.
+
+## 2026-10-08 — Dọn cấu trúc repository và sao lưu trước thay đổi
+
+**Mục tiêu/phạm vi:** theo yêu cầu chủ dự án, kiểm kê các tệp ở thư mục gốc, sắp xếp tệp chẩn đoán review vào đúng nhóm vận hành, tạo bản sao trước thay đổi, rồi commit/push trên `main`. Trước khi làm, `git status --short` sạch; `git fetch origin main` và `git rev-list --left-right --count HEAD...origin/main` xác nhận local/remote không phân kỳ (`0 0`) tại `05f2591871ef22fd9e0128ff2f735211e8af69a7`. Không di chuyển `.env`, database, media, `venv`, `node_modules`, `Logs` hoặc các thư mục backup vận hành; hai tài liệu hướng dẫn ở thư mục gốc được giữ nguyên vì README và tài liệu tập huấn đang liên kết trực tiếp.
+
+**Bản sao:** tạo `D:\QLHCNS\Backups\source-before-cleanup-20261008.bundle` bằng `git bundle create --all`; `git bundle verify` xác nhận bundle hợp lệ và chứa toàn bộ lịch sử. SHA-256 của bundle là `8B9D8E0085F7E0DE663C7253D68380B4CB3DF25B63859805545E57938B9342EE`. `Backups/` thuộc `.gitignore`, nên bản sao chỉ nằm cục bộ và không được đưa lên GitHub.
+
+**Đã làm:** chuyển `_review_probe.py` khỏi thư mục gốc thành `ops/probes/booking_status_validation.py`; cập nhật cách xác định `PROJECT_ROOT` để đường dẫn `src` vẫn đúng sau khi di chuyển. Thêm `ops/probes/README.md` nêu rõ đây là probe thủ công, không thay cho regression test, chỉ được dùng với DB test cô lập và dữ liệu giả. Git nhận thay đổi là rename; không xóa nội dung chẩn đoán, không thay đổi mã ứng dụng, schema hay dữ liệu nghiệp vụ.
+
+**Kiểm tra/kết quả:** `venv\Scripts\python.exe -m py_compile ops\probes\booking_status_validation.py`, `venv\Scripts\python.exe src\manage.py check` với `DB_ENGINE=django.db.backends.sqlite3`, `APP_ENV=test` và `SECRET_KEY` tạm, cùng `git diff --check` đều exit 0. Đối chiếu lại thư mục gốc xác nhận không còn probe tạm. Không chạy chính probe vì nó vẫn cần database SQLite đã migrate và fixture giả; không dùng DB cấu hình để làm cho probe chạy. Không chạy full suite vì chỉ sắp xếp script chẩn đoán ngoài runtime ứng dụng.
+
+**Nhánh/commit và phần còn mở:** thay đổi cấu trúc ở commit `ec6d2f62fad3fd0cacdf01b3df04a9531d099173` trên `main`; commit nhật ký và trạng thái push được xác nhận trong bàn giao cuối đợt. Các finding RBAC/menu từ lượt review trước không thuộc phạm vi dọn file và chưa được sửa trong đợt này. Nếu probe cần dùng lâu dài, bước tiếp theo là chuyển tình huống tương ứng thành Django test dùng `ops/run_tests.py` và fixture cô lập.
+
+**Tiếp tục sắp xếp tài liệu:** sau phản hồi của chủ dự án, chuyển `HUONG_DAN_SU_DUNG_IHRMS.md` và `TAP_HUAN_IHRMS.md` từ thư mục gốc vào `docs/` tại commit `52ec2b4af9d1e4b4e2b2b6552367238aed29ec84`. Cập nhật liên kết trong `README.md`, skill `ihrms-operations`, checklist go-live, production-readiness review và liên kết nội bộ giữa hai tài liệu. Script kiểm tra toàn bộ liên kết Markdown cục bộ trong năm tài liệu đầu mối xác nhận mọi đích đều tồn tại; `git diff --check` đạt. Các nhắc lại đường dẫn cũ trong phần lịch sử của nhật ký được giữ nguyên để không viết lại bằng chứng của các đợt trước. Đây là thay đổi tài liệu, không chạy full suite ứng dụng. Bản ZIP tạo trước bước này vẫn là snapshot an toàn trước khi di chuyển; một ZIP mới theo commit cuối được tạo ngoài repository sau khi push để gửi review.
+
+## 2026-10-08 — Review tĩnh toàn mã nguồn (FULL/REVIEW), chưa sửa
+
+**Mục tiêu/phạm vi:** theo yêu cầu chủ dự án, tiếp tục lượt review RBAC/menu còn dở, mở rộng ra toàn bộ `src/apps`, lưu lịch sử và soạn yêu cầu cho Codex sửa. Chế độ REVIEW: không sửa mã, không commit/push, không ghi dữ liệu. Nguồn là bản ZIP `QLHCNS-source-20261008-0004f7e047ed.zip` (mã băm ghi trong ZIP `0004f7e047ed99db4c8e9a7f6d39539f3298f5c2`), không phải checkout Git nên **chưa xác nhận** `main`/`HEAD...origin/main`. Liên kết chia sẻ cuộc hội thoại trước không tải được nội dung; phần review dở được xác định từ ghi chú "finding RBAC/menu chưa sửa" trong nhật ký ngày 2026-10-08 phía trên.
+
+**Đã làm (đọc mã tĩnh, không chạy ứng dụng):** đối chiếu 150 route `portal/urls.py` với guard của view bằng script AST; so khớp menu `base.html` với `PERMISSION_MATRIX`; đọc kỹ `security/*`, các view nghỉ phép, lương, công văn, nhân sự, mua sắm/văn phòng, lifecycle, reporting, `leave/models.py`, upload và cấu hình production; quét toàn `src/` các mẫu rủi ro (`csrf_exempt`, `mark_safe`, SQL thô, `eval/exec`, `subprocess`, `float()` tiền) — không phát hiện vi phạm. Chi tiết, mức đã rà và danh sách phần chưa rà sâu ở [báo cáo review](Code_Review_Report_2026-10-08.md).
+
+**Kết quả (xác nhận bằng đọc mã, chưa tái hiện bằng test):** 17 finding. P1: F-01 bảng lương bỏ sót nhân viên Thử việc/Nghỉ dài hạn (cần chủ dự án quyết định). P2: F-02 quyền quản lý công văn dùng nhầm `approve_leave`; F-03 phạm vi xem công văn đến rộng hơn ma trận; F-04 thiếu tách người đề nghị/người duyệt; F-05 xuất Excel nhân sự kèm CCCD cho Kế toán; F-06 tạo dòng lương cơ bản 0 im lặng; F-07 tạo đơn nghỉ phép không chống gửi đúp/đồng thời. P3: F-08…F-17 (menu thiếu đường vào, hai quyền báo cáo song song, sinh mã nhân viên, lifecycle không khóa dòng, upload chỉ kiểm tra đuôi, `private_file` hiệu năng, `CompanyMedia`, gia hạn hợp đồng, xuất công văn, nghỉ phép nhỏ).
+
+**Kiểm tra chưa thực hiện và lý do:** môi trường review không có Django, không có mạng → chưa chạy `manage.py check`, `makemigrations --check`, test SQLite/SQL Server, `pip-audit`, `npm audit`, CI. Không dùng số test cũ làm kết quả. Không có bằng chứng Bugbot/Sixth đã chạy. Chưa rà sâu: `document/hcns/*`, `activity/*` ngoài guard, `m365/*`, `notification/*`, `planning`, `kpi`, `task`, model `asset`/`recruitment`, công thức `payroll/models.py`, `attendance/services.py`, migrations, `ops/*`, `src/frontend`, template ngoài `base.html`.
+
+**Nhánh/commit:** chưa có commit/push cho đợt này; các tệp mới: `docs/Code_Review_Report_2026-10-08.md`, `docs/Yeu_Cau_Codex_Sua_Review_2026-10-08.md` và mục nhật ký này.
+
+**Việc còn mở / chủ dự án cần làm:** (1) chốt chính sách cho F-01, F-03, F-04, F-05 (điền vào mục "Nhóm B" của yêu cầu Codex); (2) giao `docs/Yeu_Cau_Codex_Sua_Review_2026-10-08.md` cho Codex, nhóm A có thể chạy ngay; (3) đặt hai tệp mới và mục nhật ký này vào `D:\QLHCNS\docs`, chạy `git status`/`git diff --check` rồi commit theo ý chủ dự án; (4) lên lịch review tiếp phần "chưa rà sâu" và chạy đủ bộ kiểm tra trên Windows (SQLite + SQL Server).
+
+## 2026-10-08 — Sửa Nhóm A của review mã nguồn
+
+**Mục tiêu/phạm vi:** đọc `docs/Yeu_Cau_Codex_Sua_Review_2026-10-08.md` và đối chiếu từng finding với mã hiện tại trước khi sửa. Đầu đợt xác nhận nhánh `main`, working tree có ba thay đổi tài liệu của lượt review ngay trước (`docs/PROJECT_WORK_LOG.md` và hai tệp review/yêu cầu), local khớp `origin/main` (`0 0`); giữ nguyên và đưa các tài liệu cùng phạm vi vào đợt này. Cả bảy finding F-02, F-06, F-07, F-10, F-11, F-15, F-16 đều tái hiện đúng từ mã. Lần chạy test hồi quy đầu trên mã cũ cho 7 failure đúng finding và 1 error do fixture F-07 dùng sai tên trường; đã sửa fixture thành `allocated_days` trước khi chốt bộ test. Không sửa Nhóm B/C, không migration, không ghi dữ liệu nghiệp vụ thật.
+
+**Đã sửa:** F-02 thống nhất quyền quản lý công văn bằng `manage_office` cho danh sách/cập nhật/tạo; không giữ ngoại lệ `is_staff` vì tài liệu quyền hiện hành quy định `is_staff` chỉ dành cho Django Admin, không phải quyền nghiệp vụ. F-06 chỉ tạo dòng lương cho nhân viên có `EmployeeSalary` hiệu lực tại đầu kỳ, hiển thị rõ danh sách thiếu lương và không cho khóa kỳ còn dòng lương cơ bản bằng 0. F-07 đặt kiểm tra trùng ngày/quỹ phép và lưu đơn trong `atomic()` với khóa dòng `Employee`. F-10 thử lại tối đa ba lần khi mã tự sinh dạng `VH0001` va chạm unique, giữ nguyên định dạng. F-11 khóa case rồi item trong một transaction, kiểm tra lại trạng thái trước cập nhật và chỉ đóng case khi không còn item Pending. F-15 chỉ gia hạn hợp đồng `Active` mới nhất và báo rõ khi không có. F-16 kiểm tra loại công văn theo choices, mặc định `Incoming`, đặt tên `noi-bo` cho `InternalDirective`. Điều chỉnh fixture lương trong hai bộ test cũ để phản ánh quy tắc mới: nhân viên phải có mức lương hiệu lực mới được sinh bảng lương.
+
+**Test hồi quy mới:** `src/apps/portal/tests_review_20261008.py` có 10 test: ma trận sáu vai trò cho F-02; generate/lock lương F-06; gửi trùng tuần tự và đồng thời F-07; va chạm mã tuần tự và đồng thời F-10; khóa/idempotency lifecycle F-11; hợp đồng đã chấm dứt F-15; validate/tên tệp F-16. Hai test đồng thời chỉ chạy trên SQL Server thật qua database tạm của runner; SQLite bỏ qua đúng điều kiện backend. Bộ mục tiêu sau sửa đạt 10/10 trên SQL Server và 8/8 + 2 skipped trên SQLite. Bộ liên quan `apps.portal apps.lifecycle apps.document.tests_export_names` đạt 125/125, 1 skipped trên SQLite.
+
+**Kiểm tra bắt buộc trên mã cuối:** `git diff --check` exit 0; `venv\Scripts\python.exe -m pip check` exit 0, không có dependency hỏng; `manage.py check` với `APP_ENV=test`, `SECRET_KEY` tạm và SQLite tạm exit 0; `manage.py makemigrations --check --dry-run` exit 0, `No changes detected`. `venv\Scripts\python.exe ops\run_tests.py --backend sqlite`: 396 test, 390 đạt và 6 skipped theo điều kiện, exit 0. `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver`: 396/396 đạt, exit 0; runner tạo/xóa database tạm `test_ihrms_364c02a7461742e1850b7e759f7ba762`. Cả hai backend báo ba kịch bản HTTP PASS. Có cảnh báo timezone từ fixture đặt xe cũ, không làm test thất bại và không thuộc Nhóm A.
+
+**Nhánh/commit và việc còn mở:** làm trên `main`; commit được tạo sau khi hoàn tất mục nhật ký này, không push/deploy theo yêu cầu. Chủ dự án cần quyết định Nhóm B trước khi làm tiếp: F-01 trạng thái `Probation`/`OnLeave` trong lương và các danh sách; F-03 phạm vi xem công văn đến; F-04 chính sách tự duyệt; F-05 quyền xuất/che CCCD; sau đó mới chốt F-08/F-09 về quyền báo cáo và nhóm menu. Chưa chạy UAT Edge/IIS/CI hoặc kiểm thử với dữ liệu thật; kết quả hiện tại là test tự động trên DB/media cách ly. Chủ dự án kiểm tra commit rồi tự quyết định thời điểm push.
+
+## 2026-10-08 — Thêm nút quay nhanh từ trang quản trị về giao diện sử dụng
+
+**Mục tiêu/phạm vi:** theo ảnh và yêu cầu của chủ dự án, làm đường quay về portal dễ nhìn và thao tác nhanh trên thanh điều hướng Django Admin/Jazzmin. Xác nhận đang ở `main`, working tree sạch trước sửa và local đang đi trước `origin/main` một commit của đợt sửa Nhóm A; không sửa hoặc push commit đó trong lượt này.
+
+**Đã làm:** đổi nhãn liên kết top menu hiện có thành “Về giao diện sử dụng”, giữ đích nội bộ `/portal/` và không mở cửa sổ mới. Thêm `src/static/css/admin.css` qua cấu hình `custom_css` của Jazzmin để liên kết hiển thị như nút xanh nổi bật có mũi tên quay lại, trạng thái hover/focus rõ và kích thước gọn trên màn hình nhỏ. CSS chỉ tác động liên kết `/portal/` trong nhóm menu trái của navbar quản trị, không đổi quyền truy cập hay luồng đăng nhập. Thêm `src/apps/portal/tests_admin_navigation.py` kiểm tra trang admin thực sự render đúng nhãn/URL và nạp stylesheet tùy chỉnh.
+
+**Kiểm tra/kết quả:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.portal.tests_admin_navigation`: 2/2 đạt, exit 0, DB/media thử cô lập. `manage.py check` với `APP_ENV=test`, `SECRET_KEY` tạm và SQLite tạm: 0 lỗi. `manage.py findstatic css/admin.css --verbosity 0` tìm thấy đúng `D:\QLHCNS\src\static\css\admin.css`. `git diff --check` đạt. Chưa chạy full suite, SQL Server, CI hoặc UAT trình duyệt vì thay đổi chỉ là cấu hình/template output và CSS quản trị; khi triển khai cần chạy `collectstatic` theo quy trình hiện hành và tải lại trang admin không dùng cache.
+
+**Nhánh/commit:** thực hiện trên `main`; thay đổi được đưa vào cùng commit bàn giao với đợt tách Tuyển dụng/phân quyền Thang bảng lương sau khi chủ dự án yêu cầu commit và push.
+
+## 2026-10-08 — Tách mảng Tuyển dụng và giới hạn biểu mẫu Thang bảng lương
+
+**Mục tiêu/phạm vi:** theo yêu cầu chủ dự án, tách Tuyển dụng khỏi menu Nhân sự, bổ sung trang quy trình và lối vào biểu mẫu riêng; chuyển Thang bảng lương sang nhóm Kế toán và chỉ cho Kế toán/Ban giám đốc xem, xuất. Trước sửa xác nhận nhánh `main`, local đi trước `origin/main` một commit và working tree có thay đổi của nút quay về giao diện sử dụng; toàn bộ thay đổi có sẵn được giữ nguyên. Không đổi schema hay dữ liệu nghiệp vụ.
+
+**Đã làm:** thêm nhóm menu cấp đầu **Tuyển dụng** gồm Quy trình tuyển dụng, Đề xuất tuyển dụng, Ứng viên và Biểu mẫu tuyển dụng; gỡ hai lối vào tuyển dụng khỏi menu Nhân sự. Trang quy trình mới mô tả sáu bước mà hệ thống hiện hỗ trợ: đề xuất nhu cầu, duyệt, tiếp nhận ứng viên, phỏng vấn/đánh giá, offer và chuyển thành nhân viên. Quyền trang giữ nguyên phạm vi nghiệp vụ hiện có: HR Manager, HR Officer và Trưởng phòng; mỗi nút thao tác chỉ hiển thị khi có quyền tương ứng.
+
+**Phân quyền Thang bảng lương:** khai báo quyền riêng `use_salary_scale_form` cho `FINANCE_OFFICER` và `DIRECTOR`; superuser tiếp tục có toàn quyền theo cơ chế chung. Menu đổi nhãn thành **Kế toán**: Kế toán thấy các chức năng lương hiện có và Thang bảng lương; Ban giám đốc chỉ thấy biểu mẫu này, không được mở các trang vận hành payroll. HR Manager, HR Officer, System Admin, Trưởng phòng và Nhân viên không thấy mẫu trong menu/catalog và bị chặn 403 khi mở URL trực tiếp. Cập nhật ma trận RBAC và hướng dẫn biểu mẫu cùng đợt.
+
+**Kiểm tra/kết quả:** bộ test hồi quy mới `apps.portal.tests_recruitment_accounting_navigation` ban đầu thất bại trên mã cũ do chưa có menu/route Tuyển dụng và HR vẫn mở được Thang bảng lương; sau sửa đạt 3/3. Nhóm biểu mẫu + phân quyền đạt 19/19 SQLite; nhóm tuyển dụng/phân quyền/admin đạt 9/9 SQLite; nhóm biểu mẫu/tuyển dụng/phân quyền đạt 23/23 trên SQL Server tạm `test_ihrms_9818325650144b1b9bf06159520c7990`. Full suite SQLite lần đầu phát hiện một test cũ còn dùng HR để xuất `salary-scale`; đã chuyển riêng ca này sang fixture Kế toán, test hẹp đạt 6/6 và full suite cuối đạt **401 test, 395 đạt, 6 skipped**, exit 0. `manage.py check`, `makemigrations --check --dry-run`, `pip check` và `git diff --check` đều đạt; không có migration.
+
+**Còn mở/bàn giao:** chưa UAT trên trình duyệt với tài khoản nghiệp vụ thật, chưa chạy full suite SQL Server/CI và không deploy. Chủ dự án nên tải lại portal, đăng nhập lần lượt bằng tài khoản HR, Trưởng phòng, Kế toán và Ban giám đốc để xác nhận nhãn/menu và nội dung quy trình phù hợp cách gọi nội bộ. Đợt này được commit/push trên `main` sau khi chủ dự án yêu cầu; SHA và trạng thái remote được xác nhận trong bàn giao cuối.
 
 ## 2026-10-07 — Tạo tài liệu mô tả thiết kế giao diện quản trị
 
@@ -955,85 +1190,335 @@ Các tìm kiếm bổ sung đều exit 0 (exit 0 không có nghĩa kết quả k
 
 **Còn mở/bàn giao:** chưa UAT hồ sơ thật, chưa kiểm tra CI hay triển khai. Bộ 26 mẫu chưa có quyết định khen thưởng/kỷ luật và mẫu hợp đồng/phụ lục gia hạn; giao diện nói rõ, không gán nhầm biểu mẫu. Chủ dự án bổ sung bản mẫu trắng vào `docs/templates/hcns/` nếu cần layout/export cho các thủ tục này; không thêm chữ ký/dữ liệu thật vào Git. Tải lại cổng 8001, chọn nhân viên → Thao tác → nhập thông tin → Ghi nhận và soạn quyết định; xác nhận số/ngày quyết định, người ký và các điều trước khi xuất. Mẫu điều chỉnh vị trí và mức lương kết hợp nhiều nghiệp vụ, cần sửa điều tương ứng nếu chỉ điều chuyển phòng ban. Mọi kết quả tự động ở trên là test cô lập, không đồng nghĩa cam kết 100% nghiệp vụ thực tế.
 
-## 2026-09-24 — Tích hợp lưu tệp SharePoint
+## 2026-10-06 — Layout và export bộ biểu mẫu HCNS
 
-**Mục tiêu:** cho phép các nghiệp vụ cần tệp đính kèm sử dụng SharePoint qua Microsoft Graph, đồng thời giữ storage cục bộ khi tích hợp bị tắt.
+**Mục tiêu/phạm vi:** tham khảo 26 tệp chủ dự án đã đặt tại `docs/templates/hcns/`; xây dựng màn hình soạn, xem trước/in và export tương ứng. Chỉ làm trên `main`; đầu đợt working tree có thư mục mẫu chưa theo dõi, `git fetch origin main` và `git rev-list --left-right --count HEAD...origin/main` xác nhận `0 0`. Không sửa các tệp mẫu gốc, không đưa chúng vào commit, không ghi bản ghi nghiệp vụ thật.
 
-**Đã làm:** thêm Graph client và storage adapter migration-stable; nối storage vào document, nghỉ phép, công văn và CV ứng viên; thêm migrations, kiểm tra tệp upload và test M365. Cấu hình mẫu và dependency được cập nhật. Thay đổi được commit dưới `475c3e7` (`feat: integrate SharePoint file storage`) trên `chore/django-5.2-upgrade`.
+**Đã làm:** thêm `src/apps/document/hcns/` (catalog 26 layout, nội dung mẫu trắng trích chọn, form/formset validation, prefill theo quyền, render, DOCX/XLSX export và views); ba template tại `src/apps/document/templates/document/hcns/`; CSS/JS riêng; `src/apps/document/tests_hcns.py`. Thêm `/portal/hcns-forms/` và menu Biểu mẫu HCNS; nối liên kết ở chi tiết nhân viên, ứng viên, đơn nghỉ, hồ sơ vòng đời, kiểm kê, đề nghị thanh lý và danh sách lương cơ bản. Thêm `docs/Huong_Dan_Bieu_Mau_HCNS.md` hướng dẫn sử dụng; kết quả chỉ ghi tại mục nhật ký này.
 
-**Kiểm tra:** người dùng xác nhận smoke test SharePoint thật gồm upload, đọc/xem và xóa tệp thử; các thư viện/thư mục nghiệp vụ đã được kiểm tra. Trong bản sao sạch, `manage.py check` đạt, `makemigrations --check --dry-run` báo không có thay đổi, `apps.m365.tests` đạt 5/5. Không coi đây là xác nhận cho email, Teams, SSO, đồng tác giả Office hoặc OneDrive cá nhân.
+**Nội dung và quy tắc:** Word cho hồ sơ/văn bản, Excel cho thang bảng lương, bảng kiểm bàn giao, tổng hợp điểm tuyển dụng và kiểm kê/nhãn tài sản. PDF qua hộp thoại in của trình duyệt, không thêm dịch vụ chuyển đổi phía máy chủ. Giữ 60 tiêu chí đánh giá, 12 câu hỏi phỏng vấn thôi việc và bốn TOR; không đưa dòng nhân viên/ứng viên/tài sản đã điền hoặc chữ ký trong mẫu gốc vào mã. `BangLuong.xlsx` là thang bảng lương chứa giá trị, không có công thức; không thay payroll. Chủ dự án **đã xác nhận trong chat** tính trung bình cả điểm phỏng vấn và điểm bài kiểm tra theo ứng viên; đã triển khai cho bản xem trước và công thức Excel. Điểm thiếu không thành 0; không tự ra kết quả tuyển dụng. Bảng kiểm nghỉ việc thay yêu cầu ghi password bằng xác nhận bàn giao quyền truy cập qua quy trình IT, không thu thập mật khẩu. Xuất kiểm kê `.xlsx` không macro; hồ sơ vượt giới hạn soạn được xem/xuất đầy đủ. Bản xuất là bản soạn thảo, không tự duyệt/gửi đơn/đổi lương/chấm dứt hợp đồng/thanh lý tài sản; không lưu draft vào DB. Layout bám cấu trúc và nội dung mẫu, không cam kết sao chép nguyên từng pixel hoặc giữ logo, ảnh và chữ ký của tệp gốc.
 
-**Còn mở:** trước production, IT xác nhận quyền Graph tối thiểu, ACL/retention/audit của thư viện và quy trình xử lý gián đoạn SharePoint. Không đưa secrets vào repo.
+**Quyền và bảo vệ dữ liệu:** login và quyền kiểm tra tại máy chủ; employee prefill yêu cầu chính chủ hoặc cả quyền xem toàn bộ + xuất dữ liệu nhân sự; tuyển dụng yêu cầu HR; lương/quyết định dùng quyền nghiệp vụ tương ứng; asset/leave áp dụng quyền/phạm vi hiện có. Không cấp quyền nhân sự bằng `is_staff`. Loại nghỉ phải khớp mẫu `AL/UL/CO`, hồ sơ xóa bị loại. Văn bản HTML escape, chuỗi Excel được lưu kiểu text để chặn formula injection, tiêu chí/nhãn cố định do máy chủ quyết định, giới hạn số dòng và điểm. Audit chỉ ghi loại mẫu; trang/export `never_cache`; dữ liệu nguồn không hợp lệ báo lỗi an toàn.
 
-## 2026-09-24 — Cập nhật Review, cẩm nang và tập huấn
+**Kiểm tra đã chạy:**
 
-**Mục tiêu:** đồng bộ tài liệu với trạng thái đã clone GitHub sạch, Django 5.2.17, kết nối SQL Server ở môi trường kiểm tra và smoke test SharePoint.
+- `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.document.tests_hcns`: bản cuối đạt **9/9**, exit 0; gồm cả 26 GET layout/POST export, đăng nhập/quyền và phạm vi hồ sơ, dữ liệu nhập, điểm thiếu/0, chống tamper/XSS/formula injection, kiểm kê 51 dòng không cắt dữ liệu, xử lý nguồn lỗi. DB/media do runner cô lập.
+- `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.document apps.portal apps.lifecycle apps.reporting apps.security.tests_data_protection`: **136 ca, 135 đạt, 1 skip**, exit 0. Ca skip tại `src/apps/portal/tests_review_hardening.py` yêu cầu SQL Server row locking. Bộ hồi quy này chạy trước các tinh chỉnh cuối về khoảng cách in, công thức kiểm tra điểm thiếu và nguồn dữ liệu lỗi; đã chạy lại bộ HCNS tập trung trên mã cuối.
+- SQL Server: `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver apps.document.tests_hcns`; bản cuối đạt **9/9**, exit 0; runner tạo DB `test_ihrms_<UUID>` riêng và xóa sau khi chạy. Trước khi bổ sung ca nguồn lỗi cũng đã đạt 8/8; không dùng kết quả cũ thay cho lần xác nhận mã cuối.
+- `manage.py check` và `manage.py makemigrations --check --dry-run` với `DB_ENGINE=django.db.backends.sqlite3`, `DB_NAME` trỏ tới tệp SQLite tạm ngoài repo, `SECRET_KEY` tạm và `APP_ENV=test`: exit 0, không có lỗi framework và không có migration mới. Lần cấu hình kiểm tra ban đầu tạo tệp rỗng `src/qlhcns` do tên DB kế thừa cấu hình; đã xác minh tệp 0 byte sinh trong đợt này và xóa riêng tệp đó. Thử `DB_NAME=:memory:` qua settings hiện tại báo đường dẫn không mở được trên Windows; đã chuyển sang đường dẫn tuyệt đối tạm và chạy lại đạt. Không migrate DB thật.
+- Edge headless qua Playwright trên **26 HTML editor đã render cô lập**, viewport 1280×900 và 375×812: không tràn ngang trang; thêm/xóa dòng, đánh lại chỉ số formset, chặn in preview cũ và ẩn editor khi in đạt. Đây là kiểm tra HTML/JS/static; không phải browser UAT đăng nhập trên ứng dụng đang dùng.
+- Xuất 26 tệp bằng dữ liệu giả vào `%TEMP%`, mở/chuyển PDF bằng LibreOffice và render trang PNG bằng Poppler; kiểm tra bố cục, chỉnh vùng ký tránh trang riêng, mở rộng tiêu đề/cột Excel. Đã chạy `render_docx.py` với mẫu đơn nghỉ để xác minh renderer; các mẫu còn lại render trực tiếp qua LibreOffice/Poppler. Trang quyết định, đơn nghỉ, bàn giao và phiếu phỏng vấn mẫu trắng gọn trên một trang; đánh giá/TOR nhiều trang. Không kết luận dữ liệu dài bất kỳ sẽ có cùng số trang.
+- Hai workbook điểm giả được LibreOffice tính lại, rồi đọc cached values bằng `openpyxl`: trường hợp 10 và 0 cho TB phỏng vấn=30, TB kiểm tra=10, tổng=40; thiếu một điểm kiểm tra cho TB kiểm tra/tổng trống. Không có ô lỗi công thức. Không xác nhận engine Microsoft Excel thật.
+- `git diff --check` đạt. Nội dung JSON trích chọn không có email, chuỗi định danh dài hoặc nhãn password; các tệp gốc vẫn chưa theo dõi. Không tăng dependency, không migration schema, không commit/push/deploy trong nhiệm vụ này.
 
-**Đã cập nhật:** `docs/Production_Readiness_Review_2026-09-23.md` nêu bằng chứng còn thiếu trước go-live; `HUONG_DAN_SU_DUNG_IHRMS.md` thêm thao tác tệp SharePoint và báo sự cố; `TAP_HUAN_IHRMS.md` thêm bài thực hành với tệp giả; `Review_23092026_recovered.md` được đánh dấu là snapshot lịch sử; liên kết M365 trong `.env.example` được sửa sang tài liệu hiện hữu. Commit nội dung là `377ca0d` (`docs: refresh IHRMS readiness and training guides`), sau đó merge và push lịch sử remote an toàn ở `989cae9`.
+**Vòng test/fix/review theo ủy quyền tiếp tục của chủ dự án:** review trực tiếp phạm vi CHANGES/FIX cho bộ biểu mẫu và caller, không ghi nhận đã chạy Sixth/Bugbot hoặc review FULL mọi dòng mã. Sửa bốn trường hợp đã xác nhận: dòng chỉ có số 0 bị loại do so sánh với `False`; nguồn chưa kiểm tra quan hệ ngày/giờ bắt đầu-kết thúc; đơn nghỉ thường được dùng điền quyết định thai sản; ký tự XML cấm `U+FFFE/U+FFFF` có thể làm DOCX không đọc được. Bổ sung kiểm thử hồi quy, chặn nguồn không khớp `ML`, cập nhật hướng dẫn quyền/nguồn và build lại `src/static/css/tailwind.css`. Một assertion mới ban đầu tìm lý do nghỉ trong quyết định thai sản, trong khi mẫu chỉ có nhân viên và khoảng ngày; đã sửa assertion theo trường thực tế rồi chạy lại, không thay nội dung mẫu để làm test đạt.
 
-**Kiểm tra:** UTF-8 hợp lệ; `git diff --check` sạch; `manage.py check` đạt; `makemigrations --check --dry-run` báo không có thay đổi; 86 test đạt trên SQLite khi gọi module test rõ ràng. Lệnh test không kèm module tự tìm thấy 0 test; phải tiếp tục dùng lệnh có labels hoặc sửa test discovery/CI. Còn cảnh báo `RequestsDependencyWarning` về phiên bản `urllib3`/`chardet` trong môi trường test.
+**Xác minh bổ sung:** `pip check`, `npm run build:css`, `manage.py check`, `makemigrations --check --dry-run` trên SQLite tạm đều exit 0; không phát sinh migration. Bộ HCNS SQLite trên mã cuối **11/11 đạt**. Chạy lại QA static Edge sau build: 26 mẫu ở desktop/mobile, thêm/xóa/đánh lại chỉ số dòng, chặn nút in preview cũ và ẩn editor khi in đều đạt. Thêm kiểm tra **Edge có đăng nhập trên StaticLiveServerTestCase với DB/media giả cô lập**: cả 26 mẫu GET → POST preview → POST tải tệp thành công; thêm/xóa dòng tài sản và dữ liệu preview qua HTTP đúng; khoảng ngày sai trả 422; POST thiếu CSRF trả 403; không có lỗi JavaScript. Lệnh harness: `$env:PYTHONPATH=Join-Path $env:TEMP 'ihrms-hcns-layout-20261006'; venv\Scripts\python.exe ops\run_tests.py --backend sqlite live_browser_tests` (harness `live_browser_tests.py`/`live_browser.cjs` nằm ngoài repo tại thư mục tạm này, cần giữ chúng hoặc tái tạo trước khi chạy lại). Log và 26 tệp tải giả ở cùng thư mục tạm. Microsoft Word mở read-only được **22/22 DOCX**, Microsoft Excel mở và calculate read-only được **4/4 XLSX**; không sửa/lưu mẫu gốc. Excel thật tính hai workbook điểm giả: đủ điểm/0 → 30,10,40; thiếu điểm → 30,trống,trống, đúng kỳ vọng. Đây là kiểm tra Office bằng COM, chưa thay thế kiểm tra trình bày bằng mắt của người sử dụng.
 
-**Chưa hoàn tất:** bản Word `docs/HUONG_DAN_SU_DUNG_IHRMS.docx` chưa đồng bộ với Markdown vì môi trường thực thi hiện tại không có bộ dựng/render DOCX dùng cho kiểm tra từng trang.
+**Còn mở và bước chủ dự án thực hiện:** mở `Biểu mẫu HCNS` trong menu ứng dụng, thử 2–3 hồ sơ với tài khoản HR/Kế toán/nhân viên phù hợp; chọn mẫu → nhập → cập nhật preview → tải Word/Excel hoặc In/lưu PDF. Nhập phần chưa có trong DB (quốc tịch, trình độ, tài khoản ngân hàng, người nhận bàn giao, căn cứ, nội dung quyết định...). Kiểm tra nội dung, căn cứ/thẩm quyền ký, địa bàn/dự án trong TOR và trình bày bằng Microsoft Word/Excel trước khi ký. Chưa chạy UAT trên dữ liệu thật, chưa kiểm tra M365/IIS/deploy/CI; chưa có lưu draft, ký số hoặc điền tự động theo bản ghi quyết định/lịch sử lương. Khi sửa/thêm nhóm người chấm trong Excel cần xuất lại từ trang soạn để cập nhật công thức nhóm. Không dùng bộ mẫu này để tự suy diễn biểu mẫu BHXH/TNCN chưa được Kế toán xác nhận. Không cam kết không còn lỗi chỉ từ tỷ lệ test đạt. Không commit/push/deploy trong vòng tiếp tục này.
 
-**Việc cần chủ dự án/IT làm:** nếu cần bản Word mới, bảo đảm máy/môi trường làm việc có Python package `python-docx` cùng LibreOffice và renderer `render_docx.py` theo skill Documents; sau đó yêu cầu cập nhật Word, kiểm tra toàn bộ ảnh trang render và ghi kết quả tại đây. Không cần di chuyển hoặc sao chép `SKILL.md` vào repo.
+**Hồi quy toàn dự án trong vòng tiếp tục:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite`: **328 ca, 326 đạt, 2 skip**, exit 0 (419,456 giây); `--backend sqlserver`: **330/330 đạt**, exit 0 (388,160 giây), runner đã xóa DB tạm sau chạy. Hai skip SQLite là kiểm tra row locking (`portal/tests_review_hardening.py:276`) và unique index với NULL (`planning/tests.py:67`), đều được chạy trên SQL Server. Ba kịch bản HTTP nhân sự/chấm công/nghỉ phép PASS trên cả hai backend. Hai bộ bắt đầu trước các thay đổi cuối; SQLite phát hiện 9 ca HCNS, SQL Server phát hiện 11. Sau tinh chỉnh ký tự XML và bổ sung assertion nguồn ML đã chạy lại bộ HCNS trên mã cuối, không dùng kết quả full cũ thay cho xác nhận thay đổi cuối. Log ngoài Git: `%TEMP%\ihrms-hcns-layout-20261006\full-sqlite-review.log`, `full-sqlserver-review.log`, `focused-final.log`, `live-browser.log`; cảnh báo Jazzmin deprecated đã tồn tại, không phải lỗi test. Không có test thất bại trong hai bộ hồi quy.
 
-## Công cụ Word trên máy Windows
+**Chốt mã cuối:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver apps.document.tests_hcns`: **11/11 đạt**, exit 0; log `focused-sqlserver-final.log` cùng thư mục tạm, DB thử riêng đã bị runner xóa. Truy vấn chỉ đọc `SELECT COUNT(*) FROM sys.databases WHERE name LIKE 'test[_]ihrms[_]%'` xác nhận còn **0** DB thử. Như vậy bộ HCNS cuối đạt 11/11 trên cả hai backend; review lại không còn finding đã xác nhận chưa xử lý trong phạm vi này. `git diff --check` đạt; nhánh vẫn `main`, đối chiếu HEAD/origin/main `0 0`, thay đổi chưa commit được giữ nguyên. Chưa có bằng chứng CI cho mã chưa commit và không suy diễn CI là đạt.
 
-**Đã kiểm tra:** Python 3.12.14 có sẵn; `python-docx` và `pdf2image` chưa có trong Python hiện hành; LibreOffice đã cài ở `C:\Program Files\LibreOffice\program` và `soffice.com --headless --version` trả về 26.2.5.2. `pdftoppm`/Poppler chưa có trong PATH. Renderer đã có sẵn trong gói Documents của Codex tại `%USERPROFILE%\.codex\plugins\cache\openai-primary-runtime\documents\<phiên-bản>\skills\documents\render_docx.py`; không cần tạo hoặc chép file đó vào dự án.
+## 2026-10-06 — Đặt cổng phát triển mặc định QLHCNS là 8001
 
-**Cách chuẩn bị môi trường riêng, không đụng virtualenv IHRMS:** mở PowerShell mới và chạy:
+**Mục tiêu/phạm vi:** theo yêu cầu chủ dự án, tránh mở nhầm `nhaplieu_app` đang giữ cổng 8000. Xác nhận `main`, giữ toàn bộ thay đổi HCNS chưa commit; `git fetch origin main` và đối chiếu HEAD/origin/main đạt `0 0`.
+
+**Đã làm:** thêm command `src/apps/common/management/commands/runserver.py`, kế thừa command staticfiles của Django và đặt `default_port = "8001"`. Đưa `apps.common` trước `django.contrib.staticfiles` trong `src/config/settings.py` để Django chọn command riêng. Cập nhật URL và cách chọn cổng khác trong README. Lệnh `venv\Scripts\python.exe src\manage.py runserver` dùng `127.0.0.1:8001`; tham số cổng/địa chỉ rõ ràng vẫn được ưu tiên.
+
+**Kiểm tra/kết quả:** chạy Python với cấu hình SQLite tạm/APP_ENV=test, xác nhận command resolver chọn `apps.common`; dùng parser và `handle()` thật, mock riêng `run()` để không mở server hay ghi DB: không truyền cổng → 127.0.0.1:8001, truyền 8002 → 127.0.0.1:8002, truyền 127.0.0.1:8010 → đúng địa chỉ/cổng, cả ba PASS; tùy chọn staticfiles vẫn hiện diện. `venv\Scripts\python.exe src\manage.py check` trên cấu hình tạm: exit 0, không có lỗi. `git diff --check` đạt. Không chạy lại full-suite vì thay đổi chỉ là cổng phát triển và đã kiểm tra đúng luồng command; không dùng kết quả full-suite HCNS trước đó để tuyên bố đã chạy lại sau thay đổi này.
+
+**Bàn giao:** chủ dự án dừng và khởi động lại tiến trình QLHCNS bằng lệnh trên rồi mở http://127.0.0.1:8001/portal/. Tiến trình đang chạy không tự đổi cổng; nếu lệnh khởi động có cổng 8000 explicit thì bỏ tham số hoặc đổi thành 8001. Chưa mở server thực tế trong lượt này, không dừng nhaplieu_app, không sửa cấu hình IIS/Waitress hay dữ liệu nghiệp vụ, không commit/push.
+
+## 2026-10-06 — Sửa UAT quyết định tiếp nhận/bổ nhiệm/miễn nhiệm
+
+**Mục tiêu/phạm vi:** theo phản hồi và ảnh chụp của chủ dự án, thay ô nhập danh mục bằng dropdown, tự điền chức vụ/phòng ban theo cán bộ, tự đổi lương thành chữ và sửa layout theo `VH_QD bo nhiem, mien nhiem.doc`. Đầu đợt xác nhận `main`, `git fetch origin main`/HEAD đối chiếu remote `0 0`; giữ toàn bộ phần HCNS/cổng 8001 chưa commit. Review trực tiếp CHANGES/FIX trong phạm vi này.
+
+**Đã làm:** thêm `hcns/appointment.py` với danh sách chọn và bố cục riêng; `hcns/money.py` đọc tiền Việt; cập nhật catalog/form/prefill/view/render/export, thêm template `appointment_document.html`, sửa template draft/document và CSS/JS HCNS. Họ tên/người ký lấy hồ sơ chưa xóa, nhãn gồm tên/mã/chức vụ; danh sách cán bộ theo chính chủ hoặc cả quyền xem toàn bộ và xuất nhân sự, không mở quyền mới. ModelChoiceField kiểm tra ID ở máy chủ, từ chối ID không tồn tại/đã xóa và chuỗi tùy ý. Chọn cán bộ tự điền vị trí/phòng ban bằng JS; máy chủ bổ sung từ hồ sơ khi để trống, cho phép chọn lại danh mục và chức vụ mới. Dữ liệu JSON chỉ có ID cán bộ/vị trí/phòng ban; truy vấn danh sách chỉ lấy các trường cần dùng, không gửi CCCD/email/lương. Source label theo cán bộ được chọn trên POST, tránh giữ nhãn người cũ.
+
+**Tiền và nội dung:** nhập số đồng nguyên, lương bằng chữ tự cập nhật tại client và được tính lại ở server, field disabled/readonly không nhận nội dung bằng chữ do POST giả mạo. Quy tắc áp dụng cả quyết định điều chỉnh lương có cùng trường; điểm tuyển dụng và bảng lương không bị đổi. Lương trống giữ trống, 0 là “Không đồng chẵn”; xử lý nhóm nghìn/triệu/tỷ, lăm/mốt/linh. Lần thử đầu phát hiện chỉ đổi thuộc tính decimal_places không thay validator cũ, khiến số lẻ lọt tới bộ đọc tiền; đã tạo DecimalField đồng nguyên đúng validator, bổ sung hồi quy rồi chạy lại đạt. Không đổi schema/điều chỉnh lương thật. Nội dung căn cứ và bốn điều của mẫu tiếp nhận được phục hồi từ phần mẫu trắng; không đưa tên/chữ ký/dòng ví dụ thật trên trang thứ hai vào mã. Tiêu đề V/v/Điều 1 mặc định theo hành động, nội dung tự sửa vẫn do người soạn kiểm tra trước ký.
+
+**Layout:** tổ chức bên trái/quốc hiệu bên phải, số/ngày dưới từng khối; tiêu đề “QUYẾT ĐỊNH” 16pt và V/v 14pt; Times New Roman 12pt cho thân, căn cứ nghiêng/thụt dòng, nhãn Điều cùng dòng và thụt treo, nơi nhận trái/chữ ký phải và tên người ký dưới khoảng ký. A4, lề trái 25mm, trên/dưới/phải 20mm; Word và browser print cùng quy tắc. Giữ dòng cảnh báo bản soạn thảo như khác biệt có chủ ý. Không còn các nhãn “Nội dung căn cứ”, “Danh sách nơi nhận” hoặc metadata lặp trong bản in mẫu này. Các mẫu quyết định khác chưa thay layout trong lượt này. Cập nhật `docs/Huong_Dan_Bieu_Mau_HCNS.md` cùng đợt.
+
+**Kiểm tra trên mã cuối:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.document.tests_hcns apps.portal.tests_mobile`: **19/19 đạt**; `--backend sqlserver apps.document.tests_hcns`: **14/14 đạt**, runner xóa DB/media thử riêng. Bộ HCNS riêng trước đó cũng đạt 14/14 trên SQLite. Bao gồm 26 layout/export, chọn/prefill cán bộ, export DOCX hai bảng header/footer, hành động miễn nhiệm, từ chối reference giả/xóa/số lẻ, chống sửa lương bằng chữ, các quy tắc tiền và hồi quy quyền/nguồn/điểm. `manage.py check`, `makemigrations --check --dry-run` với SQLite tạm: exit 0, không có migration. `git diff --check` đạt.
+
+**Browser/Word QA:** harness ngoài repo `%TEMP%\ihrms-hcns-layout-20261006\live_browser_tests.py`/`live_browser.cjs`, chạy bằng `$env:PYTHONPATH=Join-Path $env:TEMP 'ihrms-hcns-layout-20261006'; venv\Scripts\python.exe ops\run_tests.py --backend sqlite live_browser_tests`, PASS. Edge có đăng nhập trên StaticLiveServerTestCase/DB giả: 26 mẫu POST preview/tải tệp; dropdown và auto vị trí/phòng ban, 9 trường hợp đọc tiền JS, giữ cán bộ/người ký/tiền sau POST, không tràn ngang mobile, in không editor, thiếu CSRF bị chặn và không lỗi JavaScript. Vòng browser đầu sau chỉnh layout/in chạy trước tinh chỉnh nhãn dropdown/truy vấn `.only`; vòng cuối bổ sung kiểm tra cache dưới đây. Renderer `render_docx.py` ban đầu không tìm thấy soffice trên PATH; bổ sung đường dẫn LibreOffice rồi chạy thành công. Render mẫu tham khảo, xuất tài liệu giả bằng mã hiện tại và render/đọc PNG Word, render/đọc PNG bản in browser: đều sạch, bản thử một trang. Không suy diễn mọi nội dung dài đều một trang. Artifact contract/PNG/PDF/log chỉ ở thư mục tạm, không đưa Git; log `appointment-final-regression.log`, `appointment-sqlserver-final.log`, `appointment-browser-final.log`. Chưa chạy lại full-suite toàn dự án sau sửa UAT này, không dùng số 330/330 cũ làm kết quả mã cuối.
+
+**Chốt cache và danh mục nguồn:** service worker hiện dùng cache-first cho static nên chỉ tải lại trang có thể vẫn chạy CSS/JS cũ. Thêm phiên bản URL `?v=20261006-2` cho CSS/JS HCNS trong template draft/catalog; giữ phạm vi thay đổi tại biểu mẫu. Chạy lại harness Edge sau tinh chỉnh nhãn/truy vấn và version URL, chủ động đặt CSS ẩn preview/JS lỗi vào cache các URL HCNS cũ trong browser test cô lập: cả 26 mẫu, dropdown, đổi tiền, mobile/in vẫn PASS, không lỗi JS; log `appointment-browser-cache.log`. Review thêm chặn fallback tới phòng ban/chức vụ đã xóa trong hồ sơ cán bộ, bổ sung hồi quy POST với cả hai danh mục đã xóa. Các bước xử lý source cuối được kiểm tra lại bằng 19/19 SQLite và 14/14 SQL Server, không chỉ dùng browser chạy trước chỉnh sửa source để xác nhận.
+
+**Bàn giao/còn mở:** chủ dự án tải lại trang QLHCNS cổng 8001, mở mẫu quyết định, chọn cán bộ/người ký, chọn hành động/chức vụ mới, nhập ngày hiệu lực và lương rồi cập nhật preview/tải Word/in. Đối chiếu hồ sơ thực tế, nội dung các điều/căn cứ/thẩm quyền ký trước sử dụng. Với người chưa có hồ sơ cần tạo qua Nhân sự trước khi chọn. Chưa thực hiện UAT trên dữ liệu thật/triển khai IIS/M365/CI; không migration DB gốc, không commit/push. Không có finding đã xác nhận chưa xử lý trong phạm vi lượt này.
+
+## 2026-10-06 — Điền nhân viên đã chọn vào mọi mẫu HCNS
+
+**Mục tiêu/phạm vi:** theo phản hồi chủ dự án, lựa chọn tại trang danh sách phải được giữ khi mở mẫu và các trường tương ứng trong mẫu phải lấy đủ dữ liệu đang có. `main` và working tree kiểm tra trước sửa, fetch/đối chiếu origin/main `0 0`, giữ mọi thay đổi HCNS/cổng 8001 trước đó.
+
+**Đã làm:** cập nhật `hcns/prefill.py`, `views.py`, `appointment.py`, template catalog/draft, JS HCNS và `tests_hcns.py`. Dropdown trang danh sách submit ngay khi đổi; nút Chọn hồ sơ vẫn hoạt động. Cả 26 card mang `employee_id`, nút về danh sách giữ nhân viên, không chỉ giới hạn ba nhóm personnel/decision/leave. Máy chủ tiếp tục kiểm tra quyền trước đọc dữ liệu nguồn. Ánh xạ theo trường thực sự có trong mẫu và lọc dữ liệu dư khỏi initial: họ tên/vị trí/phòng ban, ngày vào/nghỉ, ngày sinh/giới tính/năm sinh, điện thoại/email/địa chỉ, CCCD/thuế/BHXH và quản lý/vị trí quản lý. Sửa thiếu liên hệ trong bảng bàn giao nghỉ việc; dropdown bổ nhiệm được chọn đúng ID và chức vụ hiện tại/chức vụ mới được điền tham khảo. Hồ sơ vòng đời dùng cùng ánh xạ. Không thêm trường/model/migration.
+
+**Nguồn bổ sung và giới hạn:** mẫu có salary/salary_note lấy đúng một bản ghi EmployeeSalary Active đã hiệu lực và chưa kết thúc tại ngày mở, chỉ khi có quyền view_employee_compensation; không chọn lương tương lai, đã xóa hoặc tự giải quyết nhiều mức chồng lấn. Chuẩn hóa Decimal đồng nguyên để lương bằng chữ tự tính đúng. Quyết định chấm dứt lấy số hợp đồng khi có đúng một Contract Active trong hạn; không lấy ngày bắt đầu làm ngày ký. Chức vụ/lương hiện hành là tham khảo, quyết định mới cần xác nhận. Không tự điền ngân hàng/trình độ/quốc tịch/ngày cấp giấy tờ vì Employee hiện không có các trường đó; không suy đoán ngày nghỉ/ngày hiệu lực/người ký, mã ứng viên, điểm, thành viên hội đồng hay tài sản đề nghị thanh lý. Mẫu không có slot nhân viên giữ lựa chọn để chuyển mẫu và hiển thị nhãn nguồn, không chèn thêm dữ liệu không thuộc mẫu. Chuyển cán bộ trong dropdown bổ nhiệm reset chức vụ mới theo cán bộ và xóa lương/bằng chữ của người trước, tránh mang nhầm dữ liệu; có thể mở lại từ catalog để lấy lương tham khảo của người mới. Version CSS/JS HCNS `20261006-3` tránh service-worker cache cũ. Cập nhật hướng dẫn sử dụng cùng đợt.
+
+**Kiểm tra/kết quả:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.document.tests_hcns` và `--backend sqlserver apps.document.tests_hcns`: mã cuối **16/16 đạt trên mỗi backend**, exit 0, DB/media thử cô lập; SQL runner xóa DB thử. Ca mới kiểm tra cả 26 card/GET/prefill/GET export, đúng tên/contact/ngày/manager/danh mục theo slot, giữ link quay lại, quyền truy cập hồ sơ khác, nguồn lương hiện hành/tương lai/chồng lấn, hợp đồng và trường không có dữ liệu. `manage.py check`, `makemigrations --check --dry-run` trên SQLite tạm đạt, không có migration. Log `%TEMP%\ihrms-hcns-layout-20261006\employee-prefill-sqlite.log`, `employee-prefill-sqlserver.log`; không ghi dữ liệu thật.
+
+**Browser:** harness test cô lập ngoài Git chạy bằng `$env:PYTHONPATH=Join-Path $env:TEMP 'ihrms-hcns-layout-20261006'; venv\Scripts\python.exe ops\run_tests.py --backend sqlite live_browser_tests`. Edge có đăng nhập đã xác nhận đổi dropdown tự áp dụng, 26 link chứa nhân viên, mọi slot họ tên/contact tương ứng có giá trị, link quay lại giữ lựa chọn, 26 POST preview và tải tệp thành công; cache cũ bị bypass, chức năng điểm/lương/dropdown/mobile/in và CSRF vẫn đạt, không lỗi JavaScript. Log vòng đầu `employee-prefill-browser.log`; vòng cuối xác nhận thêm đổi cán bộ reset chức vụ mới/lương trong `employee-prefill-browser-final.log`. Harness và tệp tải chỉ có dữ liệu giả, nằm ngoài repo. Không coi đây là UAT với hồ sơ thật hoặc full-suite toàn dự án sau thay đổi.
+
+**Bàn giao:** tải lại trang cổng 8001, chọn nhân viên rồi mở mẫu; kiểm tra các trường tự điền, bổ sung mục trống/xác nhận lương và chức vụ mới trước xuất. Chọn Mẫu trắng để bỏ lựa chọn. Chưa commit/push/deploy/CI, không sửa DB nghiệp vụ hay mẫu gốc. Phần chưa có nguồn lưu trữ được ghi rõ trong hướng dẫn, cần chủ dự án bổ sung trực tiếp trên bản soạn.
+
+## 2026-10-05 — Khôi phục đăng nhập SQL Server và sửa trạng thái đặt xe trên main
+
+**Mục tiêu/phạm vi:** xử lý lỗi POST `/portal/login/` báo thiếu `axes_accessattempt`, rà các migration đang chờ và lỗi chức năng xác nhận được khi review. Xác nhận `main` khớp `origin/main` sau `git fetch origin main`; giữ nguyên `.sixth/` và `_review_probe.py` chưa được theo dõi.
+
+**Nguyên nhân và sao lưu:** kiểm tra chỉ đọc trên SQL Server đang cấu hình cho thấy bảng `axes_accessattempt` chưa có và 0/10 migration Axes đã áp dụng; `security.0003` tạo `tblSecurityEvent` cũng còn chờ, trong khi signal đăng nhập ghi vào bảng đó. Tạo backup COPY_ONLY/CHECKSUM tại `C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\Backup\ihrms_before_axes_20261005_103326_21d08a48.bak`; `RESTORE VERIFYONLY WITH CHECKSUM` đạt. Backup chứa dữ liệu nghiệp vụ, ở ngoài Git và cần giữ theo chính sách lưu trữ/khôi phục của quản trị SQL Server.
+
+**Đã làm trên SQL Server gốc:** chạy `venv\Scripts\python.exe src\manage.py migrate axes --noinput` (10/10 OK), `migrate security --noinput` (security.0003 OK), rồi `migrate --noinput` (attendance.0008, office.0005 và .0006, payroll.0004 đều OK). Trước khi áp dụng các ràng buộc nghiệp vụ, `audit_review_integrity` chỉ đọc báo 0 sai lệch ở cả 5 nhóm; sau migration vẫn 0. `migrate --plan` không còn thao tác; `manage.py check` đạt; `makemigrations --check --dry-run` báo No changes detected. Không tạo/xóa bản ghi nghiệp vụ gốc để thử nghiệm.
+
+**Sửa mã:** `VehicleBooking` trước đây chỉ cho `Approved`/`Cancelled`, nhưng form tạo gửi `Pending` và luồng duyệt có `Rejected`; mọi yêu cầu mới bị `full_clean()` từ chối. Bổ sung bốn trạng thái hợp lệ, mặc định `Pending`, migration `office.0006`, và hai kiểm thử tổng hợp cho model/HTTP tạo yêu cầu. Kiểm thử riêng `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.office.tests` và `--backend sqlserver apps.office.tests`: mỗi backend 8/8 đạt, SQL Server dùng database thử tạm. `pip check` không có dependency hỏng; `git diff --check` đạt.
+
+**Kiểm thử toàn bộ:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite`: 319 test, 317 đạt, 2 bỏ qua do chỉ dành SQL Server, exit 0; log `D:\QLHCNS-Backups\review-20261005-full-sqlite.log`. `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver`: 319/319 đạt, exit 0 trên database tạm do runner tạo/xóa; log `D:\QLHCNS-Backups\review-20261005-full-sqlserver.log`. Cả ba kịch bản HTTP HR, chấm công và nghỉ phép PASS trên hai backend. Log có cảnh báo cấu hình Jazzmin `dark_mode_theme` đã deprecated, không làm test thất bại. Bugbot không khả dụng trong môi trường công cụ hiện tại; review mã và luồng liên quan được thực hiện thủ công.
+
+**Việc còn mở/hành động của chủ dự án:** sau khi cập nhật mã lên máy đang chạy, dùng tài khoản thử để xác nhận đăng nhập và tạo/duyệt/từ chối đặt xe qua trình duyệt; đối chiếu với kết quả HTTP tự động. Chưa kiểm thử giao diện Edge trong lượt này hoặc mọi lỗi thiết kế/hiệu năng của toàn dự án. Backup SQL ở đường dẫn trên cần DBA giữ/luân chuyển theo quy định; không đưa vào Git. `gh run list --commit 6429d2f8769b58f41c4900358508515600eb65d9 --limit 10` trả HTTP 401 Bad credentials; chủ dự án mở GitHub Actions của commit này bằng tài khoản có quyền, đối chiếu các job và cung cấp log nếu job lỗi. Không ghi CI là đạt khi chưa xem được kết quả.
+
+**Nhánh/commit:** mã sửa ở `main` commit `6429d2f8769b58f41c4900358508515600eb65d9`; `git push origin main` thành công và `git fetch origin main` xác nhận local/remote trùng nhau tại commit đó. Mục nhật ký này được commit riêng trong cùng đợt.
+
+## 2026-10-05 — Sửa GitHub Actions frontend và kiểm tra lại toàn bộ trên main
+
+**Mục tiêu/phạm vi:** theo yêu cầu chạy lại kiểm thử và làm GitHub Actions hết lỗi trên `main`. Đầu đợt xác nhận local `main` khớp `origin/main` tại `e652db0`, chỉ có `.sixth/` và `_review_probe.py` chưa theo dõi; giữ nguyên hai mục đó. Skill `review-bugbot` yêu cầu subagent loại `bugbot`, nhưng môi trường công cụ không cung cấp loại này; review thủ công các thay đổi và luồng CI, không ghi nhận là Bugbot đã chạy.
+
+**Nguyên nhân CI đã xác nhận:** mở GitHub Actions bằng Edge có phiên đăng nhập, run #9 của commit `e652db0` thất bại ở job `frontend`, còn `backend` và `backup-command-tests` đạt. Log `npm audit --audit-level=low` báo 5 cảnh báo high do `braces` trong cây Tailwind CSS 3.4.17; advisory GHSA-vfj7-8cjw-p6xm chưa có bản vá cho `braces` 3.x. `gh auth status` xác nhận token CLI trong keyring không hợp lệ; trạng thái CI được đọc trên trang GitHub, không suy từ CLI.
+
+**Thay đổi:** nâng Tailwind và CLI lên 4.3.0 pin chính xác, lockfile sử dụng `@parcel/watcher` 2.6.0 không còn cây `braces`; chuyển CSS đầu vào sang `@import`/`@source` của Tailwind 4, build lại CSS và bỏ cấu hình v3 không còn dùng. Cập nhật hướng dẫn frontend. CI nâng `actions/setup-node` từ v4 lên v6 để bỏ cảnh báo runtime Node 20. Bộ thử backup chọn đúng shell của môi trường hiện tại (`powershell.exe` trên Windows PowerShell, `pwsh` trên PowerShell Core); kịch bản Failure trước đó không chạy được ở máy Windows này.
+
+**Kiểm tra đã chạy:** `npm ci`, `npm audit --audit-level=low` (0 vulnerability), `npm run build:css` đều exit 0. Đối chiếu selector CSS: 417 selector lớp có trong template và CSS v3 đều hiện diện sau build v4; kiểm tra này không thay thế xác nhận bố cục trình duyệt. `python -m pip check`, `python -m pip_audit -r requirements.txt` (No known vulnerabilities found), `manage.py check`, `makemigrations --check --dry-run` đạt. Cả 6 kịch bản mô phỏng `ops/backup/Test-BackupSafety.ps1` (Full/Log × Express/Standard/Failure) PASS; không kiểm thử backup/restore SQL thật bằng bộ này.
+
+**Kiểm thử toàn bộ và CI mới:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite`: 319 test, 317 đạt, 2 bỏ qua do dành riêng SQL Server, exit 0; log `D:\QLHCNS-Backups\review-20261005-ci-sqlite.log`. `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver`: 319/319 đạt, exit 0; log `D:\QLHCNS-Backups\review-20261005-ci-sqlserver.log`. Cả ba kịch bản HTTP HR, chấm công, nghỉ phép PASS trên hai backend; runner đã xóa database SQL Server tạm, kiểm tra chỉ đọc xác nhận còn 0 database `test_ihrms_%`. Có cảnh báo Jazzmin `dark_mode_theme` deprecated trong log, không làm test thất bại. Đã xác nhận trực tiếp trên Edge [GitHub Actions run #11](https://github.com/dinhtanhb/QLHCNS/actions/runs/37261635104) của commit `39f132e023b5d5c9360cb1689c8b224849cb00a7`: Status Success; backend, frontend và backup-command-tests đều thành công, không có annotation error/warning; còn 3 notice về lịch chuyển ubuntu-latest sang Ubuntu 26.
+
+**Nhánh/commit và việc còn mở:** `main`, mã sửa ở `39f132e023b5d5c9360cb1689c8b224849cb00a7`, đã push và fetch xác nhận origin/main khớp local. Commit trung gian `e0e8fa8` chỉ xóa cấu hình v3 do lệnh stage gặp pathspec của tệp đã xóa; các thay đổi còn lại đã được đưa ngay vào commit kế tiếp `39f132e`. Run #10 của commit trung gian đã lỗi frontend và được yêu cầu hủy để giải phóng hàng đợi cho run #11; không coi run trung gian là kết quả nghiệm thu. Chưa kiểm thử trực quan bố cục Edge sau nâng Tailwind, chưa xác nhận production IIS/SharePoint. Chủ dự án cần chạy `npm ci`, `npm run build:css`, rồi `venv\Scripts\python.exe src\manage.py collectstatic --noinput` theo quy trình triển khai trên máy chủ và kiểm tra bố cục các màn hình đang dùng; việc collectstatic/triển khai production không nằm trong đợt kiểm thử này.
+
+## 2026-10-05 — Chuẩn hóa reviewer Sixth và hướng dẫn review dùng lại
+
+**Mục tiêu/phạm vi:** đánh giá `.sixth/agents/code-review.md` và cập nhật hướng dẫn theo yêu cầu chủ dự án. `git status`, nhánh và `git fetch origin main` xác nhận `main` ở `164ffd30bc973b40cf4ca68ab6dfa9aa1a1738d8`, khớp remote (ahead/behind 0/0). Ban đầu `.sixth/` và `_review_probe.py` chưa theo dõi. Chỉ sửa file reviewer được yêu cầu; không sửa probe. `code-reviewr.md` không tồn tại trên đĩa dù người dùng đang có tab IDE tương ứng.
+
+**Đánh giá và thay đổi:** reviewer cũ có quy trình đọc caller/test và xác minh finding phù hợp, nhưng chủ yếu review diff sau tính năng, thiếu quy tắc IHRMS, bảo vệ dữ liệu, hai backend và xác nhận CI. Đã sao lưu bản gốc ngoài Git tại `D:\QLHCNS-Backups\review-agent-guide-20261005`. Cập nhật reviewer với FULL/CHANGES và REVIEW/FIX, checklist luồng nghiệp vụ, main, dữ liệu giả/DB-media cô lập, bằng chứng finding, quyền sửa/commit/push theo nhiệm vụ và cách báo phần chưa kiểm thử. Tạo `docs/Huong_Dan_Review_Du_An.md` có mẫu yêu cầu cho Sixth hoặc thực hiện trực tiếp, các lệnh chuẩn, điều kiện hoàn tất và giới hạn Bugbot. README/AGENTS chỉ liên kết tới hướng dẫn; nhật ký đợt chỉ ghi tại đây.
+
+**Kiểm tra thực tế:** đối chiếu mã extension Sixth AI 0.3.7 đang cài, xác nhận loader `.sixth/agents`, schema permissions, trust prompt và công cụ `launch_agent`; agent nền nhận task riêng, không nhận toàn bộ chat. Dùng Node VM chỉ chạy hàm parser `x0r` trích từ extension (không khởi động extension): file mới được nhận là `code-review`, source project, đủ 6 quyền bao gồm read mặc định. Python kiểm tra liên kết local, UTF-8 và code fence của bốn file hướng dẫn: PASS. `git diff --check`: exit 0. Đối chiếu lệnh với `ops/run_tests.py`, `ops/Run-Tests.ps1` và `.github/workflows/ci.yml`; không chạy full suite/build/audit mới vì đợt này chỉ sửa hướng dẫn, không sửa ứng dụng, dependency hoặc workflow.
+
+**Việc còn mở/bàn giao:** chưa thử gọi agent Sixth qua UI nên không coi parser PASS là run review đã thành công. Chủ dự án mở Sixth AI trong workspace, dùng mẫu FULL/REVIEW ở hướng dẫn, yêu cầu agent `code-review`, xử lý trust prompt nếu xuất hiện rồi xác nhận có run riêng/kết quả. Nếu không có agent Sixth trong công cụ đang dùng, đính kèm hai file và yêu cầu review trực tiếp; ghi đúng cách đã thực hiện. Không áp dụng migration hay ghi dữ liệu nghiệp vụ trong đợt này.
+
+**Git trong lượt tiếp tục:** chủ dự án yêu cầu commit/push toàn bộ. Fetch lại xác nhận main không phân kỳ với origin/main. Kiểm tra toàn bộ tệp mới: chỉ có reviewer, hướng dẫn và `_review_probe.py`; probe dùng cấu hình test/SQLite, khóa mẫu riêng cho probe và instance giả, không gọi save. Chạy `venv\Scripts\python.exe _review_probe.py` lần đầu lỗi encoding cp1252; chạy lại với `PYTHONIOENCODING=utf-8` hiển thị đủ trạng thái rồi exit 1 vì `clean_fields()` kiểm tra FK trên SQLite thiếu bảng `tblVehicle`. Không ghi probe đạt và không migrate/tạo fixture trên DB cấu hình để chữa lỗi này. Giữ probe nguyên trạng theo yêu cầu đưa toàn bộ lên Git; nếu cần chạy lại độc lập, phải có SQLite cô lập đã migrate và fixture giả tương ứng hoặc chuyển probe thành test dùng runner chuẩn. Không đưa .env, DB, backup hoặc dữ liệu thật. SHA commit và đối chiếu remote sau push được báo trong kết quả bàn giao.
+
+## 2026-10-02 - Hợp nhất các nhánh về main và thống nhất nhánh vận hành
+
+**Yêu cầu:** kiểm tra commit mới nhất trong các nhánh QLHCNS, hợp nhất về main; chủ dự án làm việc một mình và yêu cầu từ nay chỉ phát triển/kiểm thử/chạy trên main. Quyết định này thay thế lựa chọn giữ nhánh nâng cấp ở nhật ký ngày 01/10.
+
+**Đối chiếu trực tiếp GitHub:** main ban đầu ở `8258a3ed055775b25cb20f757acc95172c7865d0`; master ở `ef93f4ad11dfbdb5cfdefaa280cc1c3d2dc8b2b8` (review 2, 01/10); chore/django-5.2-upgrade ở `95ea51889bd2affcd947121a8bebe09632409500` (rà soát chưa hoàn tất, 02/10). Master có 1 commit mới, chỉ thêm báo cáo review và gitlink .claude/skills/huashu-design. Nhánh nâng cấp có 63 commit chưa thuộc lịch sử main và phía main có 1 merge commit riêng. Không có CI check-runs trên commit nâng cấp tại thời điểm kiểm tra.
+
+**Đã hợp nhất:** PR #3 bằng merge commit `dd3f85e27725bf051d0a5b9e5e5bba736eb3a20d`, sau đó PR #4 (master -> main) bằng `c8bb44f641235a2877a3de0bc337a7fa43228085`. Cả hai GitHub xác nhận merge thành công, không xung đột; giữ lịch sử, không force-push. Đối chiếu cây merge PR #3 với cây nhánh nâng cấp không có khác biệt. Sau PR #4, khác biệt so với bản nâng cấp chỉ là báo cáo review và gitlink thiết kế; mã ứng dụng giữ nguyên. Không khởi tạo gitlink kỹ năng bên ngoài. Các nhánh cũ được giữ để tra cứu và không dùng cho công việc tiếp theo.
+
+**Tài liệu thay đổi:** AGENTS.md ghi quy tắc chỉ phát triển, kiểm thử, chạy và triển khai trên main; README.md bổ sung cách đồng bộ main; mục nhật ký này lưu kết quả và giới hạn xác nhận.
+
+**Kiểm tra đã chạy thực tế:** lấy mã tại SHA cố định qua GitHub vào bản kiểm tra riêng trên Linux/Python 3.12; cài các phiên bản trong requirements.txt vào virtualenv riêng. Clone Git trực tiếp không có credential của kho private, nên dùng kết nối GitHub đã được cấp quyền để đọc và hợp nhất. Không dùng .env, dữ liệu nhân sự, database nghiệp vụ hay SharePoint thật.
+- `python ops/run_tests.py --backend sqlite`: phát hiện 258 test, 256 đạt, 2 bỏ qua, exit code 0; chạy trong 21,962 giây với database in-memory, media tạm và SharePoint tắt. Hai test chỉ dành SQL Server: unique NULL của ngân sách và khóa dòng khi cấp số công văn đồng thời.
+- Lần chạy đầu có 1 lỗi vì bản lấy mã còn thiếu ảnh PWA; đã lấy đúng hai ảnh gốc từ GitHub và chạy lại toàn bộ suite đạt như trên. Không sửa mã/test để bỏ qua lỗi.
+- Django `check`: không có lỗi; `makemigrations --check --dry-run`: No changes detected; `pip check`: No broken requirements found. Kiểm tra Django dùng cấu hình giả và database in-memory, không ghi database vận hành.
+
+**Giới hạn và việc còn mở:** chưa chạy SQL Server, Edge/UAT giao diện, SharePoint thật hoặc triển khai máy chủ; commit 95ea5188 ghi rõ đợt rà soát tổng thể chưa hoàn tất. Đợt này hoàn thành hợp nhất nhánh, không xác nhận nghiệm thu toàn bộ dự án. SQL Server/Windows của chủ dự án không truy cập được từ môi trường này.
+
+**Chủ dự án cập nhật máy Windows:** tại D:\\QLHCNS, chạy `git status` trước. Nếu working tree sạch, chạy lần lượt `git fetch origin`, `git switch main`, `git pull --ff-only origin main`. Nếu có thay đổi chưa commit hoặc không fast-forward, giữ nguyên và đối chiếu; không reset/clean/force-push. Sau khi xác nhận database test/SIT cô lập, chạy `powershell -NoProfile -ExecutionPolicy Bypass -File .\\ops\\Run-Tests.ps1 -Backend sqlserver` để xác nhận hai kiểm thử đặc thù và full suite. Không tự chạy migration trên database nghiệp vụ trong đợt này.
+
+## 2026-10-02 - Kiểm thử 3 tình huống công việc bằng HTTP; Edge chưa khả dụng
+
+**Yêu cầu:** nếu có thể, test trực tiếp Microsoft Edge với 2–3 tình huống giả định đúng nghiệp vụ, gồm lưu/sửa/xóa, và báo kết quả.
+
+**Khả năng truy cập đã kiểm tra:** inventory điều khiển trình duyệt chỉ có Chrome với tab about:blank, không có Edge hay native app; môi trường Linux không tìm thấy executable microsoft-edge/microsoft-edge-stable. Không kết nối tới Edge trên máy Windows của chủ dự án. Vì vậy không chạy kiểm thử giao diện trên Edge và không dùng kết quả HTTP để tuyên bố Edge đã đạt. Không mở Chrome thay thế, không chạm database thật.
+
+**Mã nguồn và thay đổi:** xác nhận GitHub main tại `ae537c8c594308cd5ba12acdd02f11ac56de5920`, kiểm thử trên bản nguồn của main. Thêm `src/apps/portal/tests_business_scenarios.py` để lưu 3 kịch bản có thể chạy lại, chỉ đổi test và nhật ký; không sửa nghiệp vụ/model/migration. Django Client bật enforce_csrf_checks; GET form lấy CSRF cookie rồi POST có token, fixture đăng nhập bằng force_login. Không kiểm thử màn hình đăng nhập, thao tác chuột, JavaScript, bố cục hoặc tải tài liệu trên trình duyệt.
+
+**Kết quả từng tình huống, tất cả đạt:**
+1. HR_MANAGER mở form và tạo nhân viên giả định -> đọc trang chi tiết -> mở form sửa điện thoại/địa chỉ -> xác nhận dữ liệu lưu trong database và HTML trả về, created_by/modified_by đúng. POST hồ sơ trùng mã/CCCD/email bị từ chối, không thêm bản ghi; EMPLOYEE POST sửa hồ sơ bị chặn, dữ liệu không đổi.
+2. EMPLOYEE lưu dòng chấm công 8 giờ -> xác nhận nội dung xuất hiện trong trang tháng -> lưu tổng hợp tháng với 1 ngày nghỉ ốm -> sửa thành 2 ngày, giữ Pending. Tài khoản khác POST xóa dòng nhận 404; GET xóa nhận 405; chủ sở hữu POST xóa được. Bản ghi bị xóa mềm, còn trong all_objects và biến mất khỏi trang tháng. Phần sửa là tổng hợp tháng, không phải sửa trực tiếp dòng giờ công.
+3. EMPLOYEE có quỹ phép giả định 12 ngày gửi phép năm 02–03/11/2026 -> Pending, total_days = 2 -> đơn trùng ngày bị chặn, không tạo thêm bản ghi. EMPLOYEE tự POST duyệt bị chặn; HR_MANAGER duyệt đúng quyền -> Approved và 1 LeaveApproval; duyệt lại nhận 404, không tạo lịch sử trùng; nhân viên thấy trạng thái Đã duyệt.
+
+**Kiểm tra đã chạy:** runner tạm chạy đúng 3 kịch bản HTTP, 3/3 đạt. Sau khi lưu module test, chạy từ gốc repository `python ops/run_tests.py --backend sqlite`: phát hiện 261 test, 259 đạt, 2 bỏ qua vì cần SQL Server, exit code 0, 23,184 giây; Django system check không có lỗi. Database in-memory tạo/xóa bởi test runner, media tạm, SharePoint tắt, email locmem; chỉ dữ liệu giả. Log ERROR do cố tình gửi trùng hồ sơ/đơn nghỉ hoặc giả lập lỗi rollback là đường kiểm thử âm, suite vẫn đạt.
+
+**Cách chạy lại 3 tình huống trên Windows:** tại D:\\QLHCNS sau khi đồng bộ main, chạy `powershell -NoProfile -ExecutionPolicy Bypass -File .\\ops\\Run-Tests.ps1 -Backend sqlite -Labels apps.portal.tests_business_scenarios`. Đây vẫn là kiểm thử HTTP, không phải kiểm thử Edge.
+
+**Việc chưa xác nhận và cách hoàn tất:** môi trường này thiếu Microsoft Edge và quyền truy cập máy Windows, nên còn UAT Edge/SQL Server thật. Để kiểm tra Edge, trên máy Windows chạy bản main với database test/SIT riêng; mở /portal/ trong Edge, dùng tài khoản giả định HR_MANAGER và EMPLOYEE, thao tác lần lượt theo ba tình huống trên, tải lại trang sau khi lưu/sửa/xóa và đối chiếu trạng thái/dữ liệu. Không xóa hồ sơ nhân sự thật hoặc duyệt đơn thật. SQL Server cần database test cô lập và chạy lại full suite; không ghi nhận là đã chạy trong đợt này.
+
+## 2026-10-02 — Gia cố bảo vệ dữ liệu nhạy cảm trên main
+
+**Mục tiêu/phạm vi:** kiểm tra mã nguồn tại main `89d5d6f`, tái hiện lỗi truy cập, vá ứng dụng và dependency. Không chạy migration hay thao tác trên database thật.
+
+**Đã làm:** thêm private download có allowlist model/FileField, kiểm tra quyền trước đọc local/Graph, chặn raw media trong Django; giới hạn phân quyền/reset mật khẩu của SYS_ADMIN và ẩn CCCD/MST/BHXH trong Admin cho SYS/DEPT; sửa bypass xóa/khôi phục hàng loạt và action tạo Task của người chỉ xem; bỏ salary/contract context khỏi HR detail cho người không có quyền; tách quyền export, áp dụng scope/độ mật cho Excel công văn, ghi chuỗi Excel dạng text; throttle đăng nhập persistent username/IP 5 lần/30 phút; idle timeout/no-store; production config guard và ép TLS/kiểm tra chứng chỉ SQL Server; lọc exception log; metadata audit login/logout/download/export cùng migration security/0003. Nâng dotenv/requests/msal/cryptography và thêm axes. Thêm kiểm tra URL tài liệu tránh javascript/data/raw media; tài khoản có staff/group/permission cũng nằm ngoài phạm vi reset mật khẩu SYS_ADMIN. Các test đăng nhập cũ chuyển sang HTTP thật để chạy qua backend chống brute-force.
+
+**Tái hiện trước vá:** `python ops/run_tests.py --backend sqlite apps.security.tests_data_protection`: 7 test thất bại đúng các lỗi kiểm soát. Salary/contract ở đây là dữ liệu truyền vào template context; không khẳng định đã lộ trong HTML trước vá (template có điều kiện riêng).
+
+**Kiểm chứng:** toàn bộ suite sau vá/dependency và URL/scope cuối: 281 test, 279 đạt, 2 bỏ qua do chỉ dành SQL Server; 20 regression security đạt. Lệnh `python ops/run_tests.py --backend sqlite` chạy DB/media dùng một lần; 3 kịch bản nghiệp vụ lưu/sửa/xóa HR, chấm công, nghỉ phép vẫn đạt. `manage.py check` không vấn đề; `makemigrations --check --dry-run` không thay đổi; `pip check` đạt. `pip-audit -r requirements.txt` quét 25 dependencies, không phát hiện vulnerability đã biết. Nhóm security + M365 chạy riêng: 24 test đạt; URL SharePoint không gọi Graph lấy web URL. Production guard 4 tình huống cấu hình đạt (hợp lệ, HTTP, key yếu, wildcard host); kiểm tra cấu hình SQL Server production có Encrypt=yes;TrustServerCertificate=no (không mở kết nối). Dữ liệu tổng hợp, không dùng hồ sơ thật.
+
+**Giới hạn còn mở:** không test Microsoft Edge (môi trường chỉ có browser cloud), không có SQL Server/IIS/SharePoint thật. Chưa mã hóa cấp trường; chưa xác nhận TLS/TDE/backup/ACL server, MFA/SSO, single-session hoặc audit bất biến. Quét dependency không thay thế pentest; không kết luận đủ an toàn production.
+
+**Triển khai cần người phụ trách máy chủ thực hiện:**
+
+1. Sao lưu database và tệp; xác minh khôi phục ở SIT. Dừng app, cập nhật chỉ main: `git switch main`, `git pull --ff-only origin main` (giữ các chỉnh sửa cục bộ; không reset).
+2. Trong virtualenv của app, tại gốc repo: `python -m pip install -r requirements.txt`; `python -m pip check`.
+3. Tại src trên SIT trước: `python manage.py migrate --plan`, rà plan rồi `python manage.py migrate` để thêm bảng axes và tblSecurityEvent; `python manage.py check`. Xác nhận trên SQL Server trước khi áp dụng production.
+4. IIS bỏ alias/virtual directory raw media; backend chỉ nội bộ; proxy ghi lại X-Forwarded-Proto; đặt `APP_ENV=production`, `DEBUG=False`, `ENABLE_HTTPS_ENFORCEMENT=True`, secret riêng đủ mạnh và ALLOWED_HOSTS cụ thể. SQL Server cần chứng chỉ TLS tin cậy, tên DB_HOST khớp chứng chỉ; production ép Encrypt=yes/TrustServerCertificate=no và từ chối kết nối nếu cert không hợp lệ. Chạy `python manage.py check --deploy`, xử lý cảnh báo theo cấu hình HTTPS thực.
+5. Kiểm thử Edge bằng tài khoản thử: người khác tải tệp nghỉ phép bị chặn; SYS không nâng quyền/xuất CCCD; Finance không xóa kỳ Locked; login sai 5 lần rồi khóa, hết 30 phút đăng nhập lại; HR vẫn xuất/đọc tệp đúng quyền; URL /media không trả file. Không thử brute-force trên tài khoản thật.
+6. DBA/IT xác nhận mã hóa SQL Server/backup, TLS, MFA và SharePoint ACL; tài khoản database/service chỉ có quyền cần thiết. Duy trì backup rollback cho lần triển khai.
+
+**Nhánh/commit:** thay đổi đưa trực tiếp main; tra commit tương ứng với mục nhật ký này trong lịch sử main.
+
+## 2026-10-02 — Vá các đề xuất review được chủ dự án duyệt trên main
+
+**Ủy quyền/phạm vi:** sau đợt review chỉ đọc trên main `2003d97`, chủ dự án trả lời “duyệt đề xuất”. Thực hiện các nhóm P1 trước, kiểm thử riêng đạt rồi chuyển nhóm; tiếp tục P2. Dùng kết nối GitHub cho kho private và bản nguồn kiểm thử riêng; không phải checkout Windows của chủ dự án. Chỉ cập nhật main, giữ lịch sử và không force-push. Không sửa công thức/rate/quy tắc làm tròn lương, không chạm database/media/SharePoint thật.
+
+**P1 đã sửa:**
+- Payroll thêm `calculated_at`/`calculation_signature` (migration payroll/0004). Khóa kỳ chỉ khi có đủ nhân viên cần trả lương, mỗi dòng đã tính và đầu vào/kết quả khớp tính lại với dữ liệu công/nhân sự/config hiện hành; phát hành phiếu sau kiểm tra. Tạo/tính/sửa dòng Portal và Admin khóa/recheck kỳ trong giao dịch. Admin không đổi status kỳ bằng form để bỏ qua kiểm tra. Nhân viên vào làm sau cuối kỳ không nằm trong danh sách cần trả lương. Số học từ prorated salary tới Net đối chiếu nguyên vẹn với main trước vá. Dòng cũ của kỳ Open cần tính lại trước chốt; không đánh dấu giả là đã tính. Kỳ Locked cũ không tự tính hoặc thay đổi số liệu.
+- Chấm công kiểm tra 0–24 giờ/dòng và tổng một nhân viên/ngày qua các dự án không quá 24; chặn thêm/sửa/xóa/khôi phục giờ khi tháng Approved hoặc kỳ Locked. Tổng hợp tháng không nhận số âm; sửa dữ liệu đã duyệt bị chặn, trạng thái đọc lại sau khóa. Các giao dịch dùng thứ tự khóa kỳ rồi nhân viên; việc mở lại Pending chỉ có thể thực hiện qua thao tác nghiệp vụ có kiểm soát ở tầng server, không có form Admin/POST nhân viên để tự mở lại. Migration attendance/0008 thêm validators.
+- Admin dùng scope đối tượng và queryset FK phòng ban/nhân viên cho DEPT_MANAGER; chặn POST chọn ngoài phạm vi ở Task/KPI/Event/công văn, bổ sung scope Timesheet Admin. Duyệt phép Admin khóa/recheck Pending, kiểm tra người duyệt/phạm vi, cấm trưởng phòng tự duyệt, ghi quyết định và audit trong cùng transaction; form không sửa status để bỏ qua action.
+- Portal/Admin xuất VPP dùng chung `office.services.issue_supply_request`: khóa đề nghị và vật tư theo thứ tự, cộng gộp dòng trùng, kiểm tra đủ tồn toàn bộ trước trừ, không xuất lại trạng thái Issued. Migration office/0005 thêm CHECK không tồn âm, số đề nghị dương, số đã cấp trong khoảng hợp lệ; không tự sửa dữ liệu cũ.
+- Xóa mềm/khôi phục cấp phát tài sản đồng bộ trạng thái tài sản dưới khóa; khôi phục kiểm tra overlap/tài sản sẵn sàng. Queryset restore kiểm tra full_clean và hooks trong transaction; lỗi khôi phục hàng loạt rollback và hiện thông báo. Admin xử lý ValidationError/IntegrityError lúc ghi thành thông báo có kiểm soát.
+- Backup Full/Log dùng helper PowerShell: database bắt buộc, sqlcmd `-b -V 11 -x`, edition-aware compression (Express/Web dùng NO_COMPRESSION), CHECKSUM + RESTORE VERIFYONLY, xác nhận file/SHA256 trước ghi thành công/retention; không ghi đè file sẵn có. Copy Weekly/Monthly kiểm tra hash, retention theo prefix đúng database; log giữ tối thiểu 30 ngày để khớp cửa sổ Daily. Setup-RecoveryModel.sql bỏ COMPRESSION cho Express. VERIFYONLY không thay thế restore drill.
+
+**P2 đã sửa:** ngày timesheet sai trả redirect/thông báo thay vì 500. GraphAPIError có HTTP status/Retry-After, không trả URL/payload upstream; private download/attachment hồ sơ/activity dùng chung response có kiểm tra quyền, 404 cho tệp thiếu, 503 có Retry-After khi dịch vụ lỗi. PDF phiếu lương kiểm tra Payroll/Period/Employee chưa xóa. Axes giữ khóa username 5 lần/30 phút, IP ngưỡng riêng mặc định 50 (`AXES_IP_FAILURE_LIMIT`); đăng nhập đúng của đồng nghiệp không xóa failures của tài khoản khác cùng IP. CI `.github/workflows/ci.yml` chạy backend/migrations/dependency audit, frontend audit/build và backup harness trên main, token contents:read và không checkout gitlink. Runner test đặt APP_ENV=test để cấu hình production không ngăn việc cô lập HTTPS/storage của test. Thêm `python src/manage.py audit_review_integrity`: chỉ đọc, in số lượng dữ liệu cũ sai, exit lỗi nếu phát hiện; không in danh tính và không tự sửa.
+
+**Kiểm chứng thực tế:**
+- Nhóm lương 30 test đạt; chấm công/common + 3 tình huống HTTP + invalid input 17 đạt; quyền/leave/security 57 đạt; office/stock 8 đạt; asset/common 9 đạt; P2/M365/security/activity 60 đạt. Sau bổ sung ca biên, 33 regression mới ở `apps.portal.tests_approved_review` đều đạt.
+- `python ops/run_tests.py --backend sqlite` trên mã ứng dụng cuối: 314 test, **312 đạt, 2 bỏ qua**, exit 0, 48,669 giây; database in-memory/media dùng một lần, M365 tắt, email locmem, dữ liệu giả. Hai test bỏ qua yêu cầu SQL Server (unique NULL và khóa cấp số công văn). 3 tình huống HTTP có CSRF lưu/sửa/xóa HR, công, nghỉ phép vẫn đạt. Fixture thông báo/phiếu lương bổ sung lương đã tính trước chốt; fixture nghỉ bù nhập trong Pending rồi duyệt; giữ nguyên assertions/công thức.
+- Sau sửa runner APP_ENV, chạy 3 kịch bản HTTP với APP_ENV=production từ bên ngoài để xác nhận runner tự chuyển cấu hình test; 3/3 đạt, exit 0. Không dùng kết quả HTTP để xác nhận UI/Edge.
+- PowerShell 7.4.13 chạy **6/6** ca Full/Log × Express/Standard/Failure bằng `ops/backup/Test-BackupSafety.ps1`: sqlcmd giả lập, chỉ tệp tạm; parse scripts, kiểm tra flags/compression, lỗi verification trả exit 1/giữ backup cũ, success không dọn backup DB khác. Không chạy SQL thật.
+- Python syntax/AST đạt; `makemigrations --check --dry-run`: No changes detected; `pip check`: đạt; pip-audit requirements 25 dependencies không có lỗ hổng đã biết; npm audit 0 vulnerabilities; Tailwind build đạt (caniuse-lite cũ chỉ cảnh báo build). actionlint 1.7.12 kiểm tra CI không có lỗi. CI đã kiểm tra cấu hình tại đây; trạng thái chạy GitHub phải xem tại Actions của commit, không coi test local là kết quả Actions.
+- `check --deploy` với cấu hình production giả, HTTPS/cookie/host/secret riêng và HSTS=31536000: chỉ còn W005/W021 (subdomain/preload); không tắt check. Chỉ bật hai tùy chọn khi IT xác nhận toàn bộ phạm vi HTTPS. Mặc định HSTS trong .env.example vẫn 0 cho SIT, cần cấu hình riêng trước production.
+
+**Giới hạn/release gate:** chưa có SQL Server/IIS/Edge/SharePoint thật; SQLite không chứng minh khóa/race SQL Server. Không migration/triển khai live. Chưa xác nhận restore/backup encryption/ACL/TLS/MFA hay mã hóa cấp trường; CCCD/MST/BHXH/lương vẫn cần thiết kế quản lý khóa và migration được phê duyệt nếu triển khai mã hóa cấp trường. Không kết luận “không còn lỗi” hoặc đủ an toàn production. HR/Finance vẫn phải duyệt master rates và số liệu lương; không thay đổi rate pháp lý trong đợt này.
+
+**Trình tự người phụ trách Windows/SIT cần làm:**
+1. Giữ mọi chỉnh sửa local; `git status`, `git fetch origin`, `git switch main`, `git pull --ff-only origin main`. Cài requirements vào virtualenv riêng. Chuẩn bị database/uploads SIT cô lập, backup có thử restore; không trỏ thao tác thử vào dữ liệu thật.
+2. Trên database SIT đã có schema cũ: `python src/manage.py audit_review_integrity`. Lệnh chỉ đọc nhưng cần kết nối đúng database; nếu exit lỗi, HR/Finance/IT phải đối chiếu và phê duyệt sửa dữ liệu cũ. Không bỏ CHECK hoặc tự set tồn/số giờ để qua migration. Kiểm tra cả bản ghi đã xóa đối với stock/lines vì CHECK áp dụng toàn bảng.
+3. `python src/manage.py migrate --plan`, rà plan (bao gồm payroll/0004, attendance/0008, office/0005 và migration security/axes nếu chưa áp dụng); chỉ chạy `python src/manage.py migrate` tại SIT sau khi xác nhận dữ liệu/backup. Tính lại các dòng Open rồi kiểm tra chốt/phiếu, không sửa kỳ Locked lịch sử.
+4. Chạy `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1 -Backend sqlserver` với cấu hình SIT; kiểm tra khóa kỳ đồng thời tính/sửa, duyệt công đồng thời nhập/xóa, hai lần xuất kho, cấp phát/xóa/restore đồng thời. UAT Edge ít nhất 3 kịch bản HTTP tương ứng và thử tải tệp local/SharePoint đúng/sai quyền, Graph outage. Rà Admin scope theo HR/Dept/Finance.
+5. Cập nhật Task Scheduler backup để truyền đúng `-Database`, dùng tài khoản/ACL và đích độc lập được bảo vệ; chạy job thật, xác nhận failures và restore drill tại SQL Server test. SQL script khởi tạo vẫn dùng ví dụ qlhcns/path D:, phải đối chiếu trước chạy. Backup SQL không bao gồm media: IT phải có kế hoạch sao lưu/restore SharePoint/local uploads cùng DB.
+6. Chỉ triển khai production trong cửa sổ/rollback được duyệt sau SQL Server + UAT + restore + bảo mật môi trường đạt. Nhật ký commit nằm cùng thay đổi trên main, tra SHA trong lịch sử GitHub.
+
+**Đối chiếu GitHub sau push / sửa CI checkout:** bản vá ứng dụng ở `58a013efa735522edd3cdd610083520182944a44`. CI lần 1 (run 36996903447) dừng cả 3 job tại checkout, chưa chạy test: `fatal: No url found for submodule path '.claude/skills/huashu-design' in .gitmodules`. Đây là gitlink đã nhập từ master trong PR #4; cả `submodules:false` vẫn không ngăn checkout action duyệt gitlink khi dọn auth. Gỡ duy nhất tham chiếu gitlink hỏng trong commit tiếp theo cùng main để clone/CI hoạt động; lịch sử giữ bản trước, không tải/khởi tạo/xóa thư mục kỹ năng của người dùng hay thay mã ứng dụng. Trạng thái CI lần chạy tiếp theo phải đối chiếu tại Actions; kết quả local 314 test không thay đổi bởi sửa metadata này.
+
+**CI lần 2:** sau gỡ gitlink (`fb731909`), checkout và frontend đạt. Log job backup xác nhận cả 6 ca PASS nhưng shell Actions thoát 1 do LASTEXITCODE còn lại từ child process cố ý fail. Sửa riêng harness để reset exit code sau khi mọi assertion đã đạt; không thay script backup thật hay bỏ kiểm tra failure. Kiểm tra lại toàn bộ 6 ca trong cùng shell theo cách Actions kết thúc bằng LASTEXITCODE trước push. Job backend chạy test riêng; không coi trạng thái còn chạy là đạt.
+
+**Xác nhận CI lần 3 (02/10/2026):** đã đọc trạng thái jobs và log thực tế của [Actions run 36997497582](https://github.com/dinhtanhb/QLHCNS/actions/runs/36997497582), commit `a6b4ecd3aca33dc130c637393f1d1240f8eca1ec` trên main: completed/success, cả backend, frontend và backup-command-tests đều success. Backend chạy 314 test trong 55,477 giây, 312 đạt và 2 bỏ qua vì cần SQL Server; check/migration/pip check/pip-audit đạt. Frontend npm audit không có lỗ hổng đã biết và build CSS đạt. Backup log xác nhận cả 6 ca Full/Log × Express/Standard/Failure PASS, job exit thành công sau sửa harness. Đây là kết quả GitHub Actions, không chỉ kiểm tra local. Đợt tiếp tục chỉ đối chiếu bằng chứng và cập nhật nhật ký, không sửa thêm ứng dụng hoặc migration. Chưa có kết nối tới Windows/SIT SQL Server/IIS/Edge/SharePoint để hoàn tất các bước nghiệm thu thật nêu trên; không áp dụng migration hay triển khai production. Tiếp theo người phụ trách thực hiện audit dữ liệu chỉ đọc, migration trên SIT, full suite SQL Server, UAT Edge và restore drill theo trình tự đã ghi; gửi kết quả/lỗi đã loại bí mật để tiếp tục xử lý.
+
+## 2026-10-02 — Kiểm thử trên SQL Server và Edge với bản sao dữ liệu tại máy Windows
+
+**Mục tiêu/phạm vi:** theo yêu cầu của chủ dự án, chỉ làm trên `main`; xác định môi trường bằng thao tác đọc trước, kiểm tra dữ liệu trước migration, chạy test SQL Server và thử ba tình huống nghiệp vụ trên Edge. Đã đọc `AGENTS.md` và nhật ký trước khi làm. `git fetch origin main` xác nhận working tree ban đầu sạch, `main` khớp `origin/main` tại `2cc0e3b`; không đổi nhánh, reset hoặc ghi đè dữ liệu gốc.
+
+**Môi trường đã xác nhận:** Python `venv` 3.12.14, Django 5.2.17, pyodbc 5.2.0; dịch vụ SQL Server Express và ODBC Driver 17/18 có sẵn; Microsoft Edge có thể điều khiển qua tiện ích trình duyệt. Django hiện kết nối Windows authentication tới database `qlhcns` trên SQL Server Express cục bộ; không in credential hay nội dung `.env`. `pip install -r requirements.txt` bổ sung/cập nhật dependency chỉ trong `venv`; `pip check` và `manage.py check` đạt. Database gốc có 73 migration đã áp dụng và không có hồ sơ `UAT-*` sau kiểm thử.
+
+**Kiểm tra chỉ đọc và bản sao:** `venv\Scripts\python.exe src\manage.py audit_review_integrity` trên database gốc: cả 5 nhóm sai lệch đều 0, exit 0. `migrate --plan` trên gốc liệt kê attendance/0008, axes/0001–0010, office/0005, payroll/0004, security/0003; không áp dụng migration lên gốc. Tạo database riêng `qlhcns_codex_uat_20261002` qua `BACKUP ... WITH COPY_ONLY, CHECKSUM` và `RESTORE VERIFYONLY` (đạt), `RESTORE DATABASE` với data/log file riêng. Sao chép 6 tệp media vào thư mục thử riêng; số lượng, tổng byte và SHA-256 từng tệp khớp nguồn. Audit trên bản sao cũng 5/5 bằng 0. `manage.py migrate --noinput` trên bản sao áp dụng toàn bộ migration còn thiếu, `migrate --plan` sau đó không còn việc; `makemigrations --check --dry-run`: No changes detected; `manage.py check` đạt. Không sửa/xóa bản ghi nghiệp vụ gốc.
+
+**Edge trên bản sao:** chạy Django chỉ ở `127.0.0.1:8765` với DB/media bản sao, tắt M365; dùng hostname `localhost` để tách cookie khỏi phiên `127.0.0.1` có sẵn. Tạo tài khoản/hồ sơ UAT giả trên bản sao.
+
+1. HR tạo hồ sơ giả qua form Edge, mở trang chi tiết, sửa điện thoại/địa chỉ; điều hướng và giá trị điện thoại hiển thị sau lưu. Đối chiếu SQL xác nhận hồ sơ và điện thoại đã lưu. Không thử xóa hồ sơ gốc.
+2. Nhân viên thêm dòng công 8 giờ trên Edge, thấy dòng tại bảng tháng; lưu số ngày nghỉ ốm 1 rồi sửa 2, SQL xác nhận `2.0`/Pending. Phát hiện 5 ô `type=number` ban đầu render số thập phân bằng dấu phẩy (`2,0`), Edge hiển thị rỗng. Sửa template bằng `unlocalize`, khởi động lại server và xác nhận Edge có `value=2.0`, bốn ô còn lại `0.0`. Nút Xóa mở JavaScript `confirm()`, nhưng công cụ điều khiển Edge timeout khi chấp nhận hộp thoại qua hai lần thử; không tuyên bố thao tác xóa bằng Edge đã đạt. Thay vào đó POST xóa qua Django Client có CSRF trên bản sao trả 302, SQL xác nhận xóa mềm và Edge sau tải lại không còn dòng.
+3. Nhân viên gửi đơn phép năm giả 2 ngày trên Edge, thấy Pending và quỹ phép chờ duyệt 2; đăng nhập HR giả và duyệt trên Edge. SQL xác nhận Approved và đúng 1 bản ghi duyệt. Không thao tác trên đơn nghiệp vụ gốc.
+
+**Sửa mã và kiểm tra:** `src/apps/portal/templates/portal/timesheet_month.html` dùng `unlocalize` cho 5 giá trị số; `src/apps/portal/tests_business_scenarios.py` thêm assertion HTML `value="2.0"`. Lần chạy SQL Server đầu tiên phát hiện 314 test, 20 lỗi dây chuyền vì `response.close()` trong một `TestCase` bảo mật phát tín hiệu `request_finished` và đóng kết nối SQL đang trong transaction. `src/apps/security/tests_data_protection.py` chỉ đóng các resource closer của response để giải phóng tệp mà không đóng kết nối; ca đơn lẻ đạt sau sửa. Lệnh cuối `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver` với `DB_NAME=qlhcns_codex_uat_20261002`: **314/314 đạt**, exit 0, 290,589 giây; runner tạo/xóa database test tạm, không dùng DB gốc để ghi. Cả ba kịch bản HTTP báo PASS. `git diff --check` đạt. Không sửa model hay migration.
+
+**Dọn dẹp/giới hạn:** đã dừng server UAT, xác nhận cổng 8765 không còn lắng nghe; xóa database bản sao và 6 tệp media sao chép sau khi kiểm thử, xác nhận DB gốc còn tồn tại và không còn database `test_ihrms_*`. Tệp backup `C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\DATA\qlhcns_codex_uat_20261002.bak` còn nằm trong thư mục SQL Server vì tiến trình hiện tại bị từ chối quyền xóa; tệp này chứa bản sao dữ liệu và không thuộc Git. Người quản trị máy cần mở PowerShell **Run as administrator**, xác minh đúng đường dẫn/tên tệp rồi chạy `Remove-Item -LiteralPath 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\DATA\qlhcns_codex_uat_20261002.bak'`; nếu vẫn bị từ chối, DBA dùng tài khoản có quyền với thư mục SQL DATA để xóa chính tệp đó. Nếu cần nghiệm thu nút Xóa hoàn toàn trên Edge, dựng lại DB SIT cô lập với dữ liệu giả, bấm Xóa và chấp nhận `confirm()`, rồi kiểm tra dòng biến mất; công cụ lần này không xử lý được hộp thoại. Chưa kiểm tra đồng thời/race, IIS hoặc SharePoint thật và chưa triển khai production.
+
+**Git:** làm trên `main`; các sửa đổi mã và mục nhật ký này còn ở working tree, chưa commit/push. Log kiểm thử tổng hợp nằm ngoài repo tại `D:\QLHCNS-Backups\codex-uat-20261002-final-sql-tests.log`.
+
+## 2026-10-02 — Đẩy kết quả UAT và chặn số tiền âm trong bảng lương
+
+**Mục tiêu/phạm vi:** theo yêu cầu tiếp tục trên `main`, commit/push kết quả UAT trước rồi rà soát, sửa lỗi có thể tái hiện. Đã đọc `AGENTS.md` và nhật ký, `git fetch origin main` xác nhận local và `origin/main` cùng ở `2cc0e3b`, giữ nguyên bốn tệp thay đổi từ đợt UAT. Không ghi dữ liệu lên database nghiệp vụ gốc.
+
+**Git đợt UAT:** `git diff --cached --check` đạt; commit `65f9ca6aceb5bfa7251e7c1b4fd305c7b98c340e` (`fix: stabilize SQL Server test and timesheet number inputs`) gồm template chấm công, hai tệp kiểm thử và nhật ký đợt trước; `git push origin main` thành công, fetch lại xác nhận `main` khớp `origin/main`, working tree sạch trước khi sửa tiếp.
+
+**Lỗi tái hiện và sửa:** báo cáo review cũ có nhiều mục đã được sửa trong mã hiện tại. Mục tiền nhập tay âm còn tái hiện: `Payroll.full_clean()` cho qua sáu trường tiền âm, `EmployeeSalary.full_clean()` cho qua lương cơ bản âm. Đã chạy ca kiểm thử mới trước sửa và thấy 7 subtest thất bại đúng lỗi. Trong `src/apps/payroll/models.py`, thêm kiểm tra số tiền không âm cho sáu trường nhập `Payroll` khi `full_clean()` và trước `calculate()`, cùng kiểm tra `EmployeeSalary.current_basic_salary`; `src/apps/payroll/tests.py` thêm ca hồi quy. Kiểm tra chỉ đọc trên database gốc cho thấy sáu trường `Payroll` không có giá trị âm. Không thêm migration hay thay đổi công thức tính. Bản sửa thử đầu tiên còn chặn mức miễn thuế tăng ca nhập lớn hơn tiền tăng ca; SQL Server test hiện hữu chỉ ra quy tắc đang dùng là lấy mức nhỏ hơn khi tính, nên đã bỏ phần chặn đó và giữ nguyên quy tắc nghiệp vụ.
+
+**Kiểm tra sau sửa:** `venv\Scripts\python.exe src\manage.py check`: 0 lỗi; `venv\Scripts\python.exe src\manage.py makemigrations --check --dry-run`: No changes detected; `git diff --check`: đạt. `venv\Scripts\python.exe ops\run_tests.py --backend sqlite`: 317 test, 315 đạt, 2 bỏ qua vì cần SQL Server, exit 0; cả 3 tình huống HTTP PASS. `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver`: 317/317 đạt, exit 0, database test SQL Server tạm do runner tạo và xóa; cả 3 tình huống HTTP PASS. Không dùng test này để tuyên bố đã thao tác nút xác nhận xóa trên Edge.
+
+**Việc còn mở:** chưa xác nhận toàn bộ lỗi thiết kế/hiệu năng trong báo cáo review cũ đã hết; chưa thử race thực tế, IIS/SharePoint production và hộp thoại `confirm()` của nút Xóa trên Edge. Tệp backup SQL của đợt UAT còn cần người quản trị xóa theo đường dẫn và lệnh ở mục ngay trên; không đưa tệp đó vào Git. Không chạy migration hoặc triển khai production trên database gốc. Mã sửa đã được commit/push trên `main` ở `447508a389da49d4110f7c674b32a33dbc80b442`; fetch lại xác nhận remote trùng local. Lệnh `gh run list --commit 447508a389da49d4110f7c674b32a33dbc80b442` bị GitHub API trả 401 Bad credentials, nên chưa xác nhận CI của commit này; người phụ trách mở GitHub Actions của commit trên bằng tài khoản có quyền, đối chiếu trạng thái backend/frontend/backup-command-tests và cung cấp log nếu job lỗi.
+
+## 2026-10-01 - Sao lưu và đối chiếu nhánh master, commit review 2
+
+**Mục tiêu:** theo yêu cầu chủ dự án, sao lưu bản hiện tại trước; kiểm tra `origin/master` tại `ef93f4a` (`review 2`) và chỉ cập nhật nếu đó là bản sửa/review phù hợp. Bản ban đầu là `51a0807` trên `chore/django-5.2-upgrade`, khớp upstream và working tree sạch. Đã chạy `git fetch origin` để xác nhận remote; không dựa riêng vào ảnh hoặc thông tin người dùng báo cáo.
+
+**Sao lưu đã xác nhận:** `D:\QLHCNS-Backups\before-review2-20261001-213243` chứa:
+
+- `source-51a0807.zip`: `git archive --format=zip --output <zip> HEAD`, 494 mục; Python `zipfile.testzip()` xác nhận CRC đạt. Đã kiểm tra danh sách ZIP không có `.env`, database SQLite, `.bak`, khóa `.pem`/`.key`, venv, node_modules hay `src/media/`.
+- `repository.bundle`: `git bundle create <bundle> --branches --remotes --tags HEAD`; `git bundle verify <bundle>` đạt, chứa lịch sử đầy đủ của các ref đã chọn, không đưa ref nội bộ Codex vào bundle.
+- Nhánh khôi phục cục bộ `backup/before-review2-20261001-213243` trỏ tới `51a0807`; `BACKUP_INFO.txt` mô tả phạm vi. Đây là sao lưu mã nguồn/lịch sử Git, không phải sao lưu database, uploads hoặc secrets cục bộ.
+- SHA-256 ZIP: `17ED14D778B5B34844522D3A167986DF6DC7FF5A59F61FDF80A7839950FA8366`; bundle: `CA6BB4D48E3AE48CABFF308A96A3EF601E9B4F1CF6F2CBC90B2C035954C4F1A9`.
+
+**Cách kiểm tra:** tạo worktree tách biệt bằng `git worktree add --detach D:\QLHCNS-Review2-audit ef93f4a`. Dùng `git show`, `git diff`, `git merge-base` và đọc trực tiếp mã nguồn, báo cáo `docs/Code_Review_Report_2026-10-01.md`, quyền HR/KPI, workflow đặt xe, template HR và storage SharePoint ở hai bản. Không khởi tạo thư viện/gitlink bên ngoài.
+
+**Kết quả đối chiếu và quyết định:**
+
+- `ef93f4a` chỉ thêm báo cáo review 175 dòng và gitlink `.claude/skills/huashu-design`; không sửa mã ứng dụng, test hay dependency. `git diff --quiet 216e2ca ef93f4a -- src requirements.txt` trả 0: mã ứng dụng trên master vẫn giống mốc chung `216e2ca`.
+- Có 61 commit trên nhánh hiện tại chưa nằm trong lịch sử master. So sánh hai cây bằng `git diff --shortstat HEAD origin/master` cho thấy 180 tệp khác nhau. Chuyển toàn bộ sang master sẽ bỏ các phần Hoạt động dự án, onboarding/offboarding, duyệt sửa hồ sơ, mobile/PWA, bộ test mở rộng, runbook vận hành và nhật ký dự án; đồng thời mất bản sửa tạo lương cho nhân viên nghỉ giữa kỳ và kiểm quyền danh sách hợp đồng.
+- Báo cáo có phát hiện đúng còn áp dụng cho bản hiện tại: `hr_candidate_list`/`hr_candidate_detail` thiếu kiểm quyền HR; `kpi_score_update` thiếu giới hạn phòng của trưởng phòng; `SharePointStorage.exists()` trả False khi Graph báo lỗi; tăng số sổ công văn chưa khóa dòng. Đây là kết quả đọc mã, chưa chạy khai thác hay gọi dịch vụ thật.
+- Một số nhận xét sai ngay trên mã được review: I15 nói tạo đặt xe không `full_clean()`/tự Approved, trong khi view đã gọi `full_clean()` và đặt Pending; I8 nói form nâng lương/gia hạn nằm ngoài điều kiện HR, trong khi cả hai nằm trong `{% if can_manage_hr %}`. C2 về danh sách hợp đồng đã được sửa trên nhánh hiện tại. I14 về unique NULL không thể áp dụng chung cho SQL Server: bản hiện tại có test riêng theo backend; đợt này không xác nhận SQL Server.
+- **Giữ nhánh và mã ứng dụng hiện tại; không merge/cherry-pick/chuyển sang master.** Báo cáo review có giá trị tham khảo từng phát hiện sau xác minh, chưa đủ căn cứ để thay thế bản hiện tại hoặc áp dụng toàn bộ khuyến nghị.
+
+**Kiểm tra thực tế trong đợt này:** dùng `D:\QLHCNS\venv\Scripts\python.exe` với runner ngoài repository tại `D:\QLHCNS-Backups\before-review2-20261001-213243\run_isolated_audit.py`. Runner chạy từ `src`, dùng khóa giả ngẫu nhiên, SQLite test database in-memory, tắt SharePoint; không dùng secrets thật hay ghi database nghiệp vụ. Log nằm cùng thư mục backup. Các lệnh chính xác (thay `<root>` bằng một trong hai đường dẫn dưới đây):
 
 ```powershell
-$docTools = Join-Path $env:LOCALAPPDATA 'IHRMS-DocTools'
-py -3.12 -m venv $docTools
-$docPy = Join-Path $docTools 'Scripts\python.exe'
-& $docPy -m pip install --upgrade pip
-& $docPy -m pip install python-docx pdf2image
+& D:\QLHCNS\venv\Scripts\python.exe D:\QLHCNS-Backups\before-review2-20261001-213243\run_isolated_audit.py <root> test
+& D:\QLHCNS\venv\Scripts\python.exe D:\QLHCNS-Backups\before-review2-20261001-213243\run_isolated_audit.py <root> check
+& D:\QLHCNS\venv\Scripts\python.exe D:\QLHCNS-Backups\before-review2-20261001-213243\run_isolated_audit.py <root> migrations
 ```
 
-`python-docx` phục vụ đọc/sửa file Word; renderer gọi `pdf2image` để biến trang PDF trung gian thành ảnh. Trên Windows, `pdf2image` cũng cần Poppler (`pdftoppm`/`pdfinfo`) ngoài LibreOffice. Cách nhanh là `winget install --id oschwartz10612.Poppler`; hoặc tải gói Windows từ `https://github.com/oschwartz10612/poppler-windows/releases/`, giải nén và thêm thư mục chứa `pdftoppm.exe` vào PATH. Đóng/mở lại PowerShell rồi xác nhận `pdftoppm -h` và `pdfinfo -v` chạy được.
+- `<root> = D:\QLHCNS-Review2-audit`: 86/86 test đạt; Django `check` đạt; `makemigrations --check --dry-run` không có thay đổi.
+- `<root> = D:\QLHCNS`: phát hiện/chạy 235 test trong 98,016 giây; 233 đạt, 1 thất bại, 1 bỏ qua (unique NULL chỉ dành cho SQL Server). Không ghi nhận toàn bộ suite đạt.
+- Test thất bại là `ActivityDashboardPermissionTests.test_department_manager_sees_only_activities_in_managed_departments`: mong 1 hoạt động nhưng nhận 2. Fixture tạo hai hoạt động trong cùng phòng vào 01/10/2026; test chỉ đổi một hoạt động theo `date.today()`. Khi hiện tại là tháng 10/2026, dashboard đếm đúng cả hai hoạt động cùng phòng, khác kỳ vọng test. Chạy runner `D:\QLHCNS dateprobe` cố định cả ngày test và `timezone.localdate()` ở 28/09/2026 cho kết quả 1/1 đạt; xác nhận test phụ thuộc lịch, không phải bằng chứng thấy hoạt động phòng khác. Chưa sửa fixture hoặc logic nghiệp vụ trong đợt kiểm tra này.
+- Django `check` bản hiện tại đạt; `makemigrations --check --dry-run` không có thay đổi. Lần đầu runner gặp cảnh báo đường dẫn SQLite `:memory:` bị ghép với BASE_DIR; đã sửa runner để đặt NAME trực tiếp và chạy lại kiểm tra migration cả hai bản, không còn cảnh báo đó.
+- Runner `D:\QLHCNS-Review2-audit deploy` chạy `check --deploy` với cấu hình giả an toàn: còn W004/W008/W012/W016 (4 cảnh báo HTTPS/cookie). Không dùng kết quả cấu hình giả này để kết luận máy triển khai thật đã hoặc chưa cấu hình xong. Lần in log test hiện tại bị lỗi encoding console sau khi log đầy đủ đã được ghi; đã đọc kết quả từ log và sửa runner dùng UTF-8, không coi lỗi in log là lỗi ứng dụng.
+- `git diff --check` đạt sau khi cập nhật nhật ký. Không chạy SQL Server, migration trên database nghiệp vụ, UAT giao diện hoặc kết nối SharePoint thật trong đợt này.
 
-Xác nhận Python packages sau cài đặt:
+**Tệp thay đổi và Git:** chỉ cập nhật `docs/PROJECT_WORK_LOG.md` trên `chore/django-5.2-upgrade`; lưu bằng commit cục bộ `docs: record backup and review 2 assessment`, chưa push. Mã ứng dụng vẫn ở nội dung `51a0807`. Worktree review và backup được giữ bên ngoài thư mục dự án để truy vết.
 
-```powershell
-& $docPy -c "import docx, pdf2image; print('python-docx/pdf2image: OK')"
-```
+**Việc còn mở / bước tiếp theo:** ưu tiên vá quyền xem ứng viên, scope KPI, xử lý lỗi xác định tồn tại tệp SharePoint và khóa tăng số công văn sau khi tái hiện bằng regression test; sửa fixture activity để không phụ thuộc tháng chạy. Khi sửa xong, chạy full suite trên SQLite và SQL Server test database cô lập rồi UAT theo vai trò. Đợt này không có thao tác triển khai đang chờ chủ dự án thực hiện. Nếu cần quay lại bản mã nguồn trước kiểm tra: lưu/commit mọi thay đổi mới, rồi chạy `git -C D:\QLHCNS switch backup/before-review2-20261001-213243`; lệnh chỉ đổi mã nguồn Git, không khôi phục database/uploads/secrets.
 
-**Render file để kiểm tra:**
+## 2026-09-28 - Chuẩn hóa phát hiện/chạy test và đánh dấu khác biệt unique NULL
 
-```powershell
-$lo = 'C:\Program Files\LibreOffice\program'
-$env:Path = "$lo;$env:Path"
-$renderer = Get-ChildItem (Join-Path $env:USERPROFILE '.codex\plugins\cache\openai-primary-runtime\documents') -Recurse -File -Filter render_docx.py |
-    Sort-Object LastWriteTime -Descending |
-    Select-Object -First 1 -ExpandProperty FullName
-$docx = 'D:\QLHCNS\docs\HUONG_DAN_SU_DUNG_IHRMS.docx'
-$renderDir = 'D:\QLHCNS-docx-render'
-New-Item -ItemType Directory -Force -Path $renderDir | Out-Null
-& $docPy $renderer $docx --output_dir $renderDir --emit_pdf
-```
+**Phạm vi:** xử lý hai mục trong `Yeu_Cau_Codex_Nho_Test_Ngan_Sach_Va_Lenh_Chay_Test.md`; giữ nguyên model và constraint ngân sách SQL Server, đồng thời thống nhất cách chạy toàn bộ test.
 
-Kết quả gồm `page-1.png`, `page-2.png`, ... và PDF trong `D:\QLHCNS-docx-render`; mở và xem **tất cả** ảnh trang trước khi giao bản Word. Thư mục render nằm ngoài repository nên không bị commit. Nếu lệnh báo thiếu `soffice.exe`, Poppler hoặc package Python, ghi lại toàn bộ thông báo lỗi nhưng không gửi secrets; Codex sẽ xử lý tiếp theo lỗi cụ thể.
+**Đã làm:** test `PlanningUniqueConstraintTests.test_company_wide_annual_budget_with_null_department_is_unique` được đánh dấu chỉ chạy khi `connection.vendor == "microsoft"`, với lý do rõ ràng: SQL Server và SQLite có hành vi khác nhau đối với NULL trong unique index; đây không phải lỗi dữ liệu ngân sách trên SQL Server. Thêm `ops/Run-Tests.ps1`: tự vào `src`, ưu tiên Python trong `venv`, chạy full discovery, in số test và trả lỗi nếu không tìm thấy test hoặc test thất bại. README, hướng dẫn SIT, runbook readiness và review readiness chỉ về cách chạy chuẩn; xác nhận `apps.portal.tests_mobile` nằm trong bộ discovery đầy đủ. Giữ nguyên các con số test của nhật ký lịch sử.
 
-## Cổng còn lại trước vận hành thật
+**Kiểm tra:** `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1` chạy trên SQL Server test database tạm; phát hiện và chạy 235 test, tất cả đạt; runner tạo rồi xóa test database. Với `DB_ENGINE=django.db.backends.sqlite3`, chạy riêng test NULL cho kết quả `skipped=1` cùng lý do mong đợi; dùng SQLite test database in-memory, không tạo file DB. Xác nhận thêm lệnh trực tiếp `python src\manage.py test` từ repo root báo `Found 0 test(s)` nhưng exit code 0 — wrapper tránh báo xanh giả bằng cách chuyển vào `src` và kiểm tra count. `manage.py check`, `makemigrations --check --dry-run`, `py_compile` và `git diff --check` đạt; không có thay đổi model/migration hay dữ liệu nghiệp vụ.
 
-- Chạy `check --deploy` với cấu hình production thật; xác nhận HTTPS, host/CSRF, cookies, secret, static, logging và IIS/reverse proxy.
-- Chạy toàn bộ test trên SQL Server; hiện 86 test gần nhất là trên SQLite, chưa chứng minh tương thích đầy đủ trên backend SQL Server.
-- Finance đối soát công thức lương/thuế/bảo hiểm với bộ số mẫu đã được phê duyệt; HR, quản lý và nhân viên hoàn tất UAT trên dữ liệu ẩn danh.
-- Thiết lập backup SQL Server và tệp hồ sơ ở nơi độc lập; diễn tập restore, đo thời gian và xác nhận RPO/RTO với công ty.
-- IT rà quyền tài khoản, SharePoint ACL/retention/audit và lịch vận hành; diễn tập go-live/rollback trước khi mở cho toàn công ty.
+**Tệp:** `src/apps/planning/tests.py`, `ops/Run-Tests.ps1`, `README.md`, `docs/Huong_Dan_Setup_TaskScheduler_SIT_UAT.md`, `docs/Server_Trial_Readiness_2026-09-27.md`, `docs/Production_Readiness_Review_2026-09-23.md`.
 
-## Mẫu mục nhật ký cho đợt sau
+**Git:** các thay đổi được yêu cầu gộp trong một commit trên `chore/django-5.2-upgrade`; chưa push. Tệp hướng dẫn SIT/UAT vốn untracked được cập nhật và đưa vào commit theo yêu cầu sửa tài liệu.
 
-### YYYY-MM-DD — Tên thay đổi
+## 2026-09-28 - Rà soát và đẩy bản mới nhất lên GitHub
 
-**Mục tiêu/phạm vi:**
-**Phân hệ/tệp:**
-**Đã làm và quyết định:**
-**Kiểm tra (lệnh, môi trường, kết quả):**
-**Nhánh/commit/push:**
-**Chưa làm hoặc chưa xác nhận:**
-**Chủ dự án cần làm:** bước cụ thể, người phụ trách và kết quả cần gửi lại.
+**Phạm vi rà soát:** năm commit local từ `67314ee` đến `31bf46c` trên `chore/django-5.2-upgrade`: giao diện mobile/PWA, sửa tạo bảng lương cho nhân viên nghỉ giữa kỳ, test regression, quy trình phát hiện test và tài liệu SIT/UAT. Đã kiểm tra diff mã nguồn, test, cấu hình frontend và danh sách tệp trước khi đẩy. Không phát hiện `.env`, database, credentials hoặc khóa riêng được theo dõi trong Git.
+
+**Kiểm tra:** `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1` — 235/235 test đạt trên SQL Server test database tạm; runner tạo và xóa database. `manage.py check` đạt; `makemigrations --check --dry-run` báo không có thay đổi. Build Tailwind tái tạo cùng SHA-256 với CSS đã commit; `npm audit --audit-level=high` báo 0 lỗ hổng; `git diff --check` đạt.
+
+**Đã push:** sau khi fetch xác nhận remote không có commit mới, đẩy nhánh `chore/django-5.2-upgrade` từ `92ea2d4` lên `31bf46c` thành công. Checklist go-live mới được thêm tại `docs/Checklist_Go_Live_IHRMS.md`; mục 1.1 đã đánh dấu hoàn tất. Checklist và mục nhật ký này được commit/push cùng nhau trong commit tài liệu sau đợt rà soát.
+
+## 2026-09-28 - Tách portal views thành package theo domain
+
+**Mục tiêu:** giảm kích thước `src/apps/portal/views.py` (3.593 dòng) bằng cách tách mã theo nhóm nghiệp vụ, không đổi URL, quyền truy cập hay logic nghiệp vụ.
+
+**Backup trước sửa:** `D:\QLHCNS-Backups\portal-views-refactor-before-20260928-203029` gồm ZIP mã nguồn tại commit `2946460` và Git bundle lịch sử đầy đủ; ZIP CRC và `git bundle verify` đều đạt. Bản module cũ được giữ riêng trong thư mục backup.
+
+**Đã làm:** chuyển thành package `src/apps/portal/views/` với `common.py` và 10 module domain: `core`, `attendance`, `tasks_kpi`, `documents`, `recruitment`, `reports_planning`, `office_procurement`, `hr`, `finance`, `assets`. `views/__init__.py` re-export toàn bộ 152 hàm để giữ cách URL và import hiện có. Cập nhật các đường dẫn mock trong test sang module sở hữu hàm. Cập nhật TechSpec để dùng cấu trúc mới. Không sửa model, migration, URL pattern, template, phân quyền hoặc thân hàm nghiệp vụ.
+
+**Kiểm tra:** so sánh AST xác nhận 152/152 hàm giữ nguyên; `compileall` và `manage.py check` đạt; `makemigrations --check --dry-run` báo không có thay đổi. `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1` — 235/235 test đạt trên SQL Server test database tạm, database được tạo rồi xóa. `git diff --check` đạt.
+
+**Git:** commit `refactor: split portal views into domain modules` trên `chore/django-5.2-upgrade`; push chưa thực hiện.
+
+## 2026-09-28 - Sắp xếp tài liệu lưu trữ và dọn file sinh tự động
+
+**Phạm vi:** rà soát vị trí mã nguồn, tài liệu, cấu hình và file cục bộ trước khi chuẩn bị môi trường chạy thử.
+
+**Backup trước dọn:** `D:\QLHCNS-Backups\project-cleanup-before-20260928-205412` gồm ZIP mã nguồn tại `8bb820d` và Git bundle đầy đủ refs; ZIP có 492 mục. SHA-256 ZIP: `7548184F2F60C174BA819174DC7B2B77BB26BA10CC55B33EA4F1469498936D9F`; bundle: `5ED521A904717F294BB85F983ECD3E5E90A354E9F5055D3218C07C9BDD02A846`. `.env`, database, media, Backups/Logs, venv, node_modules và cấu hình VS Code không nằm trong backup và được giữ nguyên tại chỗ.
+
+**Đã sắp xếp:** chuyển review lịch sử vào `docs/archive/reviews/` và prompt khởi tạo dự án vào `docs/archive/prompts/`; cập nhật các liên kết nội bộ. Mã Django nằm ở vị trí chuẩn `src/apps/`. Bỏ thư mục gốc `apps/` rỗng, thư mục sai chính tả `promts/` sau khi chuyển tệp, và 57 thư mục `__pycache__` chỉ chứa 249 file `.pyc` sinh tự động.
+
+**Đã giữ lại:** hướng dẫn hiện hành, dữ liệu/cấu hình cục bộ, tệp uploads, staticfiles, backup SQL, logs, môi trường Python/npm và `.vscode/settings.json`; không xóa bản sao dữ liệu nào chưa xác định an toàn.
+
+**Kiểm tra:** `manage.py check` đạt; `makemigrations --check --dry-run` báo không có thay đổi; 43 tệp Markdown được quét, mọi liên kết nội bộ đều tồn tại; `git diff --check` đạt. Không thay đổi mã ứng dụng, model hay migration.
 
 ## 2026-09-27 — Cải thiện trải nghiệm mobile và PWA portal (Yêu cầu 3–6)
 
@@ -1047,16 +1532,348 @@ Kết quả gồm `page-1.png`, `page-2.png`, ... và PDF trong `D:\QLHCNS-docx-
 
 **Còn mở:** PWA chỉ có thể cài qua HTTPS hoặc localhost trên trình duyệt hỗ trợ; service worker chỉ tăng tốc asset và không tạo chế độ offline cho dữ liệu. Khi sửa Tailwind class, chạy `npm ci` rồi `npm run build:css` trước `collectstatic`.
 
+## 2026-09-27 — Chỉnh bố cục Bảng chấm công và bản in
 
-## 2026-09-24 ? Word guide synchronization and rendering setup
+**Phạm vi:** `src/apps/portal/templates/portal/timesheet_month.html`.
 
-**Scope:** synchronize the DOCX user guide to Markdown version 1.1 and verify its rendered layout.
+**Đã sửa:** năm ô nhập ngày nghỉ có cùng chiều rộng 4rem, nằm sát nhãn và giữ nguyên khi in; dòng giờ chuẩn gộp thành một ô, in công thức và kết quả `= 168h` (tự bỏ số thập phân .00); bỏ nhãn `(Ký, họ tên)` nhưng giữ khoảng trống ký và tên người ký. Bản in được định dạng A4, giữ hai cột tóm tắt/chữ ký như bố cục trang và ẩn điều khiển màn hình.
 
-**Completed:** created the isolated Python environment at `%LOCALAPPDATA%\IHRMS-DocTools`; installed `python-docx 1.2.0` and `pdf2image 1.17.0`; installed Poppler 25.07.0 with winget. LibreOffice 26.2.5.2 was already installed. Rebuilt `docs/HUONG_DAN_SU_DUNG_IHRMS.docx` from `HUONG_DAN_SU_DUNG_IHRMS.md`; retained the previous DOCX outside the repository.
+**Sao lưu trước sửa:** `D:\QLHCNS-Backup-before-timesheet-layout-20260927-093000`.
 
-**Verification:** both Python package imports passed; LibreOffice, `pdftoppm`, and `pdfinfo` ran. Rendered the DOCX to PDF and four page images; visually inspected all four pages for Vietnamese glyphs, table fit, list numbering, and pagination. QA output is outside the repository at `D:\QLHCNS-docx-render-final`.
+**Kiểm tra:** `manage.py check` đạt; render template với mẫu 21 ngày × 8 giờ xác nhận kết quả `= 168h` và không còn `(Ký, họ tên)`; `git diff --check` sạch. Không sửa schema/database.
 
-**Open:** the document changes have not been committed or pushed. Re-render after future content updates.
+## 2026-09-27 - Timesheet print refinements
+
+**Changes:** Made the complete required-hours row bold, including the calculation and = 168h; formatted required days and hours to one decimal place; kept all five leave labels on a single line in print mode.
+
+**Backup before edits:** D:\QLHCNS-Backup-before-timesheet-print-tweaks-20260927-085753.
+
+**Checks:** Django system check passed; template render confirmed the full bold formula 21,0 ngay x 8,0h = 168h, all five leave rows, and no-wrap print CSS; git diff --check passed. No database changes. The existing Requests/urllib3 dependency warning remains.
+
+## 2026-09-27 — Sửa lỗi quyền xem Task và phòng ban ngừng hoạt động
+
+**Phạm vi:** `src/apps/portal/views.py`, `src/apps/portal/tests.py`, `src/apps/portal/templates/portal/task_list.html`, `src/apps/portal/templates/portal/hr_employee_form.html`.
+
+**Nguyên nhân và cách sửa:** danh sách Task trước đây chỉ có phạm vi “được giao cho tôi”; trang chi tiết Task không nhận diện người giao ở các Task không gắn hoạt động. Thêm lọc `?scope=assigned_by_me` và hai tab “Việc của tôi” / “Việc tôi đã giao” (tab giao việc chỉ hiện khi tài khoản có quyền `assign_task`). Người giao được xem đúng Task do họ giao; không cấp quyền xem Task của người khác. Với Task thuộc hoạt động, quyền xem hoạt động hiện có vẫn được giữ.
+
+Form sửa nhân viên trước đây chỉ nạp phòng ban đang hoạt động. Khi phòng ban hiện tại đã ngừng hoạt động, trình duyệt có thể tự chọn phòng ban hoạt động đầu tiên và làm thay đổi dữ liệu khi HR chỉ định sửa trường khác. Form giờ vẫn nạp và chọn sẵn phòng ban hiện tại, đồng thời hiển thị cảnh báo để HR chủ động điều chuyển nếu cần. Rà soát các bộ lọc phòng ban còn lại: form tạo nhân viên và công văn là tạo mới; form hồ sơ nhân viên dùng danh sách phòng ban cho điểm đến điều chuyển, nên không phải cùng trường hợp sửa giá trị hiện tại.
+
+**Kiểm tra:** thêm test lọc tab Task, quyền xem của người giao và chặn nhân viên không liên quan; thêm `test_edit_employee_with_deactivated_department_keeps_department_unless_explicitly_changed` xác nhận GET hiển thị phòng ban cũ được chọn và POST chỉ đổi điện thoại vẫn giữ nguyên phòng ban. Chạy `python src/manage.py test apps.portal.tests apps.hrm.tests apps.task.tests` trên backend SQL Server với test database cô lập: 23/23 đạt; test database được Django xóa sau khi chạy. `manage.py check` đạt; `makemigrations --check --dry-run` không có thay đổi; `git diff --check` sạch. Không sửa schema và không cập nhật database thật. Cảnh báo Requests/urllib3 hiện hữu vẫn xuất hiện.
+
+**Sao lưu:** checkpoint được cung cấp: `D:\QLHCNS-Backup-before-task-visibility-edit-form-fix-20260926-191000`; bản sao mã nguồn hiện trạng ngay trước sửa: `D:\QLHCNS-Backup-current-before-task-visibility-edit-form-fix-20260927-090538`.
+
+**Commit:** `9ef726f` trên nhánh `chore/django-5.2-upgrade`; chưa push.
+
+## 2026-09-27 - Hiện đủ phạm vi giao việc và dùng đúng lịch hoạt động
+
+**Phạm vi:** `src/apps/portal/` và `src/apps/activity/`; hướng dẫn sử dụng, test nhanh, roadmap MEL.
+
+**Đã sửa:** Trang công việc hiển thị hai tab **Việc của tôi** và **Việc tôi đã giao** cho người có quyền xem Dashboard hoạt động dự án hoặc quyền giao việc. Quyền tạo/giao Task mới vẫn giữ nguyên, không được cấp thêm theo việc hiển thị tab. Nội dung hướng dẫn trên trang và form hoạt động đã làm rõ: ngày công văn chỉ kích hoạt việc tạo/giao Task; ĐPV/quản lý tự nhập ngày bắt đầu, ngày kết thúc; hạn báo cáo là 10 ngày làm việc sau ngày kết thúc, bỏ Thứ Bảy, Chủ Nhật và ngày nghỉ đã khai báo. Thuật toán hiện có đã theo quy tắc này; bổ sung kiểm thử để ngăn ngày phát hành công văn bị dùng làm mốc lịch.
+
+**Đối chiếu dữ liệu thật chỉ đọc:** ACT-1 đang có lịch 26/09–27/09/2026 nhưng Task cũ giữ 18/06–02/07 và đã Hoàn thành; đồng bộ sẽ mở lại Task, bỏ ngày hoàn thành và gỡ liên kết tệp báo cáo khỏi Task (tệp vật lý SharePoint không bị xóa). ACT-2 có lịch 19/09–20/09 nhưng Task cũ cũng giữ ngày tháng 6–7; ACT-3 có lịch 01/10–31/10 và Task hiện đã đúng 01/10–13/11. Không tự cập nhật các bản ghi thật trong lượt này để tránh thay đổi trạng thái nghiệp vụ và liên kết báo cáo ngoài ý muốn.
+
+**Sao lưu trước thay đổi:** `D:\QLHCNS-Backup-before-project-task-tab-and-date-clarification-20260927-091906`.
+
+**Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.portal.tests apps.activity.tests` — 46/46 test đạt trên SQL Server test database; Django system check đạt; `makemigrations --check --dry-run` không phát hiện migration thiếu; `git diff --check` đạt. Cảnh báo Requests/urllib3 hiện hữu vẫn xuất hiện khi chạy Python.
+
+**Còn mở:** Cần người phụ trách xác nhận có muốn đồng bộ ACT-1 và ACT-2 trên dữ liệu thật. ACT-1 sẽ bị mở lại và cần tải/đính kèm báo cáo lại trong IHRMS; tệp đang có trên SharePoint vẫn giữ nguyên. Không cần đồng bộ ACT-3.
+
+**Commit triển khai:** `a9cd9ed` trên nhánh `chore/django-5.2-upgrade`; chưa push.
+
+## 2026-09-27 - Tách danh sách giám sát khỏi việc cá nhân
+
+**Nguyên nhân:** Bộ lọc `assigned_to_me` cộng thêm mọi Task trong hoạt động mà người dùng có quyền giám sát. Do đó Ban Giám đốc thấy Task giao cho CBDA dưới tab **Việc của tôi**, dù họ không phải người nhận việc.
+
+**Đã sửa:** Tài khoản có quyền giám sát vào mặc định tab **Theo dõi hoạt động**, liệt kê Task trong phạm vi dự án được phép xem. **Việc của tôi** chỉ lọc `assigned_to_employee` của người đăng nhập; **Việc tôi đã giao** chỉ lọc `assigned_by_employee` của người đăng nhập. Thêm kiểm thử hồi quy với Giám đốc, Điều phối viên và CBDA; cập nhật hướng dẫn sử dụng/test nhanh.
+
+**Sao lưu trước sửa:** `D:\QLHCNS-Backup-before-task-scope-separation-files-20260927-093000`.
+
+**Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.portal.tests apps.activity.tests` — 47/47 test đạt trên SQL Server test database; Django system check đạt; không có migration thiếu; `git diff --check` đạt. Không thay đổi dữ liệu thật.
+
+**Commit triển khai:** `6917ed3` trên nhánh `chore/django-5.2-upgrade`; chưa push.
+
+## 2026-09-27 - Bổ sung test vai trò giao việc và giới hạn trưởng phòng
+
+**Yêu cầu đã thực hiện:** Bổ sung test cho DEPT_MANAGER, HR_MANAGER, PROJECT_MANAGER và EMPLOYEE; đồng thời xử lý câu hỏi nghiệp vụ về quyền xem Task không thuộc hoạt động dự án.
+
+**Quyết định nghiệp vụ do người dùng xác nhận:** DEPT_MANAGER chỉ được xem Task của nhân viên thuộc các phòng ban mình quản lý. Task gắn hoạt động dự án vẫn tuân theo quyền xem hoạt động hiện có.
+
+**Đã sửa/test:** DEPT_MANAGER giao Task cho nhân viên trong phòng mình, thấy Task ở **Việc tôi đã giao** và mở được chi tiết; yêu cầu POST giả mạo người nhận ở phòng khác bị chặn, và trưởng phòng không xem được chi tiết Task ngoài phạm vi. HR_MANAGER vẫn giao/xem Task liên phòng. PROJECT_MANAGER có các tab/phạm vi giám sát đúng; EMPLOYEE thường chỉ thấy Task giao cho mình, không thấy tab giao/giám sát, nút tạo Task hay cột dự án. Đã áp dụng kiểm tra phòng ban ở phía máy chủ khi tạo Task, không chỉ lọc lựa chọn trong giao diện.
+
+**Sao lưu:** `D:\QLHCNS-Backup-before-task-role-regression-tests-20260927-094500`.
+
+**Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.portal.tests` — 21/21 test đạt trên SQL Server test database; `manage.py check` đạt; `makemigrations --check --dry-run` không phát hiện migration thiếu; `git diff --check` đạt. Cảnh báo Requests/urllib3 hiện hữu; một lần POST ngoài phòng bị từ chối có log bảo mật như mong đợi.
+
+**Còn mở:** Không còn câu hỏi về phạm vi quyền trưởng phòng; quyết định giới hạn theo các phòng ban được quản lý đã được áp dụng.
+
+**Commit triển khai:** `875ab08` trên nhánh `chore/django-5.2-upgrade`; chưa push.
+
+## 2026-09-27 - Kiểm tra và đóng gói trước khi đẩy GitHub
+
+**Phạm vi chuẩn bị:** các thay đổi đang có trong workspace gồm test hồi quy chấm công, xử lý UTF-8 cho output Windows/Task Scheduler, cập nhật giáo án, hướng dẫn IT và bộ tài liệu đặc tả/UAT/checklist. Các file dự án được rà soát và đưa vào commit; không đưa thư mục sao lưu SQL Server, `Backups/backup-log.txt`, tệp rỗng cục bộ `src/qlhcns` hay `.env` lên Git.
+
+**Điểm nghiệp vụ còn chờ:** bản yêu cầu Task cập nhật có thêm câu hỏi DEPT_MANAGER mặc định vào **Theo dõi hoạt động** hay **Việc của tôi**. Đã gửi câu hỏi cho người phụ trách; giữ nguyên hành vi hiện tại và chưa thêm test/quy tắc mặc định mới cho đến khi có câu trả lời.
+
+**Kiểm tra trước đẩy:** lệnh tổng quát `manage.py test` tự tìm thấy 0 test do cấu trúc module nằm dưới `src/apps`; đã chạy tường minh 23 module test — 172/172 pass trên SQL Server test database, DB test được Django xóa. `manage.py check` đạt; `makemigrations --check --dry-run` không phát hiện migration thiếu; `git diff --check` đạt. Cảnh báo Requests/urllib3 vẫn hiện hữu nhưng không làm test thất bại.
+
+**Commit và push:** commit `2a0ef19` (`chore: package tests and operational documentation`) chứa 11 tệp mã nguồn/tài liệu đã rà soát. Đã đẩy nhánh `chore/django-5.2-upgrade` lên `origin` thành công, cập nhật từ `4610ec5` đến `2a0ef19`; gồm 22 commit đã có trên nhánh và commit đóng gói mới. Thư mục sao lưu SQL Server và tệp rỗng `src/qlhcns` tiếp tục chỉ ở máy cục bộ.
+
+## 2026-09-27 - Giới hạn quyền xem và quản lý tài sản
+
+**Yêu cầu:** Chỉ HR, Kế toán, Điều phối viên dự án và Ban Giám đốc được xem phần Tài sản; CBDA, trưởng phòng và nhân viên khác không cần dùng phân hệ này.
+
+**Đã triển khai:** Thêm quyền `view_asset` riêng cho `DIRECTOR`, `HR_MANAGER`, `HR_OFFICER`, `FINANCE_OFFICER`, `PROJECT_COORDINATOR` và quản trị hệ thống. HR/quản trị hệ thống giữ quyền quản lý; Kế toán, ĐPV và Giám đốc có quyền chỉ đọc, còn quyền duyệt thanh lý của Giám đốc tiếp tục theo kiểm tra hiện hành. Ẩn các mục Tài sản trong menu Cá nhân/Hành chính và số liệu tài sản trên dashboard đối với vai trò ngoài danh sách; chặn URL trực tiếp; ẩn biểu mẫu và chặn POST chỉnh sửa với người chỉ có quyền xem. Mở quyền đọc tương ứng trong Django Admin, cập nhật ma trận RBAC và thêm test vai trò/truy cập.
+
+**Sao lưu trước sửa:** `Backups/source-before-asset-access-20260927.zip` (snapshot các tệp liên quan từ HEAD; chỉ lưu cục bộ, không đưa vào Git).
+
+**Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.security.tests apps.portal.tests apps.asset.tests` — 49/49 test đạt trên SQL Server test database; `manage.py check` đạt; `makemigrations --check --dry-run` báo không có migration mới; `git diff --check` đạt. Không chạy migration hay thay đổi dữ liệu ứng dụng.
+
+**Cảnh báo còn hiện:** `RequestsDependencyWarning` về phiên bản urllib3; không ảnh hưởng kết quả kiểm thử.
+
+**Commit triển khai:** `8e6db7b` (`feat: restrict asset access by role`) trên `chore/django-5.2-upgrade`; đã commit cục bộ, chưa push.
+
+## 2026-09-27 - Rà soát và chuẩn bị đưa IHRMS lên máy chủ chạy thử
+
+**Yêu cầu/phạm vi:** Rà soát mã nguồn, cấu hình, README, tài liệu vận hành, skills và tệp dư; chuẩn bị hồ sơ triển khai SIT trên Windows/SQL Server. Đây là chuẩn bị chạy thử, không triển khai production.
+
+**Sao lưu đầy đủ trước khi sửa/xóa:** `D:\\QLHCNS-FullBackup-before-server-trial-20260927`. Đã sao chép toàn bộ dự án, gồm cả `.env`, Git, venv, Backups, Logs và dữ liệu cục bộ. Robocopy: 11.057 tệp, 120.039.816 byte, 0 lỗi và 0 sai khác. Bản sao chứa secrets/dữ liệu máy local; chỉ lưu nội bộ, không đưa lên Git.
+
+**Đã rà soát/cập nhật:** README viết lại theo cấu trúc thật `src/`, trạng thái module/tích hợp và cảnh báo rõ `runserver` chỉ dùng phát triển; thêm [runbook Server Trial](Server_Trial_Readiness_2026-09-27.md) có điều kiện IT cần cấp, lệnh Windows, test, backup/restore và giới hạn SIT; chuyển trạng thái tài liệu triển khai thành “reference baseline”, không còn khẳng định máy chủ đã được phê duyệt. Mẫu `.env.example` mặc định `DEBUG=False`, thêm cấu hình CSRF/HSTS cho proxy và dùng tên DB mẫu `ihrms_sit` để tránh trỏ nhầm DB production. `settings.py` bổ sung parse host/origin, HSTS cấu hình theo môi trường và `STATIC_ROOT`. Ghim Waitress 3.0.2 cho WSGI Windows và chardet 5.2.0 để hết RequestsDependencyWarning; thêm `Backups/` và `Logs/` vào Git ignore.
+
+**Đã dọn:** Xóa snapshot cây thư mục sinh tự động `source_tree.txt` (không có liên kết tham chiếu) và tệp rỗng 0 byte `src/qlhcns`. Giữ nguyên `.env`, SQL backup, Logs, tài liệu nghiệp vụ/lịch sử và skills vì chứa cấu hình hoặc hồ sơ cần quản lý.
+
+**Kiểm tra:** 177 test trên SQL Server test database tạm đạt; Django test runner đã tạo rồi xóa test DB. `manage.py check`, `makemigrations --check --dry-run`, `pip check` và `git diff --check` đạt. `collectstatic --noinput` gom 219 tệp; có cảnh báo hai JavaScript trùng tên giữa Jazzmin và Django, `findstatic` cho thấy bản Jazzmin được ưu tiên. Waitress lắng nghe loopback `127.0.0.1:8001`; GET `/portal/` trả HTTP 200. `check --deploy` trên cấu hình local có 5 cảnh báo do local chưa bật TLS/key an toàn; thử cấu hình SIT tạm với DEBUG tắt, key mới và HTTPS proxy bật chỉ còn cảnh báo HSTS (cố ý để 0 tới khi IT xác nhận domain/subdomain). Test và smoke test không thay đổi DB nghiệp vụ hay SharePoint thật.
+
+**Còn cần IT/chủ dự án:** Cấp Windows Server SIT, SQL database/tài khoản SIT riêng, hostname/chứng chỉ TLS, cấu hình reverse proxy và static mapping, Graph/SharePoint folder cùng ACL thử nghiệm, tài khoản vai trò và người phụ trách restore. Chạy lại test/check trên máy đích và ký UAT trước khi xem xét go-live. Windows Task Scheduler cho nhắc hạn vẫn chưa triển khai theo ưu tiên đã thống nhất.
+
+**Commit:** `c12eae7` (`chore: prepare Windows server trial deployment`) on `chore/django-5.2-upgrade`; local commit, not pushed.
+
+## 2026-09-27 - Bổ sung kiểm thử theo review (Yêu cầu 1 và 2)
+
+**Phạm vi:** Đọc `Ket_Qua_Review_va_Yeu_Cau_Codex_2026-09-27.md` và chỉ thực hiện hai yêu cầu đầu: bổ sung kiểm thử cho 10 app chưa có test và viết kiểm thử hồi quy cho I3–I8, I11. Theo yêu cầu trong tài liệu, khi test phơi bày lỗi nghiệp vụ thì ghi nhận để báo lại, không tự ý sửa logic, đặc biệt với chính sách lương. Không sửa mã nghiệp vụ, schema hoặc migration.
+
+**Sao lưu trước thay đổi:** Git bundle `D:\QLHCNS-Backup-before-review-regression-tests-20260927-174456.bundle`; đã xác minh bundle đọc được bằng `git bundle verify`.
+
+**Đã bổ sung:** Thay các test placeholder trong `contract`, `document`, `kpi`, `office`, `organization`, `planning`, `procurement`, `project`, `recruitment`, `task`; thêm hồi quy liên quan trong `asset`, `leave`, `payroll`, `portal`. Tổng cộng 14 module test được cập nhật. Các kiểm thử bao quát ràng buộc dữ liệu, xác thực tệp, quyền truy cập/thao tác và các tình huống được đánh mã I3–I8, I11.
+
+**Kết quả test trên SQL Server:** Chạy tường minh toàn bộ 23 module test của dự án bằng Django test runner; 224 test, 3 failures và 1 error. Database test cô lập được runner tạo rồi xóa. `manage.py check` không có lỗi; `makemigrations --check --dry-run` báo không có thay đổi; cú pháp 14 tệp Python được phân tích thành công; `git diff --check` đạt.
+
+**Lỗi được test xác nhận, chưa sửa theo phạm vi đã thống nhất:**
+
+- I3: giờ cuối tuần do nhân viên nhập vẫn được cộng nghỉ bù khi bảng công tháng còn Pending.
+- I6: tạo kỳ lương bỏ nhân viên có ngày nghỉ việc nằm trong kỳ vì truy vấn hiện chỉ lấy nhân viên còn trạng thái Active. Cần xác nhận quy tắc nghiệp vụ lương trước khi đổi cách chọn người hoặc tính lương.
+- Phân quyền hợp đồng: danh sách hợp đồng trả hợp đồng của nhân viên khác trong context cho tài khoản EMPLOYEE.
+- Mua sắm: route danh sách gọi template `portal/procurement_request_list.html` nhưng template không tồn tại, làm trang lỗi khi truy cập.
+
+**Các hồi quy đạt:** I4 chia yêu cầu nghỉ qua tháng/năm; I5 ngăn cấp trùng tài sản và không chuyển tài sản về sẵn sàng nếu còn lượt cấp đang hoạt động; I7 chọn mức lương theo ngày hiệu lực; I8 tạo/hiển thị Payslip khi chốt kỳ; I11 không cho hoàn tất kiểm kê khi còn dòng chưa đếm và không cho sửa dòng đã hoàn tất. Test các ràng buộc có giá trị phòng ban NULL của ngân sách cũng đạt trên SQL Server.
+
+**Trạng thái:** Chỉ có thay đổi trong các tệp `tests.py`; chưa commit hoặc push. `docs/Huong_Dan_Setup_TaskScheduler_SIT_UAT.md` đang là tệp untracked có sẵn trong workspace, được giữ nguyên và không đưa vào phạm vi thay đổi này.
+
+## 2026-09-27 - Xử lý I3, quyền xem hợp đồng và trang mua sắm
+
+**Yêu cầu/diễn giải:** Nhân viên dự án cộng đồng làm việc thường xuyên vào Thứ Bảy, Chủ Nhật; giờ làm phải được ghi nhận, nhưng chỉ được quy đổi thành nghỉ bù khi bảng chấm công tháng được duyệt. I6 về lương giữa kỳ tiếp tục chờ xác nhận quy tắc nghiệp vụ.
+
+**Sao lưu trước sửa:** `D:\QLHCNS-Backup-before-I3-contract-procurement-20260927-181613.bundle`; `git bundle verify` xác nhận bundle chứa lịch sử Git đầy đủ.
+
+**Đã sửa:** `compensatory_days_earned()` chỉ lấy giờ từ những tháng có `MonthlyAttendanceSummary` ở trạng thái Approved. Giờ T7/CN/ngày lễ vẫn được tích lũy theo quy tắc tối đa 1 ngày cho mỗi ngày làm và làm tròn xuống nửa ngày; tháng Pending hoặc chưa có bản tổng hợp chưa được cộng vào quỹ nghỉ bù. Danh sách hợp đồng lao động trả HTTP 403 cho tài khoản không có quyền `manage_hr`; HR vẫn xem được danh sách. Tạo template `portal/procurement_request_list.html` để hiển thị danh sách theo quyền hiện có, form tạo đề nghị, thao tác duyệt/từ chối và đánh dấu đã mua.
+
+**Kiểm thử:** Các test tập trung `apps.leave.tests`, `apps.contract.tests`, `apps.procurement.tests` đạt 44/44 trên SQL Server test database. Toàn bộ 23 module của bộ test SIT đạt 226/227; test duy nhất còn thất bại là I6 (nhân viên nghỉ việc giữa kỳ chưa được đưa vào kỳ lương), giữ nguyên để chờ xác nhận, không sửa logic lương. Test database tạm đã được Django tạo rồi xóa. `manage.py check`, `makemigrations --check --dry-run`, cú pháp Python và `git diff --check` đạt; không phát sinh migration.
+
+**Phạm vi tệp:** Thay đổi logic nghỉ bù, chặn quyền danh sách hợp đồng, template mua sắm và test tương ứng. Không thay đổi cấu trúc database. Tệp untracked `docs/Huong_Dan_Setup_TaskScheduler_SIT_UAT.md` tiếp tục được giữ nguyên, không thuộc thay đổi này.
+
+## 2026-09-27 - Sửa khẩn I6: tạo bảng lương cho người nghỉ giữa kỳ
+
+**Mục tiêu/phạm vi:** Sửa lỗi I6 đã có trước đợt responsive/mobile/PWA, được test hồi quy phát hiện trong Yêu cầu 2. Nhân viên đã nghỉ nhưng `leave_date` nằm trong kỳ lương vẫn cần có dòng lương cho phần thời gian làm việc; không thay đổi công thức tính lương hoặc dashboard.
+
+**Sao lưu trước sửa:** `D:\QLHCNS-Backup-before-I6-payroll-20260927.zip`, sao chép từ snapshot mã nguồn mới nhất trước thay đổi. SHA-256: `692ddb3b26e9cf8b1a540882ce2f693aad69ca604630f008c9abc70c02e97775`.
+
+**Nguyên nhân và thay đổi:** Test I6 thất bại trước sửa trên SQL Server test database. Hai truy vấn riêng ở trang chạy lương và thao tác tạo dòng đều chỉ lấy `employment_status="Active"`, nên loại nhân viên đã nghỉ trong kỳ khỏi cả danh sách thiếu và quá trình tạo. Thêm `_employees_payable_for_period(period)` dùng chung: lấy nhân viên Active hoặc có `leave_date` trong khoảng bao gồm cả ngày đầu/cuối kỳ; dùng helper tại cả hai vị trí. Giữ nguyên loại trừ người đã nghỉ trước kỳ, bảo toàn nhánh Active có ngày nghỉ trong tương lai và bộ lọc dòng đã tồn tại để không tạo trùng. Không sửa `Payroll.calculate()`; phép tính tỷ lệ ngày công vốn đã có test riêng.
+
+**Kiểm thử:** Test trước sửa tái hiện FAIL. Sau sửa, chạy rõ 23 module test của dự án bằng Django test runner trên SQL Server test database tạm: 230/230 đạt; database kiểm thử do runner tạo và xóa. Kiểm thử mới bao gồm nghỉ đúng ngày đầu/cuối kỳ, nghỉ trước kỳ, nhân viên Active có ngày nghỉ tương lai, danh sách xem trước, chạy tạo lần hai không sinh trùng. Test `PartialMonthSalaryTests` xác nhận phép tính lương theo ngày công vẫn giữ đúng. `manage.py check`, `makemigrations --check --dry-run` và `git diff --check` đạt; không có migration và không ghi dữ liệu nghiệp vụ. Lưu ý `manage.py test` không kèm label trong repo phát hiện 0 test, vì vậy cần gọi tường minh các module test.
+
+**Chưa thực hiện:** Chưa thao tác tay trên giao diện với nhân viên thử nghiệm. Finance/chủ dự án cần xác nhận một lượt ở SIT/UAT bằng kỳ lương chưa khóa và nhân viên test nghỉ giữa kỳ: kiểm tra người đó ở danh sách còn thiếu, tạo dòng, chạy chức năng tính lương, đối chiếu ngày công/lương tỷ lệ, sau đó chạy tạo lại để xác nhận không trùng. Không thử bằng kỳ lương hoặc hồ sơ thật đang vận hành.
+
+**Commit:** `ebc900f` (`fix: include mid-period leavers in payroll generation`) trên `chore/django-5.2-upgrade`; commit cục bộ, chưa push. Nhật ký này được commit riêng ngay sau đó. Tệp untracked `docs/Huong_Dan_Setup_TaskScheduler_SIT_UAT.md` vẫn được giữ nguyên.
+
+## 2026-09-26 — Chuẩn hóa menu điều hướng toàn cổng IHRMS
+
+**Yêu cầu:** sửa menu các trang bị co hẹp, làm chữ tiêu đề xuống dòng như ảnh người dùng gửi; giữ trải nghiệm nhất quán giữa các trang.
+
+**Sao lưu trước khi sửa:** `D:\QLHCNS-Backup-before-menu-fix-20260926-091916` (356 tệp; loại `.git`, `.env`, virtualenv, database, media/cache). Sao lưu bao gồm cả trạng thái làm việc hiện thời; không thay đổi hoặc đưa các mục chưa theo dõi hiện hữu `Backups/`, `src/qlhcns` vào Git.
+
+**Thay đổi:** cập nhật template dùng chung `src/templates/base.html` và stylesheet `src/static/css/ihrms.css`. Mở rộng khung menu vượt giới hạn 1024px cũ; các mục giữ nhãn trên một dòng và thanh điều hướng xuống hàng giữa các nhóm khi viewport hẹp. Menu xổ xuống có giới hạn chiều cao, cuộn dọc khi dài; nút có trạng thái ARIA, đóng khi click ngoài hoặc nhấn Escape và trả focus về nút mở. Các trang kế thừa `base.html` gồm cổng portal, dashboard reporting và hoạt động dự án nên cùng nhận kiểu menu này.
+
+**Sửa kiểm thử phát hiện trong lúc xác minh:** dữ liệu CCCD giả trong regression tests portal được rút còn 20 ký tự để tương thích SQL Server; test nhắc hạn activity dùng ngày thứ Hai cố định và mô phỏng thời điểm tạo thông báo, không còn phụ thuộc thứ/ngày chạy thực tế.
+
+**Kiểm tra:** `manage.py check` đạt. Chạy `manage.py test apps.asset.tests apps.common.tests apps.hrm.tests apps.leave.tests apps.payroll.tests apps.security.tests apps.activity.tests apps.portal.tests apps.m365.tests --verbosity 1` trực tiếp với SQL Server; 117/117 pass trên database test và Django tự hủy database test sau khi chạy. `git diff --check` đạt. Môi trường vẫn hiện `RequestsDependencyWarning` do các phiên bản urllib3/chardet; không làm test thất bại.
+
+**Còn mở:** cần kiểm tra trực quan menu trên trình duyệt với các độ rộng màn hình thực tế trước khi triển khai cho nhân viên.
+
+**Nhánh/commit:** `chore/django-5.2-upgrade`, commit `5ddb3a7` (`fix: make portal navigation responsive and accessible`); chưa push.
+
+## 2026-09-26 — Căn lại khung menu theo bố cục trang
+
+**Phản hồi:** menu vẫn lệch trái so với logo và nội dung do khung điều hướng rộng 1280px trong khi header/nội dung dùng khung `max-w-5xl` (1024px).
+
+**Sửa:** đồng bộ `.portal-nav-inner` về 64rem và lề ngang 1.5rem như header/nội dung, kể cả màn hình nhỏ; vẫn giữ nguyên cơ chế không ngắt chữ trong nhãn và xuống hàng giữa các mục khi thiếu chỗ.
+
+**Kiểm tra:** `manage.py check`, `makemigrations --check --dry-run` và `git diff --check` đạt; không thay đổi dữ liệu/schema.
+
+**Nhánh/commit:** `chore/django-5.2-upgrade`; ghi commit sau rà soát. Chưa push.
+
+## 2026-09-26 — Bản nháp Outlook cho thông báo nghiệp vụ (hạng mục 1)
+
+**Mục tiêu/phạm vi:** bổ sung nhật ký outbox cho email cần người dùng xem lại và gửi thủ công bằng Outlook desktop; không gửi SMTP/Graph tự động. Tích hợp với quyết định nghỉ phép, khóa kỳ lương và duyệt công văn/tài liệu. Tách hàm tạo `mailto:` dùng chung cho thông báo hoạt động.
+
+**Tệp/phân hệ:** `apps/common/email_draft.py`; `apps/notification` (model, service, migration, tests); `apps/portal` (luồng thông báo, xác nhận đã gửi, template/URL); `apps/activity/services.py`.
+
+**Đã làm:** thêm bảng `tblNotificationEmailOutbox`, khóa idempotency, trạng thái Draft/Sent và thông tin người xác nhận; hiển thị link mở Outlook và nút xác nhận trong trang thông báo; không đưa dữ liệu lương/chi tiết nhạy cảm vào thư. Mỗi sự kiện nghiệp vụ tạo thông báo trong ứng dụng và bản nháp tương ứng trong cùng transaction. Backup trước thay đổi: `D:\QLHCNS-Backup-before-4-features-20260926-101643`.
+
+**Kiểm tra:** trên SQL Server qua Django test database: `manage.py test apps.notification.tests apps.portal.tests apps.activity.tests --verbosity 1` — 40/40 pass; test DB được Django xóa sau khi chạy. `manage.py check` đạt; `makemigrations --check --dry-run` báo không có thay đổi chưa migration; `git diff --check` đạt. Môi trường có `RequestsDependencyWarning` nhưng không ảnh hưởng kết quả.
+
+**An toàn/vận hành:** máy chủ không gửi thư. Người nhận mở Outlook, kiểm tra/sửa/gửi thật, rồi xác nhận đã gửi trong IHRMS. Chưa kiểm thử bằng Outlook desktop tương tác.
+
+**Commit:** `bdfa3a9` (`feat: add Outlook draft notification outbox`) trên `chore/django-5.2-upgrade`.
+
+**Còn mở:** triển khai hạng mục 4 (sơ đồ tổ chức và yêu cầu tự cập nhật hồ sơ), kế tiếp checklist onboarding/offboarding. Hạng mục báo cáo chỉ tạo khung kỹ thuật fail-closed theo chỉ đạo “chưa xuất báo cáo”, chờ Kế toán xác nhận biểu mẫu và quy tắc phân bổ.
+
+## 2026-09-26 — Sơ đồ tổ chức và yêu cầu cập nhật hồ sơ (hạng mục 4)
+
+**Mục tiêu/phạm vi:** cung cấp sơ đồ nhân sự nội bộ và quy trình nhân viên đề nghị thay đổi email cá nhân, số điện thoại hoặc địa chỉ; Nhân sự duyệt, từ chối hoặc yêu cầu bổ sung. Hồ sơ Employee chỉ thay đổi sau khi duyệt.
+
+**Tệp/phân hệ:** `apps/hrm` (model + migration + tests); `apps/portal` (views, URLs, mẫu sơ đồ/form/danh sách); `apps/security/permissions.py`; `templates/base.html`.
+
+**Đã làm:** sơ đồ dựng cây từ nhân viên Active, không truy vấn N+1, không hiển thị liên hệ riêng, chịu được dữ liệu quản lý có vòng lặp; yêu cầu thay đổi dùng whitelist kiểm tra cả phía server/model, lưu snapshot để chặn duyệt nếu giá trị đã đổi, khóa transaction khi duyệt, thông báo kết quả, giới hạn xem/tải chứng từ cho chính nhân viên hoặc Nhân sự. Migration mới chỉ tạo bảng `tblEmployeeProfileChangeRequest`, không sửa bảng nhân viên. Backup trước giai đoạn: `D:\QLHCNS-Backup-before-feature4-20260926-102541`.
+
+**Kiểm tra:** trên SQL Server test database: `manage.py test apps.hrm.tests apps.portal.tests --verbosity 1` — 13/13 pass; Django tự xóa test database. `manage.py check` đạt; `makemigrations --check --dry-run` báo không có thay đổi chưa migration; `git diff --check` đạt.
+
+**Commit:** `8230782` (`feat: add org chart and profile change approvals`) trên `chore/django-5.2-upgrade`.
+
+**Còn mở:** checklist onboarding/offboarding là hạng mục tiếp theo. HR cần rà soát whitelist (hiện ba trường có sẵn trên Employee) và nội dung/chủ sở hữu checklist; báo cáo tuân thủ sẽ chỉ có stub kỹ thuật fail-closed, chưa tạo báo cáo theo chỉ đạo.
+
+## 2026-09-26 — Checklist onboarding/offboarding (hạng mục 2)
+
+**Mục tiêu/phạm vi:** tạo checklist theo mẫu cho tiếp nhận/nghỉ việc bằng thao tác tường minh của HR; gán đầu việc theo vai trò, cập nhật hoàn tất/bỏ qua có lý do, nhắc các mục quá hạn và đưa số cảnh báo lên trang chủ. Không tự mở checklist khi hồ sơ nhân viên được tạo/lưu.
+
+**Tệp/phân hệ:** app mới `apps/lifecycle` (4 model, service, views, admin, templates, command `send_lifecycle_reminders`, migration); tích hợp quyền, menu, dashboard và URL portal.
+
+**Đã làm:** mẫu được chụp thành các dòng checklist độc lập để sửa mẫu không làm đổi case cũ; khóa `triggering_event_ref` chống mở trùng; chỉ người được giao hoặc HR cập nhật; người khác không xem case; liên kết lịch sử cấp phát/thu hồi AssetAllocation có sẵn, không sửa/xóa lịch sử. Nhắc hạn tạo thông báo trong ứng dụng và chống gửi trùng trong cùng ngày. Template checklist được HR/SysAdmin cấu hình qua Django Admin; HR mở hồ sơ qua menu Nhân sự. Backup trước giai đoạn: `D:\QLHCNS-Backup-before-feature2-20260926-103045`.
+
+**Kiểm tra:** SQL Server test database: `manage.py test apps.lifecycle.tests apps.portal.tests apps.hrm.tests --verbosity 1` — 19/19 pass; test database bị Django xóa sau chạy. `manage.py check` đạt; `makemigrations --check --dry-run` không còn thay đổi chưa migration.
+
+**Vận hành:** cần áp dụng migration `lifecycle.0001_initial` khi triển khai. Task Scheduler chưa được cấu hình theo quyết định ưu tiên trước đây; quản trị viên có thể gọi `python src\manage.py send_lifecycle_reminders` thủ công, và cần lên lịch hằng ngày khi sẵn sàng.
+
+**Commit:** `0558999` (`feat: add onboarding and offboarding checklists`) trên `chore/django-5.2-upgrade`.
+
+**Còn mở:** HR cần tạo/xác nhận hai bộ checklist chuẩn, vai trò chịu trách nhiệm, ngày hạn cho từng mục; đây là cấu hình nghiệp vụ chưa được cung cấp nên chưa seed dữ liệu mặc định. Tiếp theo là khung báo cáo tuân thủ fail-closed, không xuất file/báo cáo.
+
+## 2026-09-26 — Khung kỹ thuật báo cáo tuân thủ (hạng mục 3)
+
+**Mục tiêu/phạm vi:** chuẩn bị điểm mở rộng cho báo cáo BHXH, quyết toán PIT và chi phí lương theo phòng ban theo chỉ đạo “chỉ làm khung kỹ thuật, chưa xuất báo cáo”.
+
+**Tệp/phân hệ:** `apps/reporting/services.py`, `apps/reporting/tests.py`, `apps/security/permissions.py`.
+
+**Đã làm:** thêm exception `ComplianceReportNotConfigured`, ba hàm placeholder đều dừng rõ ràng cho đến khi Kế toán xác nhận biểu mẫu/mapping/quy tắc phân bổ, và khai báo quyền dự kiến `export_compliance_report`. Không thêm endpoint, không tính số liệu, không sinh hoặc lưu file, không migration. Backup trước giai đoạn: `D:\QLHCNS-Backup-before-feature3-20260926-103639`.
+
+**Kiểm tra:** bộ test tích hợp trên SQL Server test database: 57/57 pass; gồm notification, portal, activity, HRM, lifecycle và reporting. Django tự xóa test database. `manage.py check` đạt; `makemigrations --check --dry-run` báo không có thay đổi; `git diff --check` đạt.
+
+**Còn mở:** Kế toán cung cấp mẫu BHXH đúng phiên bản, mẫu PIT theo năm và quy tắc phân bổ chi phí theo phòng ban. Sau khi có xác nhận, mới xây mapping, endpoint có phân quyền/audit snapshot và bộ đối chiếu số liệu; hiện chưa có báo cáo nghiệp vụ để sử dụng.
+
+**Commit:** `828506e` (`chore: scaffold compliance reports behind finance gate`) trên `chore/django-5.2-upgrade`.
+
+## 2026-09-26 — Kết quả hồi quy toàn bộ sau 4 hạng mục
+
+**Phát hiện và sửa:** test quyền cũ giả định nhân viên thường không được cấp bất kỳ quyền nào. Cập nhật kiểm thử để cho phép đúng hai quyền tự phục vụ mới (`submit_profile_change_request`, `view_own_lifecycle_items`) và vẫn xác nhận nhân viên không có quyền duyệt yêu cầu hoặc quản lý checklist.
+
+**Kiểm tra cuối:** trên SQL Server test database, `manage.py test apps.asset.tests apps.common.tests apps.hrm.tests apps.leave.tests apps.payroll.tests apps.security.tests apps.activity.tests apps.portal.tests apps.m365.tests apps.notification.tests apps.lifecycle.tests apps.reporting.tests --verbosity 1` — 140/140 pass. Test database tự được xóa. `manage.py check` đạt; `makemigrations --check --dry-run` báo không thay đổi; `git diff --check` đạt. Cảnh báo `RequestsDependencyWarning` vẫn hiện trong môi trường nhưng test thành công.
+
+**Ghi chú:** thay đổi test activity hiện hữu của chủ dự án (`src/apps/activity/tests.py`) và các mục chưa theo dõi khác vẫn được giữ nguyên, không đưa vào các commit triển khai.
+
+## 2026-09-26 — Cập nhật cẩm nang sử dụng và giáo án tập huấn
+
+**Mục tiêu/phạm vi:** cập nhật tài liệu người dùng sau bốn hạng mục HRMS mới, phân biệt rõ chức năng đã triển khai với phần còn chờ cấu hình hoặc xác nhận nghiệp vụ.
+
+**Tệp:** `HUONG_DAN_SU_DUNG_IHRMS.md`, `TAP_HUAN_IHRMS.md`.
+
+**Đã cập nhật:** cẩm nang có hướng dẫn yêu cầu đổi hồ sơ, sơ đồ tổ chức, duyệt yêu cầu, bản nháp Outlook gửi thủ công, mở/giao/theo dõi checklist và điều kiện vận hành nhắc hạn; ghi rõ báo cáo BHXH/PIT/chi phí phòng ban chưa xuất được. Giáo án có bài thực hành theo vai trò cho hồ sơ cá nhân/sơ đồ, checklist và quy trình xác nhận email; thêm nội dung chuẩn bị mẫu, bảo vệ dữ liệu demo và các phần chưa bật. Tài liệu yêu cầu HR thống nhất mẫu checklist trước khi cấu hình và dùng nghiệp vụ.
+
+**Kiểm tra:** rà soát văn bản UTF-8 và `git diff --check`; không thay đổi code/schema nên không chạy test ứng dụng.
+
+**Commit:** chưa commit trong lượt cập nhật tài liệu này.
+
+**Còn mở:** HR cần hoàn thiện mẫu checklist và whitelist chính thức; Kế toán cần xác nhận mẫu/qui tắc báo cáo; IT quyết định cấu hình Task Scheduler. Hướng dẫn chỉ mô tả phần mềm và không thay thế SOP được công ty phê duyệt.
+
+## 2026-09-26 — Sửa lỗi Unicode khi output management command bị redirect
+
+**Lỗi/nguyên nhân:** khi một lệnh Django chạy trên Windows mà stdout/stderr bị chuyển hướng khỏi console thật, Python có thể dùng code page hệ thống như cp1252. Ký tự tiếng Việt không mã hóa được sẽ làm command dừng với `UnicodeEncodeError`.
+
+**Đã sửa:** `src/manage.py` cấu hình stdout và stderr sang UTF-8 với `errors='replace'` trước khi Django khởi chạy, áp dụng chung cho mọi management command đi qua tệp này. `ops/scheduler/Run-ActivityReportReminders.ps1` cũng đặt `PYTHONIOENCODING=utf-8` và `PYTHONUTF8=1`, nhất quán với script nhắc lifecycle hiện có. Rà `src/config/wsgi.py` và `src/config/asgi.py`: không có lệnh in log trực tiếp ra stdout/stderr nên không cần chỉnh ở đó.
+
+**Kiểm tra:** thử redirect với `PYTHONIOENCODING=cp1252`, rồi chạy `venv\Scripts\python.exe src\manage.py shell -c "print(...)"` và xác nhận tệp UTF-8 chứa đúng chuỗi tiếng Việt — đạt, không có `UnicodeEncodeError`. `python -m py_compile src/manage.py` và `git diff --check` đạt. Lệnh tổng quát `venv\Scripts\python.exe src\manage.py test` tự tìm thấy 0 test trong cấu trúc `src/apps`; đã chạy toàn bộ 23 module test tường minh — 148/148 pass, test database được xóa. Cảnh báo `RequestsDependencyWarning` vẫn xuất hiện nhưng không làm test thất bại.
+
+**Commit:** chưa commit trong lượt sửa này.
+
+**Còn mở:** không còn thay đổi code đã biết; Task Scheduler production cần chạy script đã cập nhật khi triển khai bản mới.
+
+## 2026-09-26 — Làm rõ checklist, sơ đồ tổ chức và menu giao việc
+
+**Mục tiêu:** phân định trải nghiệm checklist giữa HR và nhân viên; làm sơ đồ tổ chức dễ đọc/tìm kiếm; giúp người dùng thấy rõ lối vào giao việc và cập nhật hoàn tất.
+
+**Đã thực hiện:** checklist được ghi rõ là HR mở/quản lý hồ sơ onboarding/offboarding, còn nhân viên và người thuộc các vai trò dự án chỉ xem/cập nhật phần việc được giao. Bổ sung quyền xem checklist cá nhân cho Director, Project Manager, Project Coordinator và CBDA; quyền quản lý toàn bộ vẫn riêng cho HR. Sơ đồ tổ chức hiển thị số nhân viên/phòng ban, chức vụ, phòng ban, quản lý trực tiếp, số báo cáo trực tiếp; có tìm kiếm theo tên/chức vụ/phòng ban và giữ hiển thị nhánh cha phù hợp. Đưa liên kết tác vụ ra menu **Kế hoạch** với nhãn **Giao việc & hoàn tất**.
+
+**Backup trước thay đổi:** `D:\QLHCNS-Backup-before-orgchart-checklist-menu-20260926-181546`.
+
+**Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.security.tests apps.lifecycle.tests apps.portal.tests --verbosity 1` — 33 test pass trên SQL Server test database; `manage.py check` đạt; `makemigrations --check --dry-run` không có thay đổi; `git diff --check` đạt. Không phát sinh migration.
+
+**Còn mở:** kiểm tra trực quan sơ đồ trên trình duyệt với tài khoản thật và xác nhận HR/CBDA thấy đúng nhãn menu sau khi triển khai.
+
+## 2026-09-26 — Phân định checklist HCNS, menu hoạt động dự án và sơ đồ tổ chức
+
+**Mục tiêu:** làm rõ checklist nhân sự là thủ tục nội bộ của HCNS; bỏ menu trùng; đưa công việc dự án về đúng nhóm; sửa thao tác hồ sơ nhân viên và giúp sơ đồ vừa màn hình.
+
+**Đã thực hiện:** checklist đổi tên thành “Checklist thủ tục nhân sự”, mô tả rõ phạm vi giấy tờ/tiếp nhận/nghỉ việc; menu chỉ còn trong **Nhân sự**. Quyền truy cập và giao đầu việc bị giới hạn vào vai trò `HR_OFFICER`/`HR_MANAGER`; người dùng dự án/nhân viên thường không thể mở checklist dù biết URL. Menu **Giao việc & hoàn tất** được đặt trong nhóm **Hoạt động dự án**. Nút **Thao tác** trong danh sách hồ sơ dùng HTML `<details>/<summary>` thay vì gọi hàm JavaScript không tồn tại; các mục liên kết tới đúng phần Điều chuyển/Bổ nhiệm/Lương/Hợp đồng/Sửa hồ sơ. Sơ đồ tổ chức dùng chiều rộng lớn hơn, tự thu để vừa chiều ngang cửa sổ và có nút thu/phóng cùng “Vừa màn hình”. Hướng dẫn sử dụng và hướng dẫn test nhanh đã đồng bộ vị trí menu và ranh giới giữa checklist HCNS với task dự án.
+
+**Backup trước thay đổi:** `D:\QLHCNS-Backup-before-clarify-HR-checklist-menu-orgchart-20260926-183154`.
+
+**Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.security.tests apps.lifecycle.tests apps.portal.tests --verbosity 1` — 36/36 test pass trên SQL Server test database; database kiểm thử được Django xóa sau chạy. `manage.py check` đạt; `makemigrations --check --dry-run` không có thay đổi; `git diff --check` đạt. Có cảnh báo dependency Requests/urllib3 đã tồn tại trong môi trường nhưng không làm test thất bại.
+
+**Còn mở:** cần đăng nhập bằng tài khoản HCNS và CBDA trên trình duyệt để xác nhận menu theo vai trò; nếu muốn dùng test SQL Server mới nhất, khởi động lại server ứng dụng để nạp template/CSS cập nhật.
+
+## 2026-09-26 — Sửa danh sách giao việc dự án và lỗi mở form sửa nhân viên
+
+**Mục tiêu:** giải thích và hiển thị đúng Task báo cáo hoạt động cho CBDA/Điều phối viên/Quản lý dự án; sửa lỗi `VariableDoesNotExist` khi vào Sửa hồ sơ.
+
+**Đã thực hiện:** danh sách Task dự án nay bao gồm task giao cho người dùng và các task gắn với hoạt động trong phạm vi họ được xem; CBDA chỉ thấy hoạt động của mình, Điều phối viên/Quản lý dự án thấy phạm vi được phép. Trang cho biết task tự tạo khi liên kết công văn đi, người giao là Điều phối viên (hoặc người ký nếu hồ sơ thiếu Điều phối viên), người nhận là CBDA phụ trách chính, hạn 10 ngày làm việc; CBDA cần tải báo cáo SharePoint trước khi hoàn thành. Form nhân viên luôn nhận đầy đủ các khóa dữ liệu khởi tạo kể cả khi sửa hồ sơ; bổ sung test GET trang sửa. Cẩm nang và hướng dẫn test nhanh đã chỉ rõ người giao và điều kiện task xuất hiện.
+
+**Backup trước thay đổi:** `D:\QLHCNS-Backup-before-task-visibility-edit-form-fix-20260926-191000`.
+
+**Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.portal.tests apps.activity.tests --verbosity 1` — 38/38 test pass trên SQL Server test database; test database được Django xóa sau chạy. `manage.py check` đạt; `makemigrations --check --dry-run` không có thay đổi; `py_compile` và `git diff --check` đạt.
+
+**Còn mở:** không cần thao tác giao Task báo cáo bằng tay. Để xác nhận trên dữ liệu thật, cần một hoạt động có CBDA phụ trách và công văn đi được liên kết; khi đó Task sẽ hiện cho CBDA và nhóm quản lý dự án.
+
+## 2026-09-26 — Sửa ngày bắt đầu và hoàn thành của Giao việc
+
+**Vấn đề:** Task trước đây lưu ngày bắt đầu và hạn hoàn thành nhưng không có ngày hoàn thành thực tế; giao việc và đánh dấu hoàn thành cùng ngày khiến giao diện không thể hiện rõ ba mốc thời gian.
+
+**Đã sửa:** ngày bắt đầu mặc định là ngày tạo Task; khi chuyển trạng thái sang Hoàn thành, hệ thống ghi ngày hiện tại vào `CompletedDate`, và xóa ngày này nếu Task được chuyển lại trạng thái chưa hoàn thành. Danh sách và chi tiết Task hiển thị riêng ngày bắt đầu, hạn và ngày hoàn thành theo định dạng ngày/tháng/năm. Thêm migration `task.0003_task_completed_date`; Task đã hoàn thành trước migration được điền ngày gần đúng từ thời điểm sửa cuối cùng.
+
+**Sao lưu:** `D:\QLHCNS-Backup-before-task-completion-date-20260926-192500` (tạo trước khi sửa mã).
+
+**Kiểm tra:** migration đã áp dụng trên SQL Server (`task.0003_task_completed_date` đã được đánh dấu áp dụng); `manage.py check` đạt; `makemigrations --check --dry-run` không phát hiện thay đổi thiếu migration; 40 test của `apps.portal.tests` và `apps.activity.tests` đạt; `git diff --check` sạch. Có cảnh báo dependency Requests/urllib3 hiện hữu trong môi trường chạy test.
+
+**Lưu ý dữ liệu cũ:** ngày hoàn thành của Task cũ là ước tính từ lần cập nhật cuối, không nhất thiết là ngày người dùng thực sự bấm Hoàn thành. Task mới ghi nhận ngày thực tế khi chuyển trạng thái.
+
+## 2026-09-26 — Đồng bộ hạn Task theo lịch hoạt động
+
+**Quy tắc được người dùng xác nhận:** Công văn đi đã phát hành kích hoạt việc giao Task; ngày bắt đầu Task bằng ngày bắt đầu hoạt động, hạn là 10 ngày làm việc sau ngày kết thúc hoạt động. Khi lịch đổi, cập nhật Task hiện có thay vì tạo bản trùng.
+
+**Đã sửa:** `create_task_for_activity` tạo và đồng bộ ngày Task theo lịch hoạt động; nếu lịch đổi, thông báo trong IHRMS tới CBDA và người giao. Task đã đánh dấu hoàn thành trước ngày kết thúc mới được mở lại, xóa ngày hoàn thành và bỏ liên kết tệp báo cáo cũ nhưng không xóa tệp khỏi SharePoint. Không cho hoàn thành Task báo cáo trước ngày kết thúc hoạt động. Cập nhật hướng dẫn giao việc, form và roadmap.
+
+**Dữ liệu kiểm thử đã đồng bộ:** hoạt động 01/10–31/10/2026 có Task bắt đầu 01/10, hạn 13/11/2026 theo lịch ngày làm việc trong DB, trạng thái Todo. Task hoàn thành sớm ngày 26/09 được mở lại; liên kết báo cáo cũ được gỡ, tệp vật lý vẫn giữ trên SharePoint.
+
+**Sao lưu trước sửa:** `D:\QLHCNS-Backup-before-activity-task-date-policy-20260926-201500`.
+
+**Kiểm tra:** 42 test của `apps.activity.tests` và `apps.portal.tests` đạt; `manage.py check` đạt; `makemigrations --check --dry-run` không phát hiện thay đổi schema. `git diff --check` sạch. Cảnh báo RequestsDependencyWarning hiện hữu vẫn xuất hiện khi chạy Python.
 
 ## 2026-09-25 — Hoạt động dự án: giao Task, báo cáo, nhắc hạn
 
@@ -1110,21 +1927,6 @@ Kết quả gồm `page-1.png`, `page-2.png`, ... và PDF trong `D:\QLHCNS-docx-
 
 **Đã hoàn tất:** phần Dashboard chung cho Hoạt động dự án được ghi ở mục nhật ký kế tiếp.
 
-
-## 2026-09-24 — Đề xuất mở rộng IHRMS cho hoạt động dự án NGO/MEL
-
-**Mục tiêu/phạm vi:** đánh giá yêu cầu lập kế hoạch tháng, điều phối CBDA, lịch, MEL, ngân sách và quyết toán; lập lộ trình code theo các cổng phê duyệt.
-
-**Đã rà soát:** Project Charter, RBAC matrix, apps.project.Project, apps.task.Task, apps.planning.Event/AnnualBudget, apps.document.OfficialDispatch, các route/template giao việc/sự kiện và quyền hiện hành. Charter hiện loại Grant, ngân sách tài trợ, hoạt động phát triển cộng đồng và MEL khỏi phạm vi; model hiện chưa hỗ trợ workflow NGO đầy đủ.
-
-**Đã tạo:** docs/NGO_Activity_Planning_MEL_Roadmap.md ghi nhận nhận xét hiện trạng, luồng mục tiêu, mô hình dữ liệu/tích hợp, quyền, dashboard, tiêu chí nghiệm thu, ước lượng 7–10 tuần và quyết định NGO cần chốt. Đây là đề xuất; chưa sửa code, Charter, migration hay cấu hình.
-
-**Ranh giới kiến trúc được làm rõ:** miền Hoạt động dự án riêng; Hộp việc của tôi, thành phần giao việc/lịch, trao đổi, thông báo và nhắc hạn dùng chung; dashboard dự án riêng. KPI nhân sự và chỉ số MEL dùng mô hình, quyền, công thức và báo cáo riêng, chỉ tái sử dụng thành phần hiển thị. Chưa sửa code hoặc schema.
-
-**Kiểm tra phần hành chính–nhân sự (24/09/2026):** Codex chạy `python src/manage.py check` (đạt), `makemigrations --check --dry-run` (No changes detected), và 86 test trên SQLite test database tạm (đạt). Codex xác nhận kết nối cấu hình hiện tại tới SQL Server bằng `connection.vendor=microsoft` và `SELECT 1`; chưa chạy test suite SQL Server vì chưa xác minh đó là database SIT riêng, an toàn cho Django tạo/xóa test database. Người dùng trước đó báo các luồng nghiệp vụ chạy bình thường; báo cáo này chưa phải UAT ký nhận.
-
-**Còn mở:** Chưa đủ điều kiện go-live/pilot với dữ liệu thật. Cần test SQL Server SIT, `check --deploy` trên cấu hình máy chủ, UAT có biên bản, xác nhận backup/restore và quyền dữ liệu. Với phân hệ NGO, Ban Giám đốc cần phê duyệt mở rộng Charter; Chương trình/MEL/Tài chính/IT chốt RACI, SLA, xung đột lịch, tiền tệ, chứng từ, dữ liệu người tham gia và database SIT trước khi có schema/migration. Chủ dự án làm theo mục “Việc chủ dự án cần điều phối ở Cổng 0” trong roadmap; không gửi dữ liệu thụ hưởng định danh qua chat.
-
 ## 2026-09-25 — Tổng quan Hoạt động dự án trên Dashboard chung
 
 **Mục tiêu/phạm vi:** hiển thị tiến độ dự án trong Dashboard trang chủ dành cho Ban Giám đốc, Quản lý dự án và Trưởng phòng; giữ dashboard hoạt động chuyên biệt hiện tại.
@@ -1152,6 +1954,7 @@ Kết quả gồm `page-1.png`, `page-2.png`, ... và PDF trong `D:\QLHCNS-docx-
 **Nhánh/commit/push:** `chore/django-5.2-upgrade`; thay đổi đã được push lên GitHub.
 
 **Còn mở:** đăng nhập bằng CBDA và tài khoản quản lý để kiểm tra trực quan trên trình duyệt; cập nhật danh mục mã hoạt động đồng bộ khi danh sách nghiệp vụ thay đổi.
+
 ## 2026-09-25 — Chuyển email xin duyệt hoạt động sang SMTP
 
 **Phạm vi:** Công ty nhận thư bằng POP3 và nhân viên dùng Microsoft Outlook; ứng dụng IHRMS gửi thư qua SMTP của nhà cung cấp email. Microsoft Graph tiếp tục được dùng riêng cho SharePoint.
@@ -1292,814 +2095,106 @@ Khi Điều phối viên xác nhận đã gửi thư Outlook, IHRMS tạo thông
 
 **Nhánh/commit:** `chore/django-5.2-upgrade`; ghi commit sau khi rà soát diff. Chưa push trong đợt này.
 
-## 2026-09-26 — Chuẩn hóa menu điều hướng toàn cổng IHRMS
+## 2026-09-24 — Tích hợp lưu tệp SharePoint
 
-**Yêu cầu:** sửa menu các trang bị co hẹp, làm chữ tiêu đề xuống dòng như ảnh người dùng gửi; giữ trải nghiệm nhất quán giữa các trang.
+**Mục tiêu:** cho phép các nghiệp vụ cần tệp đính kèm sử dụng SharePoint qua Microsoft Graph, đồng thời giữ storage cục bộ khi tích hợp bị tắt.
 
-**Sao lưu trước khi sửa:** `D:\QLHCNS-Backup-before-menu-fix-20260926-091916` (356 tệp; loại `.git`, `.env`, virtualenv, database, media/cache). Sao lưu bao gồm cả trạng thái làm việc hiện thời; không thay đổi hoặc đưa các mục chưa theo dõi hiện hữu `Backups/`, `src/qlhcns` vào Git.
+**Đã làm:** thêm Graph client và storage adapter migration-stable; nối storage vào document, nghỉ phép, công văn và CV ứng viên; thêm migrations, kiểm tra tệp upload và test M365. Cấu hình mẫu và dependency được cập nhật. Thay đổi được commit dưới `475c3e7` (`feat: integrate SharePoint file storage`) trên `chore/django-5.2-upgrade`.
 
-**Thay đổi:** cập nhật template dùng chung `src/templates/base.html` và stylesheet `src/static/css/ihrms.css`. Mở rộng khung menu vượt giới hạn 1024px cũ; các mục giữ nhãn trên một dòng và thanh điều hướng xuống hàng giữa các nhóm khi viewport hẹp. Menu xổ xuống có giới hạn chiều cao, cuộn dọc khi dài; nút có trạng thái ARIA, đóng khi click ngoài hoặc nhấn Escape và trả focus về nút mở. Các trang kế thừa `base.html` gồm cổng portal, dashboard reporting và hoạt động dự án nên cùng nhận kiểu menu này.
+**Kiểm tra:** người dùng xác nhận smoke test SharePoint thật gồm upload, đọc/xem và xóa tệp thử; các thư viện/thư mục nghiệp vụ đã được kiểm tra. Trong bản sao sạch, `manage.py check` đạt, `makemigrations --check --dry-run` báo không có thay đổi, `apps.m365.tests` đạt 5/5. Không coi đây là xác nhận cho email, Teams, SSO, đồng tác giả Office hoặc OneDrive cá nhân.
 
-**Sửa kiểm thử phát hiện trong lúc xác minh:** dữ liệu CCCD giả trong regression tests portal được rút còn 20 ký tự để tương thích SQL Server; test nhắc hạn activity dùng ngày thứ Hai cố định và mô phỏng thời điểm tạo thông báo, không còn phụ thuộc thứ/ngày chạy thực tế.
+**Còn mở:** trước production, IT xác nhận quyền Graph tối thiểu, ACL/retention/audit của thư viện và quy trình xử lý gián đoạn SharePoint. Không đưa secrets vào repo.
 
-**Kiểm tra:** `manage.py check` đạt. Chạy `manage.py test apps.asset.tests apps.common.tests apps.hrm.tests apps.leave.tests apps.payroll.tests apps.security.tests apps.activity.tests apps.portal.tests apps.m365.tests --verbosity 1` trực tiếp với SQL Server; 117/117 pass trên database test và Django tự hủy database test sau khi chạy. `git diff --check` đạt. Môi trường vẫn hiện `RequestsDependencyWarning` do các phiên bản urllib3/chardet; không làm test thất bại.
+## 2026-09-24 — Cập nhật Review, cẩm nang và tập huấn
 
-**Còn mở:** cần kiểm tra trực quan menu trên trình duyệt với các độ rộng màn hình thực tế trước khi triển khai cho nhân viên.
+**Mục tiêu:** đồng bộ tài liệu với trạng thái đã clone GitHub sạch, Django 5.2.17, kết nối SQL Server ở môi trường kiểm tra và smoke test SharePoint.
 
-**Nhánh/commit:** `chore/django-5.2-upgrade`, commit `5ddb3a7` (`fix: make portal navigation responsive and accessible`); chưa push.
+**Đã cập nhật:** `docs/Production_Readiness_Review_2026-09-23.md` nêu bằng chứng còn thiếu trước go-live; `HUONG_DAN_SU_DUNG_IHRMS.md` thêm thao tác tệp SharePoint và báo sự cố; `TAP_HUAN_IHRMS.md` thêm bài thực hành với tệp giả; `Review_23092026_recovered.md` được đánh dấu là snapshot lịch sử; liên kết M365 trong `.env.example` được sửa sang tài liệu hiện hữu. Commit nội dung là `377ca0d` (`docs: refresh IHRMS readiness and training guides`), sau đó merge và push lịch sử remote an toàn ở `989cae9`.
 
-## 2026-09-26 — Căn lại khung menu theo bố cục trang
+**Kiểm tra:** UTF-8 hợp lệ; `git diff --check` sạch; `manage.py check` đạt; `makemigrations --check --dry-run` báo không có thay đổi; 86 test đạt trên SQLite khi gọi module test rõ ràng. Lệnh test không kèm module tự tìm thấy 0 test; phải tiếp tục dùng lệnh có labels hoặc sửa test discovery/CI. Còn cảnh báo `RequestsDependencyWarning` về phiên bản `urllib3`/`chardet` trong môi trường test.
 
-**Phản hồi:** menu vẫn lệch trái so với logo và nội dung do khung điều hướng rộng 1280px trong khi header/nội dung dùng khung `max-w-5xl` (1024px).
+**Chưa hoàn tất:** bản Word `docs/HUONG_DAN_SU_DUNG_IHRMS.docx` chưa đồng bộ với Markdown vì môi trường thực thi hiện tại không có bộ dựng/render DOCX dùng cho kiểm tra từng trang.
 
-**Sửa:** đồng bộ `.portal-nav-inner` về 64rem và lề ngang 1.5rem như header/nội dung, kể cả màn hình nhỏ; vẫn giữ nguyên cơ chế không ngắt chữ trong nhãn và xuống hàng giữa các mục khi thiếu chỗ.
+**Việc cần chủ dự án/IT làm:** nếu cần bản Word mới, bảo đảm máy/môi trường làm việc có Python package `python-docx` cùng LibreOffice và renderer `render_docx.py` theo skill Documents; sau đó yêu cầu cập nhật Word, kiểm tra toàn bộ ảnh trang render và ghi kết quả tại đây. Không cần di chuyển hoặc sao chép `SKILL.md` vào repo.
 
-**Kiểm tra:** `manage.py check`, `makemigrations --check --dry-run` và `git diff --check` đạt; không thay đổi dữ liệu/schema.
+### Công cụ Word trên máy Windows
 
-**Nhánh/commit:** `chore/django-5.2-upgrade`; ghi commit sau rà soát. Chưa push.
+**Đã kiểm tra:** Python 3.12.14 có sẵn; `python-docx` và `pdf2image` chưa có trong Python hiện hành; LibreOffice đã cài ở `C:\Program Files\LibreOffice\program` và `soffice.com --headless --version` trả về 26.2.5.2. `pdftoppm`/Poppler chưa có trong PATH. Renderer đã có sẵn trong gói Documents của Codex tại `%USERPROFILE%\.codex\plugins\cache\openai-primary-runtime\documents\<phiên-bản>\skills\documents\render_docx.py`; không cần tạo hoặc chép file đó vào dự án.
 
-## 2026-09-26 — Bản nháp Outlook cho thông báo nghiệp vụ (hạng mục 1)
-
-**Mục tiêu/phạm vi:** bổ sung nhật ký outbox cho email cần người dùng xem lại và gửi thủ công bằng Outlook desktop; không gửi SMTP/Graph tự động. Tích hợp với quyết định nghỉ phép, khóa kỳ lương và duyệt công văn/tài liệu. Tách hàm tạo `mailto:` dùng chung cho thông báo hoạt động.
-
-**Tệp/phân hệ:** `apps/common/email_draft.py`; `apps/notification` (model, service, migration, tests); `apps/portal` (luồng thông báo, xác nhận đã gửi, template/URL); `apps/activity/services.py`.
-
-**Đã làm:** thêm bảng `tblNotificationEmailOutbox`, khóa idempotency, trạng thái Draft/Sent và thông tin người xác nhận; hiển thị link mở Outlook và nút xác nhận trong trang thông báo; không đưa dữ liệu lương/chi tiết nhạy cảm vào thư. Mỗi sự kiện nghiệp vụ tạo thông báo trong ứng dụng và bản nháp tương ứng trong cùng transaction. Backup trước thay đổi: `D:\QLHCNS-Backup-before-4-features-20260926-101643`.
-
-**Kiểm tra:** trên SQL Server qua Django test database: `manage.py test apps.notification.tests apps.portal.tests apps.activity.tests --verbosity 1` — 40/40 pass; test DB được Django xóa sau khi chạy. `manage.py check` đạt; `makemigrations --check --dry-run` báo không có thay đổi chưa migration; `git diff --check` đạt. Môi trường có `RequestsDependencyWarning` nhưng không ảnh hưởng kết quả.
-
-**An toàn/vận hành:** máy chủ không gửi thư. Người nhận mở Outlook, kiểm tra/sửa/gửi thật, rồi xác nhận đã gửi trong IHRMS. Chưa kiểm thử bằng Outlook desktop tương tác.
-
-**Commit:** `bdfa3a9` (`feat: add Outlook draft notification outbox`) trên `chore/django-5.2-upgrade`.
-
-**Còn mở:** triển khai hạng mục 4 (sơ đồ tổ chức và yêu cầu tự cập nhật hồ sơ), kế tiếp checklist onboarding/offboarding. Hạng mục báo cáo chỉ tạo khung kỹ thuật fail-closed theo chỉ đạo “chưa xuất báo cáo”, chờ Kế toán xác nhận biểu mẫu và quy tắc phân bổ.
-## 2026-09-26 — Sơ đồ tổ chức và yêu cầu cập nhật hồ sơ (hạng mục 4)
-
-**Mục tiêu/phạm vi:** cung cấp sơ đồ nhân sự nội bộ và quy trình nhân viên đề nghị thay đổi email cá nhân, số điện thoại hoặc địa chỉ; Nhân sự duyệt, từ chối hoặc yêu cầu bổ sung. Hồ sơ Employee chỉ thay đổi sau khi duyệt.
-
-**Tệp/phân hệ:** `apps/hrm` (model + migration + tests); `apps/portal` (views, URLs, mẫu sơ đồ/form/danh sách); `apps/security/permissions.py`; `templates/base.html`.
-
-**Đã làm:** sơ đồ dựng cây từ nhân viên Active, không truy vấn N+1, không hiển thị liên hệ riêng, chịu được dữ liệu quản lý có vòng lặp; yêu cầu thay đổi dùng whitelist kiểm tra cả phía server/model, lưu snapshot để chặn duyệt nếu giá trị đã đổi, khóa transaction khi duyệt, thông báo kết quả, giới hạn xem/tải chứng từ cho chính nhân viên hoặc Nhân sự. Migration mới chỉ tạo bảng `tblEmployeeProfileChangeRequest`, không sửa bảng nhân viên. Backup trước giai đoạn: `D:\QLHCNS-Backup-before-feature4-20260926-102541`.
-
-**Kiểm tra:** trên SQL Server test database: `manage.py test apps.hrm.tests apps.portal.tests --verbosity 1` — 13/13 pass; Django tự xóa test database. `manage.py check` đạt; `makemigrations --check --dry-run` báo không có thay đổi chưa migration; `git diff --check` đạt.
-
-**Commit:** `8230782` (`feat: add org chart and profile change approvals`) trên `chore/django-5.2-upgrade`.
-
-**Còn mở:** checklist onboarding/offboarding là hạng mục tiếp theo. HR cần rà soát whitelist (hiện ba trường có sẵn trên Employee) và nội dung/chủ sở hữu checklist; báo cáo tuân thủ sẽ chỉ có stub kỹ thuật fail-closed, chưa tạo báo cáo theo chỉ đạo.
-## 2026-09-26 — Checklist onboarding/offboarding (hạng mục 2)
-
-**Mục tiêu/phạm vi:** tạo checklist theo mẫu cho tiếp nhận/nghỉ việc bằng thao tác tường minh của HR; gán đầu việc theo vai trò, cập nhật hoàn tất/bỏ qua có lý do, nhắc các mục quá hạn và đưa số cảnh báo lên trang chủ. Không tự mở checklist khi hồ sơ nhân viên được tạo/lưu.
-
-**Tệp/phân hệ:** app mới `apps/lifecycle` (4 model, service, views, admin, templates, command `send_lifecycle_reminders`, migration); tích hợp quyền, menu, dashboard và URL portal.
-
-**Đã làm:** mẫu được chụp thành các dòng checklist độc lập để sửa mẫu không làm đổi case cũ; khóa `triggering_event_ref` chống mở trùng; chỉ người được giao hoặc HR cập nhật; người khác không xem case; liên kết lịch sử cấp phát/thu hồi AssetAllocation có sẵn, không sửa/xóa lịch sử. Nhắc hạn tạo thông báo trong ứng dụng và chống gửi trùng trong cùng ngày. Template checklist được HR/SysAdmin cấu hình qua Django Admin; HR mở hồ sơ qua menu Nhân sự. Backup trước giai đoạn: `D:\QLHCNS-Backup-before-feature2-20260926-103045`.
-
-**Kiểm tra:** SQL Server test database: `manage.py test apps.lifecycle.tests apps.portal.tests apps.hrm.tests --verbosity 1` — 19/19 pass; test database bị Django xóa sau chạy. `manage.py check` đạt; `makemigrations --check --dry-run` không còn thay đổi chưa migration.
-
-**Vận hành:** cần áp dụng migration `lifecycle.0001_initial` khi triển khai. Task Scheduler chưa được cấu hình theo quyết định ưu tiên trước đây; quản trị viên có thể gọi `python src\manage.py send_lifecycle_reminders` thủ công, và cần lên lịch hằng ngày khi sẵn sàng.
-
-**Commit:** `0558999` (`feat: add onboarding and offboarding checklists`) trên `chore/django-5.2-upgrade`.
-
-**Còn mở:** HR cần tạo/xác nhận hai bộ checklist chuẩn, vai trò chịu trách nhiệm, ngày hạn cho từng mục; đây là cấu hình nghiệp vụ chưa được cung cấp nên chưa seed dữ liệu mặc định. Tiếp theo là khung báo cáo tuân thủ fail-closed, không xuất file/báo cáo.
-## 2026-09-26 — Khung kỹ thuật báo cáo tuân thủ (hạng mục 3)
-
-**Mục tiêu/phạm vi:** chuẩn bị điểm mở rộng cho báo cáo BHXH, quyết toán PIT và chi phí lương theo phòng ban theo chỉ đạo “chỉ làm khung kỹ thuật, chưa xuất báo cáo”.
-
-**Tệp/phân hệ:** `apps/reporting/services.py`, `apps/reporting/tests.py`, `apps/security/permissions.py`.
-
-**Đã làm:** thêm exception `ComplianceReportNotConfigured`, ba hàm placeholder đều dừng rõ ràng cho đến khi Kế toán xác nhận biểu mẫu/mapping/quy tắc phân bổ, và khai báo quyền dự kiến `export_compliance_report`. Không thêm endpoint, không tính số liệu, không sinh hoặc lưu file, không migration. Backup trước giai đoạn: `D:\QLHCNS-Backup-before-feature3-20260926-103639`.
-
-**Kiểm tra:** bộ test tích hợp trên SQL Server test database: 57/57 pass; gồm notification, portal, activity, HRM, lifecycle và reporting. Django tự xóa test database. `manage.py check` đạt; `makemigrations --check --dry-run` báo không có thay đổi; `git diff --check` đạt.
-
-**Còn mở:** Kế toán cung cấp mẫu BHXH đúng phiên bản, mẫu PIT theo năm và quy tắc phân bổ chi phí theo phòng ban. Sau khi có xác nhận, mới xây mapping, endpoint có phân quyền/audit snapshot và bộ đối chiếu số liệu; hiện chưa có báo cáo nghiệp vụ để sử dụng.
-
-**Commit:** `828506e` (`chore: scaffold compliance reports behind finance gate`) trên `chore/django-5.2-upgrade`.
-## 2026-09-26 — Kết quả hồi quy toàn bộ sau 4 hạng mục
-
-**Phát hiện và sửa:** test quyền cũ giả định nhân viên thường không được cấp bất kỳ quyền nào. Cập nhật kiểm thử để cho phép đúng hai quyền tự phục vụ mới (`submit_profile_change_request`, `view_own_lifecycle_items`) và vẫn xác nhận nhân viên không có quyền duyệt yêu cầu hoặc quản lý checklist.
-
-**Kiểm tra cuối:** trên SQL Server test database, `manage.py test apps.asset.tests apps.common.tests apps.hrm.tests apps.leave.tests apps.payroll.tests apps.security.tests apps.activity.tests apps.portal.tests apps.m365.tests apps.notification.tests apps.lifecycle.tests apps.reporting.tests --verbosity 1` — 140/140 pass. Test database tự được xóa. `manage.py check` đạt; `makemigrations --check --dry-run` báo không thay đổi; `git diff --check` đạt. Cảnh báo `RequestsDependencyWarning` vẫn hiện trong môi trường nhưng test thành công.
-
-**Ghi chú:** thay đổi test activity hiện hữu của chủ dự án (`src/apps/activity/tests.py`) và các mục chưa theo dõi khác vẫn được giữ nguyên, không đưa vào các commit triển khai.
-
-## 2026-09-26 — Cập nhật cẩm nang sử dụng và giáo án tập huấn
-
-**Mục tiêu/phạm vi:** cập nhật tài liệu người dùng sau bốn hạng mục HRMS mới, phân biệt rõ chức năng đã triển khai với phần còn chờ cấu hình hoặc xác nhận nghiệp vụ.
-
-**Tệp:** `HUONG_DAN_SU_DUNG_IHRMS.md`, `TAP_HUAN_IHRMS.md`.
-
-**Đã cập nhật:** cẩm nang có hướng dẫn yêu cầu đổi hồ sơ, sơ đồ tổ chức, duyệt yêu cầu, bản nháp Outlook gửi thủ công, mở/giao/theo dõi checklist và điều kiện vận hành nhắc hạn; ghi rõ báo cáo BHXH/PIT/chi phí phòng ban chưa xuất được. Giáo án có bài thực hành theo vai trò cho hồ sơ cá nhân/sơ đồ, checklist và quy trình xác nhận email; thêm nội dung chuẩn bị mẫu, bảo vệ dữ liệu demo và các phần chưa bật. Tài liệu yêu cầu HR thống nhất mẫu checklist trước khi cấu hình và dùng nghiệp vụ.
-
-**Kiểm tra:** rà soát văn bản UTF-8 và `git diff --check`; không thay đổi code/schema nên không chạy test ứng dụng.
-
-**Commit:** chưa commit trong lượt cập nhật tài liệu này.
-
-**Còn mở:** HR cần hoàn thiện mẫu checklist và whitelist chính thức; Kế toán cần xác nhận mẫu/qui tắc báo cáo; IT quyết định cấu hình Task Scheduler. Hướng dẫn chỉ mô tả phần mềm và không thay thế SOP được công ty phê duyệt.
-
-## 2026-09-26 — Sửa lỗi Unicode khi output management command bị redirect
-
-**Lỗi/nguyên nhân:** khi một lệnh Django chạy trên Windows mà stdout/stderr bị chuyển hướng khỏi console thật, Python có thể dùng code page hệ thống như cp1252. Ký tự tiếng Việt không mã hóa được sẽ làm command dừng với `UnicodeEncodeError`.
-
-**Đã sửa:** `src/manage.py` cấu hình stdout và stderr sang UTF-8 với `errors='replace'` trước khi Django khởi chạy, áp dụng chung cho mọi management command đi qua tệp này. `ops/scheduler/Run-ActivityReportReminders.ps1` cũng đặt `PYTHONIOENCODING=utf-8` và `PYTHONUTF8=1`, nhất quán với script nhắc lifecycle hiện có. Rà `src/config/wsgi.py` và `src/config/asgi.py`: không có lệnh in log trực tiếp ra stdout/stderr nên không cần chỉnh ở đó.
-
-**Kiểm tra:** thử redirect với `PYTHONIOENCODING=cp1252`, rồi chạy `venv\Scripts\python.exe src\manage.py shell -c "print(...)"` và xác nhận tệp UTF-8 chứa đúng chuỗi tiếng Việt — đạt, không có `UnicodeEncodeError`. `python -m py_compile src/manage.py` và `git diff --check` đạt. Lệnh tổng quát `venv\Scripts\python.exe src\manage.py test` tự tìm thấy 0 test trong cấu trúc `src/apps`; đã chạy toàn bộ 23 module test tường minh — 148/148 pass, test database được xóa. Cảnh báo `RequestsDependencyWarning` vẫn xuất hiện nhưng không làm test thất bại.
-
-**Commit:** chưa commit trong lượt sửa này.
-
-**Còn mở:** không còn thay đổi code đã biết; Task Scheduler production cần chạy script đã cập nhật khi triển khai bản mới.
-
-## 2026-09-26 — Làm rõ checklist, sơ đồ tổ chức và menu giao việc
-
-**Mục tiêu:** phân định trải nghiệm checklist giữa HR và nhân viên; làm sơ đồ tổ chức dễ đọc/tìm kiếm; giúp người dùng thấy rõ lối vào giao việc và cập nhật hoàn tất.
-
-**Đã thực hiện:** checklist được ghi rõ là HR mở/quản lý hồ sơ onboarding/offboarding, còn nhân viên và người thuộc các vai trò dự án chỉ xem/cập nhật phần việc được giao. Bổ sung quyền xem checklist cá nhân cho Director, Project Manager, Project Coordinator và CBDA; quyền quản lý toàn bộ vẫn riêng cho HR. Sơ đồ tổ chức hiển thị số nhân viên/phòng ban, chức vụ, phòng ban, quản lý trực tiếp, số báo cáo trực tiếp; có tìm kiếm theo tên/chức vụ/phòng ban và giữ hiển thị nhánh cha phù hợp. Đưa liên kết tác vụ ra menu **Kế hoạch** với nhãn **Giao việc & hoàn tất**.
-
-**Backup trước thay đổi:** `D:\QLHCNS-Backup-before-orgchart-checklist-menu-20260926-181546`.
-
-**Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.security.tests apps.lifecycle.tests apps.portal.tests --verbosity 1` — 33 test pass trên SQL Server test database; `manage.py check` đạt; `makemigrations --check --dry-run` không có thay đổi; `git diff --check` đạt. Không phát sinh migration.
-
-**Còn mở:** kiểm tra trực quan sơ đồ trên trình duyệt với tài khoản thật và xác nhận HR/CBDA thấy đúng nhãn menu sau khi triển khai.
-
-## 2026-09-26 — Phân định checklist HCNS, menu hoạt động dự án và sơ đồ tổ chức
-
-**Mục tiêu:** làm rõ checklist nhân sự là thủ tục nội bộ của HCNS; bỏ menu trùng; đưa công việc dự án về đúng nhóm; sửa thao tác hồ sơ nhân viên và giúp sơ đồ vừa màn hình.
-
-**Đã thực hiện:** checklist đổi tên thành “Checklist thủ tục nhân sự”, mô tả rõ phạm vi giấy tờ/tiếp nhận/nghỉ việc; menu chỉ còn trong **Nhân sự**. Quyền truy cập và giao đầu việc bị giới hạn vào vai trò `HR_OFFICER`/`HR_MANAGER`; người dùng dự án/nhân viên thường không thể mở checklist dù biết URL. Menu **Giao việc & hoàn tất** được đặt trong nhóm **Hoạt động dự án**. Nút **Thao tác** trong danh sách hồ sơ dùng HTML `<details>/<summary>` thay vì gọi hàm JavaScript không tồn tại; các mục liên kết tới đúng phần Điều chuyển/Bổ nhiệm/Lương/Hợp đồng/Sửa hồ sơ. Sơ đồ tổ chức dùng chiều rộng lớn hơn, tự thu để vừa chiều ngang cửa sổ và có nút thu/phóng cùng “Vừa màn hình”. Hướng dẫn sử dụng và hướng dẫn test nhanh đã đồng bộ vị trí menu và ranh giới giữa checklist HCNS với task dự án.
-
-**Backup trước thay đổi:** `D:\QLHCNS-Backup-before-clarify-HR-checklist-menu-orgchart-20260926-183154`.
-
-**Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.security.tests apps.lifecycle.tests apps.portal.tests --verbosity 1` — 36/36 test pass trên SQL Server test database; database kiểm thử được Django xóa sau chạy. `manage.py check` đạt; `makemigrations --check --dry-run` không có thay đổi; `git diff --check` đạt. Có cảnh báo dependency Requests/urllib3 đã tồn tại trong môi trường nhưng không làm test thất bại.
-
-**Còn mở:** cần đăng nhập bằng tài khoản HCNS và CBDA trên trình duyệt để xác nhận menu theo vai trò; nếu muốn dùng test SQL Server mới nhất, khởi động lại server ứng dụng để nạp template/CSS cập nhật.
-
-## 2026-09-26 — Sửa danh sách giao việc dự án và lỗi mở form sửa nhân viên
-
-**Mục tiêu:** giải thích và hiển thị đúng Task báo cáo hoạt động cho CBDA/Điều phối viên/Quản lý dự án; sửa lỗi `VariableDoesNotExist` khi vào Sửa hồ sơ.
-
-**Đã thực hiện:** danh sách Task dự án nay bao gồm task giao cho người dùng và các task gắn với hoạt động trong phạm vi họ được xem; CBDA chỉ thấy hoạt động của mình, Điều phối viên/Quản lý dự án thấy phạm vi được phép. Trang cho biết task tự tạo khi liên kết công văn đi, người giao là Điều phối viên (hoặc người ký nếu hồ sơ thiếu Điều phối viên), người nhận là CBDA phụ trách chính, hạn 10 ngày làm việc; CBDA cần tải báo cáo SharePoint trước khi hoàn thành. Form nhân viên luôn nhận đầy đủ các khóa dữ liệu khởi tạo kể cả khi sửa hồ sơ; bổ sung test GET trang sửa. Cẩm nang và hướng dẫn test nhanh đã chỉ rõ người giao và điều kiện task xuất hiện.
-
-**Backup trước thay đổi:** `D:\QLHCNS-Backup-before-task-visibility-edit-form-fix-20260926-191000`.
-
-**Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.portal.tests apps.activity.tests --verbosity 1` — 38/38 test pass trên SQL Server test database; test database được Django xóa sau chạy. `manage.py check` đạt; `makemigrations --check --dry-run` không có thay đổi; `py_compile` và `git diff --check` đạt.
-
-**Còn mở:** không cần thao tác giao Task báo cáo bằng tay. Để xác nhận trên dữ liệu thật, cần một hoạt động có CBDA phụ trách và công văn đi được liên kết; khi đó Task sẽ hiện cho CBDA và nhóm quản lý dự án.
-
-## 2026-09-26 — Sửa ngày bắt đầu và hoàn thành của Giao việc
-
-**Vấn đề:** Task trước đây lưu ngày bắt đầu và hạn hoàn thành nhưng không có ngày hoàn thành thực tế; giao việc và đánh dấu hoàn thành cùng ngày khiến giao diện không thể hiện rõ ba mốc thời gian.
-
-**Đã sửa:** ngày bắt đầu mặc định là ngày tạo Task; khi chuyển trạng thái sang Hoàn thành, hệ thống ghi ngày hiện tại vào `CompletedDate`, và xóa ngày này nếu Task được chuyển lại trạng thái chưa hoàn thành. Danh sách và chi tiết Task hiển thị riêng ngày bắt đầu, hạn và ngày hoàn thành theo định dạng ngày/tháng/năm. Thêm migration `task.0003_task_completed_date`; Task đã hoàn thành trước migration được điền ngày gần đúng từ thời điểm sửa cuối cùng.
-
-**Sao lưu:** `D:\QLHCNS-Backup-before-task-completion-date-20260926-192500` (tạo trước khi sửa mã).
-
-**Kiểm tra:** migration đã áp dụng trên SQL Server (`task.0003_task_completed_date` đã được đánh dấu áp dụng); `manage.py check` đạt; `makemigrations --check --dry-run` không phát hiện thay đổi thiếu migration; 40 test của `apps.portal.tests` và `apps.activity.tests` đạt; `git diff --check` sạch. Có cảnh báo dependency Requests/urllib3 hiện hữu trong môi trường chạy test.
-
-**Lưu ý dữ liệu cũ:** ngày hoàn thành của Task cũ là ước tính từ lần cập nhật cuối, không nhất thiết là ngày người dùng thực sự bấm Hoàn thành. Task mới ghi nhận ngày thực tế khi chuyển trạng thái.
-
-## 2026-09-26 — Đồng bộ hạn Task theo lịch hoạt động
-
-**Quy tắc được người dùng xác nhận:** Công văn đi đã phát hành kích hoạt việc giao Task; ngày bắt đầu Task bằng ngày bắt đầu hoạt động, hạn là 10 ngày làm việc sau ngày kết thúc hoạt động. Khi lịch đổi, cập nhật Task hiện có thay vì tạo bản trùng.
-
-**Đã sửa:** `create_task_for_activity` tạo và đồng bộ ngày Task theo lịch hoạt động; nếu lịch đổi, thông báo trong IHRMS tới CBDA và người giao. Task đã đánh dấu hoàn thành trước ngày kết thúc mới được mở lại, xóa ngày hoàn thành và bỏ liên kết tệp báo cáo cũ nhưng không xóa tệp khỏi SharePoint. Không cho hoàn thành Task báo cáo trước ngày kết thúc hoạt động. Cập nhật hướng dẫn giao việc, form và roadmap.
-
-**Dữ liệu kiểm thử đã đồng bộ:** hoạt động 01/10–31/10/2026 có Task bắt đầu 01/10, hạn 13/11/2026 theo lịch ngày làm việc trong DB, trạng thái Todo. Task hoàn thành sớm ngày 26/09 được mở lại; liên kết báo cáo cũ được gỡ, tệp vật lý vẫn giữ trên SharePoint.
-
-**Sao lưu trước sửa:** `D:\QLHCNS-Backup-before-activity-task-date-policy-20260926-201500`.
-
-**Kiểm tra:** 42 test của `apps.activity.tests` và `apps.portal.tests` đạt; `manage.py check` đạt; `makemigrations --check --dry-run` không phát hiện thay đổi schema. `git diff --check` sạch. Cảnh báo RequestsDependencyWarning hiện hữu vẫn xuất hiện khi chạy Python.
-
-## 2026-09-27 — Chỉnh bố cục Bảng chấm công và bản in
-
-**Phạm vi:** `src/apps/portal/templates/portal/timesheet_month.html`.
-
-**Đã sửa:** năm ô nhập ngày nghỉ có cùng chiều rộng 4rem, nằm sát nhãn và giữ nguyên khi in; dòng giờ chuẩn gộp thành một ô, in công thức và kết quả `= 168h` (tự bỏ số thập phân .00); bỏ nhãn `(Ký, họ tên)` nhưng giữ khoảng trống ký và tên người ký. Bản in được định dạng A4, giữ hai cột tóm tắt/chữ ký như bố cục trang và ẩn điều khiển màn hình.
-
-**Sao lưu trước sửa:** `D:\QLHCNS-Backup-before-timesheet-layout-20260927-093000`.
-
-**Kiểm tra:** `manage.py check` đạt; render template với mẫu 21 ngày × 8 giờ xác nhận kết quả `= 168h` và không còn `(Ký, họ tên)`; `git diff --check` sạch. Không sửa schema/database.
-
-
-## 2026-09-27 - Timesheet print refinements
-
-**Changes:** Made the complete required-hours row bold, including the calculation and = 168h; formatted required days and hours to one decimal place; kept all five leave labels on a single line in print mode.
-
-**Backup before edits:** D:\QLHCNS-Backup-before-timesheet-print-tweaks-20260927-085753.
-
-**Checks:** Django system check passed; template render confirmed the full bold formula 21,0 ngay x 8,0h = 168h, all five leave rows, and no-wrap print CSS; git diff --check passed. No database changes. The existing Requests/urllib3 dependency warning remains.
-
-## 2026-09-27 — Sửa lỗi quyền xem Task và phòng ban ngừng hoạt động
-
-**Phạm vi:** `src/apps/portal/views.py`, `src/apps/portal/tests.py`, `src/apps/portal/templates/portal/task_list.html`, `src/apps/portal/templates/portal/hr_employee_form.html`.
-
-**Nguyên nhân và cách sửa:** danh sách Task trước đây chỉ có phạm vi “được giao cho tôi”; trang chi tiết Task không nhận diện người giao ở các Task không gắn hoạt động. Thêm lọc `?scope=assigned_by_me` và hai tab “Việc của tôi” / “Việc tôi đã giao” (tab giao việc chỉ hiện khi tài khoản có quyền `assign_task`). Người giao được xem đúng Task do họ giao; không cấp quyền xem Task của người khác. Với Task thuộc hoạt động, quyền xem hoạt động hiện có vẫn được giữ.
-
-Form sửa nhân viên trước đây chỉ nạp phòng ban đang hoạt động. Khi phòng ban hiện tại đã ngừng hoạt động, trình duyệt có thể tự chọn phòng ban hoạt động đầu tiên và làm thay đổi dữ liệu khi HR chỉ định sửa trường khác. Form giờ vẫn nạp và chọn sẵn phòng ban hiện tại, đồng thời hiển thị cảnh báo để HR chủ động điều chuyển nếu cần. Rà soát các bộ lọc phòng ban còn lại: form tạo nhân viên và công văn là tạo mới; form hồ sơ nhân viên dùng danh sách phòng ban cho điểm đến điều chuyển, nên không phải cùng trường hợp sửa giá trị hiện tại.
-
-**Kiểm tra:** thêm test lọc tab Task, quyền xem của người giao và chặn nhân viên không liên quan; thêm `test_edit_employee_with_deactivated_department_keeps_department_unless_explicitly_changed` xác nhận GET hiển thị phòng ban cũ được chọn và POST chỉ đổi điện thoại vẫn giữ nguyên phòng ban. Chạy `python src/manage.py test apps.portal.tests apps.hrm.tests apps.task.tests` trên backend SQL Server với test database cô lập: 23/23 đạt; test database được Django xóa sau khi chạy. `manage.py check` đạt; `makemigrations --check --dry-run` không có thay đổi; `git diff --check` sạch. Không sửa schema và không cập nhật database thật. Cảnh báo Requests/urllib3 hiện hữu vẫn xuất hiện.
-
-**Sao lưu:** checkpoint được cung cấp: `D:\QLHCNS-Backup-before-task-visibility-edit-form-fix-20260926-191000`; bản sao mã nguồn hiện trạng ngay trước sửa: `D:\QLHCNS-Backup-current-before-task-visibility-edit-form-fix-20260927-090538`.
-
-**Commit:** `9ef726f` trên nhánh `chore/django-5.2-upgrade`; chưa push.
-
-## 2026-09-27 - Hiện đủ phạm vi giao việc và dùng đúng lịch hoạt động
-
-**Phạm vi:** `src/apps/portal/` và `src/apps/activity/`; hướng dẫn sử dụng, test nhanh, roadmap MEL.
-
-**Đã sửa:** Trang công việc hiển thị hai tab **Việc của tôi** và **Việc tôi đã giao** cho người có quyền xem Dashboard hoạt động dự án hoặc quyền giao việc. Quyền tạo/giao Task mới vẫn giữ nguyên, không được cấp thêm theo việc hiển thị tab. Nội dung hướng dẫn trên trang và form hoạt động đã làm rõ: ngày công văn chỉ kích hoạt việc tạo/giao Task; ĐPV/quản lý tự nhập ngày bắt đầu, ngày kết thúc; hạn báo cáo là 10 ngày làm việc sau ngày kết thúc, bỏ Thứ Bảy, Chủ Nhật và ngày nghỉ đã khai báo. Thuật toán hiện có đã theo quy tắc này; bổ sung kiểm thử để ngăn ngày phát hành công văn bị dùng làm mốc lịch.
-
-**Đối chiếu dữ liệu thật chỉ đọc:** ACT-1 đang có lịch 26/09–27/09/2026 nhưng Task cũ giữ 18/06–02/07 và đã Hoàn thành; đồng bộ sẽ mở lại Task, bỏ ngày hoàn thành và gỡ liên kết tệp báo cáo khỏi Task (tệp vật lý SharePoint không bị xóa). ACT-2 có lịch 19/09–20/09 nhưng Task cũ cũng giữ ngày tháng 6–7; ACT-3 có lịch 01/10–31/10 và Task hiện đã đúng 01/10–13/11. Không tự cập nhật các bản ghi thật trong lượt này để tránh thay đổi trạng thái nghiệp vụ và liên kết báo cáo ngoài ý muốn.
-
-**Sao lưu trước thay đổi:** `D:\QLHCNS-Backup-before-project-task-tab-and-date-clarification-20260927-091906`.
-
-**Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.portal.tests apps.activity.tests` — 46/46 test đạt trên SQL Server test database; Django system check đạt; `makemigrations --check --dry-run` không phát hiện migration thiếu; `git diff --check` đạt. Cảnh báo Requests/urllib3 hiện hữu vẫn xuất hiện khi chạy Python.
-
-**Còn mở:** Cần người phụ trách xác nhận có muốn đồng bộ ACT-1 và ACT-2 trên dữ liệu thật. ACT-1 sẽ bị mở lại và cần tải/đính kèm báo cáo lại trong IHRMS; tệp đang có trên SharePoint vẫn giữ nguyên. Không cần đồng bộ ACT-3.
-
-**Commit triển khai:** `a9cd9ed` trên nhánh `chore/django-5.2-upgrade`; chưa push.
-
-## 2026-09-27 - Tách danh sách giám sát khỏi việc cá nhân
-
-**Nguyên nhân:** Bộ lọc `assigned_to_me` cộng thêm mọi Task trong hoạt động mà người dùng có quyền giám sát. Do đó Ban Giám đốc thấy Task giao cho CBDA dưới tab **Việc của tôi**, dù họ không phải người nhận việc.
-
-**Đã sửa:** Tài khoản có quyền giám sát vào mặc định tab **Theo dõi hoạt động**, liệt kê Task trong phạm vi dự án được phép xem. **Việc của tôi** chỉ lọc `assigned_to_employee` của người đăng nhập; **Việc tôi đã giao** chỉ lọc `assigned_by_employee` của người đăng nhập. Thêm kiểm thử hồi quy với Giám đốc, Điều phối viên và CBDA; cập nhật hướng dẫn sử dụng/test nhanh.
-
-**Sao lưu trước sửa:** `D:\QLHCNS-Backup-before-task-scope-separation-files-20260927-093000`.
-
-**Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.portal.tests apps.activity.tests` — 47/47 test đạt trên SQL Server test database; Django system check đạt; không có migration thiếu; `git diff --check` đạt. Không thay đổi dữ liệu thật.
-
-**Commit triển khai:** `6917ed3` trên nhánh `chore/django-5.2-upgrade`; chưa push.
-
-## 2026-09-27 - Bổ sung test vai trò giao việc và giới hạn trưởng phòng
-
-**Yêu cầu đã thực hiện:** Bổ sung test cho DEPT_MANAGER, HR_MANAGER, PROJECT_MANAGER và EMPLOYEE; đồng thời xử lý câu hỏi nghiệp vụ về quyền xem Task không thuộc hoạt động dự án.
-
-**Quyết định nghiệp vụ do người dùng xác nhận:** DEPT_MANAGER chỉ được xem Task của nhân viên thuộc các phòng ban mình quản lý. Task gắn hoạt động dự án vẫn tuân theo quyền xem hoạt động hiện có.
-
-**Đã sửa/test:** DEPT_MANAGER giao Task cho nhân viên trong phòng mình, thấy Task ở **Việc tôi đã giao** và mở được chi tiết; yêu cầu POST giả mạo người nhận ở phòng khác bị chặn, và trưởng phòng không xem được chi tiết Task ngoài phạm vi. HR_MANAGER vẫn giao/xem Task liên phòng. PROJECT_MANAGER có các tab/phạm vi giám sát đúng; EMPLOYEE thường chỉ thấy Task giao cho mình, không thấy tab giao/giám sát, nút tạo Task hay cột dự án. Đã áp dụng kiểm tra phòng ban ở phía máy chủ khi tạo Task, không chỉ lọc lựa chọn trong giao diện.
-
-**Sao lưu:** `D:\QLHCNS-Backup-before-task-role-regression-tests-20260927-094500`.
-
-**Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.portal.tests` — 21/21 test đạt trên SQL Server test database; `manage.py check` đạt; `makemigrations --check --dry-run` không phát hiện migration thiếu; `git diff --check` đạt. Cảnh báo Requests/urllib3 hiện hữu; một lần POST ngoài phòng bị từ chối có log bảo mật như mong đợi.
-
-**Còn mở:** Không còn câu hỏi về phạm vi quyền trưởng phòng; quyết định giới hạn theo các phòng ban được quản lý đã được áp dụng.
-
-**Commit triển khai:** `875ab08` trên nhánh `chore/django-5.2-upgrade`; chưa push.
-
-## 2026-09-27 - Kiểm tra và đóng gói trước khi đẩy GitHub
-
-**Phạm vi chuẩn bị:** các thay đổi đang có trong workspace gồm test hồi quy chấm công, xử lý UTF-8 cho output Windows/Task Scheduler, cập nhật giáo án, hướng dẫn IT và bộ tài liệu đặc tả/UAT/checklist. Các file dự án được rà soát và đưa vào commit; không đưa thư mục sao lưu SQL Server, `Backups/backup-log.txt`, tệp rỗng cục bộ `src/qlhcns` hay `.env` lên Git.
-
-**Điểm nghiệp vụ còn chờ:** bản yêu cầu Task cập nhật có thêm câu hỏi DEPT_MANAGER mặc định vào **Theo dõi hoạt động** hay **Việc của tôi**. Đã gửi câu hỏi cho người phụ trách; giữ nguyên hành vi hiện tại và chưa thêm test/quy tắc mặc định mới cho đến khi có câu trả lời.
-
-**Kiểm tra trước đẩy:** lệnh tổng quát `manage.py test` tự tìm thấy 0 test do cấu trúc module nằm dưới `src/apps`; đã chạy tường minh 23 module test — 172/172 pass trên SQL Server test database, DB test được Django xóa. `manage.py check` đạt; `makemigrations --check --dry-run` không phát hiện migration thiếu; `git diff --check` đạt. Cảnh báo Requests/urllib3 vẫn hiện hữu nhưng không làm test thất bại.
-
-**Commit và push:** commit `2a0ef19` (`chore: package tests and operational documentation`) chứa 11 tệp mã nguồn/tài liệu đã rà soát. Đã đẩy nhánh `chore/django-5.2-upgrade` lên `origin` thành công, cập nhật từ `4610ec5` đến `2a0ef19`; gồm 22 commit đã có trên nhánh và commit đóng gói mới. Thư mục sao lưu SQL Server và tệp rỗng `src/qlhcns` tiếp tục chỉ ở máy cục bộ.
-
-## 2026-09-27 - Giới hạn quyền xem và quản lý tài sản
-
-**Yêu cầu:** Chỉ HR, Kế toán, Điều phối viên dự án và Ban Giám đốc được xem phần Tài sản; CBDA, trưởng phòng và nhân viên khác không cần dùng phân hệ này.
-
-**Đã triển khai:** Thêm quyền `view_asset` riêng cho `DIRECTOR`, `HR_MANAGER`, `HR_OFFICER`, `FINANCE_OFFICER`, `PROJECT_COORDINATOR` và quản trị hệ thống. HR/quản trị hệ thống giữ quyền quản lý; Kế toán, ĐPV và Giám đốc có quyền chỉ đọc, còn quyền duyệt thanh lý của Giám đốc tiếp tục theo kiểm tra hiện hành. Ẩn các mục Tài sản trong menu Cá nhân/Hành chính và số liệu tài sản trên dashboard đối với vai trò ngoài danh sách; chặn URL trực tiếp; ẩn biểu mẫu và chặn POST chỉnh sửa với người chỉ có quyền xem. Mở quyền đọc tương ứng trong Django Admin, cập nhật ma trận RBAC và thêm test vai trò/truy cập.
-
-**Sao lưu trước sửa:** `Backups/source-before-asset-access-20260927.zip` (snapshot các tệp liên quan từ HEAD; chỉ lưu cục bộ, không đưa vào Git).
-
-**Kiểm tra:** `venv\Scripts\python.exe src\manage.py test apps.security.tests apps.portal.tests apps.asset.tests` — 49/49 test đạt trên SQL Server test database; `manage.py check` đạt; `makemigrations --check --dry-run` báo không có migration mới; `git diff --check` đạt. Không chạy migration hay thay đổi dữ liệu ứng dụng.
-
-**Cảnh báo còn hiện:** `RequestsDependencyWarning` về phiên bản urllib3; không ảnh hưởng kết quả kiểm thử.
-
-**Commit triển khai:** `8e6db7b` (`feat: restrict asset access by role`) trên `chore/django-5.2-upgrade`; đã commit cục bộ, chưa push.
-
-
-## 2026-09-27 - Rà soát và chuẩn bị đưa IHRMS lên máy chủ chạy thử
-
-**Yêu cầu/phạm vi:** Rà soát mã nguồn, cấu hình, README, tài liệu vận hành, skills và tệp dư; chuẩn bị hồ sơ triển khai SIT trên Windows/SQL Server. Đây là chuẩn bị chạy thử, không triển khai production.
-
-**Sao lưu đầy đủ trước khi sửa/xóa:** `D:\\QLHCNS-FullBackup-before-server-trial-20260927`. Đã sao chép toàn bộ dự án, gồm cả `.env`, Git, venv, Backups, Logs và dữ liệu cục bộ. Robocopy: 11.057 tệp, 120.039.816 byte, 0 lỗi và 0 sai khác. Bản sao chứa secrets/dữ liệu máy local; chỉ lưu nội bộ, không đưa lên Git.
-
-**Đã rà soát/cập nhật:** README viết lại theo cấu trúc thật `src/`, trạng thái module/tích hợp và cảnh báo rõ `runserver` chỉ dùng phát triển; thêm [runbook Server Trial](Server_Trial_Readiness_2026-09-27.md) có điều kiện IT cần cấp, lệnh Windows, test, backup/restore và giới hạn SIT; chuyển trạng thái tài liệu triển khai thành “reference baseline”, không còn khẳng định máy chủ đã được phê duyệt. Mẫu `.env.example` mặc định `DEBUG=False`, thêm cấu hình CSRF/HSTS cho proxy và dùng tên DB mẫu `ihrms_sit` để tránh trỏ nhầm DB production. `settings.py` bổ sung parse host/origin, HSTS cấu hình theo môi trường và `STATIC_ROOT`. Ghim Waitress 3.0.2 cho WSGI Windows và chardet 5.2.0 để hết RequestsDependencyWarning; thêm `Backups/` và `Logs/` vào Git ignore.
-
-**Đã dọn:** Xóa snapshot cây thư mục sinh tự động `source_tree.txt` (không có liên kết tham chiếu) và tệp rỗng 0 byte `src/qlhcns`. Giữ nguyên `.env`, SQL backup, Logs, tài liệu nghiệp vụ/lịch sử và skills vì chứa cấu hình hoặc hồ sơ cần quản lý.
-
-**Kiểm tra:** 177 test trên SQL Server test database tạm đạt; Django test runner đã tạo rồi xóa test DB. `manage.py check`, `makemigrations --check --dry-run`, `pip check` và `git diff --check` đạt. `collectstatic --noinput` gom 219 tệp; có cảnh báo hai JavaScript trùng tên giữa Jazzmin và Django, `findstatic` cho thấy bản Jazzmin được ưu tiên. Waitress lắng nghe loopback `127.0.0.1:8001`; GET `/portal/` trả HTTP 200. `check --deploy` trên cấu hình local có 5 cảnh báo do local chưa bật TLS/key an toàn; thử cấu hình SIT tạm với DEBUG tắt, key mới và HTTPS proxy bật chỉ còn cảnh báo HSTS (cố ý để 0 tới khi IT xác nhận domain/subdomain). Test và smoke test không thay đổi DB nghiệp vụ hay SharePoint thật.
-
-**Còn cần IT/chủ dự án:** Cấp Windows Server SIT, SQL database/tài khoản SIT riêng, hostname/chứng chỉ TLS, cấu hình reverse proxy và static mapping, Graph/SharePoint folder cùng ACL thử nghiệm, tài khoản vai trò và người phụ trách restore. Chạy lại test/check trên máy đích và ký UAT trước khi xem xét go-live. Windows Task Scheduler cho nhắc hạn vẫn chưa triển khai theo ưu tiên đã thống nhất.
-
-**Commit:** `c12eae7` (`chore: prepare Windows server trial deployment`) on `chore/django-5.2-upgrade`; local commit, not pushed.
-
-## 2026-09-27 - Bổ sung kiểm thử theo review (Yêu cầu 1 và 2)
-
-**Phạm vi:** Đọc `Ket_Qua_Review_va_Yeu_Cau_Codex_2026-09-27.md` và chỉ thực hiện hai yêu cầu đầu: bổ sung kiểm thử cho 10 app chưa có test và viết kiểm thử hồi quy cho I3–I8, I11. Theo yêu cầu trong tài liệu, khi test phơi bày lỗi nghiệp vụ thì ghi nhận để báo lại, không tự ý sửa logic, đặc biệt với chính sách lương. Không sửa mã nghiệp vụ, schema hoặc migration.
-
-**Sao lưu trước thay đổi:** Git bundle `D:\QLHCNS-Backup-before-review-regression-tests-20260927-174456.bundle`; đã xác minh bundle đọc được bằng `git bundle verify`.
-
-**Đã bổ sung:** Thay các test placeholder trong `contract`, `document`, `kpi`, `office`, `organization`, `planning`, `procurement`, `project`, `recruitment`, `task`; thêm hồi quy liên quan trong `asset`, `leave`, `payroll`, `portal`. Tổng cộng 14 module test được cập nhật. Các kiểm thử bao quát ràng buộc dữ liệu, xác thực tệp, quyền truy cập/thao tác và các tình huống được đánh mã I3–I8, I11.
-
-**Kết quả test trên SQL Server:** Chạy tường minh toàn bộ 23 module test của dự án bằng Django test runner; 224 test, 3 failures và 1 error. Database test cô lập được runner tạo rồi xóa. `manage.py check` không có lỗi; `makemigrations --check --dry-run` báo không có thay đổi; cú pháp 14 tệp Python được phân tích thành công; `git diff --check` đạt.
-
-**Lỗi được test xác nhận, chưa sửa theo phạm vi đã thống nhất:**
-
-- I3: giờ cuối tuần do nhân viên nhập vẫn được cộng nghỉ bù khi bảng công tháng còn Pending.
-- I6: tạo kỳ lương bỏ nhân viên có ngày nghỉ việc nằm trong kỳ vì truy vấn hiện chỉ lấy nhân viên còn trạng thái Active. Cần xác nhận quy tắc nghiệp vụ lương trước khi đổi cách chọn người hoặc tính lương.
-- Phân quyền hợp đồng: danh sách hợp đồng trả hợp đồng của nhân viên khác trong context cho tài khoản EMPLOYEE.
-- Mua sắm: route danh sách gọi template `portal/procurement_request_list.html` nhưng template không tồn tại, làm trang lỗi khi truy cập.
-
-**Các hồi quy đạt:** I4 chia yêu cầu nghỉ qua tháng/năm; I5 ngăn cấp trùng tài sản và không chuyển tài sản về sẵn sàng nếu còn lượt cấp đang hoạt động; I7 chọn mức lương theo ngày hiệu lực; I8 tạo/hiển thị Payslip khi chốt kỳ; I11 không cho hoàn tất kiểm kê khi còn dòng chưa đếm và không cho sửa dòng đã hoàn tất. Test các ràng buộc có giá trị phòng ban NULL của ngân sách cũng đạt trên SQL Server.
-
-**Trạng thái:** Chỉ có thay đổi trong các tệp `tests.py`; chưa commit hoặc push. `docs/Huong_Dan_Setup_TaskScheduler_SIT_UAT.md` đang là tệp untracked có sẵn trong workspace, được giữ nguyên và không đưa vào phạm vi thay đổi này.
-
-## 2026-09-27 - Xử lý I3, quyền xem hợp đồng và trang mua sắm
-
-**Yêu cầu/diễn giải:** Nhân viên dự án cộng đồng làm việc thường xuyên vào Thứ Bảy, Chủ Nhật; giờ làm phải được ghi nhận, nhưng chỉ được quy đổi thành nghỉ bù khi bảng chấm công tháng được duyệt. I6 về lương giữa kỳ tiếp tục chờ xác nhận quy tắc nghiệp vụ.
-
-**Sao lưu trước sửa:** `D:\QLHCNS-Backup-before-I3-contract-procurement-20260927-181613.bundle`; `git bundle verify` xác nhận bundle chứa lịch sử Git đầy đủ.
-
-**Đã sửa:** `compensatory_days_earned()` chỉ lấy giờ từ những tháng có `MonthlyAttendanceSummary` ở trạng thái Approved. Giờ T7/CN/ngày lễ vẫn được tích lũy theo quy tắc tối đa 1 ngày cho mỗi ngày làm và làm tròn xuống nửa ngày; tháng Pending hoặc chưa có bản tổng hợp chưa được cộng vào quỹ nghỉ bù. Danh sách hợp đồng lao động trả HTTP 403 cho tài khoản không có quyền `manage_hr`; HR vẫn xem được danh sách. Tạo template `portal/procurement_request_list.html` để hiển thị danh sách theo quyền hiện có, form tạo đề nghị, thao tác duyệt/từ chối và đánh dấu đã mua.
-
-**Kiểm thử:** Các test tập trung `apps.leave.tests`, `apps.contract.tests`, `apps.procurement.tests` đạt 44/44 trên SQL Server test database. Toàn bộ 23 module của bộ test SIT đạt 226/227; test duy nhất còn thất bại là I6 (nhân viên nghỉ việc giữa kỳ chưa được đưa vào kỳ lương), giữ nguyên để chờ xác nhận, không sửa logic lương. Test database tạm đã được Django tạo rồi xóa. `manage.py check`, `makemigrations --check --dry-run`, cú pháp Python và `git diff --check` đạt; không phát sinh migration.
-
-**Phạm vi tệp:** Thay đổi logic nghỉ bù, chặn quyền danh sách hợp đồng, template mua sắm và test tương ứng. Không thay đổi cấu trúc database. Tệp untracked `docs/Huong_Dan_Setup_TaskScheduler_SIT_UAT.md` tiếp tục được giữ nguyên, không thuộc thay đổi này.
-
-## 2026-09-27 - Sửa khẩn I6: tạo bảng lương cho người nghỉ giữa kỳ
-
-**Mục tiêu/phạm vi:** Sửa lỗi I6 đã có trước đợt responsive/mobile/PWA, được test hồi quy phát hiện trong Yêu cầu 2. Nhân viên đã nghỉ nhưng `leave_date` nằm trong kỳ lương vẫn cần có dòng lương cho phần thời gian làm việc; không thay đổi công thức tính lương hoặc dashboard.
-
-**Sao lưu trước sửa:** `D:\QLHCNS-Backup-before-I6-payroll-20260927.zip`, sao chép từ snapshot mã nguồn mới nhất trước thay đổi. SHA-256: `692ddb3b26e9cf8b1a540882ce2f693aad69ca604630f008c9abc70c02e97775`.
-
-**Nguyên nhân và thay đổi:** Test I6 thất bại trước sửa trên SQL Server test database. Hai truy vấn riêng ở trang chạy lương và thao tác tạo dòng đều chỉ lấy `employment_status="Active"`, nên loại nhân viên đã nghỉ trong kỳ khỏi cả danh sách thiếu và quá trình tạo. Thêm `_employees_payable_for_period(period)` dùng chung: lấy nhân viên Active hoặc có `leave_date` trong khoảng bao gồm cả ngày đầu/cuối kỳ; dùng helper tại cả hai vị trí. Giữ nguyên loại trừ người đã nghỉ trước kỳ, bảo toàn nhánh Active có ngày nghỉ trong tương lai và bộ lọc dòng đã tồn tại để không tạo trùng. Không sửa `Payroll.calculate()`; phép tính tỷ lệ ngày công vốn đã có test riêng.
-
-**Kiểm thử:** Test trước sửa tái hiện FAIL. Sau sửa, chạy rõ 23 module test của dự án bằng Django test runner trên SQL Server test database tạm: 230/230 đạt; database kiểm thử do runner tạo và xóa. Kiểm thử mới bao gồm nghỉ đúng ngày đầu/cuối kỳ, nghỉ trước kỳ, nhân viên Active có ngày nghỉ tương lai, danh sách xem trước, chạy tạo lần hai không sinh trùng. Test `PartialMonthSalaryTests` xác nhận phép tính lương theo ngày công vẫn giữ đúng. `manage.py check`, `makemigrations --check --dry-run` và `git diff --check` đạt; không có migration và không ghi dữ liệu nghiệp vụ. Lưu ý `manage.py test` không kèm label trong repo phát hiện 0 test, vì vậy cần gọi tường minh các module test.
-
-**Chưa thực hiện:** Chưa thao tác tay trên giao diện với nhân viên thử nghiệm. Finance/chủ dự án cần xác nhận một lượt ở SIT/UAT bằng kỳ lương chưa khóa và nhân viên test nghỉ giữa kỳ: kiểm tra người đó ở danh sách còn thiếu, tạo dòng, chạy chức năng tính lương, đối chiếu ngày công/lương tỷ lệ, sau đó chạy tạo lại để xác nhận không trùng. Không thử bằng kỳ lương hoặc hồ sơ thật đang vận hành.
-
-**Commit:** `ebc900f` (`fix: include mid-period leavers in payroll generation`) trên `chore/django-5.2-upgrade`; commit cục bộ, chưa push. Nhật ký này được commit riêng ngay sau đó. Tệp untracked `docs/Huong_Dan_Setup_TaskScheduler_SIT_UAT.md` vẫn được giữ nguyên.
-
-## 2026-09-28 - Chuẩn hóa phát hiện/chạy test và đánh dấu khác biệt unique NULL
-
-**Phạm vi:** xử lý hai mục trong `Yeu_Cau_Codex_Nho_Test_Ngan_Sach_Va_Lenh_Chay_Test.md`; giữ nguyên model và constraint ngân sách SQL Server, đồng thời thống nhất cách chạy toàn bộ test.
-
-**Đã làm:** test `PlanningUniqueConstraintTests.test_company_wide_annual_budget_with_null_department_is_unique` được đánh dấu chỉ chạy khi `connection.vendor == "microsoft"`, với lý do rõ ràng: SQL Server và SQLite có hành vi khác nhau đối với NULL trong unique index; đây không phải lỗi dữ liệu ngân sách trên SQL Server. Thêm `ops/Run-Tests.ps1`: tự vào `src`, ưu tiên Python trong `venv`, chạy full discovery, in số test và trả lỗi nếu không tìm thấy test hoặc test thất bại. README, hướng dẫn SIT, runbook readiness và review readiness chỉ về cách chạy chuẩn; xác nhận `apps.portal.tests_mobile` nằm trong bộ discovery đầy đủ. Giữ nguyên các con số test của nhật ký lịch sử.
-
-**Kiểm tra:** `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1` chạy trên SQL Server test database tạm; phát hiện và chạy 235 test, tất cả đạt; runner tạo rồi xóa test database. Với `DB_ENGINE=django.db.backends.sqlite3`, chạy riêng test NULL cho kết quả `skipped=1` cùng lý do mong đợi; dùng SQLite test database in-memory, không tạo file DB. Xác nhận thêm lệnh trực tiếp `python src\manage.py test` từ repo root báo `Found 0 test(s)` nhưng exit code 0 — wrapper tránh báo xanh giả bằng cách chuyển vào `src` và kiểm tra count. `manage.py check`, `makemigrations --check --dry-run`, `py_compile` và `git diff --check` đạt; không có thay đổi model/migration hay dữ liệu nghiệp vụ.
-
-**Tệp:** `src/apps/planning/tests.py`, `ops/Run-Tests.ps1`, `README.md`, `docs/Huong_Dan_Setup_TaskScheduler_SIT_UAT.md`, `docs/Server_Trial_Readiness_2026-09-27.md`, `docs/Production_Readiness_Review_2026-09-23.md`.
-
-**Git:** các thay đổi được yêu cầu gộp trong một commit trên `chore/django-5.2-upgrade`; chưa push. Tệp hướng dẫn SIT/UAT vốn untracked được cập nhật và đưa vào commit theo yêu cầu sửa tài liệu.
-
-## 2026-09-28 - Rà soát và đẩy bản mới nhất lên GitHub
-
-**Phạm vi rà soát:** năm commit local từ `67314ee` đến `31bf46c` trên `chore/django-5.2-upgrade`: giao diện mobile/PWA, sửa tạo bảng lương cho nhân viên nghỉ giữa kỳ, test regression, quy trình phát hiện test và tài liệu SIT/UAT. Đã kiểm tra diff mã nguồn, test, cấu hình frontend và danh sách tệp trước khi đẩy. Không phát hiện `.env`, database, credentials hoặc khóa riêng được theo dõi trong Git.
-
-**Kiểm tra:** `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1` — 235/235 test đạt trên SQL Server test database tạm; runner tạo và xóa database. `manage.py check` đạt; `makemigrations --check --dry-run` báo không có thay đổi. Build Tailwind tái tạo cùng SHA-256 với CSS đã commit; `npm audit --audit-level=high` báo 0 lỗ hổng; `git diff --check` đạt.
-
-**Đã push:** sau khi fetch xác nhận remote không có commit mới, đẩy nhánh `chore/django-5.2-upgrade` từ `92ea2d4` lên `31bf46c` thành công. Checklist go-live mới được thêm tại `docs/Checklist_Go_Live_IHRMS.md`; mục 1.1 đã đánh dấu hoàn tất. Checklist và mục nhật ký này được commit/push cùng nhau trong commit tài liệu sau đợt rà soát.
-
-## 2026-09-28 - Tách portal views thành package theo domain
-
-**Mục tiêu:** giảm kích thước `src/apps/portal/views.py` (3.593 dòng) bằng cách tách mã theo nhóm nghiệp vụ, không đổi URL, quyền truy cập hay logic nghiệp vụ.
-
-**Backup trước sửa:** `D:\QLHCNS-Backups\portal-views-refactor-before-20260928-203029` gồm ZIP mã nguồn tại commit `2946460` và Git bundle lịch sử đầy đủ; ZIP CRC và `git bundle verify` đều đạt. Bản module cũ được giữ riêng trong thư mục backup.
-
-**Đã làm:** chuyển thành package `src/apps/portal/views/` với `common.py` và 10 module domain: `core`, `attendance`, `tasks_kpi`, `documents`, `recruitment`, `reports_planning`, `office_procurement`, `hr`, `finance`, `assets`. `views/__init__.py` re-export toàn bộ 152 hàm để giữ cách URL và import hiện có. Cập nhật các đường dẫn mock trong test sang module sở hữu hàm. Cập nhật TechSpec để dùng cấu trúc mới. Không sửa model, migration, URL pattern, template, phân quyền hoặc thân hàm nghiệp vụ.
-
-**Kiểm tra:** so sánh AST xác nhận 152/152 hàm giữ nguyên; `compileall` và `manage.py check` đạt; `makemigrations --check --dry-run` báo không có thay đổi. `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1` — 235/235 test đạt trên SQL Server test database tạm, database được tạo rồi xóa. `git diff --check` đạt.
-
-**Git:** commit `refactor: split portal views into domain modules` trên `chore/django-5.2-upgrade`; push chưa thực hiện.
-
-## 2026-09-28 - Sắp xếp tài liệu lưu trữ và dọn file sinh tự động
-
-**Phạm vi:** rà soát vị trí mã nguồn, tài liệu, cấu hình và file cục bộ trước khi chuẩn bị môi trường chạy thử.
-
-**Backup trước dọn:** `D:\QLHCNS-Backups\project-cleanup-before-20260928-205412` gồm ZIP mã nguồn tại `8bb820d` và Git bundle đầy đủ refs; ZIP có 492 mục. SHA-256 ZIP: `7548184F2F60C174BA819174DC7B2B77BB26BA10CC55B33EA4F1469498936D9F`; bundle: `5ED521A904717F294BB85F983ECD3E5E90A354E9F5055D3218C07C9BDD02A846`. `.env`, database, media, Backups/Logs, venv, node_modules và cấu hình VS Code không nằm trong backup và được giữ nguyên tại chỗ.
-
-**Đã sắp xếp:** chuyển review lịch sử vào `docs/archive/reviews/` và prompt khởi tạo dự án vào `docs/archive/prompts/`; cập nhật các liên kết nội bộ. Mã Django nằm ở vị trí chuẩn `src/apps/`. Bỏ thư mục gốc `apps/` rỗng, thư mục sai chính tả `promts/` sau khi chuyển tệp, và 57 thư mục `__pycache__` chỉ chứa 249 file `.pyc` sinh tự động.
-
-**Đã giữ lại:** hướng dẫn hiện hành, dữ liệu/cấu hình cục bộ, tệp uploads, staticfiles, backup SQL, logs, môi trường Python/npm và `.vscode/settings.json`; không xóa bản sao dữ liệu nào chưa xác định an toàn.
-
-**Kiểm tra:** `manage.py check` đạt; `makemigrations --check --dry-run` báo không có thay đổi; 43 tệp Markdown được quét, mọi liên kết nội bộ đều tồn tại; `git diff --check` đạt. Không thay đổi mã ứng dụng, model hay migration.
-
-## 2026-10-01 - Sao lưu và đối chiếu nhánh master, commit review 2
-
-**Mục tiêu:** theo yêu cầu chủ dự án, sao lưu bản hiện tại trước; kiểm tra `origin/master` tại `ef93f4a` (`review 2`) và chỉ cập nhật nếu đó là bản sửa/review phù hợp. Bản ban đầu là `51a0807` trên `chore/django-5.2-upgrade`, khớp upstream và working tree sạch. Đã chạy `git fetch origin` để xác nhận remote; không dựa riêng vào ảnh hoặc thông tin người dùng báo cáo.
-
-**Sao lưu đã xác nhận:** `D:\QLHCNS-Backups\before-review2-20261001-213243` chứa:
-
-- `source-51a0807.zip`: `git archive --format=zip --output <zip> HEAD`, 494 mục; Python `zipfile.testzip()` xác nhận CRC đạt. Đã kiểm tra danh sách ZIP không có `.env`, database SQLite, `.bak`, khóa `.pem`/`.key`, venv, node_modules hay `src/media/`.
-- `repository.bundle`: `git bundle create <bundle> --branches --remotes --tags HEAD`; `git bundle verify <bundle>` đạt, chứa lịch sử đầy đủ của các ref đã chọn, không đưa ref nội bộ Codex vào bundle.
-- Nhánh khôi phục cục bộ `backup/before-review2-20261001-213243` trỏ tới `51a0807`; `BACKUP_INFO.txt` mô tả phạm vi. Đây là sao lưu mã nguồn/lịch sử Git, không phải sao lưu database, uploads hoặc secrets cục bộ.
-- SHA-256 ZIP: `17ED14D778B5B34844522D3A167986DF6DC7FF5A59F61FDF80A7839950FA8366`; bundle: `CA6BB4D48E3AE48CABFF308A96A3EF601E9B4F1CF6F2CBC90B2C035954C4F1A9`.
-
-**Cách kiểm tra:** tạo worktree tách biệt bằng `git worktree add --detach D:\QLHCNS-Review2-audit ef93f4a`. Dùng `git show`, `git diff`, `git merge-base` và đọc trực tiếp mã nguồn, báo cáo `docs/Code_Review_Report_2026-10-01.md`, quyền HR/KPI, workflow đặt xe, template HR và storage SharePoint ở hai bản. Không khởi tạo thư viện/gitlink bên ngoài.
-
-**Kết quả đối chiếu và quyết định:**
-
-- `ef93f4a` chỉ thêm báo cáo review 175 dòng và gitlink `.claude/skills/huashu-design`; không sửa mã ứng dụng, test hay dependency. `git diff --quiet 216e2ca ef93f4a -- src requirements.txt` trả 0: mã ứng dụng trên master vẫn giống mốc chung `216e2ca`.
-- Có 61 commit trên nhánh hiện tại chưa nằm trong lịch sử master. So sánh hai cây bằng `git diff --shortstat HEAD origin/master` cho thấy 180 tệp khác nhau. Chuyển toàn bộ sang master sẽ bỏ các phần Hoạt động dự án, onboarding/offboarding, duyệt sửa hồ sơ, mobile/PWA, bộ test mở rộng, runbook vận hành và nhật ký dự án; đồng thời mất bản sửa tạo lương cho nhân viên nghỉ giữa kỳ và kiểm quyền danh sách hợp đồng.
-- Báo cáo có phát hiện đúng còn áp dụng cho bản hiện tại: `hr_candidate_list`/`hr_candidate_detail` thiếu kiểm quyền HR; `kpi_score_update` thiếu giới hạn phòng của trưởng phòng; `SharePointStorage.exists()` trả False khi Graph báo lỗi; tăng số sổ công văn chưa khóa dòng. Đây là kết quả đọc mã, chưa chạy khai thác hay gọi dịch vụ thật.
-- Một số nhận xét sai ngay trên mã được review: I15 nói tạo đặt xe không `full_clean()`/tự Approved, trong khi view đã gọi `full_clean()` và đặt Pending; I8 nói form nâng lương/gia hạn nằm ngoài điều kiện HR, trong khi cả hai nằm trong `{% if can_manage_hr %}`. C2 về danh sách hợp đồng đã được sửa trên nhánh hiện tại. I14 về unique NULL không thể áp dụng chung cho SQL Server: bản hiện tại có test riêng theo backend; đợt này không xác nhận SQL Server.
-- **Giữ nhánh và mã ứng dụng hiện tại; không merge/cherry-pick/chuyển sang master.** Báo cáo review có giá trị tham khảo từng phát hiện sau xác minh, chưa đủ căn cứ để thay thế bản hiện tại hoặc áp dụng toàn bộ khuyến nghị.
-
-**Kiểm tra thực tế trong đợt này:** dùng `D:\QLHCNS\venv\Scripts\python.exe` với runner ngoài repository tại `D:\QLHCNS-Backups\before-review2-20261001-213243\run_isolated_audit.py`. Runner chạy từ `src`, dùng khóa giả ngẫu nhiên, SQLite test database in-memory, tắt SharePoint; không dùng secrets thật hay ghi database nghiệp vụ. Log nằm cùng thư mục backup. Các lệnh chính xác (thay `<root>` bằng một trong hai đường dẫn dưới đây):
+**Cách chuẩn bị môi trường riêng, không đụng virtualenv IHRMS:** mở PowerShell mới và chạy:
 
 ```powershell
-& D:\QLHCNS\venv\Scripts\python.exe D:\QLHCNS-Backups\before-review2-20261001-213243\run_isolated_audit.py <root> test
-& D:\QLHCNS\venv\Scripts\python.exe D:\QLHCNS-Backups\before-review2-20261001-213243\run_isolated_audit.py <root> check
-& D:\QLHCNS\venv\Scripts\python.exe D:\QLHCNS-Backups\before-review2-20261001-213243\run_isolated_audit.py <root> migrations
+$docTools = Join-Path $env:LOCALAPPDATA 'IHRMS-DocTools'
+py -3.12 -m venv $docTools
+$docPy = Join-Path $docTools 'Scripts\python.exe'
+& $docPy -m pip install --upgrade pip
+& $docPy -m pip install python-docx pdf2image
 ```
 
-- `<root> = D:\QLHCNS-Review2-audit`: 86/86 test đạt; Django `check` đạt; `makemigrations --check --dry-run` không có thay đổi.
-- `<root> = D:\QLHCNS`: phát hiện/chạy 235 test trong 98,016 giây; 233 đạt, 1 thất bại, 1 bỏ qua (unique NULL chỉ dành cho SQL Server). Không ghi nhận toàn bộ suite đạt.
-- Test thất bại là `ActivityDashboardPermissionTests.test_department_manager_sees_only_activities_in_managed_departments`: mong 1 hoạt động nhưng nhận 2. Fixture tạo hai hoạt động trong cùng phòng vào 01/10/2026; test chỉ đổi một hoạt động theo `date.today()`. Khi hiện tại là tháng 10/2026, dashboard đếm đúng cả hai hoạt động cùng phòng, khác kỳ vọng test. Chạy runner `D:\QLHCNS dateprobe` cố định cả ngày test và `timezone.localdate()` ở 28/09/2026 cho kết quả 1/1 đạt; xác nhận test phụ thuộc lịch, không phải bằng chứng thấy hoạt động phòng khác. Chưa sửa fixture hoặc logic nghiệp vụ trong đợt kiểm tra này.
-- Django `check` bản hiện tại đạt; `makemigrations --check --dry-run` không có thay đổi. Lần đầu runner gặp cảnh báo đường dẫn SQLite `:memory:` bị ghép với BASE_DIR; đã sửa runner để đặt NAME trực tiếp và chạy lại kiểm tra migration cả hai bản, không còn cảnh báo đó.
-- Runner `D:\QLHCNS-Review2-audit deploy` chạy `check --deploy` với cấu hình giả an toàn: còn W004/W008/W012/W016 (4 cảnh báo HTTPS/cookie). Không dùng kết quả cấu hình giả này để kết luận máy triển khai thật đã hoặc chưa cấu hình xong. Lần in log test hiện tại bị lỗi encoding console sau khi log đầy đủ đã được ghi; đã đọc kết quả từ log và sửa runner dùng UTF-8, không coi lỗi in log là lỗi ứng dụng.
-- `git diff --check` đạt sau khi cập nhật nhật ký. Không chạy SQL Server, migration trên database nghiệp vụ, UAT giao diện hoặc kết nối SharePoint thật trong đợt này.
+`python-docx` phục vụ đọc/sửa file Word; renderer gọi `pdf2image` để biến trang PDF trung gian thành ảnh. Trên Windows, `pdf2image` cũng cần Poppler (`pdftoppm`/`pdfinfo`) ngoài LibreOffice. Cách nhanh là `winget install --id oschwartz10612.Poppler`; hoặc tải gói Windows từ `https://github.com/oschwartz10612/poppler-windows/releases/`, giải nén và thêm thư mục chứa `pdftoppm.exe` vào PATH. Đóng/mở lại PowerShell rồi xác nhận `pdftoppm -h` và `pdfinfo -v` chạy được.
 
-**Tệp thay đổi và Git:** chỉ cập nhật `docs/PROJECT_WORK_LOG.md` trên `chore/django-5.2-upgrade`; lưu bằng commit cục bộ `docs: record backup and review 2 assessment`, chưa push. Mã ứng dụng vẫn ở nội dung `51a0807`. Worktree review và backup được giữ bên ngoài thư mục dự án để truy vết.
+Xác nhận Python packages sau cài đặt:
 
-**Việc còn mở / bước tiếp theo:** ưu tiên vá quyền xem ứng viên, scope KPI, xử lý lỗi xác định tồn tại tệp SharePoint và khóa tăng số công văn sau khi tái hiện bằng regression test; sửa fixture activity để không phụ thuộc tháng chạy. Khi sửa xong, chạy full suite trên SQLite và SQL Server test database cô lập rồi UAT theo vai trò. Đợt này không có thao tác triển khai đang chờ chủ dự án thực hiện. Nếu cần quay lại bản mã nguồn trước kiểm tra: lưu/commit mọi thay đổi mới, rồi chạy `git -C D:\QLHCNS switch backup/before-review2-20261001-213243`; lệnh chỉ đổi mã nguồn Git, không khôi phục database/uploads/secrets.
+```powershell
+& $docPy -c "import docx, pdf2image; print('python-docx/pdf2image: OK')"
+```
 
-## 2026-10-02 - Hợp nhất các nhánh về main và thống nhất nhánh vận hành
+**Render file để kiểm tra:**
 
-**Yêu cầu:** kiểm tra commit mới nhất trong các nhánh QLHCNS, hợp nhất về main; chủ dự án làm việc một mình và yêu cầu từ nay chỉ phát triển/kiểm thử/chạy trên main. Quyết định này thay thế lựa chọn giữ nhánh nâng cấp ở nhật ký ngày 01/10.
+```powershell
+$lo = 'C:\Program Files\LibreOffice\program'
+$env:Path = "$lo;$env:Path"
+$renderer = Get-ChildItem (Join-Path $env:USERPROFILE '.codex\plugins\cache\openai-primary-runtime\documents') -Recurse -File -Filter render_docx.py |
+    Sort-Object LastWriteTime -Descending |
+    Select-Object -First 1 -ExpandProperty FullName
+$docx = 'D:\QLHCNS\docs\HUONG_DAN_SU_DUNG_IHRMS.docx'
+$renderDir = 'D:\QLHCNS-docx-render'
+New-Item -ItemType Directory -Force -Path $renderDir | Out-Null
+& $docPy $renderer $docx --output_dir $renderDir --emit_pdf
+```
 
-**Đối chiếu trực tiếp GitHub:** main ban đầu ở `8258a3ed055775b25cb20f757acc95172c7865d0`; master ở `ef93f4ad11dfbdb5cfdefaa280cc1c3d2dc8b2b8` (review 2, 01/10); chore/django-5.2-upgrade ở `95ea51889bd2affcd947121a8bebe09632409500` (rà soát chưa hoàn tất, 02/10). Master có 1 commit mới, chỉ thêm báo cáo review và gitlink .claude/skills/huashu-design. Nhánh nâng cấp có 63 commit chưa thuộc lịch sử main và phía main có 1 merge commit riêng. Không có CI check-runs trên commit nâng cấp tại thời điểm kiểm tra.
+Kết quả gồm `page-1.png`, `page-2.png`, ... và PDF trong `D:\QLHCNS-docx-render`; mở và xem **tất cả** ảnh trang trước khi giao bản Word. Thư mục render nằm ngoài repository nên không bị commit. Nếu lệnh báo thiếu `soffice.exe`, Poppler hoặc package Python, ghi lại toàn bộ thông báo lỗi nhưng không gửi secrets; Codex sẽ xử lý tiếp theo lỗi cụ thể.
 
-**Đã hợp nhất:** PR #3 bằng merge commit `dd3f85e27725bf051d0a5b9e5e5bba736eb3a20d`, sau đó PR #4 (master -> main) bằng `c8bb44f641235a2877a3de0bc337a7fa43228085`. Cả hai GitHub xác nhận merge thành công, không xung đột; giữ lịch sử, không force-push. Đối chiếu cây merge PR #3 với cây nhánh nâng cấp không có khác biệt. Sau PR #4, khác biệt so với bản nâng cấp chỉ là báo cáo review và gitlink thiết kế; mã ứng dụng giữ nguyên. Không khởi tạo gitlink kỹ năng bên ngoài. Các nhánh cũ được giữ để tra cứu và không dùng cho công việc tiếp theo.
+### Cổng còn lại trước vận hành thật
 
-**Tài liệu thay đổi:** AGENTS.md ghi quy tắc chỉ phát triển, kiểm thử, chạy và triển khai trên main; README.md bổ sung cách đồng bộ main; mục nhật ký này lưu kết quả và giới hạn xác nhận.
+- Chạy `check --deploy` với cấu hình production thật; xác nhận HTTPS, host/CSRF, cookies, secret, static, logging và IIS/reverse proxy.
+- Chạy toàn bộ test trên SQL Server; hiện 86 test gần nhất là trên SQLite, chưa chứng minh tương thích đầy đủ trên backend SQL Server.
+- Finance đối soát công thức lương/thuế/bảo hiểm với bộ số mẫu đã được phê duyệt; HR, quản lý và nhân viên hoàn tất UAT trên dữ liệu ẩn danh.
+- Thiết lập backup SQL Server và tệp hồ sơ ở nơi độc lập; diễn tập restore, đo thời gian và xác nhận RPO/RTO với công ty.
+- IT rà quyền tài khoản, SharePoint ACL/retention/audit và lịch vận hành; diễn tập go-live/rollback trước khi mở cho toàn công ty.
 
-**Kiểm tra đã chạy thực tế:** lấy mã tại SHA cố định qua GitHub vào bản kiểm tra riêng trên Linux/Python 3.12; cài các phiên bản trong requirements.txt vào virtualenv riêng. Clone Git trực tiếp không có credential của kho private, nên dùng kết nối GitHub đã được cấp quyền để đọc và hợp nhất. Không dùng .env, dữ liệu nhân sự, database nghiệp vụ hay SharePoint thật.
-- `python ops/run_tests.py --backend sqlite`: phát hiện 258 test, 256 đạt, 2 bỏ qua, exit code 0; chạy trong 21,962 giây với database in-memory, media tạm và SharePoint tắt. Hai test chỉ dành SQL Server: unique NULL của ngân sách và khóa dòng khi cấp số công văn đồng thời.
-- Lần chạy đầu có 1 lỗi vì bản lấy mã còn thiếu ảnh PWA; đã lấy đúng hai ảnh gốc từ GitHub và chạy lại toàn bộ suite đạt như trên. Không sửa mã/test để bỏ qua lỗi.
-- Django `check`: không có lỗi; `makemigrations --check --dry-run`: No changes detected; `pip check`: No broken requirements found. Kiểm tra Django dùng cấu hình giả và database in-memory, không ghi database vận hành.
+### Mẫu mục nhật ký cho đợt sau
 
-**Giới hạn và việc còn mở:** chưa chạy SQL Server, Edge/UAT giao diện, SharePoint thật hoặc triển khai máy chủ; commit 95ea5188 ghi rõ đợt rà soát tổng thể chưa hoàn tất. Đợt này hoàn thành hợp nhất nhánh, không xác nhận nghiệm thu toàn bộ dự án. SQL Server/Windows của chủ dự án không truy cập được từ môi trường này.
+### YYYY-MM-DD — Tên thay đổi
 
-**Chủ dự án cập nhật máy Windows:** tại D:\\QLHCNS, chạy `git status` trước. Nếu working tree sạch, chạy lần lượt `git fetch origin`, `git switch main`, `git pull --ff-only origin main`. Nếu có thay đổi chưa commit hoặc không fast-forward, giữ nguyên và đối chiếu; không reset/clean/force-push. Sau khi xác nhận database test/SIT cô lập, chạy `powershell -NoProfile -ExecutionPolicy Bypass -File .\\ops\\Run-Tests.ps1 -Backend sqlserver` để xác nhận hai kiểm thử đặc thù và full suite. Không tự chạy migration trên database nghiệp vụ trong đợt này.
+**Mục tiêu/phạm vi:**
+**Phân hệ/tệp:**
+**Đã làm và quyết định:**
+**Kiểm tra (lệnh, môi trường, kết quả):**
+**Nhánh/commit/push:**
+**Chưa làm hoặc chưa xác nhận:**
+**Chủ dự án cần làm:** bước cụ thể, người phụ trách và kết quả cần gửi lại.
 
-## 2026-10-02 - Kiểm thử 3 tình huống công việc bằng HTTP; Edge chưa khả dụng
+## 2026-09-24 — Word guide synchronization and rendering setup
 
-**Yêu cầu:** nếu có thể, test trực tiếp Microsoft Edge với 2–3 tình huống giả định đúng nghiệp vụ, gồm lưu/sửa/xóa, và báo kết quả.
+**Scope:** synchronize the DOCX user guide to Markdown version 1.1 and verify its rendered layout.
 
-**Khả năng truy cập đã kiểm tra:** inventory điều khiển trình duyệt chỉ có Chrome với tab about:blank, không có Edge hay native app; môi trường Linux không tìm thấy executable microsoft-edge/microsoft-edge-stable. Không kết nối tới Edge trên máy Windows của chủ dự án. Vì vậy không chạy kiểm thử giao diện trên Edge và không dùng kết quả HTTP để tuyên bố Edge đã đạt. Không mở Chrome thay thế, không chạm database thật.
+**Completed:** created the isolated Python environment at `%LOCALAPPDATA%\IHRMS-DocTools`; installed `python-docx 1.2.0` and `pdf2image 1.17.0`; installed Poppler 25.07.0 with winget. LibreOffice 26.2.5.2 was already installed. Rebuilt `docs/HUONG_DAN_SU_DUNG_IHRMS.docx` from `HUONG_DAN_SU_DUNG_IHRMS.md`; retained the previous DOCX outside the repository.
 
-**Mã nguồn và thay đổi:** xác nhận GitHub main tại `ae537c8c594308cd5ba12acdd02f11ac56de5920`, kiểm thử trên bản nguồn của main. Thêm `src/apps/portal/tests_business_scenarios.py` để lưu 3 kịch bản có thể chạy lại, chỉ đổi test và nhật ký; không sửa nghiệp vụ/model/migration. Django Client bật enforce_csrf_checks; GET form lấy CSRF cookie rồi POST có token, fixture đăng nhập bằng force_login. Không kiểm thử màn hình đăng nhập, thao tác chuột, JavaScript, bố cục hoặc tải tài liệu trên trình duyệt.
+**Verification:** both Python package imports passed; LibreOffice, `pdftoppm`, and `pdfinfo` ran. Rendered the DOCX to PDF and four page images; visually inspected all four pages for Vietnamese glyphs, table fit, list numbering, and pagination. QA output is outside the repository at `D:\QLHCNS-docx-render-final`.
 
-**Kết quả từng tình huống, tất cả đạt:**
-1. HR_MANAGER mở form và tạo nhân viên giả định -> đọc trang chi tiết -> mở form sửa điện thoại/địa chỉ -> xác nhận dữ liệu lưu trong database và HTML trả về, created_by/modified_by đúng. POST hồ sơ trùng mã/CCCD/email bị từ chối, không thêm bản ghi; EMPLOYEE POST sửa hồ sơ bị chặn, dữ liệu không đổi.
-2. EMPLOYEE lưu dòng chấm công 8 giờ -> xác nhận nội dung xuất hiện trong trang tháng -> lưu tổng hợp tháng với 1 ngày nghỉ ốm -> sửa thành 2 ngày, giữ Pending. Tài khoản khác POST xóa dòng nhận 404; GET xóa nhận 405; chủ sở hữu POST xóa được. Bản ghi bị xóa mềm, còn trong all_objects và biến mất khỏi trang tháng. Phần sửa là tổng hợp tháng, không phải sửa trực tiếp dòng giờ công.
-3. EMPLOYEE có quỹ phép giả định 12 ngày gửi phép năm 02–03/11/2026 -> Pending, total_days = 2 -> đơn trùng ngày bị chặn, không tạo thêm bản ghi. EMPLOYEE tự POST duyệt bị chặn; HR_MANAGER duyệt đúng quyền -> Approved và 1 LeaveApproval; duyệt lại nhận 404, không tạo lịch sử trùng; nhân viên thấy trạng thái Đã duyệt.
+**Open:** the document changes have not been committed or pushed. Re-render after future content updates.
 
-**Kiểm tra đã chạy:** runner tạm chạy đúng 3 kịch bản HTTP, 3/3 đạt. Sau khi lưu module test, chạy từ gốc repository `python ops/run_tests.py --backend sqlite`: phát hiện 261 test, 259 đạt, 2 bỏ qua vì cần SQL Server, exit code 0, 23,184 giây; Django system check không có lỗi. Database in-memory tạo/xóa bởi test runner, media tạm, SharePoint tắt, email locmem; chỉ dữ liệu giả. Log ERROR do cố tình gửi trùng hồ sơ/đơn nghỉ hoặc giả lập lỗi rollback là đường kiểm thử âm, suite vẫn đạt.
+## 2026-09-24 — Đề xuất mở rộng IHRMS cho hoạt động dự án NGO/MEL
 
-**Cách chạy lại 3 tình huống trên Windows:** tại D:\\QLHCNS sau khi đồng bộ main, chạy `powershell -NoProfile -ExecutionPolicy Bypass -File .\\ops\\Run-Tests.ps1 -Backend sqlite -Labels apps.portal.tests_business_scenarios`. Đây vẫn là kiểm thử HTTP, không phải kiểm thử Edge.
+**Mục tiêu/phạm vi:** đánh giá yêu cầu lập kế hoạch tháng, điều phối CBDA, lịch, MEL, ngân sách và quyết toán; lập lộ trình code theo các cổng phê duyệt.
 
-**Việc chưa xác nhận và cách hoàn tất:** môi trường này thiếu Microsoft Edge và quyền truy cập máy Windows, nên còn UAT Edge/SQL Server thật. Để kiểm tra Edge, trên máy Windows chạy bản main với database test/SIT riêng; mở /portal/ trong Edge, dùng tài khoản giả định HR_MANAGER và EMPLOYEE, thao tác lần lượt theo ba tình huống trên, tải lại trang sau khi lưu/sửa/xóa và đối chiếu trạng thái/dữ liệu. Không xóa hồ sơ nhân sự thật hoặc duyệt đơn thật. SQL Server cần database test cô lập và chạy lại full suite; không ghi nhận là đã chạy trong đợt này.
+**Đã rà soát:** Project Charter, RBAC matrix, apps.project.Project, apps.task.Task, apps.planning.Event/AnnualBudget, apps.document.OfficialDispatch, các route/template giao việc/sự kiện và quyền hiện hành. Charter hiện loại Grant, ngân sách tài trợ, hoạt động phát triển cộng đồng và MEL khỏi phạm vi; model hiện chưa hỗ trợ workflow NGO đầy đủ.
 
+**Đã tạo:** docs/NGO_Activity_Planning_MEL_Roadmap.md ghi nhận nhận xét hiện trạng, luồng mục tiêu, mô hình dữ liệu/tích hợp, quyền, dashboard, tiêu chí nghiệm thu, ước lượng 7–10 tuần và quyết định NGO cần chốt. Đây là đề xuất; chưa sửa code, Charter, migration hay cấu hình.
 
-## 02/10/2026 — Gia cố bảo vệ dữ liệu nhạy cảm trên main
+**Ranh giới kiến trúc được làm rõ:** miền Hoạt động dự án riêng; Hộp việc của tôi, thành phần giao việc/lịch, trao đổi, thông báo và nhắc hạn dùng chung; dashboard dự án riêng. KPI nhân sự và chỉ số MEL dùng mô hình, quyền, công thức và báo cáo riêng, chỉ tái sử dụng thành phần hiển thị. Chưa sửa code hoặc schema.
 
-**Mục tiêu/phạm vi:** kiểm tra mã nguồn tại main `89d5d6f`, tái hiện lỗi truy cập, vá ứng dụng và dependency. Không chạy migration hay thao tác trên database thật.
+**Kiểm tra phần hành chính–nhân sự (24/09/2026):** Codex chạy `python src/manage.py check` (đạt), `makemigrations --check --dry-run` (No changes detected), và 86 test trên SQLite test database tạm (đạt). Codex xác nhận kết nối cấu hình hiện tại tới SQL Server bằng `connection.vendor=microsoft` và `SELECT 1`; chưa chạy test suite SQL Server vì chưa xác minh đó là database SIT riêng, an toàn cho Django tạo/xóa test database. Người dùng trước đó báo các luồng nghiệp vụ chạy bình thường; báo cáo này chưa phải UAT ký nhận.
 
-**Đã làm:** thêm private download có allowlist model/FileField, kiểm tra quyền trước đọc local/Graph, chặn raw media trong Django; giới hạn phân quyền/reset mật khẩu của SYS_ADMIN và ẩn CCCD/MST/BHXH trong Admin cho SYS/DEPT; sửa bypass xóa/khôi phục hàng loạt và action tạo Task của người chỉ xem; bỏ salary/contract context khỏi HR detail cho người không có quyền; tách quyền export, áp dụng scope/độ mật cho Excel công văn, ghi chuỗi Excel dạng text; throttle đăng nhập persistent username/IP 5 lần/30 phút; idle timeout/no-store; production config guard và ép TLS/kiểm tra chứng chỉ SQL Server; lọc exception log; metadata audit login/logout/download/export cùng migration security/0003. Nâng dotenv/requests/msal/cryptography và thêm axes. Thêm kiểm tra URL tài liệu tránh javascript/data/raw media; tài khoản có staff/group/permission cũng nằm ngoài phạm vi reset mật khẩu SYS_ADMIN. Các test đăng nhập cũ chuyển sang HTTP thật để chạy qua backend chống brute-force.
-
-**Tái hiện trước vá:** `python ops/run_tests.py --backend sqlite apps.security.tests_data_protection`: 7 test thất bại đúng các lỗi kiểm soát. Salary/contract ở đây là dữ liệu truyền vào template context; không khẳng định đã lộ trong HTML trước vá (template có điều kiện riêng).
-
-**Kiểm chứng:** toàn bộ suite sau vá/dependency và URL/scope cuối: 281 test, 279 đạt, 2 bỏ qua do chỉ dành SQL Server; 20 regression security đạt. Lệnh `python ops/run_tests.py --backend sqlite` chạy DB/media dùng một lần; 3 kịch bản nghiệp vụ lưu/sửa/xóa HR, chấm công, nghỉ phép vẫn đạt. `manage.py check` không vấn đề; `makemigrations --check --dry-run` không thay đổi; `pip check` đạt. `pip-audit -r requirements.txt` quét 25 dependencies, không phát hiện vulnerability đã biết. Nhóm security + M365 chạy riêng: 24 test đạt; URL SharePoint không gọi Graph lấy web URL. Production guard 4 tình huống cấu hình đạt (hợp lệ, HTTP, key yếu, wildcard host); kiểm tra cấu hình SQL Server production có Encrypt=yes;TrustServerCertificate=no (không mở kết nối). Dữ liệu tổng hợp, không dùng hồ sơ thật.
-
-**Giới hạn còn mở:** không test Microsoft Edge (môi trường chỉ có browser cloud), không có SQL Server/IIS/SharePoint thật. Chưa mã hóa cấp trường; chưa xác nhận TLS/TDE/backup/ACL server, MFA/SSO, single-session hoặc audit bất biến. Quét dependency không thay thế pentest; không kết luận đủ an toàn production.
-
-**Triển khai cần người phụ trách máy chủ thực hiện:**
-
-1. Sao lưu database và tệp; xác minh khôi phục ở SIT. Dừng app, cập nhật chỉ main: `git switch main`, `git pull --ff-only origin main` (giữ các chỉnh sửa cục bộ; không reset).
-2. Trong virtualenv của app, tại gốc repo: `python -m pip install -r requirements.txt`; `python -m pip check`.
-3. Tại src trên SIT trước: `python manage.py migrate --plan`, rà plan rồi `python manage.py migrate` để thêm bảng axes và tblSecurityEvent; `python manage.py check`. Xác nhận trên SQL Server trước khi áp dụng production.
-4. IIS bỏ alias/virtual directory raw media; backend chỉ nội bộ; proxy ghi lại X-Forwarded-Proto; đặt `APP_ENV=production`, `DEBUG=False`, `ENABLE_HTTPS_ENFORCEMENT=True`, secret riêng đủ mạnh và ALLOWED_HOSTS cụ thể. SQL Server cần chứng chỉ TLS tin cậy, tên DB_HOST khớp chứng chỉ; production ép Encrypt=yes/TrustServerCertificate=no và từ chối kết nối nếu cert không hợp lệ. Chạy `python manage.py check --deploy`, xử lý cảnh báo theo cấu hình HTTPS thực.
-5. Kiểm thử Edge bằng tài khoản thử: người khác tải tệp nghỉ phép bị chặn; SYS không nâng quyền/xuất CCCD; Finance không xóa kỳ Locked; login sai 5 lần rồi khóa, hết 30 phút đăng nhập lại; HR vẫn xuất/đọc tệp đúng quyền; URL /media không trả file. Không thử brute-force trên tài khoản thật.
-6. DBA/IT xác nhận mã hóa SQL Server/backup, TLS, MFA và SharePoint ACL; tài khoản database/service chỉ có quyền cần thiết. Duy trì backup rollback cho lần triển khai.
-
-**Nhánh/commit:** thay đổi đưa trực tiếp main; tra commit tương ứng với mục nhật ký này trong lịch sử main.
-
-## 02/10/2026 — Vá các đề xuất review được chủ dự án duyệt trên main
-
-**Ủy quyền/phạm vi:** sau đợt review chỉ đọc trên main `2003d97`, chủ dự án trả lời “duyệt đề xuất”. Thực hiện các nhóm P1 trước, kiểm thử riêng đạt rồi chuyển nhóm; tiếp tục P2. Dùng kết nối GitHub cho kho private và bản nguồn kiểm thử riêng; không phải checkout Windows của chủ dự án. Chỉ cập nhật main, giữ lịch sử và không force-push. Không sửa công thức/rate/quy tắc làm tròn lương, không chạm database/media/SharePoint thật.
-
-**P1 đã sửa:**
-- Payroll thêm `calculated_at`/`calculation_signature` (migration payroll/0004). Khóa kỳ chỉ khi có đủ nhân viên cần trả lương, mỗi dòng đã tính và đầu vào/kết quả khớp tính lại với dữ liệu công/nhân sự/config hiện hành; phát hành phiếu sau kiểm tra. Tạo/tính/sửa dòng Portal và Admin khóa/recheck kỳ trong giao dịch. Admin không đổi status kỳ bằng form để bỏ qua kiểm tra. Nhân viên vào làm sau cuối kỳ không nằm trong danh sách cần trả lương. Số học từ prorated salary tới Net đối chiếu nguyên vẹn với main trước vá. Dòng cũ của kỳ Open cần tính lại trước chốt; không đánh dấu giả là đã tính. Kỳ Locked cũ không tự tính hoặc thay đổi số liệu.
-- Chấm công kiểm tra 0–24 giờ/dòng và tổng một nhân viên/ngày qua các dự án không quá 24; chặn thêm/sửa/xóa/khôi phục giờ khi tháng Approved hoặc kỳ Locked. Tổng hợp tháng không nhận số âm; sửa dữ liệu đã duyệt bị chặn, trạng thái đọc lại sau khóa. Các giao dịch dùng thứ tự khóa kỳ rồi nhân viên; việc mở lại Pending chỉ có thể thực hiện qua thao tác nghiệp vụ có kiểm soát ở tầng server, không có form Admin/POST nhân viên để tự mở lại. Migration attendance/0008 thêm validators.
-- Admin dùng scope đối tượng và queryset FK phòng ban/nhân viên cho DEPT_MANAGER; chặn POST chọn ngoài phạm vi ở Task/KPI/Event/công văn, bổ sung scope Timesheet Admin. Duyệt phép Admin khóa/recheck Pending, kiểm tra người duyệt/phạm vi, cấm trưởng phòng tự duyệt, ghi quyết định và audit trong cùng transaction; form không sửa status để bỏ qua action.
-- Portal/Admin xuất VPP dùng chung `office.services.issue_supply_request`: khóa đề nghị và vật tư theo thứ tự, cộng gộp dòng trùng, kiểm tra đủ tồn toàn bộ trước trừ, không xuất lại trạng thái Issued. Migration office/0005 thêm CHECK không tồn âm, số đề nghị dương, số đã cấp trong khoảng hợp lệ; không tự sửa dữ liệu cũ.
-- Xóa mềm/khôi phục cấp phát tài sản đồng bộ trạng thái tài sản dưới khóa; khôi phục kiểm tra overlap/tài sản sẵn sàng. Queryset restore kiểm tra full_clean và hooks trong transaction; lỗi khôi phục hàng loạt rollback và hiện thông báo. Admin xử lý ValidationError/IntegrityError lúc ghi thành thông báo có kiểm soát.
-- Backup Full/Log dùng helper PowerShell: database bắt buộc, sqlcmd `-b -V 11 -x`, edition-aware compression (Express/Web dùng NO_COMPRESSION), CHECKSUM + RESTORE VERIFYONLY, xác nhận file/SHA256 trước ghi thành công/retention; không ghi đè file sẵn có. Copy Weekly/Monthly kiểm tra hash, retention theo prefix đúng database; log giữ tối thiểu 30 ngày để khớp cửa sổ Daily. Setup-RecoveryModel.sql bỏ COMPRESSION cho Express. VERIFYONLY không thay thế restore drill.
-
-**P2 đã sửa:** ngày timesheet sai trả redirect/thông báo thay vì 500. GraphAPIError có HTTP status/Retry-After, không trả URL/payload upstream; private download/attachment hồ sơ/activity dùng chung response có kiểm tra quyền, 404 cho tệp thiếu, 503 có Retry-After khi dịch vụ lỗi. PDF phiếu lương kiểm tra Payroll/Period/Employee chưa xóa. Axes giữ khóa username 5 lần/30 phút, IP ngưỡng riêng mặc định 50 (`AXES_IP_FAILURE_LIMIT`); đăng nhập đúng của đồng nghiệp không xóa failures của tài khoản khác cùng IP. CI `.github/workflows/ci.yml` chạy backend/migrations/dependency audit, frontend audit/build và backup harness trên main, token contents:read và không checkout gitlink. Runner test đặt APP_ENV=test để cấu hình production không ngăn việc cô lập HTTPS/storage của test. Thêm `python src/manage.py audit_review_integrity`: chỉ đọc, in số lượng dữ liệu cũ sai, exit lỗi nếu phát hiện; không in danh tính và không tự sửa.
-
-**Kiểm chứng thực tế:**
-- Nhóm lương 30 test đạt; chấm công/common + 3 tình huống HTTP + invalid input 17 đạt; quyền/leave/security 57 đạt; office/stock 8 đạt; asset/common 9 đạt; P2/M365/security/activity 60 đạt. Sau bổ sung ca biên, 33 regression mới ở `apps.portal.tests_approved_review` đều đạt.
-- `python ops/run_tests.py --backend sqlite` trên mã ứng dụng cuối: 314 test, **312 đạt, 2 bỏ qua**, exit 0, 48,669 giây; database in-memory/media dùng một lần, M365 tắt, email locmem, dữ liệu giả. Hai test bỏ qua yêu cầu SQL Server (unique NULL và khóa cấp số công văn). 3 tình huống HTTP có CSRF lưu/sửa/xóa HR, công, nghỉ phép vẫn đạt. Fixture thông báo/phiếu lương bổ sung lương đã tính trước chốt; fixture nghỉ bù nhập trong Pending rồi duyệt; giữ nguyên assertions/công thức.
-- Sau sửa runner APP_ENV, chạy 3 kịch bản HTTP với APP_ENV=production từ bên ngoài để xác nhận runner tự chuyển cấu hình test; 3/3 đạt, exit 0. Không dùng kết quả HTTP để xác nhận UI/Edge.
-- PowerShell 7.4.13 chạy **6/6** ca Full/Log × Express/Standard/Failure bằng `ops/backup/Test-BackupSafety.ps1`: sqlcmd giả lập, chỉ tệp tạm; parse scripts, kiểm tra flags/compression, lỗi verification trả exit 1/giữ backup cũ, success không dọn backup DB khác. Không chạy SQL thật.
-- Python syntax/AST đạt; `makemigrations --check --dry-run`: No changes detected; `pip check`: đạt; pip-audit requirements 25 dependencies không có lỗ hổng đã biết; npm audit 0 vulnerabilities; Tailwind build đạt (caniuse-lite cũ chỉ cảnh báo build). actionlint 1.7.12 kiểm tra CI không có lỗi. CI đã kiểm tra cấu hình tại đây; trạng thái chạy GitHub phải xem tại Actions của commit, không coi test local là kết quả Actions.
-- `check --deploy` với cấu hình production giả, HTTPS/cookie/host/secret riêng và HSTS=31536000: chỉ còn W005/W021 (subdomain/preload); không tắt check. Chỉ bật hai tùy chọn khi IT xác nhận toàn bộ phạm vi HTTPS. Mặc định HSTS trong .env.example vẫn 0 cho SIT, cần cấu hình riêng trước production.
-
-**Giới hạn/release gate:** chưa có SQL Server/IIS/Edge/SharePoint thật; SQLite không chứng minh khóa/race SQL Server. Không migration/triển khai live. Chưa xác nhận restore/backup encryption/ACL/TLS/MFA hay mã hóa cấp trường; CCCD/MST/BHXH/lương vẫn cần thiết kế quản lý khóa và migration được phê duyệt nếu triển khai mã hóa cấp trường. Không kết luận “không còn lỗi” hoặc đủ an toàn production. HR/Finance vẫn phải duyệt master rates và số liệu lương; không thay đổi rate pháp lý trong đợt này.
-
-**Trình tự người phụ trách Windows/SIT cần làm:**
-1. Giữ mọi chỉnh sửa local; `git status`, `git fetch origin`, `git switch main`, `git pull --ff-only origin main`. Cài requirements vào virtualenv riêng. Chuẩn bị database/uploads SIT cô lập, backup có thử restore; không trỏ thao tác thử vào dữ liệu thật.
-2. Trên database SIT đã có schema cũ: `python src/manage.py audit_review_integrity`. Lệnh chỉ đọc nhưng cần kết nối đúng database; nếu exit lỗi, HR/Finance/IT phải đối chiếu và phê duyệt sửa dữ liệu cũ. Không bỏ CHECK hoặc tự set tồn/số giờ để qua migration. Kiểm tra cả bản ghi đã xóa đối với stock/lines vì CHECK áp dụng toàn bảng.
-3. `python src/manage.py migrate --plan`, rà plan (bao gồm payroll/0004, attendance/0008, office/0005 và migration security/axes nếu chưa áp dụng); chỉ chạy `python src/manage.py migrate` tại SIT sau khi xác nhận dữ liệu/backup. Tính lại các dòng Open rồi kiểm tra chốt/phiếu, không sửa kỳ Locked lịch sử.
-4. Chạy `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1 -Backend sqlserver` với cấu hình SIT; kiểm tra khóa kỳ đồng thời tính/sửa, duyệt công đồng thời nhập/xóa, hai lần xuất kho, cấp phát/xóa/restore đồng thời. UAT Edge ít nhất 3 kịch bản HTTP tương ứng và thử tải tệp local/SharePoint đúng/sai quyền, Graph outage. Rà Admin scope theo HR/Dept/Finance.
-5. Cập nhật Task Scheduler backup để truyền đúng `-Database`, dùng tài khoản/ACL và đích độc lập được bảo vệ; chạy job thật, xác nhận failures và restore drill tại SQL Server test. SQL script khởi tạo vẫn dùng ví dụ qlhcns/path D:, phải đối chiếu trước chạy. Backup SQL không bao gồm media: IT phải có kế hoạch sao lưu/restore SharePoint/local uploads cùng DB.
-6. Chỉ triển khai production trong cửa sổ/rollback được duyệt sau SQL Server + UAT + restore + bảo mật môi trường đạt. Nhật ký commit nằm cùng thay đổi trên main, tra SHA trong lịch sử GitHub.
-
-**Đối chiếu GitHub sau push / sửa CI checkout:** bản vá ứng dụng ở `58a013efa735522edd3cdd610083520182944a44`. CI lần 1 (run 36996903447) dừng cả 3 job tại checkout, chưa chạy test: `fatal: No url found for submodule path '.claude/skills/huashu-design' in .gitmodules`. Đây là gitlink đã nhập từ master trong PR #4; cả `submodules:false` vẫn không ngăn checkout action duyệt gitlink khi dọn auth. Gỡ duy nhất tham chiếu gitlink hỏng trong commit tiếp theo cùng main để clone/CI hoạt động; lịch sử giữ bản trước, không tải/khởi tạo/xóa thư mục kỹ năng của người dùng hay thay mã ứng dụng. Trạng thái CI lần chạy tiếp theo phải đối chiếu tại Actions; kết quả local 314 test không thay đổi bởi sửa metadata này.
-
-**CI lần 2:** sau gỡ gitlink (`fb731909`), checkout và frontend đạt. Log job backup xác nhận cả 6 ca PASS nhưng shell Actions thoát 1 do LASTEXITCODE còn lại từ child process cố ý fail. Sửa riêng harness để reset exit code sau khi mọi assertion đã đạt; không thay script backup thật hay bỏ kiểm tra failure. Kiểm tra lại toàn bộ 6 ca trong cùng shell theo cách Actions kết thúc bằng LASTEXITCODE trước push. Job backend chạy test riêng; không coi trạng thái còn chạy là đạt.
-
-**Xác nhận CI lần 3 (02/10/2026):** đã đọc trạng thái jobs và log thực tế của [Actions run 36997497582](https://github.com/dinhtanhb/QLHCNS/actions/runs/36997497582), commit `a6b4ecd3aca33dc130c637393f1d1240f8eca1ec` trên main: completed/success, cả backend, frontend và backup-command-tests đều success. Backend chạy 314 test trong 55,477 giây, 312 đạt và 2 bỏ qua vì cần SQL Server; check/migration/pip check/pip-audit đạt. Frontend npm audit không có lỗ hổng đã biết và build CSS đạt. Backup log xác nhận cả 6 ca Full/Log × Express/Standard/Failure PASS, job exit thành công sau sửa harness. Đây là kết quả GitHub Actions, không chỉ kiểm tra local. Đợt tiếp tục chỉ đối chiếu bằng chứng và cập nhật nhật ký, không sửa thêm ứng dụng hoặc migration. Chưa có kết nối tới Windows/SIT SQL Server/IIS/Edge/SharePoint để hoàn tất các bước nghiệm thu thật nêu trên; không áp dụng migration hay triển khai production. Tiếp theo người phụ trách thực hiện audit dữ liệu chỉ đọc, migration trên SIT, full suite SQL Server, UAT Edge và restore drill theo trình tự đã ghi; gửi kết quả/lỗi đã loại bí mật để tiếp tục xử lý.
-
-## 02/10/2026 — Kiểm thử trên SQL Server và Edge với bản sao dữ liệu tại máy Windows
-
-**Mục tiêu/phạm vi:** theo yêu cầu của chủ dự án, chỉ làm trên `main`; xác định môi trường bằng thao tác đọc trước, kiểm tra dữ liệu trước migration, chạy test SQL Server và thử ba tình huống nghiệp vụ trên Edge. Đã đọc `AGENTS.md` và nhật ký trước khi làm. `git fetch origin main` xác nhận working tree ban đầu sạch, `main` khớp `origin/main` tại `2cc0e3b`; không đổi nhánh, reset hoặc ghi đè dữ liệu gốc.
-
-**Môi trường đã xác nhận:** Python `venv` 3.12.14, Django 5.2.17, pyodbc 5.2.0; dịch vụ SQL Server Express và ODBC Driver 17/18 có sẵn; Microsoft Edge có thể điều khiển qua tiện ích trình duyệt. Django hiện kết nối Windows authentication tới database `qlhcns` trên SQL Server Express cục bộ; không in credential hay nội dung `.env`. `pip install -r requirements.txt` bổ sung/cập nhật dependency chỉ trong `venv`; `pip check` và `manage.py check` đạt. Database gốc có 73 migration đã áp dụng và không có hồ sơ `UAT-*` sau kiểm thử.
-
-**Kiểm tra chỉ đọc và bản sao:** `venv\Scripts\python.exe src\manage.py audit_review_integrity` trên database gốc: cả 5 nhóm sai lệch đều 0, exit 0. `migrate --plan` trên gốc liệt kê attendance/0008, axes/0001–0010, office/0005, payroll/0004, security/0003; không áp dụng migration lên gốc. Tạo database riêng `qlhcns_codex_uat_20261002` qua `BACKUP ... WITH COPY_ONLY, CHECKSUM` và `RESTORE VERIFYONLY` (đạt), `RESTORE DATABASE` với data/log file riêng. Sao chép 6 tệp media vào thư mục thử riêng; số lượng, tổng byte và SHA-256 từng tệp khớp nguồn. Audit trên bản sao cũng 5/5 bằng 0. `manage.py migrate --noinput` trên bản sao áp dụng toàn bộ migration còn thiếu, `migrate --plan` sau đó không còn việc; `makemigrations --check --dry-run`: No changes detected; `manage.py check` đạt. Không sửa/xóa bản ghi nghiệp vụ gốc.
-
-**Edge trên bản sao:** chạy Django chỉ ở `127.0.0.1:8765` với DB/media bản sao, tắt M365; dùng hostname `localhost` để tách cookie khỏi phiên `127.0.0.1` có sẵn. Tạo tài khoản/hồ sơ UAT giả trên bản sao.
-
-1. HR tạo hồ sơ giả qua form Edge, mở trang chi tiết, sửa điện thoại/địa chỉ; điều hướng và giá trị điện thoại hiển thị sau lưu. Đối chiếu SQL xác nhận hồ sơ và điện thoại đã lưu. Không thử xóa hồ sơ gốc.
-2. Nhân viên thêm dòng công 8 giờ trên Edge, thấy dòng tại bảng tháng; lưu số ngày nghỉ ốm 1 rồi sửa 2, SQL xác nhận `2.0`/Pending. Phát hiện 5 ô `type=number` ban đầu render số thập phân bằng dấu phẩy (`2,0`), Edge hiển thị rỗng. Sửa template bằng `unlocalize`, khởi động lại server và xác nhận Edge có `value=2.0`, bốn ô còn lại `0.0`. Nút Xóa mở JavaScript `confirm()`, nhưng công cụ điều khiển Edge timeout khi chấp nhận hộp thoại qua hai lần thử; không tuyên bố thao tác xóa bằng Edge đã đạt. Thay vào đó POST xóa qua Django Client có CSRF trên bản sao trả 302, SQL xác nhận xóa mềm và Edge sau tải lại không còn dòng.
-3. Nhân viên gửi đơn phép năm giả 2 ngày trên Edge, thấy Pending và quỹ phép chờ duyệt 2; đăng nhập HR giả và duyệt trên Edge. SQL xác nhận Approved và đúng 1 bản ghi duyệt. Không thao tác trên đơn nghiệp vụ gốc.
-
-**Sửa mã và kiểm tra:** `src/apps/portal/templates/portal/timesheet_month.html` dùng `unlocalize` cho 5 giá trị số; `src/apps/portal/tests_business_scenarios.py` thêm assertion HTML `value="2.0"`. Lần chạy SQL Server đầu tiên phát hiện 314 test, 20 lỗi dây chuyền vì `response.close()` trong một `TestCase` bảo mật phát tín hiệu `request_finished` và đóng kết nối SQL đang trong transaction. `src/apps/security/tests_data_protection.py` chỉ đóng các resource closer của response để giải phóng tệp mà không đóng kết nối; ca đơn lẻ đạt sau sửa. Lệnh cuối `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver` với `DB_NAME=qlhcns_codex_uat_20261002`: **314/314 đạt**, exit 0, 290,589 giây; runner tạo/xóa database test tạm, không dùng DB gốc để ghi. Cả ba kịch bản HTTP báo PASS. `git diff --check` đạt. Không sửa model hay migration.
-
-**Dọn dẹp/giới hạn:** đã dừng server UAT, xác nhận cổng 8765 không còn lắng nghe; xóa database bản sao và 6 tệp media sao chép sau khi kiểm thử, xác nhận DB gốc còn tồn tại và không còn database `test_ihrms_*`. Tệp backup `C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\DATA\qlhcns_codex_uat_20261002.bak` còn nằm trong thư mục SQL Server vì tiến trình hiện tại bị từ chối quyền xóa; tệp này chứa bản sao dữ liệu và không thuộc Git. Người quản trị máy cần mở PowerShell **Run as administrator**, xác minh đúng đường dẫn/tên tệp rồi chạy `Remove-Item -LiteralPath 'C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\DATA\qlhcns_codex_uat_20261002.bak'`; nếu vẫn bị từ chối, DBA dùng tài khoản có quyền với thư mục SQL DATA để xóa chính tệp đó. Nếu cần nghiệm thu nút Xóa hoàn toàn trên Edge, dựng lại DB SIT cô lập với dữ liệu giả, bấm Xóa và chấp nhận `confirm()`, rồi kiểm tra dòng biến mất; công cụ lần này không xử lý được hộp thoại. Chưa kiểm tra đồng thời/race, IIS hoặc SharePoint thật và chưa triển khai production.
-
-**Git:** làm trên `main`; các sửa đổi mã và mục nhật ký này còn ở working tree, chưa commit/push. Log kiểm thử tổng hợp nằm ngoài repo tại `D:\QLHCNS-Backups\codex-uat-20261002-final-sql-tests.log`.
-
-## 02/10/2026 — Đẩy kết quả UAT và chặn số tiền âm trong bảng lương
-
-**Mục tiêu/phạm vi:** theo yêu cầu tiếp tục trên `main`, commit/push kết quả UAT trước rồi rà soát, sửa lỗi có thể tái hiện. Đã đọc `AGENTS.md` và nhật ký, `git fetch origin main` xác nhận local và `origin/main` cùng ở `2cc0e3b`, giữ nguyên bốn tệp thay đổi từ đợt UAT. Không ghi dữ liệu lên database nghiệp vụ gốc.
-
-**Git đợt UAT:** `git diff --cached --check` đạt; commit `65f9ca6aceb5bfa7251e7c1b4fd305c7b98c340e` (`fix: stabilize SQL Server test and timesheet number inputs`) gồm template chấm công, hai tệp kiểm thử và nhật ký đợt trước; `git push origin main` thành công, fetch lại xác nhận `main` khớp `origin/main`, working tree sạch trước khi sửa tiếp.
-
-**Lỗi tái hiện và sửa:** báo cáo review cũ có nhiều mục đã được sửa trong mã hiện tại. Mục tiền nhập tay âm còn tái hiện: `Payroll.full_clean()` cho qua sáu trường tiền âm, `EmployeeSalary.full_clean()` cho qua lương cơ bản âm. Đã chạy ca kiểm thử mới trước sửa và thấy 7 subtest thất bại đúng lỗi. Trong `src/apps/payroll/models.py`, thêm kiểm tra số tiền không âm cho sáu trường nhập `Payroll` khi `full_clean()` và trước `calculate()`, cùng kiểm tra `EmployeeSalary.current_basic_salary`; `src/apps/payroll/tests.py` thêm ca hồi quy. Kiểm tra chỉ đọc trên database gốc cho thấy sáu trường `Payroll` không có giá trị âm. Không thêm migration hay thay đổi công thức tính. Bản sửa thử đầu tiên còn chặn mức miễn thuế tăng ca nhập lớn hơn tiền tăng ca; SQL Server test hiện hữu chỉ ra quy tắc đang dùng là lấy mức nhỏ hơn khi tính, nên đã bỏ phần chặn đó và giữ nguyên quy tắc nghiệp vụ.
-
-**Kiểm tra sau sửa:** `venv\Scripts\python.exe src\manage.py check`: 0 lỗi; `venv\Scripts\python.exe src\manage.py makemigrations --check --dry-run`: No changes detected; `git diff --check`: đạt. `venv\Scripts\python.exe ops\run_tests.py --backend sqlite`: 317 test, 315 đạt, 2 bỏ qua vì cần SQL Server, exit 0; cả 3 tình huống HTTP PASS. `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver`: 317/317 đạt, exit 0, database test SQL Server tạm do runner tạo và xóa; cả 3 tình huống HTTP PASS. Không dùng test này để tuyên bố đã thao tác nút xác nhận xóa trên Edge.
-
-**Việc còn mở:** chưa xác nhận toàn bộ lỗi thiết kế/hiệu năng trong báo cáo review cũ đã hết; chưa thử race thực tế, IIS/SharePoint production và hộp thoại `confirm()` của nút Xóa trên Edge. Tệp backup SQL của đợt UAT còn cần người quản trị xóa theo đường dẫn và lệnh ở mục ngay trên; không đưa tệp đó vào Git. Không chạy migration hoặc triển khai production trên database gốc. Mã sửa đã được commit/push trên `main` ở `447508a389da49d4110f7c674b32a33dbc80b442`; fetch lại xác nhận remote trùng local. Lệnh `gh run list --commit 447508a389da49d4110f7c674b32a33dbc80b442` bị GitHub API trả 401 Bad credentials, nên chưa xác nhận CI của commit này; người phụ trách mở GitHub Actions của commit trên bằng tài khoản có quyền, đối chiếu trạng thái backend/frontend/backup-command-tests và cung cấp log nếu job lỗi.
-
-## 05/10/2026 — Khôi phục đăng nhập SQL Server và sửa trạng thái đặt xe trên main
-
-**Mục tiêu/phạm vi:** xử lý lỗi POST `/portal/login/` báo thiếu `axes_accessattempt`, rà các migration đang chờ và lỗi chức năng xác nhận được khi review. Xác nhận `main` khớp `origin/main` sau `git fetch origin main`; giữ nguyên `.sixth/` và `_review_probe.py` chưa được theo dõi.
-
-**Nguyên nhân và sao lưu:** kiểm tra chỉ đọc trên SQL Server đang cấu hình cho thấy bảng `axes_accessattempt` chưa có và 0/10 migration Axes đã áp dụng; `security.0003` tạo `tblSecurityEvent` cũng còn chờ, trong khi signal đăng nhập ghi vào bảng đó. Tạo backup COPY_ONLY/CHECKSUM tại `C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\Backup\ihrms_before_axes_20261005_103326_21d08a48.bak`; `RESTORE VERIFYONLY WITH CHECKSUM` đạt. Backup chứa dữ liệu nghiệp vụ, ở ngoài Git và cần giữ theo chính sách lưu trữ/khôi phục của quản trị SQL Server.
-
-**Đã làm trên SQL Server gốc:** chạy `venv\Scripts\python.exe src\manage.py migrate axes --noinput` (10/10 OK), `migrate security --noinput` (security.0003 OK), rồi `migrate --noinput` (attendance.0008, office.0005 và .0006, payroll.0004 đều OK). Trước khi áp dụng các ràng buộc nghiệp vụ, `audit_review_integrity` chỉ đọc báo 0 sai lệch ở cả 5 nhóm; sau migration vẫn 0. `migrate --plan` không còn thao tác; `manage.py check` đạt; `makemigrations --check --dry-run` báo No changes detected. Không tạo/xóa bản ghi nghiệp vụ gốc để thử nghiệm.
-
-**Sửa mã:** `VehicleBooking` trước đây chỉ cho `Approved`/`Cancelled`, nhưng form tạo gửi `Pending` và luồng duyệt có `Rejected`; mọi yêu cầu mới bị `full_clean()` từ chối. Bổ sung bốn trạng thái hợp lệ, mặc định `Pending`, migration `office.0006`, và hai kiểm thử tổng hợp cho model/HTTP tạo yêu cầu. Kiểm thử riêng `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.office.tests` và `--backend sqlserver apps.office.tests`: mỗi backend 8/8 đạt, SQL Server dùng database thử tạm. `pip check` không có dependency hỏng; `git diff --check` đạt.
-
-**Kiểm thử toàn bộ:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite`: 319 test, 317 đạt, 2 bỏ qua do chỉ dành SQL Server, exit 0; log `D:\QLHCNS-Backups\review-20261005-full-sqlite.log`. `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver`: 319/319 đạt, exit 0 trên database tạm do runner tạo/xóa; log `D:\QLHCNS-Backups\review-20261005-full-sqlserver.log`. Cả ba kịch bản HTTP HR, chấm công và nghỉ phép PASS trên hai backend. Log có cảnh báo cấu hình Jazzmin `dark_mode_theme` đã deprecated, không làm test thất bại. Bugbot không khả dụng trong môi trường công cụ hiện tại; review mã và luồng liên quan được thực hiện thủ công.
-
-**Việc còn mở/hành động của chủ dự án:** sau khi cập nhật mã lên máy đang chạy, dùng tài khoản thử để xác nhận đăng nhập và tạo/duyệt/từ chối đặt xe qua trình duyệt; đối chiếu với kết quả HTTP tự động. Chưa kiểm thử giao diện Edge trong lượt này hoặc mọi lỗi thiết kế/hiệu năng của toàn dự án. Backup SQL ở đường dẫn trên cần DBA giữ/luân chuyển theo quy định; không đưa vào Git. `gh run list --commit 6429d2f8769b58f41c4900358508515600eb65d9 --limit 10` trả HTTP 401 Bad credentials; chủ dự án mở GitHub Actions của commit này bằng tài khoản có quyền, đối chiếu các job và cung cấp log nếu job lỗi. Không ghi CI là đạt khi chưa xem được kết quả.
-
-**Nhánh/commit:** mã sửa ở `main` commit `6429d2f8769b58f41c4900358508515600eb65d9`; `git push origin main` thành công và `git fetch origin main` xác nhận local/remote trùng nhau tại commit đó. Mục nhật ký này được commit riêng trong cùng đợt.
-
-## 05/10/2026 — Sửa GitHub Actions frontend và kiểm tra lại toàn bộ trên main
-
-**Mục tiêu/phạm vi:** theo yêu cầu chạy lại kiểm thử và làm GitHub Actions hết lỗi trên `main`. Đầu đợt xác nhận local `main` khớp `origin/main` tại `e652db0`, chỉ có `.sixth/` và `_review_probe.py` chưa theo dõi; giữ nguyên hai mục đó. Skill `review-bugbot` yêu cầu subagent loại `bugbot`, nhưng môi trường công cụ không cung cấp loại này; review thủ công các thay đổi và luồng CI, không ghi nhận là Bugbot đã chạy.
-
-**Nguyên nhân CI đã xác nhận:** mở GitHub Actions bằng Edge có phiên đăng nhập, run #9 của commit `e652db0` thất bại ở job `frontend`, còn `backend` và `backup-command-tests` đạt. Log `npm audit --audit-level=low` báo 5 cảnh báo high do `braces` trong cây Tailwind CSS 3.4.17; advisory GHSA-vfj7-8cjw-p6xm chưa có bản vá cho `braces` 3.x. `gh auth status` xác nhận token CLI trong keyring không hợp lệ; trạng thái CI được đọc trên trang GitHub, không suy từ CLI.
-
-**Thay đổi:** nâng Tailwind và CLI lên 4.3.0 pin chính xác, lockfile sử dụng `@parcel/watcher` 2.6.0 không còn cây `braces`; chuyển CSS đầu vào sang `@import`/`@source` của Tailwind 4, build lại CSS và bỏ cấu hình v3 không còn dùng. Cập nhật hướng dẫn frontend. CI nâng `actions/setup-node` từ v4 lên v6 để bỏ cảnh báo runtime Node 20. Bộ thử backup chọn đúng shell của môi trường hiện tại (`powershell.exe` trên Windows PowerShell, `pwsh` trên PowerShell Core); kịch bản Failure trước đó không chạy được ở máy Windows này.
-
-**Kiểm tra đã chạy:** `npm ci`, `npm audit --audit-level=low` (0 vulnerability), `npm run build:css` đều exit 0. Đối chiếu selector CSS: 417 selector lớp có trong template và CSS v3 đều hiện diện sau build v4; kiểm tra này không thay thế xác nhận bố cục trình duyệt. `python -m pip check`, `python -m pip_audit -r requirements.txt` (No known vulnerabilities found), `manage.py check`, `makemigrations --check --dry-run` đạt. Cả 6 kịch bản mô phỏng `ops/backup/Test-BackupSafety.ps1` (Full/Log × Express/Standard/Failure) PASS; không kiểm thử backup/restore SQL thật bằng bộ này.
-
-**Kiểm thử toàn bộ và CI mới:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite`: 319 test, 317 đạt, 2 bỏ qua do dành riêng SQL Server, exit 0; log `D:\QLHCNS-Backups\review-20261005-ci-sqlite.log`. `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver`: 319/319 đạt, exit 0; log `D:\QLHCNS-Backups\review-20261005-ci-sqlserver.log`. Cả ba kịch bản HTTP HR, chấm công, nghỉ phép PASS trên hai backend; runner đã xóa database SQL Server tạm, kiểm tra chỉ đọc xác nhận còn 0 database `test_ihrms_%`. Có cảnh báo Jazzmin `dark_mode_theme` deprecated trong log, không làm test thất bại. Đã xác nhận trực tiếp trên Edge [GitHub Actions run #11](https://github.com/dinhtanhb/QLHCNS/actions/runs/37261635104) của commit `39f132e023b5d5c9360cb1689c8b224849cb00a7`: Status Success; backend, frontend và backup-command-tests đều thành công, không có annotation error/warning; còn 3 notice về lịch chuyển ubuntu-latest sang Ubuntu 26.
-
-**Nhánh/commit và việc còn mở:** `main`, mã sửa ở `39f132e023b5d5c9360cb1689c8b224849cb00a7`, đã push và fetch xác nhận origin/main khớp local. Commit trung gian `e0e8fa8` chỉ xóa cấu hình v3 do lệnh stage gặp pathspec của tệp đã xóa; các thay đổi còn lại đã được đưa ngay vào commit kế tiếp `39f132e`. Run #10 của commit trung gian đã lỗi frontend và được yêu cầu hủy để giải phóng hàng đợi cho run #11; không coi run trung gian là kết quả nghiệm thu. Chưa kiểm thử trực quan bố cục Edge sau nâng Tailwind, chưa xác nhận production IIS/SharePoint. Chủ dự án cần chạy `npm ci`, `npm run build:css`, rồi `venv\Scripts\python.exe src\manage.py collectstatic --noinput` theo quy trình triển khai trên máy chủ và kiểm tra bố cục các màn hình đang dùng; việc collectstatic/triển khai production không nằm trong đợt kiểm thử này.
-
-## 05/10/2026 — Chuẩn hóa reviewer Sixth và hướng dẫn review dùng lại
-
-**Mục tiêu/phạm vi:** đánh giá `.sixth/agents/code-review.md` và cập nhật hướng dẫn theo yêu cầu chủ dự án. `git status`, nhánh và `git fetch origin main` xác nhận `main` ở `164ffd30bc973b40cf4ca68ab6dfa9aa1a1738d8`, khớp remote (ahead/behind 0/0). Ban đầu `.sixth/` và `_review_probe.py` chưa theo dõi. Chỉ sửa file reviewer được yêu cầu; không sửa probe. `code-reviewr.md` không tồn tại trên đĩa dù người dùng đang có tab IDE tương ứng.
-
-**Đánh giá và thay đổi:** reviewer cũ có quy trình đọc caller/test và xác minh finding phù hợp, nhưng chủ yếu review diff sau tính năng, thiếu quy tắc IHRMS, bảo vệ dữ liệu, hai backend và xác nhận CI. Đã sao lưu bản gốc ngoài Git tại `D:\QLHCNS-Backups\review-agent-guide-20261005`. Cập nhật reviewer với FULL/CHANGES và REVIEW/FIX, checklist luồng nghiệp vụ, main, dữ liệu giả/DB-media cô lập, bằng chứng finding, quyền sửa/commit/push theo nhiệm vụ và cách báo phần chưa kiểm thử. Tạo `docs/Huong_Dan_Review_Du_An.md` có mẫu yêu cầu cho Sixth hoặc thực hiện trực tiếp, các lệnh chuẩn, điều kiện hoàn tất và giới hạn Bugbot. README/AGENTS chỉ liên kết tới hướng dẫn; nhật ký đợt chỉ ghi tại đây.
-
-**Kiểm tra thực tế:** đối chiếu mã extension Sixth AI 0.3.7 đang cài, xác nhận loader `.sixth/agents`, schema permissions, trust prompt và công cụ `launch_agent`; agent nền nhận task riêng, không nhận toàn bộ chat. Dùng Node VM chỉ chạy hàm parser `x0r` trích từ extension (không khởi động extension): file mới được nhận là `code-review`, source project, đủ 6 quyền bao gồm read mặc định. Python kiểm tra liên kết local, UTF-8 và code fence của bốn file hướng dẫn: PASS. `git diff --check`: exit 0. Đối chiếu lệnh với `ops/run_tests.py`, `ops/Run-Tests.ps1` và `.github/workflows/ci.yml`; không chạy full suite/build/audit mới vì đợt này chỉ sửa hướng dẫn, không sửa ứng dụng, dependency hoặc workflow.
-
-**Việc còn mở/bàn giao:** chưa thử gọi agent Sixth qua UI nên không coi parser PASS là run review đã thành công. Chủ dự án mở Sixth AI trong workspace, dùng mẫu FULL/REVIEW ở hướng dẫn, yêu cầu agent `code-review`, xử lý trust prompt nếu xuất hiện rồi xác nhận có run riêng/kết quả. Nếu không có agent Sixth trong công cụ đang dùng, đính kèm hai file và yêu cầu review trực tiếp; ghi đúng cách đã thực hiện. Không áp dụng migration hay ghi dữ liệu nghiệp vụ trong đợt này.
-
-**Git trong lượt tiếp tục:** chủ dự án yêu cầu commit/push toàn bộ. Fetch lại xác nhận main không phân kỳ với origin/main. Kiểm tra toàn bộ tệp mới: chỉ có reviewer, hướng dẫn và `_review_probe.py`; probe dùng cấu hình test/SQLite, khóa mẫu riêng cho probe và instance giả, không gọi save. Chạy `venv\Scripts\python.exe _review_probe.py` lần đầu lỗi encoding cp1252; chạy lại với `PYTHONIOENCODING=utf-8` hiển thị đủ trạng thái rồi exit 1 vì `clean_fields()` kiểm tra FK trên SQLite thiếu bảng `tblVehicle`. Không ghi probe đạt và không migrate/tạo fixture trên DB cấu hình để chữa lỗi này. Giữ probe nguyên trạng theo yêu cầu đưa toàn bộ lên Git; nếu cần chạy lại độc lập, phải có SQLite cô lập đã migrate và fixture giả tương ứng hoặc chuyển probe thành test dùng runner chuẩn. Không đưa .env, DB, backup hoặc dữ liệu thật. SHA commit và đối chiếu remote sau push được báo trong kết quả bàn giao.
-
-## 2026-10-06 — Layout và export bộ biểu mẫu HCNS
-
-**Mục tiêu/phạm vi:** tham khảo 26 tệp chủ dự án đã đặt tại `docs/templates/hcns/`; xây dựng màn hình soạn, xem trước/in và export tương ứng. Chỉ làm trên `main`; đầu đợt working tree có thư mục mẫu chưa theo dõi, `git fetch origin main` và `git rev-list --left-right --count HEAD...origin/main` xác nhận `0 0`. Không sửa các tệp mẫu gốc, không đưa chúng vào commit, không ghi bản ghi nghiệp vụ thật.
-
-**Đã làm:** thêm `src/apps/document/hcns/` (catalog 26 layout, nội dung mẫu trắng trích chọn, form/formset validation, prefill theo quyền, render, DOCX/XLSX export và views); ba template tại `src/apps/document/templates/document/hcns/`; CSS/JS riêng; `src/apps/document/tests_hcns.py`. Thêm `/portal/hcns-forms/` và menu Biểu mẫu HCNS; nối liên kết ở chi tiết nhân viên, ứng viên, đơn nghỉ, hồ sơ vòng đời, kiểm kê, đề nghị thanh lý và danh sách lương cơ bản. Thêm `docs/Huong_Dan_Bieu_Mau_HCNS.md` hướng dẫn sử dụng; kết quả chỉ ghi tại mục nhật ký này.
-
-**Nội dung và quy tắc:** Word cho hồ sơ/văn bản, Excel cho thang bảng lương, bảng kiểm bàn giao, tổng hợp điểm tuyển dụng và kiểm kê/nhãn tài sản. PDF qua hộp thoại in của trình duyệt, không thêm dịch vụ chuyển đổi phía máy chủ. Giữ 60 tiêu chí đánh giá, 12 câu hỏi phỏng vấn thôi việc và bốn TOR; không đưa dòng nhân viên/ứng viên/tài sản đã điền hoặc chữ ký trong mẫu gốc vào mã. `BangLuong.xlsx` là thang bảng lương chứa giá trị, không có công thức; không thay payroll. Chủ dự án **đã xác nhận trong chat** tính trung bình cả điểm phỏng vấn và điểm bài kiểm tra theo ứng viên; đã triển khai cho bản xem trước và công thức Excel. Điểm thiếu không thành 0; không tự ra kết quả tuyển dụng. Bảng kiểm nghỉ việc thay yêu cầu ghi password bằng xác nhận bàn giao quyền truy cập qua quy trình IT, không thu thập mật khẩu. Xuất kiểm kê `.xlsx` không macro; hồ sơ vượt giới hạn soạn được xem/xuất đầy đủ. Bản xuất là bản soạn thảo, không tự duyệt/gửi đơn/đổi lương/chấm dứt hợp đồng/thanh lý tài sản; không lưu draft vào DB. Layout bám cấu trúc và nội dung mẫu, không cam kết sao chép nguyên từng pixel hoặc giữ logo, ảnh và chữ ký của tệp gốc.
-
-**Quyền và bảo vệ dữ liệu:** login và quyền kiểm tra tại máy chủ; employee prefill yêu cầu chính chủ hoặc cả quyền xem toàn bộ + xuất dữ liệu nhân sự; tuyển dụng yêu cầu HR; lương/quyết định dùng quyền nghiệp vụ tương ứng; asset/leave áp dụng quyền/phạm vi hiện có. Không cấp quyền nhân sự bằng `is_staff`. Loại nghỉ phải khớp mẫu `AL/UL/CO`, hồ sơ xóa bị loại. Văn bản HTML escape, chuỗi Excel được lưu kiểu text để chặn formula injection, tiêu chí/nhãn cố định do máy chủ quyết định, giới hạn số dòng và điểm. Audit chỉ ghi loại mẫu; trang/export `never_cache`; dữ liệu nguồn không hợp lệ báo lỗi an toàn.
-
-**Kiểm tra đã chạy:**
-
-- `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.document.tests_hcns`: bản cuối đạt **9/9**, exit 0; gồm cả 26 GET layout/POST export, đăng nhập/quyền và phạm vi hồ sơ, dữ liệu nhập, điểm thiếu/0, chống tamper/XSS/formula injection, kiểm kê 51 dòng không cắt dữ liệu, xử lý nguồn lỗi. DB/media do runner cô lập.
-- `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.document apps.portal apps.lifecycle apps.reporting apps.security.tests_data_protection`: **136 ca, 135 đạt, 1 skip**, exit 0. Ca skip tại `src/apps/portal/tests_review_hardening.py` yêu cầu SQL Server row locking. Bộ hồi quy này chạy trước các tinh chỉnh cuối về khoảng cách in, công thức kiểm tra điểm thiếu và nguồn dữ liệu lỗi; đã chạy lại bộ HCNS tập trung trên mã cuối.
-- SQL Server: `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver apps.document.tests_hcns`; bản cuối đạt **9/9**, exit 0; runner tạo DB `test_ihrms_<UUID>` riêng và xóa sau khi chạy. Trước khi bổ sung ca nguồn lỗi cũng đã đạt 8/8; không dùng kết quả cũ thay cho lần xác nhận mã cuối.
-- `manage.py check` và `manage.py makemigrations --check --dry-run` với `DB_ENGINE=django.db.backends.sqlite3`, `DB_NAME` trỏ tới tệp SQLite tạm ngoài repo, `SECRET_KEY` tạm và `APP_ENV=test`: exit 0, không có lỗi framework và không có migration mới. Lần cấu hình kiểm tra ban đầu tạo tệp rỗng `src/qlhcns` do tên DB kế thừa cấu hình; đã xác minh tệp 0 byte sinh trong đợt này và xóa riêng tệp đó. Thử `DB_NAME=:memory:` qua settings hiện tại báo đường dẫn không mở được trên Windows; đã chuyển sang đường dẫn tuyệt đối tạm và chạy lại đạt. Không migrate DB thật.
-- Edge headless qua Playwright trên **26 HTML editor đã render cô lập**, viewport 1280×900 và 375×812: không tràn ngang trang; thêm/xóa dòng, đánh lại chỉ số formset, chặn in preview cũ và ẩn editor khi in đạt. Đây là kiểm tra HTML/JS/static; không phải browser UAT đăng nhập trên ứng dụng đang dùng.
-- Xuất 26 tệp bằng dữ liệu giả vào `%TEMP%`, mở/chuyển PDF bằng LibreOffice và render trang PNG bằng Poppler; kiểm tra bố cục, chỉnh vùng ký tránh trang riêng, mở rộng tiêu đề/cột Excel. Đã chạy `render_docx.py` với mẫu đơn nghỉ để xác minh renderer; các mẫu còn lại render trực tiếp qua LibreOffice/Poppler. Trang quyết định, đơn nghỉ, bàn giao và phiếu phỏng vấn mẫu trắng gọn trên một trang; đánh giá/TOR nhiều trang. Không kết luận dữ liệu dài bất kỳ sẽ có cùng số trang.
-- Hai workbook điểm giả được LibreOffice tính lại, rồi đọc cached values bằng `openpyxl`: trường hợp 10 và 0 cho TB phỏng vấn=30, TB kiểm tra=10, tổng=40; thiếu một điểm kiểm tra cho TB kiểm tra/tổng trống. Không có ô lỗi công thức. Không xác nhận engine Microsoft Excel thật.
-- `git diff --check` đạt. Nội dung JSON trích chọn không có email, chuỗi định danh dài hoặc nhãn password; các tệp gốc vẫn chưa theo dõi. Không tăng dependency, không migration schema, không commit/push/deploy trong nhiệm vụ này.
-
-**Vòng test/fix/review theo ủy quyền tiếp tục của chủ dự án:** review trực tiếp phạm vi CHANGES/FIX cho bộ biểu mẫu và caller, không ghi nhận đã chạy Sixth/Bugbot hoặc review FULL mọi dòng mã. Sửa bốn trường hợp đã xác nhận: dòng chỉ có số 0 bị loại do so sánh với `False`; nguồn chưa kiểm tra quan hệ ngày/giờ bắt đầu-kết thúc; đơn nghỉ thường được dùng điền quyết định thai sản; ký tự XML cấm `U+FFFE/U+FFFF` có thể làm DOCX không đọc được. Bổ sung kiểm thử hồi quy, chặn nguồn không khớp `ML`, cập nhật hướng dẫn quyền/nguồn và build lại `src/static/css/tailwind.css`. Một assertion mới ban đầu tìm lý do nghỉ trong quyết định thai sản, trong khi mẫu chỉ có nhân viên và khoảng ngày; đã sửa assertion theo trường thực tế rồi chạy lại, không thay nội dung mẫu để làm test đạt.
-
-**Xác minh bổ sung:** `pip check`, `npm run build:css`, `manage.py check`, `makemigrations --check --dry-run` trên SQLite tạm đều exit 0; không phát sinh migration. Bộ HCNS SQLite trên mã cuối **11/11 đạt**. Chạy lại QA static Edge sau build: 26 mẫu ở desktop/mobile, thêm/xóa/đánh lại chỉ số dòng, chặn nút in preview cũ và ẩn editor khi in đều đạt. Thêm kiểm tra **Edge có đăng nhập trên StaticLiveServerTestCase với DB/media giả cô lập**: cả 26 mẫu GET → POST preview → POST tải tệp thành công; thêm/xóa dòng tài sản và dữ liệu preview qua HTTP đúng; khoảng ngày sai trả 422; POST thiếu CSRF trả 403; không có lỗi JavaScript. Lệnh harness: `$env:PYTHONPATH=Join-Path $env:TEMP 'ihrms-hcns-layout-20261006'; venv\Scripts\python.exe ops\run_tests.py --backend sqlite live_browser_tests` (harness `live_browser_tests.py`/`live_browser.cjs` nằm ngoài repo tại thư mục tạm này, cần giữ chúng hoặc tái tạo trước khi chạy lại). Log và 26 tệp tải giả ở cùng thư mục tạm. Microsoft Word mở read-only được **22/22 DOCX**, Microsoft Excel mở và calculate read-only được **4/4 XLSX**; không sửa/lưu mẫu gốc. Excel thật tính hai workbook điểm giả: đủ điểm/0 → 30,10,40; thiếu điểm → 30,trống,trống, đúng kỳ vọng. Đây là kiểm tra Office bằng COM, chưa thay thế kiểm tra trình bày bằng mắt của người sử dụng.
-
-**Còn mở và bước chủ dự án thực hiện:** mở `Biểu mẫu HCNS` trong menu ứng dụng, thử 2–3 hồ sơ với tài khoản HR/Kế toán/nhân viên phù hợp; chọn mẫu → nhập → cập nhật preview → tải Word/Excel hoặc In/lưu PDF. Nhập phần chưa có trong DB (quốc tịch, trình độ, tài khoản ngân hàng, người nhận bàn giao, căn cứ, nội dung quyết định...). Kiểm tra nội dung, căn cứ/thẩm quyền ký, địa bàn/dự án trong TOR và trình bày bằng Microsoft Word/Excel trước khi ký. Chưa chạy UAT trên dữ liệu thật, chưa kiểm tra M365/IIS/deploy/CI; chưa có lưu draft, ký số hoặc điền tự động theo bản ghi quyết định/lịch sử lương. Khi sửa/thêm nhóm người chấm trong Excel cần xuất lại từ trang soạn để cập nhật công thức nhóm. Không dùng bộ mẫu này để tự suy diễn biểu mẫu BHXH/TNCN chưa được Kế toán xác nhận. Không cam kết không còn lỗi chỉ từ tỷ lệ test đạt. Không commit/push/deploy trong vòng tiếp tục này.
-
-**Hồi quy toàn dự án trong vòng tiếp tục:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite`: **328 ca, 326 đạt, 2 skip**, exit 0 (419,456 giây); `--backend sqlserver`: **330/330 đạt**, exit 0 (388,160 giây), runner đã xóa DB tạm sau chạy. Hai skip SQLite là kiểm tra row locking (`portal/tests_review_hardening.py:276`) và unique index với NULL (`planning/tests.py:67`), đều được chạy trên SQL Server. Ba kịch bản HTTP nhân sự/chấm công/nghỉ phép PASS trên cả hai backend. Hai bộ bắt đầu trước các thay đổi cuối; SQLite phát hiện 9 ca HCNS, SQL Server phát hiện 11. Sau tinh chỉnh ký tự XML và bổ sung assertion nguồn ML đã chạy lại bộ HCNS trên mã cuối, không dùng kết quả full cũ thay cho xác nhận thay đổi cuối. Log ngoài Git: `%TEMP%\ihrms-hcns-layout-20261006\full-sqlite-review.log`, `full-sqlserver-review.log`, `focused-final.log`, `live-browser.log`; cảnh báo Jazzmin deprecated đã tồn tại, không phải lỗi test. Không có test thất bại trong hai bộ hồi quy.
-
-**Chốt mã cuối:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver apps.document.tests_hcns`: **11/11 đạt**, exit 0; log `focused-sqlserver-final.log` cùng thư mục tạm, DB thử riêng đã bị runner xóa. Truy vấn chỉ đọc `SELECT COUNT(*) FROM sys.databases WHERE name LIKE 'test[_]ihrms[_]%'` xác nhận còn **0** DB thử. Như vậy bộ HCNS cuối đạt 11/11 trên cả hai backend; review lại không còn finding đã xác nhận chưa xử lý trong phạm vi này. `git diff --check` đạt; nhánh vẫn `main`, đối chiếu HEAD/origin/main `0 0`, thay đổi chưa commit được giữ nguyên. Chưa có bằng chứng CI cho mã chưa commit và không suy diễn CI là đạt.
-
-## 2026-10-06 — Đặt cổng phát triển mặc định QLHCNS là 8001
-
-**Mục tiêu/phạm vi:** theo yêu cầu chủ dự án, tránh mở nhầm `nhaplieu_app` đang giữ cổng 8000. Xác nhận `main`, giữ toàn bộ thay đổi HCNS chưa commit; `git fetch origin main` và đối chiếu HEAD/origin/main đạt `0 0`.
-
-**Đã làm:** thêm command `src/apps/common/management/commands/runserver.py`, kế thừa command staticfiles của Django và đặt `default_port = "8001"`. Đưa `apps.common` trước `django.contrib.staticfiles` trong `src/config/settings.py` để Django chọn command riêng. Cập nhật URL và cách chọn cổng khác trong README. Lệnh `venv\Scripts\python.exe src\manage.py runserver` dùng `127.0.0.1:8001`; tham số cổng/địa chỉ rõ ràng vẫn được ưu tiên.
-
-**Kiểm tra/kết quả:** chạy Python với cấu hình SQLite tạm/APP_ENV=test, xác nhận command resolver chọn `apps.common`; dùng parser và `handle()` thật, mock riêng `run()` để không mở server hay ghi DB: không truyền cổng → 127.0.0.1:8001, truyền 8002 → 127.0.0.1:8002, truyền 127.0.0.1:8010 → đúng địa chỉ/cổng, cả ba PASS; tùy chọn staticfiles vẫn hiện diện. `venv\Scripts\python.exe src\manage.py check` trên cấu hình tạm: exit 0, không có lỗi. `git diff --check` đạt. Không chạy lại full-suite vì thay đổi chỉ là cổng phát triển và đã kiểm tra đúng luồng command; không dùng kết quả full-suite HCNS trước đó để tuyên bố đã chạy lại sau thay đổi này.
-
-**Bàn giao:** chủ dự án dừng và khởi động lại tiến trình QLHCNS bằng lệnh trên rồi mở http://127.0.0.1:8001/portal/. Tiến trình đang chạy không tự đổi cổng; nếu lệnh khởi động có cổng 8000 explicit thì bỏ tham số hoặc đổi thành 8001. Chưa mở server thực tế trong lượt này, không dừng nhaplieu_app, không sửa cấu hình IIS/Waitress hay dữ liệu nghiệp vụ, không commit/push.
-
-## 2026-10-06 — Sửa UAT quyết định tiếp nhận/bổ nhiệm/miễn nhiệm
-
-**Mục tiêu/phạm vi:** theo phản hồi và ảnh chụp của chủ dự án, thay ô nhập danh mục bằng dropdown, tự điền chức vụ/phòng ban theo cán bộ, tự đổi lương thành chữ và sửa layout theo `VH_QD bo nhiem, mien nhiem.doc`. Đầu đợt xác nhận `main`, `git fetch origin main`/HEAD đối chiếu remote `0 0`; giữ toàn bộ phần HCNS/cổng 8001 chưa commit. Review trực tiếp CHANGES/FIX trong phạm vi này.
-
-**Đã làm:** thêm `hcns/appointment.py` với danh sách chọn và bố cục riêng; `hcns/money.py` đọc tiền Việt; cập nhật catalog/form/prefill/view/render/export, thêm template `appointment_document.html`, sửa template draft/document và CSS/JS HCNS. Họ tên/người ký lấy hồ sơ chưa xóa, nhãn gồm tên/mã/chức vụ; danh sách cán bộ theo chính chủ hoặc cả quyền xem toàn bộ và xuất nhân sự, không mở quyền mới. ModelChoiceField kiểm tra ID ở máy chủ, từ chối ID không tồn tại/đã xóa và chuỗi tùy ý. Chọn cán bộ tự điền vị trí/phòng ban bằng JS; máy chủ bổ sung từ hồ sơ khi để trống, cho phép chọn lại danh mục và chức vụ mới. Dữ liệu JSON chỉ có ID cán bộ/vị trí/phòng ban; truy vấn danh sách chỉ lấy các trường cần dùng, không gửi CCCD/email/lương. Source label theo cán bộ được chọn trên POST, tránh giữ nhãn người cũ.
-
-**Tiền và nội dung:** nhập số đồng nguyên, lương bằng chữ tự cập nhật tại client và được tính lại ở server, field disabled/readonly không nhận nội dung bằng chữ do POST giả mạo. Quy tắc áp dụng cả quyết định điều chỉnh lương có cùng trường; điểm tuyển dụng và bảng lương không bị đổi. Lương trống giữ trống, 0 là “Không đồng chẵn”; xử lý nhóm nghìn/triệu/tỷ, lăm/mốt/linh. Lần thử đầu phát hiện chỉ đổi thuộc tính decimal_places không thay validator cũ, khiến số lẻ lọt tới bộ đọc tiền; đã tạo DecimalField đồng nguyên đúng validator, bổ sung hồi quy rồi chạy lại đạt. Không đổi schema/điều chỉnh lương thật. Nội dung căn cứ và bốn điều của mẫu tiếp nhận được phục hồi từ phần mẫu trắng; không đưa tên/chữ ký/dòng ví dụ thật trên trang thứ hai vào mã. Tiêu đề V/v/Điều 1 mặc định theo hành động, nội dung tự sửa vẫn do người soạn kiểm tra trước ký.
-
-**Layout:** tổ chức bên trái/quốc hiệu bên phải, số/ngày dưới từng khối; tiêu đề “QUYẾT ĐỊNH” 16pt và V/v 14pt; Times New Roman 12pt cho thân, căn cứ nghiêng/thụt dòng, nhãn Điều cùng dòng và thụt treo, nơi nhận trái/chữ ký phải và tên người ký dưới khoảng ký. A4, lề trái 25mm, trên/dưới/phải 20mm; Word và browser print cùng quy tắc. Giữ dòng cảnh báo bản soạn thảo như khác biệt có chủ ý. Không còn các nhãn “Nội dung căn cứ”, “Danh sách nơi nhận” hoặc metadata lặp trong bản in mẫu này. Các mẫu quyết định khác chưa thay layout trong lượt này. Cập nhật `docs/Huong_Dan_Bieu_Mau_HCNS.md` cùng đợt.
-
-**Kiểm tra trên mã cuối:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.document.tests_hcns apps.portal.tests_mobile`: **19/19 đạt**; `--backend sqlserver apps.document.tests_hcns`: **14/14 đạt**, runner xóa DB/media thử riêng. Bộ HCNS riêng trước đó cũng đạt 14/14 trên SQLite. Bao gồm 26 layout/export, chọn/prefill cán bộ, export DOCX hai bảng header/footer, hành động miễn nhiệm, từ chối reference giả/xóa/số lẻ, chống sửa lương bằng chữ, các quy tắc tiền và hồi quy quyền/nguồn/điểm. `manage.py check`, `makemigrations --check --dry-run` với SQLite tạm: exit 0, không có migration. `git diff --check` đạt.
-
-**Browser/Word QA:** harness ngoài repo `%TEMP%\ihrms-hcns-layout-20261006\live_browser_tests.py`/`live_browser.cjs`, chạy bằng `$env:PYTHONPATH=Join-Path $env:TEMP 'ihrms-hcns-layout-20261006'; venv\Scripts\python.exe ops\run_tests.py --backend sqlite live_browser_tests`, PASS. Edge có đăng nhập trên StaticLiveServerTestCase/DB giả: 26 mẫu POST preview/tải tệp; dropdown và auto vị trí/phòng ban, 9 trường hợp đọc tiền JS, giữ cán bộ/người ký/tiền sau POST, không tràn ngang mobile, in không editor, thiếu CSRF bị chặn và không lỗi JavaScript. Vòng browser đầu sau chỉnh layout/in chạy trước tinh chỉnh nhãn dropdown/truy vấn `.only`; vòng cuối bổ sung kiểm tra cache dưới đây. Renderer `render_docx.py` ban đầu không tìm thấy soffice trên PATH; bổ sung đường dẫn LibreOffice rồi chạy thành công. Render mẫu tham khảo, xuất tài liệu giả bằng mã hiện tại và render/đọc PNG Word, render/đọc PNG bản in browser: đều sạch, bản thử một trang. Không suy diễn mọi nội dung dài đều một trang. Artifact contract/PNG/PDF/log chỉ ở thư mục tạm, không đưa Git; log `appointment-final-regression.log`, `appointment-sqlserver-final.log`, `appointment-browser-final.log`. Chưa chạy lại full-suite toàn dự án sau sửa UAT này, không dùng số 330/330 cũ làm kết quả mã cuối.
-
-**Chốt cache và danh mục nguồn:** service worker hiện dùng cache-first cho static nên chỉ tải lại trang có thể vẫn chạy CSS/JS cũ. Thêm phiên bản URL `?v=20261006-2` cho CSS/JS HCNS trong template draft/catalog; giữ phạm vi thay đổi tại biểu mẫu. Chạy lại harness Edge sau tinh chỉnh nhãn/truy vấn và version URL, chủ động đặt CSS ẩn preview/JS lỗi vào cache các URL HCNS cũ trong browser test cô lập: cả 26 mẫu, dropdown, đổi tiền, mobile/in vẫn PASS, không lỗi JS; log `appointment-browser-cache.log`. Review thêm chặn fallback tới phòng ban/chức vụ đã xóa trong hồ sơ cán bộ, bổ sung hồi quy POST với cả hai danh mục đã xóa. Các bước xử lý source cuối được kiểm tra lại bằng 19/19 SQLite và 14/14 SQL Server, không chỉ dùng browser chạy trước chỉnh sửa source để xác nhận.
-
-**Bàn giao/còn mở:** chủ dự án tải lại trang QLHCNS cổng 8001, mở mẫu quyết định, chọn cán bộ/người ký, chọn hành động/chức vụ mới, nhập ngày hiệu lực và lương rồi cập nhật preview/tải Word/in. Đối chiếu hồ sơ thực tế, nội dung các điều/căn cứ/thẩm quyền ký trước sử dụng. Với người chưa có hồ sơ cần tạo qua Nhân sự trước khi chọn. Chưa thực hiện UAT trên dữ liệu thật/triển khai IIS/M365/CI; không migration DB gốc, không commit/push. Không có finding đã xác nhận chưa xử lý trong phạm vi lượt này.
-
-## 2026-10-06 — Điền nhân viên đã chọn vào mọi mẫu HCNS
-
-**Mục tiêu/phạm vi:** theo phản hồi chủ dự án, lựa chọn tại trang danh sách phải được giữ khi mở mẫu và các trường tương ứng trong mẫu phải lấy đủ dữ liệu đang có. `main` và working tree kiểm tra trước sửa, fetch/đối chiếu origin/main `0 0`, giữ mọi thay đổi HCNS/cổng 8001 trước đó.
-
-**Đã làm:** cập nhật `hcns/prefill.py`, `views.py`, `appointment.py`, template catalog/draft, JS HCNS và `tests_hcns.py`. Dropdown trang danh sách submit ngay khi đổi; nút Chọn hồ sơ vẫn hoạt động. Cả 26 card mang `employee_id`, nút về danh sách giữ nhân viên, không chỉ giới hạn ba nhóm personnel/decision/leave. Máy chủ tiếp tục kiểm tra quyền trước đọc dữ liệu nguồn. Ánh xạ theo trường thực sự có trong mẫu và lọc dữ liệu dư khỏi initial: họ tên/vị trí/phòng ban, ngày vào/nghỉ, ngày sinh/giới tính/năm sinh, điện thoại/email/địa chỉ, CCCD/thuế/BHXH và quản lý/vị trí quản lý. Sửa thiếu liên hệ trong bảng bàn giao nghỉ việc; dropdown bổ nhiệm được chọn đúng ID và chức vụ hiện tại/chức vụ mới được điền tham khảo. Hồ sơ vòng đời dùng cùng ánh xạ. Không thêm trường/model/migration.
-
-**Nguồn bổ sung và giới hạn:** mẫu có salary/salary_note lấy đúng một bản ghi EmployeeSalary Active đã hiệu lực và chưa kết thúc tại ngày mở, chỉ khi có quyền view_employee_compensation; không chọn lương tương lai, đã xóa hoặc tự giải quyết nhiều mức chồng lấn. Chuẩn hóa Decimal đồng nguyên để lương bằng chữ tự tính đúng. Quyết định chấm dứt lấy số hợp đồng khi có đúng một Contract Active trong hạn; không lấy ngày bắt đầu làm ngày ký. Chức vụ/lương hiện hành là tham khảo, quyết định mới cần xác nhận. Không tự điền ngân hàng/trình độ/quốc tịch/ngày cấp giấy tờ vì Employee hiện không có các trường đó; không suy đoán ngày nghỉ/ngày hiệu lực/người ký, mã ứng viên, điểm, thành viên hội đồng hay tài sản đề nghị thanh lý. Mẫu không có slot nhân viên giữ lựa chọn để chuyển mẫu và hiển thị nhãn nguồn, không chèn thêm dữ liệu không thuộc mẫu. Chuyển cán bộ trong dropdown bổ nhiệm reset chức vụ mới theo cán bộ và xóa lương/bằng chữ của người trước, tránh mang nhầm dữ liệu; có thể mở lại từ catalog để lấy lương tham khảo của người mới. Version CSS/JS HCNS `20261006-3` tránh service-worker cache cũ. Cập nhật hướng dẫn sử dụng cùng đợt.
-
-**Kiểm tra/kết quả:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.document.tests_hcns` và `--backend sqlserver apps.document.tests_hcns`: mã cuối **16/16 đạt trên mỗi backend**, exit 0, DB/media thử cô lập; SQL runner xóa DB thử. Ca mới kiểm tra cả 26 card/GET/prefill/GET export, đúng tên/contact/ngày/manager/danh mục theo slot, giữ link quay lại, quyền truy cập hồ sơ khác, nguồn lương hiện hành/tương lai/chồng lấn, hợp đồng và trường không có dữ liệu. `manage.py check`, `makemigrations --check --dry-run` trên SQLite tạm đạt, không có migration. Log `%TEMP%\ihrms-hcns-layout-20261006\employee-prefill-sqlite.log`, `employee-prefill-sqlserver.log`; không ghi dữ liệu thật.
-
-**Browser:** harness test cô lập ngoài Git chạy bằng `$env:PYTHONPATH=Join-Path $env:TEMP 'ihrms-hcns-layout-20261006'; venv\Scripts\python.exe ops\run_tests.py --backend sqlite live_browser_tests`. Edge có đăng nhập đã xác nhận đổi dropdown tự áp dụng, 26 link chứa nhân viên, mọi slot họ tên/contact tương ứng có giá trị, link quay lại giữ lựa chọn, 26 POST preview và tải tệp thành công; cache cũ bị bypass, chức năng điểm/lương/dropdown/mobile/in và CSRF vẫn đạt, không lỗi JavaScript. Log vòng đầu `employee-prefill-browser.log`; vòng cuối xác nhận thêm đổi cán bộ reset chức vụ mới/lương trong `employee-prefill-browser-final.log`. Harness và tệp tải chỉ có dữ liệu giả, nằm ngoài repo. Không coi đây là UAT với hồ sơ thật hoặc full-suite toàn dự án sau thay đổi.
-
-**Bàn giao:** tải lại trang cổng 8001, chọn nhân viên rồi mở mẫu; kiểm tra các trường tự điền, bổ sung mục trống/xác nhận lương và chức vụ mới trước xuất. Chọn Mẫu trắng để bỏ lựa chọn. Chưa commit/push/deploy/CI, không sửa DB nghiệp vụ hay mẫu gốc. Phần chưa có nguồn lưu trữ được ghi rõ trong hướng dẫn, cần chủ dự án bổ sung trực tiếp trên bản soạn.
-
-## 2026-10-08 — Dọn cấu trúc repository và sao lưu trước thay đổi
-
-**Mục tiêu/phạm vi:** theo yêu cầu chủ dự án, kiểm kê các tệp ở thư mục gốc, sắp xếp tệp chẩn đoán review vào đúng nhóm vận hành, tạo bản sao trước thay đổi, rồi commit/push trên `main`. Trước khi làm, `git status --short` sạch; `git fetch origin main` và `git rev-list --left-right --count HEAD...origin/main` xác nhận local/remote không phân kỳ (`0 0`) tại `05f2591871ef22fd9e0128ff2f735211e8af69a7`. Không di chuyển `.env`, database, media, `venv`, `node_modules`, `Logs` hoặc các thư mục backup vận hành; hai tài liệu hướng dẫn ở thư mục gốc được giữ nguyên vì README và tài liệu tập huấn đang liên kết trực tiếp.
-
-**Bản sao:** tạo `D:\QLHCNS\Backups\source-before-cleanup-20261008.bundle` bằng `git bundle create --all`; `git bundle verify` xác nhận bundle hợp lệ và chứa toàn bộ lịch sử. SHA-256 của bundle là `8B9D8E0085F7E0DE663C7253D68380B4CB3DF25B63859805545E57938B9342EE`. `Backups/` thuộc `.gitignore`, nên bản sao chỉ nằm cục bộ và không được đưa lên GitHub.
-
-**Đã làm:** chuyển `_review_probe.py` khỏi thư mục gốc thành `ops/probes/booking_status_validation.py`; cập nhật cách xác định `PROJECT_ROOT` để đường dẫn `src` vẫn đúng sau khi di chuyển. Thêm `ops/probes/README.md` nêu rõ đây là probe thủ công, không thay cho regression test, chỉ được dùng với DB test cô lập và dữ liệu giả. Git nhận thay đổi là rename; không xóa nội dung chẩn đoán, không thay đổi mã ứng dụng, schema hay dữ liệu nghiệp vụ.
-
-**Kiểm tra/kết quả:** `venv\Scripts\python.exe -m py_compile ops\probes\booking_status_validation.py`, `venv\Scripts\python.exe src\manage.py check` với `DB_ENGINE=django.db.backends.sqlite3`, `APP_ENV=test` và `SECRET_KEY` tạm, cùng `git diff --check` đều exit 0. Đối chiếu lại thư mục gốc xác nhận không còn probe tạm. Không chạy chính probe vì nó vẫn cần database SQLite đã migrate và fixture giả; không dùng DB cấu hình để làm cho probe chạy. Không chạy full suite vì chỉ sắp xếp script chẩn đoán ngoài runtime ứng dụng.
-
-**Nhánh/commit và phần còn mở:** thay đổi cấu trúc ở commit `ec6d2f62fad3fd0cacdf01b3df04a9531d099173` trên `main`; commit nhật ký và trạng thái push được xác nhận trong bàn giao cuối đợt. Các finding RBAC/menu từ lượt review trước không thuộc phạm vi dọn file và chưa được sửa trong đợt này. Nếu probe cần dùng lâu dài, bước tiếp theo là chuyển tình huống tương ứng thành Django test dùng `ops/run_tests.py` và fixture cô lập.
-
-**Tiếp tục sắp xếp tài liệu:** sau phản hồi của chủ dự án, chuyển `HUONG_DAN_SU_DUNG_IHRMS.md` và `TAP_HUAN_IHRMS.md` từ thư mục gốc vào `docs/` tại commit `52ec2b4af9d1e4b4e2b2b6552367238aed29ec84`. Cập nhật liên kết trong `README.md`, skill `ihrms-operations`, checklist go-live, production-readiness review và liên kết nội bộ giữa hai tài liệu. Script kiểm tra toàn bộ liên kết Markdown cục bộ trong năm tài liệu đầu mối xác nhận mọi đích đều tồn tại; `git diff --check` đạt. Các nhắc lại đường dẫn cũ trong phần lịch sử của nhật ký được giữ nguyên để không viết lại bằng chứng của các đợt trước. Đây là thay đổi tài liệu, không chạy full suite ứng dụng. Bản ZIP tạo trước bước này vẫn là snapshot an toàn trước khi di chuyển; một ZIP mới theo commit cuối được tạo ngoài repository sau khi push để gửi review.
-
-## 2026-10-08 — Review tĩnh toàn mã nguồn (FULL/REVIEW), chưa sửa
-
-**Mục tiêu/phạm vi:** theo yêu cầu chủ dự án, tiếp tục lượt review RBAC/menu còn dở, mở rộng ra toàn bộ `src/apps`, lưu lịch sử và soạn yêu cầu cho Codex sửa. Chế độ REVIEW: không sửa mã, không commit/push, không ghi dữ liệu. Nguồn là bản ZIP `QLHCNS-source-20261008-0004f7e047ed.zip` (mã băm ghi trong ZIP `0004f7e047ed99db4c8e9a7f6d39539f3298f5c2`), không phải checkout Git nên **chưa xác nhận** `main`/`HEAD...origin/main`. Liên kết chia sẻ cuộc hội thoại trước không tải được nội dung; phần review dở được xác định từ ghi chú "finding RBAC/menu chưa sửa" trong nhật ký ngày 2026-10-08 phía trên.
-
-**Đã làm (đọc mã tĩnh, không chạy ứng dụng):** đối chiếu 150 route `portal/urls.py` với guard của view bằng script AST; so khớp menu `base.html` với `PERMISSION_MATRIX`; đọc kỹ `security/*`, các view nghỉ phép, lương, công văn, nhân sự, mua sắm/văn phòng, lifecycle, reporting, `leave/models.py`, upload và cấu hình production; quét toàn `src/` các mẫu rủi ro (`csrf_exempt`, `mark_safe`, SQL thô, `eval/exec`, `subprocess`, `float()` tiền) — không phát hiện vi phạm. Chi tiết, mức đã rà và danh sách phần chưa rà sâu ở [báo cáo review](Code_Review_Report_2026-10-08.md).
-
-**Kết quả (xác nhận bằng đọc mã, chưa tái hiện bằng test):** 17 finding. P1: F-01 bảng lương bỏ sót nhân viên Thử việc/Nghỉ dài hạn (cần chủ dự án quyết định). P2: F-02 quyền quản lý công văn dùng nhầm `approve_leave`; F-03 phạm vi xem công văn đến rộng hơn ma trận; F-04 thiếu tách người đề nghị/người duyệt; F-05 xuất Excel nhân sự kèm CCCD cho Kế toán; F-06 tạo dòng lương cơ bản 0 im lặng; F-07 tạo đơn nghỉ phép không chống gửi đúp/đồng thời. P3: F-08…F-17 (menu thiếu đường vào, hai quyền báo cáo song song, sinh mã nhân viên, lifecycle không khóa dòng, upload chỉ kiểm tra đuôi, `private_file` hiệu năng, `CompanyMedia`, gia hạn hợp đồng, xuất công văn, nghỉ phép nhỏ).
-
-**Kiểm tra chưa thực hiện và lý do:** môi trường review không có Django, không có mạng → chưa chạy `manage.py check`, `makemigrations --check`, test SQLite/SQL Server, `pip-audit`, `npm audit`, CI. Không dùng số test cũ làm kết quả. Không có bằng chứng Bugbot/Sixth đã chạy. Chưa rà sâu: `document/hcns/*`, `activity/*` ngoài guard, `m365/*`, `notification/*`, `planning`, `kpi`, `task`, model `asset`/`recruitment`, công thức `payroll/models.py`, `attendance/services.py`, migrations, `ops/*`, `src/frontend`, template ngoài `base.html`.
-
-**Nhánh/commit:** chưa có commit/push cho đợt này; các tệp mới: `docs/Code_Review_Report_2026-10-08.md`, `docs/Yeu_Cau_Codex_Sua_Review_2026-10-08.md` và mục nhật ký này.
-
-**Việc còn mở / chủ dự án cần làm:** (1) chốt chính sách cho F-01, F-03, F-04, F-05 (điền vào mục "Nhóm B" của yêu cầu Codex); (2) giao `docs/Yeu_Cau_Codex_Sua_Review_2026-10-08.md` cho Codex, nhóm A có thể chạy ngay; (3) đặt hai tệp mới và mục nhật ký này vào `D:\QLHCNS\docs`, chạy `git status`/`git diff --check` rồi commit theo ý chủ dự án; (4) lên lịch review tiếp phần "chưa rà sâu" và chạy đủ bộ kiểm tra trên Windows (SQLite + SQL Server).
-
-## 2026-10-08 — Sửa Nhóm A của review mã nguồn
-
-**Mục tiêu/phạm vi:** đọc `docs/Yeu_Cau_Codex_Sua_Review_2026-10-08.md` và đối chiếu từng finding với mã hiện tại trước khi sửa. Đầu đợt xác nhận nhánh `main`, working tree có ba thay đổi tài liệu của lượt review ngay trước (`docs/PROJECT_WORK_LOG.md` và hai tệp review/yêu cầu), local khớp `origin/main` (`0 0`); giữ nguyên và đưa các tài liệu cùng phạm vi vào đợt này. Cả bảy finding F-02, F-06, F-07, F-10, F-11, F-15, F-16 đều tái hiện đúng từ mã. Lần chạy test hồi quy đầu trên mã cũ cho 7 failure đúng finding và 1 error do fixture F-07 dùng sai tên trường; đã sửa fixture thành `allocated_days` trước khi chốt bộ test. Không sửa Nhóm B/C, không migration, không ghi dữ liệu nghiệp vụ thật.
-
-**Đã sửa:** F-02 thống nhất quyền quản lý công văn bằng `manage_office` cho danh sách/cập nhật/tạo; không giữ ngoại lệ `is_staff` vì tài liệu quyền hiện hành quy định `is_staff` chỉ dành cho Django Admin, không phải quyền nghiệp vụ. F-06 chỉ tạo dòng lương cho nhân viên có `EmployeeSalary` hiệu lực tại đầu kỳ, hiển thị rõ danh sách thiếu lương và không cho khóa kỳ còn dòng lương cơ bản bằng 0. F-07 đặt kiểm tra trùng ngày/quỹ phép và lưu đơn trong `atomic()` với khóa dòng `Employee`. F-10 thử lại tối đa ba lần khi mã tự sinh dạng `VH0001` va chạm unique, giữ nguyên định dạng. F-11 khóa case rồi item trong một transaction, kiểm tra lại trạng thái trước cập nhật và chỉ đóng case khi không còn item Pending. F-15 chỉ gia hạn hợp đồng `Active` mới nhất và báo rõ khi không có. F-16 kiểm tra loại công văn theo choices, mặc định `Incoming`, đặt tên `noi-bo` cho `InternalDirective`. Điều chỉnh fixture lương trong hai bộ test cũ để phản ánh quy tắc mới: nhân viên phải có mức lương hiệu lực mới được sinh bảng lương.
-
-**Test hồi quy mới:** `src/apps/portal/tests_review_20261008.py` có 10 test: ma trận sáu vai trò cho F-02; generate/lock lương F-06; gửi trùng tuần tự và đồng thời F-07; va chạm mã tuần tự và đồng thời F-10; khóa/idempotency lifecycle F-11; hợp đồng đã chấm dứt F-15; validate/tên tệp F-16. Hai test đồng thời chỉ chạy trên SQL Server thật qua database tạm của runner; SQLite bỏ qua đúng điều kiện backend. Bộ mục tiêu sau sửa đạt 10/10 trên SQL Server và 8/8 + 2 skipped trên SQLite. Bộ liên quan `apps.portal apps.lifecycle apps.document.tests_export_names` đạt 125/125, 1 skipped trên SQLite.
-
-**Kiểm tra bắt buộc trên mã cuối:** `git diff --check` exit 0; `venv\Scripts\python.exe -m pip check` exit 0, không có dependency hỏng; `manage.py check` với `APP_ENV=test`, `SECRET_KEY` tạm và SQLite tạm exit 0; `manage.py makemigrations --check --dry-run` exit 0, `No changes detected`. `venv\Scripts\python.exe ops\run_tests.py --backend sqlite`: 396 test, 390 đạt và 6 skipped theo điều kiện, exit 0. `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver`: 396/396 đạt, exit 0; runner tạo/xóa database tạm `test_ihrms_364c02a7461742e1850b7e759f7ba762`. Cả hai backend báo ba kịch bản HTTP PASS. Có cảnh báo timezone từ fixture đặt xe cũ, không làm test thất bại và không thuộc Nhóm A.
-
-**Nhánh/commit và việc còn mở:** làm trên `main`; commit được tạo sau khi hoàn tất mục nhật ký này, không push/deploy theo yêu cầu. Chủ dự án cần quyết định Nhóm B trước khi làm tiếp: F-01 trạng thái `Probation`/`OnLeave` trong lương và các danh sách; F-03 phạm vi xem công văn đến; F-04 chính sách tự duyệt; F-05 quyền xuất/che CCCD; sau đó mới chốt F-08/F-09 về quyền báo cáo và nhóm menu. Chưa chạy UAT Edge/IIS/CI hoặc kiểm thử với dữ liệu thật; kết quả hiện tại là test tự động trên DB/media cách ly. Chủ dự án kiểm tra commit rồi tự quyết định thời điểm push.
-
-## 2026-10-08 — Thêm nút quay nhanh từ trang quản trị về giao diện sử dụng
-
-**Mục tiêu/phạm vi:** theo ảnh và yêu cầu của chủ dự án, làm đường quay về portal dễ nhìn và thao tác nhanh trên thanh điều hướng Django Admin/Jazzmin. Xác nhận đang ở `main`, working tree sạch trước sửa và local đang đi trước `origin/main` một commit của đợt sửa Nhóm A; không sửa hoặc push commit đó trong lượt này.
-
-**Đã làm:** đổi nhãn liên kết top menu hiện có thành “Về giao diện sử dụng”, giữ đích nội bộ `/portal/` và không mở cửa sổ mới. Thêm `src/static/css/admin.css` qua cấu hình `custom_css` của Jazzmin để liên kết hiển thị như nút xanh nổi bật có mũi tên quay lại, trạng thái hover/focus rõ và kích thước gọn trên màn hình nhỏ. CSS chỉ tác động liên kết `/portal/` trong nhóm menu trái của navbar quản trị, không đổi quyền truy cập hay luồng đăng nhập. Thêm `src/apps/portal/tests_admin_navigation.py` kiểm tra trang admin thực sự render đúng nhãn/URL và nạp stylesheet tùy chỉnh.
-
-**Kiểm tra/kết quả:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.portal.tests_admin_navigation`: 2/2 đạt, exit 0, DB/media thử cô lập. `manage.py check` với `APP_ENV=test`, `SECRET_KEY` tạm và SQLite tạm: 0 lỗi. `manage.py findstatic css/admin.css --verbosity 0` tìm thấy đúng `D:\QLHCNS\src\static\css\admin.css`. `git diff --check` đạt. Chưa chạy full suite, SQL Server, CI hoặc UAT trình duyệt vì thay đổi chỉ là cấu hình/template output và CSS quản trị; khi triển khai cần chạy `collectstatic` theo quy trình hiện hành và tải lại trang admin không dùng cache.
-
-**Nhánh/commit:** thực hiện trên `main`; thay đổi được đưa vào cùng commit bàn giao với đợt tách Tuyển dụng/phân quyền Thang bảng lương sau khi chủ dự án yêu cầu commit và push.
-
-## 2026-10-08 — Tách mảng Tuyển dụng và giới hạn biểu mẫu Thang bảng lương
-
-**Mục tiêu/phạm vi:** theo yêu cầu chủ dự án, tách Tuyển dụng khỏi menu Nhân sự, bổ sung trang quy trình và lối vào biểu mẫu riêng; chuyển Thang bảng lương sang nhóm Kế toán và chỉ cho Kế toán/Ban giám đốc xem, xuất. Trước sửa xác nhận nhánh `main`, local đi trước `origin/main` một commit và working tree có thay đổi của nút quay về giao diện sử dụng; toàn bộ thay đổi có sẵn được giữ nguyên. Không đổi schema hay dữ liệu nghiệp vụ.
-
-**Đã làm:** thêm nhóm menu cấp đầu **Tuyển dụng** gồm Quy trình tuyển dụng, Đề xuất tuyển dụng, Ứng viên và Biểu mẫu tuyển dụng; gỡ hai lối vào tuyển dụng khỏi menu Nhân sự. Trang quy trình mới mô tả sáu bước mà hệ thống hiện hỗ trợ: đề xuất nhu cầu, duyệt, tiếp nhận ứng viên, phỏng vấn/đánh giá, offer và chuyển thành nhân viên. Quyền trang giữ nguyên phạm vi nghiệp vụ hiện có: HR Manager, HR Officer và Trưởng phòng; mỗi nút thao tác chỉ hiển thị khi có quyền tương ứng.
-
-**Phân quyền Thang bảng lương:** khai báo quyền riêng `use_salary_scale_form` cho `FINANCE_OFFICER` và `DIRECTOR`; superuser tiếp tục có toàn quyền theo cơ chế chung. Menu đổi nhãn thành **Kế toán**: Kế toán thấy các chức năng lương hiện có và Thang bảng lương; Ban giám đốc chỉ thấy biểu mẫu này, không được mở các trang vận hành payroll. HR Manager, HR Officer, System Admin, Trưởng phòng và Nhân viên không thấy mẫu trong menu/catalog và bị chặn 403 khi mở URL trực tiếp. Cập nhật ma trận RBAC và hướng dẫn biểu mẫu cùng đợt.
-
-**Kiểm tra/kết quả:** bộ test hồi quy mới `apps.portal.tests_recruitment_accounting_navigation` ban đầu thất bại trên mã cũ do chưa có menu/route Tuyển dụng và HR vẫn mở được Thang bảng lương; sau sửa đạt 3/3. Nhóm biểu mẫu + phân quyền đạt 19/19 SQLite; nhóm tuyển dụng/phân quyền/admin đạt 9/9 SQLite; nhóm biểu mẫu/tuyển dụng/phân quyền đạt 23/23 trên SQL Server tạm `test_ihrms_9818325650144b1b9bf06159520c7990`. Full suite SQLite lần đầu phát hiện một test cũ còn dùng HR để xuất `salary-scale`; đã chuyển riêng ca này sang fixture Kế toán, test hẹp đạt 6/6 và full suite cuối đạt **401 test, 395 đạt, 6 skipped**, exit 0. `manage.py check`, `makemigrations --check --dry-run`, `pip check` và `git diff --check` đều đạt; không có migration.
-
-**Còn mở/bàn giao:** chưa UAT trên trình duyệt với tài khoản nghiệp vụ thật, chưa chạy full suite SQL Server/CI và không deploy. Chủ dự án nên tải lại portal, đăng nhập lần lượt bằng tài khoản HR, Trưởng phòng, Kế toán và Ban giám đốc để xác nhận nhãn/menu và nội dung quy trình phù hợp cách gọi nội bộ. Đợt này được commit/push trên `main` sau khi chủ dự án yêu cầu; SHA và trạng thái remote được xác nhận trong bàn giao cuối.
-
-## 2026-10-09 — Làm lại dashboard Báo cáo và xuất Excel/Word/PowerPoint
-
-**Mục tiêu/phạm vi:** làm lại trang Báo cáo thành dashboard điều hành tổng hợp theo khoảng ngày, bao phủ các mảng đang có trên hệ thống và bổ sung ba định dạng xuất. Đầu đợt xác nhận nhánh `main`, working tree chỉ có thư mục `outputs/` không thuộc phạm vi và local khớp `origin/main` (`0 0`); giữ nguyên thư mục này. Không thay đổi schema, quyền nghiệp vụ hiện hành hoặc dữ liệu thật.
-
-**Đã làm:** thay trang `portal/report_hub.html` bằng dashboard responsive có bộ lọc ngày, sáu chỉ số tổng quan, biểu đồ biến động nhân sự theo tháng, phễu tuyển dụng và các nhóm Nhân sự, Tuyển dụng, Chấm công/nghỉ phép, Hành chính, Tài sản/mua sắm, Công việc/KPI, Hợp đồng/lương, Hồ sơ/quyết định nhân sự, Kế hoạch/ngân sách/đào tạo/sự kiện, Dự án/hoạt động. Dữ liệu được tổng hợp tập trung trong `portal/reporting_dashboard.py` và dùng chung cho HTML cùng ba định dạng xuất; không đưa định danh cá nhân, CCCD, liên hệ hoặc số tiền lương vào báo cáo. Thêm endpoint tải Excel `.xlsx`, Word `.docx` và slide `.pptx`; giữ cùng quyền xem báo cáo hiện có (HR Manager, Ban giám đốc và superuser), trả 403 khi không có quyền, kiểm tra khoảng ngày tối đa 1095 ngày và ghi `SecurityEvent` khi xuất thành công. Excel có ba sheet và hai biểu đồ gốc; Word dùng trang ngang và bảng theo nhóm; PowerPoint 16:9 có 12 slide, hai biểu đồ gốc và các bảng tóm tắt. Bổ sung `python-docx==1.2.0`, `python-pptx==1.0.2` và test hồi quy `tests_report_dashboard.py`.
-
-**Kiểm tra/kết quả:** `venv\Scripts\python.exe src\manage.py check` đạt, 0 lỗi. `venv\Scripts\python.exe src\manage.py test apps.portal.tests_report_dashboard --verbosity 1` đạt **5/5** sau thay đổi cuối; kiểm tra render, quyền, tham số, ba MIME/tệp có thể mở và audit xuất. Cùng 5 test đạt trên SQL Server dùng database tạm `test_ihrms_4e00dba9b4b64fddabc14548c9931a9d`, runner đã xóa database sau kiểm tra. `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.portal.tests_report_dashboard apps.portal.tests_review_hardening apps.portal.tests_mobile` đạt **35 test, 1 skipped**. Full `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.portal` đạt **120 test, 3 skipped**, exit 0. `makemigrations --check --dry-run` báo `No changes detected`; `pip check` và `git diff --check` đạt. Mẫu tổng hợp chỉ đọc được tạo trong thư mục tạm: Excel mở bằng openpyxl có 3 sheet/2 chart, Word mở bằng python-docx có 10 bảng, PowerPoint mở bằng python-pptx có 12 slide/2 chart; kiểm tra hình học không có shape vượt khung slide.
-
-**Phần chưa kiểm thử/bàn giao:** chưa render trực quan Word/PowerPoint vì bộ công cụ tài liệu không tìm thấy LibreOffice đóng gói; chưa UAT trang Báo cáo trong Edge đã đăng nhập, chưa chạy full suite SQL Server/CI và chưa kiểm tra số liệu với dữ liệu nghiệp vụ đại diện. Chủ dự án cần cài dependency từ `requirements.txt`, tải lại ứng dụng, đăng nhập tài khoản HR Manager/Ban giám đốc để đối chiếu từng chỉ số và mở ba tệp xuất bằng Microsoft Office. Không commit/push/deploy trong đợt này vì chưa được yêu cầu.
-
-## 2026-10-09 — Bugbot giao diện, đồng bộ kiểu chữ/màu và dọn tệp tạm
-
-**Mục tiêu/phạm vi:** theo yêu cầu rà lại bố cục, font, màu, giao diện toàn dự án và sửa mã; chủ dự án chọn Bugbot. Đầu đợt xác nhận `main`, local khớp `origin/main` (`0 0`); giữ nguyên thay đổi dashboard/export chưa commit và thư mục `outputs/` từ lượt trước. Bugbot chạy review diff hiện tại, phát hiện bốn finding: mất link Ngân sách (P1), biểu đồ thiếu số liệu cho trình đọc màn hình (P2), vùng cuộn mobile không nhận focus (P2), nhãn 10–12px (P3). Phần rà thêm đọc `base.html`, CSS chung, các template công văn/phiếu lương, tiêu chuẩn frontend và đặc tả UI; chưa tuyên bố đã UAT tất cả màn hình.
-
-**Bản sao trước sửa:** tạo `D:\QLHCNS-Backups\QLHCNS-before-ui-cleanup-20261009-090318.zip` (15.229.192 byte, 1.299 mục), SHA-256 `97F11BA577D0CD209AD2DB99DC0BC34D7ED75D58F6C2108D8C4A8DEB3A18A041`. Danh sách ZIP đã được kiểm tra không có `.env`, database, media, `venv`, `node_modules` hoặc `outputs`; bản sao nằm ngoài repository. Không chép nội dung bí mật từ cấu hình cục bộ vào tài liệu hoặc Git.
-
-**Đã sửa:** khôi phục link riêng “Xem ngân sách” và đổi link còn lại thành “Xem định biên”; đưa CSS Báo cáo khỏi template sang `src/static/css/report_dashboard.css`, bổ sung token màu/font dùng chung trong `ihrms.css` và `extra_css` trong layout gốc. Biểu đồ tháng có vùng cuộn focusable và bảng số liệu truy cập bằng bàn phím; phễu tuyển dụng là danh sách có nhãn/số đọc được. Tăng cỡ chữ của nhãn quan trọng ở Dashboard, header, công văn và phiếu lương; bỏ hiệu ứng nhấp nháy của mức Hỏa tốc. Thêm regression HTML cho link và khả năng truy cập. Tạo [UI_DESIGN_SYSTEM.md](UI_DESIGN_SYSTEM.md), liên kết từ README và gắn chú thích hiện trạng vào tiêu chuẩn frontend/đặc tả UI; sửa tài liệu Tailwind từ 3 thành đúng 4.3.0 đang ghim. Build lại `tailwind.css`.
-
-**Dọn tệp:** xác nhận `.tmp-ihrms-dashboard` chỉ chứa một junction `node_modules` trỏ tới cache công cụ ngoài dự án và không có tham chiếu trong mã. Lệnh xóa junction bị chính sách máy từ chối; đã chuyển nguyên thư mục sang `%TEMP%\ihrms-dashboard-junction-20261009`, nên workspace sạch mục tạm này và có thể khôi phục. Không xóa `outputs/` vì đó là sản phẩm chưa theo dõi từ lượt trước và chưa có bằng chứng là tệp thừa.
-
-**Kiểm tra/kết quả:** `venv\Scripts\python.exe src\manage.py test apps.portal.tests_report_dashboard --verbosity 1` đạt 5/5 trên SQLite; cùng 5 test đạt với `ops\run_tests.py --backend sqlserver` trên DB tạm `test_ihrms_f3f363b2644846909c05cf100cd7d9c0`, runner đã xóa DB tạm. `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.portal` đạt 120 test, 3 skipped, exit 0. `manage.py check` đạt 0 lỗi; `makemigrations --check --dry-run` báo không đổi schema; `findstatic css/report_dashboard.css` tìm thấy asset; `npm run build:css` đạt với Tailwind 4.3.0; `git diff --check` đạt. Phép thử parse CSS tùy chọn qua Node không chạy được vì `postcss` không được cài làm dependency độc lập; build Tailwind vẫn thành công. Chưa có UAT trình duyệt xác thực ở 375/768/1440px, kiểm tra zoom 200%, so khớp số liệu thật hoặc full suite SQL Server sau đợt UI này. Chủ dự án cần tải lại portal, mở Báo cáo và các màn hình công văn/phiếu lương trên các cỡ màn hình, thử bàn phím, rồi đối chiếu xuất Office. Chưa commit/push/deploy trong đợt này.
-
-## 2026-10-09 — Tách thư mục SharePoint cho Công văn đến và Công văn đi
-
-**Mục tiêu/phạm vi:** người dùng báo cả hai loại công văn đều vào `CongVan`. Đối chiếu mã xác nhận `OfficialDispatch.attachment` dùng chung `upload_to_dispatches` và `ConfiguredStorage("dispatches")`, mặc dù settings đã có `incoming_docs=CongVanDen` và `outgoing_docs=CongVanDi`. Làm trên `main`, local khớp `origin/main` (`0 0`); giữ nguyên các thay đổi dashboard/UI và `outputs/` chưa commit. Không đổi schema hoặc di chuyển tệp nghiệp vụ thật.
-
-**Đã sửa:** `upload_to_dispatches` chọn tiền tố `incoming_docs` hoặc `outgoing_docs` theo `dispatch_type`; `ConfiguredStorage` định tuyến hai tiền tố qua cấu hình thư mục tương ứng trong cùng thư viện SharePoint. Văn bản nội bộ tiếp tục vào `CongVan`. Đường dẫn đã lưu có tiền tố `CongVan`, `CongVanDen`, `CongVanDi` được nhận dạng idempotent để mở lại đúng nơi; tệp cũ ở `CongVan` không tự chuyển và không bị đổi tên DB. Giữ nguyên hàm `upload_to_dispatches` và adapter storage để migration hiện có không drift. Bổ sung kiểm thử đường dẫn/saving/mở tệp cũ, cập nhật `.env.example`, chú thích settings, tài liệu sử dụng và storage docstring.
-
-**Kiểm tra/kết quả:** test mới thất bại đúng hai nhánh Incoming/Outgoing trên mã cũ, sau sửa đạt. `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.m365.tests apps.document.tests apps.portal.tests_review_hardening`: 37 test, 1 skipped, exit 0. `venv\Scripts\python.exe ops\run_tests.py --backend sqlserver apps.m365.tests apps.document.tests`: 11 test, exit 0; DB thử `test_ihrms_dc16d7cc87bb4c4b80b6f32a46ab7cea` đã được runner xóa. `manage.py check` đạt 0 lỗi, `makemigrations --check --dry-run` báo `No changes detected`, `git diff --check` đạt. Test SharePoint dùng mock, không truy cập site/tệp thật.
-
-**Còn mở/hành động chủ dự án:** khởi động lại ứng dụng sau cập nhật mã, tạo một Công văn đến và một Công văn đi với tệp thử không nhạy cảm, kiểm tra chúng nằm đúng `CongVanDen`/`CongVanDi` và mở lại qua IHRMS; mở thêm một công văn cũ ở `CongVan`. Nếu có cấu hình `M365_FOLDER_INCOMING`/`M365_FOLDER_OUTGOING` tùy chỉnh, kiểm tra tên thư mục thực tế theo cấu hình đó. Chưa commit/push/deploy, chưa thực hiện smoke test SharePoint thật.
-
-**Bàn giao Git sau yêu cầu commit/push:** 25 tệp mã, CSS, test và tài liệu của ba mục ngày 09/10 được commit trên `main` tại `442b8482e180cc2e0d655d65d0319e4a4adb0f8d` và push thành công; `git ls-remote origin refs/heads/main` khớp SHA này ngay sau push. `outputs/` vẫn untracked và không được stage; `.env`, backup, DB/media và secret không nằm trong commit. Lệnh `gh run list --branch main --commit 442b8482e180cc2e0d655d65d0319e4a4adb0f8d --limit 5` trả HTTP 401 Bad credentials, nên chưa xác nhận ba job Actions cho commit này. Chủ dự án cần đăng nhập lại GitHub CLI bằng tài khoản có quyền hoặc mở Actions của repository và kiểm tra đúng SHA cùng trạng thái `backend`, `frontend`, `backup-command-tests`. Mục nhật ký bàn giao này được commit/push tiếp sau commit mã; SHA cuối được báo trong phản hồi.
-
-## 2026-10-10 — Căn menu/KPI và áp dụng DESIGN.md toàn giao diện
-
-**Mục tiêu/phạm vi:** sửa menu lệch khung, căn giữa giá trị toàn bộ thẻ KPI hiện có, mở rộng theme sang toàn portal và quản trị. Xác nhận `main`, fetch origin và `HEAD...origin/main` là `0 0` lúc bắt đầu; bảo toàn các thay đổi UI/UAT/bốn finding chưa commit. Không thay đổi nghiệp vụ, phân quyền, schema, dữ liệu thật hay `.env`.
-
-**Đã làm:** menu trước đó rộng 80rem nhưng header/main mặc định 64rem; nay ba vùng dùng chung token chiều rộng, gồm ngoại lệ trang sơ đồ tổ chức rộng. Tách `design_tokens.css` dùng chung portal/Jazzmin; theme Tailwind ánh xạ blue/indigo và gray/slate sang palette DESIGN.md, giữ màu thành công/cảnh báo/lỗi. Font system, weight nhấn mạnh 600, card raised nhẹ, input inset, focus rõ và reduced-motion. Áp dụng adapter cho Jazzmin, HCNS và sơ đồ tổ chức; bảng giữ phẳng, bản giấy/Word/Excel giữ bố cục nghiệp vụ. KPI Trang chủ, Báo cáo, tiến độ dự án, số dư phép và trung tâm báo cáo dùng căn giữa/tabular-nums; không thay đổi căn cột số trong bảng. Đổi phiên bản URL CSS và cache static PWA để tránh CSS cũ; vẫn không cache HTML/dữ liệu nghiệp vụ. Login có label gắn với input/autocomplete. Cập nhật `docs/UI_DESIGN_SYSTEM.md`, test phiên bản CSS/menu và thêm regression token/menu/KPI.
-
-**Kiểm tra đã xác nhận:** `npm run build:css`, `venv\Scripts\python.exe src\manage.py check` đạt. Edge trên DB SQLite preview riêng, dữ liệu giả lập, SMTP locmem và M365 tắt: header/nav/main cùng left 436.5px và width 1024px ở viewport desktop; mọi số KPI Trang chủ/Báo cáo/tiến độ đã kiểm tra có computed text-align center. Xem thêm HCNS và Jazzmin; sửa chữ người dùng/sidebar trắng trên nền tím để tránh chìm. Mobile 390px và tablet 768px không tràn ngang toàn trang (scrollWidth lần lượt 375/753px), menu dùng được và đã khôi phục viewport. Screenshot minh chứng lưu ngoài repo trong thư mục preview tạm, không chứa dữ liệu thật. Test mới bắt class KPI gắn nhầm thẻ cha, đã sửa và test mobile đạt 6/6 SQLite. Các lượt full ban đầu bắt assertion phiên bản CSS/nhãn checklist cũ; đã cập nhật theo UI mới. Full suite cuối bằng `venv\Scripts\python.exe ops\run_tests.py --backend sqlite` đạt 416 test, 7 skipped theo backend, exit 0; cùng lệnh với `--backend sqlserver` đạt 416/416, exit 0. DB test tạm được runner xóa; cả hai backend báo ba kịch bản HTTP PASS. Các lượt lỗi ban đầu không được coi là đạt. `node --check src/static/js/service-worker.js` và `git diff --check` đạt (Git chỉ cảnh báo LF/CRLF). Khung rộng org chart cũng xác nhận cả ba vùng cùng width 1536px. Tính tương phản năm cặp chữ/nền chính đạt 4.94–13.89:1; ô tìm kiếm có outline tím 2px/offset 2px. Bản giấy HCNS xác nhận Times New Roman, chữ đen; nút primary chữ trắng/nền #4c1d95.
-
-**Bàn giao/còn mở:** chưa commit/push/deploy. Theme đã áp dụng qua nguồn CSS chung cho toàn giao diện, nhưng chưa UAT trực quan từng trang/11 vai trò, zoom 200%, tương tác quản trị toàn bộ hay tích hợp Office/SharePoint thật. Chủ dự án khởi động lại ứng dụng để nạp template mới; khi triển khai chạy `venv\Scripts\python.exe src\manage.py collectstatic --noinput`, mở lại portal và Ctrl+F5 để nhận CSS/cache mới. Không cần xóa cookie/dữ liệu nghiệp vụ. Tiếp tục UAT theo kế hoạch trên bản sao cô lập; các điều kiện GO/NO-GO và migration từ lượt trước không thay đổi.
-
-## 2026-10-10 — Chế độ sáng/tối và bàn giao các thay đổi đang chờ
-
-**Mục tiêu/phạm vi:** thêm hai chế độ sáng/tối và commit/push theo yêu cầu chủ dự án. Xác nhận nhánh `main`, fetch origin và so sánh `HEAD...origin/main` là `0 0`; giữ nguyên, đưa vào bàn giao các thay đổi giao diện DESIGN.md, menu/KPI và bốn sửa lỗi UAT từ các mục trước. Không sửa `.env`, không reset dữ liệu, không áp dụng migration vào DB nghiệp vụ.
-
-**Đã làm:** thêm `src/static/js/theme.js`, `src/static/css/theme.css`, override `src/templates/admin/base_site.html`; nút chuyển ở header portal/đăng nhập và navbar quản trị, mặc định sáng, chỉ lưu lựa chọn giao diện trong localStorage, đồng bộ tab, xử lý storage bị chặn. CSS tối dùng bảng màu tím, tương phản chữ/KPI và màu trạng thái sáng hơn; adapter Bootstrap cho quản trị, không đổi định dạng xuất Office và giấy HCNS. Theme được đọc trước stylesheet để giảm nháy nền, cache service worker tăng phiên bản và chỉ cache static. Thêm unit test JavaScript và regression Django, cập nhật `docs/UI_DESIGN_SYSTEM.md`.
-
-**Kiểm tra:** `npm run build:css` đạt; `node --test src/frontend/theme.test.cjs` đạt 3/3 (lưu lựa chọn, storage bị chặn, dữ liệu không hợp lệ/đồng bộ tab); `ops/run_tests.py --backend sqlite apps.portal.tests_mobile` đạt 7/7. `node --check` cho theme/service worker và `git diff --check` đạt. Edge trên SQLite preview riêng, dữ liệu giả, M365 tắt/email locmem: xác nhận Trang chủ, Báo cáo và quản trị chuyển sáng/tối, tải lại vẫn giữ lựa chọn; mobile 390px không tràn ngang, khôi phục viewport sau kiểm tra. Đã sửa các nền Bootstrap còn trắng khi rà trực quan. Không coi các lượt full suite bị mất phiên công cụ lúc chuyển lượt chat là kết quả đạt; chạy lại có log ngoài repository để xác minh trước bàn giao.
-
-**Kiểm tra cuối trước commit:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite` chạy đủ 417 test, đạt với 7 skipped theo backend, exit 0. Cùng lệnh với `--backend sqlserver` đạt 417/417, exit 0, DB tạm `test_ihrms_6ed83684777c47fa8329c6365b20000c` được runner xóa. Cả hai backend báo ba kịch bản HTTP PASS. `manage.py check`, `makemigrations --check --dry-run` trên SQLite preview riêng và `pip check` đạt; không có migration phát sinh ngoài `procurement.0002` đã chuẩn bị từ lượt trước.
-
-**Nhánh/commit:** bản mã và tài liệu chờ bàn giao đã commit `d16d280` trên `main` và push thành công lên `origin/main`. Bổ sung dòng xác nhận này bằng commit tài liệu cùng đợt; SHA HEAD/remote cuối được đối chiếu trong phản hồi bàn giao. Các ghi chú “chưa commit/push” ở mục trước là trạng thái lịch sử lúc kết thúc từng lượt, nay được thay thế bởi bàn giao này.
-
-**Bàn giao/còn mở:** kiểm tra danh sách tệp và mẫu bí mật không phát hiện `.env`, DB, CSV tài khoản, backup hoặc khóa riêng trong phạm vi đưa vào Git. Chưa deploy hoặc xác nhận CI/UAT đủ 11 vai trò/từng màn hình/Office/SharePoint thật. Migration `procurement.0002` vẫn chưa áp dụng vào DB `qlhcns`; DBA thực hiện trên bản sao UAT sau backup/restore và kiểm tra dữ liệu như kế hoạch. Khi triển khai, khởi động lại ứng dụng, chạy `venv\Scripts\python.exe src\manage.py collectstatic --noinput`, Ctrl+F5 để nhận CSS mới; dùng nút mặt trăng/mặt trời trên header để chọn mode.
-
-## 2026-10-10 — Gom menu Nhân sự và thử UI theo DESIGN.md
-
-**Mục tiêu/phạm vi:** gom Cần duyệt và Quyết định nhân sự vào Nhân sự; thử thiết kế theo `DESIGN.md` cho khung portal, Trang chủ và dashboard Báo cáo. Làm trên `main`, đã fetch origin và xác nhận `HEAD...origin/main` là `0 0`; bảo toàn các thay đổi bốn finding/UAT đang có. Không sửa dữ liệu thật, schema, quyền backend hay `.env`.
-
-**Đã làm:** `src/templates/base.html` bỏ hai mục điều hướng cấp một, gom Nhân sự thành “Hồ sơ & quá trình” và “Cần duyệt & xử lý”. Điều kiện hiển thị menu bao gồm người chỉ có quyền duyệt; từng link vẫn theo quyền cũ, Tuyển dụng và Kế toán giữ riêng. `src/static/css/ihrms.css`, `home_dashboard.css`, `report_dashboard.css` dùng bảng màu tím, system font, card raised nhẹ, form inset, focus và reduced-motion; giữ màu trạng thái và hàng KPI cân đối. Nút chính dùng primaryStrong thay vì primary nhạt để chữ trắng rõ. Build lại `tailwind.css`; cập nhật `docs/UI_DESIGN_SYSTEM.md` để đồng nhất với DESIGN.md và nêu rõ phạm vi bản thử. Thêm regression role/menu trong `tests_recruitment_accounting_navigation.py`.
-
-**Kiểm tra:** `venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.portal.tests_recruitment_accounting_navigation apps.portal.tests_report_dashboard apps.portal.tests_mobile` đạt 14/14, exit 0. Cùng bộ test với `--backend sqlserver` đạt 14/14, exit 0; DB SQL Server test tạm đã được runner xóa. `npm run build:css` đạt; `git diff --check` không có lỗi whitespace (chỉ cảnh báo chuyển LF/CRLF). Edge đăng nhập tài khoản HR_MANAGER giả lập trên SQLite preview riêng, SMTP locmem và M365 tắt: đã xem Trang chủ, submenu Nhân sự và Báo cáo trên desktop; kiểm tra mobile viewport 390px, menu nằm trong vùng nội dung, không tràn ngang (scrollWidth 375px), Escape đóng submenu và trả focus về nút Nhân sự. Khôi phục viewport sau kiểm tra. Không dùng session/dữ liệu nghiệp vụ thật.
-
-**Còn mở/bàn giao:** đây là bản UI thử trong mã, chưa chuyển đổi toàn bộ form nghiệp vụ, org chart, Jazzmin hay bản in; chưa UAT trực quan đủ 11 vai trò, zoom 200%, toàn bộ breakpoint và Office/SharePoint thật. Chưa commit/push/deploy. Chủ dự án mở Trang chủ/Báo cáo, hard refresh (Ctrl+F5) và đánh giá bảng màu/bóng nổi trước khi nhân rộng sang các màn hình còn lại. Bốn finding và migration từ mục bên dưới vẫn giữ nguyên trạng thái bàn giao riêng.
-
-## 2026-10-09–10 — Khắc phục bốn finding trước UAT máy chủ
-
-**Mục tiêu/phạm vi:** theo yêu cầu xử lý bốn vấn đề của lượt review FULL ngay trước: guard cấu hình UAT, an toàn script reset QA, quyết định hồ sơ hoạt động đồng thời, và dữ liệu đề nghị mua sắm. Xác nhận nhánh `main`, local khớp `origin/main` (`0 0`) lúc bắt đầu; giữ nguyên phần sửa sẵn có trong `docs/PROJECT_WORK_LOG.md`, `ops/reset_qa_data.py` và bản kế hoạch UAT chưa theo dõi. Không reset DB, không dùng dữ liệu thật, không sửa `.env`.
-
-**Đã làm:** `APP_ENV=uat` nay bắt buộc tắt DEBUG, ép HTTPS, dùng secret mạnh và hostname cụ thể như production; runner test dùng `APP_ENV=test` vẫn cô lập. Script `ops/reset_qa_data.py` chỉ cho chạy với `APP_ENV=test`, từ chối DB tên chung `qlhcns`, chỉ chấp nhận tên bản sao QA/UAT rõ ràng, tệp `.bak` không rỗng ngoài repo và extended property `IHRMS_DISPOSABLE_QA=YES` trước khi có thể xóa; việc tệp tồn tại **không** chứng minh restore thành công. Quyết định hồ sơ hoạt động được khóa dòng và kiểm tra lại trạng thái trong transaction, thông báo gửi sau khi lưu thành công. Đề nghị mua sắm kiểm tra số dòng, tên, số lượng, đơn giá phía server; model có validator và migration `procurement.0002` thêm check constraint không cho số lượng <=0/đơn giá âm. Cập nhật kế hoạch UAT yêu cầu khai báo `APP_ENV=uat` rõ ràng.
-
-**Kiểm tra đã xác nhận:** test tập trung mua sắm/duyệt đạt 14/14 SQLite và 15/15 SQL Server; test guard UAT đạt 1/1 SQLite; test tranh chấp duyệt SQL Server cùng guard đạt 3/3. Sau migration, test tập trung mua sắm/guard đạt 9/9 trên cả SQLite và SQL Server; sau khi siết `APP_ENV=test`, test guard đạt 2/2 SQLite. Full suite trên mã cuối bằng `ops/run_tests.py` đạt **414/414 SQL Server**, exit 0, trên DB tạm `test_ihrms_9e491a4c290040c289aec784e979204a` đã xóa; **414 SQLite**, 7 skipped theo backend, exit 0. Cả hai backend báo ba kịch bản HTTP PASS. `manage.py check`, `makemigrations --check --dry-run`, `pip check`, `git diff --check` đều đạt; `migrate procurement --plan` chỉ liệt kê `0002`. Truy vấn chỉ đọc trên DB `qlhcns` đếm 0 hạng mục mua sắm có số lượng <=0 hoặc đơn giá âm. Thử `--apply` với DB tên `qlhcns` bị chặn trước mọi ghi. Kiểm tra `check --deploy` trên cấu hình UAT giả lập còn duy nhất cảnh báo HSTS W004 do chủ ý chưa bật HSTS trước khi IT xác nhận HTTPS mọi hostname; đây không phải kiểm tra trên máy chủ thật. Test có cảnh báo timezone từ fixture đặt xe cũ, không làm thất bại.
-
-**Nhánh/commit, việc còn mở và hành động chủ dự án:** chưa commit/push/deploy vì yêu cầu lần này là sửa và kiểm thử; migration `0002` **chưa áp dụng** lên DB `qlhcns`. Trước triển khai UAT, DBA kiểm tra dữ liệu mua sắm không hợp lệ trên DB đích, backup và restore thử, rồi mới chạy migration trên bản sao UAT được duyệt. IT đặt `APP_ENV=uat` cùng TLS/hostname/secret riêng và chạy `check --deploy` trên máy chủ; không copy/chạy script reset QA trên máy chủ UAT. Chưa xác nhận secret M365 cũ được thu hồi, tích hợp thật, CI theo SHA hoặc GO/NO-GO hạ tầng.
+**Còn mở:** Chưa đủ điều kiện go-live/pilot với dữ liệu thật. Cần test SQL Server SIT, `check --deploy` trên cấu hình máy chủ, UAT có biên bản, xác nhận backup/restore và quyền dữ liệu. Với phân hệ NGO, Ban Giám đốc cần phê duyệt mở rộng Charter; Chương trình/MEL/Tài chính/IT chốt RACI, SLA, xung đột lịch, tiền tệ, chứng từ, dữ liệu người tham gia và database SIT trước khi có schema/migration. Chủ dự án làm theo mục “Việc chủ dự án cần điều phối ở Cổng 0” trong roadmap; không gửi dữ liệu thụ hưởng định danh qua chat.

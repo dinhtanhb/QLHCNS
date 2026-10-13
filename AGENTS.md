@@ -25,3 +25,9 @@ Khi được giao review, đọc [hướng dẫn review dự án](docs/Huong_Dan
 3. Chạy kiểm tra phù hợp và ghi chính xác lệnh/kết quả trong nhật ký.
 4. Cập nhật `docs/PROJECT_WORK_LOG.md` cùng đợt thay đổi.
 5. Báo rõ tệp đã đổi, kiểm tra đạt/chưa đạt, commit/push nếu có, và bước tiếp theo cần người dùng làm.
+
+## Kiểm thử luồng nghiệp vụ trên trình duyệt
+
+Theo yêu cầu chủ dự án ngày 13/10/2026, sau mỗi đợt sửa mã phải kiểm thử lại các luồng nghiệp vụ bị ảnh hưởng trên ứng dụng đang chạy trong trình duyệt, không chỉ kiểm tra HTTP hoặc HTML tĩnh. Thao tác tạo/sửa/gửi/duyệt cần kiểm tra thông báo, trang đích, dữ liệu đã lưu và chỉ số Dashboard liên quan theo đặc tả đã duyệt. Với sửa giao diện, kiểm tra cả sáng/tối, màn hình rộng/hẹp, tên/nội dung dài và thao tác bàn phím.
+
+Được tạo dữ liệu giả để kiểm thử; mặc định dùng database/media và tài khoản thử nghiệm tách biệt, không sửa/xóa hồ sơ thật. `ops/run_browser_uat.py` cung cấp các luồng hồi quy Dashboard Đợt 1 và hồ sơ/hợp đồng/nghỉ phép trên DB dùng một lần; bổ sung luồng tương ứng khi sửa phân hệ khác. Ghi lệnh, backend, luồng, kết quả, ảnh/bằng chứng và giới hạn vào cùng mục `docs/PROJECT_WORK_LOG.md`. Nếu kết nối trình duyệt không hoạt động, ghi lỗi cụ thể, tiếp tục phần kiểm tra độc lập an toàn và không tuyên bố đã UAT phiên trình duyệt của người dùng. Chỉ báo hoàn tất sau khi chạy lại các kiểm tra liên quan trên nguồn cuối.

@@ -1,6 +1,7 @@
 from apps.notification.models import Notification
 from apps.activity.models import ActivityProposal
 from apps.security.permissions import get_role_name, has_permission, permission_flags
+from django.conf import settings
 
 
 def user_permissions(request):
@@ -23,6 +24,7 @@ def user_permissions(request):
         if can_approve_proposals else 0
     )
     context.update({
+        "synthetic_demo": getattr(settings, "SYNTHETIC_DEMO", False),
         # Các tên cũ đang dùng trong giao diện, giữ lại để không phải sửa template
         "can_approve": context["can_approve_leave"],
         "is_admin_user": context["can_view_admin_menu"],

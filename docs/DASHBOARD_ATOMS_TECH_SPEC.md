@@ -29,6 +29,14 @@ Có thể duyệt Đợt 1 trước mà chưa bật khối còn thiếu chính s
 
 ## 2. Mục tiêu, nguồn và bằng chứng
 
+### Bổ sung được yêu cầu ngày 13/10/2026: tìm kiếm và demo Atoms
+
+Ô tìm kiếm dùng chung trong header đã được chủ dự án yêu cầu triển khai riêng: GET `portal:global_search`, tìm trang chức năng và nhân viên theo tên/mã/email công việc. Chỉ tìm nhân viên trong scope hiện có (toàn Trung tâm, phòng đang quản lý hoặc chính mình); kiểm quyền trước truy vấn, không tìm lương, định danh nhạy cảm hay nội dung đơn nghỉ. Trang kết quả giới hạn 20 hồ sơ, tối thiểu 2 và tối đa 100 ký tự; không cache kết quả. Đây là phạm vi tìm kiếm hiện tại, chưa tìm toàn văn mọi tài liệu/công việc.
+
+Dashboard tham chiếu bố cục Atoms: 4 KPI có điểm đến cùng scope/cách đếm; 6 màu biểu đồ phân biệt nhóm, thanh thực tế/kế hoạch chung thang đo; donut có ký hiệu, tên, số lượng, tỷ trọng và thanh tỷ trọng. Giữ KPI thử việc thay cho quỹ lương: chính sách tiền, xu hướng tháng và tỷ lệ có mặt vẫn chờ duyệt/nguồn dữ liệu tương ứng. Hợp đồng được đếm theo bản ghi hợp đồng đang hiệu lực, không đổi thành số người để khớp ảnh mẫu.
+
+`ops/dashboard_demo.py` tạo/serve một SQLite riêng ngoài repository, media/log/email cách ly, banner dữ liệu giả và tài khoản nhiều vai trò. Demo có 22 nhân viên, 6 phòng ban, 4 loại/27 hợp đồng gồm các trạng thái và biên hiệu lực. Credentials/secrets/database nằm ngoài Git. Kết quả kiểm thử và cách mở demo được ghi duy nhất trong [nhật ký](PROJECT_WORK_LOG.md).
+
 Dashboard trả lời hiện trạng, việc cần xử lý, phạm vi/kỳ của số liệu và nơi kiểm tra. Mỗi khối có nhãn, giá trị/đơn vị, kỳ, scope, nguồn/cách tính và trạng thái dữ liệu.
 
 Tham chiếu [Atoms](https://r7rc1s.atoms.world/) và tám ảnh `design-system/reference/atoms/`: `01_dashboard.png`, `02_dashboard_lists.png`, `03_dashboard_tables.png`, `04_tuyen_dung_kanban.png`, `05_phong_ban.png`, `06_hop_dong.png`, `07_ho_so_nhan_vien.png`, `08_cham_cong.png`. Đã đọc lại tám ảnh trong lượt sửa. DESIGN tại `C:/Users/dinht/Downloads/atoms/DESIGN.md` là tham chiếu bố cục, không thay quy tắc dự án. Người/logo/số trong ảnh không là dữ liệu IHRMS.
@@ -343,3 +351,11 @@ Duyệt đợt nào chỉ triển khai khối đủ điều kiện đợt đó.
 | Q8 | SUPER_ADMIN không cờ toàn quyền không; HR_OFFICER/DEPT_MANAGER lịch sử nghỉ tới đâu? | has_permission/guard thật, thiếu rõ thì ẩn, không suy role/approve Pending |
 
 Chủ dự án duyệt bảng này và Đợt 1 trước khi giao sửa mã dashboard.
+
+## 14. Bổ sung theo yêu cầu ngày 13/10/2026: giao diện gọn và liên kết KPI
+
+Theo yêu cầu tiếp theo của chủ dự án, bốn KPI nhân sự có đích chỉ đọc `portal:dashboard_people` (`/portal/dashboard/people/`), với `metric=managed|active|approved|probation` và `on_date=YYYY-MM-DD`. Dùng chung scope Employee với Dashboard; managed gồm Active/Probation/OnLeave, active và probation theo trạng thái hiện tại, approved là distinct người có đơn Approved chứa ngày đã chọn. Ba chỉ số trạng thái không được trình bày như dữ liệu lịch sử.
+
+Đích mới dùng quyền đọc hiện có: view_all_employees toàn Trung tâm, DEPT_MANAGER linked trong phòng quản lý; approved thêm view_reports. Tham số không mở rộng scope. Giá trị metric/ngày sai trả 400, không đủ quyền trả 403; tìm tên/mã và phân trang giữ bộ lọc. Chỉ gửi tên/mã/phòng/trạng thái, không lý do/chứng từ nghỉ hoặc lương. Không đổi PERMISSION_MATRIX, quy trình duyệt hoặc điều kiện phải có hợp đồng của Nhân viên & hồ sơ: danh sách chi tiết chỉ số là một đích thống kê riêng, gồm đúng người đã được KPI tính.
+
+Giao diện giữ ngày/phạm vi ở đầu trang; chuyển giải thích công thức vào disclosure Cách tính chỉ số, giữ cách nhận biết 0/thiếu dữ liệu. KPI dùng icon people/briefcase/calendar/person; bảng/biểu đồ dùng icon theo nội dung. Hai cột biểu đồ và các khối dưới cân bằng chiều rộng, KPI giảm khoảng đệm; danh sách dài có vùng cuộn bàn phím, bảng thay thế nằm trong disclosure. Không tạo biểu đồ/trend hoặc mở lại tiền ngoài phạm vi Đợt 1. Nghiệm thu bổ sung: bấm bốn KPI, số/row đích khớp fixture, vai trò không vượt quyền, search/pagination/ngày đúng, sáng/tối và 5 độ rộng; kết quả thực tế ghi duy nhất trong PROJECT_WORK_LOG.md.

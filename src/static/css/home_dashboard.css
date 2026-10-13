@@ -1,5 +1,19 @@
 /* Role-based homepage: semantic tokens; shared phase-4 components. */
 @media screen {
+ .home-dashboard { --chart-1:#087f6b; --chart-2:#45a68f; --chart-3:#d38a1b; --chart-4:#2870b5; --chart-5:#bd4540; --chart-6:#717b84; }
+ [data-theme="dark"] .home-dashboard { --chart-1:#34c5aa; --chart-2:#80d6c1; --chart-3:#edb653; --chart-4:#78b6ef; --chart-5:#f48982; --chart-6:#b6c2cc; }
+ .chart-color-1 { --chart-color:var(--chart-1); } .chart-color-2 { --chart-color:var(--chart-2); } .chart-color-3 { --chart-color:var(--chart-3); } .chart-color-4 { --chart-color:var(--chart-4); } .chart-color-5 { --chart-color:var(--chart-5); } .chart-color-6 { --chart-color:var(--chart-6); }
+ .home-dashboard .dashboard-slice { stroke:var(--chart-color); }
+ .home-dashboard .dashboard-bar--actual { background:var(--chart-color); border-radius:2px; height:12px; }
+ .home-dashboard .dashboard-bar--planned { background:var(--ui-divider); border-color:var(--ui-text-muted); height:6px; }
+ .home-dashboard .dashboard-type-labels { list-style:decimal; padding-left:24px; }
+ .dashboard-type-heading { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; }
+ .dashboard-type-dot { display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--chart-color); margin-right:8px; }
+ .dashboard-type-track { display:block; background:var(--ui-divider); height:6px; margin-top:8px; border-radius:3px; overflow:hidden; }
+ .dashboard-type-track > span { display:block; height:100%; background:var(--chart-color); }
+ @media(min-width:1280px) { .home-dashboard .dashboard-panel-grid:not(.dashboard-work-grid) { grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); align-items:stretch; } }
+}
+@media screen {
  .home-dashboard .dashboard-metric-grid { grid-template-columns:1fr; }
  .dashboard-metric { min-width:0; display:flex; flex-direction:column; gap:var(--ui-space-2); }
  .dashboard-metric .ui-kpi { flex:1; min-height:8.5rem; }
@@ -48,7 +62,7 @@
 .dashboard-explanation ul { padding-left:var(--ui-space-6); }
 .dashboard-explanation p { margin:0; }
 .dashboard-legend { display:flex; flex-wrap:wrap; gap:var(--ui-space-4); font-size:var(--ui-font-size-small); color:var(--ui-text-muted); margin:0; }
-.dashboard-capacity { max-height:20rem; overflow:auto; padding-right:var(--ui-space-2); }
+.dashboard-capacity { max-height:28rem; overflow:auto; padding-right:var(--ui-space-2); }
 .dashboard-distribution { min-height:15rem; }
 .dashboard-bars { background:transparent; padding:0; gap:var(--ui-space-1); }
 .dashboard-bar { height:var(--ui-space-2); }

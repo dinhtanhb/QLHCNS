@@ -1,5 +1,15 @@
 /* App shell only; loaded after page CSS. No print-paper recoloring. */
 @media screen {
+ .ui-demo-banner { text-align:center; padding:4px 12px; background:var(--ui-warning-bg); color:var(--ui-warning-text); font-size:var(--ui-font-size-small); }
+ .portal-app .ui-global-search { display:flex; align-items:center; gap:8px; margin-left:auto; width:clamp(220px,28vw,420px); min-width:0; }
+ .portal-app .ui-global-search input { min-width:0; width:100%; height:44px; background:var(--ui-surface); color:var(--ui-text); border:1px solid var(--ui-border); border-radius:var(--ui-radius-control); padding:8px 12px; }
+ .ui-search-results { list-style:none; padding:0; margin:0; }
+ .ui-search-results li { padding:12px 0; border-bottom:1px solid var(--ui-divider); overflow-wrap:anywhere; }
+ .ui-search-results a { display:inline-flex; align-items:center; min-height:44px; color:var(--ui-link); }
+ .ui-search-results span { display:block; color:var(--ui-text-muted); font-size:var(--ui-font-size-small); }
+ @media(max-width:900px) { .portal-app .ui-topbar-row { flex-wrap:wrap; } .portal-app .ui-global-search { order:3; width:100%; } .portal-app .ui-topbar-actions { margin-left:auto; } }
+}
+@media screen {
     .portal-app {
         font-family:var(--ui-font-family); font-size:var(--ui-font-size-body);
         line-height:var(--ui-line-height-body); background:var(--ui-bg); color:var(--ui-text);

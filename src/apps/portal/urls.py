@@ -12,6 +12,8 @@ from apps.lifecycle import views as lifecycle_views
 app_name = "portal"
 
 urlpatterns = [
+    path("search/", views.global_search, name="global_search"),
+    path("dashboard/people/", views.dashboard_people, name="dashboard_people"),
     path("hcns-forms/", hcns_views.catalog, name="hcns_catalog"),
     path("hcns-forms/<slug:slug>/", hcns_views.draft, name="hcns_draft"),
     path("hr-decisions/", hcns_views.personnel_decision_list, name="personnel_decision_list"),

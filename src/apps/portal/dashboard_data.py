@@ -17,6 +17,7 @@ from apps.security.data_access import managed_departments_for
 from apps.security.permissions import get_role_code, has_permission
 from apps.portal.selectors import approvable_leave_requests
 from apps.common.number_format import vi_number
+from urllib.parse import urlencode
 
 logger = logging.getLogger(__name__)
 LIVE_PARENT = Q(department__is_deleted=False) | Q(department__isnull=True)
@@ -25,6 +26,31 @@ LIVE_CONTRACT_PARENT = (
     (Q(employee__department__is_deleted=False) | Q(employee__department__isnull=True)) &
     Q(contract_type__is_deleted=False)
 )
+
+
+def dashboard_employee_scope(user, employee=None):
+    """Shared status scope for both KPI totals and their read-only destinations."""
+    if has_permission(user, "view_all_employees"):
+        return Employee.objects.filter(LIVE_PARENT), "Toàn Trung tâm"
+    if get_role_code(user) == "DEPT_MANAGER" and employee and not employee.is_deleted:
+        return Employee.objects.filter(LIVE_PARENT, department__in=managed_departments_for(user)), "Phòng ban đang quản lý"
+    return None, None
+
+
+def dashboard_metric_employees(user, employee, key, today):
+    qs, scope = dashboard_employee_scope(user, employee)
+    if qs is None or key not in ("managed", "active", "approved", "probation"):
+        return None, scope
+    if key == "approved":
+        if not has_permission(user, "view_reports"):
+            return None, scope
+        qs = qs.filter(leave_requests__is_deleted=False, leave_requests__leave_type__is_deleted=False,
+                       leave_requests__status="Approved", leave_requests__from_date__lte=today,
+                       leave_requests__to_date__gte=today).distinct()
+    else:
+        statuses = {"managed": ("Active", "Probation", "OnLeave"), "active": ("Active",), "probation": ("Probation",)}
+        qs = qs.filter(employment_status__in=statuses[key])
+    return qs, scope
 
 
 def metric(key, label, value, scope, note, period="Hiện tại"):
@@ -50,13 +76,13 @@ def capacity_rows(departments, plans):
                 [max(0, p.planned_headcount) for p in plans if p.planned_headcount is not None])
     rows = []
     partial = False
-    for department in departments:
+    for index, department in enumerate(departments):
         matches = by_department.get(department["id"], [])
         invalid = len(matches) > 1 or bool(matches and (matches[0].planned_headcount is None or matches[0].planned_headcount < 0))
         partial |= invalid
         planned = matches[0].planned_headcount if len(matches) == 1 and not invalid else None
         actual = matches[0].actual_headcount if len(matches) == 1 and not invalid else department["actual"]
-        rows.append(dict(department, actual=actual, planned=planned,
+        rows.append(dict(department, actual=actual, planned=planned, chart_index=index % 6 + 1,
             actual_width=actual * 100 // scale, planned_width=(planned or 0) * 100 // scale,
             ratio=Decimal(actual) * 100 / Decimal(planned) if planned else None,
             ratio_display=(Decimal(actual) * 100 / Decimal(planned)).quantize(Decimal("0.1")) if planned else None,
@@ -70,7 +96,8 @@ def _headcount(today):
     departments = list(Department.objects.annotate(actual=Count("employees", filter=Q(
         employees__is_deleted=False, employees__employment_status="Active"))).values(
             "id", "department_name", "actual").order_by("department_name", "pk"))
-    # Avoid an impossible SELECT when DepartmentID is NOT NULL.
+    # A NOT NULL department column cannot contain unassigned rows. Preserve
+    # the same read formula for nullable schemas, without an impossible SELECT.
     unassigned = (Employee.objects.filter(department__isnull=True, employment_status="Active").count()
                   if Employee._meta.get_field("department").null else 0)
     if unassigned:
@@ -94,7 +121,7 @@ def _contracts(today):
         share = Decimal(group["total"]) * 100 / Decimal(total)
         angle = math.radians(float(offset + share / 2) * 3.6 - 90)
         group.update(label_x=f"{50 + 36 * math.cos(angle):.3f}", label_y=f"{50 + 36 * math.sin(angle):.3f}", index=i + 1, share=share, share_display=share.quantize(Decimal("0.1")), dash=f"{share:.6f} {100-share:.6f}", offset=f"{-offset:.6f}",
-                     variant=("series", "series-soft", "series-strong")[i % 3])
+                     variant=("series", "series-soft", "series-strong")[i % 3], chart_index=i % 6 + 1, share_width=f"{share:.6f}")
         offset += share
     fields = ("pk", "contract_no", "end_date", "contract_type__contract_type_name", "employee__full_name", "employee__employee_code")
     def rows(condition):
@@ -131,11 +158,8 @@ def dashboard_snapshot(user, employee=None):
     can_status = has_permission(user, "view_all_employees")
     dept_scope = not can_status and get_role_code(user) == "DEPT_MANAGER" and employee and not employee.is_deleted
     if can_status or dept_scope:
-        qs = Employee.objects.filter(LIVE_PARENT)
-        scope = "Toàn Trung tâm" if can_status else "Phòng ban đang quản lý"
+        qs, scope = dashboard_employee_scope(user, employee)
         result["scope_label"] = scope
-        if dept_scope:
-            qs = qs.filter(department__in=managed_departments_for(user))
         def status_block():
             counts = {s.lower(): Count("pk", filter=Q(employment_status=s), distinct=True) for s in ("Active", "Probation", "OnLeave")}
             if has_permission(user, "view_reports"):
@@ -152,7 +176,7 @@ def dashboard_snapshot(user, employee=None):
         if c is not None:
             result["metrics"] = [metric("managed", "Nhân sự đang quản lý", c["active"] + c["probation"] + c["onleave"], scope,
                 f'Active {vi_number(c["active"])} · Thử việc {vi_number(c["probation"])} · Nghỉ dài hạn {vi_number(c["onleave"])}; không gồm Resigned.'),
-                metric("active", "Đang làm việc (Active)", c["active"], scope, "Trạng thái Active; không phải có mặt hôm nay.")]
+                metric("active", "Đang làm việc", c["active"], scope, "Trạng thái Active; không phải có mặt hôm nay.")]
             if "approved" in c:
                 m = metric("approved", "Nghỉ được duyệt trong ngày", c["approved"], scope,
                            "Theo khoảng ngày đơn nghỉ, không phải số người vắng.", today.strftime("%d/%m/%Y"))
@@ -161,6 +185,7 @@ def dashboard_snapshot(user, employee=None):
             icons = {"managed": "people", "active": "briefcase", "approved": "calendar", "probation": "person"}
             for item in result["metrics"]:
                 item["icon"] = icons[item["key"]]
+                item["href"] = reverse("portal:dashboard_people") + "?" + urlencode({"metric": item["key"], "on_date": today.isoformat()})
                 if item["key"] in ("managed", "active"):
                     item["note"] += " Gồm cả hồ sơ chưa có hợp đồng; danh sách Hồ sơ nhân viên chỉ hiện hồ sơ đã có hợp đồng."
             if "uncontracted" in status:

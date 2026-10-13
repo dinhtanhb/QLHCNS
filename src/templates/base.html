@@ -14,17 +14,25 @@
     <link rel="stylesheet" href="{% static 'css/theme.css' %}?v=20261012-ui-2c-4">
     <link rel="stylesheet" href="{% static 'css/ui_tokens.css' %}?v=20261013-controls">
     {% block extra_css %}{% endblock %}
-    <link rel="stylesheet" href="{% static 'css/app_shell.css' %}?v=20261012-atoms">
+    <link rel="stylesheet" href="{% static 'css/app_shell.css' %}?v=20261013-search-demo">
     <link rel="stylesheet" href="{% static 'css/ui_controls.css' %}?v=20261013-controls">
     <link rel="stylesheet" href="{% static 'css/shared_components.css' %}?v=20261013-phase1-followup">
     <link rel="stylesheet" href="{% static 'css/atoms_ui.css' %}?v=20261012-atoms">
 </head>
 <body class="portal-app min-h-screen">
+    {% if synthetic_demo %}<div class="ui-demo-banner" role="status">Môi trường DEMO · Dữ liệu giả thử nghiệm</div>{% endif %}
     <a class="ui-skip-link" href="#main-content">Bỏ qua đến nội dung chính</a>
     <header class="ui-topbar" id="ui-topbar">
         <div class="ui-topbar-row">
             {% if user.is_authenticated %}<button id="mobileNavToggle" class="ui-control" type="button" aria-label="Mở điều hướng" aria-controls="portalSidebar" aria-expanded="false">{% include '_shell_icon.html' with name='menu' %}</button>{% endif %}
             <a class="ui-brand" href="{% url 'portal:dashboard' %}"><span class="ui-brand-short">IHRMS</span><span class="ui-brand-full">IHRMS — Cổng thông tin nhân viên</span></a>
+            {% if user.is_authenticated %}
+            <form class="ui-global-search" role="search" method="get" action="{% url 'portal:global_search' %}">
+                <label class="ui-sr-only" for="global-search-input">Tìm kiếm toàn ứng dụng</label>
+                <input id="global-search-input" name="q" type="search" maxlength="100" minlength="2" value="{{ search_query }}" placeholder="Tên, mã NV, email hoặc chức năng…">
+                <button type="submit" class="ui-control" aria-label="Tìm kiếm">{% include '_shell_icon.html' with name='search' %}</button>
+            </form>
+            {% endif %}
             <div class="ui-topbar-actions">
                 <button type="button" class="ui-control ihrms-theme-toggle" data-theme-toggle aria-label="Chuyển sang chế độ tối" aria-pressed="false"></button>
                 {% if user.is_authenticated %}

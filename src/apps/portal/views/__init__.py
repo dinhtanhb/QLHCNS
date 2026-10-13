@@ -1,6 +1,8 @@
 """Compatibility facade for portal views; implementations live in domain modules."""
 
 from .common import DIRECTOR_TITLE_KEYWORDS
+from .search import global_search
+from .core import dashboard_people
 from .assets import (
     asset_list,
     _can_manage_asset,
