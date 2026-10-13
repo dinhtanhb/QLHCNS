@@ -1,5 +1,6 @@
 /* App shell only; loaded after page CSS. No print-paper recoloring. */
 @media screen {
+ .portal-app .ui-topbar :is(.ui-breadcrumb,.ui-user-summary small,.ui-unread-badge,.ui-role-badge), .portal-app .ui-sidebar .ui-nav-section-label { font-size:var(--ui-font-size-small); }
  .ui-demo-banner { text-align:center; padding:4px 12px; background:var(--ui-warning-bg); color:var(--ui-warning-text); font-size:var(--ui-font-size-small); }
  .portal-app .ui-global-search { display:flex; align-items:center; gap:8px; margin-left:auto; width:clamp(220px,28vw,420px); min-width:0; }
  .portal-app .ui-global-search input { min-width:0; width:100%; height:44px; background:var(--ui-surface); color:var(--ui-text); border:1px solid var(--ui-border); border-radius:var(--ui-radius-control); padding:8px 12px; }

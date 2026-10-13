@@ -9,6 +9,7 @@
 <section class="ui-card"><h2 class="ui-card-title">Trang chức năng</h2>
 <ul class="ui-search-results">{% for item in search_pages %}<li><a href="{{ item.href }}">{{ item.label }}</a></li>{% empty %}<li>Không tìm thấy trang phù hợp.</li>{% endfor %}</ul></section>
 <section class="ui-card"><h2 class="ui-card-title">Nhân viên</h2>
+{% if search_limited %}<p role="status">Tìm không dấu bị giới hạn do số hồ sơ lớn. Hãy nhập tên có dấu, mã hoặc email cụ thể.</p>{% endif %}
 <ul class="ui-search-results">{% for item in search_people %}<li>{% if item.href %}<a href="{{ item.href }}">{{ item.name }}</a>{% else %}<strong>{{ item.name }}</strong>{% endif %}<span>{{ item.code }} · {{ item.department }}</span><span>{{ item.email|default:"—" }}</span></li>{% empty %}<li>Không tìm thấy nhân viên trong phạm vi được xem.</li>{% endfor %}</ul>
 {% if search_more %}<p>Hiển thị 20 kết quả đầu tiên. Hãy nhập cụ thể hơn.</p>{% endif %}</section>
 {% endif %}

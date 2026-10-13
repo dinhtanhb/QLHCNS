@@ -2,6 +2,46 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-13 — Kiểm chứng tìm kiếm và đặc tả Dashboard Đợt 2
+
+**Tóm tắt cho chủ dự án**
+- Đã sửa tìm người không dấu, giữ phạm vi được phép xem và cảnh báo khi quá nhiều hồ sơ.
+- Đã sửa các trang tìm kiếm bị ẩn lệch guard; không đổi quyền đọc dữ liệu của trang đích.
+- Full suite đạt trên cả hai backend; giao diện đạt kiểm tra sáng/tối, bàn phím và màn hình rộng/hẹp.
+- Đợt 2 mới là đặc tả; cần chốt loại nghỉ, quyền tuyển dụng, nguồn ngày tuyển, nhật ký và ngân sách truy vấn.
+- Chưa kiểm screen reader, zoom 200% hay phiên tài khoản thật; không push/deploy.
+
+**Phạm vi/Git đầu lượt:** theo tệp yêu cầu Phần A sửa tìm kiếm/kiểm chứng và Phần B chỉ đặc tả. Đọc AGENTS, ba mục mới nhất, đặc tả, search/tests/dashboard_employee_scope và RBAC; dùng UI UX Pro Max, không UI Styling/shadcn/dependency/CDN. `main`, working tree đầu lượt sạch; fetch `origin/main`, rev-list 0/0, `git ls-remote origin refs/heads/main` bằng HEAD `2c47252b712c5af3de2149654e3053190fb28bf6`: commit tìm kiếm/demo đã trên remote. Không reset/stash/đổi nhánh, không model/migration/quyền/field/CSRF/URL name/middleware/selector Pending/tiền/giấy HCNS; không thêm bộ lọc hồ sơ chưa hợp đồng.
+
+**A1:** `views/search.py:people_matches` áp scope trước; quét tối đa 5.001 dòng chỉ pk/full_name/employee_code/company_email theo full_name, pk. NFD/casefold và đ→d cho cả tên/mã/email; lấy tối đa 21 PK rồi truy vấn một lần với department, chỉ các cột an toàn. Trên scope >5.000 dùng lại icontains và hiện “Tìm không dấu bị giới hạn do số hồ sơ lớn”; không lặng lẽ trả kết quả thiếu. Giữ 2–100 ký tự, tối đa 20 + thông báo còn kết quả, đăng nhập/GET-only/no-store/escape/link theo quyền. Không đổi collation/schema, không chọn CCCD/lương hoặc trường mã hóa trong matcher. Template chỉ thêm cảnh báo.
+
+**A2 — lệch đã tái hiện bằng client:** có 15 cặp role/trang bị ẩn dù GET đích trả 200: hr_employee_list ở EMPLOYEE/DEPT_MANAGER/DIRECTOR/FINANCE_OFFICER/SYS_ADMIN (5); hcns_catalog cùng 5 role; recruitment_list ở EMPLOYEE/HR_OFFICER/DIRECTOR/FINANCE_OFFICER/SYS_ADMIN (5). Đổi ba entry PAGES thành authenticated, view vẫn giữ scope hồ sơ/biểu mẫu/phòng; các role có scope rỗng chỉ nhận danh sách rỗng, không mở thêm dữ liệu. Thêm điều kiện hồ sơ/submit hoặc approve cho profile_change_request_list để tài khoản unlinked không nhận link 403; SUPER_ADMIN không cờ không tự cấp quyền. Ma trận 8 role (EMPLOYEE/DEPT_MANAGER/HR_OFFICER/HR_MANAGER/DIRECTOR/FINANCE_OFFICER/SYS_ADMIN/superuser) kiểm mọi entry bằng GET tìm kiếm và GET đích, cùng fixture HomeDashboardTests; test riêng unlinked/SUPER_ADMIN. Không nới guard. Giữ test route resolve có sẵn, không thêm bản trùng.
+
+**Test mới/đo query:** `test_global_search.py` thêm case accent/case/đ/NFD theo nguồn, scope trước scan, giới hạn/cảnh báo, safe projection, page guard matrix, unlinked và đo matcher trước/sau trên cùng view/fixture. Login/warm-up ngoài đo; before là matcher icontains cũ, after là matcher mới; toàn GET/render, không bỏ SELECT của backend. Bảng đo cuối cập nhật bên dưới khi full suite hoàn tất. Focused SQLite 8/8 đạt, SEARCH_PAGE_GUARD_MISMATCHES=[]; trước warm-up có kết quả khác ở role đầu, không dùng làm bảng cuối.
+
+| Vai trò linked | SQLite trước → sau | SQL Server trước → sau |
+| --- | --- | --- |
+| EMPLOYEE | 6 → 7 | 7 → 8 |
+| DEPT_MANAGER | 6 → 7 | 7 → 8 |
+| HR_OFFICER | 6 → 7 | 7 → 8 |
+| HR_MANAGER | 6 → 7 | 7 → 8 |
+| DIRECTOR | 7 → 8 | 8 → 9 |
+| FINANCE_OFFICER | 6 → 7 | 7 → 8 |
+| SYS_ADMIN | 6 → 7 | 7 → 8 |
+| Superuser | 7 → 8 | 8 → 9 |
+
+Ma trận search đã đạt trên cả hai backend trong lượt full đầu (chỉ ca cache cũ thất bại); sẽ đối chiếu lại log full cuối, không dùng lượt trước làm kết luận full suite. Tăng đúng +1 SELECT mọi role; safe projection 2 query, department truy cập không N+1. Superuser được đo riêng, không thay bằng role SUPER_ADMIN không cờ.
+
+**A3/UI:** Edge trên demo SQLite cách ly, bổ sung duy nhất tên/email giả của DEMO-022 để tìm Nguyễn/Đặng và tên dài. `ops/run_search_phase2_uat.py --directory "$env:TEMP/ihrms-atoms-demo-20261013" --packages-dir "$env:TEMP/ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/packages"`: 130 kiểm tra/24 ảnh, exit native 0, errors=[]; Trang chủ/Chi tiết KPI/kết quả tìm kiếm ×360/768/1024/1440 × sáng/tối, HTTP200/không overflow, chữ hiển thị ≥14px, control ≥44px, keyboard Enter tìm NGUYEN khớp Nguyễn Đặng. Đã xem ảnh kết quả desktop tối. Bằng chứng `phase2-search-uat/browser-result.json` và ảnh trong thư mục demo; log TEMP/ihrms-phase2-browser-confirmed.log. Vòng đầu phát hiện breadcrumb 12px: nâng riêng caption khung màn hình lên small 14px, không đổi giấy/in; base stylesheet và service worker v14 đổi cache. Runner ban đầu bị race navigation khi gửi Enter rồi goto; đổi expect_navigation trước Enter và chạy lại cuối đạt. Không chứng nhận WCAG/phiên trình duyệt thật của chủ dự án.
+
+**Cây kiểm thử/gate:** export Git index bằng git archive vào TEMP/ihrms-phase2-20261013/stage-source; wrapper TEMP/ihrms-phase2-index-runner.py gọi ops/run_tests.py của nguồn đó, resolve SQL connection chỉ trong memory, DB dùng một lần/media/log riêng, M365 off. Gate wrapper TEMP/ihrms-phase2-index-gates.py chạy check, makemigrations --check --dry-run, ops/check_ui_contrast.py: exit 0, no issues/no changes, 190 cặp/0 lỗi; pip check exit 0, diff/index diff --check đạt. Lấy `$LASTEXITCODE` ngay sau Python và exit giá trị đó khi redirect PowerShell. Bản đầu SQLite chạy 488 test nhưng 1 test khóa CSS v20261013-phase1-followup cũ thất bại, 7 skip; không báo đạt. Sửa test cache cũ trong tests.py để kiểm href có cache query; tests_mobile kiểm service worker v14. Ca hồi quy riêng đạt 1/1. Full cuối phải chạy lại cả backend sau sửa test, không dùng kết quả 477 của commit trước hoặc kết quả lần đầu chưa đạt.
+
+**Phần B — chỉ tài liệu:** thêm mục 16 Đợt 2 trong DASHBOARD_ATOMS_TECH_SPEC.md và sửa số mục KPI bị trùng 14 thành15. Bảng tóm tắt/nguồn/công thức/quyền × khối/privacy/drill-down/query budget/kiểm thử/rủi ro/8 quyết định. Đọc model/guard thật: Candidate không FK JobPosting/Employee hoặc hired_at; Hired có thể được set trước khi form Employee lưu, Offer.expected_join_date không là ngày tuyển. SecurityEvent chỉ access/export; BaseAuditModel không là full audit. Đề xuất nếu cần chỉ “Cập nhật quyết định nhân sự” theo PersonnelDecisionHistory và scope decision, actor/comment ẩn; nhật ký tổng quát thiếu nguồn. Header tầng 2/giờ ca/kỳ lương hoãn. Không viết code/template/style/view của khối Đợt 2. Baseline và dự toán cho thấy HR Manager SQL17 + nghỉ/tin/ứng viên/history thành21; giữ trần20, phải chốt chia rollout/giảm query.
+
+**Còn mở/bàn giao:** các quyết định D2-1 đến D2-8 để chủ dự án duyệt trước khi giao triển khai; xem nhóm chung nghỉ, scope lịch sử, tin/candidate, nguồn ngày tuyển, source/actor nhật ký, hoãn header2 và query budget. Không sửa middleware ghi session hoặc selector Pending có parent đã xóa. Chưa screen reader/zoom200%/UAT tài khoản thật, chưa theo dõi CI; không push nên SHA local mới chưa có CI remote. Hai commit riêng theo yêu cầu; SHA/kết quả full cuối bổ sung vào cùng mục này khi chốt. Không mở bất kỳ khối Đợt 2 nào.
+
+**Kết quả full cuối:** `venv/Scripts/python.exe "$env:TEMP/ihrms-phase2-index-runner.py" --backend sqlite` trên stage-source cuối: 488 test, OK (7 skip), 525.294 giây, exit native0; `--backend sqlserver`: 488/488 OK, không skip, 568.245 giây, exit native0. Log TEMP/ihrms-phase2-full-sqlite-final.log và ihrms-phase2-full-sqlserver-final.log; database dùng một lần đã hủy. Đây là full suite của chính thay đổi A1/A2/route/demo/bố cục hiện tại, không lấy kết quả commit 9eba8ca. Cây stage cuối `2324a80745f963a32bac27967f8265fa8402ee29`; đối chiếu tất cả tệp mã stage với snapshot khớp sau chuẩn hóa LF/CRLF. Chỉ tài liệu/nhật ký bổ sung sau test, không thay nguồn ứng dụng. Cả log cuối đều SEARCH_PAGE_GUARD_MISMATCHES=[] và query matrix đúng bảng trên. Lần đầu SQL cũng chỉ lỗi assertion CSS cũ; không dùng làm kết quả đạt, đã chạy lại full cuối sau sửa test. Gate/migration/contrast/pip và diff check đều đạt; Edge cuối 130/24 ảnh vẫn khớp nguồn cuối. `gh run list --commit 2c47252...` trả HTTP401 Bad credentials; **chưa theo dõi CI**, không ghi token. SHA mới local không push nên chưa có run CI remote theo hai SHA; chủ dự án có thể xem Actions sau khi tự cho phép push, không cần gửi token qua chat.
+
 ## 2026-10-13 — Làm sạch nhật ký và bàn giao mã nguồn
 
 **Yêu cầu/phạm vi:** làm sạch nhật ký, tạo bản sao review, commit và push. Chỉ làm trên `main`; đầu lượt fetch `origin/main` thành công, ahead 1/behind 0, HEAD `9eba8cadf3d9e2a239c7a8582e22b63fc7e2114d`. Gom 26 tệp liên quan còn chờ của Dashboard/chi tiết KPI/bảng hợp đồng/tìm kiếm/demo/kiểm thử và tài liệu. Giữ `design-system/reference/` chưa theo dõi ngoài commit; không đụng dữ liệu vận hành hoặc tài khoản demo.

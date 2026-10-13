@@ -5,6 +5,12 @@ from apps.hrm.models import Employee
 from apps.organization.models import Department
 from apps.portal.views.search import PAGES
 from apps.security.permissions import has_permission
+from django.test.utils import CaptureQueriesContext
+from django.db import connection
+from django.db.models import Q
+from unittest.mock import patch
+import json
+from apps.portal.views import search as search_views
 
 
 class GlobalSearchTests(TestCase):
@@ -60,3 +66,99 @@ class GlobalSearchTests(TestCase):
         result = self.client.get(reverse('portal:global_search'), {'q':'Search'})
         self.assertEqual(len(result.context['search_people']), 20)
         self.assertTrue(result.context['search_more'])
+
+    def test_page_guard_matrix(self):
+        mismatches = []
+        roles = ('EMPLOYEE', 'DEPT_MANAGER', 'HR_OFFICER', 'HR_MANAGER',
+                 'DIRECTOR', 'FINANCE_OFFICER', 'SYS_ADMIN', 'SUPERUSER')
+        for role in roles:
+            user = self.user(role, True)
+            if role == 'SUPERUSER':
+                user.is_superuser = True
+                user.save(update_fields=['is_superuser'])
+            self.client.force_login(user)
+            for label, route, permission in PAGES:
+                url = reverse('portal:' + route)
+                result = self.client.get(reverse('portal:global_search'), {'q': label})
+                listed = any(p['href'] == url for p in result.context['search_pages'])
+                target = self.client.get(url)
+                if listed != (target.status_code == 200):
+                    mismatches.append([role, route, listed, target.status_code])
+                with self.subTest(role=role, route=route):
+                    self.assertEqual(listed, target.status_code == 200)
+        print('SEARCH_PAGE_GUARD_MISMATCHES=' + json.dumps(mismatches))
+
+    def test_query_measurement(self):
+        counts = {}
+        for role in ('EMPLOYEE', 'DEPT_MANAGER', 'HR_OFFICER', 'HR_MANAGER',
+                     'DIRECTOR', 'FINANCE_OFFICER', 'SYS_ADMIN', 'SUPERUSER'):
+            user = self.user(role, True)
+            if role == 'SUPERUSER':
+                user.is_superuser = True
+                user.save(update_fields=['is_superuser'])
+            self.client.force_login(user)
+            self.client.get(reverse('portal:global_search'))  # Login/lazy warm-up is outside measurement.
+            def old_matches(scope, query):
+                return scope.filter(Q(full_name__icontains=query) | Q(employee_code__icontains=query)
+                                    | Q(company_email__icontains=query)).select_related('department').order_by('full_name', 'pk')[:21], False
+            measured = {}
+            for version in ('before', 'after'):
+                # The previous matcher on the same final view/fixture isolates
+                # the extra SELECT rather than comparing different login state.
+                with patch.object(search_views, 'people_matches', old_matches if version == 'before' else search_views.people_matches):
+                    with CaptureQueriesContext(connection) as queries:
+                        self.client.get(reverse('portal:global_search'), {'q': 'gia'})
+                measured[version] = sum(q['sql'].lstrip().upper().startswith('SELECT') for q in queries)
+            self.assertLessEqual(measured['after'], measured['before'] + 1)
+            counts[role] = measured
+        print('SEARCH_QUERY_COUNTS=' + json.dumps(counts))
+
+    def test_accent_case_and_safe_projection(self):
+        hr = self.user('HR_MANAGER', True)
+        person = self.user('EMPLOYEE', True)
+        Employee.objects.filter(pk=person.employee_id).update(full_name='Nguyễn Đặng Thị Ánh',
+            employee_code='ĐẶNG-ÁNH', company_email='nguyễn.đặng@example.test')
+        self.client.force_login(hr)
+        for query in ('nguyen', 'NGUYỄN', 'dang', 'ĐẶNG', 'thi anh', 'dang-anh', 'nguyen.dang'):
+            response = self.client.get(reverse('portal:global_search'), {'q':query})
+            self.assertEqual([r['code'] for r in response.context['search_people']], ['ĐẶNG-ÁNH'])
+            self.assertFalse(response.context['search_limited'])
+        with CaptureQueriesContext(connection) as queries:
+            matches, limited = search_views.people_matches(Employee.objects.all(), 'nguyen')
+            result = list(matches)
+            self.assertEqual(result[0].department.department_name, self.department.department_name)
+        self.assertFalse(limited)
+        self.assertEqual(len(queries), 2)
+        for item in queries:
+            self.assertNotIn('NationalID', item['sql'])
+            self.assertNotIn('MobilePhone', item['sql'])
+            self.assertNotIn('BasicSalary', item['sql'])
+
+    def test_scan_ceiling_and_scope_before_matching(self):
+        manager = self.user('DEPT_MANAGER', True)
+        outsider = self.user('EMPLOYEE', True)
+        other = Department.objects.create(organization=self.department.organization, department_code='OUT', department_name='Other')
+        Employee.objects.filter(pk=outsider.employee_id).update(department=other, full_name='Nguyễn Ngoài Phạm Vi')
+        self.client.force_login(manager)
+        self.assertEqual(self.client.get(reverse('portal:global_search'), {'q':'nguyen'}).context['search_people'], [])
+        self.assertFalse(self.client.get(reverse('portal:global_search'), {'q':'nguyen'}).context['search_limited'])
+        hr = self.user('HR_MANAGER', True)
+        self.client.force_login(hr)
+        with patch.object(search_views, 'PEOPLE_SCAN_LIMIT', 1):
+            response = self.client.get(reverse('portal:global_search'), {'q':'home'})
+        self.assertTrue(response.context['search_limited'])
+        self.assertContains(response, 'Tìm không dấu bị giới hạn do số hồ sơ lớn')
+        self.assertLessEqual(len(response.context['search_people']), 20)
+
+    def test_unlinked_profile_change_guard(self):
+        for role in ('EMPLOYEE', 'DEPT_MANAGER', 'HR_OFFICER', 'HR_MANAGER',
+                     'DIRECTOR', 'FINANCE_OFFICER', 'SYS_ADMIN', 'SUPER_ADMIN', 'SUPERUSER'):
+            user = self.user(role, False)
+            if role == 'SUPERUSER':
+                user.is_superuser = True
+                user.save(update_fields=['is_superuser'])
+            self.client.force_login(user)
+            response = self.client.get(reverse('portal:global_search'), {'q':'Yêu cầu cập nhật hồ sơ'})
+            href = reverse('portal:profile_change_request_list')
+            listed = any(p['href'] == href for p in response.context['search_pages'])
+            self.assertEqual(listed, self.client.get(href).status_code == 200, role)
