@@ -2,6 +2,16 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-13 — Sửa lỗi CI backend do biến môi trường TEMP trên Linux
+
+**Phạm vi và nguyên nhân:** xử lý job GitHub Actions `Main regression and dependency checks / backend (pull_request)` (run `38420720139`, job `115383355138`) đang fail. Log cho thấy test `apps.portal.test_dashboard_followup.DashboardFollowupTests.test_cleaned_templates_keep_links_and_queries` lỗi `KeyError: 'TEMP'` tại `src/apps/portal/test_dashboard_followup.py:93` vì đọc trực tiếp `os.environ['TEMP']` (Windows-only) trên runner Linux.
+
+**Đã sửa:** thay đường dẫn thư mục tạm trong test từ `Path(os.environ['TEMP'])` sang `Path(tempfile.gettempdir())`; cập nhật import tương ứng trong `src/apps/portal/test_dashboard_followup.py`. Không đổi logic nghiệp vụ, model, migration, quyền hay mã production.
+
+**Kiểm tra và kết quả:** chạy `SECRET_KEY=test-secret-key python src/manage.py test apps.portal.test_dashboard_followup.DashboardFollowupTests.test_cleaned_templates_keep_links_and_queries` trên source đã sửa: `Ran 1 test ... OK`, truy vấn trước/sau giữ nguyên (`FOLLOWUP_PAGE_QUERY_COUNTS` before=after cho cả 3 template). Lượt chạy trước đó không đặt `SECRET_KEY` đã fail đúng kỳ vọng với `ImproperlyConfigured` từ settings.
+
+**Việc còn mở/hành động:** cần CI chạy lại trên GitHub để xác nhận job backend của PR #5 pass toàn bộ matrix; không có thao tác production/deploy trong đợt này.
+
 ## 2026-10-13 — Khôi phục định dạng in và tách biểu mẫu khỏi layout màn hình
 
 **Phạm vi và nguyên nhân:** chủ dự án gửi ảnh bảng chấm công mất khung/bảng/chữ ký, ô nhập vẫn xuất hiện và thông báo thành công có SVG khổng lồ trên giấy. Main sạch đầu lượt, HEAD/origin `a3b949b3ff1fc45cdbdff020783dc873e7214784`, fetch0/0. Các đợt UI chuyển quy tắc sang `@media screen` nhưng không thay đủ quy tắc in; lần kiểm tra trước chưa kiểm PDF của toàn bộ biểu mẫu. Áp dụng UI UX Pro Max và quy trình PDF, không đổi schema/service/quyền/công thức hay dữ liệu thật.
