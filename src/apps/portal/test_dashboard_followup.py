@@ -1,6 +1,6 @@
 """Phase-one follow-up: truthful fallback cards, contracts and unchanged reads."""
 import json
-import os
+import tempfile
 from pathlib import Path
 import re
 from types import SimpleNamespace
@@ -90,7 +90,7 @@ class DashboardFollowupTests(TestCase):
                'portal/timesheet_month.html':reverse('portal:timesheet_month'),
                'reporting/dashboard.html':reverse('reporting:dashboard')}
         root=Path(__file__).resolve().parents[2]
-        evidence=Path(os.environ['TEMP'])/'ihrms-followup-20261013'
+        evidence=Path(tempfile.gettempdir())/'ihrms-followup-20261013'
         engine=engines['django'].engine
         measurements={}
         for template,url in paths.items():
