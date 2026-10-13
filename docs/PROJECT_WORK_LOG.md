@@ -2,6 +2,34 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-13 — Thống nhất các hàng Dashboard theo tỷ lệ 60/40
+
+**Tóm tắt cho chủ dự án**
+
+- Chọn phương án trái60%/phải40% theo yêu cầu; cùng mép cột cho các hàng panel.
+- KPI chia đều; panel đơn dùng toàn bộ chiều rộng; màn hình hẹp một cột.
+- Nguồn cuối đạt34test,Edge1658check/132ảnh vàSQLServer133check/32ảnh cách ly.
+- Bản sao/commit/push/remote ghi metadata bàn giao; không deploy.
+
+**Phạm vi:** main sạch đầu lượt, fetchorigin/main,ahead0/behind0,HEAD `bb053b25b5ebec5af52e7253c2bca7be60c3214a`; nạp UI UX Pro Max, đọc AGENTS/spec/CSS/runner. Sửa duy nhất tỷ lệ CSS panel và cache query `20261013-balanced-60-40`; bỏ quy tắc tỷ lệ54,5/45,5 và50/50 cũ bị chồng. Từ1280px `.dashboard-panel-grid`/`.phase2-list-grid` có2child dùng3fr/2fr, tính trên khoảng rộng sau trừ gap16px. Định biên/hợp đồng, hợp đồng/xử lý và nghỉ/history cùng mép cột. Panel chỉ1child vẫn1fr; KPI2/3/4ô chia đều như trước. Không service/quyền/query/model/form/logic nghiệp vụ thay đổi. Spec17 cập nhật quy ước; runner thêmwidth1280 và đo tỷ lệ sai số0,2%.
+
+**Probe thật:** sau thêm assertionratio nhưng trước sửaCSS, chạy `venv/Scripts/python.exe ops/run_dashboard_layout_uat.py --directory "$env:TEMP/ihrms-dashboard-phase2-demo-20261013" --packages-dir "$env:TEMP/ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/packages"` thất bại exit1 tại HR1920light/pairedcolumns60/40; TEMP/dashboard-60-40-probe.log. Không giảm assertion để pass. Demo SQLite đã xác nhận synthetic marker ngoàirepo, server8767 chỉ khởi động lại đúngPID/commandline. Đã xem ảnhHR1920light trên nguồn mới; các hàng panel cùng đường chia cột.
+
+**Kiểm tra cuối:** kết quả và lệnh cụ thể ở phần cuối mục này. Kiểm tra tập trung phù hợp CSS/SSR nhỏ; không chạy fullsuite hoặc gọi kết quả full501lượt trước là đã kiểm mã mới. DB/mediaSQLtest dùng một lần, không đụng dữ liệu thật. Edge5role×6width(1920,1440,1280,1024,768,360)×2theme, measurement60/40, singlefullwidth, nooverflow, giá trị/cao thẻ/KPIlinks/keyboard. Business `ops/run_browser_uat.py --backend sqlserver --layout-only` kiểm tạo/sửaHR/hợpđồng/thông báo/trangđích/lưu/KPIclick và responsive bị ảnh hưởng; bỏ vòngduyệt/rolekhôngảnh hưởngCSS theo optioncósẵn.
+
+**Bàn giao/giới hạn:** ZIPreview `D:/QLHCNS-Backups/IHRMS_Review_20261013_Dashboard_60_40.zip` từGitindex cuối ngoàirepo, manifesttree/parent/hashmỗinguồn, khôngenv/database/media/uploads/log/CSV/tàikhoản/demo/secrets. Khôngbackup dữ liệu. Commit `ui: align dashboard panels to 60-40`, pushmainkhôngforce; SHA/remote/clean/aheadbehind ghi verificationngoàirepo/bàn giao để không tựthamchiếucommit. Khôngdeploy. Chủ dự án Ctrl+F5demo8767/portal, xem các mép cột thẳng hàng. Chưa UATbrowseruser/tài khoảnthật, screenreader/zoom200%; không báođạt. CI chưa theo dõi vì lỗiGitHubCLIHTTP401 đã xác minh lượttrước, không dùng kếtquảđó khẳngđịnh trạng tháiCIcommitmới.
+
+
+**Kết quả cuối trên chính nguồn đã dọn:**
+
+- `git diff --check`/`git diff --cached --check`: exit0; `venv/Scripts/python.exe ops/check_ui_contrast.py`: exit0,198cặp/0lỗi, không đổi token/màu.
+- `venv/Scripts/python.exe "$env:TEMP/ihrms-ui-refinements-20261013/runner.py" --backend sqlite apps.portal.test_home_dashboard apps.portal.test_dashboard_followup apps.portal.test_dashboard_drilldown apps.portal.test_home_dashboard_phase2`:34/34test OK,24,410s,nativeexit0; TEMP/dashboard-60-40-final-tests.log. Noissues; querymax23SQLite/servicekhôngghi/privacy/scope/metriclinks/growth17→17 giữ. Không gọi fullsuite501lượttrước là kếtquảlượtnày.
+- Edge runner đầy đủ vớiassert60/40: exit0,1658check/132ảnh/0JSerror,5role×6width×2theme, TEMP/dashboard-60-40-final-edge.log; ảnh/dashboard-layout-uat ởdemongoàiGit. Đo riêng18hàngpanel trong6scenario(HR×1280/1440/1920×light/dark): leftShare=.6±.002 và mépcộtphảigiữthẳnghàng±2px; ratio-60-40-measurements.json. Singlepanelvẫnfullwidth. Đã xemHR1920light/1280dark.
+- SQLServer Edge `venv/Scripts/python.exe ops/run_browser_uat.py --backend sqlserver --layout-only --packages-dir "$env:TEMP/ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/packages" --output-dir "$env:TEMP/ihrms-dashboard-60-40-business-final"`: exit0,133check/32ảnh/0JSerror,DBdestroyed=true; TEMP/dashboard-60-40-business-final.log. Create/editHR/contractVietnamese/persist/messages/KPIclick/responsiveđãkiểm. Vòng đầu thấtbại sau45check tại assertionratio1.2:1cũ; cập nhật duy nhất expectation1.5:1 trongrunner theo yêucầumới, chạy lại đạt. Không bỏassert hoặc đổiquyền/bizlogic. Có lúc commentarynói36test nhưng logthực tế34; bảnglệnh/kếtquảtrên là sốđúng.
+
+**Bản sao cuối:** Gitindex nguồn cuối gồmCSS/template/2runner/spec/nhậtký; xuấtZIP đãnêu vàmởlạikiểmhashmỗitệp/manifest. Commit `ui: align dashboard panels to 60-40`; pushmain/SHAremote0/0/clean xácminhsaucommittrong `.verification.json` vàbàngiao, khôngtạoSHAgiảtrongnhậtký tựchứaSHA. Ctrl+F5demo/portalđểnhậnCSSquerymới. Chưa tài khoảnthật/screenreader/zoom200%/CIcommitmới; khôngdeploy.
+
+
 ## 2026-10-13 — Cân đối Dashboard và trang quyết định theo Atoms
 
 **Tóm tắt cho chủ dự án**

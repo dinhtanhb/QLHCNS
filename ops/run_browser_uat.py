@@ -284,8 +284,8 @@ def main():
                                 cards=page.locator('.dashboard-panel-grid').first.locator(':scope > section').evaluate_all('(xs)=>xs.map(x=>x.getBoundingClientRect().width)')
                         # Atoms reference gives the department chart more width;
                         # the current approved layout is 1.2:1, with aligned cards.
-                        check(len(cards)==2 and abs(cards[0]-1.2*cards[1])<=2,
-                              f'Atoms chart width ratio 1.2:1 {width} {theme}')
+                            check(len(cards)==2 and abs(cards[0]-1.5*cards[1])<=2,
+                                  f'Dashboard chart width ratio 60:40 {width} {theme}')
                         capture(page, f'{label}-{width}-{theme}')
             context.close()
 

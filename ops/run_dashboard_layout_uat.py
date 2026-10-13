@@ -50,7 +50,7 @@ def main():
                 page.locator('main form button[type=submit]').click()
                 page.wait_for_load_state('networkidle')
                 check(page.url.endswith('/portal/'), role + ' actual login')
-                for width in (1920,1440,1024,768,360):
+                for width in (1920,1440,1280,1024,768,360):
                     page.set_viewport_size({'width':width,'height':1000})
                     for theme in ('light','dark'):
                         page.evaluate('(t)=>{document.documentElement.dataset.theme=t;localStorage.setItem("ihrms-theme",t)}', theme)
@@ -61,6 +61,7 @@ def main():
                         geometry = page.evaluate('''()=>{
                             const rect=x=>{const r=x.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height};};
                             return [...document.querySelectorAll('.dashboard-panel-grid,.phase2-list-grid,.phase2-metric-grid')].map(g=>({
+                                paired:g.matches('.dashboard-panel-grid,.phase2-list-grid'),
                                 grid:rect(g),cards:[...g.children].map(rect),values:[...g.querySelectorAll(':scope > .phase2-metric .ui-kpi-value')].map(rect)
                             }));
                         }''')
@@ -70,6 +71,8 @@ def main():
                                 check(abs(cards[0]['w']-grid['grid']['w'])<2,label+' single panel fills available width')
                             if width>=1280 and len(cards)>1:
                                 check(max(c['y'] for c in cards)-min(c['y'] for c in cards)<2,label+' panel top alignment')
+                                if grid['paired']:
+                                    check(abs(cards[0]['w']/(cards[0]['w']+cards[1]['w'])-.6)<.002,label+' paired columns use 60/40')
                             if len(grid['values'])>1 and width>=1280:
                                 check(max(v['y'] for v in grid['values'])-min(v['y'] for v in grid['values'])<2,label+' secondary value baseline')
                                 check(max(c['h'] for c in cards)-min(c['h'] for c in cards)<2,label+' secondary card equal heights')
