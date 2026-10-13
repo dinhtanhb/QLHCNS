@@ -1,0 +1,345 @@
+# Đặc tả kỹ thuật dashboard IHRMS theo Atoms
+
+Ngày: **13/10/2026**. Trạng thái: **bản sửa để chủ dự án duyệt; chưa triển khai**.
+Baseline từ `git rev-parse HEAD`: `cf8213554d829df3e7e094604f2bb36019a9638f`, nhánh `main`.
+Lượt này chỉ sửa tài liệu và [nhật ký](PROJECT_WORK_LOG.md), không sửa mã/quyền/dữ liệu/dependency.
+
+## 1. Tóm tắt để duyệt — một trang
+
+“Sẵn sàng” là xác định được nguồn và quyền cho nhóm được ghi, **không phải đã triển khai/kiểm thử dashboard**. Ma trận ngoại lệ ở mục 7. Khối bị từ chối không có trong HTML.
+
+| Khối | Nguồn dữ liệu | Quyền xem dựa trên mã hiện có | Đợt | Trạng thái |
+| --- | --- | --- | --- | --- |
+| Nhân sự theo status | Employee | view_all_employees; trưởng phòng trong phòng quản lý | 1 | Sẵn sàng |
+| Approved trong ngày | LeaveRequest, khoảng ngày chứa D | view_reports: HR_MANAGER/DIRECTOR; superuser | 1 | Sẵn sàng |
+| Hợp đồng sắp hết hạn + quá hạn riêng | Contract, status/start/end | manage_hr; DIRECTOR mặc định ẩn | 1 | Sẵn sàng |
+| Loại hợp đồng | Contract + ContractType | manage_hr, chỉ số không tiền | 1 | Sẵn sàng |
+| Định biên kế hoạch năm | HeadcountPlan + with_headcounts | view_reports, chỉ số không tiền | 1 | Sẵn sàng |
+| Việc cần xử lý | Queryset từng trang duyệt | Quyền từng nghiệp vụ, không gộp quyền HR | 1 | Sẵn sàng |
+| Đơn nghỉ gần đây | LeaveRequest, total_days | Scope lịch sử cần xác nhận, không suy từ approve Pending | 2 | Cần quyết định |
+| Tuyển dụng mở / ứng viên | JobPosting, RecruitmentRequest, Candidate | manage_hr cho ứng viên; scope tin mở xác minh riêng | 2 | Cần quyết định |
+| Cập nhật gần đây | Timestamp bản ghi được đọc | Quyền đọc nguồn, chưa phải sự kiện duyệt | 2 | Cần quyết định |
+| Gross / phụ cấp kỳ lương | PayrollPeriod + Payroll | manage_finance và policy dashboard được duyệt | 2 có điều kiện | Cần quyết định |
+| Trend, tỷ lệ có mặt, timeline, tuyển theo tháng | Lịch sử / lịch ca đã xác nhận | Policy tương ứng | 3 | Cần dữ liệu lịch sử |
+| Header tầng 2 / search / giờ ca | Khung chung, route thật, ca áp dụng | Shell riêng, hiện hoãn | Riêng | Cần quyết định |
+
+Giữ cá nhân/thông báo/tiến độ dự án theo quyền hiện có; nhân viên không tự nhận dashboard HR.
+
+Có thể duyệt Đợt 1 trước mà chưa bật khối còn thiếu chính sách.
+
+## 2. Mục tiêu, nguồn và bằng chứng
+
+Dashboard trả lời hiện trạng, việc cần xử lý, phạm vi/kỳ của số liệu và nơi kiểm tra. Mỗi khối có nhãn, giá trị/đơn vị, kỳ, scope, nguồn/cách tính và trạng thái dữ liệu.
+
+Tham chiếu [Atoms](https://r7rc1s.atoms.world/) và tám ảnh `design-system/reference/atoms/`: `01_dashboard.png`, `02_dashboard_lists.png`, `03_dashboard_tables.png`, `04_tuyen_dung_kanban.png`, `05_phong_ban.png`, `06_hop_dong.png`, `07_ho_so_nhan_vien.png`, `08_cham_cong.png`. Đã đọc lại tám ảnh trong lượt sửa. DESIGN tại `C:/Users/dinht/Downloads/atoms/DESIGN.md` là tham chiếu bố cục, không thay quy tắc dự án. Người/logo/số trong ảnh không là dữ liệu IHRMS.
+
+Lượt soạn trước đã tải HTML HTTP 200 và bundle `/assets/index-CfxoekPe.js`. Lượt sửa này xác minh lại bằng `Get-FileHash -Algorithm SHA256` bản `%TEMP%/ihrms-atoms-spec-20261013/atoms-main.js`: `0a6e78dadc448d4664a3f7abf9a015f29dd148704d8d5d1be2ca1c2ed29dac11`. Hash chứng minh bản đã tải, không chứng minh website hiện vẫn cùng phiên bản. URL khôi phục từ yêu cầu/nhật ký. Chưa kiểm tương tác live; công cụ web/trình duyệt lượt trước không đọc được/khởi tạo lỗi.
+
+Core hiện cấp tổng Active cho HR_MANAGER/DIRECTOR/superuser, số phòng cho DEPT_MANAGER linked, số cá nhân/dự án theo quyền. home_presentation dựng link/trình bày không query. Khối hợp đồng/định biên/Approved ngày D chưa có context; công thức dưới đây là đề xuất, không bằng chứng tính năng đã có.
+
+Quy tắc lấy từ [MASTER](../design-system/MASTER.md), [DESIGN](../DESIGN.md), tokens, permissions.py, [RBAC](10_RBAC_Permission_Matrix.md) và guard/scope view đích. Mã/tài liệu lệch nhau thì ghi quyết định, không tự mở quyền.
+
+Mẫu quyết định trình bày; mã và chính sách quyết định dữ liệu được xem.
+
+## 3. Ràng buộc kế thừa G2–G5
+
+Kiểm tra thật bằng `rg -n -- '--ui-brand:|--ui-sidebar-bg:|--ui-bg:|navy|teal|violet' src/static/css/ui_tokens.css DESIGN.md design-system/MASTER.md`:
+
+- Light brand `#0b7461`, sidebar navy `#0c233b`, nền `#f4f7f5`; dark brand `#63dbc2`, nền `#0e1827`.
+- DESIGN dòng 43/76 navy–teal; MASTER dòng 17 quyết định Atoms thay tím theo ủy quyền mới.
+- **Còn mâu thuẫn:** MASTER dòng 11 vẫn nói violet và tài liệu thống nhất. Không kết luận hoàn toàn nhất quán; không sửa MASTER/DESIGN/tokens ở lượt này, đưa vào Q1.
+
+Dùng lại G4: `src/templates/ui/kpi.html`, `ui/badge.html`, `ui/empty_state.html`, `ui/page_header.html`, `src/apps/portal/templates/portal/_pagination.html`; registry `ui_badge`, filters `ui_number/ui_date/ui_vnd` tại `apps/common/templatetags`. Card/KPI dùng cấu trúc/CSS chung; **không metric_card hay hệ card/badge thứ hai**. Status mới chỉ mở rộng registry nếu cần.
+
+| Partial đề xuất, chưa tạo | Lý do nội dung chung chưa đủ | Tái sử dụng |
+| --- | --- | --- |
+| portal/dashboard/_headcount_chart.html | Actual/planned + bảng thay thế | Khung card/chart tokens/ui_number |
+| portal/dashboard/_contract_distribution.html | Donut có nhãn + bảng | Khung card/chart tokens/ui_number |
+| portal/dashboard/_expiring_contracts.html | Hạn và quá hạn riêng | ui_badge/ui_date/empty_state |
+| portal/dashboard/_action_queue.html | Nhóm khác quyền/queryset | KPI/badge/link dùng chung |
+| _recent_leaves.html, _recruitment_summary.html, _recent_updates.html trong portal/dashboard | Đợt 2 chỉ tạo sau chốt scope | Bảng/registry/phân trang/empty_state hiện có |
+
+Màu/spacing/typography/focus dùng `--ui-*`, chart dùng `--ui-chart-*`. Không hard-code palette partial; cùng đại lượng dùng một sắc thương hiệu, không màu riêng từng phòng.
+
+Sidebar nhóm theo phân hệ, drawer <1024 px, không bottom bar. Không gradient/glow/bóng nổi kiểu neumorphism. Font hệ thống/SVG cùng bộ, không emoji/CDN/font mạng. Body 16 px, bảng/nhãn 14 px, phụ chú 12 px; control/vùng bấm ≥44 ×44 px, focus 3 px. Giữ bàn phím/nhãn/zoom/prefers-reduced-motion; viền card trang trí không thay control.
+
+Khi triển khai đo light/dark bằng `python ops/check_ui_contrast.py`. **Code tương lai:** bổ sung cặp chart foreground/track/surface, donut/legend, badge hạn ≤7 / 8–30 / 31–60 và quá hạn, focus mới nếu có. Text mục tiêu ≥4,5:1, control/focus ≥3:1. Lượt tài liệu không sửa/chạy script, không kết quả cũ để tuyên bố WCAG.
+
+Dashboard dùng cùng hệ thiết kế với các trang đã hoàn tất.
+
+## 4. Bố cục và khung riêng
+
+Tiêu đề Bảng điều khiển dùng ui/page_header; phụ chú ngày/scope/năm kế hoạch/thời điểm dựng trang. Kỳ lương chỉ trong khối tiền được duyệt. Dashboard không phụ thuộc header tầng 2.
+
+Thứ tự mục tiêu, bỏ khối thiếu quyền/điều kiện rồi tự lấp khoảng trống:
+
+1. Tối đa bốn KPI: Nhân sự đang quản lý, Active, Approved ngày D, Thử việc. Không chèn tiền/số giả cho đủ bốn ô.
+2. Cơ cấu: định biên trái 7/12, loại hợp đồng phải 5/12 nếu có quyền.
+3. Vận hành: hợp đồng sắp hết hạn + quá hạn riêng trái, queue phải.
+4. Đợt 2 mới đơn nghỉ gần đây/tuyển dụng/Cập nhật gần đây. Tiền sau policy, không điều kiện hoàn tất Đợt 1.
+5. Giữ Công việc của tôi/Thao tác nhanh/Tiến độ dự án; nhân viên thường có khu vực cá nhân ở đầu trang.
+
+≥1440 px: tối đa bốn KPI/lưới 7/5; 1024–1439 px: hai/bốn KPI theo chiều rộng thật; dưới 1024 px: drawer/panel một cột; 768–1023 px: hai KPI; 360–767 px: một KPI. Kiểm thêm 1920 px. Không tràn ngang cả trang; bảng cuộn trong vùng có nhãn; không spacer giả ép chiều cao/khoảng trống card ẩn.
+
+**App shell riêng — HOÃN:** header tầng 2 (giờ ca/kỳ lương/badge duyệt) và search topbar dùng chung mọi trang. Không gộp dashboard; cần duyệt phạm vi/nguồn/quyền:
+
+- Search có route/parser GET/scope thật; hiện chỉ tên/mã. Không email/toàn cục/search giả.
+- WorkShift và ca áp dụng phải xác minh; chưa đủ liên kết/giờ nghỉ trưa. `08:30–17:30`, `12:00–13:30` là giờ mẫu, không hard-code.
+- Kỳ lương không lộ khi chưa policy; nhiều kỳ mở phải cụ thể kỳ.
+- Badge duyệt cùng queryset/scope/cấm tự duyệt; không tổng Trung tâm cho người chỉ duyệt phòng.
+
+Dashboard vẫn rõ ràng khi topbar đang hoãn.
+
+## 5. Công thức, phạm vi và giới hạn
+
+D = timezone.localdate() hoặc GET parse hợp lệ; Y năm kế hoạch; M kỳ lương được đọc; S queryset giới hạn quyền. GET chỉ thu hẹp S. Employee luôn ghi Hiện tại; Contract status hiện tại không chứng minh status lịch sử tại D.
+
+State ready/empty/unconfigured/partial/error: 0 hợp lệ hiện `0`; thiếu nguồn “Chưa có dữ liệu”; không đầy đủ “Dữ liệu chưa đầy đủ”; lỗi “Không tải được dữ liệu”. Không null/lỗi/thiếu quyền thành 0. Tỷ lệ có tử/mẫu, mẫu 0 ghi `—`. Trend cần lịch sử tương thích hai kỳ.
+
+Mỗi số nói rõ nó đếm gì và chưa nói được điều gì.
+
+### 5.1 Nhân sự / Approved ngày D — Đợt 1
+
+Nhân sự đang quản lý = distinct Employee S có Active/Probation/OnLeave, không Resigned. Mặc định Q6, tách ba nhóm phụ, không đổi total_employees cũ chỉ Active. Active không “Có mặt hôm nay”; Thử việc là Probation riêng, không đổi rules payroll.
+
+Approved ngày D = distinct employee có LeaveRequest Approved, `from_date <= D <= to_date`; hai đơn cùng người không đếm hai, loại Pending/Rejected/Cancelled. Ghi “Theo khoảng ngày đơn nghỉ, không phải số người vắng”. Ngày phép/nửa ngày/lễ theo dịch vụ nghiệp vụ, không phép trừ ngày tự viết.
+
+Scope toàn Trung tâm dựa view_reports/báo cáo nghỉ hiện có. approve_leave chỉ chứng minh Pending; chưa đủ Approved cho HR_OFFICER/DEPT_MANAGER, mặc định ẩn phần chưa policy.
+
+Active và nghỉ được duyệt là hai loại thông tin khác nhau.
+
+### 5.2 Hợp đồng — Đợt 1
+
+Phân bố loại: Contract Active, start_date≤D, end_date null hoặc ≥D, S được manage_hr đọc; nhóm ContractType thật. Mẫu số **hợp đồng**, không người; nhiều hiệu lực một người vẫn nhiều hợp đồng.
+
+Donut ≥2 nhóm; một nhóm dùng số/tỷ trọng + bảng; 0 hợp đồng empty_state. Nhãn trực tiếp/ký hiệu/bảng loại–số–tỷ trọng, không chỉ màu; tooltip dùng bàn phím. SVG/CSS thuần, không chart library.
+
+Sắp hết hạn: Active, start_date≤D, `D <= end_date <= D+60 ngày`, sort end_date/pk. Tối đa năm dòng, tổng cả queryset; tên/mã/loại/số hợp đồng/ngày hết hạn/ngày còn lại. D “Hết hạn hôm nay”; ≤7 danger, 8–30 warning, 31–60 info luôn có chữ. Ngưỡng trình bày không đổi status/gia hạn. Vô hạn không nằm trong sắp hết hạn.
+
+Quá hạn riêng: Active nhưng end_date<D là dữ liệu/chưa xử lý; không nhập 60 ngày tương lai. Expired/Terminated muốn hiện có nhãn/công thức riêng. GET không cập nhật, không POST gia hạn từ card.
+
+Phân biệt được sắp đến hạn với bản ghi quá hạn.
+
+### 5.3 Định biên năm — Đợt 1
+
+HeadcountPlan(year, department, planned_headcount) + with_headcounts(); actual Active hiện tại như helper. Nhãn Định biên kế hoạch năm Y / Nhân sự Active hiện tại, không “đã duyệt”/actual lịch sử vì không approval/snapshot.
+
+Hai thanh actual/planned chung thang max toàn biểu đồ; actual cùng sắc thương hiệu mọi phòng, planned token đối chiếu đã đo. Nhãn actual/planned, không chuẩn mỗi hàng 100%; bảng phòng/actual/planned/chênh lệch/tỷ lệ đối chiếu tổng.
+
+Thiếu kế hoạch = Chưa nhập kế hoạch, không 0. Field planned không nullable; null DTO là thiếu bản/nguồn lỗi. `planned = 0`: Kế hoạch 0; không tính tỷ lệ. Planned>0: actual/planned ×100, vượt giữ >100%. Không phòng = Chưa xác định, không tự tạo kế hoạch.
+
+UniqueConstraint UX_Headcount_Year_Dept từ chối trùng năm/phòng; legacy/lỗi vẫn trùng báo partial, không chọn gần nhất/cộng trùng. Không property query theo phòng khi thiếu annotation.
+
+Định biên so kế hoạch năm với hiện trạng, chưa phải lịch sử đã duyệt.
+
+### 5.4 Việc cần xử lý — Đợt 1
+
+Count/row cùng selector scoped trang duyệt/guard POST thật. Bắt đầu _approvable_leave_requests; nhóm hồ sơ/tài liệu/tuyển dụng/hoạt động/checklist chỉ thêm sau đối chiếu selector. Chưa selector chung thì chưa bật, không count rộng/link hẹp.
+
+Selector nghỉ Pending toàn Trung tâm cho HR_MANAGER/DIRECTOR/superuser, managed_departments cho DEPT_MANAGER linked. Đơn tự mình có thể nằm trong list nhưng POST cấm tự duyệt: không CTA duyệt dòng đó, không gọi tổng “tôi được phép duyệt” khi chưa loại đúng. Tổng actionable mới cần thống nhất selector với trang duyệt ở code riêng.
+
+DIRECTOR không approve_recruitment, không tổng Pending core thành CTA duyệt tuyển dụng. Quyền từng nhóm riêng; GET sang list, quyết định POST/CSRF/confirmation/transaction ở nghiệp vụ, không duyệt hàng loạt dashboard.
+
+Số việc và danh sách mở ra phải cùng phạm vi.
+
+### 5.5 Đợt 2 / lịch sử Đợt 3
+
+Nghỉ gần đây tối đa sáu dòng created_date DESC/pk DESC, total_days nghiệp vụ/scope lịch sử được duyệt. Không lý do/chứng từ/sức khỏe; Pending và Approved không chung quyền suy diễn.
+
+Tuyển dụng: JobPosting Open là tin mở; SUM chỉ tiêu distinct RecruitmentRequest liên quan, không nhân theo số tin. Approved RecruitmentRequest thay thế phải nhãn Nhu cầu tuyển đã duyệt. Candidate chưa liên kết vị trí/phòng đủ để suy scope, không source text làm khóa. Tối đa ba hồ sơ được đọc, badge registry. Hired hiện tại không tuyển trong tháng.
+
+Cập nhật gần đây tối đa tám bản được đọc theo timestamp/khóa ổn định. Chỉ “Đã cập nhật hồ sơ …”, không actor nếu thiếu nguồn/modified_date thành ngày duyệt/chốt/điều chuyển. Event đầy đủ cần kiểm kê; SecurityEvent/LogEntry không bao phủ mặc định mọi luồng.
+
+Đợt 3 trend/tỷ lệ có mặt tuần/hired_at/kế hoạch đã duyệt/transition/phân bổ lịch sử. Late/Absent chỉ bản ghi đã có; thiếu không Absent. Chưa lịch/mẫu số không tỷ lệ. Thai sản cần taxonomy LeaveType xác nhận, không dò tên tiếng Việt.
+
+Thiếu lịch sử thì bỏ chỉ số lịch sử, không số gần đúng.
+
+### 5.6 Tiền — một nơi duy nhất, mặc định ẩn
+
+Nhật ký **09/10/2026 — Bỏ thông tin lương nhạy cảm khỏi Trang chủ** gỡ KPI/context lương, giữ Phiếu lương riêng. Không tự đảo quyết định. **Mọi tiền, kể cả tài chính/superuser, ẩn tới khi chủ dự án duyệt policy dashboard.** Sau duyệt manage_finance bắt buộc; view_reports/view_employee_compensation/use_salary_scale_form không cấp quỹ lương. HR/DIRECTOR cần policy/quyền riêng, không âm thầm đổi PERMISSION_MATRIX.
+
+Đủ policy: Tổng Gross kỳ lương = SUM Payroll.gross_income theo Period M/S; Phụ cấp kỳ lương = SUM allowance cùng scope. Gross không tổng chi phí Trung tâm; không cộng allowance lần nữa/tách ăn ca/xăng xe/điện thoại khi thiếu taxonomy. Aggregate nguồn riêng trước join, Decimal không float.
+
+**Số đầy đủ ui_vnd bắt buộc**, căn phải/tabular-nums/truy cập bàn phím và trình đọc màn hình. `550,9 triệu` chỉ phụ chú, không thay số đầy đủ/đổi rounding backend. Số khác ui_number, ngày ui_date, Việt Nam.
+
+Ghi kỳ/Open/Locked/số dòng/độ đầy đủ. Open tạm tính, Locked khóa thật. Thiếu kỳ khác không dòng, không quỹ lương 0 hoàn tất; Payslip khác dòng Payroll. Readiness/chữ ký tính/khóa có sẵn, không gross_income !=0 làm cờ; phòng hiện tại không thay snapshot phòng kỳ lịch sử.
+
+Duyệt bố cục không đồng nghĩa mở lại lương trên Trang chủ.
+
+## 6. Lệch giữa ảnh Atoms và dữ liệu IHRMS
+
+| Chi tiết ảnh | Có nguồn thật không? | Nhãn trung thực / xử lý |
+| --- | --- | --- |
+| Quỹ lương/phụ cấp | Có Payroll/Period, policy dashboard chưa duyệt | Ẩn; sau duyệt Tổng Gross / Phụ cấp kỳ lương, mục 5.6 |
+| Đã tuyển trong tháng | Hired có, thiếu ngày chuyển Hired tin cậy | Bỏ theo tháng; có thể Tổng hồ sơ đang ở trạng thái Hired trong scope được phép |
+| +2 so tháng trước | Status hiện tại không đủ hai kỳ | Bỏ trend tới khi có lịch sử tương thích |
+| Đã chốt bảng lương trên timeline | Status kỳ thật, chưa tự chứng minh event/actor/thời điểm | Trạng thái kỳ được đọc; bỏ event nếu thiếu log |
+| Đã duyệt nghỉ phép trên timeline | Status/ngày nghỉ không tự là event duyệt | Đơn Approved/Cập nhật gần đây; event cần nguồn xác nhận |
+| Đã điều chuyển trên timeline | Có nguồn điều chuyển, ngày hiệu lực khác thao tác | Ngày hiệu lực thật, không suy actor/action từ modified_date |
+| Thanh định biên 3/10 | Kế hoạch/actual Active có, không approval | Active hiện tại / Định biên kế hoạch năm, không sao chép số 3/10 |
+| Có mặt 73%, thai sản | Attendance/LeaveType có, mẫu số/taxonomy chưa chốt | Hoãn phần chưa rõ; Active không có mặt |
+| Giờ ca/nghỉ trưa/search email | WorkShift chưa đủ liên kết, search tên/mã | Hoãn shell, không hard-code/quảng cáo email |
+
+Ảnh là mẫu thông tin rõ ràng, không chứng minh mọi nguồn đã có.
+
+## 7. Ma trận vai trò × khối và hồ sơ liên kết
+
+**Gate đề xuất cho khối mới dựa quyền/route đã đọc**, không phải khối đã hiện ở Trang chủ. “Thấy” là chỉ số không tiền trong scope ghi; “Ẩn (Q)” là thiếu policy/mâu thuẫn, không render. Không suy quyền từ tên vai trò/is_staff.
+
+### 7.1 Đợt 1
+
+| Vai trò/cờ | Status nhân sự | Approved ngày D | Hạn + quá hạn | Loại hợp đồng | Định biên năm | Việc cần xử lý |
+| --- | --- | --- | --- | --- | --- | --- |
+| EMPLOYEE | Ẩn | Ẩn | Ẩn | Ẩn | Ẩn | Chỉ cá nhân hiện có |
+| DEPT_MANAGER | Thấy phòng quản lý nếu linked | Ẩn (Q: Approved khác Pending) | Ẩn | Ẩn | Ẩn | Nhóm có quyền; nghỉ Pending trong phòng quản lý |
+| HR_OFFICER | Thấy view_all_employees | Ẩn (Q: không view_reports) | Thấy manage_hr | Thấy manage_hr | Ẩn | Profile/lifecycle hợp lệ, không approve_leave |
+| HR_MANAGER | Thấy toàn Trung tâm | Thấy view_reports | Thấy manage_hr | Thấy manage_hr | Thấy view_reports | Từng quyền duyệt, gồm tuyển dụng; không mọi workflow |
+| DIRECTOR | Thấy toàn Trung tâm | Thấy view_reports | Ẩn (Q: route chặn) | Ẩn (Q: quyền hợp đồng) | Thấy view_reports | Từng quyền duyệt, không tuyển dụng |
+| FINANCE_OFFICER (kế toán) | Ẩn | Ẩn | Ẩn | Ẩn | Ẩn | Chỉ nhóm riêng như mua sắm, không HR |
+| SYS_ADMIN | Ẩn | Ẩn | Ẩn | Ẩn | Ẩn | Chỉ approve_office_request, không HR |
+| SUPER_ADMIN không is_superuser | Ẩn (Q: không view_all_employees) | Ẩn | Ẩn | Ẩn | Ẩn | Quyền thật, không suy toàn quyền |
+| is_superuser=True, active | Thấy toàn Trung tâm | Thấy | Thấy | Thấy | Thấy | Guard thật, không bỏ cấm tự duyệt |
+| is_staff=True, không superuser | Theo vai trò | Theo vai trò | Theo vai trò | Theo vai trò | Theo vai trò | Theo vai trò |
+
+Core chưa management block HR_OFFICER; đề xuất thêm status không tiền theo Read All hiện có, không thêm approve/reports. Trưởng phòng dùng managed_departments, không thay bằng phòng hồ sơ. Approved chỉ scope báo cáo nghỉ; approve Pending không tự cho lịch sử.
+
+RBAC cho DIRECTOR xem hợp đồng, hr_contract_list đòi manage_hr và hiện 403. Chưa chốt đường đọc thì ẩn khối hợp đồng mới; số hợp đồng báo cáo cũ không tự mở danh sách/hồ sơ. RBAC mô tả Super Admin toàn quyền nhưng has_permission cấp bằng **is_superuser**, không chỉ SUPER_ADMIN: giữ mã thật, ghi Q8. Không ACCOUNTANT; kế toán FINANCE_OFFICER.
+
+Tên vai trò không thay kiểm quyền thật.
+
+### 7.2 Đợt 2–3 và khung riêng
+
+| Vai trò | Nghỉ gần đây | Tuyển dụng / ứng viên | Cập nhật gần đây | Mọi tiền | Trend/tỷ lệ/timeline | Header 2/search |
+| --- | --- | --- | --- | --- | --- | --- |
+| EMPLOYEE | Cá nhân, không lịch sử Trung tâm | Ẩn | Ẩn quản trị | Ẩn (Q2) | Ẩn | Hoãn |
+| DEPT_MANAGER | Ẩn (Q: lịch sử) | Đề xuất theo scope cũ; ứng viên ẩn | Ẩn (Q: scope) | Ẩn (Q2) | Ẩn tới đủ nguồn/policy | Hoãn |
+| HR_OFFICER | Ẩn (Q: lịch sử) | Ứng viên manage_hr, tin mở chờ scope | Nguồn được đọc, chờ kiểm kê | Ẩn (Q2) | Ẩn tới đủ nguồn/policy | Hoãn |
+| HR_MANAGER | Scope báo cáo, đích chi tiết cần chốt | Ứng viên manage_hr, tin mở chờ scope | Nguồn được đọc, chờ kiểm kê | Ẩn (Q2) | Ẩn tới đủ nguồn/policy | Hoãn |
+| DIRECTOR | Scope báo cáo, không tự mở HR list | Ẩn ứng viên, không approve_recruitment | Nguồn đọc, không vượt guard | Ẩn (Q2) | Ẩn tới đủ nguồn/policy | Hoãn |
+| FINANCE_OFFICER | Ẩn | Ẩn | Tài chính nếu policy cho | Ẩn (Q2), manage_finance chưa đủ một mình | Ẩn tới đủ nguồn/policy | Hoãn |
+| SYS_ADMIN | Ẩn | Ẩn | Kỹ thuật/office được đọc, không timeline HR | Ẩn (Q2) | Ẩn | Hoãn |
+| SUPER_ADMIN không superuser | Quyền thật | Quyền thật | Quyền thật | Ẩn (Q2) | Ẩn tới đủ nguồn/policy | Hoãn |
+| Superuser active | Nguồn thật | Nguồn thật/scope | Nguồn thật/loại sự kiện | Ẩn (Q2) | Ẩn tới đủ nguồn/policy | Hoãn |
+| Staff không superuser | Theo vai trò | Theo vai trò | Theo vai trò | Ẩn (Q2) | Theo vai trò/nguồn | Hoãn |
+
+Bảng là điều kiện triển khai, không phải quyền mới đã duyệt.
+
+### 7.3 Linked / unlinked và guard chung
+
+| Tình trạng | Gate bổ sung |
+| --- | --- |
+| Có Employee | Theo role; hồ sơ không cấp quản trị; cá nhân lọc đúng employee |
+| Chưa Employee | Không số cá nhân/CTA cần employee; DEPT_MANAGER không scope phòng; HR_MANAGER/HR_OFFICER/DIRECTOR quyền global vẫn theo bảng, không lấy cá nhân người khác |
+| Superuser linked/unlinked | Global giữ; hành động cần Employee giữ guard; link Admin gắn hồ sơ chỉ cả is_superuser/is_staff như home_presentation |
+| Staff linked/unlinked | Chỉ thêm view_admin_menu, không nghiệp vụ/link vượt guard |
+| Không active/chưa đăng nhập | Không snapshot, giữ xác thực/has_permission |
+
+PROJECT_MANAGER/PROJECT_COORDINATOR/CBDA giữ dự án theo quyền, không mặc định HR. Denied section loại trước query/serialize/render, không CSS ẩn.
+
+Được vào Trang chủ không nghĩa xem mọi khối.
+
+## 8. Kiến trúc/context đề xuất
+
+Giữ Django SSR/portal:dashboard. Service đọc đề xuất apps/portal/dashboard_data.py/helper scope nếu cần, **chưa tạo**. home_presentation chỉ trình bày, không query mới. Dùng has_permission/data_access, không ma trận quyền thứ hai.
+
+Luồng: xác thực/quyền → S → parse D/Y/M → query khối được phép → DTO → component chung. Metric key/label/value(int/Decimal/null)/unit/state/period_label/scope_label/source_label/formula_label/numerator/denominator/note/href. Snapshot generated_at/operational_date/plan_year/section được phép. Chưa bật tiền không field tiền/query Payroll. `href=None` nếu đích không cùng scope/filter.
+
+GET không tạo summary/tính lương/sửa status/event nghiệp vụ. generated_at là lúc dựng trang, không cam kết transaction snapshot. Escape server, JSON nếu cần json_script, không innerHTML từ input. Lỗi có state, không lộ SQL/PII/token.
+
+Dữ liệu bị từ chối không được lấy và gửi ra trang.
+
+## 9. Hạng mục riêng: GET chỉ đọc / drill-down
+
+Tham số **đề xuất**, không phải đã triển khai. Code riêng sau duyệt, giữ URL name/POST/CSRF/field/guard. Card/đích cùng selector/ngày/status/scope; department GET không mở rộng quyền.
+
+| Route hiện có | GET đề xuất / hiện có | Queryset trùng card | Gate trước link |
+| --- | --- | --- | --- |
+| portal:hr_employee_list | employment_status/department; q tên/mã hiện có | Employee S/status; tổng nhiều status cần parser thống nhất | Xác minh tham số, thiếu thêm parser/test trước |
+| portal:hr_contract_list | as_of=YYYY-MM-DD; expiry=upcoming/overdue; horizon=60; contract_type; status=Active | Selector hạn/hiệu lực/type mục 5.2 | Chưa filters, manage_hr bắt buộc, Director không link |
+| portal:leave_approval_list | Pending hiện có; date_from/date_to nếu thêm | _approvable_leave_requests/cấm tự duyệt | Không mở Approved, chưa kỳ không link kỳ |
+| portal:leave_list | status/on_date=YYYY-MM-DD nếu thêm | Own Employee | Không đích Approved toàn Trung tâm |
+| portal:report_headcount | year hiện có; department nếu thêm | HeadcountPlan Y/with_headcounts | view_reports, xác minh scope/phòng |
+| portal:recruitment_list | status=Pending/kỳ nếu thêm | managed_departments_for(global_roles=(HR_MANAGER,))/approve_recruitment | Không tổng Pending link mọi status chưa lọc |
+
+Chưa đích Approved toàn Trung tâm ngày D được duyệt: chỉ số href=None. Không thêm route vượt 403. Link riêng Mở danh sách tổng có thể đúng quyền, không cả card link nếu khác số.
+
+Test filter biên ngày/status, sai tham số/ngày đảo/phòng ngoài scope, count bằng kết quả đích cùng fixture, pagination/GET không ghi/quyền URL. Reverse được, không link403/redirect sai quyền; trước parser/queryset/test, không link/cursor pointer giả.
+
+Chỉ bấm được khi trang mở ra giải thích đúng số đó.
+
+## 10. Query budget và đo
+
+Mục tiêu **≤20 SELECT** Đợt 1, cả render/lazy trên fixture cố định, **chưa đo**. Baseline cá nhân/dự án nếu vượt thì báo/xử lý riêng, không bỏ query khỏi số đếm/thay nghiệp vụ.
+
+G3–G5: fixture giả cố định, cùng role/scope/ngày/backend; login/warm-up ngoài đo. CaptureQueriesContext quanh GET/render, tách SELECT/câu ghi. Đo trước/sau/lạnh/warm-up theo role/profile/backend thật; không số G5 cũ chứng minh dashboard.
+
+Tăng tối đa đề xuất: status +1 SELECT, Approved +1, hạn/loại hợp đồng +3 tổng, định biên +2, mỗi nhóm queue +1 khi row/count dùng chung kết quả/annotation. Baseline + tăng của **khối được phép** vẫn ≤20. Không query đủ khối mọi role; vượt rà aggregate/thu hẹp đợt/báo thật. assertNumQueries ca ổn định; đo SELECT khi auth/render baseline đổi.
+
+Gate trước query; conditional Count/Sum/select_related/with_headcounts/group-by. Không vòng lặp query/load mọi row đếm Python. Thêm 100 phòng/1.000 người không tăng query theo dòng. Aggregate nguồn độc lập trước join, không SUM(DISTINCT amount) vá join vì khoản bằng nhau vẫn riêng.
+
+List 5 hợp đồng/6 nghỉ/8 cập nhật/3 ứng viên theo đợt. Cache không bắt buộc; nếu có key user/scope/quyền/D/Y/M, TTL≤60 s/invalidation quyền, không cache global dữ liệu hạn chế. p95≤1,5 s mục tiêu máy UAT ghi cấu hình/fixture/backend, không suy mock.
+
+Người dùng thường không trả query cho khối quản trị bị ẩn.
+
+## 11. Test nghiệm thu đề xuất Đợt 1
+
+Tệp đề xuất `src/apps/portal/test_home_dashboard.py`, nhãn `apps.portal.test_home_dashboard`; có thể tách `test_home_dashboard_filters.py` cho GET. **Chưa tạo/chưa chạy** trong lượt tài liệu; fixture giả/DB/media cách ly qua runner, không ghi dữ liệu vận hành.
+
+| Nhóm test | Fixture / điều kiện đạt |
+| --- | --- |
+| Role × khối | Mọi role mục 7/linked/unlinked/superuser/staff/SUPER_ADMIN không cờ; denied block/giá trị không HTML/JSON; mọi tiền vắng khi chưa policy |
+| Status / toàn 0 | Active/Probation/OnLeave/Resigned/không phòng, không nhân đôi join; 0 hiện 0, thiếu/null/lỗi không thành 0 |
+| Approved D | Hai đơn cùng người, biên ngày từ/đến bằng D, Pending/Rejected/Cancelled/ngoài scope; distinct người/không đổi total_days/nửa ngày |
+| Hợp đồng | Vô hạn/D/D+60/D+61/D−1/start tương lai/Active/Expired/Terminated; quá hạn riêng, GET không sửa status |
+| Nhiều hiệu lực | Một người nhiều hợp đồng đếm hợp đồng không người; donut 0/1/≥2 nhóm/bảng thay thế |
+| HeadcountPlan | Không kế hoạch/null DTO/planned=0/actual vượt/không phòng; trùng năm/phòng constraint từ chối, legacy trùng partial không cộng |
+| Queue | Count/row đúng selector; phòng quản lý khác phòng hồ sơ, unlinked không scope; không tự duyệt, Director không duyệt tuyển dụng |
+| SUM không nhân đôi | Join một-nhiều, hai khoản bằng nhau tính một lần mỗi khoản. Tiền/Decimal/rounding test riêng nếu bật sau; Đợt 1 không query Payroll |
+| GET không ghi | CaptureQueriesContext không INSERT/UPDATE/DELETE; snapshot hàng trước/sau không đổi, không get_or_create summary/status |
+| Query | assertNumQueries role ổn định, baseline/sau SELECT≤20, tăng row không N+1; ordinary user không query Contract/Payroll/HeadcountPlan bị ẩn |
+| Filter/link | Đúng/sai/ngoài scope/biên ngày; count khớp đích, thiếu filter href=None, không403 |
+
+Khi code: focused ops/run_tests.py --backend sqlite nhãn mới; suite/backend liên quan DB riêng, ghi số test/exit thật. SQL Server/UAT chưa chạy ghi chưa kiểm thử; SQLite không bằng chứng thay thế.
+
+UI: 1920/1440/1024/768/360 px × light/dark, Tab/Enter/Escape/drawer/reduced-motion/zoom/chart/table labels; contrast script cặp mới. HCNS/in/PDF/Word/Excel giữ nguyên, regression phù hợp nếu bị ảnh hưởng. Không WCAG/hoàn tất chỉ bằng danh sách đề xuất.
+
+**Lượt sửa tài liệu:** duy nhất kiểm bắt buộc `git diff --check`; không Django/contrast vì không code/ops/check_ui_contrast.py. Không dùng kết quả cũ.
+
+Đây là điều kiện triển khai, chưa phải kết quả đạt.
+
+## 12. Rủi ro và việc không làm
+
+Không quick-attendance Đúng giờ/Muộn/Phép/Vắng hoặc kanban kéo-thả: cần nghiệp vụ/quyền ghi/kiểm toán riêng. Board hiện có chỉ đọc scope được phép. Không đổi tính lương/nghỉ/khóa/duyệt/view/model/migration/quyền/URL name/field/CSRF/POST/dependency/giấy HCNS lượt này.
+
+Không lý do nghỉ/chứng từ sức khỏe/lương cá nhân/email/CCCD trên dashboard; tên/mã tối thiểu khi quyền/nguồn cho phép. Không dữ liệu mẫu thành thật/secret hoặc PII vào Git/ảnh nghiệm thu. Không status hiện tại thành lịch sử/GET chữa quá hạn/kế hoạch trùng.
+
+Còn mở: brand cũ MASTER, quyền Director hợp đồng/SUPER_ADMIN, policy tiền, scope nghỉ/tin tuyển/cập nhật, lịch sử/lịch ca, filters chưa có, query chưa đo. Gate hoãn/ẩn từng điểm không chặn khối độc lập đủ nguồn/quyền.
+
+Lượt này tạo bản đặc tả để duyệt, không đổi ứng dụng.
+
+## 13. Phân kỳ triển khai
+
+**Đợt 1:** status nhân sự; Approved D cho scope báo cáo; sắp hết hạn + quá hạn riêng; loại hợp đồng; định biên năm; queue selector trang duyệt. Giữ cá nhân/dự án; role đủ mục 7, không chờ Director hợp đồng/policy tiền. GET filters riêng, chưa có không link. Test/query/UI thật, không chỉ CSS.
+
+**Đợt 2:** nghỉ gần đây/tuyển dụng mở/ứng viên/Cập nhật gần đây sau scope/đích. Gross/phụ cấp chỉ sau Q2; chưa policy vẫn ẩn, bàn giao được phần không tiền. Không chuyển các khối này lại Đợt 1.
+
+**Đợt 3:** giữ trend/tỷ lệ có mặt tuần/định biên đã duyệt/timeline transition/hired_at/phân bổ chi phí lịch sử. Chốt nguồn/policy trước, schema nếu cần giao/duyệt riêng, không giả số khớp ảnh.
+
+**Shell riêng — hoãn:** search/header tầng 2/giờ ca/kỳ lương/badge, không gộp ba đợt dashboard. Q7 đủ nguồn/route/scope mới mở.
+
+Duyệt đợt nào chỉ triển khai khối đủ điều kiện đợt đó.
+
+## 14. Quyết định cần chủ dự án chốt
+
+| Mã | Cần duyệt | Mặc định an toàn khi chưa chốt |
+| --- | --- | --- |
+| Q1 | Navy–teal theo Atoms hay quay tím; câu violet MASTER dòng 11 | Giữ tokens đang chạy, không đổi brand lần nữa; đồng bộ MASTER/DESIGN nhiệm vụ riêng được duyệt |
+| Q2 | Quỹ lương dashboard có mở không; Finance/superuser/HR/Director xem mức nào? | Mọi tiền ẩn, Phiếu lương cá nhân riêng; nếu mở manage_finance điều kiện cần, HR/Director policy/quyền riêng |
+| Q3 | Director đọc hợp đồng đích nào; RBAC và manage_hr lệch? | Ẩn khối mới/không link hr_contract_list, không cấp sửa/gia hạn để đạt đọc |
+| Q4 | Mẫu số có mặt người/ngày/ca; phép/lễ/nửa ngày/nguồn thiếu? | Hoãn tỷ lệ, Active không có mặt/thiếu Attendance không vắng |
+| Q5 | Event/lịch sử/hired_at/ngày tuyển chính thức/snapshot chuẩn? | Không trend/transition/tuyển theo tháng; status hiện tại/Cập nhật gần đây sau kiểm kê |
+| Q6 | Tổng nhân sự đang quản lý hay mọi hồ sơ gồm Resigned? | Nhân sự đang quản lý Active+Probation+OnLeave, tách Active, không đổi total_employees |
+| Q7 | Search/header 2/giờ ca có làm không, route/ca nào? | Hoãn shell, tên/mã hiện có; không email/global/hard-code giờ |
+| Q8 | SUPER_ADMIN không cờ toàn quyền không; HR_OFFICER/DEPT_MANAGER lịch sử nghỉ tới đâu? | has_permission/guard thật, thiếu rõ thì ẩn, không suy role/approve Pending |
+
+Chủ dự án duyệt bảng này và Đợt 1 trước khi giao sửa mã dashboard.

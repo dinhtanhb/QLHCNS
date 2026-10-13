@@ -1,5 +1,19 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-13 — Sửa đặc tả dashboard Atoms để chủ dự án duyệt
+
+**Mục tiêu/phạm vi:** chỉ sửa `docs/DASHBOARD_ATOMS_TECH_SPEC.md` và mục nhật ký này. Dùng UI UX Pro Max, không dùng UI Styling/shadcn. Chưa triển khai dashboard hoặc thay quyền, dữ liệu, model, migration, URL, form, CSRF, giấy HCNS hay dependency. Chỉ làm trên `main`.
+
+**Kiểm kê:** `git branch --show-current` trả `main`; `git status --short` có nhật ký sửa sẵn và thư mục reference/spec chưa theo dõi. `git fetch origin main` thành công; `git rev-list --left-right --count HEAD...origin/main` trả 7/0. `git rev-parse HEAD` trả `cf8213554d829df3e7e094604f2bb36019a9638f`. Giữ nguyên các thay đổi có trước; chỉ stage phần tài liệu của đợt này.
+
+**Đã làm:** khôi phục mã commit, URL, hash và định dạng số/giờ trước khi sửa nội dung. Đọc lại tám ảnh Atoms, permissions.py, core/home_presentation và RBAC. Thêm bảng tóm tắt đầu tài liệu, ràng buộc kế thừa G2–G5, thành phần G4 dùng lại, bảng lệch dữ liệu và ma trận role × khối/linked/unlinked/superuser/staff. Thu nhỏ Đợt 1; nghỉ gần đây/tuyển dụng/cập nhật chuyển Đợt 2. Tách filters GET và app shell; chưa filter thì card không link. Quy định tiền đầy đủ qua ui_vnd, mọi khối tiền ẩn tới khi duyệt policy. Bổ sung cách đo query và test đề xuất, không ghi chúng là đã chạy. Tài liệu đã được ghi lại UTF-8 và đọc lại sau khi phát hiện luồng ghi ban đầu làm mất dấu.
+
+**Bằng chứng/mâu thuẫn:** `Get-FileHash -Algorithm SHA256` trên bản bundle trong TEMP xác nhận `0a6e78dadc448d4664a3f7abf9a015f29dd148704d8d5d1be2ca1c2ed29dac11`; không xác nhận website live hiện cùng bản. Lệnh `rg -n -- '--ui-brand:|--ui-sidebar-bg:|--ui-bg:|navy|teal|violet' src/static/css/ui_tokens.css DESIGN.md design-system/MASTER.md` xác nhận light teal #0b7461/navy #0c233b, dark teal #63dbc2. DESIGN dòng 43/76 và MASTER dòng 17 dùng navy–teal; MASTER dòng 11 còn violet. RBAC cho Director xem hợp đồng nhưng hr_contract_list đòi manage_hr, Director hiện bị chặn. SUPER_ADMIN không cờ không được has_permission cấp toàn quyền như mô tả tài liệu. Nhật ký 09/10/2026 đã gỡ lương khỏi Trang chủ; không tự đảo chính sách này. Không sửa MASTER/DESIGN/quyền trong đợt tài liệu.
+
+**Kiểm tra/kết quả:** `git diff --check` exit 0. Không chạy Django/backend/contrast vì chỉ sửa tài liệu và không sửa ops/check_ui_contrast.py, đúng phạm vi yêu cầu. Mục tiêu SELECT ≤20, test role/biên ngày/GET không ghi, tương phản hai theme và UAT là điều kiện đề xuất cho lượt code, chưa được kiểm thử trong đợt này. Không tuyên bố đạt WCAG hoặc đã triển khai.
+
+**Bàn giao:** được phép commit riêng `docs: revise dashboard spec` trên `main`; không push/deploy. Chủ dự án đọc mục 1 và chốt Q1–Q8 ở mục 14: thương hiệu, policy tiền, Director đọc hợp đồng, mẫu số có mặt, nguồn lịch sử/ngày tuyển, nghĩa tổng nhân sự, shell/search/ca và các lệch quyền còn lại. Mặc định ẩn/hoãn phần chưa rõ. Dừng trước khi triển khai; không cần người dùng tự chạy lệnh cho lượt tài liệu.
+
 ## 2026-10-12 — Thiết kế Atoms cho khung chung và các trang đã hoàn tất G5
 
 **Kiểm kê và phạm vi:** main, ahead6/behind0 sau fetch origin/main. Giữ nguyên các mục backup/export trước trong nhật ký và thư mục reference chưa theo dõi. Đã xem đủ8 ảnh design-system/reference/atoms bằng UI UX Pro Max; không dùng UI Styling/shadcn, không thêm dependency/CDN. Chủ dự án chọn “Khung chung + các trang đã hoàn tất G5”: trang chủ, Cá nhân, Nhân sự, Tuyển dụng, Kế toán. Yêu cầu mới cho phép đổi palette, thay quyết định tím trước đó; nguyên tắc nghiệp vụ/RBAC/CSRF/field constraints/44px/14px bảng/16px body/responsive/giấy HCNS vẫn giữ.
