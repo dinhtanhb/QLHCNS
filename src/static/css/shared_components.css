@@ -21,7 +21,10 @@
  .ui-history-form button { margin-top:var(--ui-space-2); }
  .ui-form-fieldset legend { font-size:var(--ui-component-heading); font-weight:var(--ui-font-weight-label); margin-bottom:var(--ui-space-4); }
  .ui-form-row,.ui-filter-bar { display:flex; flex-wrap:wrap; align-items:end; gap:var(--ui-space-4); }
- .ui-form-row .ui-field,.ui-filter-bar .ui-field { flex:1 1 var(--ui-table-col-small); }
+ .ui-form-row .ui-field { flex:1 1 var(--ui-table-col-small); }
+ .ui-filter-bar .ui-field { flex:0 1 24rem; max-width:100%; }
+ .ui-filter-bar .ui-field:has(select) { flex-basis:18rem; }
+ .ui-filter-bar .ui-field:has(input:is([type=date],[type=month],[type=number])) { flex-basis:12rem; }
  .ui-field { min-width:0; }
  .ui-field label,.ui-field-label { display:block; margin-bottom:var(--ui-space-2); font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); }
  .portal-app .ui-main .ui-page .ui-field :is(input,select):not([type=hidden]):not([type=checkbox]):not([type=radio]):not(.ui-number-source) { width:100%; min-width:0; height:var(--ui-control-height); min-height:var(--ui-control-height); }
@@ -71,6 +74,11 @@
  .ui-row-menu summary { display:inline-flex; align-items:center; gap:var(--ui-space-2); cursor:pointer; }
  .ui-row-actions { display:grid; gap:var(--ui-space-2); margin-top:var(--ui-space-2); text-align:left; }
  .ui-row-actions a { font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); display:flex; align-items:center; min-height:var(--ui-target-min); padding:var(--ui-space-2); }
+ .ui-row-popover { position:fixed; inset:auto; margin:0; width:16rem; max-width:calc(100vw - var(--ui-space-8)); max-height:calc(100dvh - var(--ui-space-8)); overflow:auto; padding:var(--ui-space-2); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); background:var(--ui-surface); color:var(--ui-text); box-shadow:var(--ui-shadow-overlay); }
+ .ui-row-popover:not(:popover-open) { display:none; }
+ .ui-row-popover a { color:var(--ui-text); text-decoration:none; border-radius:var(--ui-radius-control); }
+ .ui-row-popover a:hover { background:var(--ui-hover-bg); }
+ .ui-row-popover a:focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:calc(-1 * var(--ui-focus-width)); }
  .ui-kpi-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--ui-space-6); }
  .ui-kpi { display:flex; flex-direction:column; gap:var(--ui-space-3); }
  .ui-kpi-label { min-height:calc(var(--ui-font-size-small) * var(--ui-line-height-body) * 2); font-size:var(--ui-font-size-small); color:var(--ui-text-muted); }
@@ -89,7 +97,7 @@
  .ui-dialog .ui-button { display:inline-flex; min-height:var(--ui-control-height); align-items:center; justify-content:center; padding:var(--ui-space-2) var(--ui-space-4); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); cursor:pointer; }
  .ui-dialog .ui-button--primary { background:var(--ui-brand); color:var(--ui-on-brand); border-color:var(--ui-brand); }
  .ui-dialog .ui-button--secondary { background:var(--ui-surface); color:var(--ui-text); }
- @media(max-width:767px) { .ui-form-grid,.ui-detail-grid,.ui-detail-sections { grid-template-columns:1fr; } .ui-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .ui-form-row,.ui-filter-bar { flex-direction:column; align-items:stretch; } .ui-form-row .ui-field,.ui-filter-bar .ui-field { flex:auto; } }
+ @media(max-width:767px) { .ui-form-grid,.ui-detail-grid,.ui-detail-sections { grid-template-columns:1fr; } .ui-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .ui-form-row { flex-direction:column; align-items:stretch; } .ui-form-row .ui-field { flex:auto; } .ui-filter-bar .ui-field { flex:1 1 100%; } }
  @media(min-width:768px) { .ui-page-actions { margin-left:auto; } }
  @media(min-width:1024px) { .ui-kpi-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
  @media(min-width:1440px) { .ui-kpi-grid { grid-template-columns:repeat(6,minmax(0,1fr)); } }

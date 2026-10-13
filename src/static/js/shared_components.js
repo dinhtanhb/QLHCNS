@@ -1,6 +1,35 @@
 /* Opt-in validation and confirmation. Native form names/actions/CSRF are preserved. */
 (() => {
  'use strict';
+ document.querySelectorAll('.ui-row-dropdown button[popovertarget]').forEach(button => {
+  const menu=document.getElementById(button.getAttribute('popovertarget'));
+  if(!menu)return;
+  function position(){
+   const rect=button.getBoundingClientRect();
+   const width=menu.offsetWidth,height=menu.offsetHeight,gap=8;
+   menu.style.left=Math.max(gap,Math.min(rect.right-width,innerWidth-width-gap))+'px';
+   const below=innerHeight-rect.bottom-gap;
+   menu.style.top=Math.max(gap,below>=height?rect.bottom+gap:Math.min(rect.top-height-gap,innerHeight-height-gap))+'px';
+  }
+  menu.addEventListener('toggle',event=>{
+   const open=event.newState==='open';button.setAttribute('aria-expanded',String(open));
+   if(open){position();menu.querySelector('a')?.focus({preventScroll:true});}
+  });
+  menu.addEventListener('keydown',event=>{
+   const links=Array.from(menu.querySelectorAll('a'));
+   if(event.key==='Escape'){event.preventDefault();menu.hidePopover();button.focus();}
+   else if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){
+    event.preventDefault();const index=links.indexOf(document.activeElement);
+    const target=event.key==='Home'?0:event.key==='End'?links.length-1:(index+(event.key==='ArrowDown'?1:-1)+links.length)%links.length;
+    links[target]?.focus();
+   }
+  });
+  const close=()=>{if(menu.matches(':popover-open'))menu.hidePopover();};
+  window.addEventListener('resize',close);
+  document.addEventListener('scroll',event=>{
+   if(!menu.contains(event.target)&&menu.matches(':popover-open'))position();
+  },true);
+ });
  document.querySelectorAll('form[data-ui-form]').forEach(form => {
   const summary=form.querySelector('[data-ui-errors]');
   const controls=()=>Array.from(form.elements).filter(e=>e.matches?.('input,select,textarea')&&e.type!=='hidden'&&e.willValidate&&!e.classList.contains('ui-number-display'));

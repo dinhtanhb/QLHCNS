@@ -43,9 +43,9 @@
     }
 </style>
 
-<header class="ui-page-header no-print"><h1 class="ui-page-title">Bảng chấm công</h1><div class="ui-page-actions"><form method="get" class="ui-filter-bar"><div class="ui-field"><label for="timesheet-month">Tháng</label><select id="timesheet-month" name="month" onchange="this.form.submit()">{% for m in months %}<option value="{{ m }}" {% if m == month %}selected{% endif %}>Tháng {{ m|ui_number }}</option>{% endfor %}</select></div><div class="ui-field"><label for="timesheet-year">Năm</label><select id="timesheet-year" name="year" onchange="this.form.submit()">{% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y|ui_number }}</option>{% endfor %}</select></div></form><button onclick="window.print()" class="ui-button" type="button">{% include "_shell_icon.html" with name="office" %}In bảng công</button></div></header>
+<header class="ui-page-header no-print"><h1 class="ui-page-title">Bảng chấm công</h1><div class="ui-page-actions"><form method="get" class="ui-filter-bar"><div class="ui-field"><label for="timesheet-month">Tháng</label><select id="timesheet-month" name="month" onchange="this.form.submit()">{% for m in months %}<option value="{{ m }}" {% if m == month %}selected{% endif %}>Tháng {{ m|ui_number }}</option>{% endfor %}</select></div><div class="ui-field"><label for="timesheet-year">Năm</label><select id="timesheet-year" name="year" onchange="this.form.submit()">{% for y in years %}<option value="{{ y|ui_year }}" {% if y == year %}selected{% endif %}>{{ y|ui_year }}</option>{% endfor %}</select></div></form><button onclick="window.print()" class="ui-button" type="button">{% include "_shell_icon.html" with name="office" %}In bảng công</button></div></header>
 <section class="ui-card no-print"><h2 class="ui-card-title">Ghi nhận giờ làm việc</h2><form method="post" action="{% url 'portal:timesheet_entry_create' %}" data-ui-form>{% csrf_token %}{% include "ui/error_summary.html" %}<div class="ui-form-grid">
-<div class="ui-field"><label for="timesheet-work-date">Ngày làm việc <span class="ui-required" aria-hidden="true">*</span></label><input id="timesheet-work-date" type="date" name="work_date" required value="{{ year }}-{{ month|stringformat:'02d' }}-01" min="{{ year }}-{{ month|stringformat:'02d' }}-01"><p class="ui-field-error" id="timesheet-work-date-error" hidden></p></div>
+<div class="ui-field"><label for="timesheet-work-date">Ngày làm việc <span class="ui-required" aria-hidden="true">*</span></label><input id="timesheet-work-date" type="date" name="work_date" required value="{{ year|ui_year }}-{{ month|stringformat:'02d' }}-01" min="{{ year|ui_year }}-{{ month|stringformat:'02d' }}-01"><p class="ui-field-error" id="timesheet-work-date-error" hidden></p></div>
 <div class="ui-field"><label for="timesheet-project">Dự án</label><select id="timesheet-project" name="project"><option value="">-- Không thuộc dự án --</option>{% for p in projects %}<option value="{{ p.id }}">{{ p.project_name }}</option>{% endfor %}</select></div>
 {% include "ui/field.html" with id="timesheet-task" name="task_description" label="Công việc thực hiện" placeholder="Công việc thực hiện" %}
 {% include "ui/field.html" with id="timesheet-hours" name="hours" type="number" step="0.5" label="Số giờ" placeholder="Số giờ" required=True %}
@@ -59,7 +59,7 @@
         <p><span class="font-semibold">Họ và tên:</span> {{ summary.employee.full_name|ui_number }}</p>
         <p><span class="font-semibold">Chức vụ:</span> {{ summary.employee.position|ui_number }}</p>
         <p><span class="font-semibold">Phòng/Ban:</span> {{ summary.employee.department|ui_number }}</p>
-        <p><span class="font-semibold">Thời gian:</span> Tháng {{ month }} năm {{ year }}</p>
+        <p><span class="font-semibold">Thời gian:</span> Tháng {{ month }} năm {{ year|ui_year }}</p>
     </div>
 
     <div class="overflow-x-auto mobile-table-scroll ui-scroll" role="region" tabindex="0" aria-label="Bảng công trong tháng">
@@ -135,7 +135,7 @@
     <div class="timesheet-summary-layout grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
         <form method="post" action="{% url 'portal:timesheet_summary_update' %}" class="text-sm" data-ui-form>
             {% csrf_token %}
-            <input type="hidden" name="year" value="{{ year }}">
+            <input type="hidden" name="year" value="{{ year|ui_year }}">
             <input type="hidden" name="month" value="{{ month }}">
             {% if summary.status == "Approved" %}
             <span class="ui-print-only"><span class="inline-block bg-green-100 text-green-700 text-xs font-medium px-2 py-0.5 rounded mb-2">Đã duyệt — không thể tự sửa</span></span><span class="ui-screen-only ui-badge ui-badge--success">{% include "_shell_icon.html" with name="success" %}Đã duyệt — không thể tự sửa</span>
@@ -166,7 +166,7 @@
                 </div>
                 {% if balance %}
                 <div class="flex items-center justify-between gap-3 py-0.5 pt-2 border-t border-gray-100 mt-2">
-                    <label class="text-gray-700">Tổng ngày phép năm {{ year }}:</label>
+                    <label class="text-gray-700">Tổng ngày phép năm {{ year|ui_year }}:</label>
                     <span class="font-medium">{{ balance.allocated_days|ui_number }}</span>
                 </div>
                 <div class="flex items-center justify-between gap-3 py-0.5">

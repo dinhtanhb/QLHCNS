@@ -15,8 +15,8 @@
     <p>- Tên, mã hiệu, quy cách TS thiết bị: {{ item.asset.asset_name|ui_number }}</p>
     <p>- Số hiệu TS thiết bị: {{ item.asset.asset_code|ui_number }}</p>
     <p>- Nước sản xuất: {{ minutes.origin_country|default:"—"|ui_number }}</p>
-    <p>- Năm sản xuất: {{ minutes.manufacture_year|default:"—"|ui_number }}</p>
-    <p>- Năm đưa vào sử dụng: {{ minutes.put_into_use_year|default:"—"|ui_number }}</p>
+    <p>- Năm sản xuất: {{ minutes.manufacture_year|default:"—"|ui_year }}</p>
+    <p>- Năm đưa vào sử dụng: {{ minutes.put_into_use_year|default:"—"|ui_year }}</p>
     <p>- Nguyên giá TS thiết bị: {{ minutes.original_value|floatformat:"0g" }} đồng</p>
     <p>- Giá trị hao mòn đã trích đến thời điểm thanh lý: {{ minutes.depreciated_value|floatformat:"0g" }} đồng</p>
     <p>- Giá trị còn lại của TS thiết bị: {{ minutes.remaining_value|floatformat:"0g" }} đồng</p>

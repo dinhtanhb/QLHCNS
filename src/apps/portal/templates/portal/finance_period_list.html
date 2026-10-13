@@ -18,7 +18,7 @@
 {% if periods %}<div class="ui-scroll overflow-x-auto mobile-table-scroll" role="region" tabindex="0" aria-label="Danh sách kỳ lương; cuộn ngang để xem đầy đủ cột">
 <table class="ui-table ui-table--periods"><caption>Danh sách kỳ lương</caption><colgroup><col class="ui-col-small"><col class="ui-col-medium"><col class="ui-col-small"><col class="ui-col-medium"></colgroup>
 <thead><tr><th scope="col">Kỳ lương</th><th scope="col">Thời gian</th><th scope="col">Trạng thái</th><th scope="col" class="ui-actions">Thao tác</th></tr></thead>
-<tbody>{% for p in periods %}<tr><th scope="row">Tháng {{ p.payroll_month }}/{{ p.payroll_year }}</th><td>{{ p.start_date|ui_date }} – {{ p.end_date|ui_date }}</td><td>{% ui_badge "payroll.payrollperiod:status" p.status %}</td><td class="ui-actions"><a href="{% url 'portal:finance_payroll_run' p.pk %}" class="ui-button ui-button--secondary">Xem / Chạy lương</a></td></tr>{% endfor %}</tbody></table></div>
+<tbody>{% for p in periods %}<tr><th scope="row">Tháng {{ p.payroll_month }}/{{ p.payroll_year|ui_year }}</th><td>{{ p.start_date|ui_date }} – {{ p.end_date|ui_date }}</td><td>{% ui_badge "payroll.payrollperiod:status" p.status %}</td><td class="ui-actions"><a href="{% url 'portal:finance_payroll_run' p.pk %}" class="ui-button ui-button--secondary">Xem / Chạy lương</a></td></tr>{% endfor %}</tbody></table></div>
 {% else %}{% include "ui/empty_state.html" with title="Chưa có kỳ lương" description="Nhập Tháng và Năm ở form phía trên để tạo kỳ lương đầu tiên." icon="finance" %}{% endif %}
 </section>
 {% endblock %}

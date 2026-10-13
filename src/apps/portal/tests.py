@@ -468,14 +468,19 @@ class PortalSensitiveWorkflowTests(TestCase):
         self.assertNotContains(response, "Checklist &amp; việc được giao")
 
     def test_employee_action_menu_has_working_native_dropdown_markup(self):
+        from apps.contract.models import Contract, ContractType
         employee = self.make_employee("PORTAL-ACTION-MENU")
+        kind = ContractType.objects.create(contract_type_code="ACTION-MENU", contract_type_name="Loại giả")
+        Contract.objects.create(employee=employee, contract_type=kind, contract_no="ACTION-MENU",
+                                start_date=date(2026, 1, 1), basic_salary=0, status="Draft")
         user = self.make_user("HR_OFFICER", employee, "portal-action-menu")
         self.client.force_login(user)
 
         response = self.client.get(reverse("portal:hr_employee_list"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "<details class=\"ui-row-menu\">")
+        self.assertContains(response, 'popover="auto"')
+        self.assertContains(response, f'popovertarget="employee-actions-{employee.pk}"')
         self.assertContains(response, reverse("portal:hr_employee_edit", args=(employee.pk,)))
         self.assertNotContains(response, "toggleMenu(")
 

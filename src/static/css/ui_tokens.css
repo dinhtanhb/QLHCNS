@@ -93,15 +93,15 @@ html[data-theme="light"] {
     --ui-info-text: #075985;
     --ui-info-bg: #f0f9ff;
     --ui-info-border: #075985;
-    --ui-sidebar-bg: #0c233b;
-    --ui-sidebar-text: #d6e5ee;
-    --ui-sidebar-hover-bg: #133a43;
-    --ui-sidebar-hover-text: #ffffff;
+    --ui-sidebar-bg: #f0f5f2;
+    --ui-sidebar-text: #0c233b;
+    --ui-sidebar-hover-bg: #dff0e8;
+    --ui-sidebar-hover-text: #085e50;
     --ui-sidebar-hover-border: color-mix(in srgb, var(--ui-brand) 25%, var(--ui-transparent));
-    --ui-sidebar-active-bg: #174b43;
-    --ui-sidebar-active-text: #ffffff;
-    --ui-sidebar-marker: #6ee7c8;
-    --ui-sidebar-border: #8aa6ad;
+    --ui-sidebar-active-bg: #dff0e8;
+    --ui-sidebar-active-text: #085e50;
+    --ui-sidebar-marker: #0b7461;
+    --ui-sidebar-border: #627d78;
     --ui-chart-series: var(--ui-brand);
     --ui-chart-series-soft: var(--ui-brand-hover);
     --ui-chart-series-strong: var(--ui-brand-active);
@@ -120,11 +120,22 @@ html[data-theme="light"] {
     --ui-scrim: rgb(15 23 42 / 0.65);
 
     --ui-card-border: #d9e3df;
-    --ui-sidebar-muted: #a9bdc9;
-    --ui-sidebar-divider: #294653;
-    --ui-sidebar-focus: #6ee7c8;}
+    --ui-sidebar-muted: #4b6171;
+    --ui-sidebar-divider: #d9e3df;
+    --ui-sidebar-focus: #0b7461;}
 
 html[data-theme="dark"] {
+    --ui-sidebar-bg: #0c233b;
+    --ui-sidebar-text: #d6e5ee;
+    --ui-sidebar-hover-bg: #133a43;
+    --ui-sidebar-hover-text: #ffffff;
+    --ui-sidebar-active-bg: #174b43;
+    --ui-sidebar-active-text: #ffffff;
+    --ui-sidebar-marker: #6ee7c8;
+    --ui-sidebar-border: #8aa6ad;
+    --ui-sidebar-muted: #a9bdc9;
+    --ui-sidebar-divider: #294653;
+    --ui-sidebar-focus: #6ee7c8;
     --ui-bg: #0e1827;
     --ui-surface: #162536;
     --ui-surface-raised: #223648;
@@ -174,6 +185,17 @@ html[data-theme="dark"] {
 
 @media screen and (prefers-color-scheme: dark) {
     :root:not([data-theme]) {
+    --ui-sidebar-bg: #0c233b;
+    --ui-sidebar-text: #d6e5ee;
+    --ui-sidebar-hover-bg: #133a43;
+    --ui-sidebar-hover-text: #ffffff;
+    --ui-sidebar-active-bg: #174b43;
+    --ui-sidebar-active-text: #ffffff;
+    --ui-sidebar-marker: #6ee7c8;
+    --ui-sidebar-border: #8aa6ad;
+    --ui-sidebar-muted: #a9bdc9;
+    --ui-sidebar-divider: #294653;
+    --ui-sidebar-focus: #6ee7c8;
     --ui-bg: #0e1827;
     --ui-surface: #162536;
     --ui-surface-raised: #223648;

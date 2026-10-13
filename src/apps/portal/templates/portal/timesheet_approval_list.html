@@ -15,7 +15,7 @@
         {% for s in summaries %}
         <tr>
             <td class="">{{ s.employee|ui_number }}</td>
-            <td class="">{{ s.month }}/{{ s.year }}</td>
+            <td class="">{{ s.month }}/{{ s.year|ui_year }}</td>
             <td class="ui-number">{{ s.sick_days|ui_number }}</td>
             <td class="ui-number">{{ s.maternity_days|ui_number }}</td>
             <td class="ui-number">{{ s.compensatory_days|ui_number }}</td>

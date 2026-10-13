@@ -7,7 +7,7 @@
 <form method="get" class="ui-filter-bar">
 {% include "ui/field.html" with id="employee-search" name="q" label="Tên hoặc mã nhân viên" value=q %}
 <button class="ui-button ui-button--primary" type="submit">Áp dụng</button><a class="ui-button ui-button--secondary" href="{% url 'portal:hr_employee_list' %}">Xóa lọc</a>
-</form><p class="ui-results-count">{{ page_obj.paginator.count|ui_number }} nhân viên phù hợp{% if q %} với “{{ q }}”{% endif %}.</p></section>
+</form><p class="ui-results-count">{{ page_obj.paginator.count|ui_number }} nhân viên phù hợp{% if q %} với “{{ q }}”{% endif %}. Chỉ gồm hồ sơ đã có hợp đồng chưa xóa.</p>{% if can_manage_hr %}<p class="ui-page-description">Hồ sơ mới xuất hiện ở đây sau khi có hợp đồng. <a href="{% url 'portal:hr_contract_create' %}">Tạo hợp đồng cho hồ sơ mới</a></p>{% endif %}</section>
 <section class="ui-card" aria-labelledby="employee-list-title"><h2 id="employee-list-title" class="ui-card-title">Danh sách nhân viên</h2>
 {% if employees %}<div class="ui-scroll overflow-x-auto mobile-table-scroll" role="region" tabindex="0" aria-label="Danh sách nhân viên; cuộn ngang để xem đầy đủ cột">
 <table class="ui-table ui-table--employees{% if not can_manage_hr %} ui-table--employees-readonly{% endif %}"><caption>Hồ sơ nhân viên trong phạm vi được xem</caption><colgroup><col class="ui-col-small"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium">{% if can_manage_hr %}<col class="ui-col-medium">{% endif %}</colgroup><thead><tr><th scope="col">Mã NV</th><th scope="col">Họ tên</th><th scope="col">Phòng ban</th><th scope="col">Vị trí</th><th scope="col">Trạng thái</th>{% if can_manage_hr %}<th scope="col" class="ui-actions">Thao tác</th>{% endif %}</tr></thead><tbody>
@@ -20,9 +20,9 @@
             <td>{% ui_badge "hrm.employee:employment_status" e.employment_status %}</td>
             {% if can_manage_hr %}
             <td class="ui-actions">
-                <details class="ui-row-menu">
-                    <summary class="ui-button ui-button--secondary">Thao tác {% include "_shell_icon.html" with name="chevron" %}</summary>
-                    <div class="ui-row-actions">
+                <div class="ui-row-dropdown">
+                    <button type="button" class="ui-button ui-button--secondary" popovertarget="employee-actions-{{ e.pk }}" aria-expanded="false" aria-label="Thao tác cho {{ e.full_name }}">Thao tác {% include "_shell_icon.html" with name="chevron" %}</button>
+                    <div id="employee-actions-{{ e.pk }}" class="ui-row-actions ui-row-popover" popover="auto" aria-label="Thao tác cho {{ e.full_name }}">
                         <a href="{% url 'portal:hr_employee_detail' e.pk %}#dieuchuyen" class="block px-4 py-2 text-xs hover:bg-gray-50">Điều chuyển</a>
                         <a href="{% url 'portal:hr_employee_detail' e.pk %}#bonhiem" class="block px-4 py-2 text-xs hover:bg-gray-50">Bổ nhiệm</a>
                         <a href="{% url 'portal:hr_employee_detail' e.pk %}#luong" class="block px-4 py-2 text-xs hover:bg-gray-50">Nâng lương</a>
@@ -32,7 +32,7 @@
                         {% if can_export_employee_data and can_view_all_employees %}<a href="{% url 'portal:hcns_catalog' %}?employee_id={{ e.pk }}" class="block px-4 py-2 text-xs hover:bg-gray-50">Biểu mẫu HCNS</a>{% endif %}
                         <a href="{% url 'portal:hr_employee_edit' e.pk %}" class="block px-4 py-2 text-xs hover:bg-gray-50 border-t border-gray-100">Sửa hồ sơ</a>
                     </div>
-                </details>
+                </div>
             </td>
             {% endif %}
         </tr>

@@ -12,14 +12,14 @@
                 {% for m in months %}<option value="{{ m }}" {% if m == month %}selected{% endif %}>Tháng {{ m|ui_number }}</option>{% endfor %}
             </select>
             <select name="year" onchange="this.form.submit()" class="rounded-md border border-gray-300 px-2 py-1.5 text-sm">
-                {% for y in years %}<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y|ui_number }}</option>{% endfor %}
+                {% for y in years %}<option value="{{ y|ui_year }}" {% if y == year %}selected{% endif %}>{{ y|ui_year }}</option>{% endfor %}
             </select>
         </form>
         <button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">🖨 In</button>
     </div>
 </div>
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <h2 class="text-center font-bold mb-4">Báo cáo Chấm công tháng {{ month }}/{{ year }}</h2>
+    <h2 class="text-center font-bold mb-4">Báo cáo Chấm công tháng {{ month }}/{{ year|ui_year }}</h2>
     <div class="overflow-x-auto">
     <table class="w-full text-sm border border-gray-300 border-collapse">
         <thead>

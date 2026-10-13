@@ -233,8 +233,12 @@ class ReviewHardeningTests(TestCase):
     def test_employee_pagination_preserves_search_and_scope(self):
         self.department.manager = self.employee
         self.department.save(update_fields=['manager'])
+        contract_type = ContractType.objects.create(contract_type_code='PAGE', contract_type_name='Pagination fixture')
         for index in range(22):
-            self.make_employee(f'REVIEW-PAGE-{index:02}')
+            employee = self.make_employee(f'REVIEW-PAGE-{index:02}')
+            Contract.objects.create(employee=employee, contract_type=contract_type,
+                                    contract_no=f'PAGE-{index:02}', start_date=date(2026, 1, 1),
+                                    basic_salary=100, status='Draft')
         self.client.force_login(self.make_user('DEPT_MANAGER', self.employee, 'review-pagination'))
         response = self.client.get(reverse('portal:hr_employee_list'), {'q': 'REVIEW-PAGE', 'page': '1'})
         self.assertEqual(len(response.context['employees']), 20)

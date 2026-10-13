@@ -14,7 +14,7 @@
   return raw.replace(/\./g, '').replace(',', '.');
  }
  function enhance(input) {
-  if (sources.has(input) || input.closest('.hcns-paper') || !input.form || /(?:^|_)(?:year|month|day|birth_year|payroll_year|payroll_month)$/.test(input.name)) return;
+  if (sources.has(input) || input.closest('.hcns-paper') || !input.form || input.dataset.uiNumber === 'plain' || /(?:^|[_-])(?:year|month|day)(?:$|[_-])/.test(input.name) || /(?:^|[_-])year(?:$|[_-])/.test(input.id)) return;
   const proxy = document.createElement('input');
   proxy.type = 'text'; proxy.inputMode = 'decimal';
   proxy.className = input.className + ' ui-number-display';

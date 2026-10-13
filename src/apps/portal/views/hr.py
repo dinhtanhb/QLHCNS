@@ -4,7 +4,7 @@ import re
 from django.db import IntegrityError, models, transaction
 from django.views.decorators.http import require_POST
 from apps.security.permissions import has_permission
-from django.db.models import Q
+from django.db.models import Exists, OuterRef, Q
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
@@ -57,7 +57,10 @@ def _employee_scope(request):
 @login_required
 def hr_employee_list(request):
     q = request.GET.get("q", "").strip()
-    employees = _employee_scope(request).select_related("department", "position").order_by("full_name")
+    # The directory contains contracted employees. Keep the broader scope for
+    # contract creation/detail so initial registration never becomes a dead end.
+    contracts = Contract.objects.filter(employee_id=OuterRef("pk"))
+    employees = _employee_scope(request).filter(Exists(contracts)).select_related("department", "position").order_by("full_name")
     if q:
         employees = employees.filter(models.Q(full_name__icontains=q) | models.Q(employee_code__icontains=q))
     return render(request, "portal/hr_employee_list.html", {
