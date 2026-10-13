@@ -2,11 +2,11 @@
 {% load ui_components %}
 {% block title %}Quản lý quyết định nhân sự{% endblock %}
 {% block hr_content %}
-<div class="ui-page-actions">
+<div class="ui-page-header decision-page-header">
   <div><h1 class="ui-page-title">Quản lý quyết định nhân sự</h1><p class="ui-hr-text">Tra cứu bản nháp, trạng thái duyệt và quyết định đã ban hành.</p></div>
   {% if can_manage_decisions %}<a href="{% url 'portal:hcns_catalog' %}?group=decision" class="ui-button ui-button--primary">+ Soạn quyết định</a>{% endif %}
 </div>
-<form method="get" class="ui-hr-form">
+<form method="get" class="ui-card ui-hr-form decision-filter-bar">
   <label class="ui-field-label">Tìm kiếm
     <input name="q" value="{{ query }}" class="ui-hr-input" placeholder="Số quyết định, mã hoặc họ tên">
   </label>

@@ -475,3 +475,13 @@ Không Phase3: xu hướng/+2 tháng trước/tỷ lệ có mặt/header ca/kỳ
 | D2-9 | Bật đề xuất theo request/approve_recruitment và scope trang đích; aggregate, CTA chung riêng |
 
 Quy trình: dọn nguồn, test cuối, bản sao review không runtime/bí mật, docs commit riêng và UI commit riêng, pushmain/remoteSHA. Không forcepush/deploy; việc chưa kiểm ghi rõ nhật ký.
+
+## 17. Chỉnh bố cục theo phản hồi ngày 13/10/2026
+
+Tham khảo vị trí/cân đối của Atoms, giữ nguồn dữ liệu và toàn bộ gate Đợt1/2. Hàng có một khối được phép phải dùng toàn bộ chiều rộng, không giữ ô trống cho khối bị từ chối. Các thẻ cùng hàng có chung khoảng cách16px và đường căn giá trị; phần thao tác nằm trong thẻ. Hai khối biểu đồ có cùng chiều cao, nội dung dài cuộn trong vùng giới hạn; không kéo cao panel còn lại theo số phòng vô hạn. Không đưa số/tiền/giờ ca/xu hướng từ mẫu vào ứng dụng.
+
+Nghỉ toàn Trung tâm và history là hai khối ngang hàng. Khi cùng có nghỉ global/own, own nằm trong disclosure “Đơn nghỉ gần đây của tôi”; chỉ dữ liệu được phép mới có trong HTML. Người chỉ có own vẫn thấy khối own bình thường. Tên dài hiển thị tối đa hai dòng, giữ nguyên tên đầy đủ trong DOM/title. KPI phụ có footer chung; nhóm trạng thái mở bằng disclosure, không tạo bảng/nút rời ngoài thẻ. Các KPI legacy value=None không có nguồn không chiếm ô; số0 thật và trạng thái lỗi của nguồn Đợt1/2 vẫn giữ.
+
+Tiêu đề quyết định căn trái cùng mép nội dung; nút ở bên phải. Bộ lọc tìm kiếm/trạng thái/nút cùng đường căn, xuống một cột trên màn hình hẹp. Form duyệt/từ chối ở đầu trang trong cùng panel, lịch sử ở panel kế tiếp; giữ action/field/CSRF/guard/xuất Word/PDF và giấy HCNS. Header legacy dùng ui-page-actions có h1 được căn như page-header chung. Chỉ CSS màn hình; không sửa bố cục giấy in.
+
+Nghiệm thu hình học Edge: khối đơn rộng bằng grid (sai số2px); panel cùng hàng căn đỉnh; giá trị KPI phụ căn cùng đường và thẻ cao bằng nhau (sai số2px ở desktop). Kiểm5role×5width×2theme, trang quyết định theo quyền, dữ liệu/tên dài, nooverflow, chữ14/control44, bàn phím/disclosure/confirmation. ops/run_dashboard_layout_uat.py và ops/run_decision_layout_uat.py dùng demo có marker synthetic ngoài source; các luồng hồ sơ/hợp đồng/nghỉ vẫn kiểm qua ops/run_browser_uat.py. Không coi screenshot hoặc HTTP200 đủ để kết luận cân đối; ghi số đo/ảnh/giới hạn vào nhật ký.

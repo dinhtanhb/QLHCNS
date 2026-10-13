@@ -5,6 +5,8 @@
  .portal-app .ui-main .ui-page .ui-page-title { margin:0; font-size:var(--ui-font-size-title); font-weight:var(--ui-font-weight-heading); line-height:var(--ui-line-height-heading); color:var(--ui-text); overflow-wrap:anywhere; }
  .ui-page-description { margin:var(--ui-space-2) 0 0; font-size:var(--ui-font-size-small); color:var(--ui-text-muted); }
  .ui-page-actions,.ui-form-actions { display:flex; flex-wrap:wrap; align-items:center; gap:var(--ui-space-2); }
+ .portal-app .ui-main .ui-page > .ui-page-actions:has(h1) { justify-content:space-between; align-items:flex-start; gap:var(--ui-space-4); }
+ .portal-app .ui-main .ui-page > .ui-page-actions:has(h1) > div:first-child { flex:1 1 20rem; min-width:0; }
  .portal-app .ui-main .ui-page .ui-card { min-width:0; margin:0; padding:var(--ui-space-6); background:var(--ui-surface); color:var(--ui-text); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-card); box-shadow:var(--ui-shadow-card); }
  .ui-card > h3 { overflow-wrap:anywhere; }
  .ui-card-title { margin:0 0 var(--ui-space-4); font-size:var(--ui-component-heading); font-weight:var(--ui-font-weight-label); }

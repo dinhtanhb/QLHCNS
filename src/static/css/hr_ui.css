@@ -1,5 +1,16 @@
 /* HR module screen only; no HCNS paper selectors. */
 @media screen {
+.ui-hr .decision-page-header { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--ui-space-4); flex-wrap:wrap; width:100%; }
+.ui-hr .decision-page-header > div:first-child { flex:1 1 20rem; min-width:0; }
+.portal-app .ui-main .ui-page.ui-hr .decision-page-header .ui-page-title { margin:var(--ui-space-2) 0; }
+.ui-hr .decision-filter-bar { grid-template-columns:minmax(12rem,28rem) minmax(10rem,16rem) auto; justify-content:start; align-items:end; }
+.ui-hr .decision-filter-bar label { margin:0; }
+.ui-hr .decision-workflow { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--ui-space-4); max-width:56rem; }
+.ui-hr .decision-workflow form { display:grid; gap:var(--ui-space-3); align-content:start; }
+.ui-hr .decision-workflow .ui-button { justify-self:start; }
+.ui-hr .decision-history ol { list-style:none; margin:0; padding:0; gap:0; }
+.ui-hr .decision-history-item { padding-block:var(--ui-space-3); border-top:var(--ui-border-width) solid var(--ui-divider); }
+@media(max-width:767px) { .ui-hr .decision-filter-bar,.ui-hr .decision-workflow { grid-template-columns:minmax(0,1fr); } }
 .ui-hr { max-width:var(--ui-content-max-width); margin-inline:auto; }
 .ui-hr .ui-hr-stack { display:grid; gap:var(--ui-space-4); min-width:0; }
 .ui-hr p.ui-hr-stack { display:block; margin:var(--ui-space-2) 0; font-size:var(--ui-font-size-small); }

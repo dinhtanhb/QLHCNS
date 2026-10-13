@@ -97,5 +97,9 @@ def home_presentation(user, context):
     if "dept_counts" in context:
         # Evaluate the same queryset once, also reused by the alternative table.
         result["dept_counts"] = list(context["dept_counts"])
+    # Legacy counters without a supplied source are not useful summary cards.
+    # Keep real zero/error states of the current dashboard blocks unchanged.
+    groups = [dict(group, cards=[card for card in group["cards"] if card["value"] is not None]) for group in groups]
+    groups = [group for group in groups if group["cards"]]
     result.update(home_groups=groups, home_queue=queue, home_actions=actions)
     return result

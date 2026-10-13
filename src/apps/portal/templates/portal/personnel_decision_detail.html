@@ -7,7 +7,7 @@
 <style>@page { {{ document.profile.page_css|escape }} }</style>
 <div id="hcns-export-name" data-filename="{{ document.filename_stem }}" hidden></div>
 {% endif %}
-<div class="ui-page-actions no-print">
+<div class="ui-page-header decision-page-header no-print">
   <div>{% if can_view_workflow %}<a href="{% url 'portal:personnel_decision_list' %}" class="ui-button">← Quản lý quyết định</a>{% else %}<a href="{% url 'portal:dashboard' %}" class="ui-button">← Trang chủ</a>{% endif %}<h1 class="ui-page-title">{{ decision.decision_no|default:"Chưa đánh số"|ui_number }} · {{ decision.template_title|ui_number }}</h1><p class="ui-hr-text">{{ decision.employee.full_name|ui_number }} · {{ decision.employee.employee_code|ui_number }} · {% ui_badge "document.personneldecision:status" decision.status %}</p></div>
   <div class="ui-page-actions">
     {% if can_download_word %}<a class="ui-button" href="{% url 'portal:personnel_decision_word' decision.pk %}">Tải Word</a>{% endif %}
@@ -19,7 +19,7 @@
 {% if messages %}{% for message in messages %}<p class="ui-hr-text no-print">{{ message|ui_number }}</p>{% endfor %}{% endif %}
 {% if can_submit_decision %}<form class="ui-hr-form no-print" method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'submit' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% csrf_token %}{% include "ui/error_summary.html" %}<button class="ui-button ui-button--primary">Trình duyệt</button></form>{% endif %}
 {% if can_approve_decision %}
-<div class="ui-page-actions no-print">
+<div class="ui-card decision-workflow no-print">
   <form method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'approve' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% csrf_token %}{% include "ui/error_summary.html" %}<label class="ui-field-label">Ý kiến duyệt<textarea name="comment" rows="2" class="ui-hr-input"></textarea></label><button class="ui-button ui-button--primary">Duyệt</button></form>
   <form method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'reject' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% csrf_token %}{% include "ui/error_summary.html" %}<label class="ui-field-label">Lý do từ chối<textarea name="comment" rows="2" required class="ui-hr-input"></textarea></label><button class="ui-button">Từ chối</button></form>
 </div>
@@ -27,10 +27,10 @@
 {% if can_issue_decision %}<form class="ui-hr-form no-print" method="post" enctype="multipart/form-data" action="{% url 'portal:personnel_decision_transition' decision.pk 'issue' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% csrf_token %}{% include "ui/error_summary.html" %}<label class="ui-field-label">PDF đã ký<input type="file" name="issued_file" accept="application/pdf,.pdf" required class="ui-hr-input"></label><label class="ui-field-label">Ghi chú<input name="comment" maxlength="2000" class="ui-hr-input"></label><button class="ui-button ui-button--primary">Ghi nhận ban hành</button></form>{% endif %}
 {% if can_cancel_decision %}<form class="ui-hr-form no-print" method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'cancel' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% csrf_token %}{% include "ui/error_summary.html" %}<label class="ui-field-label">Lý do hủy<input name="comment" maxlength="2000" class="ui-hr-input"></label><button class="ui-button">Hủy bản nháp</button></form>{% endif %}
 {% if document %}<div class="ui-scroll" tabindex="0" role="region" aria-label="Bảng dữ liệu nhân sự">{% include "document/hcns/document.html" with document=document %}</div>{% elif is_employee_recipient %}<p class="ui-hr-text">Quyết định đã ban hành. Tải PDF đã ký ở phía trên để xem nội dung chính thức.</p>{% endif %}
-{% if can_view_workflow %}<section class="ui-hr-stack no-print" aria-label="Lịch sử xử lý quyết định">
+{% if can_view_workflow %}<section class="ui-card decision-history no-print" aria-label="Lịch sử xử lý quyết định">
   <h2 class="ui-card-title">Lịch sử xử lý</h2>
   <ol class="ui-hr-stack">
-    {% for event in history %}<li class="ui-hr-stack"><p class="ui-hr-text">{{ event.get_action_display|ui_number }} · {{ event.get_status_to_display|default:event.status_to|ui_number }}</p><p class="ui-hr-text">{{ event.created_date|date:"d/m/Y H:i" }} · {{ event.created_by|default:"Hệ thống"|ui_number }}</p>{% if event.comment %}<p class="ui-hr-text">{{ event.comment|ui_number }}</p>{% endif %}</li>{% empty %}<li class="ui-hr-text">Chưa có lịch sử.</li>{% endfor %}
+    {% for event in history %}<li class="decision-history-item"><p class="ui-hr-text">{{ event.get_action_display|ui_number }} · {{ event.get_status_to_display|default:event.status_to|ui_number }}</p><p class="ui-hr-text">{{ event.created_date|date:"d/m/Y H:i" }} · {{ event.created_by|default:"Hệ thống"|ui_number }}</p>{% if event.comment %}<p class="ui-hr-text">{{ event.comment|ui_number }}</p>{% endif %}</li>{% empty %}<li class="ui-hr-text">Chưa có lịch sử.</li>{% endfor %}
   </ol>
 </section>
 {% endif %}

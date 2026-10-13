@@ -2,6 +2,60 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-13 — Cân đối Dashboard và trang quyết định theo Atoms
+
+**Tóm tắt cho chủ dự án**
+
+- Sửa cột trống khi thiếu quyền, căn tiêu đề và gom KPI/footer vào cùng thẻ.
+- Dashboard gọn hơn; nghỉ cá nhân/distribution trạng thái mở bằng disclosure khi phù hợp.
+- Sửa bộ lọc và form duyệt/từ chối quyết định, giữ quyền/nghiệp vụ/giấy HCNS.
+- Nguồn cuối đạt hồi quy/full hai backend và Edge đo hình học theo từng vai trò.
+- Bản sao sạch và metadata SHA nguồn/commit/remote đi kèm bàn giao.
+- Chưa UAT phiên tài khoản thật, screenreader/zoom200%; không deploy.
+
+**Nguồn/Git:** người dùng báo demo và tài khoản thật bố cục lệch, cung cấp5ảnh. Main sạch đầu lượt, fetch origin/main, ahead0/behind0, HEAD `e3873ca23aadbc2543cad9a62e718e4fb3fae82c`. Đọc AGENTS thay thế, nhật ký/đặc tả/templates/styles/tests liên quan, dùng UI UX Pro Max (không UI Styling/shadcn). Web.open không truy cập được URL mẫu; CUA inventory lỗi kernel assets/oserror3; Edge headless sau DOMready đã đọc trực tiếp https://r7rc1s.atoms.world/, title Quản Lý Hành Chính Nhân Sự và ảnh TMP/atoms-layout-reference-20261013.png. Lần networkidle timeout vì trang không idle; lần screenshot sớm trước render trống, đã chờ h1/h2 và chụp lại đủ bố cục. Chỉ tham khảo thiết kế, không copy tiền/trend/giờ ca/dữ liệu mẫu. Không model/migration/permission/guard/query/service/bizlogic/POST/action/field/CSRF hoặc giấy in thay đổi.
+
+**Nguyên nhân/sửa:** .dashboard-panel-grid:not(work-grid) ghi đè rule only-child nên Director giữ cột trống; thêm rule đủ specificity cho tất cả grid đơn. Chart rows17rem/distributionflex căn cùng panel, giảm khoảng trắng và nút đúng bề rộng nội dung. Header quyết định dùng ui-page-actions dành cho nút nên bị dồn phải; đổi page-header, thêm rule header chung với h1 cho các trang UI dùng lớp legacy. Bộ lọc3cột cùng baseline desktop/1cột mobile, workflow2form cùng panel trái, historycard gọn. UIKPI phụ chứa cả summary/footer/disclosure, giá trị chung đường căn; own nằm dưới global bằng native details khi cùng có quyền. Tên dài clamp2giữ DOM/title; scope dữ liệu không đổi. home_presentation chỉ bỏ legacy value=None khỏi nhóm trình bày, không query mới; ready0/error của nguồn thật giữ. Cache CSS query mới cho dashboard/HR/shared. Spec mục17 mô tả quyết định mới, không sửa công thức Đợt1/2.
+
+**Kiểm tra vòng đầu:** 73test SQLite đạt nhưng chạy trong lúc còn sửa template nên không dùng làm nguồn cuối. Edge vòng đầu bắt HTTP500 do thiếu endfor ở partial mới; đã sửa, khởi động lại demo, không bỏ assertion. Layout sau sửa1334check/110ảnh/0JSerror:5role×1920/1440/1024/768/360×light/dark, dashboard và list/detail quyết định đúng quyền, kiểm nooverflow14px/44px/bàn phím cùng các phép đo panel đơn/căn đỉnh/baseline/cao thẻ. Đã xem ảnhHR1920sáng so với Atoms. Sau vòng này thêm clamp tên/nút và shared header/cache; phải chạy lại trên nguồn cuối. Decisionflow đầu28check/4ảnh: clone2Draft giả mới, HRtrình→Directorduyệt/từ chối bằng UI, Esccancel→Enterconfirm, thông báo/trang đích/status/history1event/Dashboard cập nhật đều đạt. Không sửa quyết định cũ của người dùng. Các nguồn thật không truy cập qua browser, chỉ có phản hồi/ảnh do người dùng báo; không tuyên bố đã UAT tài khoản thật.
+
+**Nguồn kiểm thử cuối:** Git index xuất TEMP, APP_ENV=test/M365off, testDB/media/log cách ly. Các lệnh và kết quả cuối ở phần nghiệm thu bên dưới. Không dùng501test của commit cũ làm bằng chứng nguồn mới. Không thêm dependency; optionalPlaywright đã ở TEMP.
+
+**Còn mở/bàn giao:** review demo localhost8767 sau Ctrl+F5 bằng HRManager/Officer/Director/Manager/Employee; thông tin giả tại TEMP/ihrms-dashboard-phase2-demo-20261013/DEMO_ACCOUNTS.txt ngoàiGit. Chủ dự án đối chiếu tài khoản thật; Codex chưa có phiên browseruser qua CUA (kernel assets lỗi), screenreader/zoom200% chưa kiểm. Không deploy hoặc mở tiền/Đợt3. ZIP sạch từ index ngoài repo và metadata hash/SHA remote sẽ ghi kết quả cuối; không đưa DB/media/env/accountCSV/token vàoGit.
+
+
+**Nghiệm thu nguồn cuối:** nguồn app/tests/runner/style cuối export từ index tree `1a85e6d79879f4c8857b83962b5809bc62973122` vào TEMP/ihrms-balanced-layout-final-20261013/stage-source. Wrapper resolve SQL connection trong memory, APP_ENV=test/M365off, DB/media/log riêng. Đối chiếu13tệp mã/runner/style thay đổi khớp snapshot sau chuẩn hóaLF/CRLF; nhật ký chỉ bổ sung kết quả sau test, không sửa app. Không lấy kết quả commit Đợt2 cũ.
+
+- `git diff --check`, `git diff --cached --check`: exit0. `venv/Scripts/python.exe -m pip check`: exit0, No broken requirements found.
+- `venv/Scripts/python.exe "$env:TEMP/ihrms-balanced-index-gates.py"`: exit0; check noissues; makemigrations --check --dry-run no changes; contrast198cặp/0lỗi, tokenpalette không đổi. TEMP/balanced-final-gates.log.
+- Focused `venv/Scripts/python.exe "$env:TEMP/ihrms-balanced-index-runner.py" --backend sqlite|sqlserver apps.portal.test_home_dashboard_phase2 apps.portal.test_home_dashboard apps.portal.test_dashboard_followup apps.portal.test_dashboard_drilldown apps.portal.test_global_search apps.document.tests_hr_workflow`:73/73 mỗi backend,exit0. SQLite80,958s/SQL122,927s; TEMP/balanced-final-{sqlite,sqlserver}.log. Giữ queryceiling24; denied/source/privacy/drilldown/HRdecision/export/lương nghiệp vụ hồi quy. Legacy bỏ ôNone không sửa số0 hoặc stateerror nguồn thật.
+- Full `venv/Scripts/python.exe "$env:TEMP/ihrms-balanced-index-runner.py" --backend sqlite` và `--backend sqlserver`: sqlite: 501test OK, skip7, 534.753s, nativeexit0; sqlserver: 501test OK, skip0, 585.629s, nativeexit0. TEMP/balanced-full-{sqlite,sqlserver}.log. DB dùng một lần đã hủy. Đây là nguồn index cuối của đợt cân đối, không sử dụng full501 từ đợt trước.
+- `venv/Scripts/python.exe ops/run_dashboard_layout_uat.py --directory "$env:TEMP/ihrms-dashboard-phase2-demo-20261013" --packages-dir "$env:TEMP/ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/packages"`: exit0,1334check/110ảnh/0JSerror, TEMP/balanced-final-layout-edge.log. 5role×5width×2theme; dashboard + decisionlist/detail ở3role được phép. Đo panelđơn fullwidth, cănđỉnh, secondaryvaluebaseline/equalheight, filterbaseline, headingleft và workflowleft với sai số2px; không chỉHTTP/screenshot. Đã xem ảnhDirector1440dark/dashboard/detail. Native own/status disclosures kiểm thêm8scenario(4width×2theme) mở/đóng Enter, popover nằm trong viewport,8/8đạt; dashboard-layout-uat/disclosure-result.json.
+- Probe CSS cũ commit e3873ca qua intercept tài nguyên CSS trên cùng Edge/page/fixture: Director1440 panel597,8125px/grid1120px=53,376%; assertionfullwidth không đạt. CSSfinal panel1120/grid1120=100%, đạt. Không sửa sourcefile đểprobe. dashboard-layout-uat/geometry-probe.json và probe-old-css-director.png ngoàiGit.
+- `venv/Scripts/python.exe ops/run_decision_layout_uat.py --directory "$env:TEMP/ihrms-dashboard-phase2-demo-20261013" --packages-dir "$env:TEMP/ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/packages"`: sourcefinal exit0,28check/4ảnh, TEMP/balanced-final-decision-flow.log. Tạo2Draft mới mỗirun, HRsubmit→Directorapprove/reject, Escape hủy xác nhận/Enter mở lại/confirmPOST, statuspersist/singlehistory/notificationmessage/trangđích/dashboardtimeline đạt. Chỉ demoSQLite marker synthetic, không sửa/xóa hồ sơ thật.
+- `venv/Scripts/python.exe ops/run_browser_uat.py --backend sqlserver --packages-dir "$env:TEMP/ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/packages" --output-dir "$env:TEMP/ihrms-balanced-business-20261013"`: exit0,406check/32ảnh/0JSerror,DBdestroyed=true. TEMP/balanced-business-edge.log; tạo/sửa hồ sơ/hợpđồng/sốVN/KPIgốc/gửiduyệtnghỉ/responsiveroles đạt. Sốcheck giảm10 so416 vì thẻ legacyNone bị bỏ nên nhánh test tràn trong ô đó không còn chạy, không xóa assertion cũ.
+
+**Bản sao/commit/push:** `D:/QLHCNS-Backups/IHRMS_Review_20261013_Balanced_Layout.zip` từ index cuối cùng app đã kiểm và nhật ký kết quả, khôngenv(DBsecret)/database/media/uploads/log/runtime/accountCSV/demoaccounts; .env.example giữ. Manifest tree/parent/SHA256 nguồn, mở lại kiểm từnghash và sốentry. ZIP này là source review, không backup DB/media. Commit `ui: balance dashboard and decision layouts` trênmain, pushoriginmain khôngforce/deploy; SHA/remote/aheadbehind/clean thực tế ghi trong `.verification.json` cạnh ZIP và bàn giao để tránh nhật ký tự tham chiếucommit. `gh run list --branch main --limit 1 --json status,conclusion,headSha` exit1 HTTP401 Bad credentials, chưa theo dõiCI; chủ dự án xem Actions qua browser hoặc tự `gh auth login`, không gửitokenqua chat.
+
+**Giới hạn:** Edgeheadless thật với dữ liệu giả, không UAT phiên người dùng/tài khoản thật (CUA kernel assets lỗi); còn screenreader/zoom200%/cảm nhận người dùng ở dữ liệu vận hành. Nguyên nhân người dùng báo ở tài khoản thật được sửa bằng cùngCSS/template, không được ghi là Codex đã xem sessionthật. Bản bố cục vẫn theo quyền hiện có; không mở contract/Candidate choDirector để lấp khoảngtrống. Dữ liệu thiếu không tạoKPIgiả; giữ logicghi/guard/paperHCNS. Chủ dự án Ctrl+F5 demo8767 và portal đang chạy, đối chiếuGiámđốc/HR/trưởngphòng; không deploytheo quyềncommit/push.
+
+**Query cuối:**
+
+| Role | SQLite unlinked/linked | SQL unlinked/linked | p95 SQLite max(s) | p95 SQL max(s) |
+| --- | --- | --- | ---: | ---: |
+| EMPLOYEE | 3/8 | 4/9 | 0.0205 | 0.0247 |
+| DEPT_MANAGER | 3/12 | 4/13 | 0.0372 | 0.0403 |
+| HR_OFFICER | 11/16 | 12/17 | 0.0417 | 0.0452 |
+| HR_MANAGER | 17/21 | 18/22 | 0.0631 | 0.0614 |
+| DIRECTOR | 12/16 | 13/17 | 0.0525 | 0.0596 |
+| FINANCE_OFFICER | 3/8 | 4/9 | 0.0261 | 0.0238 |
+| SYS_ADMIN | 3/8 | 4/9 | 0.0255 | 0.0236 |
+| SUPER_ADMIN | 4/9 | 5/10 | 0.0248 | 0.0289 |
+| SUPERUSER | 19/23 | 20/24 | 0.0617 | 0.0715 |
+
+Giữ trần24 toàn GET/render và scope; không tăng query theo bố cục. p95 là20mẫu testfixture trên máy local, không chứng nhận tải sản xuất. Fullsource/app cuối khớp524tệp src/ops với snapshot kiểm; chỉ nhật ký kết quả bổ sung sau test.
+
+
 ## 2026-10-13 — Triển khai Dashboard Đợt 2 đã duyệt
 
 **Tóm tắt cho chủ dự án**

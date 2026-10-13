@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static ui_components %}
 {% block title %}Trang chủ{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261013-phase2">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261013-balanced">{% endblock %}
 {% block content %}
 <div class="ui-page home-dashboard">
 {% include "ui/page_header.html" with title="Bảng điều khiển" description="Tình hình nhân sự và công việc trong phạm vi được cấp quyền." %}
@@ -48,10 +48,8 @@
 {% endif %}
 {% with sections=dashboard_snapshot.sections %}
 {% if sections.own_leave or sections.global_leave or sections.history %}<div class="phase2-list-grid">
-{% if sections.own_leave or sections.global_leave %}<div class="phase2-leave-stack">
 {% if sections.global_leave %}{% include 'portal/dashboard/_recent_leave.html' with data=sections.global_leave key='global_leave' %}{% endif %}
-{% if sections.own_leave %}{% include 'portal/dashboard/_recent_leave.html' with data=sections.own_leave key='own_leave' %}{% endif %}
-</div>{% endif %}
+{% if sections.own_leave and not sections.global_leave %}{% include 'portal/dashboard/_recent_leave.html' with data=sections.own_leave key='own_leave' %}{% endif %}
 {% if sections.history %}{% include 'portal/dashboard/_decision_history.html' with data=sections.history %}{% endif %}
 </div>{% endif %}
 {% if sections.postings or sections.candidates or sections.joined or sections.requests %}

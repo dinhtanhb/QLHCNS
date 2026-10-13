@@ -7,8 +7,9 @@
 <div class="ui-scroll" tabindex="0" role="region" aria-labelledby="phase2-{{ key }}-title"><table class="ui-table phase2-leave-table">
 <caption class="ui-sr-only">Đơn theo ngày tạo; trạng thái hiện tại</caption>
 <thead><tr>{% if data.global_scope %}<th scope="col">Nhân viên</th>{% endif %}<th scope="col">Loại nghỉ</th><th scope="col">Thời gian</th><th scope="col">Số ngày</th><th scope="col">Trạng thái</th></tr></thead>
-<tbody>{% for row in data.rows %}<tr>{% if data.global_scope %}<td>{{ row.employee__full_name }}<span class="phase2-secondary">{{ row.employee__employee_code }}</span></td>{% endif %}<td>{{ row.type_label }}</td><td>{{ row.from_date|ui_date }}<span class="phase2-secondary">đến {{ row.to_date|ui_date }}</span></td><td>{{ row.total_days|ui_number }}</td><td>{% ui_badge 'leave.leaverequest:status' row.status %}</td></tr>{% endfor %}</tbody>
+<tbody>{% for row in data.rows %}<tr>{% if data.global_scope %}<td><span class="phase2-person-name" title="{{ row.employee__full_name }}">{{ row.employee__full_name }}</span><span class="phase2-secondary">{{ row.employee__employee_code }}</span></td>{% endif %}<td>{{ row.type_label }}</td><td>{{ row.from_date|ui_date }}<span class="phase2-secondary">đến {{ row.to_date|ui_date }}</span></td><td>{{ row.total_days|ui_number }}</td><td>{% ui_badge 'leave.leaverequest:status' row.status %}</td></tr>{% endfor %}</tbody>
 </table></div>
 {% else %}{% include 'ui/empty_state.html' with title='Chưa có đơn trong kỳ' description='Theo ngày tạo trong 30 ngày gần đây.' %}{% endif %}
 {% if data.href %}<a class="ui-button" href="{{ data.href }}">Mở đơn nghỉ của tôi{% include '_shell_icon.html' with name='arrow' %}</a>{% endif %}
+{% if key == 'global_leave' and dashboard_snapshot.sections.own_leave %}<details class="dashboard-own-leave"><summary>Đơn nghỉ gần đây của tôi</summary>{% include 'portal/dashboard/_recent_leave.html' with data=dashboard_snapshot.sections.own_leave key='own_leave' %}</details>{% endif %}
 </section>
