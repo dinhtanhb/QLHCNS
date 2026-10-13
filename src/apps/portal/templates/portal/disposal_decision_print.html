@@ -10,7 +10,7 @@
         <td class="w-1/2">
             <p class="font-bold">LIÊN HIỆP CÁC HỘI KH & KT VIỆT NAM</p>
             <p class="font-bold">TRUNG TÂM PHÁT TRIỂN SỨC KHỎE BỀN VỮNG</p>
-            <p>Số: {{ req.decision_no|ui_number }}/QĐ-VH</p>
+            <p>Số: {{ req.decision_no|default_if_none:""|ui_number }}/QĐ-VH</p>
         </td>
         <td class="w-1/2 text-center">
             <p class="font-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
@@ -20,16 +20,16 @@
     </tr></table>
 
     <h1 class="text-lg font-bold text-center mb-1">QUYẾT ĐỊNH</h1>
-    <p class="text-center mb-6">Về việc {{ req.get_disposal_type_display|lower|ui_number }} tài sản, thiết bị và công cụ dụng cụ tại {{ req.location_name|ui_number }}</p>
+    <p class="text-center mb-6">Về việc {{ req.get_disposal_type_display|lower|default_if_none:""|ui_number }} tài sản, thiết bị và công cụ dụng cụ tại {{ req.location_name|default_if_none:""|ui_number }}</p>
     <p class="text-center font-semibold mb-6">GIÁM ĐỐC TRUNG TÂM</p>
 
     <p class="mb-2">Căn cứ Quyết định số 1491/QĐ-LHH ngày 24/10/2008 của Liên hiệp các Hội khoa học và kỹ thuật Việt Nam về việc thành lập Trung tâm Phát triển sức khỏe bền vững;</p>
     <p class="mb-2">Căn cứ Thông tư số 45/2013/TT-BTC do Bộ Tài Chính ban hành ngày 25 tháng 04 năm 2013 về việc quản lý, sử dụng và trích khấu hao TSCĐ;</p>
     <p class="mb-2">Căn cứ Thông tư số 24/2024/TT-BTC ngày 17/04/2024 của Bộ trưởng Bộ Tài chính về việc ban hành Chế độ kế toán Hành chính sự nghiệp và các văn bản bổ sung, sửa đổi (nếu có);</p>
-    <p class="mb-6">Xét đề nghị số {{ req.request_no|ui_number }} của bộ phận Hành chính văn phòng về việc "{{ req.get_disposal_type_display|ui_number }} tài sản".</p>
+    <p class="mb-6">Xét đề nghị số {{ req.request_no|default_if_none:""|ui_number }} của bộ phận Hành chính văn phòng về việc "{{ req.get_disposal_type_display|default_if_none:""|ui_number }} tài sản".</p>
 
     <p class="font-semibold text-center mb-4">QUYẾT ĐỊNH:</p>
-    <p class="mb-2"><strong>Điều 1.</strong> {{ req.get_disposal_type_display|ui_number }} các tài sản, thiết bị, công cụ dụng cụ theo danh mục dưới đây:</p>
+    <p class="mb-2"><strong>Điều 1.</strong> {{ req.get_disposal_type_display|default_if_none:""|ui_number }} các tài sản, thiết bị, công cụ dụng cụ theo danh mục dưới đây:</p>
 
     <table class="w-full text-xs border border-gray-300 border-collapse my-4">
         <thead><tr class="bg-gray-100">
@@ -41,18 +41,18 @@
         {% for it in items %}
         <tr>
             <td class="border border-gray-300 px-2 py-1 text-center">{{ forloop.counter }}</td>
-            <td class="border border-gray-300 px-2 py-1">{{ it.asset.asset_name|ui_number }}</td>
-            <td class="border border-gray-300 px-2 py-1 text-center">{{ it.asset.quantity|ui_number }}</td>
-            <td class="border border-gray-300 px-2 py-1">{{ it.asset.asset_code|ui_number }}</td>
-            <td class="border border-gray-300 px-2 py-1">{{ it.asset.brand|ui_number }}</td>
-            <td class="border border-gray-300 px-2 py-1">{{ it.damage_description|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1">{{ it.asset.asset_name|default_if_none:""|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1 text-center">{{ it.asset.quantity|default_if_none:""|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1">{{ it.asset.asset_code|default_if_none:""|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1">{{ it.asset.brand|default_if_none:""|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1">{{ it.damage_description|default_if_none:""|ui_number }}</td>
         </tr>
         {% endfor %}
         </tbody>
     </table>
 
     <p class="mb-2"><strong>Điều 2.</strong> Quyết định này có hiệu lực kể từ ngày ký.</p>
-    <p class="mb-10"><strong>Điều 3.</strong> Hội đồng {{ req.get_disposal_type_display|lower|ui_number }} tài sản (theo Quyết định số {{ req.committee_decision_no|ui_number }}) và các Bộ phận: Văn phòng, Tài chính Kế toán của Trung tâm Phát triển Sức khoẻ Bền vững chịu trách nhiệm thi hành Quyết định này./.</p>
+    <p class="mb-10"><strong>Điều 3.</strong> Hội đồng {{ req.get_disposal_type_display|lower|default_if_none:""|ui_number }} tài sản (theo Quyết định số {{ req.committee_decision_no|default_if_none:""|ui_number }}) và các Bộ phận: Văn phòng, Tài chính Kế toán của Trung tâm Phát triển Sức khoẻ Bền vững chịu trách nhiệm thi hành Quyết định này./.</p>
 
     <div class="grid grid-cols-2 text-sm">
         <div>
@@ -63,7 +63,7 @@
         <div class="text-center">
             <p class="font-semibold">GIÁM ĐỐC</p>
             <p class="text-xs text-gray-400 mb-14">(Ký, họ tên, đóng dấu)</p>
-            <p class="font-medium">{{ req.decided_by.full_name|ui_number }}</p>
+            <p class="font-medium">{{ req.decided_by.full_name|default_if_none:""|ui_number }}</p>
         </div>
     </div>
 </div>

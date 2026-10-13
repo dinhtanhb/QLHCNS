@@ -1,7 +1,7 @@
 {% if document.appointment %}
   {% include "document/hcns/appointment_document.html" with decision=document.appointment %}
 {% else %}
-<article class="hcns-paper {{ document.spec.orientation }}" style="{{ document.profile.paper_css }}">
+<article class="hcns-paper {{ document.spec.orientation }}" data-hcns-form="{{ document.spec.slug }}" style="{{ document.profile.paper_css }}">
   {% if document.header_lines %}<div class="hcns-document-header{% if document.layout.header_kind == 'right' %} hcns-header-right{% endif %}">{% for line in document.header_lines %}<div>{{ line|ui_number }}</div>{% endfor %}</div>{% endif %}
   <h1>{{ document.layout.title|ui_number }}</h1>
   <p class="hcns-draft-mark">BẢN SOẠN THẢO – Chưa thay thế văn bản được ký / ban hành</p>

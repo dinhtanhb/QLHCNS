@@ -6,14 +6,14 @@
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
     <h1 class="text-lg font-bold text-center mb-1">BIÊN BẢN THANH LÝ TRANG THIẾT BỊ, CÔNG CỤ DỤNG CỤ</h1>
     <p class="text-center mb-6">Ngày {{ minutes.decision_date|date:"d \\t\h\á\n\g m \\n\ă\m Y" }}</p>
-    <p class="mb-4">Căn cứ Biên bản kiểm tra xác định tình trạng hư hỏng thiết bị ngày {{ req.request_date|date:"d/m/Y" }} tại {{ req.location_name|ui_number }}.</p>
+    <p class="mb-4">Căn cứ Biên bản kiểm tra xác định tình trạng hư hỏng thiết bị ngày {{ req.request_date|date:"d/m/Y" }} tại {{ req.location_name|default_if_none:""|ui_number }}.</p>
 
     <p class="font-semibold mb-2">I. Ban thanh lý TS thiết bị gồm:</p>
-    {% for m in committee %}<p class="mb-1">{{ m.employee.full_name|ui_number }} — Chức vụ: {{ m.employee.position|ui_number }}</p>{% endfor %}
+    {% for m in committee %}<p class="mb-1">{{ m.employee.full_name|default_if_none:""|ui_number }} — Chức vụ: {{ m.employee.position|default_if_none:""|ui_number }}</p>{% endfor %}
 
     <p class="font-semibold mt-4 mb-2">II. Tiến hành thanh lý Tài sản thiết bị:</p>
-    <p>- Tên, mã hiệu, quy cách TS thiết bị: {{ item.asset.asset_name|ui_number }}</p>
-    <p>- Số hiệu TS thiết bị: {{ item.asset.asset_code|ui_number }}</p>
+    <p>- Tên, mã hiệu, quy cách TS thiết bị: {{ item.asset.asset_name|default_if_none:""|ui_number }}</p>
+    <p>- Số hiệu TS thiết bị: {{ item.asset.asset_code|default_if_none:""|ui_number }}</p>
     <p>- Nước sản xuất: {{ minutes.origin_country|default:"—"|ui_number }}</p>
     <p>- Năm sản xuất: {{ minutes.manufacture_year|default:"—"|ui_year }}</p>
     <p>- Năm đưa vào sử dụng: {{ minutes.put_into_use_year|default:"—"|ui_year }}</p>
@@ -22,7 +22,7 @@
     <p>- Giá trị còn lại của TS thiết bị: {{ minutes.remaining_value|floatformat:"0g" }} đồng</p>
 
     <p class="font-semibold mt-4 mb-2">III. Kết luận của Ban thanh lý TS thiết bị, CCDC:</p>
-    <p class="mb-4">{{ minutes.conclusion|ui_number }}</p>
+    <p class="mb-4">{{ minutes.conclusion|default_if_none:""|ui_number }}</p>
 
     <p class="font-semibold mb-2">IV. Kết quả thanh lý</p>
     <p>Chi phí thanh lý: {{ minutes.disposal_cost|floatformat:"0g" }} đồng</p>

@@ -497,3 +497,11 @@ Mọi dải lọc GET dùng `ui-query-bar`, chứa `ui-query-fields` bên trái 
 Kiểm kê dùng form tạo gọn có nhãn, nút bên phải trên desktop và căn phải khi xuống dòng trên mobile. Ba trang duyệt phòng họp/xe/VPP dùng bảng cuộn và các action/CSRF/backend hiện hữu; không thêm quyền hoặc trạng thái nghiệp vụ.
 
 Nghiệm thu bổ sung: `ops/run_project_layout_uat.py` kiểm các đường dẫn màn hình không có tham số bằng Edge,1440/1024/390px và sáng/tối; đo tỷ lệ grid, tràn trang, vị trí nút, gửi GET bằng bàn phím, tạo kiểm kê, duyệt/từ chối phòng/xe/VPP và cấp phát tồn kho. Chỉ chạy với marker synthetic ngoài repository. HTTP405 của endpoint chỉ POST được ghi riêng, không tính là màn hình đã UAT; trang chi tiết có tham số và các role Dashboard được kiểm bằng bộ hồi quy liên quan. Không suy rộng thành đã thử mọi trạng thái hoặc phiên tài khoản thật.
+
+## 19. Bảo vệ biểu mẫu và đầu ra in
+
+Phản hồi ngày13/10/2026 xác nhận thiếu định dạng in sau các đợt chuyển CSS sang `@media screen`. Bố cục ứng dụng60/40 không áp dụng cho giấy, chữ ký hoặc grid nhập của trình soạn HCNS. Grid HCNS giữ quy tắc riêng; `print_forms.css` nạp riêng với `media="print"`, không dùng kích thước điều khiển44px hay màu theme cho giấy.
+
+Khi in: ẩn shell, thông báo trạng thái và icon điều khiển, form nhập/lọc và dialog. Bảng chấm công phải có đường kẻ, đủ ngày/tổng, hai vùng tổng hợp/chữ ký; in giá trị đã lưu thay cho ô nhập. Mẫu kiểm kê13cột dùng giấy ngang. Định dạng trang, lề và Times New Roman từ profile HCNS tiếp tục làm chuẩn. Giãn dòng phỏng vấn216/240 và đánh giá264/240 đối chiếu trực tiếp XML Word gốc; ngăn phần ký tách khỏi đoạn cuối. Dữ liệu nullable trên năm mẫu tài sản cũ để trống, không in “None”, không thay số0 bằng trống.
+
+Mỗi thay đổi liên quan mẫu hoặc CSS dùng chung phải chạy kiểm tra print media và xuất PDF thật; chỉ HTTP200, ảnh giao diện màn hình hoặc compile template không đủ. `ops/run_print_layout_uat.py` dùng tài khoản HR/Finance giả đúng quyền, marker synthetic, DB/media ngoài repository; kiểm26mẫu HCNS, chấm công/báo cáo/công văn và5mẫu tài sản cũ. Xem tất cả trang PDF, kiểm bảng/đầu mục/chữ ký/ngắt trang/mẫu ngang và việc thông báo không lọt vào giấy. Phân biệt PDF thử bằng Edge với xác nhận máy in vật lý và phiên trình duyệt thật của người dùng.

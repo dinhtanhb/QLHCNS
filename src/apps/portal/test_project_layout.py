@@ -106,3 +106,34 @@ class ProjectLayoutTests(TestCase):
                 response = self.client.get(reverse('portal:' + name))
                 self.assertEqual(response.status_code, 302)
                 self.assertEqual(response.url, reverse('portal:dashboard'))
+
+    def test_timesheet_print_values_use_saved_summary_and_keep_screen_inputs(self):
+        from decimal import Decimal
+        from apps.attendance.models import MonthlyAttendanceSummary
+        person = self.user('EMPLOYEE', True)
+        self.client.force_login(person)
+        url = reverse('portal:timesheet_month')
+        self.client.get(url, {'month':10, 'year':2026})
+        summary = MonthlyAttendanceSummary.objects.get(employee=person.employee, month=10, year=2026)
+        summary.sick_days = Decimal('1.5')
+        summary.save()
+        response = self.client.get(url, {'month':10, 'year':2026})
+        self.assertContains(response, '<span class="ui-print-only">1,5</span>', html=True)
+        self.assertContains(response, 'name="sick_days"')
+        self.assertContains(response, 'class="timesheet-summary-form"')
+        self.assertContains(response, 'print_forms.css')
+
+    def test_inventory_print_nullable_values_stay_blank_and_zero_is_retained(self):
+        from django.utils import timezone
+        from apps.asset.models import AssetType, Asset, InventoryLine
+        hr = self.user('HR_MANAGER', True)
+        self.client.force_login(hr)
+        kind = AssetType.objects.create(asset_type_code='PRINT', asset_type_name='Synthetic')
+        asset = Asset.objects.create(asset_type=kind, asset_code='PRINT', asset_name='Synthetic', purchase_value=0)
+        session = InventorySession.objects.create(session_name='Synthetic', office_name='Fake office', inventory_datetime=timezone.now())
+        InventoryLine.objects.create(session=session, asset=asset)
+        response = self.client.get(reverse('portal:inventory_session_print', args=[session.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'ui-print-landscape')
+        self.assertNotContains(response, '>None<')
+        self.assertContains(response, '>0</td>')

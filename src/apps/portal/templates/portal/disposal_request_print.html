@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Đề nghị {{ req.get_disposal_type_display|ui_number }}{% endblock %}
+{% block title %}Đề nghị {{ req.get_disposal_type_display|default_if_none:""|ui_number }}{% endblock %}
 {% block content %}
 <style>@media print { header, nav, .no-print { display: none !important; } main { max-width: 100% !important; padding: 0 !important; } }</style>
 <div class="no-print mb-4"><button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">🖨 In</button></div>
@@ -16,13 +16,13 @@
         </td>
     </tr></table>
 
-    <h1 class="text-lg font-bold text-center mb-2">ĐỀ NGHỊ {{ req.get_disposal_type_display|upper|ui_number }} TÀI SẢN</h1>
+    <h1 class="text-lg font-bold text-center mb-2">ĐỀ NGHỊ {{ req.get_disposal_type_display|upper|default_if_none:""|ui_number }} TÀI SẢN</h1>
     <p class="text-center mb-6">Kính gửi: Ban giám đốc Trung tâm Phát triển Sức khỏe Bền vững</p>
     <p class="mb-2">Chúng tôi gồm:</p>
     {% for m in members %}
-    <p class="mb-1">{{ m.employee.full_name|ui_number }} — Chức vụ: {{ m.employee.position|ui_number }} — Tham gia: {{ m.get_participation_display|ui_number }}</p>
+    <p class="mb-1">{{ m.employee.full_name|default_if_none:""|ui_number }} — Chức vụ: {{ m.employee.position|default_if_none:""|ui_number }} — Tham gia: {{ m.get_participation_display|default_if_none:""|ui_number }}</p>
     {% endfor %}
-    <p class="mt-4 mb-2">Ngày {{ req.request_date|date:"d/m/Y" }} tại {{ req.location_name|ui_number }}, chúng tôi tiến hành kiểm tra xác định tình trạng hư hỏng tài sản, trang thiết bị văn phòng sau:</p>
+    <p class="mt-4 mb-2">Ngày {{ req.request_date|date:"d/m/Y" }} tại {{ req.location_name|default_if_none:""|ui_number }}, chúng tôi tiến hành kiểm tra xác định tình trạng hư hỏng tài sản, trang thiết bị văn phòng sau:</p>
 
     <table class="w-full text-xs border border-gray-300 border-collapse my-4">
         <thead><tr class="bg-gray-100">
@@ -34,22 +34,22 @@
         {% for it in items %}
         <tr>
             <td class="border border-gray-300 px-2 py-1 text-center">{{ forloop.counter }}</td>
-            <td class="border border-gray-300 px-2 py-1">{{ it.asset.asset_name|ui_number }}</td>
-            <td class="border border-gray-300 px-2 py-1 text-center">{{ it.asset.quantity|ui_number }}</td>
-            <td class="border border-gray-300 px-2 py-1">{{ it.asset.asset_code|ui_number }}</td>
-            <td class="border border-gray-300 px-2 py-1">{{ it.asset.brand|ui_number }}</td>
-            <td class="border border-gray-300 px-2 py-1">{{ it.damage_description|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1">{{ it.asset.asset_name|default_if_none:""|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1 text-center">{{ it.asset.quantity|default_if_none:""|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1">{{ it.asset.asset_code|default_if_none:""|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1">{{ it.asset.brand|default_if_none:""|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1">{{ it.damage_description|default_if_none:""|ui_number }}</td>
         </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <p class="mb-4">{{ req.reason|ui_number }} Chúng tôi thống nhất đề nghị phương án xử lý là: {{ req.get_disposal_type_display|ui_number }} các tài sản thiết bị nêu trên.</p>
+    <p class="mb-4">{{ req.reason|default_if_none:""|ui_number }} Chúng tôi thống nhất đề nghị phương án xử lý là: {{ req.get_disposal_type_display|default_if_none:""|ui_number }} các tài sản thiết bị nêu trên.</p>
     <p class="mb-10">Kính đề nghị Ban giám đốc xem xét và phê duyệt phương án xử lý tài sản, thiết bị nêu trên.</p>
 
     <div class="grid text-sm text-center" style="grid-template-columns: repeat({{ members|length|add:0 }}, 1fr);">
         {% for m in members %}
-        <div><p class="font-semibold text-xs mb-14">{{ m.get_role_display|ui_number }}</p><p class="font-medium">{{ m.employee.full_name|ui_number }}</p></div>
+        <div><p class="font-semibold text-xs mb-14">{{ m.get_role_display|default_if_none:""|ui_number }}</p><p class="font-medium">{{ m.employee.full_name|default_if_none:""|ui_number }}</p></div>
         {% endfor %}
     </div>
 </div>

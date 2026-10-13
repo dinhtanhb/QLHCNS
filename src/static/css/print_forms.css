@@ -1,0 +1,49 @@
+/* Paper layout is independent of responsive screen grids and theme tokens. */
+@media print {
+  @page { size:A4 portrait; margin:12mm; }
+  @page inventory-landscape { size:A4 landscape; margin:12mm; }
+  .portal-app .ui-print-landscape { page:inventory-landscape; }
+  html, body.portal-app { background:#fff !important; color:#000 !important; }
+  .portal-app :is(.ui-topbar,.ui-sidebar,.ui-drawer-overlay,.ui-skip-link,.ui-nav-tooltip,.ui-alert,.ui-demo-banner,.ui-dialog,.ui-query-bar,.ui-inline-create,.no-print,.ui-screen-only,.hcns-editor,.hcns-heading,.hcns-preview-label) { display:none !important; }
+  .portal-app svg.ui-icon { display:none !important; }
+  .portal-app :is(.ui-main-wrap,.ui-main,.ui-page,.ui-card) { width:auto !important; max-width:none !important; min-width:0 !important; min-height:0 !important; margin:0 !important; padding:0 !important; box-shadow:none !important; border:0; border-radius:0; }
+  .portal-app :is(.ui-scroll,.mobile-table-scroll,.overflow-x-auto) { max-height:none !important; height:auto !important; max-width:100% !important; min-width:0 !important; overflow:visible !important; border:0; }
+  .portal-app :is(.ui-button,.ui-page-actions,.ui-form-actions,.ui-query-actions) { display:none !important; }
+  .portal-app form:not(.timesheet-summary-form):not(.hcns-paper *) { display:none !important; }
+  .portal-app .ui-print-only { display:inline !important; }
+  .portal-app .ui-table { width:100%; min-width:0; border-collapse:collapse; font-size:9pt; line-height:1.2; color:#000; }
+  .portal-app .ui-table :is(th,td) { border:1px solid #555; padding:1mm 1.5mm; vertical-align:top; overflow-wrap:anywhere; }
+  .portal-app .ui-table th { font-weight:700; text-align:left; background:#eee !important; }
+  .portal-app table thead { display:table-header-group; }
+  .portal-app table tfoot { display:table-footer-group; }
+  .portal-app table tr { break-inside:avoid; }
+  .portal-app .ui-text-center { text-align:center; }
+  .portal-app .ui-font-label { font-weight:700; }
+  .portal-app main :not(.hcns-paper):not(.hcns-paper *) { color:#000 !important; background-color:transparent !important; box-shadow:none !important; }
+  .portal-app main div[class*="rounded"]:not(.hcns-paper):not(.hcns-paper *) { border:0 !important; border-radius:0 !important; padding:0 !important; }
+  .portal-app main table:not(.hcns-paper *) { width:100%; border-collapse:collapse; }
+  .portal-app main :is(th,td):not(.hcns-paper *) { border-color:#555 !important; }
+  .portal-app .timesheet-document { font-family:Arial,sans-serif; font-size:9pt; line-height:1.2; }
+  .portal-app .timesheet-document h1 { font-size:13pt; font-weight:700; text-align:center; margin:0 0 3mm; }
+  .portal-app .timesheet-document p { margin:0 0 1mm; }
+  .portal-app .timesheet-document .ui-table { margin-top:3mm; table-layout:fixed; font-size:8.5pt; }
+  .portal-app .timesheet-document .ui-table :is(th,td) { padding:.6mm 1mm; }
+  .portal-app .timesheet-document .ui-table th:first-child { width:10%; }
+  .portal-app .timesheet-document .ui-table th:last-child { width:20%; }
+  .portal-app .timesheet-summary-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:6mm; margin-top:4mm; break-inside:avoid; }
+  .portal-app .timesheet-summary-form { display:block; margin:0; }
+  .portal-app .timesheet-summary-form fieldset { border:0; margin:2mm 0 0; padding:0; }
+  .portal-app .timesheet-summary-form :is(input,.ui-number-display,.ui-number-input) { display:none !important; }
+  .portal-app .timesheet-leave-row,.portal-app .ui-timesheet-balance-row { display:flex; justify-content:space-between; align-items:baseline; gap:2mm; margin:0 0 1.5mm; }
+  .portal-app .timesheet-leave-row label,.portal-app .ui-timesheet-balance-row label { font-size:9pt; font-weight:400; }
+  .portal-app .ui-timesheet-signatures { display:grid; grid-template-columns:1fr 1fr; gap:3mm; text-align:center; }
+  .portal-app .ui-timesheet-signature { display:flex; flex-direction:column; min-height:25mm; }
+  .portal-app .ui-timesheet-signature-name { margin-top:auto; }
+  /* HCNS profile page size/margins and Times New Roman typesetting stay authoritative. */
+  .portal-app .hcns-paper { border:0; box-shadow:none; overflow:visible; }
+  .portal-app .hcns-paper :is(.hcns-decision-head,.hcns-decision-foot,.hcns-signatures) { break-inside:avoid; }
+  /* Word references: interview w:line=216 and evaluation w:line=264 (240=single). */
+  .portal-app .hcns-paper[data-hcns-form="candidate-interview"] { line-height:.9; }
+  .portal-app .hcns-paper[data-hcns-form="employee-evaluation"] { line-height:1.1; }
+  .portal-app .hcns-document-section:has(+ .hcns-signatures) > :last-child { break-after:avoid; }
+}

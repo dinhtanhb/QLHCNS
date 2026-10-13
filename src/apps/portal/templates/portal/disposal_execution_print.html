@@ -1,25 +1,25 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Biên bản {{ req.get_disposal_type_display|ui_number }}{% endblock %}
+{% block title %}Biên bản {{ req.get_disposal_type_display|default_if_none:""|ui_number }}{% endblock %}
 {% block content %}
 <style>@media print { header, nav, .no-print { display: none !important; } main { max-width: 100% !important; padding: 0 !important; } }</style>
 <div class="no-print mb-4"><button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">🖨 In</button></div>
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-    <h1 class="text-lg font-bold text-center mb-1">BIÊN BẢN {{ req.get_disposal_type_display|upper|ui_number }} TRANG THIẾT BỊ, CÔNG CỤ DỤNG CỤ</h1>
+    <h1 class="text-lg font-bold text-center mb-1">BIÊN BẢN {{ req.get_disposal_type_display|upper|default_if_none:""|ui_number }} TRANG THIẾT BỊ, CÔNG CỤ DỤNG CỤ</h1>
     <p class="text-center mb-6">Ngày {{ req.execution_datetime|date:"d" }} tháng {{ req.execution_datetime|date:"m" }} năm {{ req.execution_datetime|date:"Y" }}</p>
 
-    <p class="mb-2">Căn cứ Quyết định số {{ req.decision_no|ui_number }}/QĐ-VH ngày {{ req.decision_date|date:"d/m/Y" }} về việc {{ req.get_disposal_type_display|lower|ui_number }} tài sản, thiết bị và công cụ dụng cụ tại {{ req.location_name|ui_number }};</p>
-    <p class="mb-4">Căn cứ Quyết định số {{ req.committee_decision_no|ui_number }}/QĐ-VH ngày {{ req.decision_date|date:"d/m/Y" }} về việc thành lập Hội đồng {{ req.get_disposal_type_display|lower|ui_number }} tài sản, thiết bị và công cụ dụng cụ tại {{ req.location_name|ui_number }};</p>
-    <p class="mb-6">Hôm nay, vào hồi {{ req.execution_datetime|date:"H \g\i\ờ\ i" }}, ngày {{ req.execution_datetime|date:"d/m/Y" }} tiến hành {{ req.get_disposal_type_display|lower|ui_number }} tài sản, trang thiết bị với chi tiết như sau:</p>
+    <p class="mb-2">Căn cứ Quyết định số {{ req.decision_no|default_if_none:""|ui_number }}/QĐ-VH ngày {{ req.decision_date|date:"d/m/Y" }} về việc {{ req.get_disposal_type_display|lower|default_if_none:""|ui_number }} tài sản, thiết bị và công cụ dụng cụ tại {{ req.location_name|default_if_none:""|ui_number }};</p>
+    <p class="mb-4">Căn cứ Quyết định số {{ req.committee_decision_no|default_if_none:""|ui_number }}/QĐ-VH ngày {{ req.decision_date|date:"d/m/Y" }} về việc thành lập Hội đồng {{ req.get_disposal_type_display|lower|default_if_none:""|ui_number }} tài sản, thiết bị và công cụ dụng cụ tại {{ req.location_name|default_if_none:""|ui_number }};</p>
+    <p class="mb-6">Hôm nay, vào hồi {{ req.execution_datetime|date:"H \g\i\ờ\ i" }}, ngày {{ req.execution_datetime|date:"d/m/Y" }} tiến hành {{ req.get_disposal_type_display|lower|default_if_none:""|ui_number }} tài sản, trang thiết bị với chi tiết như sau:</p>
 
     <p class="font-semibold mb-2">Thành phần tham gia</p>
     <p class="mb-2">Chúng tôi gồm:</p>
-    {% if chairman %}<p class="mb-1">{{ chairman.employee.full_name|ui_number }} — chức vụ: {{ chairman.employee.position|ui_number }} — Trưởng ban</p>{% endif %}
-    {% for m in member_list %}<p class="mb-1">{{ m.employee.full_name|ui_number }} — chức vụ: {{ m.employee.position|ui_number }} — Thành viên</p>{% endfor %}
+    {% if chairman %}<p class="mb-1">{{ chairman.employee.full_name|default_if_none:""|ui_number }} — chức vụ: {{ chairman.employee.position|default_if_none:""|ui_number }} — Trưởng ban</p>{% endif %}
+    {% for m in member_list %}<p class="mb-1">{{ m.employee.full_name|default_if_none:""|ui_number }} — chức vụ: {{ m.employee.position|default_if_none:""|ui_number }} — Thành viên</p>{% endfor %}
 
     <p class="font-semibold mt-4 mb-2">Nội dung</p>
-    <p class="mb-2">Mô tả tài sản cố định {{ req.get_disposal_type_display|lower|ui_number }} theo danh sách sau đây:</p>
+    <p class="mb-2">Mô tả tài sản cố định {{ req.get_disposal_type_display|lower|default_if_none:""|ui_number }} theo danh sách sau đây:</p>
 
     <table class="w-full text-xs border border-gray-300 border-collapse my-4">
         <thead><tr class="bg-gray-100">
@@ -31,26 +31,26 @@
         {% for it in items %}
         <tr>
             <td class="border border-gray-300 px-2 py-1 text-center">{{ forloop.counter }}</td>
-            <td class="border border-gray-300 px-2 py-1">{{ it.asset.asset_name|ui_number }}</td>
-            <td class="border border-gray-300 px-2 py-1 text-center">{{ it.asset.quantity|ui_number }}</td>
-            <td class="border border-gray-300 px-2 py-1">{{ it.asset.asset_code|ui_number }}</td>
-            <td class="border border-gray-300 px-2 py-1">{{ it.asset.brand|ui_number }}</td>
-            <td class="border border-gray-300 px-2 py-1">{{ it.damage_description|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1">{{ it.asset.asset_name|default_if_none:""|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1 text-center">{{ it.asset.quantity|default_if_none:""|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1">{{ it.asset.asset_code|default_if_none:""|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1">{{ it.asset.brand|default_if_none:""|ui_number }}</td>
+            <td class="border border-gray-300 px-2 py-1">{{ it.damage_description|default_if_none:""|ui_number }}</td>
         </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <p class="mb-1">Lý do {{ req.get_disposal_type_display|lower|ui_number }} tài sản, thiết bị, CCDC: {{ req.disposal_reason|ui_number }}</p>
-    {% if req.destroy_form %}<p class="mb-1">Hình thức tiêu hủy: {{ req.destroy_form|ui_number }}</p>{% endif %}
-    {% if req.handling_method %}<p class="mb-1">Biện pháp xử lý sau tiêu hủy: {{ req.handling_method|ui_number }}</p>{% endif %}
-    <p class="mb-1">Thời gian kết thúc quá trình {{ req.get_disposal_type_display|lower|ui_number }} vào hồi {{ req.execution_end_time|time:"H giờ i" }} cùng ngày.</p>
-    <p class="mb-10">Tất cả thành viên tham gia quá trình {{ req.get_disposal_type_display|lower|ui_number }} cam kết đã chứng kiến và hoàn thành quá trình {{ req.get_disposal_type_display|lower|ui_number }} tài sản, thiết bị nêu trên.</p>
+    <p class="mb-1">Lý do {{ req.get_disposal_type_display|lower|default_if_none:""|ui_number }} tài sản, thiết bị, CCDC: {{ req.disposal_reason|default_if_none:""|ui_number }}</p>
+    {% if req.destroy_form %}<p class="mb-1">Hình thức tiêu hủy: {{ req.destroy_form|default_if_none:""|ui_number }}</p>{% endif %}
+    {% if req.handling_method %}<p class="mb-1">Biện pháp xử lý sau tiêu hủy: {{ req.handling_method|default_if_none:""|ui_number }}</p>{% endif %}
+    <p class="mb-1">Thời gian kết thúc quá trình {{ req.get_disposal_type_display|lower|default_if_none:""|ui_number }} vào hồi {{ req.execution_end_time|time:"H giờ i" }} cùng ngày.</p>
+    <p class="mb-10">Tất cả thành viên tham gia quá trình {{ req.get_disposal_type_display|lower|default_if_none:""|ui_number }} cam kết đã chứng kiến và hoàn thành quá trình {{ req.get_disposal_type_display|lower|default_if_none:""|ui_number }} tài sản, thiết bị nêu trên.</p>
 
     <div class="grid grid-cols-2 gap-y-10 text-sm text-center">
-        {% if chairman %}<div><p class="font-semibold text-xs">Trưởng ban<br>(Ký, ghi rõ họ tên)</p><p class="font-medium mt-10">{{ chairman.employee.full_name|ui_number }}</p></div>{% endif %}
+        {% if chairman %}<div><p class="font-semibold text-xs">Trưởng ban<br>(Ký, ghi rõ họ tên)</p><p class="font-medium mt-10">{{ chairman.employee.full_name|default_if_none:""|ui_number }}</p></div>{% endif %}
         {% for m in member_list %}
-        <div><p class="font-semibold text-xs">Thành viên<br>(Ký, ghi rõ họ tên)</p><p class="font-medium mt-10">{{ m.employee.full_name|ui_number }}</p></div>
+        <div><p class="font-semibold text-xs">Thành viên<br>(Ký, ghi rõ họ tên)</p><p class="font-medium mt-10">{{ m.employee.full_name|default_if_none:""|ui_number }}</p></div>
         {% endfor %}
     </div>
 </div>
