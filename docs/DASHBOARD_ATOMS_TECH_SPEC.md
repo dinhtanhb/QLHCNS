@@ -238,17 +238,17 @@ Bảng là điều kiện triển khai, không phải quyền mới đã duyệt
 
 **Đối chiếu 7.2 ↔ 16.4**
 
-| Điểm khác nhau | Dự kiến cũ 7.2 | Đề xuất hiện hành 16.4 (chờ D2) |
+| Điểm khác nhau | Dự kiến cũ 7.2 | Quyết định hiện hành 16.4 (đã chốt 13/10/2026) |
 | --- | --- | --- |
-| DEPT_MANAGER nghỉ gần đây | Ẩn lịch sử | Có thể cá nhân; lịch sử phòng chờ D2-2, không kế thừa Pending |
-| HR_OFFICER nghỉ gần đây | Ẩn chờ lịch sử | Global metadata qua manage_hr, vẫn chờ D2-2 |
+| DEPT_MANAGER nghỉ gần đây | Ẩn lịch sử | Chỉ cá nhân linked; không lịch sử phòng |
+| HR_OFFICER nghỉ gần đây | Ẩn chờ lịch sử | Chỉ cá nhân linked, tên loại chi tiết qua manage_hr |
 | FINANCE_OFFICER/SYS_ADMIN nghỉ gần đây | Ẩn | Chỉ cá nhân linked, không lịch sử HR toàn Trung tâm |
-| Tin tuyển dụng | Scope chưa chốt | Aggregate view_reports; chi tiết tin theo gate thật, chờ D2-3/7 |
-| Cập nhật gần đây | Nguồn đọc chưa kiểm kê, có nhánh tài chính/kỹ thuật | Mặc định ẩn; đề xuất chỉ lịch sử quyết định HR theo scope, không actor/comment |
-| Trưởng phòng tuyển dụng | Đề xuất theo scope cũ | D2-9 đề xuất khối trạng thái đề xuất phòng, mặc định ẩn/chờ duyệt |
+| Tin tuyển dụng | Scope chưa chốt | Aggregate Open qua view_reports; không chi tiết tin |
+| Cập nhật gần đây | Nguồn đọc chưa kiểm kê, có nhánh tài chính/kỹ thuật | Chỉ lịch sử quyết định HR theo scope, không actor/comment |
+| Trưởng phòng tuyển dụng | Đề xuất theo scope cũ | D2-9 trạng thái đề xuất đúng phạm vi phòng đang quản lý |
 | Search/header | Hoãn cả search | Search đã có theo nhiệm vụ riêng; header2/giờ ca/kỳ lương vẫn hoãn |
 
-Mục 16 là bản đề xuất chi tiết hiện hành; bảng cũ giữ để tra cứu, không ghép hai bảng thành quyền mới đã áp dụng.
+Mục 16 là quyết định chi tiết hiện hành; bảng dự kiến cũ giữ để tra cứu, không ghép thành quyền mới.
 
 ### 7.3 Linked / unlinked và guard chung
 
@@ -378,163 +378,100 @@ Theo yêu cầu tiếp theo của chủ dự án, bốn KPI nhân sự có đíc
 
 Giao diện giữ ngày/phạm vi ở đầu trang; chuyển giải thích công thức vào disclosure Cách tính chỉ số, giữ cách nhận biết 0/thiếu dữ liệu. KPI dùng icon people/briefcase/calendar/person; bảng/biểu đồ dùng icon theo nội dung. Hai cột biểu đồ và các khối dưới cân bằng chiều rộng, KPI giảm khoảng đệm; danh sách dài có vùng cuộn bàn phím, bảng thay thế nằm trong disclosure. Không tạo biểu đồ/trend hoặc mở lại tiền ngoài phạm vi Đợt 1. Nghiệm thu bổ sung: bấm bốn KPI, số/row đích khớp fixture, vai trò không vượt quyền, search/pagination/ngày đúng, sáng/tối và 5 độ rộng; kết quả thực tế ghi duy nhất trong PROJECT_WORK_LOG.md.
 
-## 16. Đợt 2 — Đặc tả để duyệt, chưa triển khai
+## 16. Đợt 2 — Đã chốt 13/10/2026
 
-Phạm vi chỉ gồm đơn nghỉ gần đây, tuyển dụng đang mở/ứng viên và cập nhật gần đây. Phần này là đề xuất dữ liệu/giao diện; không cấp quyền mới hoặc khẳng định các khối đã chạy. Các quyết định D2 bên dưới thay thế phần dự kiến Đợt 2 của mục 7.2 sau khi được duyệt. Tìm kiếm đã được giao riêng, không đồng nghĩa header tầng 2/giờ ca/kỳ lương được duyệt.
+Các quyết định D2-1…D2-9 đã được chủ dự án giao triển khai ngày 13/10/2026. Phần này thay thế đề xuất Đợt 2 ở mục 7.2; không đổi công thức/quyền Đợt 1. Tìm kiếm đã có; header giờ ca/kỳ lương và mọi tiền vẫn hoãn. Kết quả nghiệm thu thực tế nằm tại [nhật ký](PROJECT_WORK_LOG.md).
 
-### 16.1 Bảng tóm tắt để duyệt
+### 16.1 Phạm vi đã duyệt
 
-| Khối/nhãn dự kiến | Nguồn đã kiểm | Quyền xem tối đa theo nguồn hiện có | Trạng thái |
-| --- | --- | --- | --- |
-| Đơn nghỉ gần đây của tôi | LeaveRequest, created_date/from_date/to_date/total_days/status; leave_list | Tài khoản linked, chính mình | Sẵn sàng về nguồn; chốt nhãn loại nghỉ |
-| Đơn nghỉ gần đây trong phạm vi quản lý | LeaveRequest; can_read_file và LeaveScopeMixin | manage_hr / approve_leave_all_departments; DEPT_MANAGER chỉ phòng quản lý | Cần quyết định phạm vi lịch sử và đích |
-| Tin có trạng thái đang tuyển | JobPosting.status/open_date/close_date; báo cáo điều hành | view_reports chỉ số tổng; chi tiết theo JobPostingAdmin và is_staff | Cần quyết định ngày hiệu lực/quyền/đích |
-| Ứng viên đang xử lý | Candidate.status; hr_candidate_list | manage_hr; không tự mở cho Trưởng phòng/Giám đốc | Sẵn sàng về nguồn; chốt cách hiển thị và bộ lọc đích |
-| Đề xuất tuyển dụng của phòng tôi (trạng thái hiện tại) | RecruitmentRequest.status + managed_departments_for như recruitment_list | request_recruitment/approve_recruitment, scope phòng/HR_MANAGER/superuser thật | Cần quyết định D2-9; mặc định ẩn |
-| Cập nhật quyết định nhân sự | PersonnelDecisionHistory; phạm vi PersonnelDecision | manage_hr hoặc approve_personnel_decision với đúng tập quyết định được đọc | Cần quyết định chọn nguồn và giới hạn sự kiện |
-| Nhật ký hoạt động HR tổng quát / tuyển trong tháng | Không có nhật ký đầy đủ mọi thao tác; không có Candidate.hired_at/liên kết Candidate–Employee | Chưa có scope/đích đủ để bật | Chưa có nguồn |
+| Khối | Nguồn | Quyền/phạm vi |
+| --- | --- | --- |
+| Đơn nghỉ gần đây của tôi | LeaveRequest | Employee live liên kết, chính mình |
+| Đơn nghỉ gần đây toàn Trung tâm | LeaveRequest | approve_leave_all_departments: HR_MANAGER, DIRECTOR, superuser |
+| Tin có trạng thái đang tuyển | JobPosting Open | view_reports; chỉ aggregate |
+| Ứng viên đang xử lý | Candidate | manage_hr; aggregate sáu trạng thái, tổng bốn nhóm xử lý |
+| Nhân sự vào làm trong tháng | Employee.join_date | dashboard_employee_scope giống Đợt 1 |
+| Cập nhật quyết định nhân sự | PersonnelDecisionHistory | manage_hr hoặc approve_personnel_decision theo scope trang đích |
+| Đề xuất tuyển dụng | RecruitmentRequest | request_recruitment/approve_recruitment; managed_departments_for(global_roles=(HR_MANAGER,)) |
 
-Mặc định khi chưa chốt: ẩn khối mới; không hiện số 0 thay cho thiếu quyền/nguồn. Bảng không là bằng chứng nghiệm thu. Sau duyệt, chỉ triển khai phần đủ nguồn/quyền và query budget.
+Nhãn toàn Trung tâm giữ quy ước tên đơn vị hiện có. HR Officer và Trưởng phòng chỉ nghỉ của mình, không kế thừa quyền đọc file hoặc queue Pending thành lịch sử toàn phòng. Khối bị từ chối loại trước truy vấn, DTO và HTML, không CSS ẩn.
 
-### 16.2 Nguồn thật và giới hạn đã xác minh bằng mã
+### 16.2 Nguồn thật và giới hạn
 
-- `apps/leave/models.py`: LeaveRequest có employee, leave_type, from_date, to_date, total_days, reason, attachment, status; BaseAuditModel cung cấp created_date/modified_date. LeaveApproval có bản ghi quyết định; không dùng modified_date của đơn làm ngày duyệt. `views/attendance.py:leave_list` chỉ đơn của Employee đang đăng nhập; `selectors.py:approvable_leave_requests` chỉ Pending, không phải selector lịch sử. `security/data_access.py:can_read_file` kiểm riêng đơn của chính mình, manage_hr, approve_leave_all_departments hoặc DEPT_MANAGER trong phòng quản lý; đây là bằng chứng quyền đọc đối tượng, chưa phải selector lịch sử Dashboard.
-- `apps/recruitment/models.py`: JobPosting liên kết RecruitmentRequest, có posting_title/open_date/close_date/status Open|Closed; RecruitmentRequest có department/position/required_quantity/required_date/status. Candidate có code/name/status New|Screening|Interviewing|Offered|Hired|Rejected, không có FK tới JobPosting, RecruitmentRequest hoặc Employee. Interview có interview_date/result; Offer có offer_date/expected_join_date/status, không có ngày nhận việc chính thức.
-- `views/recruitment.py`: recruitment_hub kiểm manage_hr/request_recruitment/approve_recruitment; recruitment_list dùng managed_departments_for(global_roles=(HR_MANAGER,)), không có filter trạng thái/kỳ; hr_candidate_list kiểm manage_hr nhưng chưa có filter nhóm trạng thái. `recruitment/admin.py`: JobPostingAdmin chỉ HR_ROLES và điều kiện is_staff/is_active của RoleBasedAdminMixin. Không suy quyền chi tiết JobPosting từ quyền mở hub.
-- `portal/reporting_dashboard.py:build_report_snapshot` có aggregate Candidate.status và JobPosting.status=Open; `views/reports_planning.py:report_hub` kiểm view_reports. Số Open hiện tại không xét ngày đóng, nên không tự coi bằng số “trong khoảng hiệu lực”. DIRECTOR có thể xem aggregate báo cáo, nhưng không có manage_hr để mở hồ sơ ứng viên.
-- `CandidateAdmin.create_employee_from_candidate` đổi status Hired rồi chuyển tới form tạo nhân viên, trước khi người dùng lưu Employee. Vì vậy Hired không chứng minh đã tạo hồ sơ hay đã bắt đầu làm việc. Employee.join_date là ngày vào làm của hồ sơ Employee; không có nguồn nối ngày này tới ứng viên cụ thể. **Ngày tuyển chính thức của Candidate: chưa có nguồn**. Offer.expected_join_date chỉ dự kiến; Offer Accepted không phải đã vào làm.
-- `apps/common/models.py:BaseAuditModel` chỉ giữ thời điểm/người tạo, lần sửa cuối, xóa mềm; không lưu toàn bộ thao tác hay chuyển trạng thái. `security/models.py:SecurityEvent` có action/resource/record_id/occurred_at/user; nguồn hiện ghi login/logout, file_download, data_export (`security/signals.py`, `security/files.py`, HCNS/report export). Không có audit CRUD HR tổng quát. SecurityEventAdmin chỉ SYS_ADMIN/SUPER_ADMIN có is_staff hoặc superuser đủ quyền Admin; không có route portal nhật ký bảo mật.
-- `document/models.py:PersonnelDecisionHistory` có action/status_from/status_to/created_date/created_by/comment/decision; `document/hcns/views.py` ghi sự kiện quyết định thật. `personnel_decision_list` và `_visible_personnel_decision` giới hạn tập đọc; recipient Employee chỉ được quyết định Issued của mình, nhưng trang detail cố ý không gửi history cho recipient. Không dùng điều kiện recipient để mở timeline lịch sử.
-- Notification có title/message/created_date và người nhận; thông báo không là audit mọi nghiệp vụ. Không đưa message thông báo vào một “nhật ký hoạt động” giả; không dùng thời điểm tải Dashboard làm thời điểm nghiệp vụ.
+LeaveRequest.created_date là ngày tạo; from_date/to_date là kỳ nghỉ; total_days có sẵn. LeaveApproval là nguồn duyệt riêng, không dùng modified_date. Candidate không có FK tới JobPosting/RecruitmentRequest/Employee hoặc hired_at. Hired/Offer Accepted không chứng minh bắt đầu làm việc. Employee.join_date là ngày vào làm của hồ sơ, không là ngày tuyển ứng viên. Không join Interview/Offer để tính Candidate.
 
-### 16.3 Công thức và dữ liệu tối thiểu
+PersonnelDecisionHistory giữ action/status_to/created_date/decision. Trang personnel_decision_list cho manage_hr toàn bộ; người chỉ approve_personnel_decision đọc PendingApproval hoặc quyết định có history do họ tạo. Reverse history của trang hiện bao gồm bản ghi actor đã xóa mềm; subquery visibility phải giữ cùng quy tắc, nhưng sự kiện hiển thị luôn live. Recipient chỉ được detail Issued của mình; không có timeline. SecurityEvent/Notification không thay thế history HR.
 
-**Đơn nghỉ gần đây:** nhãn “Đơn nghỉ gần đây của tôi” hoặc “Đơn nghỉ gần đây trong phạm vi quản lý”. Đề xuất kỳ 30 ngày theo **ngày tạo đơn**, từ 00:00 ngày D−29 đến trước 00:00 ngày D+1 theo timezone dự án, không lọc bằng ngày bắt đầu nghỉ. Pending/Approved/Rejected/Cancelled là trạng thái hiện tại, không gọi “đã duyệt trong tháng”. Lọc scope trước; loại đơn/Employee/phòng/LeaveType đã xóa khỏi khối mới, không sửa selector Pending hiện có. Sắp created_date DESC, pk DESC, tối đa 6 dòng. DTO chỉ pk, tên/mã tối thiểu của người được phép đọc, from_date/to_date, total_days sẵn có, status và nhãn loại chung. Không tính lại phép/lễ/nửa ngày, không sửa total_days. Nếu chỉ lấy 6 dòng, ghi “Tối đa 6 đơn mới nhất”, không coi len(list) là tổng số đơn trong kỳ; tổng toàn kỳ chỉ thêm khi có query budget/selector đồng nhất.
+recruitment_list chỉ lọc RecruitmentRequest live theo phòng live được quản lý, không loại vị trí đã xóa; khối đề xuất giữ đúng tập này. JobPosting có công thức parent live chặt hơn theo D2-7; không dùng count posting làm count đề xuất. Không sửa guard, PERMISSION_MATRIX, model/migration, CSRF, middleware, field form, URL name, logic nghỉ/duyệt/lương/giấy HCNS.
 
-Loại nghỉ mặc định hiển thị **“Nghỉ phép” cho tất cả vai trò**; chưa duyệt mapping thì không suy từ tên/mã loại nghỉ thành nhóm y tế. Không hiện “Thai sản”, “Nghỉ ốm” hay loại sức khỏe cho người chỉ được đọc metadata. Chốt ngoại lệ tên loại chi tiết ở D2-1, không suy quyền xem y tế từ quyền duyệt.
+### 16.3 Công thức và DTO
 
-**Tin tuyển dụng:** phương án mặc định trung thực là số JobPosting live có status=Open, nhãn “Tin có trạng thái đang tuyển”; không gọi “đang hiệu lực hôm nay” nếu không xét ngày. Nếu chốt nhãn “Đang tuyển hôm nay”, dùng thêm open_date≤D và (close_date null hoặc ≥D); D và ngày đóng là biên inclusive. Loại posting/RecruitmentRequest/phòng/vị trí đã xóa khỏi công thức mới; parent Pending/Rejected không tự coi Approved. D2-7 chốt có bắt buộc RecruitmentRequest Approved hay không; chưa chốt thì chưa bật số hiệu lực mới. Không tự đóng posting quá ngày trên GET. Required_quantity không phải số người còn thiếu nếu chưa có nguồn gán người đã tuyển vào từng yêu cầu.
+**Nghỉ:** created_date từ 00:00 D−29 inclusive đến trước 00:00 D+1 theo timezone dự án; sắp −created_date,−pk; tối đa6. Nhãn “Tối đa 6 đơn mới nhất trong 30 ngày”; len(rows) không là tổng. Loại đơn/Employee/phòng/LeaveType đã xóa. DTO chỉ pk, from_date, to_date, total_days, status, nhãn loại; global thêm tên/mã Employee. Chỉ manage_hr thấy tên loại chi tiết; mọi người khác kể cả DIRECTOR chỉ “Nghỉ phép”. Không chọn reason/attachment hoặc tính lại phép/lễ. Trạng thái hiện tại, không lịch sử số được duyệt trong tháng.
 
-**Ứng viên:** distinct Candidate live với status thuộc New, Screening, Interviewing, Offered; nhóm Hired/Rejected riêng và không gọi là tuyển trong kỳ. Đề xuất aggregate 4 nhóm, tổng là tổng nhóm hợp lệ; không join Interview/Offer làm nhân đôi. Khi chỉ có count, không lấy tên/các trường hồ sơ. Nếu duyệt danh sách ngắn, tối đa 3 tên/mã/trạng thái theo created_date DESC, pk DESC, ghi đó là mới tạo hồ sơ, không phải vừa tuyển. **Ứng viên theo phòng/tin đăng: chưa có nguồn FK**, không lọc giả bằng nguồn ứng tuyển hoặc người phỏng vấn. Tin mở và ứng viên là hai nguồn độc lập, không trình bày như phễu chuyển đổi cùng cohort.
+**Tin:** count JobPosting live status=Open; loại yêu cầu cha/phòng/vị trí đã xóa. Không lọc open_date/close_date hoặc status cha Approved; ghi “Theo trạng thái Open, chưa xét ngày đóng”. Không tự đóng posting trên GET. Không chi tiết/admin link.
 
-**Cập nhật gần đây:** khuyến nghị thu hẹp thành “Cập nhật quyết định nhân sự”, chỉ sự kiện thật PersonnelDecisionHistory trong 30 ngày created_date, sắp DESC/pk DESC, tối đa 8 dòng. Trước query lịch sử phải có queryset decision đúng manage_hr/global hoặc approve_personnel_decision: PendingApproval hoặc có history do chính user tạo, như trang đích. Loại decision/employee/phòng/history đã xóa. Chỉ action, thời điểm, số quyết định tối thiểu/status; không comment, content_snapshot, nội dung giấy, dữ liệu lương, tên người thao tác. Không suy “ai vừa sửa gì” từ modified_date. Nếu chưa chọn nguồn/không có nguồn chung, ẩn khối; nếu chủ dự án muốn placeholder, ghi “Chưa có nguồn nhật ký được duyệt”, không bịa hoạt động. Nếu đủ quyền/nguồn nhưng không có sự kiện thì “Chưa có cập nhật trong kỳ”.
+**Ứng viên:** một grouped aggregate Candidate live theo sáu trạng thái. Tổng xử lý = New+Screening+Interviewing+Offered; Hired/Rejected riêng. Hired mang nhãn “Trạng thái Hired”, không gọi đã vào làm hoặc tuyển trong kỳ. Không query tên/email/điện thoại/CV/lương, Interview/Offer hoặc nguồn báo cáo tổng. Không số theo phòng/tin do thiếu FK.
 
-SecurityEvent là phương án **nhật ký truy cập/xuất dữ liệu**, không thay nhãn sự kiện HR. Muốn dùng cần quyết định riêng nguồn, gate is_staff/role Admin, scope tài nguyên và mục đích hiển thị; default ẩn trên portal. Không lộ user FK/tên đăng nhập/người thao tác nếu chưa có policy đọc actor. Notification chỉ có thể là khối “Thông báo của tôi” giữ nguồn người nhận, không nhập vào audit chung.
+**Vào làm:** Employee live, join_date trong [đầu tháng D,D], status Active/Probation/OnLeave, dashboard_employee_scope. Không ngày tương lai/tháng trước/Resigned. Nhãn “Nhân sự vào làm trong tháng”; ghi “Theo ngày vào làm của hồ sơ nhân sự” để tránh nhãn lẫn với tuyển dụng. Count gộp vào aggregate trạng thái Đợt 1, không tăng SELECT; không đổi bốn KPI chính. Drill-down metric=joined dùng cùng selector/phạm vi/kỳ, giữ chính sách hợp đồng của Nhân viên & hồ sơ độc lập.
 
-**Khối tùy chọn D2-9 — Đề xuất tuyển dụng của phòng tôi (trạng thái hiện tại):** chỉ sau duyệt, nguồn RecruitmentRequest live và scope `managed_departments_for(user, global_roles=(HR_MANAGER,))` của recruitment_list. Gate trước query: request_recruitment hoặc approve_recruitment; DEPT_MANAGER linked chỉ phòng đang quản lý, unlinked không scope và ẩn; HR_MANAGER/superuser global dùng nhãn “Đề xuất tuyển dụng trong phạm vi quản lý” thay “phòng tôi” khi scope toàn Trung tâm. HR_OFFICER/DIRECTOR/EMPLOYEE/FINANCE_OFFICER/SYS_ADMIN không nhận khối nếu thiếu gate, dù có thể GET trang rỗng200. Không đổi selector/phân quyền thực tế hoặc ngầm thêm global role.
+**Quyết định:** history live trong 30 ngày tạo như nghỉ; sắp −created_date,−pk, tối đa8; decision/Employee/phòng live, scope ở16.2 bằng subquery/Exists không N+1. DTO pk/decision_id/số quyết định/action nhãn Việt/created_date/status_to/href detail đúng scope. Không actor/comment/content_snapshot/tên Employee/lương. Rỗng “Chưa có cập nhật trong kỳ”; không log giả.
 
-Đề xuất một aggregate grouped status Pending/Approved/Rejected/Closed, số đếm là **bản ghi đề xuất trạng thái hiện tại**, không required_quantity/người đã tuyển/lịch sử chuyển trạng thái. Không gọi Approved/Closed là “đã tuyển trong tháng”. Không lấy request_reason, lương, thông tin ứng viên, định danh hoặc nội dung yêu cầu. Tập bản ghi phải trùng scope của đích; parent bị xóa nếu muốn loại cần chốt selector đồng bộ với đích ở nhiệm vụ riêng, không âm thầm đổi công thức khi view cũ chưa loại.
+**Đề xuất:** một grouped aggregate Pending/Approved/Rejected/Closed theo scope thật của recruitment_list, không required_quantity/request_reason/ứng viên. Closed ghi “Trạng thái Closed”; không là người tuyển được. Trưởng phòng linked ghi “của phòng tôi”; HR_MANAGER/superuser toàn Trung tâm ghi “Đề xuất tuyển dụng”; note “Trạng thái hiện tại”. Trưởng phòng unlinked ẩn; scope linked không có phòng cho tổng0 trung thực. Không lọc parent thêm ngoài trang đích.
 
-`recruitment_list` hiện chưa filter status; KPI trạng thái `href=None`, CTA riêng “Mở danh sách đề xuất tuyển dụng” được phép theo cùng gate. Chỉ link từng số sau nhiệm vụ riêng thêm filter và kiểm count/PK đúng trạng thái/scope. Dự toán +1 SELECT, denied +0; không query mỗi nhóm trạng thái. Nghiệm thu đề xuất: role/linked/unlinked, phòng quản lý khác phòng hồ sơ/nhiều phòng/phòng ngoài scope, mọi status/rỗng/lỗi, ghi nhãn global đúng, không request_reason/salary/PII trong HTML/JSON, GET không sửa status, filter chưa có thì href=None, N+1 không tăng theo 1.000 yêu cầu. Chưa viết mã khối này; mặc định ẩn/chờ duyệt D2-9.
+### 16.4 Quyền × khối thực tế
 
-### 16.4 Quyền × khối đề xuất
+| Vai trò | Nghỉ tôi | Nghỉ global | Tin Open | Candidate | Vào làm | History | Đề xuất |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| EMPLOYEE | Linked, chung | Ẩn | Ẩn | Ẩn | Ẩn | Ẩn | Ẩn |
+| DEPT_MANAGER | Linked, chung | Ẩn | Ẩn | Ẩn | Phòng quản lý khi linked | Ẩn | Phòng quản lý khi linked |
+| HR_OFFICER | Linked, chi tiết | Ẩn | Ẩn | Global | Global | Global | Ẩn |
+| HR_MANAGER | Linked, chi tiết | Global, chi tiết | Global | Global | Global | Global | Global |
+| DIRECTOR | Linked, chung | Global, chung | Global | Ẩn | Global | Decision đọc được | Ẩn |
+| FINANCE_OFFICER / SYS_ADMIN | Linked, chung | Ẩn | Ẩn | Ẩn | Ẩn | Ẩn | Ẩn |
+| SUPER_ADMIN không cờ | Linked, chung | Ẩn | Ẩn | Ẩn | Ẩn | Ẩn | Ẩn |
+| Superuser active | Linked, chi tiết | Global, chi tiết | Global | Global | Global | Global | Global |
 
-Các ô sau là mức tối đa đề xuất sau khi chốt D2; trước đó các khối mới ẩn. “Cá nhân” chỉ khi Employee live; “global” vẫn yêu cầu has_permission thật và nguồn live. Không sửa PERMISSION_MATRIX/guard để đạt UI.
+Gate bằng has_permission thật; staff chỉ mở menu Admin, không cấp khối HR. Global cho HR/Director unlinked giữ nguyên quyền global, không có khối own. Role dự án không kế thừa HR, chỉ own khi Employee live. Gate nghỉ global approve_leave_all_departments đã xác minh chỉ HR_MANAGER/DIRECTOR ngoài superuser.
 
-| Vai trò | Nghỉ gần đây | Tin Open | Ứng viên đang xử lý | Cập nhật quyết định nhân sự |
-| --- | --- | --- | --- | --- |
-| EMPLOYEE | Cá nhân; nhãn chung | Ẩn | Ẩn | Ẩn, không tự mở history recipient |
-| DEPT_MANAGER | Cá nhân; lịch sử phòng cần D2-2 và managed_departments | Ẩn, đề xuất phòng là nguồn khác | Ẩn, thiếu FK scope | Ẩn |
-| HR_OFFICER | Global metadata qua manage_hr, cần D2-2 | Cần D2-3; quyền Admin không tự cấp portal | Global qua manage_hr | Global qua manage_hr; cần D2-5 |
-| HR_MANAGER | Global metadata qua manage_hr/all-departments; cần D2-2 | Aggregate qua view_reports; dòng chi tiết chờ D2-3 | Global qua manage_hr | Global qua manage_hr; cần D2-5/budget |
-| DIRECTOR | Global metadata qua all-departments; cần D2-2 | Aggregate qua view_reports, không link hồ sơ ứng viên | Ẩn vì không manage_hr | Chỉ tập decision đọc được theo approve_personnel_decision, cần D2-5 |
-| FINANCE_OFFICER | Cá nhân; không lịch sử HR toàn Trung tâm | Ẩn | Ẩn | Ẩn |
-| SYS_ADMIN | Cá nhân; không lịch sử HR toàn Trung tâm | Ẩn | Ẩn | Ẩn HR; audit bảo mật là quyết định riêng |
-| Superuser active | Global nguồn thật; vẫn nhãn chung trước policy | Nguồn thật; link Admin chỉ đủ staff | Global nguồn thật | Global nguồn thật; actor vẫn ẩn trước policy |
+### 16.5 Privacy và trạng thái
 
-**Quyền × khối D2-9 bổ sung (đề xuất, mặc định ẩn):**
+Không chọn/serialize lý do/file/giấy y tế, CCCD/thuế/BH/ngân hàng, lương, CV, contact ứng viên, comment/content_snapshot/người thao tác. Chỉ tên loại nghỉ ở manage_hr theo D2-1 đã duyệt; các role khác không nhận tên nhạy cảm ngay trong SQL projection. SSR escape, không raw innerHTML. Nguồn hợp lệ rỗng = ready với0 hoặc empty list; thiếu nguồn “Chưa có dữ liệu”; lỗi DB “Không tải được dữ liệu”, không raw SQL. Denied không là0/placeholder.
 
-| Vai trò | Đề xuất tuyển dụng trong phạm vi quản lý |
+### 16.6 Drill-down
+
+- Own nghỉ: CTA “Mở đơn nghỉ của tôi” → leave_list chung, không link count30ngày; global href=None.
+- Tin: count không link; CTA recruitment_hub riêng chỉ gate manage_hr/request_recruitment/approve_recruitment.
+- Candidate: count không link; CTA hr_candidate_list chung chỉ manage_hr.
+- Joined: dashboard_people?metric=joined&on_date=D, cùng selector. Không thêm route/GET filter khác.
+- History: từng dòng personnel_decision_detail chỉ khi guard detail thật cho phép; list có thể nhận decision qua actor event đã xóa nhưng detail chỉ history live. Trường hợp lệch này giữ metadata đúng list và href=None, kiểm guard bằng subquery trong cùng SELECT; không sửa quyền/view. Tổng event không link tổng decision.
+- Đề xuất: count href=None; CTA “Mở danh sách đề xuất” → recruitment_list, chưa filter trạng thái.
+
+### 16.7 Ngân sách và đo
+
+Trần đã duyệt24 SELECT toàn GET+render cho mỗi role/profile/backend, không trừ transaction SELECT SQL Server. Baseline phải đo lại cùng fixture trước sửa; login/warm-up ngoài đo. Nghỉ own/global mỗi nguồn tối đa1 SELECT; khi cùng bật gộp bằng hai ROW_NUMBER (global và partition Employee), mỗi danh sách vẫn tối đa6 độc lập. Tin/candidate/history/đề xuất mỗi nguồn tối đa1; joined gộp aggregate cũ. Denied +0. Không query trong loop, không build_report_snapshot, không N+1. Thêm100phòng/1.000Employee/Candidate/history không tăng số query; đo p95 GET mục tiêu≤1,5s, ghi CPU/RAM/backend/fixture/cold/warm. Vượt phải báo/gộp/chia rollout, không giấu query. Số đo cuối thực tế và baseline nằm trong nhật ký cùng đợt; không dùng số lượt trước chứng nhận mã mới.
+
+### 16.8 Nghiệm thu
+
+test_home_dashboard_phase2: role×linked/unlinked/superuser/staff/SUPER_ADMIN; nguồn denied không query/DTO/HTML; privacy sentinel loại Thai sản chỉ manage_hr; biên ngày tạo, stored total_days, soft-delete, max6/max8 và sorttie. Open parent live, sáu trạng thái Candidate không nhân đôi Interview/Offer. Joined count=drill-down, scope và biên tháng/ngày/status. History cùng scope/detail và không recipient. Đề xuất count=scope recruitment_list. Service GET không ghi; middleware/session ghi riêng nếu có.
+
+Hồi quy test_home_dashboard/test_dashboard_followup/test_dashboard_drilldown/test_global_search; probe mới thất bại mã cũ khi khả thi. Full SQLite/SQL Server trên Git index xuất TEMP, DB/media cách ly APP_ENV=test M365 off, số thực không kết quả cũ. check/dryrunmigration/pipcheck/diffcheck/contrast trên nguồn cuối. Edge headless HR Manager/Officer/Manager/Director/Employee ×360/768/1024/1440/1920×light/dark, text≥14/control≥44, bàn phím/reduced-motion/nội dung dài/nooverflow/no duplicate counters. Bằng chứng ngoài Git. Screenreader/zoom200%/tài khoản thật ghi chưa kiểm nếu chưa thực hiện.
+
+### 16.9 Hoãn và giới hạn
+
+Không Phase3: xu hướng/+2 tháng trước/tỷ lệ có mặt/header ca/kỳ lương/tiền/kanban/quickattendance. Không schema/history tuyển tự chế, fake FK/phễu, log giả hoặc mở quyền mới. Giữ thứ tự khối Đợt 1; thêm hàng danh sách nghỉ trái/history phải và tối đa4ô nhỏ “Chỉ số theo dõi khác”. Token/component/SVG hiện có; không dependency/font mạng/CDN/emoji/gradient/glow. Ảnh01/02/03 không có ở path tham chiếu trong lượt thực hiện; dùng ảnh Atoms chủ dự án đã gửi và ghi giới hạn nhật ký.
+
+### 16.10 Quyết định — Đã chốt 13/10/2026
+
+| Mã | Quyết định đã duyệt |
 | --- | --- |
-| EMPLOYEE / HR_OFFICER / DIRECTOR / FINANCE_OFFICER / SYS_ADMIN | Ẩn, không suy từ GET200 hoặc quyền quản trị khác |
-| DEPT_MANAGER | Có request_recruitment và Employee live: phòng đang quản lý; unlinked ẩn |
-| HR_MANAGER | Gate request_recruitment/approve_recruitment; global theo selector thật |
-| Superuser active | Global theo gate/selector thật; không tự gọi global là “phòng tôi” |
-| SUPER_ADMIN không cờ / staff | Theo has_permission và scope thật; không tự cấp toàn quyền |
+| D2-1 | Tên loại nghỉ chi tiết chỉ manage_hr; khác “Nghỉ phép”; không reason/attachment |
+| D2-2 | Own linked + global approve_leave_all_departments; HR Officer/Trưởng phòng chỉ own;30ngày tạo/max6 |
+| D2-3 | Open aggregate view_reports; Candidate aggregate manage_hr; CTA chung đúng gate, count không link |
+| D2-4 | Employee.join_date đầu tháng…D/status đang quản lý/cùng scope; metric joined, không nguồn Hired/Offer |
+| D2-5 | PersonnelDecisionHistory30ngày/max8; manage_hr hoặc scope approve; actor/comment/snapshot ẩn |
+| D2-6 | Hoãn header tầng2/ca/kỳ lương, không hard-code |
+| D2-7 | Open theo status; parent live; không xét ngày hoặc Approved cha |
+| D2-8 | ≤24 SELECT toàn GET/render, denied+0/noN+1/sizegrowth/p95≤1,5s đo thực hai backend |
+| D2-9 | Bật đề xuất theo request/approve_recruitment và scope trang đích; aggregate, CTA chung riêng |
 
-SUPER_ADMIN **không cờ is_superuser** không tự nhận toàn quyền: kiểm has_permission/guard thật; staff không tự nhận HR. HR global unlinked có thể giữ khối global nếu được duyệt nhưng không khối cá nhân. DEPT_MANAGER unlinked không lịch sử phòng. Role dự án không tự nhận HR; chỉ cá nhân nếu nguồn/Employee cho phép. Mỗi denied block phải bị loại trước query/DTO/render, không CSS ẩn và không nhúng JSON bị từ chối.
-
-### 16.5 Loại dữ liệu nhạy cảm
-
-Không chọn/serialize reason/attachment, giấy y tế/thai sản, CCCD/thuế/BH/tài khoản ngân hàng, lương/Offer.salary_offer, CV, điện thoại/email/địa chỉ ứng viên, comments phỏng vấn, nội dung đơn/giấy hoặc tên actor. Chỉ tên/mã người của đúng scope khi cần nhận diện. Bảng tổng tuyển dụng không kéo dữ liệu hồ sơ; tên/PK không được vào HTML/JSON của role denied. Không thêm những trường này vào tìm kiếm chung. Escape SSR, không raw innerHTML; không coi dữ liệu không hiển thị bằng CSS là đã loại khỏi phản hồi.
-
-### 16.6 Drill-down và các đích chưa đủ
-
-| Nguồn/đích có sẵn | Giới hạn thật | Điều kiện link hoặc việc riêng cần làm |
-| --- | --- | --- |
-| portal:leave_list | Own Employee, mọi trạng thái/ngày; chưa filter kỳ tạo | Link “Mở đơn nghỉ của tôi” là mở danh sách chung, không link một tổng 30 ngày; filter created_from/created_to/status cần giao riêng trước khi link count |
-| portal:leave_approval_list | Pending theo selector/quyền duyệt | Chỉ queue Pending; không dùng cho lịch sử Approved/Rejected/Cancelled |
-| apps.security.files/download đơn nghỉ | can_read_file, có thể ghi SecurityEvent | Không đặt link tệp/nhạy cảm trên Dashboard; không tải tệp để kiểm số |
-| portal:recruitment_list | Phòng quản lý/HR_MANAGER/superuser; chưa status/kỳ | Không dùng làm đích JobPosting hoặc Candidate; bộ lọc yêu cầu tuyển dụng là hạng mục riêng |
-| portal:recruitment_hub | manage_hr/request_recruitment/approve_recruitment | Mở hub bằng CTA riêng, không biến count tin/candidate thành link vì khác queryset |
-| portal:hr_candidate_list | manage_hr; mọi trạng thái, chưa filter | CTA danh sách chung được phép; filter status_group=processing và cùng parent/soft-delete cần riêng trước khi click KPI processing |
-| admin:recruitment_jobposting_changelist | is_staff/is_active và quyền JobPostingAdmin | Chỉ đủ cả gate; Open status filter Admin chưa bảo đảm cùng khoảng ngày/parent. Đích portal tin mở hiện chưa có; ghi hạng mục riêng, không dựng link giả |
-| portal:personnel_decision_list / personnel_decision_detail | manage_hr/approve_personnel_decision; recipient Issued chỉ detail, history bị loại | Link từng sự kiện tới decision chỉ khi cùng scope được đọc. Danh sách chưa filter kỳ history; tổng sự kiện không link thành tổng decision |
-| admin:security_securityevent_changelist | Quyền Admin riêng; không portal timeline | Chỉ CTA audit khi đủ quyền và policy; không dùng làm đích cập nhật HR |
-
-Không thêm route/filter ở lượt tài liệu này. Khi triển khai, href=None nếu chưa có đích cùng bộ lọc; CTA mở danh sách chung phải được ghi đúng nhãn, không làm cả card trông bấm được. Tất cả link cần test user thật và count/tập PK khớp, phân trang giữ filter, query parameter không mở rộng scope.
-
-### 16.7 Query budget và kế hoạch đo
-
-Baseline dưới đây lấy số **GET + render đã đo Đợt 1**, không phải số mới của khối Đợt 2. Hai cột là unlinked/linked; SQL Server có SELECT kiểm tra transaction, không trừ khỏi tổng. Nguồn: test_dashboard_followup.test_eight_role_query_matrix và mục Hoàn thiện Đợt 1 của nhật ký.
-
-| Vai trò | SQLite unlinked / linked | SQL Server unlinked / linked |
-| --- | --- | --- |
-| EMPLOYEE | 3 / 7 | 4 / 8 |
-| DEPT_MANAGER | 3 / 10 | 4 / 11 |
-| HR_OFFICER | 9 / 13 | 10 / 14 |
-| HR_MANAGER | 12 / 16 | 13 / 17 |
-| DIRECTOR | 9 / 13 | 10 / 14 |
-| FINANCE_OFFICER | 3 / 7 | 4 / 8 |
-| SYS_ADMIN | 3 / 7 | 4 / 8 |
-| SUPER_ADMIN không superuser | 4 / 8 | 5 / 9 |
-| Superuser active | Chưa đo riêng trong bảng này | Chưa đo riêng trong bảng này |
-
-Tăng tối đa đề xuất: nghỉ +1 SELECT lấy tối đa 6 dòng/relations cần thiết; tin Open +1 aggregate; ứng viên +1 grouped aggregate. Danh sách ngắn ứng viên hoặc tin chi tiết thêm tối đa +1 **mỗi nguồn**, chỉ sau chốt budget. Cập nhật quyết định +1 SELECT sau scope bằng subquery/Exists; không query từng sự kiện/actor. Bị ẩn +0, không query nguồn hoặc load nhạy cảm.
-
-Trần ≤20 SELECT là mục tiêu tự đặt của Đợt 1 khi chưa đo, **không phải giới hạn kỹ thuật**. Không thay mục Đợt 1. Đề xuất D2-8 cho Đợt 2: **≤24 SELECT mỗi vai trò**, chờ chủ dự án duyệt, với điều kiện số truy vấn không tăng khi thêm 100 phòng/1.000 người/ứng viên/sự kiện; người không có quyền +0; nguồn ẩn không query; đo p95 trên máy UAT, ghi CPU/RAM/DB/backend/fixture và cấu hình. Mục tiêu p95≤1,5 giây tại máy UAT; vượt thì chia rollout hoặc gộp truy vấn, không dùng số query thấp thay bằng chứng tốc độ. Chưa tự áp dụng trần mới trong code/tests.
-
-| Vai trò linked | SQL Server Đợt 1 đã đo | Khối đề xuất | Dự toán Đợt 2 | So trần đề xuất24 |
-| --- | --- | --- | --- | --- |
-| HR_MANAGER | 17 | Nghỉ1 + tin1 + ứng viên1 + history1 | 21; tùy chọn D2-9 +1 thành22 | Dưới24, vẫn phải đo N+1/p95 |
-| HR_OFFICER | 14 | Nghỉ1 + ứng viên1 + history1 | 17; tin chi tiết chỉ khi được duyệt gate | Chờ scope/đích và đo thật |
-| DIRECTOR | 14 | Nghỉ1 + tin1 + history1 | 17 | Chờ policy/scope, không candidate |
-| DEPT_MANAGER | 11 | Nghỉ cá nhân1; lịch sử phòng là scope thay thế chờ D2-2; D2-9 +1 | 12–13 theo khối được duyệt | Chờ D2-2/9; không query tin/candidate |
-| EMPLOYEE / FINANCE_OFFICER / SYS_ADMIN | 8 | Nghỉ cá nhân1 | 9 | Chỉ linked/cá nhân; quản trị denied +0 |
-| Superuser | Chưa đo riêng | Các khối thật được duyệt | Chưa có tổng dự toán chắc chắn | Phải đo riêng trước bật |
-
-Đây là **dự toán, chưa đo Đợt 2**. Danh sách ngắn mỗi nguồn +1 thêm vào tổng, không tự miễn budget. Phương án thay thế giữ20 và bỏ ít nhất một khối với HR_MANAGER (17+4=21), hoặc gộp/reuse query trước khi bật. Không chạy build_report_snapshot toàn bộ chỉ để lấy hai số tuyển dụng vì sẽ kéo nguồn không thuộc khối; không trừ câu query khỏi báo cáo để đạt.
-
-Đo CaptureQueriesContext quanh GET/render trên fixture cố định, login/warm-up ngoài đo, từng role/profile/backend, count SELECT và ghi riêng câu ghi; thêm 100 phòng/1.000 người/ứng viên/sự kiện không tăng số query theo dòng. Kiểm cả cold/warm, 0/thiếu/lỗi, nguồn denied +0. Báo p95/máy/khối thật riêng, không suy từ số query. Cache nếu có key user/scope/quyền/kỳ và không dùng dữ liệu global cho role hẹp; chưa cần cache để làm đúng quyền.
-
-### 16.8 Nghiệm thu khi được giao triển khai
-
-Tệp đề xuất: `test_home_dashboard_phase2.py` (role/source/privacy/state/budget), `test_home_dashboard_phase2_filters.py` (đích/filter), mở rộng runner Edge trên DB/media giả. Chưa tạo/chạy các test khối mới ở lượt tài liệu này.
-
-- Role × bốn nhóm dữ liệu trong bảng, linked/unlinked/superuser/staff/SUPER_ADMIN không cờ: denied section, tên/PK/counter không có trong HTML/JSON, không query bảng nguồn. Role thiếu nguồn hoặc policy ẩn, không hiện 0 giả. Named scopes dùng chung với đích, query parameter ngoài scope không thêm hồ sơ.
-- Nghỉ: ngày tạo D−29 và trước D+1, đơn tạo trước kỳ nhưng nghỉ trong kỳ, timezone biên nửa đêm, các trạng thái/đơn của mình/người khác/phòng khác/quản lý nhiều phòng, parent đã xóa, loại y tế chứa giá trị sentinel; không reason/file/chi tiết sức khỏe trên phản hồi. total_days giữ nguyên, không gọi clean/save/tính lại.
-- Tuyển dụng: Open/Closed, open_date tương lai, close_date null/D/D−1, parent deleted/không Approved theo D2-7; Candidate 6 status, nhiều Interview/Offer không nhân đôi count. Không có FK thì không đưa số ứng viên theo phòng/tin. Hired trước khi form Employee lưu không thành “đã tuyển trong tháng”; không lấy lương/email/điện thoại/CV.
-- Cập nhật: sự kiện history thật, thời gian bằng nhau sắp PK ổn định, event của decision ngoài scope/recipient không được đọc history/actor không được đọc; comment/content_snapshot có sentinel không lọt HTML/JSON. Không dùng SecurityEvent login làm HR transition, không tạo log/Notification giả khi GET; nguồn chưa chốt/rỗng/lỗi có trạng thái/nhãn đúng.
-- Drill-down: chỉ href đúng route/guard, row PK và aggregate trùng selector/kỳ/status, invalid/reversed ngày/phòng ngoài scope, pagination giữ filter. Count event khác count decision không link nhầm; không 403/404 cho link đã liệt kê. Không CTA ghi/duyệt qua GET.
-- GET: service khối không INSERT/UPDATE/DELETE, snapshot hàng nghiệp vụ trước/sau không đổi. Kiểm integration và ghi riêng middleware/session hiện có nếu phát sinh, không tuyên bố toàn request read-only hoặc sửa middleware trong lượt này. Auth/login và log tải/xuất có hành vi riêng, không lấy làm bằng chứng service ghi DB.
-- UI: 360/768/1024/1440 × sáng/tối, nội dung dài, control ≥44px/chữ ≥14px, Tab/Enter/Escape, reduced-motion, table thay biểu đồ, label nguồn/kỳ/0/thiếu/lỗi. Đo contrast và scope bảo mật trước khi mở khối. Không chứng nhận WCAG từ screenshot; screen reader/zoom 200% và UAT tài khoản thật là cổng riêng.
-
-### 16.9 Rủi ro và việc không làm
-
-Không quick-attendance, kanban kéo-thả, KPI tiền, tên/lương người thao tác, trend tuyển theo tháng, đánh dấu đã vào làm từ Hired/Accepted, thêm model/migration/ngày tuyển tự chế hoặc log giả. Không đổi quyền/guard/logic duyệt/nghỉ/lương, field form, URL name, CSRF, middleware hoặc giấy HCNS. Không sửa selector Pending có parent đã xóa trong nhiệm vụ này. Không làm header tầng 2/giờ ca/kỳ lương cùng các khối mặc định; không hard-code lịch ca từ ảnh. Các trang/mẫu hiện có vẫn là đích thật, không thay UI hay backend Đợt 2 trước khi duyệt.
-
-### 16.10 Quyết định cho chủ dự án
-
-| Mã | Cần chốt | Khuyến nghị mặc định an toàn |
-| --- | --- | --- |
-| D2-1 | Hiện tên loại nghỉ chi tiết hay nhóm chung, ai được xem? | Chỉ “Nghỉ phép” cho mọi role; không suy role HR/duyệt cho quyền y tế; ngoại lệ phải chốt riêng |
-| D2-2 | Lịch sử nghỉ của HR_OFFICER/DEPT_MANAGER/global được mở tới đâu, kỳ theo ngày nào? | Own 30 ngày tạo; lịch sử phòng/global chờ duyệt scope đọc, không kế thừa Pending; không lý do/file |
-| D2-3 | Ai xem aggregate tin mở và hồ sơ ứng viên? Có mở metadata JobPosting cho HR_OFFICER không staff? | Candidate chỉ manage_hr; Open aggregate chỉ view_reports; chi tiết tin theo gate thật/đích có nguồn, role khác ẩn |
-| D2-4 | Ngày tuyển chính thức và liên kết ứng viên–nhân viên lấy từ đâu? | Ghi chưa có nguồn; không dùng Hired/Offer dự kiến làm ngày tuyển. Nếu cần schema/history, giao nhiệm vụ riêng sau duyệt |
-| D2-5 | Chọn nhật ký nào, ai được xem, có hiện tên actor không? | Hoãn nhật ký tổng quát; nếu bật chỉ “Cập nhật quyết định nhân sự” theo quyền đọc decision, actor/comment ẩn. SecurityEvent là khối audit riêng cần policy Admin |
-| D2-6 | Header tầng 2/giờ ca/kỳ lương làm cùng lượt này hay hoãn? | Hoãn; tìm kiếm đã có không cấp phép giờ ca/kỳ lương. Chưa có mapping ca áp dụng cho mọi người, không hard-code ảnh; mọi tiền vẫn ẩn |
-| D2-7 | Tin đang tuyển theo status Open hay hiệu lực ngày D; parent yêu cầu phải Approved không? | Nhãn theo status hiện có; muốn xét ngày/Approved chốt công thức và đích trước, không sửa status trên GET |
-| D2-8 | Chốt trần Đợt 2 và khối/danh sách ngắn ưu tiên? | Đề xuất ≤24, không N+1 theo 100 phòng/1.000 hồ sơ, denied +0/nguồn ẩn không query, đo p95/cấu hình UAT; vượt mục tiêu chia rollout/gộp query. Thay thế giữ20 và bỏ một khối. Chờ duyệt, chưa áp dụng |
-| D2-9 | Bật “Đề xuất tuyển dụng của phòng tôi (trạng thái hiện tại)” không? | Chờ duyệt, mặc định ẩn; gate request/approve_recruitment, managed_departments_for đúng scope, aggregate +1; href=None khi chưa filter, CTA chung riêng |
-
-Chủ dự án duyệt từng quyết định/phần đủ nguồn trước khi giao triển khai. Lượt này dừng ở đặc tả và sửa tìm kiếm; không mở các khối Đợt 2 hoặc push/deploy.
+Quy trình: dọn nguồn, test cuối, bản sao review không runtime/bí mật, docs commit riêng và UI commit riêng, pushmain/remoteSHA. Không forcepush/deploy; việc chưa kiểm ghi rõ nhật ký.
