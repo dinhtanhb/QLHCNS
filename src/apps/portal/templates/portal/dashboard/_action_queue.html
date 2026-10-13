@@ -1,0 +1,6 @@
+<section class="ui-card" id="dashboard-queue" aria-labelledby="dashboard-queue-title"><h2 class="ui-card-title" id="dashboard-queue-title">Việc cần xử lý</h2><p class="ui-page-description">{{ dashboard_snapshot.scope_label }} · Hiện tại · Nguồn: cùng selector với danh sách duyệt.</p>
+ {% if data.state == 'partial' %}{% include "ui/empty_state.html" with title="Dữ liệu chưa đầy đủ" description=data.message %}
+ {% elif data.state == 'error' %}{% include "ui/empty_state.html" with state="error" title="Không tải được dữ liệu" description="Vui lòng thử lại sau." %}
+ {% elif data.rows %}<ul class="home-queue">{% for item in data.rows %}<li><div class="dashboard-queue-row"><span>{{ item.label }}</span><strong>{{ item.value|ui_number }}</strong></div><p class="ui-page-description">{{ item.note }}</p><a class="ui-button ui-button--secondary" href="{{ item.href }}">Mở danh sách đơn chờ duyệt</a></li>{% endfor %}</ul>
+ {% else %}{% include "ui/empty_state.html" with title="Chưa có nhóm xử lý phù hợp" description="Các nhóm chỉ được bật sau khi đối chiếu đúng quyền và phạm vi trang duyệt." %}{% endif %}
+</section>

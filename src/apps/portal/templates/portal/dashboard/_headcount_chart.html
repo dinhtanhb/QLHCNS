@@ -1,0 +1,17 @@
+{% load ui_components l10n %}
+<section class="ui-card" id="dashboard-headcount" aria-labelledby="dashboard-headcount-title">
+ <h2 class="ui-card-title" id="dashboard-headcount-title">Định biên kế hoạch năm {{ dashboard_snapshot.plan_year|unlocalize }}</h2>
+ <p class="ui-page-description">Toàn Trung tâm · Nhân sự Active hiện tại / kế hoạch năm. Nguồn: HeadcountPlan và Employee.</p>
+ {% if data.state == 'error' %}{% include "ui/empty_state.html" with state="error" title="Không tải được dữ liệu" description="Vui lòng thử lại sau." %}
+ {% else %}
+ {% if data.state == 'partial' %}<p class="dashboard-quality">Dữ liệu chưa đầy đủ: kế hoạch trùng hoặc không hợp lệ chưa được cộng vào chỉ số.</p>{% elif data.state == 'unconfigured' %}<p class="dashboard-quality">Chưa nhập kế hoạch năm này.</p>{% endif %}
+ <p class="ui-page-description">Thanh liền: Active · Thanh viền nét đứt: kế hoạch. Các phòng dùng chung thang đo.</p>
+ <ul class="dashboard-capacity">{% for row in data.rows %}<li>
+  <div class="dashboard-row-heading"><strong>{{ row.department_name }}</strong><span>{{ row.actual|ui_number }} / {% if row.planned == None %}—{% else %}{{ row.planned|ui_number }}{% endif %} người</span></div>
+  <div class="dashboard-bars" aria-hidden="true"><span class="dashboard-bar dashboard-bar--actual" style="width:{{ row.actual_width }}%"></span><span class="dashboard-bar dashboard-bar--planned" style="width:{{ row.planned_width }}%"></span></div>
+  {% if row.note %}<p class="ui-page-description">{{ row.note }}</p>{% endif %}
+ </li>{% empty %}<li>{% include "ui/empty_state.html" with title="Chưa có dữ liệu" description="Chưa có phòng ban để đối chiếu kế hoạch." %}</li>{% endfor %}</ul>
+ <details class="home-dept-data"><summary>Xem bảng dữ liệu định biên</summary><div class="ui-scroll" role="region" tabindex="0" aria-label="Bảng định biên năm"><table class="ui-table"><caption>Active hiện tại và định biên kế hoạch năm; kế hoạch chưa có trạng thái phê duyệt</caption><thead><tr><th scope="col">Phòng ban</th><th scope="col">Active</th><th scope="col">Kế hoạch</th><th scope="col">Còn thiếu</th><th scope="col">Tỷ lệ</th></tr></thead><tbody>{% for row in data.rows %}<tr><th scope="row">{{ row.department_name }}</th><td class="ui-number">{{ row.actual|ui_number }}</td><td class="ui-number">{% if row.planned == None %}—{% else %}{{ row.planned|ui_number }}{% endif %}</td><td class="ui-number">{% if row.gap == None %}—{% else %}{{ row.gap|ui_number }}{% endif %}</td><td class="ui-number">{% if row.ratio == None %}—{% else %}{{ row.ratio_display|ui_number }}%{% endif %}{% if row.note %}<span class="ui-page-description">{{ row.note }}</span>{% endif %}</td></tr>{% endfor %}</tbody></table></div></details>
+ <a class="ui-button ui-button--secondary" href="{% url 'portal:report_headcount' %}?year={{ dashboard_snapshot.plan_year|unlocalize }}">Mở báo cáo định biên</a>
+ {% endif %}
+</section>

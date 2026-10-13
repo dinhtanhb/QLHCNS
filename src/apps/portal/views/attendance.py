@@ -41,17 +41,9 @@ def _leave_approvers_for(employee):
 
 
 def _approvable_leave_requests(request):
-    """Các đơn nghỉ phép mà tài khoản đang đăng nhập THỰC SỰ có quyền duyệt."""
-    qs = LeaveRequest.objects.filter(status="Pending").select_related("employee", "leave_type")
-    if has_permission(request.user, "approve_leave_all_departments"):
-        return qs
-    if _role_code(request) == "DEPT_MANAGER":
-        employee = _get_employee(request)
-        if not employee:
-            return qs.none()
-        dept_ids = employee.managed_departments.values_list("pk", flat=True)
-        return qs.filter(employee__department_id__in=dept_ids)
-    return qs.none()
+    """Compatibility wrapper; approval GET/POST and dashboard share this selector."""
+    from apps.portal.selectors import approvable_leave_requests
+    return approvable_leave_requests(request.user)
 
 
 @login_required

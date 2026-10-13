@@ -105,42 +105,28 @@ def dashboard(request):
     if employee:
         context["my_pending_leaves"] = LeaveRequest.objects.filter(employee=employee, status="Pending").count()
         context["my_open_tasks"] = Task.objects.filter(assigned_to_employee=employee).exclude(status__in=["Done", "Cancelled"]).count()
-    # HR Manager / Director / Super Admin: bức tranh toàn Trung tâm
+    from apps.portal.dashboard_data import dashboard_snapshot
+    snapshot = dashboard_snapshot(request.user, employee)
+    context["dashboard_snapshot"] = snapshot
+    counts = snapshot["sections"].get("status", {}).get("counts", {})
+    # Preserve the old Active-only keys; new managed headcount has its own DTO key.
     if is_super or role_code in ("HR_MANAGER", "DIRECTOR"):
         context["is_management_view"] = True
-        context["total_employees"] = Employee.objects.filter(employment_status="Active").count()
-        context["pending_leave_approvals"] = LeaveRequest.objects.filter(status="Pending").count()
-        context["pending_recruitment"] = RecruitmentRequest.objects.filter(status="Pending").count()
-        context["pending_documents"] = Document.objects.filter(status="PendingApproval").count()
-        context["open_tasks_company"] = Task.objects.exclude(status__in=["Done", "Cancelled"]).count()
-        if has_permission(request.user, "view_asset"):
-            context["assets_in_use"] = Asset.objects.filter(status="InUse").count()
-        dept_counts = (
-            Employee.objects.filter(employment_status="Active")
-            .values("department__department_name")
-            .annotate(total=Count("id"))
-            .order_by("-total")
-        )
-        context["dept_counts"] = dept_counts
-
-    # Trưởng phòng: bức tranh phòng ban mình quản lý
+        context["total_employees"] = counts.get("active")
+        rows = snapshot["sections"].get("headcount", {}).get("rows", [])
+        context["dept_counts"] = sorted([
+            {"department__department_name": row["department_name"], "total": row["actual"]}
+            for row in rows if row["actual"]
+        ], key=lambda row: row["total"], reverse=True)
     elif role_code == "DEPT_MANAGER" and employee:
-        dept_ids = employee.managed_departments.values_list("pk", flat=True)
         context["is_manager_view"] = True
-        context["dept_employee_count"] = Employee.objects.filter(department_id__in=dept_ids, employment_status="Active").count()
-        context["dept_pending_leaves"] = LeaveRequest.objects.filter(
-            employee__department_id__in=dept_ids, status="Pending"
-        ).count()
-        context["dept_open_tasks"] = Task.objects.filter(
-            department_id__in=dept_ids
-        ).exclude(status__in=["Done", "Cancelled"]).count()
-        if has_permission(request.user, "view_asset"):
-            context["dept_assets_in_use"] = Asset.objects.filter(
-                allocations__employee__department_id__in=dept_ids, allocations__return_date__isnull=True
-            ).distinct().count()
+        context["dept_employee_count"] = counts.get("active")
 
     from apps.portal.home_presentation import home_presentation
     context.update(home_presentation(request.user, context))
+    # Phase one replaces administrative cards/queues, while retaining personal actions.
+    context["home_groups"] = [group for group in context["home_groups"] if group["title"] == "Công việc của tôi"]
+    context["home_queue"] = snapshot["sections"].get("queue", {}).get("rows", [])
     return render(request, "portal/dashboard.html", context)
 
 

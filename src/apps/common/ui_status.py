@@ -200,6 +200,14 @@ STATUS_BADGES = {'hrm.employee:employment_status': {'Active': {'label': 'Đang l
                                                          'tone': 'neutral',
                                                          'icon': 'info'}}}
 
+STATUS_BADGES["dashboard.contract:expiry"] = {
+    "today": {"label": "Hết hạn hôm nay", "tone": "danger", "icon": "danger"},
+    "urgent": {"label": "Còn không quá 7 ngày", "tone": "danger", "icon": "danger"},
+    "soon": {"label": "Còn 8–30 ngày", "tone": "warning", "icon": "warning"},
+    "later": {"label": "Còn 31–60 ngày", "tone": "info", "icon": "info"},
+    "overdue": {"label": "Quá hạn; cần rà soát", "tone": "danger", "icon": "danger"},
+}
+
 def status_badge(family, code, fallback=""):
     known = STATUS_BADGES.get(family, {}).get(str(code))
     if known:

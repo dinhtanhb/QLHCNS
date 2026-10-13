@@ -1,5 +1,38 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-13 — Triển khai dashboard Atoms Đợt 1
+
+**Phạm vi và quyết định:** chỉ làm trên `main`. Trước sửa, fetch thành công và nhánh ahead 8/behind 0. Giữ nguyên mục backup/export và đặc tả soạn trước còn dirty; reference PNG không đưa vào commit. Dùng UI UX Pro Max, không UI Styling/shadcn. Theo phần Q3 chi tiết của prompt, Director vẫn không được xem khối hợp đồng; câu mở đầu nói mở quyền không được dùng để nới quyền. Q1 giữ navy–teal; Q2 ẩn mọi tiền; Q6 dùng nhóm Active/Probation/OnLeave; Q7 hoãn topbar; Q8 theo quyền thật. Ngày và năm lấy ngày địa phương hiện tại, không đọc GET.
+
+**Thay đổi:** sửa câu violet cũ ở MASTER, không đổi tokens. Thêm dashboard_data.py và selectors.py. Trang chủ có KPI status, Approved ngày D, định biên năm, loại hợp đồng, sắp hết hạn và quá hạn riêng theo quyền. Dùng lại thành phần G4 và badge registry. Các partial dưới portal/dashboard ghép nội dung nghiệp vụ, không tạo hệ card/badge mới; _contract_rows dùng lại cho hai nhóm hạn. Biểu đồ SVG/CSS có nhãn và bảng thay thế. Tỷ lệ hiển thị một chữ số thập phân; số tính gốc được giữ. Chỉ lấy các trường hợp đồng cần hiển thị, không lấy lương vào DTO. KPI không có đích lọc đúng thì không là link; liên kết danh sách chung tách riêng. Không thêm filters, model, migration, quyền, form/CSRF/POST hoặc dependency.
+
+**Nội dung giữ lại:** công việc cá nhân, thao tác nhanh, tiến độ dự án và cảnh báo chưa gắn hồ sơ. Cảnh báo checklist quá hạn hiện có cũng được giữ riêng sau test hồi quy; không gộp nó vào tổng Pending đơn nghỉ. Chuyển selector nghỉ sang module chung và giữ wrapper cũ cho GET/POST. Không thay hành vi duyệt. Mã thật chỉ cấm Trưởng phòng tự duyệt; HR Manager/Director có ngoại lệ cũ. Dashboard không có nút POST duyệt trực tiếp.
+
+**Khối chưa bật:** queue mới chỉ có đơn nghỉ Pending dùng cùng selector trang duyệt. Chưa bật nhóm hồ sơ/tài liệu/tuyển dụng/hoạt động vì chưa có selector được đối chiếu trong phạm vi này. Nghỉ gần đây, ứng viên, cập nhật, tiền, trend, tỷ lệ có mặt, header tầng 2/search/giờ ca và Đợt 2 không làm. Selector cũ có thể trả đơn có hồ sơ cha đã xóa; không tự đổi nghiệp vụ. Gặp trường hợp đó, queue mới có trạng thái Dữ liệu chưa đầy đủ và không gắn link lệch số. Model Employee hiện bắt buộc department; nhóm không phòng được kiểm ở DTO, không tạo NULL trái constraint trong database. HeadcountPlan null cũng là thiếu kế hoạch ở DTO, không là giá trị được phép lưu.
+
+**Mốc truy vấn SQLite:** cùng fixture giả, cùng thứ tự tạo tài khoản và GET sau warm-up. Đo bằng CaptureQueriesContext, tính cả render. Mỗi ô là chưa gắn / có hồ sơ. SELECT là số lần đọc database.
+
+| Vai trò | Trước | Sau |
+| --- | --- | --- |
+| EMPLOYEE | 3 / 9 | 3 / 7 |
+| DEPT_MANAGER | 3 / 13 | 3 / 10 |
+| HR_OFFICER | 4 / 10 | 8 / 12 |
+| HR_MANAGER | 11 / 17 | 12 / 16 |
+| DIRECTOR | 12 / 18 | 10 / 14 |
+| FINANCE_OFFICER | 3 / 9 | 3 / 7 |
+| SYS_ADMIN | 3 / 9 | 3 / 7 |
+| Superuser | 12 / 18 | 13 / 17 |
+
+Mốc đo exit 0; max sau sửa 17 SELECT, dưới 20. Test thêm 100 phòng và 1.000 nhân viên giữ số query của service ổn định. Role matrix kiểm linked/unlinked, staff/superuser/SUPER_ADMIN không cờ; khối bị từ chối không có trong HTML và không query nguồn tương ứng. Tài khoản inactive/anonymous không query service. Không query Payroll. GET toàn trang vẫn ghi một lần django_session từ middleware bảo mật hiện có; đây là lệch với yêu cầu tuyệt đối không INSERT/UPDATE/DELETE. Service không ghi và toàn GET không ghi bảng nghiệp vụ. Không sửa middleware ngoài phạm vi hoặc báo giả rằng mọi GET không ghi.
+
+**Kiểm thử và kết quả:** test smoke mới thất bại trên mã cũ (exit 1) vì thiếu khối dashboard, sau sửa đạt. Full suite lần đầu có hai lỗi: mất cảnh báo checklist và assertion phiên bản CSS cũ. Đã sửa hai điểm và nhóm focused gồm dashboard + hai hồi quy đạt 16/16 SQLite, exit 0. Full sau sửa hai hồi quy: `ops/run_tests.py --backend sqlite` phát hiện 465 test, 458 đạt/7 bỏ qua, 519,943 giây, exit 0; `--backend sqlserver` đạt 465/465, 546,841 giây, exit 0. Sau hai lần full chỉ thêm guard không query cho Trưởng phòng có Employee đã xóa và assertion tương ứng; focused mã bàn giao chạy lại 16/16 trên SQLite (7,352 giây) và SQL Server (27,225 giây), đều exit 0. Không chạy lại full sau guard nhỏ này; không coi kết quả full là đã đo đúng mọi byte của mã cuối. Mốc query chạy lại trên mã cuối vẫn 3–17 SELECT, exit 0. Các log/fixture/bản HTML/ảnh nằm ngoài Git tại TEMP/ihrms-dashboard-phase1-20261013. Runner dự án dùng DB/media riêng; wrapper TEMP chỉ đổi đích log và gọi lại ops/run_tests.py, không đổi nghiệp vụ hay runner trong repository.
+
+**Kiểm tra giao diện:** Edge headless trên HTML do Django Test Client render từ dữ liệu giả: HR Manager/Director/Employee × 1920/1440/1024/768/360 px × light/dark, 30 ảnh và 139 checks, exit 0. Không tràn ngang trang; bốn KPI ở desktop khi đủ quyền; panel một cột trên mobile; vùng bấm từ 44 px, nhãn bảng từ 14 px. Drawer Enter/Escape, focus trở lại, mở bảng bằng bàn phím, focus vùng cuộn và reduced-motion đạt. Đã kiểm phóng chữ root 200%, chưa phải UAT zoom trình duyệt thực. Sửa CSS sau khi phát hiện quy tắc chung lấn lưới KPI; sửa tỷ lệ nhiều chữ số khi xem ảnh rồi chụp/kiểm lại. CSS mới chỉ screen và Trang chủ; không đổi CSS chung/tokens/giấy HCNS. Không kiểm lại Office/PDF/in máy thật.
+
+**Lệnh cuối:** pip check, manage.py check, makemigrations --check --dry-run và ops/check_ui_contrast.py đều exit 0. Migration check đầu dùng tên :memory: theo Path của settings bị cảnh báo đường dẫn Windows; đã chạy lại với SQLite TEMP hợp lệ, không cảnh báo và không có migration mới. Contrast có 190 cặp, 0 lỗi; light min text/UI 5.100/3.506, dark 7.007/3.982. Không coi đây là chứng nhận WCAG. git diff --check exit 0. Focused/full được ghi ở trên; không có migration mới. Các SQL Server DB test dùng tên riêng do runner tạo và được runner báo xóa khi kết thúc; không thao tác DB nghiệp vụ.
+
+**Commit/bàn giao:** commit docs Q1 là `15416e27df5a1220fc2746befb1e37d9fc1c28a6` (`docs: align MASTER with navy-teal tokens`). Commit ứng dụng `ui: dashboard phase 1` chỉ gồm tệp đợt này và test; SHA xác nhận bằng git rev-parse HEAD và báo trong bàn giao sau commit. Để tra cứu SHA từ mục này dùng git log -1 --format=%H --grep="^ui: dashboard phase 1$". Không push/deploy. Chưa kiểm screen reader thực, browser zoom 200% đầy đủ, UAT tài khoản thật, M365 thật hoặc CI theo SHA. Chủ dự án Ctrl+F5 Trang chủ và xem bằng vài vai trò thật, duyệt bố cục; quyết định có push không và có xử lý riêng ghi session/selector hồ sơ cha đã xóa không. Không bắt đầu Đợt 2.
+
 ## 2026-10-13 — Sửa đặc tả dashboard Atoms để chủ dự án duyệt
 
 **Mục tiêu/phạm vi:** chỉ sửa `docs/DASHBOARD_ATOMS_TECH_SPEC.md` và mục nhật ký này. Dùng UI UX Pro Max, không dùng UI Styling/shadcn. Chưa triển khai dashboard hoặc thay quyền, dữ liệu, model, migration, URL, form, CSRF, giấy HCNS hay dependency. Chỉ làm trên `main`.

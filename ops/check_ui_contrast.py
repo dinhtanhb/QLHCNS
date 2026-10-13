@@ -72,6 +72,12 @@ def pairings():
     for bg in ("bg", "surface", "surface-raised"):
         pairs.extend((fg, bg, 3) for fg in ("chart-series", "chart-series-soft", "chart-series-strong", "chart-grid", "chart-hire", "chart-departure", "chart-transfer", "chart-promotion"))
         pairs.extend((fg, bg, 4.5) for fg in ("chart-axis", "chart-label"))
+    # Phase-one bars/donut direct labels and expiry status components.
+    for series in ("chart-series", "chart-series-soft", "chart-series-strong"):
+        pairs.append(("on-brand", series, 4.5))
+    for status in ("danger", "warning", "info"):
+        pairs.extend(((status + "-text", status + "-bg", 4.5),
+                      (status + "-border", status + "-bg", 3)))
     return pairs
 
 

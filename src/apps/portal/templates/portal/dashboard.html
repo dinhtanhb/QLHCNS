@@ -1,14 +1,11 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static ui_components %}
 {% block title %}Trang chủ{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261012-ui-3">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261013-dashboard-1">{% endblock %}
 {% block content %}
 <div class="ui-page home-dashboard">
-<header class="ui-page-header">
- <div><h1 class="ui-page-title">{% if employee %}Xin chào, {{ employee.full_name }}{% else %}Trang chủ{% endif %}</h1>
- <p class="ui-page-description">{% if employee %}{{ employee.employee_code }} · {{ employee.department }} · {{ employee.position }}{% else %}Chào mừng anh/chị đến cổng thông tin nhân viên.{% endif %}</p></div>
- <p class="home-period">Số liệu hiện tại · {{ home_period }}</p>
-</header>
+{% include "ui/page_header.html" with title="Bảng điều khiển" description="Tình hình nhân sự và công việc trong phạm vi được cấp quyền." %}
+<p class="home-period">Ngày vận hành {{ dashboard_snapshot.operational_date|ui_date }} · {{ dashboard_snapshot.scope_label }} · Cập nhật {{ dashboard_snapshot.generated_at|date:"H:i" }}</p>
 {% if not employee %}
 <section class="ui-card home-profile-warning" aria-labelledby="profile-warning-title">
  {% include "_shell_icon.html" with name="warning" %}<div><h2 id="profile-warning-title">Tài khoản chưa gắn hồ sơ nhân viên</h2>
@@ -16,33 +13,33 @@
  {% if profile_setup %}<p>Sử dụng màn hình có sẵn bên dưới; hồ sơ được tạo cần được quản trị viên có quyền gắn với tài khoản.</p><a class="ui-button" href="{{ profile_setup.href }}">{{ profile_setup.label }}{% include "_shell_icon.html" with name="arrow" %}</a>{% endif %}</div>
 </section>
 {% endif %}
+{% if dashboard_snapshot.sections.status %}
+<section id="dashboard-status" aria-labelledby="dashboard-status-title"><h2 class="ui-card-title" id="dashboard-status-title">Tình hình nhân sự</h2>
+{% if dashboard_snapshot.sections.status.state == 'error' %}{% include "ui/empty_state.html" with state="error" title="Không tải được dữ liệu" description="Vui lòng thử lại sau." %}{% endif %}
+<div class="ui-kpi-grid dashboard-metric-grid">{% for item in dashboard_snapshot.metrics %}<div class="dashboard-metric">{% include "ui/kpi.html" with label=item.label value=item.value period=item.period_label href=item.href only %}<p class="ui-page-description">{{ item.scope_label }} · {{ item.source_label }}</p><p class="ui-page-description">{{ item.note }}</p></div>{% endfor %}</div></section>
+{% endif %}
+{% if dashboard_snapshot.sections.headcount or dashboard_snapshot.sections.contracts %}<div class="dashboard-panel-grid">
+{% if dashboard_snapshot.sections.headcount %}{% include "portal/dashboard/_headcount_chart.html" with data=dashboard_snapshot.sections.headcount %}{% endif %}
+{% if dashboard_snapshot.sections.contracts %}{% include "portal/dashboard/_contract_distribution.html" with data=dashboard_snapshot.sections.contracts %}{% endif %}
+</div>{% endif %}
+{% if dashboard_snapshot.sections.contracts or dashboard_snapshot.sections.queue %}<div class="dashboard-panel-grid">
+{% if dashboard_snapshot.sections.contracts %}{% include "portal/dashboard/_expiring_contracts.html" with data=dashboard_snapshot.sections.contracts %}{% endif %}
+{% if dashboard_snapshot.sections.queue %}{% include "portal/dashboard/_action_queue.html" with data=dashboard_snapshot.sections.queue %}{% endif %}
+</div>{% endif %}
 {% for group in home_groups %}
 <section aria-labelledby="home-group-{{ forloop.counter }}"><h2 class="ui-card-title" id="home-group-{{ forloop.counter }}">{{ group.title }}</h2>
  <div class="ui-kpi-grid home-kpi-grid">{% for card in group.cards %}{% include "ui/kpi.html" with label=card.label value=card.value href=card.href warning=card.warning period=card.period only %}{% endfor %}</div>
 </section>
 {% endfor %}
 <div class="home-action-grid">
-<section class="ui-card" aria-labelledby="home-queue-title"><h2 class="ui-card-title" id="home-queue-title">Việc cần tôi xử lý</h2>
- {% if home_queue or can_approve_activity_proposals %}
- <ul class="home-queue">{% for item in home_queue %}<li><a href="{{ item.href }}"><span>{{ item.label }}</span><span class="ui-badge{% if item.value > 0 %} ui-badge--warning{% endif %}">{% if item.value > 0 %}{% include "_shell_icon.html" with name="warning" %}Cần xử lý · {% endif %}{{ item.value|ui_number }}</span></a></li>{% endfor %}
- {% if can_approve_activity_proposals %}<li><a href="{% url 'portal:activity_proposal_approval_list' %}"><span>Đề xuất hoạt động chờ duyệt</span><span class="ui-badge{% if pending_activity_proposal_count > 0 %} ui-badge--warning{% endif %}">{% if pending_activity_proposal_count > 0 %}{% include "_shell_icon.html" with name="warning" %}Cần xử lý · {% endif %}{{ pending_activity_proposal_count|ui_number }}</span></a></li>{% endif %}</ul>
- <p class="ui-page-description">Chọn một mục để xem danh sách trong phạm vi quyền của anh/chị. Số 0 nghĩa là không có mục cần xử lý.</p>
- {% else %}<div class="ui-state">{% include "_shell_icon.html" with name="info" %}<p>Chưa có danh sách xử lý dành cho tài khoản này trên trang chủ.</p><p class="ui-page-description">{% if employee %}Xem công việc cá nhân ở các thẻ phía trên.{% else %}Liên hệ Phòng Nhân sự để hoàn tất việc gắn hồ sơ.{% endif %}</p></div>{% endif %}
-</section>
+{% if lifecycle_overdue_count != None %}
+<section aria-label="Theo dõi checklist hiện có">{% include "ui/kpi.html" with label="Checklist onboarding/offboarding quá hạn" value=lifecycle_overdue_count warning=True period="Hiện tại" only %}
+<p class="ui-page-description">Nguồn và phạm vi checklist hiện có; không thuộc tổng đơn nghỉ chờ duyệt.</p>{% if can_manage_lifecycle_case %}<a class="ui-button ui-button--secondary" href="{% url 'portal:lifecycle_case_list' %}">Mở danh sách hồ sơ onboarding/offboarding</a>{% endif %}</section>
+{% endif %}
 <section class="ui-card" aria-labelledby="home-actions-title"><h2 class="ui-card-title" id="home-actions-title">Thao tác nhanh</h2>
  <div class="ui-page-actions">{% for action in home_actions %}<a class="ui-button" href="{{ action.href }}">{{ action.label }}{% include "_shell_icon.html" with name="arrow" %}</a>{% empty %}<p class="ui-page-description">Chưa có thao tác nhanh phù hợp. Anh/chị có thể mở các mục được cấp quyền trong menu.</p>{% endfor %}</div>
 </section>
 </div>
-{% if is_management_view %}
-<section class="ui-card home-department-panel" aria-labelledby="home-dept-title"><h2 class="ui-card-title" id="home-dept-title">Nhân sự theo phòng ban</h2>
- {% if dept_counts|length == 1 %}{% for d in dept_counts %}<p class="home-dept-summary"><strong>{{ d.department__department_name|default:"Chưa xác định" }}</strong><span>{{ d.total|ui_number }} người · {% widthratio d.total total_employees 100 %}% nhân sự đang làm việc</span></p>{% endfor %}
- {% elif dept_counts %}
- <p class="ui-page-description">{{ total_employees|ui_number }} nhân viên đang làm việc; phòng ban được sắp xếp theo số người giảm dần.</p>
- <ul class="home-dept-bars">{% for d in dept_counts %}<li><div><span>{{ d.department__department_name|default:"Chưa xác định" }}</span><strong>{{ d.total|ui_number }} người</strong></div><div class="home-bar-track" aria-hidden="true"><span style="width:{% widthratio d.total total_employees 100 %}%"></span></div></li>{% endfor %}</ul>
- <details class="home-dept-data"><summary>Xem bảng dữ liệu nhân sự</summary><div class="ui-scroll" tabindex="0" role="region" aria-label="Bảng nhân sự theo phòng ban"><table class="ui-table"><caption>Số nhân viên đang làm việc theo phòng ban</caption><thead><tr><th scope="col">Phòng ban</th><th scope="col" class="ui-number">Số người</th></tr></thead><tbody>{% for d in dept_counts %}<tr><th scope="row">{{ d.department__department_name|default:"Chưa xác định" }}</th><td class="ui-number">{{ d.total|ui_number }}</td></tr>{% endfor %}</tbody></table></div></details>
- {% else %}<div class="ui-state">{% include "_shell_icon.html" with name="people" %}<p>Chưa có nhân viên đang làm việc để thống kê.</p><p class="ui-page-description">Kiểm tra hồ sơ và trạng thái nhân viên trong danh sách nhân sự.</p>{% if can_view_all_employees %}<a class="ui-button" href="{% url 'portal:hr_employee_list' %}">Mở danh sách nhân viên</a>{% endif %}</div>{% endif %}
-</section>
-{% endif %}
 {% if show_project_activity_summary %}
 <section class="ui-card home-project-summary" aria-labelledby="home-project-title"><div class="ui-page-header"><div><h2 class="ui-card-title" id="home-project-title">Tiến độ hoạt động dự án</h2><p class="ui-page-description">Tháng {{ activity_month_label }}</p></div><a class="ui-button" href="{% url 'portal:activity_dashboard' %}?month={{ activity_month }}">Mở Dashboard hoạt động{% include "_shell_icon.html" with name="arrow" %}</a></div>
  {% if activity_total == 0 %}<p class="home-project-empty">Không có hoạt động trong tháng này thuộc phạm vi tài khoản. Mở Dashboard để chọn kỳ khác và kiểm tra các bộ lọc.</p>{% endif %}
