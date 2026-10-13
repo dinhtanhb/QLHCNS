@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static ui_components %}
 {% block title %}Trang chủ{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261013-dashboard-1">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261013-phase1-followup">{% endblock %}
 {% block content %}
 <div class="ui-page home-dashboard">
 {% include "ui/page_header.html" with title="Bảng điều khiển" description="Tình hình nhân sự và công việc trong phạm vi được cấp quyền." %}
@@ -16,30 +16,24 @@
 {% if dashboard_snapshot.sections.status %}
 <section id="dashboard-status" aria-labelledby="dashboard-status-title"><h2 class="ui-card-title" id="dashboard-status-title">Tình hình nhân sự</h2>
 {% if dashboard_snapshot.sections.status.state == 'error' %}{% include "ui/empty_state.html" with state="error" title="Không tải được dữ liệu" description="Vui lòng thử lại sau." %}{% endif %}
-<div class="ui-kpi-grid dashboard-metric-grid">{% for item in dashboard_snapshot.metrics %}<div class="dashboard-metric">{% include "ui/kpi.html" with label=item.label value=item.value period=item.period_label href=item.href only %}<p class="ui-page-description">{{ item.scope_label }} · {{ item.source_label }}</p><p class="ui-page-description">{{ item.note }}</p></div>{% endfor %}</div></section>
+<div class="ui-kpi-grid dashboard-metric-grid">{% for item in dashboard_snapshot.metrics %}<div class="dashboard-metric">{% include "ui/kpi.html" with label=item.label value=item.value period=item.period_label href=item.href icon=item.icon only %}</div>{% endfor %}</div>
+<details class="dashboard-explanation"><summary>Cách tính chỉ số</summary><ul>{% for item in dashboard_snapshot.metrics %}<li><strong>{{ item.label }}</strong>: {{ item.note }}</li>{% endfor %}</ul></details></section>
+{% if dashboard_snapshot.uncontracted %}<p class="ui-page-description">Có {{ dashboard_snapshot.uncontracted.value|ui_number }} hồ sơ chưa có hợp đồng. <a class="dashboard-text-link" href="{{ dashboard_snapshot.uncontracted.href }}">Tạo hợp đồng</a></p>{% endif %}
 {% endif %}
 {% if dashboard_snapshot.sections.headcount or dashboard_snapshot.sections.contracts %}<div class="dashboard-panel-grid">
 {% if dashboard_snapshot.sections.headcount %}{% include "portal/dashboard/_headcount_chart.html" with data=dashboard_snapshot.sections.headcount %}{% endif %}
 {% if dashboard_snapshot.sections.contracts %}{% include "portal/dashboard/_contract_distribution.html" with data=dashboard_snapshot.sections.contracts %}{% endif %}
 </div>{% endif %}
-{% if dashboard_snapshot.sections.contracts or dashboard_snapshot.sections.queue %}<div class="dashboard-panel-grid">
+{% if dashboard_snapshot.sections.contracts or dashboard_snapshot.sections.queue %}<div class="dashboard-panel-grid dashboard-work-grid">
 {% if dashboard_snapshot.sections.contracts %}{% include "portal/dashboard/_expiring_contracts.html" with data=dashboard_snapshot.sections.contracts %}{% endif %}
-{% if dashboard_snapshot.sections.queue %}{% include "portal/dashboard/_action_queue.html" with data=dashboard_snapshot.sections.queue %}{% endif %}
+<div class="dashboard-work-aside">{% if dashboard_snapshot.sections.queue %}{% include "portal/dashboard/_action_queue.html" with data=dashboard_snapshot.sections.queue %}{% endif %}{% include "portal/dashboard/_quick_actions.html" %}</div>
 </div>{% endif %}
 {% for group in home_groups %}
 <section aria-labelledby="home-group-{{ forloop.counter }}"><h2 class="ui-card-title" id="home-group-{{ forloop.counter }}">{{ group.title }}</h2>
- <div class="ui-kpi-grid home-kpi-grid">{% for card in group.cards %}{% include "ui/kpi.html" with label=card.label value=card.value href=card.href warning=card.warning period=card.period only %}{% endfor %}</div>
+ <div class="ui-kpi-grid home-kpi-grid">{% for card in group.cards %}<div>{% include "ui/kpi.html" with label=card.label value=card.value href=card.href warning=card.warning period=card.period icon=card.icon only %}{% if card.note %}<p class="ui-page-description">{{ card.note }}</p>{% endif %}</div>{% endfor %}</div>
 </section>
 {% endfor %}
-<div class="home-action-grid">
-{% if lifecycle_overdue_count != None %}
-<section aria-label="Theo dõi checklist hiện có">{% include "ui/kpi.html" with label="Checklist onboarding/offboarding quá hạn" value=lifecycle_overdue_count warning=True period="Hiện tại" only %}
-<p class="ui-page-description">Nguồn và phạm vi checklist hiện có; không thuộc tổng đơn nghỉ chờ duyệt.</p>{% if can_manage_lifecycle_case %}<a class="ui-button ui-button--secondary" href="{% url 'portal:lifecycle_case_list' %}">Mở danh sách hồ sơ onboarding/offboarding</a>{% endif %}</section>
-{% endif %}
-<section class="ui-card" aria-labelledby="home-actions-title"><h2 class="ui-card-title" id="home-actions-title">Thao tác nhanh</h2>
- <div class="ui-page-actions">{% for action in home_actions %}<a class="ui-button" href="{{ action.href }}">{{ action.label }}{% include "_shell_icon.html" with name="arrow" %}</a>{% empty %}<p class="ui-page-description">Chưa có thao tác nhanh phù hợp. Anh/chị có thể mở các mục được cấp quyền trong menu.</p>{% endfor %}</div>
-</section>
-</div>
+{% if not dashboard_snapshot.sections.contracts and not dashboard_snapshot.sections.queue %}{% include 'portal/dashboard/_quick_actions.html' %}{% endif %}
 {% if show_project_activity_summary %}
 <section class="ui-card home-project-summary" aria-labelledby="home-project-title"><div class="ui-page-header"><div><h2 class="ui-card-title" id="home-project-title">Tiến độ hoạt động dự án</h2><p class="ui-page-description">Tháng {{ activity_month_label }}</p></div><a class="ui-button" href="{% url 'portal:activity_dashboard' %}?month={{ activity_month }}">Mở Dashboard hoạt động{% include "_shell_icon.html" with name="arrow" %}</a></div>
  {% if activity_total == 0 %}<p class="home-project-empty">Không có hoạt động trong tháng này thuộc phạm vi tài khoản. Mở Dashboard để chọn kỳ khác và kiểm tra các bộ lọc.</p>{% endif %}

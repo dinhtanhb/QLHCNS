@@ -5,7 +5,7 @@ import logging
 import math
 
 from django.db import DatabaseError
-from django.db.models import Count, Q
+from django.db.models import Count, Exists, OuterRef, Q
 from django.urls import reverse
 from django.utils import timezone
 
@@ -28,7 +28,7 @@ LIVE_CONTRACT_PARENT = (
 
 
 def metric(key, label, value, scope, note, period="Hiện tại"):
-    return dict(key=key, label=label, value=value, unit="người", state="ready" if value else "empty",
+    return dict(key=key, label=label, value=value, unit="người", state="ready",
                 scope_label=scope, period_label=period, source_label="Employee",
                 formula_label=note, note=note, numerator=None, denominator=None, href=None)
 
@@ -70,7 +70,9 @@ def _headcount(today):
     departments = list(Department.objects.annotate(actual=Count("employees", filter=Q(
         employees__is_deleted=False, employees__employment_status="Active"))).values(
             "id", "department_name", "actual").order_by("department_name", "pk"))
-    unassigned = Employee.objects.filter(department__isnull=True, employment_status="Active").count()
+    # Avoid an impossible SELECT when DepartmentID is NOT NULL.
+    unassigned = (Employee.objects.filter(department__isnull=True, employment_status="Active").count()
+                  if Employee._meta.get_field("department").null else 0)
     if unassigned:
         departments.append({"id": None, "department_name": "Chưa xác định", "actual": unassigned})
     plans = list(with_headcounts(HeadcountPlan.objects.filter(year=today.year, department__is_deleted=False)))
@@ -140,7 +142,10 @@ def dashboard_snapshot(user, employee=None):
                 counts["approved"] = Count("pk", distinct=True, filter=Q(
                     leave_requests__is_deleted=False, leave_requests__leave_type__is_deleted=False,
                     leave_requests__status="Approved", leave_requests__from_date__lte=today, leave_requests__to_date__gte=today))
-            return dict(state="ready", counts=qs.aggregate(**counts))
+            block = dict(state="ready", counts=qs.aggregate(**counts))
+            if has_permission(user, "manage_hr"):
+                block["uncontracted"] = qs.filter(~Exists(Contract.objects.filter(employee_id=OuterRef("pk")))).count()
+            return block
         status = _read_block(status_block)
         result["sections"]["status"] = status
         c = status.get("counts")
@@ -153,6 +158,13 @@ def dashboard_snapshot(user, employee=None):
                            "Theo khoảng ngày đơn nghỉ, không phải số người vắng.", today.strftime("%d/%m/%Y"))
                 m["source_label"] = "LeaveRequest Approved"; result["metrics"].append(m)
             result["metrics"].append(metric("probation", "Thử việc", c["probation"], scope, "Trạng thái Probation hiện tại."))
+            icons = {"managed": "people", "active": "briefcase", "approved": "calendar", "probation": "person"}
+            for item in result["metrics"]:
+                item["icon"] = icons[item["key"]]
+                if item["key"] in ("managed", "active"):
+                    item["note"] += " Gồm cả hồ sơ chưa có hợp đồng; danh sách Hồ sơ nhân viên chỉ hiện hồ sơ đã có hợp đồng."
+            if "uncontracted" in status:
+                result["uncontracted"] = dict(value=status["uncontracted"], href=reverse("portal:hr_contract_create"))
     if has_permission(user, "view_reports"):
         result["sections"]["headcount"] = _read_block(lambda: _headcount(today))
     if has_permission(user, "manage_hr"):

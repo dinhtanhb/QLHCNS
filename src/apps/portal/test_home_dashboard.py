@@ -78,7 +78,8 @@ class HomeDashboardTests(TestCase):
                     for href in hrefs:
                         self.assertEqual(self.client.get(href).status_code, 200, (role, linked, href))
                     self.assertNotIn('ui-kpi--warning', main)
-                    self.assertNotIn('Chưa có dữ liệu', main)
+                    if any(card['value'] is None for group in ctx['home_groups'] for card in group['cards']):
+                        self.assertContains(response, 'Chưa có dữ liệu')
 
     def test_only_staff_superuser_gets_editable_profile_link(self):
         for staff in (False, True):

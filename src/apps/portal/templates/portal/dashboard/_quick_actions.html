@@ -1,0 +1,9 @@
+<div class="home-action-grid">
+{% if lifecycle_overdue_count != None %}
+<section aria-label="Theo dõi checklist hiện có">{% include "ui/kpi.html" with label="Checklist onboarding/offboarding quá hạn" value=lifecycle_overdue_count warning=True period="Hiện tại" icon="checklist" only %}
+{% if can_manage_lifecycle_case %}<a class="dashboard-text-link" href="{% url 'portal:lifecycle_case_list' %}">Xem checklist</a>{% endif %}</section>
+{% endif %}
+<section class="ui-card" aria-labelledby="home-actions-title"><h2 class="ui-card-title" id="home-actions-title">Thao tác nhanh</h2>
+ <div class="ui-page-actions">{% for action in home_actions %}<a class="ui-button" href="{{ action.href }}">{{ action.label }}{% include "_shell_icon.html" with name="arrow" %}</a>{% empty %}<p class="ui-page-description">Chưa có thao tác nhanh phù hợp. Anh/chị có thể mở các mục được cấp quyền trong menu.</p>{% endfor %}</div>
+</section>
+</div>

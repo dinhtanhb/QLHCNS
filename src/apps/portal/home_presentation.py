@@ -10,6 +10,18 @@ def home_presentation(user, context):
     result = {"home_period": timezone.localdate().strftime("%d/%m/%Y")}
     groups = []
     queue = []
+    sections = context.get("dashboard_snapshot", {}).get("sections", {})
+    status = sections.get("status", {})
+    new_queue = sections.get("queue", {})
+
+    def status_duplicates(key):
+        return (status.get("state") in ("ready", "empty") and
+                context.get(key) is not None and context[key] == status.get("counts", {}).get("active"))
+
+    def queue_duplicates(key):
+        rows = new_queue.get("rows", [])
+        return (new_queue.get("state") in ("ready", "empty") and len(rows) == 1 and
+                context.get(key) is not None and context[key] == rows[0].get("value"))
 
     def target(name, permission=None):
         return reverse("portal:" + name) if not permission or has_permission(user, permission) else None
@@ -18,7 +30,11 @@ def home_presentation(user, context):
         href = target(name, permission) if name else None
         value = context.get(key)
         item = {"label": label, "value": value, "href": href + query if href else None,
-                "warning": pending, "period": "Hiện tại"}
+                "warning": pending, "period": "Hiện tại", "icon": "calendar" if "leave" in key else "checklist" if "lifecycle" in key else "briefcase" if "task" in key else "people"}
+        if name == "hr_employee_list":
+            # A status total does not represent the contracted directory set.
+            item["href"] = None
+            item["note"] = "Gồm cả hồ sơ chưa có hợp đồng; danh sách Hồ sơ nhân viên chỉ hiện hồ sơ đã có hợp đồng."
         if pending and actionable and href and value is not None:
             queue.append(item)
         return item
@@ -38,6 +54,12 @@ def home_presentation(user, context):
         ]
         if has_permission(user, "view_asset"):
             cards.append(card("Tài sản đang cấp phát", "assets_in_use", "asset_admin_list", "view_asset"))
+        cards = [c for i,c in enumerate(cards) if not (i == 0 and status_duplicates("total_employees") or i == 1 and queue_duplicates("pending_leave_approvals"))]
+        if status.get("state") in ("ready", "empty") and not status_duplicates("total_employees"):
+            if cards and cards[0]["label"] == "Nhân viên đang làm việc": cards[0]["label"] = "Nhân viên Active theo tổng quan cũ"
+        if new_queue.get("state") in ("ready", "empty") and not queue_duplicates("pending_leave_approvals"):
+            for item in cards:
+                if item["label"] == "Đơn nghỉ chờ duyệt": item["label"] = "Đơn nghỉ chờ duyệt theo tổng quan cũ"
         groups.append({"title": "Tổng quan Trung tâm", "cards": cards})
     elif context.get("is_manager_view"):
         cards = [
@@ -47,6 +69,12 @@ def home_presentation(user, context):
         ]
         if has_permission(user, "view_asset"):
             cards.append(card("Tài sản đang cấp phát trong phòng", "dept_assets_in_use"))
+        cards = [c for i,c in enumerate(cards) if not (i == 0 and status_duplicates("dept_employee_count") or i == 1 and queue_duplicates("dept_pending_leaves"))]
+        if status.get("state") in ("ready", "empty") and not status_duplicates("dept_employee_count"):
+            if cards and cards[0]["label"] == "Nhân viên trong phòng": cards[0]["label"] = "Nhân viên Active trong phòng theo tổng quan cũ"
+        if new_queue.get("state") in ("ready", "empty") and not queue_duplicates("dept_pending_leaves"):
+            for item in cards:
+                if item["label"] == "Đơn nghỉ phòng ban chờ duyệt": item["label"] = "Đơn nghỉ phòng ban theo tổng quan cũ"
         groups.append({"title": "Tổng quan phòng ban", "cards": cards})
     if has_permission(user, "view_own_lifecycle_items") and "lifecycle_overdue_count" in context:
         card("Checklist onboarding/offboarding quá hạn", "lifecycle_overdue_count", "lifecycle_case_list", "view_own_lifecycle_items", True)

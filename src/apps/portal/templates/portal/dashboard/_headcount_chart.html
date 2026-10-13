@@ -1,11 +1,10 @@
 {% load ui_components l10n %}
 <section class="ui-card" id="dashboard-headcount" aria-labelledby="dashboard-headcount-title">
- <h2 class="ui-card-title" id="dashboard-headcount-title">Định biên kế hoạch năm {{ dashboard_snapshot.plan_year|unlocalize }}</h2>
- <p class="ui-page-description">Toàn Trung tâm · Nhân sự Active hiện tại / kế hoạch năm. Nguồn: HeadcountPlan và Employee.</p>
+ <h2 class="ui-card-title" id="dashboard-headcount-title">{% include "_shell_icon.html" with name="people" %} Định biên năm {{ dashboard_snapshot.plan_year|unlocalize }}</h2>
  {% if data.state == 'error' %}{% include "ui/empty_state.html" with state="error" title="Không tải được dữ liệu" description="Vui lòng thử lại sau." %}
  {% else %}
  {% if data.state == 'partial' %}<p class="dashboard-quality">Dữ liệu chưa đầy đủ: kế hoạch trùng hoặc không hợp lệ chưa được cộng vào chỉ số.</p>{% elif data.state == 'unconfigured' %}<p class="dashboard-quality">Chưa nhập kế hoạch năm này.</p>{% endif %}
- <p class="ui-page-description">Thanh liền: Active · Thanh viền nét đứt: kế hoạch. Các phòng dùng chung thang đo.</p>
+ <p class="dashboard-legend"><span>Thanh liền: đang làm việc</span><span>Thanh nét đứt: kế hoạch</span></p>
  <ul class="dashboard-capacity">{% for row in data.rows %}<li>
   <div class="dashboard-row-heading"><strong>{{ row.department_name }}</strong><span>{{ row.actual|ui_number }} / {% if row.planned == None %}—{% else %}{{ row.planned|ui_number }}{% endif %} người</span></div>
   <div class="dashboard-bars" aria-hidden="true"><span class="dashboard-bar dashboard-bar--actual" style="width:{{ row.actual_width }}%"></span><span class="dashboard-bar dashboard-bar--planned" style="width:{{ row.planned_width }}%"></span></div>

@@ -2,6 +2,7 @@
 {% load l10n ui_components %}
 {% block title %}Bảng chấm công{% endblock %}
 {% block personal_content %}
+<div class="ui-followup-page">
 <style>
 @media print {
 
@@ -27,7 +28,7 @@
         body { background: white !important; }
         .timesheet-document {
             padding: 8mm !important;
-            border: 1px solid #d1d5db !important;
+            border: 1px solid var(--ui-border) !important;
             border-radius: 0 !important;
             box-shadow: none !important;
         }
@@ -51,46 +52,46 @@
 {% include "ui/field.html" with id="timesheet-hours" name="hours" type="number" step="0.5" label="Số giờ" placeholder="Số giờ" required=True %}
 </div><div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm dòng chấm công</button></div></form></section>
 <!-- KHUNG BẢNG CHẤM CÔNG — theo đúng layout mẫu -->
-<div class="timesheet-document ui-card bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-10">
-    <div class="text-center mb-6">
-        <h1 class="text-xl font-bold">BẢNG CHẤM CÔNG</h1>
+<div class="timesheet-document ui-card">
+    <div class="">
+        <h1 class="">BẢNG CHẤM CÔNG</h1>
     </div>
-    <div class="text-sm mb-4 space-y-0.5">
-        <p><span class="font-semibold">Họ và tên:</span> {{ summary.employee.full_name|ui_number }}</p>
-        <p><span class="font-semibold">Chức vụ:</span> {{ summary.employee.position|ui_number }}</p>
-        <p><span class="font-semibold">Phòng/Ban:</span> {{ summary.employee.department|ui_number }}</p>
-        <p><span class="font-semibold">Thời gian:</span> Tháng {{ month }} năm {{ year|ui_year }}</p>
+    <div class="">
+        <p><span class="ui-font-label">Họ và tên:</span> {{ summary.employee.full_name|ui_number }}</p>
+        <p><span class="ui-font-label">Chức vụ:</span> {{ summary.employee.position|ui_number }}</p>
+        <p><span class="ui-font-label">Phòng/Ban:</span> {{ summary.employee.department|ui_number }}</p>
+        <p><span class="ui-font-label">Thời gian:</span> Tháng {{ month }} năm {{ year|ui_year }}</p>
     </div>
 
-    <div class="overflow-x-auto mobile-table-scroll ui-scroll" role="region" tabindex="0" aria-label="Bảng công trong tháng">
-        <table class="w-full text-sm border border-gray-300 border-collapse ui-table ui-personal-timesheet-table">
+    <div class="mobile-table-scroll ui-scroll" role="region" tabindex="0" aria-label="Bảng công trong tháng">
+        <table class="ui-table ui-personal-timesheet-table">
         <thead>
-            <tr class="bg-gray-100">
-                <th scope="col" class="border border-gray-300 px-2 py-1.5 w-24">Ngày</th>
-                <th scope="col" class="border border-gray-300 px-2 py-1.5">Công việc</th>
-                <th scope="col" class="border border-gray-300 px-2 py-1.5 w-28">Tổng giờ/ngày</th>
+            <tr class="">
+                <th scope="col" class="">Ngày</th>
+                <th scope="col" class="">Công việc</th>
+                <th scope="col" class="">Tổng giờ/ngày</th>
             </tr>
         </thead>
         <tbody>
         {% for row in day_rows %}
             {% if row.is_weekend %}
-            <tr class="bg-blue-100">
-                <td class="border border-gray-300 px-2 py-1.5 text-center">{{ row.day|ui_number }}</td>
-                <td class="border border-gray-300 px-2 py-1.5"></td>
-                <td class="border border-gray-300 px-2 py-1.5"></td>
+            <tr class="ui-timesheet-weekend">
+                <td class="ui-text-center">{{ row.day|ui_number }}</td>
+                <td class=""></td>
+                <td class=""></td>
             </tr>
             {% elif row.holiday %}
-            <tr class="bg-yellow-50">
-                <td class="border border-gray-300 px-2 py-1.5 text-center">{{ row.day|ui_number }}</td>
-                <td class="border border-gray-300 px-2 py-1.5">+ Nghỉ lễ: {{ row.holiday.holiday_name|ui_number }}</td>
-                <td class="border border-gray-300 px-2 py-1.5 text-center">0</td>
+            <tr class="ui-timesheet-holiday">
+                <td class="ui-text-center">{{ row.day|ui_number }}</td>
+                <td class="">+ Nghỉ lễ: {{ row.holiday.holiday_name|ui_number }}</td>
+                <td class="ui-text-center">0</td>
             </tr>
             {% else %}
             <tr>
-                <td class="border border-gray-300 px-2 py-1.5 text-center align-top">{{ row.day|ui_number }}</td>
-                <td class="border border-gray-300 px-2 py-1.5">
+                <td class="ui-text-center">{{ row.day|ui_number }}</td>
+                <td class="">
                     {% for e in row.entries %}
-                    <div class="flex items-center justify-between gap-2 {% if not forloop.last %}mb-1{% endif %}">
+                    <div class="">
                         <span>+ {% if e.project %}[{{ e.project.project_code|ui_number }}] {% endif %}{{ e.task_description|default:""|ui_number }}</span>
                         <form method="post" action="{% url 'portal:timesheet_entry_delete' e.pk %}" class="no-print" data-ui-confirm="Xóa dòng chấm công này?" data-ui-confirm-title="Xác nhận xóa dòng chấm công" data-ui-confirm-label="Xóa dòng">
                             {% csrf_token %}
@@ -99,16 +100,16 @@
                     </div>
                     {% endfor %}
                 </td>
-                <td class="border border-gray-300 px-2 py-1.5 text-center align-top">{{ row.day_total|ui_number }}</td>
+                <td class="ui-text-center">{{ row.day_total|ui_number }}</td>
             </tr>
             {% endif %}
         {% endfor %}
-        <tr class="font-semibold">
-            <td class="border border-gray-300 px-2 py-1.5" colspan="2">Tổng số giờ làm việc trong tháng</td>
-            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ total_hours|ui_number }}</td>
+        <tr class="ui-font-label">
+            <td class="" colspan="2">Tổng số giờ làm việc trong tháng</td>
+            <td class="ui-text-center">{{ total_hours|ui_number }}</td>
         </tr>
         <tr>
-            <td class="border border-gray-300 px-2 py-1.5" colspan="3">
+            <td class="" colspan="3">
                 <strong>
                 Tổng số giờ cần làm trong tháng: {{ base_days|ui_number }} ngày
                 {% if approved_leave_total %}- {{ approved_leave_total|ui_number }} ngày nghỉ đã duyệt{% endif %}
@@ -118,64 +119,64 @@
             </td>
         </tr>
                 {% for a in allocations %}
-        <tr class="font-semibold">
-            <td class="border border-gray-300 px-2 py-1.5" colspan="2">Phân bổ thời gian ({{ a.project.project_code|ui_number }}) (%)</td>
-            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ a.allocation_percent|ui_number }}%</td>
+        <tr class="ui-font-label">
+            <td class="" colspan="2">Phân bổ thời gian ({{ a.project.project_code|ui_number }}) (%)</td>
+            <td class="ui-text-center">{{ a.allocation_percent|ui_number }}%</td>
         </tr>
         {% endfor %}
-        <tr class="font-semibold">
-            <td class="border border-gray-300 px-2 py-1.5" colspan="2">Số thời gian ngoài giờ</td>
-            <td class="border border-gray-300 px-2 py-1.5 text-center {% if diff_hours < 0 %}text-red-600{% else %}text-green-700{% endif %}">{{ diff_hours|ui_number }}</td>
+        <tr class="ui-font-label">
+            <td class="" colspan="2">Số thời gian ngoài giờ</td>
+            <td class="">{{ diff_hours|ui_number }}</td>
         </tr>
         </tbody>
     </table>
     </div>
 
         <!-- Tổng hợp + Chữ ký: 2 cột song song -->
-    <div class="timesheet-summary-layout grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
-        <form method="post" action="{% url 'portal:timesheet_summary_update' %}" class="text-sm" data-ui-form>
+    <div class="timesheet-summary-layout">
+        <form method="post" action="{% url 'portal:timesheet_summary_update' %}" class="" data-ui-form>
             {% csrf_token %}
             <input type="hidden" name="year" value="{{ year|ui_year }}">
             <input type="hidden" name="month" value="{{ month }}">
             {% if summary.status == "Approved" %}
-            <span class="ui-print-only"><span class="inline-block bg-green-100 text-green-700 text-xs font-medium px-2 py-0.5 rounded mb-2">Đã duyệt — không thể tự sửa</span></span><span class="ui-screen-only ui-badge ui-badge--success">{% include "_shell_icon.html" with name="success" %}Đã duyệt — không thể tự sửa</span>
+            <span class="ui-print-only"><span class="">Đã duyệt — không thể tự sửa</span></span><span class="ui-screen-only ui-badge ui-badge--success">{% include "_shell_icon.html" with name="success" %}Đã duyệt — không thể tự sửa</span>
             {% else %}
-            <span class="ui-print-only"><span class="inline-block bg-amber-100 text-amber-700 text-xs font-medium px-2 py-0.5 rounded mb-2">Chờ quản lý duyệt</span></span><span class="ui-screen-only ui-badge ui-badge--warning">{% include "_shell_icon.html" with name="warning" %}Chờ quản lý duyệt</span>
+            <span class="ui-print-only"><span class="">Chờ quản lý duyệt</span></span><span class="ui-screen-only ui-badge ui-badge--warning">{% include "_shell_icon.html" with name="warning" %}Chờ quản lý duyệt</span>
             {% endif %}
             <fieldset class="ui-form-fieldset" {% if summary.status == "Approved" %}disabled{% endif %}>
-            <div class="space-y-1">
-                <div class="timesheet-leave-row py-0.5">
-                    <label for="timesheet-sick-days" class="text-gray-700">Số ngày nghỉ ốm trong tháng:</label>
-                    <input id="timesheet-sick-days" type="number" step="0.5" name="sick_days" value="{{ summary.sick_days|unlocalize }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
+            <div class="">
+                <div class="timesheet-leave-row">
+                    <label for="timesheet-sick-days" class="ui-field-label">Số ngày nghỉ ốm trong tháng:</label>
+                    <input id="timesheet-sick-days" type="number" step="0.5" name="sick_days" value="{{ summary.sick_days|unlocalize }}" class="timesheet-leave-input">
                 </div>
-                <div class="timesheet-leave-row py-0.5">
-                    <label for="timesheet-maternity-days" class="text-gray-700">Số ngày thai sản trong tháng:</label>
-                    <input id="timesheet-maternity-days" type="number" step="0.5" name="maternity_days" value="{{ summary.maternity_days|unlocalize }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
+                <div class="timesheet-leave-row">
+                    <label for="timesheet-maternity-days" class="ui-field-label">Số ngày thai sản trong tháng:</label>
+                    <input id="timesheet-maternity-days" type="number" step="0.5" name="maternity_days" value="{{ summary.maternity_days|unlocalize }}" class="timesheet-leave-input">
                 </div>
-                <div class="timesheet-leave-row py-0.5">
-                    <label for="timesheet-compensatory-days" class="text-gray-700">Số ngày nghỉ bù trong tháng:</label>
-                    <input id="timesheet-compensatory-days" type="number" step="0.5" name="compensatory_days" value="{{ summary.compensatory_days|unlocalize }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
+                <div class="timesheet-leave-row">
+                    <label for="timesheet-compensatory-days" class="ui-field-label">Số ngày nghỉ bù trong tháng:</label>
+                    <input id="timesheet-compensatory-days" type="number" step="0.5" name="compensatory_days" value="{{ summary.compensatory_days|unlocalize }}" class="timesheet-leave-input">
                 </div>
-                <div class="timesheet-leave-row py-0.5">
-                    <label for="timesheet-annual-leave-days" class="text-gray-700">Số ngày nghỉ phép trong tháng:</label>
-                    <input id="timesheet-annual-leave-days" type="number" step="0.5" name="annual_leave_days" value="{{ summary.annual_leave_days|unlocalize }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
+                <div class="timesheet-leave-row">
+                    <label for="timesheet-annual-leave-days" class="ui-field-label">Số ngày nghỉ phép trong tháng:</label>
+                    <input id="timesheet-annual-leave-days" type="number" step="0.5" name="annual_leave_days" value="{{ summary.annual_leave_days|unlocalize }}" class="timesheet-leave-input">
                 </div>
-                <div class="timesheet-leave-row py-0.5">
-                    <label for="timesheet-unpaid-leave-days" class="text-gray-700">Số ngày nghỉ không lương trong tháng:</label>
-                    <input id="timesheet-unpaid-leave-days" type="number" step="0.5" name="unpaid_leave_days" value="{{ summary.unpaid_leave_days|unlocalize }}" class="timesheet-leave-input rounded border border-gray-300 text-sm">
+                <div class="timesheet-leave-row">
+                    <label for="timesheet-unpaid-leave-days" class="ui-field-label">Số ngày nghỉ không lương trong tháng:</label>
+                    <input id="timesheet-unpaid-leave-days" type="number" step="0.5" name="unpaid_leave_days" value="{{ summary.unpaid_leave_days|unlocalize }}" class="timesheet-leave-input">
                 </div>
                 {% if balance %}
-                <div class="flex items-center justify-between gap-3 py-0.5 pt-2 border-t border-gray-100 mt-2">
-                    <label class="text-gray-700">Tổng ngày phép năm {{ year|ui_year }}:</label>
-                    <span class="font-medium">{{ balance.allocated_days|ui_number }}</span>
+                <div class="ui-timesheet-balance-row ui-timesheet-balance-total">
+                    <label class="ui-field-label">Tổng ngày phép năm {{ year|ui_year }}:</label>
+                    <span class="ui-font-label">{{ balance.allocated_days|ui_number }}</span>
                 </div>
-                <div class="flex items-center justify-between gap-3 py-0.5">
-                    <label class="text-gray-700">Số ngày phép đã sử dụng (lũy kế):</label>
-                    <span class="font-medium">{{ balance.used_days|ui_number }}</span>
+                <div class="ui-timesheet-balance-row">
+                    <label class="ui-field-label">Số ngày phép đã sử dụng (lũy kế):</label>
+                    <span class="ui-font-label">{{ balance.used_days|ui_number }}</span>
                 </div>
-                <div class="flex items-center justify-between gap-3 py-0.5">
-                    <label class="text-gray-700">Số ngày phép còn lại:</label>
-                    <span class="font-bold text-green-700">{{ balance.remaining_days|ui_number }}</span>
+                <div class="ui-timesheet-balance-row">
+                    <label class="ui-field-label">Số ngày phép còn lại:</label>
+                    <span class="ui-text-success">{{ balance.remaining_days|ui_number }}</span>
                 </div>
                 {% endif %}
             </div>
@@ -183,17 +184,18 @@
             </fieldset>
         </form>
 
-        <div class="grid grid-cols-2 gap-6 text-sm text-center self-start">
-            <div class="flex h-32 flex-col items-center">
-                <p class="font-semibold">Quản lý trực tiếp</p>
-                <p class="font-medium mt-auto">{{ summary.employee.manager.full_name|default:"—"|ui_number }}</p>
+        <div class="ui-timesheet-signatures">
+            <div class="ui-timesheet-signature">
+                <p class="ui-font-label">Quản lý trực tiếp</p>
+                <p class="ui-timesheet-signature-name">{{ summary.employee.manager.full_name|default:"—"|ui_number }}</p>
             </div>
-            <div class="flex h-32 flex-col items-center">
-                <p class="font-semibold">Chữ ký nhân viên</p>
-                <p class="font-medium mt-auto">{{ summary.employee.full_name|ui_number }}</p>
+            <div class="ui-timesheet-signature">
+                <p class="ui-font-label">Chữ ký nhân viên</p>
+                <p class="ui-timesheet-signature-name">{{ summary.employee.full_name|ui_number }}</p>
             </div>
         </div>
     </div>
 </div>
 {% include "ui/confirm_dialog.html" %}
+</div>
 {% endblock %}

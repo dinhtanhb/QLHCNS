@@ -50,7 +50,7 @@ class TableWrapperParser(HTMLParser):
             self.tables += 1
             if self.stack:
                 parent_tag, parent_classes = self.stack[-1]
-                if parent_tag == "div" and {"overflow-x-auto", "mobile-table-scroll"}.issubset(parent_classes):
+                if parent_tag == "div" and "mobile-table-scroll" in parent_classes and bool({"overflow-x-auto", "ui-scroll"} & parent_classes):
                     self.wrapped_tables += 1
         if tag not in self.VOID_TAGS:
             classes = set((attrs.get("class") or "").split())
@@ -117,12 +117,12 @@ class MobileTableTests(SimpleTestCase):
         ):
             with self.subTest(template=relative):
                 source = (root / relative).read_text(encoding="utf-8")
-                self.assertEqual(source.count("ihrms-kpi-value"), expected)
+                self.assertEqual(source.count("ihrms-kpi-value") if relative != "templates/reporting/dashboard.html" else source.count('include "ui/kpi.html"'), expected)
         leave_source = (root / "apps/portal/templates/portal/leave_list.html").read_text(encoding="utf-8")
         self.assertEqual(leave_source.count('class="ui-kpi-value"'), 2)
         self.assertEqual(leave_source.count('class="ui-kpi-label"'), 2)
         worker = (root / "static" / "js" / "service-worker.js").read_text(encoding="utf-8")
-        self.assertIn("ihrms-static-v9-controls-20261013", worker)
+        self.assertIn("ihrms-static-v12-phase1-followup-20261013", worker)
         self.assertIn("/static/css/design_tokens.css", worker)
 
     def test_theme_is_available_before_styles_and_in_admin(self):

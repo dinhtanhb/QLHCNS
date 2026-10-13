@@ -124,8 +124,7 @@ def dashboard(request):
 
     from apps.portal.home_presentation import home_presentation
     context.update(home_presentation(request.user, context))
-    # Phase one replaces administrative cards/queues, while retaining personal actions.
-    context["home_groups"] = [group for group in context["home_groups"] if group["title"] == "Công việc của tôi"]
+    # Presentation removes only verified duplicate cards and preserves fallbacks.
     context["home_queue"] = snapshot["sections"].get("queue", {}).get("rows", [])
     return render(request, "portal/dashboard.html", context)
 
