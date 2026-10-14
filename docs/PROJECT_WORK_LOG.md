@@ -2,6 +2,35 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-14 — Giai đoạn 5: Kế toán, chuẩn hóa giao diện và liên kết theo quyền
+
+**Tóm tắt cho chủ dự án**
+
+- Bỏ liên kết hồ sơ ngoài quyền của kế toán; tên/mã nhân viên hiển thị bằng văn bản trong danh sách lương.
+- Chuẩn hóa 5 trang Kế toán; nhãn/form có nghĩa, số kết quả, nút thang lương trong vùng hành động tiêu đề.
+- Tính lại toàn kỳ có xác nhận; không đổi POST, dữ liệu nhập tay, cách tính hay quyền.
+- Edge đạt205 kiểm tra; SQLite528 test đạt (skip7), SQL Server528 test đạt; query5 trang không tăng.
+- Hồi quy380 kiểm tra/37 PDF và645 kiểm tra BCC/8 tình huống đạt; không sửa CSS/giấy in.
+- Nguồn và bằng chứng review ngoài repo; commit riêng Kế toán trước khi bắt đầu Hành chính, không deploy.
+
+**Đầu lượt/phạm vi:** main/origin khớp `2cecd21b70d8b787a3cfadd8f3ebb9d3ed1dfa15`, fetch0/0; CI bản in trước đã success (run38500185039), metadata bàn giao trước được cập nhật ngoài repo. Đọc yêu cầu6f93f180 và UI Ux Pro Max, tra UX về nhãn thường trực/xác nhận/focus; không dùng UI Styling/shadcn. Giữ nguyên thư mục reference chưa theo dõi và dữ liệu thật.
+
+**Kiểm kê guard/hành động:** 5 view Kế toán giữ `_can_manage_finance`/`has_permission(manage_finance)`, không sửa PERMISSION_MATRIX, `_employee_scope`, view/model hay migration. Giữ nguyên form tạo kỳ (payroll_month/payroll_year), tạo người phụ thuộc (employee/full_name/relationship/registered_from), ba form cấu hình (form_type insurance/deduction/bracket và toàn bộ tên/required/step/giới hạn hiện có), generate/calculate/lock/issue/update-line theo trạng thái Open/Locked, CSRF và URL. Menu nhân viên giữ can_manage_hr, can_export_employee_data/can_view_all_employees, target popover và mọi href/fragment.
+
+**Sửa và quyết định phạm vi:** salary_list đổi tên nhân viên từ nút/link hr_employee_detail#luong thành chữ; kế toán không có quyền xem hồ sơ nhân viên; mở thêm quyền là quyết định riêng của chủ dự án. Dùng page_header/actions partial, field/options partial cho phụ thuộc/cấu hình, h2 cho form và danh sách, salaries|length/dependents|length dùng cache QuerySet hiện có. Bỏ25 class rỗng và mọi ID finance-1-/2-/3-, placeholder lặp nhãn, dấu+ ở nút. Năm/tiền/ui-number/tabular giữ nguyên. Hai danh sách lương/phụ thuộc chưa có tìm kiếm/phân trang, hiện đủ cho quy mô hiện tại; thêm tìm kiếm là yêu cầu riêng. Đọc toàn Payroll.calculate(): chỉ cập nhật ngày công/kết quả gross/insurance/tax/net/signature/timestamp, giữ các trường nhập tay; xác nhận dùng câu trung tính đúng nội dung cập nhật tự động. Menu nhân viên bỏ42 token utility trong8 anchor (block/px/py/text-xs/hover/border)→0; tận dụng selector ui-row-popover a đã có hover/focus/44px, không thêm CSS chung. Năm trang Kế toán bỏ overflow-x-auto→0 utility cũ trong thuộc tính class; còn mobile-table-scroll là thành phần hiện có, không phải utility cần thay. Không thay CSS/assets, URL cache hoặc mẫu giấy.
+
+**Test và baseline:** thêm ui_test_helpers.assert_internal_links để quét anchor nội bộ bằng đúng client đã đăng nhập, không replay POST; mọi link trong5 trang có dữ liệu trả200/302, không403/404. FINANCE_OFFICER test không còn href hồ sơ; không giữ link có điều kiện nên không có nhánh mở quyền cần test. Probe trước sửa trên mã2cecd21: 12 test,4 failure đúng lỗi link/xác nhận/markup (không error). Sau sửa test_finance_followup/test_finance_ui/tests_recruitment_accounting_navigation qua wrapper ops/run_tests.py:16 test/4,262s đạt. Số query cùng fixture salary14→14,dependent10→10,tax11→11,period9→9,payroll15→15; có assertion trần để bắt tăng query. Không sửa N+1 có sẵn nếu ngoài phạm vi.
+
+**Lệnh/kết quả:** `git diff --check` exit0; `venv/Scripts/python.exe -m pip check` exit0; Django check và makemigrations --check --dry-run qua TEMP finance-framework.py dùng settings test/SQLite ngoài repo: exit0, không migration; lần gọi đầu thiếu DJANGO_SETTINGS_MODULE đã sửa wrapper và chạy lại đạt. `venv/Scripts/python.exe ops/check_ui_contrast.py`:198 cặp,0fail/exit0. `venv/Scripts/python.exe "$env:TEMP/project-layout-final-tests.py" --backend sqlite`:528 test/131,956s, OK skip7; cùng wrapper `--backend sqlserver`:528 test/300,173s, OK0skip, exit0; wrapper chỉ MD5 fixture test và gọi ops/run_tests.py với DB/media dùng một lần. Sau dọn BOM/whitespace chạy lại focused16 đạt. Không dùng kết quả full suite lượt trước.
+
+**UAT Edge và in:** `venv/Scripts/python.exe ops/run_finance_followup_uat.py --directory "$env:TEMP/ihrms-finance-followup-20261014" --packages-dir "$env:TEMP/ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/packages" --port8782`:205 kiểm tra,0fail/exit0; 5 trang×1920/1440/1024/768/390×sáng/tối, dữ liệu tên dài, không tràn, control44px/chữ14px, focus/Tab, Enter mở xác nhận/Escape đóng, hủy không ghi, xác nhận có timestamp mới và giữ tiền nhập tay, thêm người phụ thuộc lưu/thông báo/trang đích, Dashboard còn truy cập được; HR menu mở bằng Enter/Tab link/Escape tại5kích thước×2theme. Đã xem ảnh salary/dependent/payroll1440 sáng/tối. Phép đo đầu đếm cả nguồn số ẩn ui-number-source (2px) nên báo thấp giả; sửa selector chỉ đo control hiển thị và chạy lại, không đổi CSS để chữa test.
+
+`ops/run_print_layout_uat.py` cùng directory/packages/port8782:380 kiểm tra/37PDF đạt/exit0. `ops/run_timesheet_print_uat.py` thêm --pdf-packages-dir "$env:TEMP/ihrms-pdf-qa-packages-20261014" --phase after:645 kiểm tra/8 tình huống/32PDF đạt; thư mục mới không có baseline trước BCC nên16 so query/công thức trước-sau không chạy, thay bằng query5trang và test BCC/full suite; không báo661. Lần đầu chạy hai runner cùng sửa tài khoản thử nghiệm gây mất session/SQLite locked; đã dừng chạy song song trên cùng demo và chạy lại tuần tự đạt. CSS in và mọi template giấy không đổi trong diff. Poppler render37chung+8BCC, kiểm trang trắng và contact sheet lưu ngoài Git; kết quả cuối trong pdf-visual-qa/result.json. Bằng chứng JSON/PDF/ảnh là giả, không đưa DB/password/marker secret vào Git.
+
+**Bàn giao:** `D:/QLHCNS-Backups/IHRMS_Review_20261014_Finance.zip` từ index cuối, manifest main/base/tree và SHA256 từng tệp, mở lại kiểm hash; `D:/QLHCNS-Backups/IHRMS_Finance_Proof_20261014.zip` chỉ ảnh/PDF/JSON giả. Loại.env (giữ.env.example), DB/media/uploads/runtime/log/tài khoản/bí mật/reference chưa theo dõi. Commit riêng `ui: finance follow-up`; metadata SHA/hash/remote/CI ở `D:/QLHCNS-Backups/IHRMS_Finance_20261014.delivery.json`, push main, so SHA0/0, không force-push/deploy. Chỉ bắt đầu Hành chính khi full suite phần này đã đạt.
+
+**Giới hạn:** chưa screen reader, zoom200% thực, UAT phiên tài khoản thật hoặc máy in vật lý. Không thay chính sách kế toán xem hồ sơ; chủ dự án quyết nếu muốn mở quyền. Các thao tác viết dùng DB/media giả ngoài repo; dữ liệu vận hành giữ nguyên.
+
 ## 2026-10-14 — Khôi phục bản in bảng chấm công theo mẫu BCC VietHealth
 
 **Tóm tắt cho chủ dự án**

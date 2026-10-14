@@ -2,29 +2,30 @@
 {% load ui_components %}
 {% block title %}Người phụ thuộc{% endblock %}
 {% block finance_content %}
-<header class="ui-page-header"><h1 class="ui-page-title">Người phụ thuộc (Giảm trừ thuế TNCN)</h1></header>
-<div class="ui-card">
+{% include "ui/page_header.html" with title="Người phụ thuộc" description="Đăng ký người phụ thuộc để giảm trừ thuế thu nhập cá nhân." %}
+<section class="ui-card" aria-labelledby="dependent-create-title">
+    <h2 id="dependent-create-title" class="ui-card-title">Thêm người phụ thuộc</h2>
     <form data-ui-form method="post" class="ui-finance-form">{% include "ui/error_summary.html" %}
         {% csrf_token %}
-        <div class="ui-field"><label for="finance-1-employee">Nhân viên</label><select id="finance-1-employee" name="employee" required class="ui-finance-input">
-            {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name|ui_number }}</option>{% endfor %}
-        </select></div>
-        <div class="ui-field"><label for="finance-1-full_name">Họ tên người phụ thuộc</label><input id="finance-1-full_name" type="text" name="full_name" placeholder="Họ tên người phụ thuộc" required class="ui-finance-input"></div>
-        <div class="ui-field"><label for="finance-1-relationship">Quan hệ</label><input id="finance-1-relationship" type="text" name="relationship" placeholder="Quan hệ (Con, Cha, Mẹ...)" required class="ui-finance-input"></div>
-        <div class="ui-field"><label for="finance-1-registered_from">Đăng ký từ</label><input id="finance-1-registered_from" type="date" name="registered_from" required class="ui-finance-input"></div>
-        <button type="submit" class="ui-button ui-button--primary">+ Thêm người phụ thuộc</button>
+        {% include "ui/field.html" with id="dependent-employee" name="employee" label="Nhân viên" required=True options_template="portal/_finance_employee_options.html" %}
+        {% include "ui/field.html" with id="dependent-full_name" name="full_name" label="Họ tên người phụ thuộc" type="text" required=True %}
+        {% include "ui/field.html" with id="dependent-relationship" name="relationship" label="Quan hệ" type="text" placeholder="Ví dụ: Con, Cha, Mẹ" required=True %}
+        {% include "ui/field.html" with id="dependent-registered_from" name="registered_from" label="Đăng ký từ" type="date" required=True %}
+        <button type="submit" class="ui-button ui-button--primary">Thêm người phụ thuộc</button>
     </form>
-</div>
-<div class="ui-card">
-    <div class="ui-scroll overflow-x-auto mobile-table-scroll" tabindex="0" role="region" aria-label="Bảng Người phụ thuộc; cuộn ngang để xem đầy đủ">
+</section>
+<section class="ui-card" aria-labelledby="dependent-list-title">
+<h2 id="dependent-list-title" class="ui-card-title">Người phụ thuộc đã đăng ký</h2>
+<p class="ui-results-count">{{ dependents|length|ui_number }} người phụ thuộc</p>
+    <div class="ui-scroll mobile-table-scroll" tabindex="0" role="region" aria-label="Bảng Người phụ thuộc; cuộn ngang để xem đầy đủ">
         <table class="ui-table ui-finance-table"><caption class="ui-sr-only">Người phụ thuộc</caption>
-        <thead><tr class=""><th scope="col" class="">Nhân viên</th><th scope="col" class="">Người phụ thuộc</th><th scope="col" class="">Quan hệ</th><th scope="col" class="">Đăng ký từ</th></tr></thead>
-        <tbody class="">
+        <thead><tr><th scope="col">Nhân viên</th><th scope="col">Người phụ thuộc</th><th scope="col">Quan hệ</th><th scope="col">Đăng ký từ</th></tr></thead>
+        <tbody>
         {% for d in dependents %}
-        <tr><td class="">{{ d.employee|ui_number }}</td><td class="">{{ d.full_name|ui_number }}</td><td class="">{{ d.relationship|ui_number }}</td><td class="">{{ d.registered_from|ui_date }}</td></tr>
-        {% empty %}<tr><td colspan="4" class="">{% include "ui/empty_state.html" with title="Chưa có người phụ thuộc" description="Danh sách sẽ hiển thị tại đây khi có dữ liệu." icon="finance" %}</td></tr>{% endfor %}
+        <tr><td>{{ d.employee|ui_number }}</td><td>{{ d.full_name|ui_number }}</td><td>{{ d.relationship|ui_number }}</td><td>{{ d.registered_from|ui_date }}</td></tr>
+        {% empty %}<tr><td colspan="4">{% include "ui/empty_state.html" with title="Chưa có người phụ thuộc" description="Danh sách sẽ hiển thị tại đây khi có dữ liệu." icon="finance" %}</td></tr>{% endfor %}
         </tbody>
     </table>
     </div>
-</div>
+</section>
 {% endblock %}

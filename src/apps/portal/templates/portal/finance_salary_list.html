@@ -2,22 +2,24 @@
 {% load ui_components %}
 {% block title %}Lương cơ bản{% endblock %}
 {% block finance_content %}
-<header class="ui-page-header"><h1 class="ui-page-title">Lương cơ bản Nhân viên</h1><p class="ui-finance-text"><a href="{% url 'portal:hcns_draft' 'salary-scale' %}" class="ui-button ui-button--secondary">Thang bảng lương theo mẫu / Excel</a></p></header>
-<div class="ui-card">
-    <div class="ui-scroll overflow-x-auto mobile-table-scroll" tabindex="0" role="region" aria-label="Bảng Lương cơ bản nhân viên; cuộn ngang để xem đầy đủ">
+{% include "ui/page_header.html" with title="Lương cơ bản nhân viên" description="Mức lương đang áp dụng và ngày hiệu lực của từng nhân viên." actions_template="portal/_finance_salary_actions.html" %}
+<section class="ui-card" aria-labelledby="salary-list-title">
+<h2 id="salary-list-title" class="ui-card-title">Mức lương hiện hành</h2>
+<p class="ui-results-count">{{ salaries|length|ui_number }} mức lương</p>
+    <div class="ui-scroll mobile-table-scroll" tabindex="0" role="region" aria-label="Bảng Lương cơ bản nhân viên; cuộn ngang để xem đầy đủ">
         <table class="ui-table ui-finance-table"><caption class="ui-sr-only">Lương cơ bản nhân viên</caption>
-        <thead><tr class=""><th scope="col" class="">Nhân viên</th><th scope="col" class="">Phòng ban</th><th scope="col" class="ui-number">Lương cơ bản hiện tại</th><th scope="col" class="">Áp dụng từ</th></tr></thead>
-        <tbody class="">
+        <thead><tr><th scope="col">Nhân viên</th><th scope="col">Phòng ban</th><th scope="col" class="ui-number">Lương cơ bản hiện tại</th><th scope="col">Áp dụng từ</th></tr></thead>
+        <tbody>
         {% for s in salaries %}
         <tr>
-            <td class=""><a href="{% url 'portal:hr_employee_detail' s.employee.pk %}#luong" class="ui-button ui-button--secondary">{{ s.employee|ui_number }}</a></td>
-            <td class="">{{ s.employee.department|ui_number }}</td>
+            <td>{{ s.employee|ui_number }}</td>
+            <td>{{ s.employee.department|ui_number }}</td>
             <td class="ui-number">{{ s.current_basic_salary|ui_vnd }}</td>
-            <td class="">{{ s.effective_date|ui_date }}</td>
+            <td>{{ s.effective_date|ui_date }}</td>
         </tr>
-        {% empty %}<tr><td colspan="4" class="">{% include "ui/empty_state.html" with title="Chưa có dữ liệu lương" description="Danh sách sẽ hiển thị tại đây khi có dữ liệu." icon="finance" %}</td></tr>{% endfor %}
+        {% empty %}<tr><td colspan="4">{% include "ui/empty_state.html" with title="Chưa có dữ liệu lương" description="Danh sách sẽ hiển thị tại đây khi có dữ liệu." icon="finance" %}</td></tr>{% endfor %}
         </tbody>
     </table>
     </div>
-</div>
+</section>
 {% endblock %}

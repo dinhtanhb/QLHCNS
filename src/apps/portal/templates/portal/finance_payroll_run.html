@@ -2,11 +2,11 @@
 {% load ui_components %}
 {% block title %}Chạy lương{% endblock %}
 {% block finance_content %}
-<header class="ui-page-header"><div><h1 class="ui-page-title">Bảng lương — Tháng {{ period.payroll_month }}/{{ period.payroll_year|ui_year }}</h1><p class="ui-page-description">Các khoản tiền tính bằng đồng Việt Nam.</p></div>{% ui_badge "payroll.payrollperiod:status" period.status period.get_status_display %}</header>
+{% include "ui/page_header.html" with title="Bảng lương" description="Các khoản tiền tính bằng đồng Việt Nam." actions_template="portal/_finance_payroll_heading.html" %}
 {% if period.status != "Locked" %}
 <section class="ui-card"><h2 class="ui-card-title">Xử lý kỳ lương</h2><div class="ui-page-actions">
 <form method="post" action="{% url 'portal:finance_payroll_generate' period.pk %}">{% csrf_token %}<button type="submit" class="ui-button ui-button--primary">Tạo bảng lương cho {{ missing_employees|length|ui_number }} nhân viên còn thiếu</button></form>
-<form method="post" action="{% url 'portal:finance_payroll_calculate_all' period.pk %}">{% csrf_token %}<button type="submit" class="ui-button ui-button--secondary">Tính lương toàn bộ kỳ này</button></form>
+<form method="post" action="{% url 'portal:finance_payroll_calculate_all' period.pk %}" data-ui-confirm="Tính lại toàn bộ bảng lương của kỳ này? Giá trị tính tự động sẽ được cập nhật lại." data-ui-confirm-title="Tính lại bảng lương" data-ui-confirm-label="Tính lại toàn bộ">{% csrf_token %}<button type="submit" class="ui-button ui-button--secondary">Tính lương toàn bộ kỳ này</button></form>
 <form method="post" action="{% url 'portal:finance_payroll_lock' period.pk %}" data-ui-confirm="Khóa kỳ lương này? Sau khi khóa sẽ không sửa được nữa." data-ui-confirm-title="Khóa kỳ lương" data-ui-confirm-label="Khóa kỳ lương">{% csrf_token %}<button type="submit" class="ui-button ui-button--danger">{% include "_shell_icon.html" with name="warning" %}Khóa kỳ lương</button></form>
 </div></section>
 {% endif %}
@@ -17,7 +17,7 @@
 <section class="ui-card"><div class="ui-alert ui-alert--danger" role="alert">{% include "_shell_icon.html" with name="danger" %}<div><p>Chưa thể tạo bảng lương cho {{ missing_salary_employees|length|ui_number }} nhân viên chưa có mức lương hiệu lực:</p><ul class="ui-finance-list">{% for employee in missing_salary_employees %}<li>{{ employee.employee_code|ui_number }} — {{ employee.full_name|ui_number }}</li>{% endfor %}</ul></div></div></section>
 {% endif %}
 <section class="ui-card"><h2 class="ui-card-title">Chi tiết bảng lương</h2>
-<div class="ui-scroll overflow-x-auto mobile-table-scroll" role="region" tabindex="0" aria-label="Bảng lương, đơn vị đồng; cuộn ngang để xem đầy đủ cột">
+<div class="ui-scroll mobile-table-scroll" role="region" tabindex="0" aria-label="Bảng lương, đơn vị đồng; cuộn ngang để xem đầy đủ cột">
 <table class="ui-table ui-finance-payroll"><caption class="ui-sr-only">Chi tiết bảng lương — đơn vị đồng</caption><colgroup><col class="ui-col-large"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-small"></colgroup>
 <thead><tr><th scope="col">Nhân viên</th><th scope="col" class="ui-number">Lương CB</th><th scope="col" class="ui-number" title="Tiền lương ghi trong hợp đồng dùng làm căn cứ đóng BHXH/BHYT/BHTN. Để 0 thì hệ thống lấy bằng Lương CB.">Lương đóng BH</th><th scope="col" class="ui-number">Phụ cấp</th><th scope="col" class="ui-number">Tăng ca</th><th scope="col" class="ui-number" title="Phần tiền làm thêm giờ trả cao hơn giờ thường — được miễn thuế TNCN.">TC miễn thuế</th><th scope="col" class="ui-number">Khấu trừ khác</th><th scope="col" class="ui-number">Gross</th><th scope="col" class="ui-number">Bảo hiểm</th><th scope="col" class="ui-number">Thuế</th><th scope="col" class="ui-number">Net</th><th scope="col" class="ui-actions">Thao tác</th></tr></thead>
 <tbody>{% for p in payrolls %}<tr>
