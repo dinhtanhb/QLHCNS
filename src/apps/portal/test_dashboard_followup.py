@@ -42,8 +42,8 @@ class DashboardFollowupTests(TestCase):
                     if card['label']=='Nhân viên đang làm việc':self.assertIsNone(card['href'])
         different=home_presentation(user,dict(is_management_view=True,total_employees=5,pending_leave_approvals=4,
             dashboard_snapshot={'sections':{'status':{'state':'ready','counts':{'active':3}},'queue':{'state':'ready','rows':[{'value':2}]}}}))
-        self.assertIn('Nhân viên Active theo tổng quan cũ',[c['label'] for c in different['home_groups'][0]['cards']])
-        self.assertIn('Đơn nghỉ chờ duyệt theo tổng quan cũ',[c['label'] for c in different['home_groups'][0]['cards']])
+        self.assertIn('Nhân viên Active (theo tổng quan chung)',[c['label'] for c in different['home_groups'][0]['cards']])
+        self.assertIn('Đơn nghỉ chờ duyệt (theo tổng quan chung)',[c['label'] for c in different['home_groups'][0]['cards']])
         manager=self.user('DEPT_MANAGER',True)
         cards=home_presentation(manager,dict(is_manager_view=True,dept_employee_count=7,dept_pending_leaves=1))['home_groups'][0]['cards']
         self.assertIsNone(cards[0]['href'])
@@ -59,7 +59,7 @@ class DashboardFollowupTests(TestCase):
             if item['key'] in ('managed','active'):self.assertIn('Gồm cả hồ sơ chưa có hợp đồng;',item['note'])
         self.assertNotIn('uncontracted',data.dashboard_snapshot(other,other.employee))
         self.client.force_login(hr)
-        self.assertContains(self.client.get(reverse('portal:dashboard')),'Có 1 hồ sơ chưa có hợp đồng.')
+        self.assertContains(self.client.get(reverse('portal:dashboard')),'Có 1 hồ sơ chưa có hợp đồng')
 
     def test_active_sources_same_with_without_plan_deleted_and_nonactive(self):
         hr=self.user('HR_MANAGER',True);deleted=self.user('DELETED',True);deleted.employee.delete()

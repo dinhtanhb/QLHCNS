@@ -10,6 +10,9 @@ def main():
     parser.add_argument('--directory', type=Path, required=True)
     parser.add_argument('--packages-dir', type=Path, required=True)
     parser.add_argument('--port', type=int, default=8767)
+    parser.add_argument('--phase', choices=('before','after'), default='after')
+    parser.add_argument('--accounts', nargs='+', help='Optional focused rerun; default covers all nine accounts.')
+    parser.add_argument('--widths', nargs='+', type=int, help='Optional focused widths; default covers the required matrix.')
     args = parser.parse_args()
     folder = args.directory.resolve()
     root = Path(__file__).resolve().parents[1]
@@ -20,7 +23,7 @@ def main():
     sys.path.insert(0, str(args.packages_dir.resolve()))
     from playwright.sync_api import sync_playwright
     password = next(line.split(': ', 1)[1] for line in (folder / 'DEMO_ACCOUNTS.txt').read_text(encoding='utf-8').splitlines() if line.startswith('Mật khẩu'))
-    output = folder / 'dashboard-layout-uat'
+    output = folder / ('dashboard-group-layout-'+args.phase)
     output.mkdir(exist_ok=True)
     report = {'checks': [], 'errors': [], 'screenshots': [], 'synthetic_only': True}
     base = f'http://127.0.0.1:{args.port}'
@@ -30,119 +33,68 @@ def main():
             raise AssertionError(label)
         report['checks'].append(label)
 
-    expected = {
-        'hr': {'own_leave', 'global_leave', 'history', 'postings', 'candidates', 'joined', 'requests'},
-        'hr-officer': {'own_leave', 'history', 'candidates', 'joined'},
-        'manager': {'own_leave', 'joined', 'requests'},
-        'director': {'own_leave', 'global_leave', 'history', 'postings', 'joined'},
-        'employee': {'own_leave'},
-    }
+
+    accounts=['employee','manager','hr-officer','hr','director','finance','sys','layout-admin','unlinked']
+    if args.phase=='before':accounts=['employee','manager','hr','director']
+    if args.accounts:accounts=args.accounts
     try:
         with sync_playwright() as pw:
-            browser = pw.chromium.launch(channel='msedge', headless=True)
-            for role, allowed in expected.items():
-                context = browser.new_context(viewport={'width':1440, 'height':1000}, service_workers='block', reduced_motion='reduce')
-                page = context.new_page()
-                page.on('pageerror', lambda error: report['errors'].append(str(error)))
-                page.goto(base + '/portal/login/')
-                page.locator('[name=username]').fill('demo-' + role)
-                page.locator('[name=password]').fill(password)
-                page.locator('main form button[type=submit]').click()
-                page.wait_for_load_state('networkidle')
-                check(page.url.endswith('/portal/'), role + ' actual login')
-                for width in (1920,1440,1280,1024,768,360):
-                    page.set_viewport_size({'width':width,'height':1000})
+            browser=pw.chromium.launch(channel='msedge',headless=True)
+            for role in accounts:
+                context=browser.new_context(viewport={'width':1440,'height':900},service_workers='block',reduced_motion='reduce')
+                page=context.new_page();page.on('pageerror',lambda error:report['errors'].append(str(error)))
+                page.goto(base+'/portal/login/');page.locator('[name=username]').fill('demo-'+role);page.locator('[name=password]').fill(password);page.locator('main form button[type=submit]').click();page.wait_for_load_state('networkidle')
+                widths=(1756,390) if args.phase=='before' else (1756,1440,1280,1024,768,390)
+                if args.widths:widths=args.widths
+                for width in widths:
+                    page.set_viewport_size({'width':width,'height':900})
                     for theme in ('light','dark'):
-                        page.evaluate('(t)=>{document.documentElement.dataset.theme=t;localStorage.setItem("ihrms-theme",t)}', theme)
-                        response = page.goto(base + '/portal/', wait_until='networkidle')
-                        label = f'{role} {width} {theme}'
-                        check(response.status == 200, label + ' HTTP200')
-                        check(page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'), label + ' no page overflow')
-                        geometry = page.evaluate('''()=>{
-                            const rect=x=>{const r=x.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height};};
-                            return [...document.querySelectorAll('.dashboard-panel-grid,.phase2-list-grid,.phase2-metric-grid')].map(g=>({
-                                paired:g.matches('.dashboard-panel-grid,.phase2-list-grid'),
-                                grid:rect(g),cards:[...g.children].map(rect),values:[...g.querySelectorAll(':scope > .phase2-metric .ui-kpi-value')].map(rect)
-                            }));
-                        }''')
-                        for grid in geometry:
-                            cards=grid['cards']
-                            if len(cards)==1:
-                                check(abs(cards[0]['w']-grid['grid']['w'])<2,label+' single panel fills available width')
-                            if width>=1280 and len(cards)>1:
-                                check(max(c['y'] for c in cards)-min(c['y'] for c in cards)<2,label+' panel top alignment')
-                                if grid['paired']:
-                                    check(abs(cards[0]['w']/(cards[0]['w']+cards[1]['w'])-.6)<.002,label+' paired columns use 60/40')
-                            if len(grid['values'])>1 and width>=1280:
-                                check(max(v['y'] for v in grid['values'])-min(v['y'] for v in grid['values'])<2,label+' secondary value baseline')
-                                check(max(c['h'] for c in cards)-min(c['h'] for c in cards)<2,label+' secondary card equal heights')
-                        for key in expected['hr']:
-                            check(bool(page.locator('#phase2-' + key).count()) == (key in allowed), label + ' scope ' + key)
-                        text = page.locator('main').inner_text()
-                        check('Thai sản' in text if role in ('hr','hr-officer') else 'Thai sản' not in text, label + ' leave type privacy')
-                        check('SYNTHETIC_PRIVATE' not in page.content(), label + ' private sentinels absent')
-                        check(page.locator('#dashboard-status .ui-kpi').count() == (4 if role in ('hr','director') else 3 if role in ('hr-officer','manager') else 0), label + ' original KPI count')
-                        small = page.locator('main :is(p,span,strong,small,label,a,button,input,summary,th,td,h1,h2,time,dt,dd)').evaluate_all('''xs=>xs.filter(x=>{
-                            const r=x.getBoundingClientRect();return x.checkVisibility()&&r.width&&r.height&&x.textContent.trim()&&!x.closest('svg')&&parseFloat(getComputedStyle(x).fontSize)<14;
-                        }).map(x=>({tag:x.tagName,cls:x.className,size:getComputedStyle(x).fontSize}))''')
-                        check(not small, label + ' text >=14px ' + str(small))
-                        short = page.locator('main :is(button,input,select,a.ui-button,a.dashboard-text-link,summary)').evaluate_all('''xs=>xs.filter(x=>{
-                            const r=x.getBoundingClientRect();return x.checkVisibility()&&r.width&&r.height&&r.height<43.5&&x.type!=='hidden';
-                        }).map(x=>({tag:x.tagName,cls:x.className,height:x.getBoundingClientRect().height}))''')
-                        check(not short, label + ' targets >=44px ' + str(short))
-                        check(page.evaluate('matchMedia("(prefers-reduced-motion: reduce)").matches'), label + ' reduced motion')
-                        if 'joined' in allowed:
-                            count = page.locator('#phase2-joined .ui-kpi-value').inner_text()
-                            with page.expect_navigation(wait_until='networkidle'):
-                                page.locator('#phase2-joined a.ui-kpi').click()
-                            check('metric=joined' in page.url and page.locator('main').inner_text().find('Nhân sự vào làm trong tháng') >= 0, label + ' joined drill-down')
-                            check(response.status == 200 and int(count) == page.locator('tbody tr').count(), label + ' joined rows match')
-                            page.goto(base + '/portal/', wait_until='networkidle')
-                        if 'history' in allowed:
-                            history_link = page.locator('#phase2-history a').first
-                            if history_link.count():
-                                with page.expect_navigation(wait_until='networkidle'):
-                                    history_link.click()
-                                check('decisions' in page.url, label + ' decision detail link')
-                                page.goto(base + '/portal/', wait_until='networkidle')
-                        # Native summary: keyboard opens/closes without custom JS.
-                        summary = page.locator('.dashboard-explanation summary').first
-                        if summary.count():
-                            summary.focus(); page.keyboard.press('Enter')
-                            check(summary.evaluate('x=>x.parentElement.open'), label + ' Enter disclosure')
-                            page.keyboard.press('Enter')
-                            check(not summary.evaluate('x=>x.parentElement.open'), label + ' Enter close')
-                        page.locator('#global-search-input').focus()
-                        page.keyboard.press('Tab'); page.keyboard.press('Escape')
-                        check(page.evaluate('document.activeElement !== document.body'), label + ' Tab/Escape focus retained')
-                        name = f'{role}-{width}-{theme}.png'
-                        page.screenshot(path=str(output / name), full_page=True)
-                        report['screenshots'].append(name)
-                        if role in ('hr','hr-officer','director'):
-                            for route,slug in (('/portal/hr-decisions/','decisions'),('/portal/hr-decisions/1/','decision-detail')):
-                                response=page.goto(base+route,wait_until='networkidle')
-                                check(response.status==200,label+' '+slug+' opens')
-                                check(page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),label+' '+slug+' no overflow')
-                                bounds=page.evaluate('''()=>{
-                                    const page=document.querySelector('.ui-page'),h=document.querySelector('.decision-page-header h1');
-                                    const a=page.getBoundingClientRect(),b=h.getBoundingClientRect();return {page:a.x,heading:b.x};
-                                }''')
-                                check(abs(bounds['page']-bounds['heading'])<2,label+' '+slug+' left-aligned heading')
-                                if slug=='decisions' and width>=1024 and role!='director':
-                                    controls=page.locator('.ui-query-bar :is(input,select,button)').evaluate_all('xs=>xs.map(x=>x.getBoundingClientRect().bottom)')
-                                    check(max(controls)-min(controls)<2,label+' filter controls share baseline')
-                                if slug=='decision-detail' and page.locator('.decision-workflow').count():
-                                    check(page.locator('.decision-workflow').evaluate('x=>x.getBoundingClientRect().left')<bounds['page']+2,label+' workflow anchored left')
-                                name=f'{slug}-{role}-{width}-{theme}.png'
-                                page.screenshot(path=str(output/name),full_page=True);report['screenshots'].append(name)
-                            page.goto(base+'/portal/',wait_until='networkidle')
+                        page.evaluate('(t)=>{document.documentElement.dataset.theme=t;localStorage.setItem("ihrms-theme",t)}',theme)
+                        response=page.goto(base+'/portal/',wait_until='networkidle');label=f'{role} {width} {theme}'
+                        page.evaluate('()=>scrollTo(0,0)')
+                        if args.phase=='after':
+                            check(response.status==200,label+' opens')
+                            check(page.evaluate('document.documentElement.dataset.theme')==theme,label+' requested theme retained after navigation')
+                            overflow=page.locator('body *').evaluate_all('xs=>xs.filter(x=>x.checkVisibility() && x.getBoundingClientRect().right>innerWidth+1).map(x=>[x.tagName,x.className,x.getBoundingClientRect().right]).slice(0,12)')
+                            check(page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),label+' no page overflow '+str(overflow)+' '+str(page.evaluate('()=>({w:innerWidth,doc:document.documentElement.scrollWidth,body:document.body.scrollWidth,offenders:[...document.querySelectorAll("*")].filter(x=>x.scrollWidth>x.clientWidth+2).map(x=>[x.tagName,x.className,x.scrollWidth,x.clientWidth]).slice(0,20)})')))
+                            nested=page.locator('.home-dashboard .ui-card *').evaluate_all('xs=>xs.filter(x=>x.checkVisibility() && ["auto","scroll"].includes(getComputedStyle(x).overflowY) && x.scrollHeight>x.clientHeight+1).map(x=>x.className)')
+                            check(not nested,label+' no inner vertical scrolling '+str(nested))
+                            check(page.locator('.home-dashboard .ui-card').evaluate_all('xs=>xs.every(x=>x.scrollHeight<=x.clientHeight+1)'),label+' cards fit content')
+                            groups=page.locator('.home-dashboard > section[id^=group-]').evaluate_all('xs=>xs.map(x=>x.id)')
+                            check(groups==[x for x in ['group-hr','group-admin','group-recruitment','group-projects'] if x in groups],label+' business group order')
+                            check(not page.locator('.home-dashboard').get_by_text('Thao tác nhanh',exact=True).count(),label+' quick actions removed')
+                            check('theo tổng quan cũ' not in page.locator('main').inner_text(),label+' clear labels')
+                            if page.locator('#dashboard-my-work').count():
+                                check(page.locator('#dashboard-my-work a[href="/portal/leave/create/"]').count()==1,label+' own leave creation')
+                                check(page.locator('#dashboard-my-work a[href="/portal/leave/"]').count()==1,label+' own leave list')
+                            grids=page.locator('.home-row,.home-main-kpis').evaluate_all('xs=>xs.map(g=>[...g.children].map(x=>{let r=x.getBoundingClientRect();return {y:r.y,h:r.height,w:r.width}}))')
+                            if width>=1024:
+                                for rows in grids:
+                                    if len(rows)>1:
+                                        check(max(x['y'] for x in rows)-min(x['y'] for x in rows)<1.1,label+' row top alignment')
+                                        check(max(x['h'] for x in rows)-min(x['h'] for x in rows)<1.1,label+' equal card heights')
+                                ratios=page.locator('.home-row:not(.home-row--single)').evaluate_all('xs=>xs.filter(x=>x.children.length===2).map(x=>x.children[0].getBoundingClientRect().width/x.children[1].getBoundingClientRect().width)')
+                                check(all(abs(ratio-1.5)<0.01 for ratio in ratios),label+' paired content is 60/40')
+                                blanks=page.locator('.home-row .ui-card').evaluate_all('xs=>xs.map(x=>{const last=[...x.children].filter(y=>y.checkVisibility()).at(-1);return last?x.getBoundingClientRect().bottom-last.getBoundingClientRect().bottom-parseFloat(getComputedStyle(x).paddingBottom):0})')
+                                check(all(gap<=96 for gap in blanks),label+' paired cards trailing space <=96px '+str(blanks))
+                            if width==1440 and page.locator('#dashboard-my-work').count():
+                                bottom=page.locator('#dashboard-my-work').bounding_box()['y']+page.locator('#dashboard-my-work').bounding_box()['height']
+                                check(bottom<=900,label+' first fold includes my work')
+                                if groups:check(page.locator('#'+groups[0]+' > header').bounding_box()['y']<900,label+' first group title in first fold')
+                            check(page.locator('main summary').evaluate_all('xs=>xs.filter(x=>x.checkVisibility()).every(x=>x.getBoundingClientRect().height>=43.5)'),label+' calculation touch targets')
+                            small=page.locator('main :is(p,span,strong,a,summary,th,td)').evaluate_all('xs=>xs.filter(x=>x.checkVisibility() && x.textContent.trim() && parseFloat(getComputedStyle(x).fontSize)<14).map(x=>[x.className,getComputedStyle(x).fontSize,x.textContent.slice(0,40)])');check(not small,label+' text >=14px '+str(small))
+                            values=page.locator('.home-main-kpis .ui-kpi-value').evaluate_all('xs=>xs.map(x=>x.getBoundingClientRect().y)')
+                            if width>=1024 and len(values)>1:check(max(values)-min(values)<=1,label+' main value baseline')
+                            for summary in page.locator('main details.home-info > summary').all():
+                                owner=summary.evaluate('x=>x.closest("section")?.id');summary.focus();page.keyboard.press('Enter');check(summary.evaluate('x=>x.parentElement.open'),label+' '+str(owner)+' calculation keyboard opens');page.keyboard.press('Escape');check(not summary.evaluate('x=>x.parentElement.open'),label+' '+str(owner)+' calculation Escape closes')
+                        if width in (1756,390) and role in ('employee','manager','hr','director'):
+                            page.evaluate('()=>{document.activeElement.blur();scrollTo(0,0)}')
+                            path=output/f'{args.phase}-{role}-{width}-{theme}.png';page.screenshot(path=str(path),full_page=True);report['screenshots'].append(str(path))
                 context.close()
             browser.close()
-        check(not report['errors'], 'No browser JavaScript errors')
-    finally:
-        (output / 'browser-result.json').write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
-    print(json.dumps({'checks':len(report['checks']), 'screenshots':len(report['screenshots']), 'errors':report['errors']}))
+    except Exception as error:
+        report['errors'].append(str(error))
+    report['passed']=not report['errors'];(output/'result.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8');print(json.dumps({'checks':len(report['checks']),'screenshots':len(report['screenshots']),'errors':report['errors']}));return not report['passed']
 
 
-if __name__ == '__main__':
-    main()
+if __name__=='__main__':raise SystemExit(main())

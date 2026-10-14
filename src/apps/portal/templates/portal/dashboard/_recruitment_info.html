@@ -1,0 +1,5 @@
+{% load ui_components %}{% for item in dashboard_layout.recruitment %}<h4>{{ item.label }}</h4>
+<p>{{ item.note }}</p>{% if item.rows %}<dl class="home-inline-totals">{% for row in item.rows %}<div>
+<dt>{{ row.label }}</dt>
+<dd>{{ row.value|ui_number }}</dd>
+</div>{% endfor %}</dl>{% endif %}{% endfor %}

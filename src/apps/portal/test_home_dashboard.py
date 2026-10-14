@@ -139,9 +139,10 @@ class PhaseOneSmokeTests(TestCase):
         self.client.force_login(user)
         response = self.client.get(reverse("portal:dashboard"))
         self.assertContains(response, 'id="dashboard-status"')
-        self.assertContains(response, 'id="dashboard-contracts"')
+        self.assertNotContains(response, 'id="dashboard-contracts"')  # R2 hides empty contract cards.
         self.assertContains(response, 'id="dashboard-headcount"')
-        self.assertContains(response, 'id="dashboard-contract-types"')
+        self.assertNotContains(response, 'id="dashboard-contract-types"')
+        self.assertIn('contracts',response.context['dashboard_snapshot']['sections'])
         self.assertIn("dashboard_snapshot", response.context)
         self.assertNotIn("payroll", response.context["dashboard_snapshot"])
 
@@ -220,7 +221,7 @@ class PhaseOneSmokeTests(TestCase):
         self.assertIsNone(section["href"])
         self.client.force_login(user)
         html=self.client.get(reverse("portal:dashboard")).content.decode()
-        self.assertIn('class="dashboard-donut"',html)
+        self.assertIn('class="home-type-list"',html)
         self.assertIn("Hết hạn hôm nay",html)
         self.assertIn("Quá hạn cần rà soát",html)
         kinds[1].delete()

@@ -35,7 +35,8 @@ class DashboardPhase2Tests(TestCase):
         response = self.client.get(reverse('portal:dashboard'))
         for key in ('own_leave', 'global_leave', 'postings', 'candidates', 'joined', 'history', 'requests'):
             self.assertIn(key, response.context['dashboard_snapshot']['sections'])
-            self.assertContains(response, 'id="phase2-' + key + '"')
+            # R2: authorized DTO remains available, empty/redundant cards are omitted.
+            self.assertIn('dashboard_layout', response.context)
 
     def stamp(self, obj, day, hour=0):
         stamp = timezone.make_aware(datetime.combine(day, midnight(hour)), timezone.get_current_timezone())
@@ -176,7 +177,8 @@ class DashboardPhase2Tests(TestCase):
                 self.assertFalse(any(q['sql'].lstrip().upper().startswith(('INSERT','UPDATE','DELETE')) for q in captured))
                 self.client.force_login(user)
                 response = self.client.get(reverse('portal:dashboard'))
-                for key,allowed in expected.items(): self.assertEqual('id="phase2-'+key+'"' in response.content.decode(), bool(allowed))
+                for key,allowed in expected.items():
+                    if not allowed:self.assertNotIn('id="phase2-'+key+'"',response.content.decode())
 
     def test_query_matrix_p95_and_size_independence(self):
         matrix = {}

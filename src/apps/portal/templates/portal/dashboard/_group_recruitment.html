@@ -1,0 +1,6 @@
+{% load ui_components %}<section id="group-recruitment" aria-labelledby="group-recruitment-title">{% include 'portal/dashboard/_group_header.html' with key='recruitment' title='Tuyển dụng' link=dashboard_layout.recruitment_href link_label='Mở tuyển dụng' %}<section class="ui-card">
+<div class="home-recruitment-metrics">{% for item in dashboard_layout.recruitment %}<div id="phase2-{{ item.key }}">
+<h3>{{ item.label }}</h3>
+<strong class="home-work-value">{{ item.value|ui_number }}</strong>
+</div>{% endfor %}</div>{% include 'portal/dashboard/_info_popover.html' with content_template='portal/dashboard/_recruitment_info.html' %}</section>
+</section>

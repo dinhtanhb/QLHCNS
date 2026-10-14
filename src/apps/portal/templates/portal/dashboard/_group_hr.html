@@ -1,0 +1,12 @@
+{% load ui_components %}<section id="group-hr" aria-labelledby="group-hr-title">
+{% url 'portal:report_headcount' as headcount_url %}{% include 'portal/dashboard/_group_header.html' with key='hr' title='Nhân sự' create=dashboard_layout.create_employee link=dashboard_layout.headcount_href link_label='Mở báo cáo định biên' %}
+{% if dashboard_layout.headcount or dashboard_layout.show_distribution %}<div class="ui-layout-split home-row{% if not dashboard_layout.headcount or not dashboard_layout.show_distribution %} home-row--single{% endif %}">{% if dashboard_layout.headcount %}{% include 'portal/dashboard/_headcount_chart.html' with data=dashboard_layout.headcount %}{% endif %}{% if dashboard_layout.show_distribution %}{% include 'portal/dashboard/_contract_distribution.html' with data=dashboard_layout.contracts %}{% endif %}</div>{% endif %}
+{% if dashboard_layout.show_expiring %}{% include 'portal/dashboard/_expiring_contracts.html' with data=dashboard_layout.contracts %}{% endif %}
+{% if dashboard_layout.history %}{% include 'portal/dashboard/_decision_history.html' with data=dashboard_layout.history %}{% endif %}
+{% if dashboard_layout.joined %}<section class="ui-card home-summary-line" id="phase2-joined">
+<h3>Nhân sự vào làm trong tháng</h3>
+<strong>{{ dashboard_layout.joined.value|ui_number }}</strong>
+<a href="{{ dashboard_layout.joined.href }}" class="home-text-link">Xem tất cả →</a>
+<p>Theo ngày vào làm của hồ sơ</p>
+</section>{% endif %}
+</section>

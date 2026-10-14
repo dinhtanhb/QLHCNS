@@ -1,0 +1,19 @@
+{% load ui_components %}<section class="ui-card home-my-work" id="dashboard-my-work" aria-labelledby="my-work-title">
+<h2 id="my-work-title" class="home-card-title">Công việc của tôi</h2>
+<div class="home-my-work-grid">
+<div>
+<span>Đơn nghỉ của tôi đang chờ duyệt</span>
+<strong class="home-work-value">{{ my_pending_leaves|ui_number }}</strong>
+<div class="home-work-actions">
+<a href="{% url 'portal:leave_create' %}" class="ui-button ui-button--primary">Tạo đơn nghỉ</a>
+<a href="{% url 'portal:leave_list' %}" class="home-text-link">Mở đơn nghỉ →</a>
+</div>
+</div>
+<div>
+<span>Công việc của tôi chưa hoàn thành</span>
+<strong class="home-work-value">{{ my_open_tasks|ui_number }}</strong>
+<a href="{% url 'portal:task_list' %}?scope=assigned_to_me" class="home-text-link">Mở công việc →</a>
+</div>
+</div>
+{% if dashboard_layout.my_checklist %}<p>{{ dashboard_layout.my_checklist.label }}: {{ dashboard_layout.my_checklist.value|ui_number }} · <a class="home-text-link" href="{{ dashboard_layout.my_checklist.href }}">Xem checklist →</a></p>{% endif %}
+</section>

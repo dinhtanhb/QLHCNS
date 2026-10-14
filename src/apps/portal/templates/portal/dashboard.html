@@ -1,64 +1,24 @@
-{% extends "base.html" %}
-{% load static ui_components %}
+{% extends "base.html" %}{% load static ui_components %}
 {% block title %}Trang chủ{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261013-balanced-60-40">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261014-grouped"><script src="{% static 'js/home_dashboard.js' %}?v=20261014-grouped" defer></script>{% endblock %}
 {% block content %}
-<div class="ui-page home-dashboard">
-{% include "ui/page_header.html" with title="Bảng điều khiển" description="Tình hình nhân sự và công việc trong phạm vi được cấp quyền." %}
+<div class="ui-page home-dashboard" data-density="{{ dashboard_layout.density }}">
+<header class="home-page-header">
+<div>
+<h1 class="ui-page-title">Bảng điều khiển</h1>
 <p class="home-period">Ngày vận hành {{ dashboard_snapshot.operational_date|ui_date }} · {{ dashboard_snapshot.scope_label }} · Cập nhật {{ dashboard_snapshot.generated_at|date:"H:i" }}</p>
-{% if not employee %}
-<section class="ui-card home-profile-warning" aria-labelledby="profile-warning-title">
- {% include "_shell_icon.html" with name="warning" %}<div><h2 id="profile-warning-title">Tài khoản chưa gắn hồ sơ nhân viên</h2>
- <p>Các thông tin và thao tác cá nhân sẽ hiển thị sau khi tài khoản được gắn hồ sơ. Vui lòng liên hệ Phòng Nhân sự để được hỗ trợ.</p>
- {% if profile_setup %}<p>Sử dụng màn hình có sẵn bên dưới; hồ sơ được tạo cần được quản trị viên có quyền gắn với tài khoản.</p><a class="ui-button" href="{{ profile_setup.href }}">{{ profile_setup.label }}{% include "_shell_icon.html" with name="arrow" %}</a>{% endif %}</div>
-</section>
-{% endif %}
-{% if dashboard_snapshot.sections.status %}
-<section id="dashboard-status" aria-labelledby="dashboard-status-title"><h2 class="ui-card-title" id="dashboard-status-title">Tình hình nhân sự</h2>
-{% if dashboard_snapshot.sections.status.state == 'error' %}{% include "ui/empty_state.html" with state="error" title="Không tải được dữ liệu" description="Vui lòng thử lại sau." %}{% endif %}
-<div class="ui-kpi-grid dashboard-metric-grid">{% for item in dashboard_snapshot.metrics %}<div class="dashboard-metric">{% include "ui/kpi.html" with label=item.label value=item.value period=item.period_label href=item.href icon=item.icon only %}</div>{% endfor %}</div>
-<details class="dashboard-explanation"><summary>Cách tính chỉ số</summary><ul>{% for item in dashboard_snapshot.metrics %}<li><strong>{{ item.label }}</strong>: {{ item.note }}</li>{% endfor %}</ul></details></section>
-{% if dashboard_snapshot.uncontracted.value %}<p class="ui-page-description">Có {{ dashboard_snapshot.uncontracted.value|ui_number }} hồ sơ chưa có hợp đồng. <a class="dashboard-text-link" href="{{ dashboard_snapshot.uncontracted.href }}">Tạo hợp đồng</a></p>{% endif %}
-{% endif %}
-{% if dashboard_snapshot.sections.headcount or dashboard_snapshot.sections.contracts %}<div class="dashboard-panel-grid">
-{% if dashboard_snapshot.sections.headcount %}{% include "portal/dashboard/_headcount_chart.html" with data=dashboard_snapshot.sections.headcount %}{% endif %}
-{% if dashboard_snapshot.sections.contracts %}{% include "portal/dashboard/_contract_distribution.html" with data=dashboard_snapshot.sections.contracts %}{% endif %}
-</div>{% endif %}
-{% if dashboard_snapshot.sections.contracts or dashboard_snapshot.sections.queue %}<div class="dashboard-panel-grid dashboard-work-grid">
-{% if dashboard_snapshot.sections.contracts %}{% include "portal/dashboard/_expiring_contracts.html" with data=dashboard_snapshot.sections.contracts %}{% endif %}
-<div class="dashboard-work-aside">{% if dashboard_snapshot.sections.queue %}{% include "portal/dashboard/_action_queue.html" with data=dashboard_snapshot.sections.queue %}{% endif %}{% include "portal/dashboard/_quick_actions.html" %}</div>
-</div>{% endif %}
-{% for group in home_groups %}
-<section aria-labelledby="home-group-{{ forloop.counter }}"><h2 class="ui-card-title" id="home-group-{{ forloop.counter }}">{{ group.title }}</h2>
- <div class="ui-kpi-grid home-kpi-grid">{% for card in group.cards %}<div>{% include "ui/kpi.html" with label=card.label value=card.value href=card.href warning=card.warning period=card.period icon=card.icon only %}{% if card.note %}<p class="ui-page-description">{{ card.note }}</p>{% endif %}</div>{% endfor %}</div>
-</section>
-{% endfor %}
-{% if not dashboard_snapshot.sections.contracts and not dashboard_snapshot.sections.queue %}{% include 'portal/dashboard/_quick_actions.html' %}{% endif %}
-{% if show_project_activity_summary %}
-<section class="ui-card home-project-summary" aria-labelledby="home-project-title"><div class="ui-page-header"><div><h2 class="ui-card-title" id="home-project-title">Tiến độ hoạt động dự án</h2><p class="ui-page-description">Tháng {{ activity_month_label }}</p></div><a class="ui-button" href="{% url 'portal:activity_dashboard' %}?month={{ activity_month }}">Mở Dashboard hoạt động{% include "_shell_icon.html" with name="arrow" %}</a></div>
- {% if activity_total == 0 %}<p class="home-project-empty">Không có hoạt động trong tháng này thuộc phạm vi tài khoản. Mở Dashboard để chọn kỳ khác và kiểm tra các bộ lọc.</p>{% endif %}
- <dl class="home-project-list">
- <div><dt>{% include "_shell_icon.html" with name="folder" %}Hoạt động trong tháng</dt><dd>{{ activity_total|ui_number }}</dd></div>
- <div><dt>{% include "_shell_icon.html" with name="success" %}Task báo cáo hoàn thành</dt><dd>{{ activity_completed|ui_number }}</dd></div>
- <div{% if activity_overdue > 0 %} class="home-status-danger"{% endif %}><dt>{% include "_shell_icon.html" with name="danger" %}Task quá hạn</dt><dd>{{ activity_overdue|ui_number }}{% if activity_overdue > 0 %}<span class="ui-badge ui-badge--danger">Cần xử lý</span>{% endif %}</dd></div>
- <div{% if activity_report_missing > 0 %} class="home-status-warning"{% endif %}><dt>{% include "_shell_icon.html" with name="warning" %}Task thiếu báo cáo</dt><dd>{{ activity_report_missing|ui_number }}{% if activity_report_missing > 0 %}<span class="ui-badge ui-badge--warning">Cần xử lý</span>{% endif %}</dd></div>
- <div><dt>{% include "_shell_icon.html" with name="info" %}Hoạt động chưa có Task</dt><dd>{{ activity_without_task|ui_number }}</dd></div>
- </dl>
-</section>
-{% endif %}
-{% with sections=dashboard_snapshot.sections %}
-{% if sections.own_leave or sections.global_leave or sections.history %}<div class="phase2-list-grid">
-{% if sections.global_leave %}{% include 'portal/dashboard/_recent_leave.html' with data=sections.global_leave key='global_leave' %}{% endif %}
-{% if sections.own_leave and not sections.global_leave %}{% include 'portal/dashboard/_recent_leave.html' with data=sections.own_leave key='own_leave' %}{% endif %}
-{% if sections.history %}{% include 'portal/dashboard/_decision_history.html' with data=sections.history %}{% endif %}
-</div>{% endif %}
-{% if sections.postings or sections.candidates or sections.joined or sections.requests %}
-<section aria-labelledby="phase2-followup-title"><h2 class="ui-card-title" id="phase2-followup-title">Chỉ số theo dõi khác</h2><div class="phase2-metric-grid">
-{% if sections.postings %}{% include 'portal/dashboard/_phase2_metric.html' with data=sections.postings key='postings' %}{% endif %}
-{% if sections.candidates %}{% include 'portal/dashboard/_phase2_metric.html' with data=sections.candidates key='candidates' %}{% endif %}
-{% if sections.joined %}{% include 'portal/dashboard/_phase2_metric.html' with data=sections.joined key='joined' %}{% endif %}
-{% if sections.requests %}{% include 'portal/dashboard/_phase2_metric.html' with data=sections.requests key='requests' %}{% endif %}
-</div></section>{% endif %}
-{% endwith %}
+</div>
+<div class="home-header-actions">{% if dashboard_layout.report_action %}<a href="{{ dashboard_layout.report_action.href }}" class="home-text-link">Mở báo cáo điều hành →</a>{% endif %}{% include 'portal/dashboard/_info_popover.html' with content_template='portal/dashboard/_info_metrics.html' %}</div>
+{% if dashboard_layout.groups|length >= 3 %}<nav class="home-jumps" aria-label="Nhảy tới nhóm thông tin">{% for group in dashboard_layout.groups %}<a href="#group-{{ group.key }}">{{ group.label }}</a>{% endfor %}</nav>{% endif %}</header>
+{% if not employee %}<section class="ui-card home-profile-warning" aria-labelledby="profile-warning-title">{% include '_shell_icon.html' with name='warning' %}<div>
+<h2 id="profile-warning-title">Tài khoản chưa gắn hồ sơ nhân viên</h2>
+<p>Liên hệ Phòng Nhân sự để liên kết hồ sơ và sử dụng thao tác cá nhân.</p>{% if profile_setup %}<a class="home-text-link" href="{{ profile_setup.href }}">{{ profile_setup.label }} →</a>{% endif %}</div>
+</section>{% endif %}
+{% include 'portal/dashboard/_kpi_main.html' %}
+{% if employee %}{% include 'portal/dashboard/_my_work.html' %}{% endif %}
+{% if dashboard_layout.show_hr %}{% include 'portal/dashboard/_group_hr.html' %}{% endif %}
+{% if dashboard_layout.show_admin %}{% include 'portal/dashboard/_group_admin.html' %}{% endif %}
+{% if dashboard_layout.recruitment %}{% include 'portal/dashboard/_group_recruitment.html' %}{% endif %}
+{% if dashboard_layout.project_allowed %}{% include 'portal/dashboard/_group_projects.html' %}{% endif %}
 </div>
 {% endblock %}

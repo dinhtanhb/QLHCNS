@@ -439,7 +439,7 @@ class PortalSensitiveWorkflowTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "css/home_dashboard.css?v=")
-        self.assertContains(response, "home-kpi-grid")
+        self.assertContains(response, 'id="dashboard-my-work"')
         task_link = f'href="{reverse("portal:task_list")}"'
         html = response.content.decode()
         self.assertEqual(html.count(task_link), 1)

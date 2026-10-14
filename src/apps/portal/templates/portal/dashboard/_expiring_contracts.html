@@ -1,12 +1,20 @@
-{% load ui_components %}
-<section class="ui-card" id="dashboard-contracts" aria-labelledby="dashboard-contracts-title"><h2 class="ui-card-title" id="dashboard-contracts-title">{% include "_shell_icon.html" with name="contract" %} Hợp đồng sắp hết hạn</h2>
- {% if data.state == 'error' %}{% include "ui/empty_state.html" with state="error" title="Không tải được dữ liệu" description="Vui lòng thử lại sau." %}
- {% else %}
- <p><strong>{{ data.upcoming_count|ui_number }} hợp đồng</strong> hết hạn từ hôm nay đến 60 ngày tới.</p>
- {% include "portal/dashboard/_contract_rows.html" with rows=data.upcoming_rows list_label="Hợp đồng sắp hết hạn" %}
- {% if data.overdue_count %}<h3>Quá hạn cần rà soát · {{ data.overdue_count|ui_number }}</h3>
- {% include "portal/dashboard/_contract_rows.html" with rows=data.overdue_rows list_label="Hợp đồng quá hạn" %}
- {% endif %}<a class="dashboard-text-link" href="{% url 'portal:hr_contract_list' %}">Xem tất cả hợp đồng</a>
- <details class="dashboard-explanation"><summary>Phạm vi dữ liệu</summary><p>Hợp đồng Active đã bắt đầu, trong 60 ngày tới. Nhóm quá hạn có ngày kết thúc trước hôm nay. Mỗi nhóm hiện tối đa 5 dòng; số tổng đếm toàn bộ nhóm.</p></details>
- {% endif %}
-</section>
+{% load ui_components %}<section class="ui-card" id="dashboard-contracts" aria-labelledby="dashboard-contracts-title">
+<header class="home-card-header">
+<h3 id="dashboard-contracts-title">{% include '_shell_icon.html' with name='contract' %}Hợp đồng sắp hết hạn</h3>
+<a href="{% url 'portal:hr_contract_list' %}" class="home-text-link">Xem tất cả →</a>
+</header>
+{% if data.state == 'error' %}{% include 'ui/empty_state.html' with state='error' title='Không tải được dữ liệu' %}{% else %}
+{% if data.overdue_count %}<p class="home-warning">{% include '_shell_icon.html' with name='warning' %}Quá hạn cần rà soát · {{ data.overdue_count|ui_number }} hợp đồng</p>{% endif %}
+{% if data.overdue_count %}<ul class="home-list">{% for row in data.overdue_rows %}<li><div><strong>{{ row.employee__full_name }}</strong><span>{{ row.contract_no }}</span></div><span>{{ row.end_date|ui_date }}</span></li>{% endfor %}</ul>{% if data.overdue_count > data.overdue_rows|length %}<p class="home-footnote">Hiển thị {{ data.overdue_rows|length }}/{{ data.overdue_count|ui_number }} hợp đồng quá hạn.</p>{% endif %}{% endif %}
+{% if data.upcoming_count %}<p>{{ data.upcoming_count|ui_number }} hợp đồng hết hạn trong 60 ngày tới</p>
+<ul class="home-list">{% for row in data.upcoming_rows %}<li>
+<div>
+<strong>{{ row.employee__full_name }}</strong>
+<span>{{ row.employee__employee_code }} · {{ row.contract_no }}</span>
+</div>
+<div>{{ row.end_date|ui_date }}<span>{% if row.days == 0 %}Hết hạn hôm nay{% else %}Còn {{ row.days|ui_number }} ngày{% endif %}</span>
+</div>
+</li>{% endfor %}</ul>{% if data.upcoming_count > data.upcoming_rows|length %}<p class="home-footnote">Hiển thị {{ data.upcoming_rows|length }}/{{ data.upcoming_count|ui_number }}; danh sách hợp đồng hiện có chưa hỗ trợ đúng bộ lọc này.</p>{% endif %}{% endif %}
+{% if dashboard_snapshot.uncontracted.value %}<p class="home-warning">{% include '_shell_icon.html' with name='warning' %}Có {{ dashboard_snapshot.uncontracted.value|ui_number }} hồ sơ chưa có hợp đồng — <a href="{{ dashboard_snapshot.uncontracted.href }}" class="home-text-link">Tạo hợp đồng</a>
+</p>{% endif %}{% endif %}
+{% include 'portal/dashboard/_info_popover.html' with note='Hợp đồng Active đã bắt đầu; sắp hết hạn trong 60 ngày tới. Quá hạn là ngày kết thúc trước hôm nay. Không tự đổi trạng thái.' %}</section>

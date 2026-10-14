@@ -1,0 +1,16 @@
+{% load ui_components %}<p>Đếm hợp đồng Active đã bắt đầu và còn hiệu lực; một người có thể có nhiều hợp đồng.</p>
+<table class="home-data-table">
+<caption>Bảng loại hợp đồng</caption>
+<thead>
+<tr>
+<th scope="col">Loại</th>
+<th scope="col">Số hợp đồng</th>
+<th scope="col">Tỷ trọng</th>
+</tr>
+</thead>
+<tbody>{% for group in data.types %}<tr>
+<th scope="row">{{ group.contract_type__contract_type_name }}</th>
+<td>{{ group.total|ui_number }}</td>
+<td>{{ group.share_display|ui_number }}%</td>
+</tr>{% endfor %}</tbody>
+</table>

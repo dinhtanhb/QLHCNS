@@ -2,6 +2,27 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-14 — Dashboard: bố cục nhóm theo quyền
+
+**Tóm tắt cho chủ dự án**
+
+- Gom Trang chủ theo thứ tự KPI → Công việc của tôi → Nhân sự → Hành chính → Tuyển dụng → Dự án; bỏ thẻ phụ rỗng và Thao tác nhanh.
+- Dùng thẻ, liên kết và Cách tính thống nhất; danh sách giới hạn 5/3 dòng, định biên 6 phòng, không cuộn dọc trong thẻ.
+- Dữ liệu/DTO cũ và số truy vấn qua 9 tài khoản không đổi; không có ghi nghiệp vụ khi GET Dashboard.
+- Edge: 2.380 kiểm tra bố cục, 355 kiểm tra luồng trên DB dùng một lần; PDF 37/37 không khác văn bản/pixel, BCC 645/8 đạt.
+- Cập nhật đặc tả và MASTER; không sửa nguồn công thức, quyền, URL, model, migration hoặc giấy in.
+- Bản sao mã review và ảnh giả ngoài repository; commit/push main, không deploy. Yêu cầu chuẩn hóa form toàn ứng dụng là đợt riêng tiếp theo.
+
+**Phạm vi:** home_presentation.py thêm hàm thuần grouped_dashboard và dashboard_layout từ snapshot/context đã materialize; giữ mọi khóa cũ. Dashboard/partials, home_dashboard.css/JS, worker/cache, test và hai tài liệu. Không sửa dashboard_data.py/selectors.py/PERMISSION_MATRIX. Giữ Q2 ẩn tiền, Q3 Giám đốc không mặc nhiên xem hợp đồng, D2 riêng tư loại nghỉ. Tài khoản cá nhân chỉ Công việc của tôi; checklist quá hạn cá nhân chuyển vào cùng khối. Không thêm truy vấn để dựng đủ KPI khi context không cấp số công việc phòng/hàng chờ. Định biên và cơ cấu hợp đồng ghép 60/40 từ1024px; danh sách dài tách hàng để tránh kéo thẻ ngắn thành vùng trắng lớn. KPI quản lý phòng có ba chỉ số được cấp thì chia đều ba cột. Dưới600px bảng đơn nghỉ chuyển thành dòng có nhãn, không cắt tên hoặc cuộn trang ngang.
+
+**Bảo toàn và hồi quy:** ops/run_dashboard_group_contract_uat.py so archive71b6a2f và nguồn mới trên cùng DB/media giả TEMP/ihrms-finance-followup-20261014. Chín tài khoản gồm nhân viên, trưởng phòng, HR officer/manager, giám đốc, kế toán, sysadmin, superuser và chưa liên kết: SELECT lần lượt10/14/18/23/18/10/5/20/5 không tăng; snapshot bỏ generated_at khớp nguyên vẹn; liên kết nội bộ200/302. Ghi django_session do middleware giữ nguyên; runner cấm mọi ghi bảng nghiệp vụ trong Dashboard GET. Các test nghiệp vụ hiện có giữ nguyên số liệu/phạm vi; chỉ cập nhật assertion markup/copy: phân phối loại hợp đồng chuyển donut sang nhãn/thanh, thẻ rỗng ẩn, lớp grid cũ bỏ, liên kết Dashboard dự án giữ tên. Thêm3 test mapping thuần, giới hạn và không đổi DTO. Full suite lần đầu bắt hai assertion markup cũ ở activity/tests.py và portal/tests.py; giữ assertion quyền/count và chỉnh nhãn/class tương ứng rồi chạy lại, không bỏ test.
+
+**Đo và xem ảnh:** ops/run_dashboard_layout_uat.py: 9 tài khoản ×1756/1440/1280/1024/768/390 ×sáng/tối, 2.380 kiểm tra/16 ảnh cuối. Đo theme thực tế sau navigation (lưu lựa chọn trước reload), không tràn trang, không cuộn dọc trong thẻ, thứ tự nhóm, chiều cao hàng/KPI và đường cơ sở số, tỷ lệ60/40, khoảng trắng cuối thẻ ghép≤96px, first fold1440×900 chứa MyWork và tiêu đề nhóm đầu, chữ≥14px, Cách tính≥44px/Enter/Escape. Lượt cũ chỉ kiểm overflow/tỷ lệ nên bỏ sót CSS chung ghi đè ở1024px, chữ kỳ12px và khoảng trắng dài; đã bổ sung phép đo rồi sửa selector chỉ trong home-dashboard. Một thẻ info có thừa đóng div làm Escape không đóng; đã sửa markup, kiểm lại toàn bộ disclosure. Đã xem ảnh HR desktop và Giám đốc mobile, sau đó sửa bảng mobile thay cách ngắt chữ từng cột. Contact sheet trước/sau cùng4 tầng tài khoản ở1756/390; ảnh toàn trang giữ ngoài Git.
+
+**Kiểm thử nguồn cuối:** git diff --check; pip check; Django check; makemigrations --check --dry-run; contrast198 cặp/0 lỗi. npm run build:css; Tailwind URL20261014-dashboard-grouped, worker v20. Full suite qua ops/run_tests.py bằng wrapper TEMP/project-layout-final-tests.py chỉ thay password hasher fixture, DB/media dùng một lần: SQLite542 test/143.099s OK(7 skip); SQL Server kết quả cuối bổ sung ngay trước commit. ops/run_browser_uat.py --backend sqlite:355 kiểm tra/32 ảnh, tạo hồ sơ→hợp đồng→xuất hiện danh sách→dropdown/sửa; nghỉ→hàng chờ→xác nhận duyệt→lưu một lần→hàng chờ rỗng; các mép D/D+7/30/60/61/quá hạn và hợp đồng Draft/Expired/Terminated/future, headcount0/thiếu/vượt, quyền liên kết và Dashboard không tiền. Runner cập nhật selector theo nhóm mới; giữ kiểm dữ liệu lưu, trạng thái và số liệu. Đây là Edge headless, không phải UAT phiên trình duyệt/tài khoản thật của chủ dự án.
+
+**In/cache và bàn giao:** ops/run_print_layout_uat.py:402 kiểm tra/37 PDF, gồm sổ công văn và lặp trang; ops/run_timesheet_print_uat.py:645 kiểm tra/8 tình huống, đạt. So37 PDF cùng bản ghi trước/sau: văn bản và pixel trùng; không sửa print_forms.css. ops/run_asset_cache_uat.py:9 kiểm tra, phiên worker v19→v20 giữ cookie/cache, reload thường, gap stale597.094→16px. Một lượt cache lỗi fetch worker khi demo vừa restart; chạy lại sau ổn định đạt, không gọi lần lỗi là pass. Nhật ký bằng chứng và ZIP review tại D:/QLHCNS-Backups/IHRMS_Review_20261014_DashboardGrouped.zip và IHRMS_DashboardGrouped_Proof_20261014.zip, manifest nguồn/tree và SHA-256 từng tệp được mở lại xác minh. Loại env/database/media/log/account secret và private design-system/reference; đây là source review, không backup phục hồi dữ liệu. Giữ thay đổi AGENTS.md ngoài phạm vi. Chưa kiểm screen reader, zoom200%, máy in thật và UAT dữ liệu thật. Trạng thái commit/remote/CI theo SHA trong metadata giao nhận cạnh ZIP.
+
 ## 2026-10-14 — Giai đoạn 5: Kế hoạch
 
 **Tóm tắt cho chủ dự án**

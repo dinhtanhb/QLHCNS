@@ -1,0 +1,3 @@
+{% load ui_components %}<p>Chỉ hiển thị dữ liệu trong phạm vi tài khoản được phép xem. Các chỉ số nhân sự gồm hồ sơ chưa có hợp đồng.</p>
+<ul>{% for item in dashboard_layout.main %}{% if item.note %}<li>{{ item.label }}: {{ item.note }}</li>{% endif %}{% endfor %}</ul>
+<p>Ngày vận hành {{ dashboard_snapshot.operational_date|ui_date }}. Các trạng thái hiện tại không thay thế chấm công thực tế.</p>

@@ -1,5 +1,13 @@
 # IHRMS — Design system đã duyệt
 
+## Trang chủ theo nhóm — 14/10/2026
+
+Quy chuẩn này thay thế bố cục các khối Dashboard ở các mục cũ: KPI chính → Công việc của tôi → Nhân sự → Hành chính → Tuyển dụng → Dự án. Quyền và nguồn dữ liệu giữ nguyên. Không dựng khối không được phép trong HTML. Khối rỗng thu gọn hoặc ẩn; không dùng thẻ số 0 riêng cho mọi chỉ số phụ. KPI chính chỉ hiển thị số liệu đã có trong DTO/context; không thêm truy vấn để đủ bốn ô.
+
+Mỗi thẻ có biểu tượng, tiêu đề, tối đa một liên kết danh sách ở đầu; nội dung và ghi chú nằm trong thẻ. Nút tạo chỉ ở đầu nhóm hoặc Công việc của tôi. Cùng một kiểu details/summary “Cách tính”, mở bằng Enter và đóng bằng Escape; nội dung giải thích chạy trong luồng trang. Không có nhóm Thao tác nhanh, liên kết rời hoặc vùng cuộn dọc trong thẻ. Hai khối nội dung chia 60/40 từ 1024px; dưới đó một cột. KPI cùng hàng có cùng chiều cao và đường cơ sở số; nhãn dài được dành cùng chiều cao. Các KPI hiện có ba chỉ số chia đều ba cột, không để cột rỗng giả.
+
+Danh sách tối đa năm dòng; ba dòng cho tài khoản có quyền duyệt quyết định nhưng không có quyền quản lý nhân sự. Định biên tối đa sáu phòng theo thứ tự nguồn, phòng chưa có kế hoạch chỉ một dòng; vượt kế hoạch có chữ và biểu tượng cảnh báo. Tuyển dụng gộp các số dương đang được cấp vào một thẻ. Dự án rỗng chỉ một dòng và liên kết hợp lệ. Không bổ sung bộ lọc hoặc giả định phạm vi của trang đích.
+
 Trạng thái: đã duyệt bởi chủ dự án ngày 12/10/2026 kèm các điều kiện trong yêu cầu Giai đoạn 2. Nguồn quyết định: UI UX Pro Max, kiểm kê mã IHRMS và các ràng buộc của chủ dự án. Nhật ký duy nhất: [PROJECT_WORK_LOG](../docs/PROJECT_WORK_LOG.md). Thứ bậc: MASTER + tokens > DESIGN.md > mặc định skill. Giai đoạn 2 áp dụng khung; nội dung trang con chưa thiết kế lại.
 
 ## Phạm vi và nguồn của skill

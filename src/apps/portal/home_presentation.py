@@ -56,10 +56,10 @@ def home_presentation(user, context):
             cards.append(card("Tài sản đang cấp phát", "assets_in_use", "asset_admin_list", "view_asset"))
         cards = [c for i,c in enumerate(cards) if not (i == 0 and status_duplicates("total_employees") or i == 1 and queue_duplicates("pending_leave_approvals"))]
         if status.get("state") in ("ready", "empty") and not status_duplicates("total_employees"):
-            if cards and cards[0]["label"] == "Nhân viên đang làm việc": cards[0]["label"] = "Nhân viên Active theo tổng quan cũ"
+            if cards and cards[0]["label"] == "Nhân viên đang làm việc": cards[0]["label"] = "Nhân viên Active (theo tổng quan chung)"
         if new_queue.get("state") in ("ready", "empty") and not queue_duplicates("pending_leave_approvals"):
             for item in cards:
-                if item["label"] == "Đơn nghỉ chờ duyệt": item["label"] = "Đơn nghỉ chờ duyệt theo tổng quan cũ"
+                if item["label"] == "Đơn nghỉ chờ duyệt": item["label"] = "Đơn nghỉ chờ duyệt (theo tổng quan chung)"
         groups.append({"title": "Tổng quan Trung tâm", "cards": cards})
     elif context.get("is_manager_view"):
         cards = [
@@ -71,10 +71,10 @@ def home_presentation(user, context):
             cards.append(card("Tài sản đang cấp phát trong phòng", "dept_assets_in_use"))
         cards = [c for i,c in enumerate(cards) if not (i == 0 and status_duplicates("dept_employee_count") or i == 1 and queue_duplicates("dept_pending_leaves"))]
         if status.get("state") in ("ready", "empty") and not status_duplicates("dept_employee_count"):
-            if cards and cards[0]["label"] == "Nhân viên trong phòng": cards[0]["label"] = "Nhân viên Active trong phòng theo tổng quan cũ"
+            if cards and cards[0]["label"] == "Nhân viên trong phòng": cards[0]["label"] = "Nhân viên Active trong phòng (theo tổng quan chung)"
         if new_queue.get("state") in ("ready", "empty") and not queue_duplicates("dept_pending_leaves"):
             for item in cards:
-                if item["label"] == "Đơn nghỉ phòng ban chờ duyệt": item["label"] = "Đơn nghỉ phòng ban theo tổng quan cũ"
+                if item["label"] == "Đơn nghỉ phòng ban chờ duyệt": item["label"] = "Đơn nghỉ phòng ban (theo tổng quan chung)"
         groups.append({"title": "Tổng quan phòng ban", "cards": cards})
     if has_permission(user, "view_own_lifecycle_items") and "lifecycle_overdue_count" in context:
         card("Checklist onboarding/offboarding quá hạn", "lifecycle_overdue_count", "lifecycle_case_list", "view_own_lifecycle_items", True)
@@ -102,4 +102,113 @@ def home_presentation(user, context):
     groups = [dict(group, cards=[card for card in group["cards"] if card["value"] is not None]) for group in groups]
     groups = [group for group in groups if group["cards"]]
     result.update(home_groups=groups, home_queue=queue, home_actions=actions)
+    result["dashboard_layout"] = grouped_dashboard(user, context, result)
     return result
+
+
+def grouped_dashboard(user, context, presentation):
+    """Presentation only: reuse materialized DTOs and counters; never read the database."""
+    snapshot = context.get("dashboard_snapshot", {})
+    sections = snapshot.get("sections", {})
+    compact = has_permission(user, "approve_personnel_decision") and not has_permission(user, "manage_hr")
+    limit = 3 if compact else 5
+    layout = {"density": "compact" if compact else "comfortable", "limit": limit,
+              "main": [], "groups": [], "actions": {}, "queue": [], "totals": []}
+    actions = {a["label"]: a for a in presentation["home_actions"]}
+    layout["actions"] = actions
+    layout["create_employee"] = actions.get("Tạo hồ sơ nhân viên")
+    layout["create_dispatch"] = actions.get("Tạo công văn")
+    layout["assign_task"] = actions.get("Giao công việc")
+    layout["recruitment_href"] = reverse("portal:recruitment_hub") if any(has_permission(user,p) for p in ("manage_hr","request_recruitment","approve_recruitment")) else None
+    layout["headcount_href"] = reverse("portal:report_headcount") + "?year=" + str(snapshot.get("plan_year", "")) if has_permission(user,"view_reports") else None
+    layout["report_action"] = actions.get("Mở báo cáo điều hành")
+    layout["my_work"] = bool(context.get("employee"))
+    layout["manager"] = bool(context.get("is_manager_view"))
+    counts = sections.get("status", {}).get("counts", {})
+    metrics = {m["key"]: dict(m) for m in snapshot.get("metrics", [])}
+    def add(item):
+        if item and item.get("value") is not None and len(layout["main"]) < 4:
+            layout["main"].append(item)
+    if layout["manager"]:
+        item = metrics.get("managed")
+        if item: item["label"] = "Nhân viên trong phòng"
+        add(item)
+        queue = sections.get("queue", {}).get("rows", [])
+        if queue: add(dict(queue[0], label="Đơn nghỉ phòng chờ duyệt", icon="calendar"))
+        if context.get("dept_open_tasks") is not None:
+            add(dict(label="Công việc phòng chưa hoàn thành",value=context["dept_open_tasks"],icon="briefcase"))
+        add(sections.get("joined"))
+    elif metrics:
+        add(metrics.get("managed")); add(metrics.get("approved"))
+        contracts = sections.get("contracts")
+        if contracts and contracts.get("upcoming_count") is not None:
+            add(dict(label="Hợp đồng sắp hết hạn (≤60 ngày)",value=contracts["upcoming_count"],icon="contract",
+                     note="Hợp đồng Active đã bắt đầu; đến 60 ngày tới.", overdue=contracts.get("overdue_count",0)))
+        else: add(sections.get("joined"))
+        queue = sections.get("queue", {}).get("rows", [])
+        if queue: add(dict(queue[0], label="Đơn nghỉ chờ duyệt",icon="calendar"))
+        elif context.get("open_tasks_company") is not None:
+            add(dict(label="Công việc đang mở toàn Trung tâm",value=context["open_tasks_company"],icon="briefcase"))
+        if len(layout["main"])<4 and "joined" in sections: add(sections["joined"])
+    # Do not duplicate the joined counter when it fills a fallback main slot.
+    unique=[]
+    for item in layout["main"]:
+        if not any(x.get("label")==item.get("label") for x in unique):unique.append(item)
+    layout["main"]=unique
+    layout["status_counts"] = counts
+    layout["main_keys"] = [m.get("key") for m in layout["main"]]
+    layout["my_checklist"] = next((item for item in presentation["home_queue"]
+        if item.get("label", "").startswith("Checklist") and item.get("value")), None)
+    # Urgent work comes from existing scoped queue DTOs or legacy supplied counters.
+    queue = list(sections.get("queue", {}).get("rows", []))
+    for item in presentation["home_queue"]:
+        if item.get("label", "").startswith("Checklist"):
+            continue  # Personal overdue work belongs to My work, not Administration.
+        if not any(q.get("label")==item["label"] for q in queue):
+            queue.append(item)
+    requests = sections.get("requests", {})
+    for row in requests.get("rows", []):
+        if row["code"]=="Pending" and has_permission(user,"approve_recruitment"):
+            queue.append(dict(label="Đề xuất tuyển dụng chờ duyệt",value=row["value"],href=requests.get("cta")))
+    seen=set()
+    for item in queue:
+        if item.get("value",0) and item.get("href") and item["href"] not in seen:
+            seen.add(item["href"]);layout["queue"].append(item)
+    for group in presentation["home_groups"]:
+        if group["title"]=="Công việc của tôi": continue
+        for card in group["cards"]:
+            if card.get("value",0) and not card.get("warning") and card["label"] not in {m["label"] for m in layout["main"]}:
+                if "Nhân viên" not in card["label"]:layout["totals"].append(card)
+    headcount=sections.get("headcount",{})
+    layout["headcount"] = dict(headcount, rows=headcount.get("rows",[])[:6], total=len(headcount.get("rows",[]))) if headcount.get("rows") or headcount.get("state")=="error" else None
+    contracts=sections.get("contracts",{})
+    uncontracted=snapshot.get("uncontracted",{})
+    layout["contracts"] = dict(contracts,upcoming_rows=contracts.get("upcoming_rows",[])[:limit],overdue_rows=contracts.get("overdue_rows",[])[:limit]) if contracts else None
+    layout["show_expiring"] = bool(contracts and (contracts.get("upcoming_count") or contracts.get("overdue_count") or uncontracted.get("value") or contracts.get("state")=="error"))
+    layout["show_distribution"] = bool(contracts.get("types"))
+    history=sections.get("history",{})
+    layout["history"] = dict(history,rows=history.get("rows",[])[:limit],total=len(history.get("rows",[]))) if history.get("rows") or history.get("state")=="error" else None
+    joined=sections.get("joined",{})
+    layout["joined"] = joined if joined.get("value") and joined not in layout["main"] else None
+    leave=sections.get("global_leave") or (sections.get("own_leave") if layout["manager"] else None)
+    layout["leave"] = dict(leave,rows=leave.get("rows",[])[:limit],total=len(leave.get("rows",[])),key="global_leave" if leave.get("global_scope") else "own_leave") if leave and (leave.get("rows") or leave.get("state")=="error") else None
+    recruitment=[]
+    for key in ("postings","candidates","requests"):
+        data=sections.get(key)
+        if data and (data.get("value") or data.get("state")=="error"):
+            recruitment.append(dict(data,key=key))
+    layout["recruitment"] = recruitment
+    project_rows=[]
+    if context.get("show_project_activity_summary"):
+        for key,label in (("activity_overdue","Task quá hạn"),("activity_report_missing","Task thiếu báo cáo"),("activity_total","Hoạt động trong tháng"),("activity_completed","Task báo cáo hoàn thành"),("activity_without_task","Hoạt động chưa có Task")):
+            if context.get(key):project_rows.append(dict(label=label,value=context[key],warning=key in ("activity_overdue","activity_report_missing")))
+    layout["projects"]=project_rows
+    layout["project_allowed"]=bool(context.get("show_project_activity_summary"))
+    hr=bool(layout["show_expiring"] or layout["show_distribution"] or layout["headcount"] or layout["history"] or layout["joined"])
+    admin=bool(layout["queue"] or layout["leave"] or layout["totals"] or sections.get("queue"))
+    if hr:layout["groups"].append(dict(key="hr",label="Nhân sự"))
+    if admin:layout["groups"].append(dict(key="admin",label="Hành chính"))
+    if recruitment:layout["groups"].append(dict(key="recruitment",label="Tuyển dụng"))
+    if project_rows or layout["project_allowed"]:layout["groups"].append(dict(key="projects",label="Dự án"))
+    layout["show_hr"],layout["show_admin"]=hr,admin
+    return layout

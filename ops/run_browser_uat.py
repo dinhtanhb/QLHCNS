@@ -165,7 +165,7 @@ def main():
                 return context, page
 
             context, page = login(accounts['HR_MANAGER-linked'])
-            check('0 hợp đồng đang hiệu lực' in page.locator('#dashboard-contract-types').inner_text(), 'Empty contracts explained')
+            check(page.locator('#dashboard-contract-types').count() == 0, 'Empty contract distribution is hidden without a zero card')
             check('Chưa nhập kế hoạch' in page.locator('#dashboard-headcount').inner_text(), 'Missing plan not silently zero')
             capture(page, 'dashboard-empty')
 
@@ -250,18 +250,20 @@ def main():
             statuses = list(Contract.objects.values_list('pk','status','end_date'))
             go(page, 'portal:dashboard')
             values = page.locator('#dashboard-status .ui-kpi-value').all_text_contents()
-            check([x.strip() for x in values] == ['12','10','1','1'], 'Dashboard Active/Probation/OnLeave and distinct Approved counts match fixed fixture')
+            check([x.strip() for x in values] == ['12','1','5','0'], 'Grouped main managed/approved/upcoming/queue counts match fixed fixture')
+            check('Đang làm việc 10 · Thử việc 1 · Nghỉ dài hạn 1' in page.locator('#dashboard-status').inner_text(), 'Status breakdown remains visible without duplicate cards')
             check('5 hợp đồng' in page.locator('#dashboard-contracts').inner_text(), 'D to D+60 inclusive; D+61/future/non-Active excluded')
             check('Quá hạn cần rà soát · 1' in page.locator('#dashboard-contracts').inner_text(), 'Overdue separate from upcoming')
             check('7 hợp đồng' in page.locator('#dashboard-contract-types').inner_text(), 'Effective contracts count contracts, not employees')
-            check(page.locator('.dashboard-donut').count() == 1, 'Two contract types have labelled donut plus data table')
+            check(page.locator('.home-type-list li').count() == 2, 'Two contract types have directly labelled tracks plus data table')
             check('Kế hoạch 0' in page.locator('#dashboard-headcount').inner_text() and 'Chưa nhập kế hoạch' in page.locator('#dashboard-headcount').inner_text(), 'Zero and missing headcount plan are distinct')
             page.locator('#dashboard-headcount summary').click()
             check('450' in page.locator('#dashboard-headcount').inner_text(), 'Over-plan ratio retained above 100 percent')
             check(statuses == list(Contract.objects.values_list('pk','status','end_date')), 'Dashboard GET never changes contract statuses/dates')
-            links = page.locator('#dashboard-status a.ui-kpi').evaluate_all('(xs)=>xs.map(a=>a.getAttribute("href"))')
-            check(len(links) == 4, 'All four main KPI cards are links')
-            for href, expected in zip(links, (12, 10, 1, 1)):
+            all_links = page.locator('#dashboard-status a.ui-kpi').evaluate_all('(xs)=>xs.map(a=>a.getAttribute("href"))')
+            links = [href for href in all_links if href.startswith(reverse('portal:dashboard_people'))]
+            check(len(links) == 2 and len(all_links) == 3, 'Managed/approved exact person drilldowns and existing approval queue link retained')
+            for href, expected in zip(links, (12, 1)):
                 go(page, 'portal:dashboard')
                 with page.expect_navigation(wait_until='networkidle') as navigation:
                     page.locator('#dashboard-status a.ui-kpi').filter(has=page.locator('strong')).all()[links.index(href)].click()
@@ -279,9 +281,9 @@ def main():
                         if label == 'contracts':
                             check(page.locator('tbody a').evaluate_all('(xs)=>xs.every(a=>{const x=a.getBoundingClientRect(),c=a.closest("td").getBoundingClientRect();return x.right<=c.right+1})'), f'All contract names bounded {width} {theme}')
                         if label == 'dashboard':
-                            check(page.locator('#dashboard-status a.ui-kpi').count() == 4, f'Four linked KPI cards {width} {theme}')
+                            check(page.locator('#dashboard-status a.ui-kpi').count() == 3, f'Two people drilldowns and existing queue link {width} {theme}')
                             if width >= 1440:
-                                cards=page.locator('.dashboard-panel-grid').first.locator(':scope > section').evaluate_all('(xs)=>xs.map(x=>x.getBoundingClientRect().width)')
+                                cards=page.locator('.home-row').first.locator(':scope > section').evaluate_all('(xs)=>xs.map(x=>x.getBoundingClientRect().width)')
                         # Atoms reference gives the department chart more width;
                         # the current approved layout is 1.2:1, with aligned cards.
                             check(len(cards)==2 and abs(cards[0]-1.5*cards[1])<=2,
@@ -321,7 +323,7 @@ def main():
             request.refresh_from_db()
             check(request.status == 'Approved' and LeaveApproval.objects.filter(leave_request=request).count() == 1, 'Confirmed UI approval persists once')
             go(page, 'portal:dashboard')
-            check(page.locator('#dashboard-queue strong').inner_text() == '0', 'Queue updates after approval')
+            check(page.locator('#dashboard-queue strong').count() == 0 and 'Không có việc cần xử lý hôm nay' in page.locator('#dashboard-queue').inner_text(), 'Queue updates to compact empty state after approval')
             context.close()
 
             for label, account in accounts.items():

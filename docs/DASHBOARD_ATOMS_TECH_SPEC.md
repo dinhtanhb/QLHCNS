@@ -1,5 +1,15 @@
 # Đặc tả kỹ thuật dashboard IHRMS theo Atoms
 
+## Điều chỉnh trình bày theo nhóm — 14/10/2026
+
+Yêu cầu nhóm Dashboard đã được chủ dự án cho triển khai; mục này thay thứ tự và cách dựng thẻ trong các phần trình bày cũ, giữ toàn bộ nguồn, công thức, giới hạn quyền và ngoại lệ dữ liệu. `home_presentation.grouped_dashboard` tạo `dashboard_layout` từ snapshot/context đã có, không đọc database hoặc đổi DTO cũ. Giữ Q2 (ẩn tiền), Q3 (Giám đốc không mặc nhiên xem hợp đồng) và riêng tư D2 của đơn nghỉ.
+
+Thứ tự: KPI chính, Công việc của tôi, Nhân sự, Hành chính, Tuyển dụng, Dự án. Nội dung ngoài quyền không có trong HTML. Người chỉ có quyền cá nhân xem Công việc của tôi; không thêm lịch sử đơn nghỉ cá nhân thành một thẻ khác. Quản lý phòng dùng số đã được cấp trong phạm vi phòng. HR dùng nhân sự đang quản lý (kèm phân rã trạng thái), nghỉ được duyệt trong ngày, hợp đồng sắp hết hạn, hàng chờ; nếu nguồn không cấp chỉ số thì không tự tính thay. Giám đốc dùng số hiện có không gồm hợp đồng. Các nguồn cũ không cấp công việc phòng hoặc hàng chờ tổng hợp vẫn được giữ nguyên giới hạn, không thêm truy vấn để tạo đủ ô.
+
+Nhân sự gồm hợp đồng, cơ cấu loại, định biên, cập nhật quyết định và vào làm nếu chưa ở KPI chính. Hành chính gồm hàng chờ và đơn nghỉ gần đây theo DTO cho phép; hàng chờ rỗng một dòng. Tuyển dụng gộp các chỉ số dương đã có, không lặp vào làm; không có dữ liệu thì ẩn nhóm. Dự án chỉ chỉ số dương; rỗng một dòng. Danh sách giới hạn 5/3 dòng theo quyền, định biên 6 phòng; số tổng giữ nguồn. Liên kết danh sách chưa hỗ trợ đúng bộ lọc phải ghi rõ, không tạo URL/tham số giả.
+
+Mỗi thẻ dùng cùng cấu trúc đầu/nội dung/ghi chú; một kiểu “Cách tính” bằng details, Enter/Escape. Hai thẻ cùng hàng 60/40 từ 1024px; một cột dưới mốc này. Không cuộn dọc trong thẻ, không Thao tác nhanh hoặc thẻ rỗng lớn. Kiểm tra hình học, bàn phím, sáng/tối, 9 tài khoản trên demo cách ly; đối chiếu snapshot và số truy vấn với archive `71b6a2f`. Kết quả kiểm thử cuối ghi tại [nhật ký duy nhất](PROJECT_WORK_LOG.md).
+
 Ngày: **13/10/2026**. Trạng thái: **bản sửa để chủ dự án duyệt; chưa triển khai**.
 Baseline từ `git rev-parse HEAD`: `cf8213554d829df3e7e094604f2bb36019a9638f`, nhánh `main`.
 Lượt này chỉ sửa tài liệu và [nhật ký](PROJECT_WORK_LOG.md), không sửa mã/quyền/dữ liệu/dependency.
