@@ -1,0 +1,1 @@
+{% load ui_components %}{% for t in templates %}<option value="{{ t.id }}">{{ t.kpi_name }} (trọng số {{ t.weight|ui_number }}%)</option>{% endfor %}

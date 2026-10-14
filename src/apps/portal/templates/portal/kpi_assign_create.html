@@ -1,42 +1,20 @@
-{% extends "base.html" %}
+{% extends "portal/planning_base.html" %}{% load ui_components %}
 {% block title %}Tạo chỉ tiêu KPI{% endblock %}
-{% block content %}
-<div class="max-w-lg bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <h1 class="text-lg font-bold text-gray-900 mb-4">Tạo chỉ tiêu KPI cho nhân viên</h1>
-    <form method="post" class="space-y-4">
-        {% csrf_token %}
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Nhân viên</label>
-            <select name="employee" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-                {% for e in candidates %}
-                <option value="{{ e.id }}">{{ e.employee_code|ui_number }} - {{ e.full_name|ui_number }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Chỉ số KPI</label>
-            <select name="kpi_template" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-                {% for t in templates %}
-                <option value="{{ t.id }}">{{ t.kpi_name|ui_number }} (trọng số {{ t.weight|ui_number }}%)</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Kỳ đánh giá</label>
-            <select name="kpi_period" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-                {% for p in periods %}
-                <option value="{{ p.id }}">{{ p|ui_number }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Chỉ tiêu</label>
-            <input type="number" step="0.01" name="target" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
-        </div>
-        <div class="flex gap-3 pt-2">
-            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-medium px-5 py-2.5 rounded-md transition">Tạo</button>
-            <a href="{% url 'portal:kpi_score_list' %}" class="text-gray-500 hover:text-gray-700 px-5 py-2.5">Hủy</a>
-        </div>
-    </form>
+{% block planning_content %}
+{% include "ui/page_header.html" with title="Tạo chỉ tiêu KPI cho nhân viên" %}
+<section class="ui-card">
+<h2 class="ui-card-title">Thông tin chỉ tiêu</h2>
+<form method="post" class="ui-planning-form" data-ui-form>{% csrf_token %}{% include "ui/error_summary.html" %}
+<div class="ui-planning-grid">
+{% include "ui/field.html" with id="kpi-employee" name="employee" label="Nhân viên" required=True options_template="ui/planning_options/employees.html" %}
+{% include "ui/field.html" with id="kpi-template" name="kpi_template" label="Chỉ số KPI" required=True options_template="ui/planning_options/templates.html" %}
+{% include "ui/field.html" with id="kpi-period" name="kpi_period" label="Kỳ đánh giá" required=True options_template="ui/planning_options/periods.html" %}
+{% include "ui/field.html" with id="kpi-target" name="target" label="Chỉ tiêu" type="number" step="0.01" required=True %}
 </div>
+<div class="ui-form-actions">
+<button type="submit" class="ui-button ui-button--primary">Tạo</button>
+<a href="{% url 'portal:kpi_score_list' %}" class="ui-button ui-button--secondary">Hủy</a>
+</div>
+</form>
+</section>
 {% endblock %}

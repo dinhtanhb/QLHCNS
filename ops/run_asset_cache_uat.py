@@ -27,8 +27,8 @@ def main():
     output = folder / 'asset-cache-uat'
     output.mkdir(exist_ok=True)
     state = {'port': args.baseline_port}
-    old_cache = 'ihrms-static-v17-administration-20261014'
-    new_cache = 'ihrms-static-v18-dispatch-register-20261014'
+    old_cache = 'ihrms-static-v18-dispatch-register-20261014'
+    new_cache = 'ihrms-static-v19-planning-20261014'
     old_css = """@media screen {
     .portal-app .ui-main .ui-query-bar {display:grid !important;grid-template-columns:minmax(0,1fr) auto !important;}
     .portal-app .ui-main .ui-query-actions {grid-column:2 !important;}

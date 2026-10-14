@@ -1,52 +1,48 @@
-{% extends "base.html" %}
-{% load ui_components %}
+{% extends "portal/planning_base.html" %}{% load ui_components l10n %}
 {% block title %}Chấm điểm KPI{% endblock %}
-{% block content %}
-<div class="flex items-center justify-between mb-4">
-    <h1 class="text-lg font-bold text-gray-900">Chấm điểm KPI nhân viên</h1>
-    <a href="{% url 'portal:kpi_assign_create' %}" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Tạo chỉ tiêu mới</a>
+{% block planning_content %}
+<div class="ui-page-header">{% include "ui/page_header.html" with title="Chấm điểm KPI nhân viên" %}<a href="{% url 'portal:kpi_assign_create' %}" class="ui-button ui-button--primary">Tạo chỉ tiêu mới</a>
 </div>
-
-<div class="ui-card ui-results-card">
+<section class="ui-card ui-results-card">
+<h2 class="ui-card-title">Chỉ tiêu KPI</h2>
 <div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Lọc kỳ KPI">
-<div class="ui-query-fields">
-{% include "ui/field.html" with id="kpi-score-list-period" name="period" label="Kỳ KPI" options_template="ui/query_options/kpi_score_list-period.html" %}
-</div>
-{% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"period" %}
-</form>
+<div class="ui-query-fields">{% include "ui/field.html" with id="kpi-score-list-period" name="period" label="Kỳ KPI" options_template="ui/query_options/kpi_score_list-period.html" %}</div>{% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"period" %}</form>
 <p class="ui-results-count" aria-live="polite">Có {{ results|length|ui_number }} chỉ tiêu phù hợp.</p>
 </div>
-    <div class="overflow-x-auto">
-    <table class="w-full text-sm">
-        <thead>
-            <tr class="text-left text-gray-500 border-b border-gray-200">
-                <th class="py-2 pr-4">Nhân viên</th><th class="py-2 pr-4">Kỳ</th><th class="py-2 pr-4">Chỉ số KPI</th><th class="py-2 pr-4">Chỉ tiêu</th><th class="py-2 pr-4">Thực tế</th><th class="py-2 pr-4">Tỷ lệ đạt</th><th class="py-2">Cập nhật</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-        {% for r in results %}
-        <tr>
-            <td class="py-2.5 pr-4 font-medium">{{ r.employee|ui_number }}</td>
-            <td class="py-2.5 pr-4">{{ r.kpi_period|ui_number }}</td>
-            <td class="py-2.5 pr-4">{{ r.kpi_template|ui_number }}</td>
-            <td class="py-2.5 pr-4">{{ r.target|ui_number }}</td>
-            <td class="py-2.5 pr-4">{{ r.actual|default:"—"|ui_number }}</td>
-            <td class="py-2.5 pr-4">{{ r.achievement|ui_number }}%</td>
-            <td class="py-2.5">
-                <form method="post" action="{% url 'portal:kpi_score_update' r.pk %}" class="flex gap-2">
-                    {% csrf_token %}
-                    <input type="number" step="0.01" name="actual" value="{{ r.actual|default_if_none:'' }}"
-                        class="w-24 rounded-md border border-gray-300 px-2 py-1 text-sm">
-                    <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-xs font-medium px-3 py-1.5 rounded-md transition">Lưu</button>
-                </form>
-            </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="7" class="py-6 text-center text-gray-400">Chưa có chỉ tiêu KPI nào.</td></tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    </div>
+<div class="ui-scroll" tabindex="0" role="region" aria-label="Bảng chấm điểm KPI">
+<table class="ui-table ui-planning-kpi">
+<caption class="ui-sr-only">Chấm điểm chỉ tiêu KPI theo kỳ</caption>
+<thead>
+<tr>
+<th scope="col">Nhân viên</th>
+<th scope="col">Kỳ</th>
+<th scope="col">Chỉ số KPI</th>
+<th scope="col" class="ui-number">Chỉ tiêu</th>
+<th scope="col" class="ui-number">Thực tế</th>
+<th scope="col" class="ui-number">Tỷ lệ đạt</th>
+<th scope="col">Cập nhật</th>
+</tr>
+</thead>
+<tbody>{% for r in results %}<tr>
+<th scope="row">{{ r.employee }}</th>
+<td>{{ r.kpi_period }}</td>
+<td>{{ r.kpi_template }}</td>
+<td class="ui-number">{{ r.target|ui_number }}</td>
+<td class="ui-number">{{ r.actual|default_if_none:"—"|ui_number }}</td>
+<td class="ui-number">{{ r.achievement|ui_number }}%</td>
+<td>
+<form method="post" action="{% url 'portal:kpi_score_update' r.pk %}" class="ui-planning-form-row" data-ui-form>{% csrf_token %}<div class="ui-field">
+<label for="kpi-actual-{{ r.pk }}">Thực tế</label>
+<input id="kpi-actual-{{ r.pk }}" aria-label="Thực tế {{ r.employee }} {{ r.kpi_template }}" type="number" step="0.01" name="actual" value="{{ r.actual|default_if_none:''|unlocalize }}">
 </div>
+<button type="submit" class="ui-button ui-button--primary">Lưu</button>
+</form>
+</td>
+</tr>{% empty %}<tr>
+<td colspan="7">{% if selected_period %}{% include "ui/empty_state.html" with title="Không có chỉ tiêu phù hợp với kỳ đã chọn." %}{% else %}{% include "ui/empty_state.html" with title="Chưa có chỉ tiêu KPI nào." %}{% endif %}</td>
+</tr>{% endfor %}</tbody>
+</table>
+</div>
+</section>
 {% endblock %}

@@ -118,14 +118,20 @@ def main():
                     for row in geometry:
                         report.setdefault('filter_geometry', {})[label]=row
                         check(row['close'] and row['fit'] and row['stack'] and row['mobile'] and row['labels'] and row['font'] and row['height']>=44, label + ' inline filter controls')
-                    if args.only and page.locator('.ui-administration').count():
+                    if args.only and page.locator('.ui-administration,.ui-planning').count():
                         check(page.locator('main h1:visible').count()==1,label+' single visible page title')
                         check(page.locator('.ui-administration > .ui-print-only:visible').count()==0,label+' print register hidden on screen')
                         controls=page.locator('main input:not([type=hidden]):not(.ui-number-source),main select,main textarea,main button').evaluate_all('''xs=>xs.filter(x=>x.checkVisibility()).map(x=>({height:x.getBoundingClientRect().height,font:parseFloat(getComputedStyle(x).fontSize),label:x.tagName!=='BUTTON'?!!document.querySelector('label[for="'+x.id+'"]'):true}))''')
                         check(all(x['height']>=43.5 and x['font']>=14 and x['label'] for x in controls),label+' controls, labels and type size')
+                        if page.locator('.ui-planning-kpi').count():
+                            table=page.locator('.ui-planning-kpi')
+                            check(table.evaluate('x=>getComputedStyle(x).tableLayout==="auto"'),label+' KPI automatic column sizing')
+                            check(table.locator('input:not(.ui-number-source):visible').evaluate_all('xs=>xs.every(x=>x.getBoundingClientRect().width>=110)'),label+' KPI input readable width')
+                            if width>=1440:
+                                check(table.evaluate('x=>x.getBoundingClientRect().width<=x.parentElement.clientWidth+1'),label+' KPI actions fit wide table')
                         if width in (1440,390):page.screenshot(path=str(output/(route.strip('/').replace('/','-')+f'-{width}-{theme}.png')),full_page=True)
                     if width == 1440:
-                        grids = page.locator('.ui-layout-split,.ui-detail-grid,.ui-detail-sections,.ui-finance-grid,.ui-recruitment-grid,.ui-report-export-grid,.report-visuals,.report-section-grid,.timesheet-summary-layout,.ui-form-grid:not(.ui-form-grid--three)').evaluate_all('''xs=>xs.filter(x=>x.getBoundingClientRect().width && !x.closest('.hcns-paper,.hcns-editor')).map(x=>getComputedStyle(x).gridTemplateColumns.split(' ').map(parseFloat))''')
+                        grids = page.locator('.ui-planning-grid,.ui-layout-split,.ui-detail-grid,.ui-detail-sections,.ui-finance-grid,.ui-recruitment-grid,.ui-report-export-grid,.report-visuals,.report-section-grid,.timesheet-summary-layout,.ui-form-grid:not(.ui-form-grid--three)').evaluate_all('''xs=>xs.filter(x=>x.getBoundingClientRect().width && !x.closest('.hcns-paper,.hcns-editor')).map(x=>getComputedStyle(x).gridTemplateColumns.split(' ').map(parseFloat))''')
                         for cols in grids:
                             if len(cols) == 2:
                                 check(abs(cols[0]/sum(cols)-.6)<.003, label + ' split 60/40')

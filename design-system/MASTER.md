@@ -106,7 +106,15 @@ CSS/JS thay đổi phải có URL phiên bản mới, kể cả stylesheet nạp
 ## Hành chính
 
 - Trang công văn, tài sản, kiểm kê, thanh lý, đặt phòng/xe, VPP và mua sắm dùng `portal/administration_base.html`, page header/field/table/badge/empty state chung. `administration_ui.css` chỉ áp dụng màn hình, dùng token và chia 60/40 cho hai vùng nội dung.
-- Bảng nhiều cột nằm trong vùng `ui-scroll` có nhãn và tabindex; caption hỗ trợ đọc màn hình, th có scope, tên/mã giữ liên kết thật. Trang không tràn ở390px, bảng cuộn ngang khi cần. Nhãn luôn hiện và input/nút tối thiểu44px, chữ14px; không giảm font để ép cột.
+- Bảng nhiều cột nằm trong vùng `ui-scroll` có nhãn và tabindex; caption hỗ trợ đọc màn hình, th có scope, tên/mã giữ liên kết thật. Trang không tràn ở390px, bảng cuộn ngang khi cần. Nhãn luôn hiện và input/nút tối thiểu 44px, chữ 14px; không giảm font để ép cột.
 - Công văn giữ nguyên số hiệu, tệp, ngày và quyền; dùng lại dải lọc hiện có với nút ngay sau trường. Không thêm lọc/phân trang/truy vấn hoặc mở quyền xuất báo cáo trong đợt UI.
 - Trạng thái dùng ui_badge và nhãn chữ. Hủy/từ chối/thanh lý dùng dialog xác nhận chung; từng form POST/CSRF, submitter decision và điều kiện hiển thị theo quyền giữ nguyên. Chi tiết và lịch sử không che thông tin; hàng động mua sắm có nhãn và ID riêng.
 - Template giấy/HCNS và khổ in không đổi. Khi sửa template hành chính chạy lại37 PDF hồi quy+BCC và xem ảnh/số đo; không suy từ HTTP200 hoặc CSS màn hình rằng bản in đúng. Các template sổ công văn cũ chưa có route được ghi nhận, không tự thêm URL/nghiệp vụ.
+
+## Kế hoạch — lịch, đào tạo và bảng nhập KPI
+
+- Lịch công tác giữ thành phần Hành chính; ngày lễ có nhãn chữ/ngày theo ui_date, không chỉ phân biệt bằng màu. Đào tạo dùng trạng thái ui_badge và thông báo rõ tài khoản chưa gắn hồ sơ; portal hiện chỉ đọc danh sách đã đăng ký.
+- Form giao KPI dùng nhãn thường trực, error_summary và hai cột nội dung 60/40 từ 1024px; màn hình hẹp xếp theo thứ tự đọc. Không đổi người được giao, tên chỉ tiêu, kỳ, trọng số hoặc công thức.
+- Bảng chấm KPI có caption, scope, vùng cuộn được focus; cột số ui-number căn phải và chữ số tabular. Mỗi ô thực tế có ID riêng và tên nhân viên/tiêu chí; 0 là số hợp lệ, năm trong kỳ giữ nguyên 2026.
+- Dải lọc kỳ giữ ui-query-card/ui-query-bar/query_actions, nút ngay sau trường, Áp dụng/Enter, Xóa lọc khi có lọc và số kết quả. Không thêm lọc/sắp xếp/phân trang. Nút tối thiểu 44px, chữ 14px, sáng/tối và reduced-motion theo token hiện có.
+- Không thêm route đăng ký đào tạo hoặc sửa giấy in. Khi cập nhật asset, tăng URL/cache và chạy hồi quy PDF chung/BCC trên nguồn cuối.

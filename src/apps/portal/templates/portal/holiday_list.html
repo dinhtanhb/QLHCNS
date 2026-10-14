@@ -1,37 +1,39 @@
-{% extends "base.html" %}
+{% extends "portal/planning_base.html" %}{% load ui_components %}
 {% block title %}Ngày lễ{% endblock %}
-{% block content %}
-<h1 class="text-lg font-bold text-gray-900 mb-4">Danh mục Ngày lễ</h1>
-
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-    <h2 class="text-sm font-bold text-gray-900 mb-3">Thêm ngày lễ mới</h2>
-    <form method="post" class="grid grid-cols-1 md:grid-cols-4 gap-3">
-        {% csrf_token %}
-        <input type="text" name="holiday_code" placeholder="Mã (vd. QK1_2026)" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <input type="text" name="holiday_name" placeholder="Tên ngày lễ" required class="rounded-md border border-gray-300 px-3 py-2 text-sm md:col-span-2">
-        <input type="date" name="holiday_date" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <button type="submit" class="md:col-span-4 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Thêm</button>
-    </form>
+{% block planning_content %}
+{% include "ui/page_header.html" with title="Danh mục ngày lễ" %}
+<section class="ui-card">
+<h2 class="ui-card-title">Thêm ngày lễ mới</h2>
+<form method="post" class="ui-planning-form-row" data-ui-form>{% csrf_token %}{% include "ui/error_summary.html" %}
+{% include "ui/field.html" with id="holiday-code" name="holiday_code" label="Mã ngày lễ" placeholder="Ví dụ: QK1_2026" required=True %}
+{% include "ui/field.html" with id="holiday-name" name="holiday_name" label="Tên ngày lễ" required=True %}
+{% include "ui/field.html" with id="holiday-date" name="holiday_date" label="Ngày lễ" type="date" required=True %}
+<button type="submit" class="ui-button ui-button--primary">Thêm ngày lễ</button>
+</form>
+</section>
+<section class="ui-card">
+<h2 class="ui-card-title">Danh sách ngày lễ</h2>
+<div class="ui-scroll mobile-table-scroll" tabindex="0" role="region" aria-label="Danh sách ngày lễ">
+<table class="ui-table">
+<caption class="ui-sr-only">Danh mục ngày lễ</caption>
+<thead>
+<tr>
+<th scope="col">Ngày</th>
+<th scope="col">Tên ngày lễ</th>
+<th scope="col">Thao tác</th>
+</tr>
+</thead>
+<tbody>{% for h in holidays %}<tr>
+<td>{{ h.holiday_date|ui_date }}</td>
+<th scope="row">{{ h.holiday_name }}</th>
+<td>
+<form method="post" action="{% url 'portal:holiday_delete' h.pk %}" data-ui-confirm="Xóa ngày lễ này?" data-ui-confirm-title="Xóa ngày lễ" data-ui-confirm-label="Xóa ngày lễ">{% csrf_token %}<button type="submit" class="ui-button ui-button--danger">Xóa</button>
+</form>
+</td>
+</tr>{% empty %}<tr>
+<td colspan="3">{% include "ui/empty_state.html" with title="Chưa có ngày lễ nào." %}</td>
+</tr>{% endfor %}</tbody>
+</table>
 </div>
-
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <div class="overflow-x-auto mobile-table-scroll">
-        <table class="w-full text-sm">
-        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Ngày</th><th class="py-2 pr-4">Tên</th><th class="py-2"></th></tr></thead>
-        <tbody class="divide-y divide-gray-100">
-        {% for h in holidays %}
-        <tr>
-            <td class="py-2 pr-4">{{ h.holiday_date|ui_number }}</td>
-            <td class="py-2 pr-4">{{ h.holiday_name|ui_number }}</td>
-            <td class="py-2">
-                <form method="post" action="{% url 'portal:holiday_delete' h.pk %}" onsubmit="return confirm('Xóa ngày lễ này?')">
-                    {% csrf_token %}<button type="submit" class="text-red-600 text-xs">Xóa</button>
-                </form>
-            </td>
-        </tr>
-        {% empty %}<tr><td colspan="3" class="py-6 text-center text-gray-400">Chưa có ngày lễ nào.</td></tr>{% endfor %}
-        </tbody>
-    </table>
-    </div>
-</div>
+</section>
 {% endblock %}
