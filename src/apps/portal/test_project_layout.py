@@ -117,9 +117,9 @@ class ProjectLayoutTests(TestCase):
         for name in ('shared_components.css', 'shared_components.js'):
             self.assertIn(name + "' %}?v=20261014-results-workflow", base)
         self.assertIn("project_layout.css' %}?v=20261014-bcc-timesheet-final", base)
-        self.assertIn("print_forms.css' %}?v=20261014-bcc-timesheet-final", base)
+        self.assertIn("print_forms.css' %}?v=20261014-dispatch-register", base)
         worker = (root / 'static/js/service-worker.js').read_text(encoding='utf-8')
-        self.assertIn('ihrms-static-v17-administration-20261014', worker)
+        self.assertIn('ihrms-static-v18-dispatch-register-20261014', worker)
 
     def test_reset_filter_excludes_scope_and_empty_values(self):
         from django.http import QueryDict

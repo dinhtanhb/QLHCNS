@@ -68,7 +68,9 @@ class AdministrationUITests(TestCase):
         self.assertIn('ui-screen-only',screen)
         self.assertIn('portal/dispatch_register_print.html',screen)
         paper=(root/'dispatch_register_print.html').read_text(encoding='utf-8')
-        self.assertNotIn('class="ui-table',paper)
+        self.assertIn('dispatch-register',paper)
+        self.assertNotIn('<a ',paper)
+        self.assertNotIn('<button',paper)
         self.assertNotIn('ui-query-bar',paper)
 
     def test_booking_approval_controls_keep_submitter_values_and_confirmation(self):

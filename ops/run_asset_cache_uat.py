@@ -27,8 +27,8 @@ def main():
     output = folder / 'asset-cache-uat'
     output.mkdir(exist_ok=True)
     state = {'port': args.baseline_port}
-    old_cache = 'ihrms-static-v16-bcc-print-20261014'
-    new_cache = 'ihrms-static-v17-administration-20261014'
+    old_cache = 'ihrms-static-v17-administration-20261014'
+    new_cache = 'ihrms-static-v18-dispatch-register-20261014'
     old_css = """@media screen {
     .portal-app .ui-main .ui-query-bar {display:grid !important;grid-template-columns:minmax(0,1fr) auto !important;}
     .portal-app .ui-main .ui-query-actions {grid-column:2 !important;}
@@ -101,7 +101,7 @@ def main():
         page.reload(wait_until='networkidle')
         check(0 <= page.evaluate(gap) <= 17, 'layout survives controlling worker reload')
         page.goto(base+'/portal/timesheet/?month=9&year=2026',wait_until='networkidle')
-        check(page.locator('link[href*="print_forms.css"]').get_attribute('href').endswith('v=20261014-bcc-timesheet-final'), 'fresh print stylesheet URL loaded')
+        check(page.locator('link[href*="print_forms.css"]').get_attribute('href').endswith('v=20261014-dispatch-register'), 'fresh print stylesheet URL loaded')
         page.emulate_media(media='print')
         check(page.locator('.ui-personal-timesheet-table').evaluate('x=>getComputedStyle(x).fontFamily.includes("Times New Roman")&&parseFloat(getComputedStyle(x).fontSize)>=13.33'), 'warm cache loads BCC print font')
         page.emulate_media(media='screen')

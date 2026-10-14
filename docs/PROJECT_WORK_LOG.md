@@ -2,6 +2,27 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-14 — Giấy in sổ công văn
+
+**Tóm tắt cho chủ dự án**
+
+- Thay markup màn hình đóng băng bằng giấy sổ công văn A4 ngang riêng: logo, tiêu đề, bộ lọc và bảng sáu cột có viền.
+- Không còn nút/link/emoji/Tailwind trên giấy; phông Times New Roman ≥10pt, lặp tiêu đề bảng và tránh cắt hàng.
+- Dữ liệu và phạm vi trang kết quả giữ nguyên; năm lấy từ dữ liệu sẵn có, không thêm lọc/truy vấn.
+- Runner PDF mới bắt được sáu lỗi trên bản cũ; bản mới đạt 402 kiểm tra/37 PDF và kiểm tra nhiều trang riêng; BCC 645 kiểm tra đạt.
+- Cập nhật phiên bản CSS in, Tailwind và service worker; cache v17→v18 đạt 9 kiểm tra.
+- Commit riêng `print: dispatch register paper form`, bản sao review ngoài repo; không deploy.
+
+**Phạm vi/nguyên nhân:** tiếp sau `7b561eee8b24b31bc34dafaa657d17abea243210` đã push main, CI 38525183313 success. Bản in trước giữ nguyên UI cũ nên có emoji, không phải giấy riêng, chữ nhỏ và không có cấu trúc cột chuẩn. Hồi quy trước chỉ giữ ảnh cũ, không đánh giá chất lượng giấy nên bỏ sót. Không đổi guard/POST/model/migration/URL/quyền, không dependency mới; PDF QA packages chỉ ở TEMP.
+
+**Sửa:** dispatch_register_print.html chỉ dùng dữ liệu đã có: số/ký hiệu và số gốc, ngày đến/đi, trích yếu, nơi gửi/nhận, người xử lý, trạng thái. Năm hiển thị thô từ các ngày văn bản trong trang; view không có bộ lọc năm nên không thêm. Giấy ghi rõ chỉ in phạm vi và trang kết quả đang xem; không tự xuất toàn bộ QuerySet hoặc tăng query. Cột loại được đưa lên dòng lọc; hạn xử lý/độ khẩn và link chi tiết vẫn trên màn hình, không đưa vào giấy sáu cột theo yêu cầu. CSS chỉ nằm trong khối `.dispatch-register` và named @page riêng; tăng print_forms.css?v và Tailwind, worker v18. Build lại Tailwind bỏ 20 selector cũ, thêm lại một hover:bg-gray-50 vốn còn được template khác dùng; không xóa utility của Kế hoạch/Báo cáo/Dự án. Không sửa các biểu mẫu HCNS/BCC khác.
+
+**Kiểm tra:** runner ops/run_print_layout_uat.py thêm đọc PDF thật bằng pdfplumber (packages QA ngoài app), kiểm khổ ngang, chữ trong lề, serif ≥10pt, sáu cột/viền/tiêu đề lặp, không UI text/emoji; clone dòng trong DOM giả để stress nhiều trang, không ghi DB hoặc thay scope backend. Probe trên archive 110b893 port8784: exit1, sáu lỗi đúng kỳ vọng. Nguồn mới: 402 kiểm tra/37 PDF, 0 lỗi, thêm dispatches-pagination.pdf; đã xem ảnh trang đầu và trang hai, đủ viền và tiêu đề lặp. ops/run_timesheet_print_uat.py: 645 kiểm tra/8 tình huống, 0 lỗi. 36 PDF còn lại so cùng bản ghi ổn định bằng Poppler/text với archive, 36/36 văn bản/pixel không đổi, kết quả ở dispatch-paper-comparison; sổ công văn là baseline thay đổi có chủ đích, không coi khác pixel là hồi quy. So cũ/mới xác nhận bỏ giao diện, giữ bản ghi và thêm người xử lý theo giấy được yêu cầu.
+
+**Lệnh:** các runner dùng `--directory "$env:TEMP/ihrms-finance-followup-20261014" --packages-dir "$env:TEMP/ihrms-browser-uat-dafbe3c4812644cd85e43e7f0fb8ab91/packages" --port 8782`; print runner thêm `--pdf-packages-dir "$env:TEMP/ihrms-pdf-qa-packages-20261014"`. Cache runner thêm `--baseline-port 8784`: 9 kiểm tra, gap597,09→16px. Django focused 24 test đạt; full SQLite/SQL Server chạy trên nguồn chốt, kết quả cuối SQLite: 536 test/201,881s, OK (7 skip); SQL Server: 536 test/308,635s, OK, không skip, exit0. pip check, Django check, makemigrations --check --dry-run, contrast198/0 và git diff --check đạt; không migration. Chỉ restart demo cách ly khi template cache cần, không restart/deploy app thật.
+
+**Bàn giao:** `D:/QLHCNS-Backups/IHRMS_Review_20261014_DispatchPaper.zip`, manifest tree/hash từng tệp và mở lại xác minh; bằng chứng giả ở ZIP Proof cùng đợt, metadata SHA/remote/CI ngoài repo. Giữ AGENTS/reference ngoài phạm vi; không đưa DB/env/media/log/tài khoản/bí mật vào ZIP nguồn. Chưa screen reader, zoom200% thực, phiên tài khoản thật hoặc máy in vật lý. Tiếp theo chỉ Kế hoạch, không Báo cáo/Dự án.
+
 ## 2026-10-14 — Hành chính: khôi phục Hủy và ẩn liên kết ngoài quyền
 
 **Tóm tắt cho chủ dự án**

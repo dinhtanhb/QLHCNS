@@ -77,3 +77,25 @@
   .portal-app .hcns-paper[data-hcns-form="employee-evaluation"] { line-height:1.1; }
   .portal-app .hcns-document-section:has(+ .hcns-signatures) > :last-child { break-after:avoid; }
 }
+
+/* Dispatch register paper only; other HCNS documents keep their own rules. */
+@media print {
+  @page dispatch-register { size:A4 landscape; margin:12mm; }
+  .portal-app .dispatch-register { page:dispatch-register; color:black; background:white; font:10.5pt/1.3 "Times New Roman",serif; }
+  .portal-app .dispatch-register-heading { display:flex; align-items:center; gap:8mm; margin:0 0 5mm; }
+  .portal-app .dispatch-register-heading img { width:28mm; height:auto; }
+  .portal-app .dispatch-register-heading h1 { flex:1; text-align:center; margin:0; font-size:18pt; }
+  .portal-app .dispatch-register-filters { margin:0 0 4mm; }
+  .portal-app .dispatch-register table { width:100%; table-layout:fixed; border-collapse:collapse; font:inherit; }
+  .portal-app .dispatch-register caption { text-align:left; margin-bottom:2mm; font-size:10pt; }
+  .portal-app .dispatch-register :is(th,td) { border:.5pt solid black !important; padding:2mm; vertical-align:top; overflow-wrap:anywhere; color:black; background:white !important; }
+  .portal-app .dispatch-register th { font-weight:700; text-align:left; }
+  .portal-app .dispatch-register thead { display:table-header-group; }
+  .portal-app .dispatch-register tr { break-inside:avoid; }
+  .portal-app .dispatch-register .dispatch-col-number { width:12%; }
+  .portal-app .dispatch-register .dispatch-col-date { width:10%; }
+  .portal-app .dispatch-register .dispatch-col-title { width:34%; }
+  .portal-app .dispatch-register .dispatch-col-organization { width:18%; }
+  .portal-app .dispatch-register .dispatch-col-assignee { width:16%; }
+  .portal-app .dispatch-register .dispatch-col-status { width:10%; }
+}

@@ -1,125 +1,14 @@
-{% load ui_components %}
-{# Frozen pre-administration print presentation; screen changes must not restyle this register. #}
-
-<div class="space-y-6">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-            <h1 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-                <span>&#128236;</span> Công văn & Văn bản Hành chính
-            </h1>
-            <p class="text-xs text-gray-500 mt-1">Theo dõi, phân công và xử lý công văn đến, công văn đi và chỉ đạo điều hành.</p>
-        </div>
-        <div class="ui-page-actions flex flex-wrap gap-2">
-            {% if can_export_dispatches %}<a href="{% url 'reporting:export_dispatches' %}?type=Incoming" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition">
-                &#128229; Xuất Sổ CV Đến (.xlsx)
-            </a>
-            <a href="{% url 'reporting:export_dispatches' %}?type=Outgoing" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition">
-                &#128228; Xuất Sổ CV Đi (.xlsx)
-            </a>
-            {% endif %}{% if is_management %}
-            <a href="{% url 'portal:dispatch_create' %}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-blue-700 text-white hover:bg-blue-800 transition">
-                + Tiếp nhận / Vào sổ công văn
-            </a>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- Bộ lọc tìm kiếm -->
-
-
-    <!-- Bảng danh sách công văn -->
-    <div class="ui-card ui-results-card">
-<div class="overflow-x-auto">
-            <table class="w-full text-left text-xs text-gray-600">
-                <thead class="bg-gray-50 border-b border-gray-200 text-gray-700 font-semibold uppercase tracking-wider">
-                    <tr>
-                        <th class="py-3 px-4">Số công văn</th>
-                        <th class="py-3 px-4">Loại</th>
-                        <th class="py-3 px-4">Trích yếu nội dung</th>
-                        <th class="py-3 px-4">Đơn vị gửi/nhận</th>
-                        <th class="py-3 px-4">Ngày đến/đi</th>
-                        <th class="py-3 px-4">Hạn xử lý</th>
-                        <th class="py-3 px-4">Độ khẩn</th>
-                        <th class="py-3 px-4">Trạng thái</th>
-                        <th class="py-3 px-4 text-center">Chi tiết</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    {% for d in dispatches %}
-                    <tr class="hover:bg-gray-50/80 transition">
-                        <td class="py-3 px-4 font-semibold text-gray-900 whitespace-nowrap">
-                            {{ d.dispatch_no|ui_number }}
-                            {% if d.original_doc_no %}
-                            <div class="text-xs text-gray-600">Gốc: {{ d.original_doc_no|ui_number }}</div>
-                            {% endif %}
-                        </td>
-                        <td class="py-3 px-4 whitespace-nowrap">
-                            {% if d.dispatch_type == 'Incoming' %}
-                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Đến</span>
-                            {% elif d.dispatch_type == 'Outgoing' %}
-                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">Đi</span>
-                            {% else %}
-                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">Nội bộ</span>
-                            {% endif %}
-                        </td>
-                        <td class="py-3 px-4 max-w-xs font-medium text-gray-800">
-                            <a href="{% url 'portal:dispatch_detail' d.pk %}" class="hover:text-blue-600 line-clamp-2">
-                                {{ d.title|ui_number }}
-                            </a>
-                        </td>
-                        <td class="py-3 px-4 whitespace-nowrap text-gray-700">
-                            {{ d.issuing_organization|truncatechars:25|ui_number }}
-                        </td>
-                        <td class="py-3 px-4 whitespace-nowrap text-gray-500">
-                            {{ d.received_or_sent_date|date:"d/m/Y" }}
-                        </td>
-                        <td class="py-3 px-4 whitespace-nowrap">
-                            {% if d.due_date %}
-                            <span class="{% if d.status != 'Completed' and d.due_date < today %}text-red-600 font-bold{% else %}text-gray-700{% endif %}">
-                                {{ d.due_date|date:"d/m/Y" }}
-                            </span>
-                            {% else %}
-                            <span class="text-gray-400">—</span>
-                            {% endif %}
-                        </td>
-                        <td class="py-3 px-4 whitespace-nowrap">
-                            {% if d.urgency_level == 'TopUrgent' %}
-                            <span class="px-2 py-0.5 rounded text-xs font-bold bg-red-100 text-red-700">HỎA TỐC</span>
-                            {% elif d.urgency_level == 'VeryUrgent' %}
-                            <span class="px-2 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-800">THƯỢNG KHẨN</span>
-                            {% elif d.urgency_level == 'Urgent' %}
-                            <span class="px-2 py-0.5 rounded text-xs font-semibold bg-orange-100 text-orange-700">Khẩn</span>
-                            {% else %}
-                            <span class="text-gray-400">Thường</span>
-                            {% endif %}
-                        </td>
-                        <td class="py-3 px-4 whitespace-nowrap">
-                            {% if d.status == 'Completed' %}
-                            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Hoàn thành</span>
-                            {% elif d.status == 'Processing' %}
-                            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">Đang xử lý</span>
-                            {% elif d.status == 'Overdue' %}
-                            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">Quá hạn</span>
-                            {% else %}
-                            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Chờ xử lý</span>
-                            {% endif %}
-                        </td>
-                        <td class="py-3 px-4 text-center whitespace-nowrap">
-                            <a href="{% url 'portal:dispatch_detail' d.pk %}" class="text-blue-600 hover:text-blue-800 font-medium">
-                                Chi tiết →
-                            </a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="9" class="py-8 text-center text-gray-400">
-                            Không có công văn / văn bản nào phù hợp.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-{% include "portal/_pagination.html" %}
+﻿{% load static ui_components %}
+<section class="dispatch-register" aria-label="Sổ công văn bản in">
+  <header class="dispatch-register-heading">
+    <img src="{% static 'img/logo.png' %}" alt="Logo Trung tâm">
+    <h1>SỔ CÔNG VĂN {% if selected_type == 'Incoming' %}ĐẾN{% elif selected_type == 'Outgoing' %}ĐI{% elif selected_type == 'InternalDirective' %}NỘI BỘ{% else %}ĐẾN/ĐI{% endif %}</h1>
+  </header>
+  <p class="dispatch-register-filters">Loại: {% if selected_type == 'Incoming' %}Đến{% elif selected_type == 'Outgoing' %}Đi{% elif selected_type == 'InternalDirective' %}Nội bộ{% else %}Tất cả{% endif %} · Năm: {% regroup dispatches|dictsort:"received_or_sent_date.year" by received_or_sent_date.year as register_years %}{% for group in register_years %}{{ group.grouper|stringformat:"d" }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}{% if selected_status %} · Trạng thái: {{ selected_status }}{% endif %}{% if search_query %} · Từ khóa: {{ search_query }}{% endif %}</p>
+  <table>
+    <caption>Sổ công văn trong phạm vi và trang kết quả đang xem</caption>
+    <colgroup><col class="dispatch-col-number"><col class="dispatch-col-date"><col class="dispatch-col-title"><col class="dispatch-col-organization"><col class="dispatch-col-assignee"><col class="dispatch-col-status"></colgroup>
+    <thead><tr><th scope="col">Số/ký hiệu</th><th scope="col">Ngày đến/đi</th><th scope="col">Trích yếu</th><th scope="col">Nơi gửi/nhận</th><th scope="col">Người xử lý</th><th scope="col">Trạng thái</th></tr></thead>
+    <tbody>{% for d in dispatches %}<tr><td>{{ d.dispatch_no }}{% if d.original_doc_no %}<br>Gốc: {{ d.original_doc_no }}{% endif %}</td><td>{{ d.received_or_sent_date|ui_date }}</td><td>{{ d.title }}</td><td>{{ d.issuing_organization }}</td><td>{{ d.assigned_to|default:'—' }}</td><td>{{ d.get_status_display }}</td></tr>{% empty %}<tr><td colspan="6">Không có công văn phù hợp.</td></tr>{% endfor %}</tbody>
+  </table>
+</section>
