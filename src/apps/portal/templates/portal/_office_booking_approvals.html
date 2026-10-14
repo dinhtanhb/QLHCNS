@@ -1,13 +1,14 @@
 <div class="ui-page">
-  <header class="ui-page-header"><h1 class="ui-page-title">{{ page_title }}</h1></header>
+{% load ui_components %}
+  {% include "ui/page_header.html" with title=page_title description="Xử lý các yêu cầu trong phạm vi duyệt." %}
   <section class="ui-card">
     <div class="ui-scroll" tabindex="0" role="region" aria-label="Yêu cầu chờ duyệt">
-      <table class="ui-table"><thead><tr><th>Người đề nghị</th><th>Tài nguyên</th><th>Thời gian</th><th>Mục đích</th><th>Thao tác</th></tr></thead>
+      <table class="ui-table"><caption class="ui-sr-only">Thông tin hành chính</caption><thead><tr><th scope="col">Người đề nghị</th><th scope="col">Tài nguyên</th><th scope="col">Thời gian</th><th scope="col">Mục đích</th><th scope="col">Thao tác</th></tr></thead>
         <tbody>{% for booking in bookings %}<tr>
           <td>{{ booking.employee }}</td><td>{% if resource_kind == "room" %}{{ booking.room }}{% else %}{{ booking.vehicle }}<br>{{ booking.destination }}{% endif %}</td>
           <td>{{ booking.start_time|date:"d/m/Y H:i" }}<br>{{ booking.end_time|date:"d/m/Y H:i" }}</td><td>{{ booking.purpose }}</td>
-          <td><form method="post" action="{% url approve_url_name booking.pk %}" class="ui-page-actions">{% csrf_token %}<button type="submit" name="decision" value="Approved" class="ui-button ui-button--primary">Duyệt</button><button type="submit" name="decision" value="Rejected" class="ui-button">Từ chối</button></form></td>
-        </tr>{% empty %}<tr><td colspan="5">Không có yêu cầu chờ duyệt.</td></tr>{% endfor %}</tbody>
+          <td><form data-ui-confirm="Xác nhận xử lý yêu cầu này?" method="post" action="{% url approve_url_name booking.pk %}" class="ui-page-actions ui-admin-form" data-ui-form>{% include "ui/error_summary.html" %}{% csrf_token %}<button type="submit" name="decision" value="Approved" class="ui-button ui-button--primary">Duyệt</button><button type="submit" name="decision" value="Rejected" class="ui-button ui-button--secondary">Từ chối</button></form></td>
+        </tr>{% empty %}<tr><td colspan="5">{% include "ui/empty_state.html" with title="Không có yêu cầu chờ duyệt." description="Danh sách trong phạm vi đang xem." icon="office" %}</td></tr>{% endfor %}</tbody>
       </table>
     </div>
   </section>

@@ -1,0 +1,33 @@
+/* Administration screens only: document paper styles remain independent. */
+@media screen {
+ .ui-administration > .ui-print-only { display:none; }
+ .ui-administration > .ui-screen-only { min-width:0; }
+ .portal-app .ui-main .ui-page.ui-administration .ui-table { table-layout:auto; }
+ .portal-app .ui-main .ui-page.ui-administration .ui-table:has(th:nth-child(7)) { min-width:calc(var(--ui-table-col-medium) * 7); }
+ .ui-administration .ui-badge { max-width:100%; white-space:normal; }
+ .ui-administration .ui-badge > span { overflow-wrap:anywhere; }
+
+ .ui-administration .ui-admin-stack,.ui-administration .ui-admin-form { display:grid; gap:var(--ui-space-4); min-width:0; }
+ .ui-administration .ui-admin-inline,.ui-administration .ui-admin-form-inline { display:flex; flex-wrap:wrap; align-items:end; gap:var(--ui-space-3); min-width:0; }
+ .ui-administration .ui-admin-inline > .ui-page-header { flex:1 1 24rem; margin:0; }
+ .ui-administration .ui-admin-form-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--ui-space-4); align-items:end; }
+ .ui-administration .ui-admin-form-inline > .ui-field { flex:1 1 13rem; min-width:0; }
+ .ui-administration .ui-field :is(input,select,textarea) { width:100%; max-width:100%; min-width:0; }
+ .ui-administration .ui-field textarea { min-height:6rem; }
+ .ui-administration .ui-field input[type=file] { height:auto; min-height:var(--ui-control-height); }
+ .ui-administration form > .ui-error-summary { grid-column:1 / -1; }
+ .ui-administration .ui-table { min-width:44rem; }
+ .ui-administration .ui-table :is(td,th) { white-space:normal; overflow-wrap:anywhere; }
+ .ui-administration .ui-table .ui-field { min-width:10rem; }
+ .ui-administration .ui-table :is(th,td):last-child .ui-admin-form-inline { min-width:20rem; }
+ .ui-administration .ui-card { min-width:0; }
+ .ui-administration .ui-admin-panel,.ui-administration .ui-admin-history { padding:var(--ui-space-4); background:var(--ui-surface-raised); border:var(--ui-border-width) solid var(--ui-card-border); border-radius:var(--ui-radius-control); }
+ .ui-administration .ui-admin-history { border-inline-start:var(--ui-space-1) solid var(--ui-brand); }
+ .ui-administration .ui-admin-preline { white-space:pre-line; overflow-wrap:anywhere; }
+ .ui-administration .ui-admin-link { color:var(--ui-brand); text-underline-offset:.2em; }
+ .ui-administration .ui-admin-link:focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:var(--ui-focus-offset); }
+ .ui-administration form > .ui-button { justify-self:start; }
+ .ui-administration .ui-button { white-space:normal; }
+ .ui-administration .ui-admin-counted { background:var(--ui-surface-raised); }
+ @media(min-width:1024px) { .ui-administration .ui-admin-form-grid { grid-template-columns:var(--ui-split-columns); } }
+}

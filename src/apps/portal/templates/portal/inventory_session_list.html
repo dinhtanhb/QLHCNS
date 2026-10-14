@@ -1,35 +1,36 @@
-{% extends "base.html" %}
+{% extends "portal/administration_base.html" %}
+{% load ui_components %}
 {% block title %}Kiểm kê Tài sản{% endblock %}
-{% block content %}<div class="ui-page">
+{% block administration_content %}<div class="ui-page">
 <div class="ui-page-header">
-    <h1 class="ui-page-title">Kiểm kê Tài sản</h1>
+    {% include "ui/page_header.html" with title="Kiểm kê tài sản" description="Tra cứu và xử lý thông tin trong phạm vi được cấp quyền." %}
 </div>
-{% if not can_manage_asset %}<p class="mb-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">Chế độ chỉ xem các đợt kiểm kê.</p>{% endif %}
+{% if not can_manage_asset %}<p>Chế độ chỉ xem các đợt kiểm kê.</p>{% endif %}
 {% if can_manage_asset %}<div class="ui-card">
     <h2 class="ui-card-title">Tạo đợt kiểm kê mới</h2>
-    <form method="post" action="{% url 'portal:inventory_session_create' %}" class="ui-inline-create">
+    <form method="post" action="{% url 'portal:inventory_session_create' %}" class="ui-inline-create ui-admin-form" data-ui-form>{% include "ui/error_summary.html" %}
         {% csrf_token %}
         <div class="ui-inline-create-fields">
-        <label for="inventory-session-name">Tên đợt<input id="inventory-session-name" type="text" name="session_name" placeholder="VD: Kiểm kê cuối năm 2026" required class="rounded-md border border-gray-300 px-3 py-2 text-sm"></label>
-        <label for="inventory-office-name">Văn phòng / Bộ phận<input id="inventory-office-name" type="text" name="office_name" required class="rounded-md border border-gray-300 px-3 py-2 text-sm"></label>
-        <label for="inventory-datetime">Thời điểm<input id="inventory-datetime" type="datetime-local" name="inventory_datetime" required class="rounded-md border border-gray-300 px-3 py-2 text-sm"></label>
-        </div><button type="submit" class="ui-button ui-button--primary">+ Tạo đợt kiểm kê</button>
+{% include "ui/field.html" with id="inventory-session-name" name="session_name" label="Tên đợt" placeholder="Ví dụ: Kiểm kê cuối năm 2026" required=True %}
+{% include "ui/field.html" with id="inventory-office-name" name="office_name" label="Văn phòng / Bộ phận" required=True %}
+{% include "ui/field.html" with id="inventory-datetime" name="inventory_datetime" type="datetime-local" label="Thời điểm" required=True %}
+</div><button type="submit" class="ui-button ui-button--primary">Tạo đợt kiểm kê</button>
     </form>
 </div>
 {% endif %}
-<div class="ui-card">
-    <div class="overflow-x-auto mobile-table-scroll">
-        <table class="ui-table">
-        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Tên đợt</th><th class="py-2 pr-4">Văn phòng</th><th class="py-2 pr-4">Thời điểm</th><th class="py-2">Trạng thái</th></tr></thead>
-        <tbody class="divide-y divide-gray-100">
+<div class="ui-card"><h2 class="ui-card-title">Danh sách</h2>
+    <div class="mobile-table-scroll ui-scroll" tabindex="0" role="region" aria-label="Các đợt kiểm kê; cuộn ngang để xem đầy đủ">
+        <table class="ui-table"><caption class="ui-sr-only">Các đợt kiểm kê</caption>
+        <thead><tr><th scope="col" >Tên đợt</th><th scope="col" >Văn phòng</th><th scope="col" >Thời điểm</th><th scope="col" >Trạng thái</th></tr></thead>
+        <tbody>
         {% for s in sessions %}
-        <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{% url 'portal:inventory_session_detail' s.pk %}'">
-            <td class="py-2 pr-4 font-medium text-blue-700">{{ s.session_name|ui_number }}</td>
-            <td class="py-2 pr-4">{{ s.office_name|ui_number }}</td>
-            <td class="py-2 pr-4">{{ s.inventory_datetime|date:"d/m/Y H:i" }}</td>
-            <td class="py-2">{{ s.get_status_display|ui_number }}</td>
+        <tr  onclick="window.location='{% url 'portal:inventory_session_detail' s.pk %}'">
+            <td>{{ s.session_name|ui_number }}</td>
+            <td>{{ s.office_name|ui_number }}</td>
+            <td>{{ s.inventory_datetime|date:"d/m/Y H:i" }}</td>
+            <td>{% ui_badge "asset.inventorysession:status" s.status s.get_status_display %}</td>
         </tr>
-        {% empty %}<tr><td colspan="4" class="py-6 text-center text-gray-400">Chưa có đợt kiểm kê nào.</td></tr>{% endfor %}
+        {% empty %}<tr><td colspan="4" >{% include "ui/empty_state.html" with title="Chưa có đợt kiểm kê nào." description="Danh sách trong phạm vi đang xem." icon="office" %}</td></tr>{% endfor %}
         </tbody>
     </table>
     </div>

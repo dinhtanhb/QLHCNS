@@ -1,63 +1,64 @@
-{% extends "base.html" %}
+{% extends "portal/administration_base.html" %}
+{% load ui_components %}
 {% block title %}Công văn đến{% endblock %}
-{% block content %}
+{% block administration_content %}
 <style>@media print { .no-print { display: none !important; } }</style>
-<div class="flex items-center justify-between mb-4">
-    <h1 class="text-lg font-bold text-gray-900">Sổ Công văn đến</h1>
-    <button type="button" onclick="window.print()" class="no-print rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">In sổ công văn</button>
+<div class="ui-admin-inline">
+    {% include "ui/page_header.html" with title="Sổ công văn đến" description="Tra cứu và xử lý thông tin trong phạm vi được cấp quyền." %}
+    <button type="button" onclick="window.print()" class="no-print ui-button ui-button--secondary">In sổ công văn</button>
 </div>
 
 {% if can_manage_office %}
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6 no-print">
-    <h2 class="text-sm font-bold text-gray-900 mb-3">Ghi nhận công văn đến mới</h2>
-    <form method="post" action="{% url 'portal:office_incoming_create' %}" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+<div class="no-print ui-card">
+    <h2 class="ui-card-title">Ghi nhận công văn đến mới</h2>
+    <form method="post" action="{% url 'portal:office_incoming_create' %}" enctype="multipart/form-data" class="ui-admin-form-grid" data-ui-form>{% include "ui/error_summary.html" %}
         {% csrf_token %}
-        <input type="text" name="incoming_no" placeholder="Số công văn đến" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <input type="date" name="incoming_date" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <input type="text" name="sender" placeholder="Nơi gửi" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <input type="text" name="subject" placeholder="Trích yếu / Nội dung" required class="rounded-md border border-gray-300 px-3 py-2 text-sm md:col-span-2">
-        <input type="date" name="due_date" placeholder="Hạn xử lý" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <input type="file" name="attachment" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.webp,.txt,.csv,.zip,.rar,.7z" class="md:col-span-3 text-sm" title="Chấp nhận PDF, Word, Excel, PowerPoint, ảnh, txt, csv, zip. Tối đa 20 MB.">
-        <button type="submit" class="md:col-span-3 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Ghi nhận công văn đến</button>
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_incoming_list-incoming_no-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="incoming_no" label="Số công văn đến" type="text" required=True %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_incoming_list-incoming_date-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="incoming_date" label="Ngày đến" type="date" required=True %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_incoming_list-sender-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="sender" label="Nơi gửi" type="text" required=True %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_incoming_list-subject-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="subject" label="Trích yếu / Nội dung" type="text" required=True %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_incoming_list-due_date-5-"|add:row_number %}{% include "ui/field.html" with id=field_id name="due_date" label="Hạn xử lý" type="date" %}{% endwith %}{% endwith %}
+        <div class="ui-field"><label for="office_incoming_list-attachment-6-{{ forloop.counter|default:'0' }}">Tệp đính kèm</label><input type="file" name="attachment" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.webp,.txt,.csv,.zip,.rar,.7z"  title="Chấp nhận PDF, Word, Excel, PowerPoint, ảnh, txt, csv, zip. Tối đa 20 MB." id="office_incoming_list-attachment-6-{{ forloop.counter|default:'0' }}"></div>
+        <button type="submit" class="ui-button ui-button--primary">Ghi nhận công văn đến</button>
     </form>
 </div>
 {% endif %}
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <div class="overflow-x-auto">
-    <table class="w-full text-sm">
-        <thead><tr class="text-left text-gray-500 border-b border-gray-200">
-            <th class="py-2 pr-4">Số</th><th class="py-2 pr-4">Ngày</th><th class="py-2 pr-4">Nơi gửi</th><th class="py-2 pr-4">Trích yếu</th>
-            <th class="py-2 pr-4">Người xử lý</th><th class="py-2 pr-4">Trạng thái</th><th class="py-2">File</th>
+<div class="ui-card"><h2 class="ui-card-title">Danh sách</h2>
+    <div class="ui-scroll mobile-table-scroll" tabindex="0" role="region" aria-label="Sổ công văn đến; cuộn ngang để xem đầy đủ">
+    <table class="ui-table"><caption class="ui-sr-only">Sổ công văn đến</caption>
+        <thead><tr>
+            <th scope="col" >Số</th><th scope="col" >Ngày</th><th scope="col" >Nơi gửi</th><th scope="col" >Trích yếu</th>
+            <th scope="col" >Người xử lý</th><th scope="col" >Trạng thái</th><th scope="col" >File</th>
         </tr></thead>
-        <tbody class="divide-y divide-gray-100">
+        <tbody>
         {% for d in docs %}
         <tr>
-            <td class="py-2 pr-4 text-gray-500">{{ d.incoming_no|ui_number }}</td>
-            <td class="py-2 pr-4">{{ d.incoming_date|ui_number }}</td>
-            <td class="py-2 pr-4">{{ d.sender|ui_number }}</td>
-            <td class="py-2 pr-4 font-medium">{{ d.subject|ui_number }}</td>
-            <td class="py-2 pr-4">
+            <td>{{ d.incoming_no|ui_number }}</td>
+            <td>{{ d.incoming_date|ui_number }}</td>
+            <td>{{ d.sender|ui_number }}</td>
+            <td>{{ d.subject|ui_number }}</td>
+            <td>
                 {% if can_manage_office %}
-                <form method="post" action="{% url 'portal:office_incoming_assign' d.pk %}" class="flex gap-1 items-center">
+                <form method="post" action="{% url 'portal:office_incoming_assign' d.pk %}" class="ui-admin-form-inline" data-ui-form>{% include "ui/error_summary.html" %}
                     {% csrf_token %}
-                    <select name="handler" class="rounded border border-gray-300 px-1 py-0.5 text-xs">
+                    <div class="ui-field"><label for="office_incoming_list-handler-7-{{ forloop.counter|default:'0' }}">Người xử lý</label><select name="handler"  id="office_incoming_list-handler-7-{{ forloop.counter|default:'0' }}">
                         <option value="">-- Chưa phân công --</option>
                         {% for e in employees %}<option value="{{ e.id }}" {% if d.handler_id == e.id %}selected{% endif %}>{{ e.full_name|ui_number }}</option>{% endfor %}
-                    </select>
-                    <select name="status" class="rounded border border-gray-300 px-1 py-0.5 text-xs">
+                    </select></div>
+                    <div class="ui-field"><label for="office_incoming_list-status-8-{{ forloop.counter|default:'0' }}">Trạng thái</label><select name="status"  id="office_incoming_list-status-8-{{ forloop.counter|default:'0' }}">
                         <option value="New" {% if d.status == "New" %}selected{% endif %}>Mới nhận</option>
                         <option value="Processing" {% if d.status == "Processing" %}selected{% endif %}>Đang xử lý</option>
                         <option value="Done" {% if d.status == "Done" %}selected{% endif %}>Đã xử lý xong</option>
-                    </select>
-                    <button type="submit" class="bg-blue-700 text-white text-xs px-2 py-0.5 rounded">Lưu</button>
+                    </select></div>
+                    <button type="submit" class="ui-button ui-button--primary">Lưu</button>
                 </form>
                 {% else %}{{ d.handler|default:"Chưa phân công"|ui_number }}{% endif %}
             </td>
-            <td class="py-2 pr-4">{{ d.get_status_display|ui_number }}</td>
-            <td class="py-2">{% if d.attachment %}<a href="{{ d.attachment.url }}" target="_blank" class="text-blue-700 hover:underline">Tải về</a>{% else %}—{% endif %}</td>
+            <td>{{ d.get_status_display|ui_number }}</td>
+            <td>{% if d.attachment %}<a href="{{ d.attachment.url }}" target="_blank" class="ui-admin-link">Tải về</a>{% else %}—{% endif %}</td>
         </tr>
-        {% empty %}<tr><td colspan="7" class="py-6 text-center text-gray-400">Chưa có công văn đến nào.</td></tr>{% endfor %}
+        {% empty %}<tr><td colspan="7" >{% include "ui/empty_state.html" with title="Chưa có công văn đến nào." description="Danh sách trong phạm vi đang xem." icon="office" %}</td></tr>{% endfor %}
         </tbody>
     </table>
     </div>

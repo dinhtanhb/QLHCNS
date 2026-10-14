@@ -18,11 +18,14 @@ class InternalLinks(HTMLParser):
             self.links.add(target.path + ('?' + target.query if target.query else ''))
 
 
-def assert_internal_links(test, response):
+def assert_internal_links(test, response, *, known_denials=None):
     """Use the caller's authenticated client without following permission redirects."""
     for target in sorted(InternalLinks(response.content.decode()).links):
         with test.subTest(target=target):
             result = test.client.get(target)
-            test.assertIn(result.status_code, (200, 302), target)
+            if target in (known_denials or {}):
+                test.assertEqual(result.status_code, known_denials[target], target)
+            else:
+                test.assertIn(result.status_code, (200, 302), target)
             if getattr(result, 'streaming', False):
                 result.close()

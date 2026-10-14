@@ -1,44 +1,44 @@
-{% extends "portal/hr_base.html" %}
+{% extends "portal/administration_base.html" %}
 {% load ui_components %}
 {% block title %}Duyệt tài liệu{% endblock %}
-{% block hr_content %}
-<h1 class="ui-page-title">Tài liệu chờ phê duyệt</h1>
-<div class="ui-card">
+{% block administration_content %}
+{% include "ui/page_header.html" with title="Tài liệu chờ phê duyệt" description="Tra cứu và xử lý thông tin trong phạm vi được cấp quyền." %}
+<div class="ui-card"><h2 class="ui-card-title">Danh sách</h2>
     <div class="ui-scroll" tabindex="0" role="region" aria-label="Bảng dữ liệu nhân sự">
     <table class="ui-table ui-hr-table"><caption>Duyệt tài liệu</caption>
         <thead>
             <tr class="ui-hr-text">
-                <th scope="col" class="">Số hiệu</th><th scope="col" class="">Tên tài liệu</th><th scope="col" class="">Danh mục</th><th scope="col" class="">Phiên bản</th><th scope="col" class="">Thao tác</th>
+                <th scope="col" >Số hiệu</th><th scope="col" >Tên tài liệu</th><th scope="col" >Danh mục</th><th scope="col" >Phiên bản</th><th scope="col" >Thao tác</th>
             </tr>
         </thead>
         <tbody>
         {% for d in documents %}
         <tr>
-            <td class="">{{ d.document_no|ui_number }}</td>
-            <td class="">{{ d.document_name|ui_number }}</td>
-            <td class="">{{ d.category|ui_number }}</td>
-            <td class="">v{{ d.version_no|ui_number }}</td>
-            <td class="">
+            <td>{{ d.document_no|ui_number }}</td>
+            <td>{{ d.document_name|ui_number }}</td>
+            <td>{{ d.category|ui_number }}</td>
+            <td>v{{ d.version_no|ui_number }}</td>
+            <td>
                 <div class="ui-page-actions">
-                    <form method="post" action="{% url 'portal:document_approve' d.pk %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">
+                    <form method="post" action="{% url 'portal:document_approve' d.pk %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% include "ui/error_summary.html" %}
                         {% csrf_token %}{% include "ui/error_summary.html" %}
                         <input type="hidden" name="decision" value="Approved">
                         <button type="submit" class="ui-button ui-button--primary">Duyệt</button>
                     </form>
-                    <form method="post" action="{% url 'portal:document_approve' d.pk %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">
+                    <form method="post" action="{% url 'portal:document_approve' d.pk %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% include "ui/error_summary.html" %}
                         {% csrf_token %}{% include "ui/error_summary.html" %}
                         <input type="hidden" name="decision" value="Rejected">
-                        <button type="submit" class="ui-button">Từ chối</button>
+                        <button type="submit" class="ui-button ui-button--secondary">Từ chối</button>
                     </form>
                 </div>
             </td>
         </tr>
         {% empty %}
-        <tr><td colspan="5" class="">{% include "ui/empty_state.html" with title="Không có tài liệu nào chờ duyệt." description="Kiểm tra phạm vi tài khoản và các bộ lọc hiện tại; liên hệ HCNS nếu cần hỗ trợ." %}</td></tr>
+        <tr><td colspan="5" >{% include "ui/empty_state.html" with title="Không có tài liệu nào chờ duyệt." description="Kiểm tra phạm vi tài khoản và các bộ lọc hiện tại; liên hệ HCNS nếu cần hỗ trợ." %}</td></tr>
         {% endfor %}
         </tbody>
     </table>
     </div>
 </div>
-{% include "ui/confirm_dialog.html" %}
+
 {% endblock %}

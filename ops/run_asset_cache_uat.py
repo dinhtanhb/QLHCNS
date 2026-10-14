@@ -27,11 +27,11 @@ def main():
     output = folder / 'asset-cache-uat'
     output.mkdir(exist_ok=True)
     state = {'port': args.baseline_port}
-    old_cache = 'ihrms-static-v15-results-workflow-20261014'
-    new_cache = 'ihrms-static-v16-bcc-print-20261014'
+    old_cache = 'ihrms-static-v16-bcc-print-20261014'
+    new_cache = 'ihrms-static-v17-administration-20261014'
     old_css = """@media screen {
-    .portal-app .ui-main .ui-query-bar {display:grid;grid-template-columns:minmax(0,1fr) auto;}
-    .portal-app .ui-main .ui-query-actions {grid-column:2;}
+    .portal-app .ui-main .ui-query-bar {display:grid !important;grid-template-columns:minmax(0,1fr) auto !important;}
+    .portal-app .ui-main .ui-query-actions {grid-column:2 !important;}
     }"""
     checks = []
 
@@ -50,7 +50,7 @@ def main():
             connection.request(self.command, self.path, body=body, headers=dict(self.headers))
             response = connection.getresponse()
             payload = response.read()
-            if state['port'] == args.baseline_port and self.path.startswith('/static/css/project_layout.css'):
+            if state['port'] == args.baseline_port and self.path.startswith('/static/css/tailwind.css'):
                 payload += old_css.encode()
             self.send_response(response.status)
             for key, value in response.getheaders():

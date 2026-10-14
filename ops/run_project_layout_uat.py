@@ -118,12 +118,18 @@ def main():
                     for row in geometry:
                         report.setdefault('filter_geometry', {})[label]=row
                         check(row['close'] and row['fit'] and row['stack'] and row['mobile'] and row['labels'] and row['font'] and row['height']>=44, label + ' inline filter controls')
+                    if args.only and page.locator('.ui-administration').count():
+                        check(page.locator('main h1:visible').count()==1,label+' single visible page title')
+                        check(page.locator('.ui-administration > .ui-print-only:visible').count()==0,label+' print register hidden on screen')
+                        controls=page.locator('main input:not([type=hidden]):not(.ui-number-source),main select,main textarea,main button').evaluate_all('''xs=>xs.filter(x=>x.checkVisibility()).map(x=>({height:x.getBoundingClientRect().height,font:parseFloat(getComputedStyle(x).fontSize),label:x.tagName!=='BUTTON'?!!document.querySelector('label[for="'+x.id+'"]'):true}))''')
+                        check(all(x['height']>=43.5 and x['font']>=14 and x['label'] for x in controls),label+' controls, labels and type size')
+                        if width in (1440,390):page.screenshot(path=str(output/(route.strip('/').replace('/','-')+f'-{width}-{theme}.png')),full_page=True)
                     if width == 1440:
                         grids = page.locator('.ui-layout-split,.ui-detail-grid,.ui-detail-sections,.ui-finance-grid,.ui-recruitment-grid,.ui-report-export-grid,.report-visuals,.report-section-grid,.timesheet-summary-layout,.ui-form-grid:not(.ui-form-grid--three)').evaluate_all('''xs=>xs.filter(x=>x.getBoundingClientRect().width && !x.closest('.hcns-paper,.hcns-editor')).map(x=>getComputedStyle(x).gridTemplateColumns.split(' ').map(parseFloat))''')
                         for cols in grids:
                             if len(cols) == 2:
                                 check(abs(cols[0]/sum(cols)-.6)<.003, label + ' split 60/40')
-            if route in ('/portal/timesheet/', '/portal/inventory/', '/portal/hr-decisions/', '/portal/reports/', '/portal/hr/contracts/'):
+            if args.only or route in ('/portal/timesheet/', '/portal/inventory/', '/portal/hr-decisions/', '/portal/reports/', '/portal/hr/contracts/'):
                 page.set_viewport_size({'width':1440,'height':1000})
                 page.screenshot(path=str(output / (route.strip('/').replace('/', '-') + '.png')), full_page=True)
             # Exercise the actual GET with keyboard, preserving all field values.
@@ -167,6 +173,12 @@ def main():
                 page.goto(base + reverse('portal:' + list_name))
                 form = page.locator('form[action="' + reverse('portal:' + action_name, args=[record.pk]) + '"]')
                 form.locator('button[value="' + action + '"]').click()
+                if page.locator('#ui-confirm-dialog').is_visible():
+                    page.keyboard.press('Escape')
+                    record.refresh_from_db()
+                    check(record.status == 'Pending', list_name+' confirmation Escape does not write')
+                    form.locator('button[value="' + action + '"]').click()
+                    page.locator('[data-ui-confirm-accept]').click()
                 page.wait_for_load_state('networkidle')
                 record.refresh_from_db()
                 check(record.status == action, list_name + ' UI saved ' + action)

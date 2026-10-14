@@ -102,3 +102,11 @@ Mẫu chuẩn: tiêu đề → dải trường và Áp dụng/Xóa lọc liền 
 Quyết định: tiêu đề/trạng thái và tiện ích phụ → một panel Xử lý quyết định → giấy xem trước → lịch sử. Trình duyệt/Duyệt/Ghi nhận ban hành là thao tác chính theo quyền/trạng thái; Hủy/Từ chối thu gọn, mở lý do và nút xác nhận/Đóng ngay trong panel. Đóng giữ nội dung nháp trong DOM, trả focus về summary; form POST độc lập giữ CSRF và xác nhận. Khi backend từ chối dữ liệu, giữ tối đa 2000 ký tự ghi chú trong session người dùng cho đúng quyết định, lấy ra một lần ở trang đích; không lưu vào localStorage. File cần chọn lại sau lỗi; không đổi guard, trạng thái hay URL. Mọi quy tắc mới chỉ cho màn hình, panel xử lý không in.
 
 CSS/JS thay đổi phải có URL phiên bản mới, kể cả stylesheet nạp sau đã bỏ override; tăng phiên bản cache service worker cùng đợt. Cổng kiểm thử gồm phiên cache cũ → reload thường, không yêu cầu xóa dữ liệu trình duyệt; ảnh và đo khoảng cách, cùng hồi quy PDF và luồng nghiệp vụ trên dữ liệu giả. Chi tiết thực thi/kết quả nằm duy nhất trong [nhật ký dự án](../docs/PROJECT_WORK_LOG.md).
+
+## Hành chính
+
+- Trang công văn, tài sản, kiểm kê, thanh lý, đặt phòng/xe, VPP và mua sắm dùng `portal/administration_base.html`, page header/field/table/badge/empty state chung. `administration_ui.css` chỉ áp dụng màn hình, dùng token và chia 60/40 cho hai vùng nội dung.
+- Bảng nhiều cột nằm trong vùng `ui-scroll` có nhãn và tabindex; caption hỗ trợ đọc màn hình, th có scope, tên/mã giữ liên kết thật. Trang không tràn ở390px, bảng cuộn ngang khi cần. Nhãn luôn hiện và input/nút tối thiểu44px, chữ14px; không giảm font để ép cột.
+- Công văn giữ nguyên số hiệu, tệp, ngày và quyền; dùng lại dải lọc hiện có với nút ngay sau trường. Không thêm lọc/phân trang/truy vấn hoặc mở quyền xuất báo cáo trong đợt UI.
+- Trạng thái dùng ui_badge và nhãn chữ. Hủy/từ chối/thanh lý dùng dialog xác nhận chung; từng form POST/CSRF, submitter decision và điều kiện hiển thị theo quyền giữ nguyên. Chi tiết và lịch sử không che thông tin; hàng động mua sắm có nhãn và ID riêng.
+- Template giấy/HCNS và khổ in không đổi. Khi sửa template hành chính chạy lại37 PDF hồi quy+BCC và xem ảnh/số đo; không suy từ HTTP200 hoặc CSS màn hình rằng bản in đúng. Các template sổ công văn cũ chưa có route được ghi nhận, không tự thêm URL/nghiệp vụ.

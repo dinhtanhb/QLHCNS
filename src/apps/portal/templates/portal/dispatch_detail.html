@@ -1,126 +1,116 @@
-{% extends "base.html" %}
+{% extends "portal/administration_base.html" %}
+{% load ui_components %}
 
 {% block title %}Chi tiết công văn {{ dispatch.dispatch_no|ui_number }}{% endblock %}
 
-{% block content %}
-<div class="max-w-4xl mx-auto space-y-6">
-    <div class="flex items-center justify-between">
-        <a href="{% url 'portal:dispatch_list' %}" class="inline-flex items-center text-xs font-semibold text-gray-500 hover:text-gray-800">
+{% block administration_content %}
+<div class="ui-admin-stack">
+    <div class="ui-admin-inline">
+        <a href="{% url 'portal:dispatch_list' %}" class="ui-admin-link">
             ← Quay lại danh sách công văn
         </a>
-        <div class="flex items-center gap-2">
-            <span class="text-xs text-gray-500">Trạng thái:</span>
-            {% if dispatch.status == 'Completed' %}
-            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">Đã hoàn thành</span>
-            {% elif dispatch.status == 'Processing' %}
-            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Đang xử lý</span>
-            {% elif dispatch.status == 'Overdue' %}
-            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">Quá hạn</span>
-            {% else %}
-            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">Chờ phân công</span>
-            {% endif %}
+        <div class="ui-admin-inline">
+            <span class="ui-text-muted">Trạng thái:</span>
+            {% ui_badge "document.officialdispatch:status" dispatch.status dispatch.get_status_display %}
         </div>
     </div>
 
     <!-- Khối thông tin chi tiết công văn -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
+    <div class="ui-card">
         <div>
-            <div class="flex items-center gap-2 mb-2">
+            <div class="ui-admin-inline">
                 {% if dispatch.dispatch_type == 'Incoming' %}
-                <span class="px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-700">CÔNG VĂN ĐẾN</span>
+                <span class="ui-font-label">CÔNG VĂN ĐẾN</span>
                 {% elif dispatch.dispatch_type == 'Outgoing' %}
-                <span class="px-2 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-700">CÔNG VĂN ĐI</span>
+                <span class="ui-font-label">CÔNG VĂN ĐI</span>
                 {% else %}
-                <span class="px-2 py-0.5 rounded text-xs font-bold bg-purple-100 text-purple-700">CHỈ ĐẠO NỘI BỘ</span>
+                <span class="ui-font-label">CHỈ ĐẠO NỘI BỘ</span>
                 {% endif %}
-                <span class="text-sm font-semibold text-gray-600">Số: {{ dispatch.dispatch_no|ui_number }}</span>
+                <span class="ui-font-label">Số: {{ dispatch.dispatch_no|ui_number }}</span>
                 {% if dispatch.original_doc_no %}
-                <span class="text-xs text-gray-400">(Số gốc: {{ dispatch.original_doc_no|ui_number }})</span>
+                <span class="ui-text-muted">(Số gốc: {{ dispatch.original_doc_no|ui_number }})</span>
                 {% endif %}
             </div>
-            <h1 class="text-xl font-bold text-gray-900 leading-snug">{{ dispatch.title|ui_number }}</h1>
+            {% include "ui/page_header.html" with title=dispatch.title description="Thông tin văn bản, phân công và quá trình xử lý." %}
         </div>
 
         <!-- Lưới metadata -->
-        <div class="ui-layout-split grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50/70 p-4 rounded-xl text-xs text-gray-700">
+        <div class="ui-layout-split">
             <div>
-                <span class="text-gray-400 block mb-0.5">Cơ quan / Đơn vị ban hành:</span>
-                <span class="font-semibold text-gray-900">{{ dispatch.issuing_organization|ui_number }}</span>
+                <span class="ui-text-muted">Cơ quan / Đơn vị ban hành:</span>
+                <span class="ui-font-label">{{ dispatch.issuing_organization|ui_number }}</span>
             </div>
             <div>
-                <span class="text-gray-400 block mb-0.5">Ngày ban hành / Ngày đến:</span>
-                <span class="font-semibold text-gray-900">{{ dispatch.issue_date|date:"d/m/Y" }} — Đến ngày: {{ dispatch.received_or_sent_date|date:"d/m/Y" }}</span>
+                <span class="ui-text-muted">Ngày ban hành / Ngày đến:</span>
+                <span class="ui-font-label">{{ dispatch.issue_date|date:"d/m/Y" }} — Đến ngày: {{ dispatch.received_or_sent_date|date:"d/m/Y" }}</span>
             </div>
             <div>
-                <span class="text-gray-400 block mb-0.5">Phòng ban chủ trì xử lý:</span>
-                <span class="font-semibold text-gray-900">{{ dispatch.department.department_name|default:"Chưa phân công"|ui_number }}</span>
+                <span class="ui-text-muted">Phòng ban chủ trì xử lý:</span>
+                <span class="ui-font-label">{{ dispatch.department.department_name|default:"Chưa phân công"|ui_number }}</span>
             </div>
             <div>
-                <span class="text-gray-400 block mb-0.5">Cán bộ phụ trách chính:</span>
-                <span class="font-semibold text-gray-900">{{ dispatch.assigned_to.full_name|default:"Chưa phân công"|ui_number }}</span>
+                <span class="ui-text-muted">Cán bộ phụ trách chính:</span>
+                <span class="ui-font-label">{{ dispatch.assigned_to.full_name|default:"Chưa phân công"|ui_number }}</span>
             </div>
             <div>
-                <span class="text-gray-400 block mb-0.5">Hạn xử lý (Deadline):</span>
-                <span class="font-semibold {% if dispatch.due_date and dispatch.due_date < today %}text-red-600 font-bold{% else %}text-gray-900{% endif %}">
+                <span class="ui-text-muted">Hạn xử lý (Deadline):</span>
+                <span class="ui-font-label">
                     {{ dispatch.due_date|date:"d/m/Y"|default:"Không có hạn" }}
                 </span>
             </div>
             <div>
-                <span class="text-gray-400 block mb-0.5">Độ khẩn / Độ mật:</span>
-                <span class="font-semibold text-gray-900">{{ dispatch.get_urgency_level_display|ui_number }} / {{ dispatch.get_security_level_display|ui_number }}</span>
+                <span class="ui-text-muted">Độ khẩn / Độ mật:</span>
+                <span class="ui-font-label">{{ dispatch.get_urgency_level_display|ui_number }} / {{ dispatch.get_security_level_display|ui_number }}</span>
             </div>
         </div>
 
         <!-- Bút phê / Ý kiến chỉ đạo -->
         {% if dispatch.leadership_directive %}
-        <div class="p-4 rounded-xl border border-amber-200 bg-amber-50/50">
-            <h3 class="text-xs font-bold text-amber-800 uppercase tracking-wide mb-1 flex items-center gap-1.5">
-                <span>✍️</span> Bút phê / Ý kiến chỉ đạo của Lãnh đạo
+        <div class="ui-admin-panel">
+            <h3 class="ui-field-label">
+                 Bút phê / Ý kiến chỉ đạo của Lãnh đạo
             </h3>
-            <p class="text-sm text-amber-900 whitespace-pre-line">{{ dispatch.leadership_directive|ui_number }}</p>
+            <p class="ui-admin-preline">{{ dispatch.leadership_directive|ui_number }}</p>
         </div>
         {% endif %}
 
         <!-- Tệp đính kèm -->
         <div>
-            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Tệp đính kèm văn bản</h3>
+            <h3 class="ui-field-label">Tệp đính kèm văn bản</h3>
             {% if dispatch.attachment %}
-            <a href="{{ dispatch.attachment.url }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-blue-700 text-xs font-semibold shadow-sm transition">
-                <span>📎</span> Tải / Xem văn bản scan
+            <a href="{{ dispatch.attachment.url }}" target="_blank" class="ui-button ui-button--secondary">
+                 Tải / Xem văn bản scan
             </a>
             {% else %}
-            <p class="text-xs text-gray-400 italic">Không có tệp đính kèm.</p>
+            <p class="ui-text-muted">Không có tệp đính kèm.</p>
             {% endif %}
         </div>
     </div>
 
     <!-- Khối cập nhật tiến độ xử lý -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-4">
-        <h2 class="text-sm font-bold text-gray-900 flex items-center gap-2">
-            <span>💬</span> Cập nhật tiến độ & Báo cáo kết quả xử lý
+    <div class="ui-card">
+        <h2 class="ui-card-title">
+             Cập nhật tiến độ & Báo cáo kết quả xử lý
         </h2>
-        <form method="post" class="space-y-3">
+        <form method="post" class="ui-admin-form" data-ui-form>{% include "ui/error_summary.html" %}
             {% csrf_token %}
-            <div class="ui-layout-split grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="ui-layout-split">
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Loại hành động</label>
-                    <input type="text" name="action_type" value="Báo cáo tiến độ" class="w-full text-xs rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_detail-action_type-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="action_type" label="Loại hành động" type="text" value="Báo cáo tiến độ" %}{% endwith %}{% endwith %}
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Cập nhật trạng thái văn bản</label>
-                    <select name="new_status" class="w-full text-xs rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <div class="ui-field"><label for="dispatch_detail-new_status-2-{{ forloop.counter|default:'0' }}">Cập nhật trạng thái văn bản</label><select name="new_status"  id="dispatch_detail-new_status-2-{{ forloop.counter|default:'0' }}">
                         {% for val, label in status_choices %}
                         <option value="{{ val }}" {% if dispatch.status == val %}selected{% endif %}>{{ label|ui_number }}</option>
                         {% endfor %}
-                    </select>
+                    </select></div>
                 </div>
             </div>
             <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">Ý kiến / Nội dung xử lý</label>
-                <textarea name="comment" rows="3" required placeholder="Nhập tóm tắt kết quả xử lý, văn bản gửi đi, hoặc vướng mắc cần ý kiến..." class="w-full text-xs rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                <div class="ui-field"><label for="dispatch_detail-comment-3-{{ forloop.counter|default:'0' }}">Ý kiến / Nội dung xử lý</label><textarea name="comment" rows="3" required  id="dispatch_detail-comment-3-{{ forloop.counter|default:'0' }}"></textarea></div>
             </div>
-            <div class="flex justify-end">
-                <button type="submit" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-xs font-semibold transition">
+            <div class="ui-admin-inline">
+                <button type="submit" class="ui-button ui-button--primary">
                     Gửi cập nhật tiến độ
                 </button>
             </div>
@@ -128,25 +118,25 @@
     </div>
 
     <!-- Lịch sử luân chuyển & xử lý -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 class="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <span>🕒</span> Quá trình luân chuyển & xử lý
+    <div class="ui-card">
+        <h2 class="ui-card-title">
+             Quá trình luân chuyển & xử lý
         </h2>
-        <div class="space-y-4">
+        <div class="ui-admin-stack">
             {% for t in trackings %}
-            <div class="flex gap-3 border-l-2 border-blue-500 pl-4 py-1">
-                <div class="flex-1">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-gray-900">{{ t.actor.full_name|ui_number }} — <span class="text-blue-600 font-normal">{{ t.action_type|ui_number }}</span></span>
-                        <span class="text-xs text-gray-600">{{ t.action_date|date:"H:i d/m/Y" }}</span>
+            <div class="ui-admin-history">
+                <div class="ui-admin-inline">
+                    <div class="ui-admin-inline">
+                        <span class="ui-font-label">{{ t.actor.full_name|ui_number }} — <span>{{ t.action_type|ui_number }}</span></span>
+                        <span class="ui-text-muted">{{ t.action_date|date:"H:i d/m/Y" }}</span>
                     </div>
                     {% if t.comment %}
-                    <p class="text-xs text-gray-600 mt-1 bg-gray-50 p-2 rounded-lg">{{ t.comment|ui_number }}</p>
+                    <p class="ui-text-muted">{{ t.comment|ui_number }}</p>
                     {% endif %}
                 </div>
             </div>
             {% empty %}
-            <p class="text-xs text-gray-400 italic">Chưa có lịch sử xử lý nào được ghi nhận.</p>
+            <p class="ui-text-muted">Chưa có lịch sử xử lý nào được ghi nhận.</p>
             {% endfor %}
         </div>
     </div>

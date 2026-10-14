@@ -1,58 +1,56 @@
-{% extends "base.html" %}
+{% extends "portal/administration_base.html" %}
+{% load ui_components %}
 {% block title %}Đề nghị Văn phòng phẩm{% endblock %}
-{% block content %}
-<h1 class="text-lg font-bold text-gray-900 mb-4">Đề nghị cấp Văn phòng phẩm</h1>
+{% block administration_content %}
+{% include "ui/page_header.html" with title="Đề nghị văn phòng phẩm" description="Tra cứu và xử lý thông tin trong phạm vi được cấp quyền." %}
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-    <h2 class="text-sm font-bold text-gray-900 mb-3">Tạo đề nghị mới</h2>
-    <form method="post" action="{% url 'portal:supply_request_create' %}">
+<div class="ui-card">
+    <h2 class="ui-card-title">Tạo đề nghị mới</h2>
+    <form method="post" action="{% url 'portal:supply_request_create' %}" data-ui-form>{% include "ui/error_summary.html" %}
         {% csrf_token %}
-        <div id="supply-lines" class="space-y-2 mb-3">
-            <div class="ui-layout-split grid grid-cols-2 gap-3">
-                <select name="item" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <div id="supply-lines" class="ui-admin-stack">
+            <div class="ui-layout-split">
+                <div class="ui-field"><label for="supply_request_list-item-4-{{ forloop.counter|default:'0' }}">Vật tư</label><select name="item"  id="supply_request_list-item-4-{{ forloop.counter|default:'0' }}">
                     <option value="">-- Chọn vật tư --</option>
                     {% for i in items %}<option value="{{ i.id }}">{{ i.item_name|ui_number }} ({{ i.unit|ui_number }})</option>{% endfor %}
-                </select>
-                <input type="number" name="quantity" min="1" placeholder="Số lượng" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+                </select></div>
+                {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="supply_request_list-quantity-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" min="1" %}{% endwith %}{% endwith %}
             </div>
-            <div class="ui-layout-split grid grid-cols-2 gap-3">
-                <select name="item" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <div class="ui-layout-split">
+                <div class="ui-field"><label for="supply_request_list-item-5-{{ forloop.counter|default:'0' }}">Vật tư</label><select name="item"  id="supply_request_list-item-5-{{ forloop.counter|default:'0' }}">
                     <option value="">-- Chọn vật tư (dòng 2, tùy chọn) --</option>
                     {% for i in items %}<option value="{{ i.id }}">{{ i.item_name|ui_number }} ({{ i.unit|ui_number }})</option>{% endfor %}
-                </select>
-                <input type="number" name="quantity" min="1" placeholder="Số lượng" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+                </select></div>
+                {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="supply_request_list-quantity-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" min="1" %}{% endwith %}{% endwith %}
             </div>
-            <div class="ui-layout-split grid grid-cols-2 gap-3">
-                <select name="item" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <div class="ui-layout-split">
+                <div class="ui-field"><label for="supply_request_list-item-6-{{ forloop.counter|default:'0' }}">Vật tư</label><select name="item"  id="supply_request_list-item-6-{{ forloop.counter|default:'0' }}">
                     <option value="">-- Chọn vật tư (dòng 3, tùy chọn) --</option>
                     {% for i in items %}<option value="{{ i.id }}">{{ i.item_name|ui_number }} ({{ i.unit|ui_number }})</option>{% endfor %}
-                </select>
-                <input type="number" name="quantity" min="1" placeholder="Số lượng" class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+                </select></div>
+                {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="supply_request_list-quantity-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" min="1" %}{% endwith %}{% endwith %}
             </div>
         </div>
-        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Gửi đề nghị</button>
+        <button type="submit" class="ui-button ui-button--primary">Gửi đề nghị</button>
     </form>
 </div>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <h2 class="text-sm font-bold text-gray-900 mb-3">Đề nghị của tôi</h2>
-    <div class="overflow-x-auto mobile-table-scroll">
-        <table class="w-full text-sm">
-        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Số đề nghị</th><th class="py-2 pr-4">Ngày</th><th class="py-2 pr-4">Vật tư</th><th class="py-2">Trạng thái</th></tr></thead>
-        <tbody class="divide-y divide-gray-100">
+<div class="ui-card">
+    <h2 class="ui-card-title">Đề nghị của tôi</h2>
+    <div class="mobile-table-scroll ui-scroll" tabindex="0" role="region" aria-label="Đề nghị văn phòng phẩm của tôi; cuộn ngang để xem đầy đủ">
+        <table class="ui-table"><caption class="ui-sr-only">Đề nghị văn phòng phẩm của tôi</caption>
+        <thead><tr><th scope="col" >Số đề nghị</th><th scope="col" >Ngày</th><th scope="col" >Vật tư</th><th scope="col" >Trạng thái</th></tr></thead>
+        <tbody>
         {% for r in requests %}
         <tr>
-            <td class="py-2 pr-4 text-gray-500">{{ r.request_no|ui_number }}</td>
-            <td class="py-2 pr-4">{{ r.request_date|ui_number }}</td>
-            <td class="py-2 pr-4">{% for line in r.items.all %}{{ line.item.item_name|ui_number }} x{{ line.quantity_requested|ui_number }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
-            <td class="py-2">
-                <span class="px-2.5 py-1 rounded-full text-xs font-medium
-                    {% if r.status == 'Issued' %}bg-green-100 text-green-700
-                    {% elif r.status == 'Rejected' %}bg-red-100 text-red-700
-                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">{{ r.get_status_display|ui_number }}</span>
+            <td>{{ r.request_no|ui_number }}</td>
+            <td>{{ r.request_date|ui_date }}</td>
+            <td>{% for line in r.items.all %}{{ line.item.item_name|ui_number }} x{{ line.quantity_requested|ui_number }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+            <td>
+                {% ui_badge "office.supplyrequest:status" r.status r.get_status_display %}
             </td>
         </tr>
-        {% empty %}<tr><td colspan="4" class="py-6 text-center text-gray-400">Chưa có đề nghị nào.</td></tr>{% endfor %}
+        {% empty %}<tr><td colspan="4" >{% include "ui/empty_state.html" with title="Chưa có đề nghị nào." description="Danh sách trong phạm vi đang xem." icon="office" %}</td></tr>{% endfor %}
         </tbody>
     </table>
     </div>

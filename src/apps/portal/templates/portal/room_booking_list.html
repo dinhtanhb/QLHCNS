@@ -1,49 +1,48 @@
-{% extends "base.html" %}
+{% extends "portal/administration_base.html" %}
+{% load ui_components %}
 {% block title %}Đặt phòng họp{% endblock %}
-{% block content %}
-<h1 class="text-lg font-bold text-gray-900 mb-4">Đặt phòng họp</h1>
+{% block administration_content %}
+{% include "ui/page_header.html" with title="Đặt phòng họp" description="Tra cứu và xử lý thông tin trong phạm vi được cấp quyền." %}
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-    <h2 class="text-sm font-bold text-gray-900 mb-3">Đặt phòng mới</h2>
-    <form method="post" action="{% url 'portal:room_booking_create' %}" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+<div class="ui-card">
+    <h2 class="ui-card-title">Đặt phòng mới</h2>
+    <form method="post" action="{% url 'portal:room_booking_create' %}" class="ui-admin-form-grid" data-ui-form>{% include "ui/error_summary.html" %}
         {% csrf_token %}
-        <select name="room" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <div class="ui-field"><label for="room_booking_list-room-4-{{ forloop.counter|default:'0' }}">Phòng họp</label><select name="room" required  id="room_booking_list-room-4-{{ forloop.counter|default:'0' }}">
             {% for r in rooms %}<option value="{{ r.id }}">{{ r.room_name|ui_number }} ({{ r.capacity|ui_number }} người)</option>{% endfor %}
-        </select>
-        <input type="text" name="purpose" placeholder="Mục đích họp" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <input type="datetime-local" name="start_time" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <input type="datetime-local" name="end_time" required class="rounded-md border border-gray-300 px-3 py-2 text-sm">
-        <button type="submit" class="md:col-span-4 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Đặt phòng</button>
+        </select></div>
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="room_booking_list-purpose-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="purpose" label="Mục đích" type="text" required=True %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="room_booking_list-start_time-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="start_time" label="Bắt đầu" type="datetime-local" required=True %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="room_booking_list-end_time-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="end_time" label="Kết thúc" type="datetime-local" required=True %}{% endwith %}{% endwith %}
+        <button type="submit" class="ui-button ui-button--primary">Đặt phòng</button>
     </form>
-    <p class="text-xs text-gray-400 mt-2">Yêu cầu sẽ ở trạng thái "Chờ duyệt" cho tới khi Hành chính duyệt.</p>
+    <p class="ui-text-muted">Yêu cầu sẽ ở trạng thái "Chờ duyệt" cho tới khi Hành chính duyệt.</p>
 </div>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <h2 class="text-sm font-bold text-gray-900 mb-3">Lịch đặt phòng sắp tới</h2>
-    <div class="overflow-x-auto mobile-table-scroll">
-        <table class="w-full text-sm">
-        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Phòng</th><th class="py-2 pr-4">Người đặt</th><th class="py-2 pr-4">Thời gian</th><th class="py-2 pr-4">Mục đích</th><th class="py-2 pr-4">Trạng thái</th><th class="py-2"></th></tr></thead>
-        <tbody class="divide-y divide-gray-100">
+<div class="ui-card">
+    <h2 class="ui-card-title">Lịch đặt phòng sắp tới</h2>
+    <div class="mobile-table-scroll ui-scroll" tabindex="0" role="region" aria-label="Lịch đặt phòng; cuộn ngang để xem đầy đủ">
+        <table class="ui-table"><caption class="ui-sr-only">Lịch đặt phòng</caption>
+        <thead><tr><th scope="col" >Phòng</th><th scope="col" >Người đặt</th><th scope="col" >Thời gian</th><th scope="col" >Mục đích</th><th scope="col" >Trạng thái</th><th scope="col">Thao tác</th></tr></thead>
+        <tbody>
         {% for b in upcoming %}
         <tr>
-            <td class="py-2 pr-4 font-medium">{{ b.room|ui_number }}</td>
-            <td class="py-2 pr-4">{{ b.employee|ui_number }}</td>
-            <td class="py-2 pr-4">{{ b.start_time|date:"d/m H:i" }} - {{ b.end_time|date:"H:i" }}</td>
-            <td class="py-2 pr-4 text-gray-500">{{ b.purpose|ui_number }}</td>
-            <td class="py-2 pr-4">
-                <span class="px-2.5 py-1 rounded-full text-xs font-medium
-                    {% if b.status == 'Approved' %}bg-green-100 text-green-700
-                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">{{ b.get_status_display|ui_number }}</span>
+            <td>{{ b.room|ui_number }}</td>
+            <td>{{ b.employee|ui_number }}</td>
+            <td>{{ b.start_time|date:"d/m H:i" }} - {{ b.end_time|date:"H:i" }}</td>
+            <td>{{ b.purpose|ui_number }}</td>
+            <td>
+                {% ui_badge "office.roombooking:status" b.status b.get_status_display %}
             </td>
-            <td class="py-2">
+            <td>
                 {% if b.employee.user_account.user == request.user %}
-                <form method="post" action="{% url 'portal:room_booking_cancel' b.pk %}" onsubmit="return confirm('Hủy đặt phòng này?')">
-                    {% csrf_token %}<button type="submit" class="text-red-600 text-xs">Hủy</button>
+                <form method="post" action="{% url 'portal:room_booking_cancel' b.pk %}" data-ui-confirm="Hủy đặt phòng này?" data-ui-form>{% include "ui/error_summary.html" %}
+                    {% csrf_token %}<button type="submit" class="ui-button ui-button--danger">Hủy</button>
                 </form>
                 {% endif %}
             </td>
         </tr>
-        {% empty %}<tr><td colspan="6" class="py-6 text-center text-gray-400">Chưa có lịch đặt phòng nào.</td></tr>{% endfor %}
+        {% empty %}<tr><td colspan="6" >{% include "ui/empty_state.html" with title="Chưa có lịch đặt phòng nào." description="Danh sách trong phạm vi đang xem." icon="office" %}</td></tr>{% endfor %}
         </tbody>
     </table>
     </div>

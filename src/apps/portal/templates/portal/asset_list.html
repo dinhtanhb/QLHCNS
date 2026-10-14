@@ -1,26 +1,27 @@
-{% extends "base.html" %}
+{% extends "portal/administration_base.html" %}
+{% load ui_components %}
 {% block title %}Tài sản của tôi{% endblock %}
-{% block content %}
-<h1 class="text-lg font-bold text-gray-900 mb-4">Tài sản đang sử dụng</h1>
-{% if not can_manage_asset %}<p class="mb-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">Chế độ chỉ xem thông tin tài sản.</p>{% endif %}
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <div class="overflow-x-auto">
-    <table class="w-full text-sm">
+{% block administration_content %}
+{% include "ui/page_header.html" with title="Tài sản đang sử dụng" description="Tra cứu và xử lý thông tin trong phạm vi được cấp quyền." %}
+{% if not can_manage_asset %}<p>Chế độ chỉ xem thông tin tài sản.</p>{% endif %}
+<div class="ui-card"><h2 class="ui-card-title">Danh sách</h2>
+    <div class="ui-scroll mobile-table-scroll" tabindex="0" role="region" aria-label="Tài sản được cấp phát; cuộn ngang để xem đầy đủ">
+    <table class="ui-table"><caption class="ui-sr-only">Tài sản được cấp phát</caption>
         <thead>
-            <tr class="text-left text-gray-500 border-b border-gray-200">
-                <th class="py-2 pr-4">Mã tài sản</th><th class="py-2 pr-4">Tên tài sản</th><th class="py-2 pr-4">Loại</th><th class="py-2">Ngày nhận</th>
+            <tr>
+                <th scope="col" >Mã tài sản</th><th scope="col" >Tên tài sản</th><th scope="col" >Loại</th><th scope="col" >Ngày nhận</th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-gray-100">
+        <tbody>
         {% for a in allocations %}
         <tr>
-            <td class="py-2.5 pr-4 text-gray-500">{{ a.asset.asset_code|ui_number }}</td>
-            <td class="py-2.5 pr-4 font-medium">{{ a.asset.asset_name|ui_number }}</td>
-            <td class="py-2.5 pr-4">{{ a.asset.asset_type|ui_number }}</td>
-            <td class="py-2.5">{{ a.assigned_date|ui_number }}</td>
+            <td>{{ a.asset.asset_code|ui_number }}</td>
+            <td>{{ a.asset.asset_name|ui_number }}</td>
+            <td>{{ a.asset.asset_type|ui_number }}</td>
+            <td>{{ a.assigned_date|ui_date }}</td>
         </tr>
         {% empty %}
-        <tr><td colspan="4" class="py-6 text-center text-gray-400">Hiện không có tài sản nào được cấp phát.</td></tr>
+        <tr><td colspan="4" >{% include "ui/empty_state.html" with title="Hiện không có tài sản nào được cấp phát." description="Danh sách trong phạm vi đang xem." icon="office" %}</td></tr>
         {% endfor %}
         </tbody>
     </table>

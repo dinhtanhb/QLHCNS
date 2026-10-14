@@ -1,15 +1,16 @@
-{% extends "base.html" %}
+{% extends "portal/administration_base.html" %}
+{% load ui_components %}
 {% block title %}Duyệt cấp văn phòng phẩm{% endblock %}
-{% block content %}<div class="ui-page">
-  <header class="ui-page-header"><h1 class="ui-page-title">Duyệt cấp văn phòng phẩm</h1></header>
+{% block administration_content %}<div class="ui-page">
+  <header class="ui-page-header">{% include "ui/page_header.html" with title="Duyệt đề nghị văn phòng phẩm" description="Tra cứu và xử lý thông tin trong phạm vi được cấp quyền." %}</header>
   <section class="ui-card"><h2 class="ui-card-title">Chờ duyệt</h2><div class="ui-scroll" tabindex="0" role="region" aria-label="Đề nghị chờ duyệt">
-    <table class="ui-table"><thead><tr><th>Số đề nghị</th><th>Người đề nghị</th><th>Ngày</th><th>Vật tư</th><th>Thao tác</th></tr></thead><tbody>
+    <table class="ui-table"><caption class="ui-sr-only">Đề nghị văn phòng phẩm</caption><thead><tr><th scope="col">Số đề nghị</th><th scope="col">Người đề nghị</th><th scope="col">Ngày</th><th scope="col">Vật tư</th><th scope="col">Thao tác</th></tr></thead><tbody>
     {% for r in pending %}<tr><td>{{ r.request_no }}</td><td>{{ r.employee }}</td><td>{{ r.request_date|date:"d/m/Y" }}</td><td>{% for line in r.items.all %}{{ line.item.item_name }} × {{ line.quantity_requested|ui_number }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</td><td>
-      <form method="post" action="{% url 'portal:supply_request_approve' r.pk %}" class="ui-page-actions">{% csrf_token %}<button type="submit" name="decision" value="Approved" class="ui-button ui-button--primary">Duyệt</button><button type="submit" name="decision" value="Rejected" class="ui-button">Từ chối</button></form>
+      <form data-ui-confirm="Xác nhận xử lý yêu cầu này?" method="post" action="{% url 'portal:supply_request_approve' r.pk %}" class="ui-page-actions ui-admin-form" data-ui-form>{% include "ui/error_summary.html" %}{% csrf_token %}<button type="submit" name="decision" value="Approved" class="ui-button ui-button--primary">Duyệt</button><button type="submit" name="decision" value="Rejected" class="ui-button ui-button--secondary">Từ chối</button></form>
     </td></tr>{% empty %}<tr><td colspan="5">Không có đề nghị chờ duyệt.</td></tr>{% endfor %}</tbody></table>
   </div></section>
   <section class="ui-card"><h2 class="ui-card-title">Chờ cấp phát</h2><div class="ui-scroll" tabindex="0" role="region" aria-label="Đề nghị đã duyệt">
-    <table class="ui-table"><thead><tr><th>Số đề nghị</th><th>Người đề nghị</th><th>Vật tư</th><th>Thao tác</th></tr></thead><tbody>
-    {% for r in approved %}<tr><td>{{ r.request_no }}</td><td>{{ r.employee }}</td><td>{% for line in r.items.all %}{{ line.item.item_name }} × {{ line.quantity_requested|ui_number }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</td><td><form method="post" action="{% url 'portal:supply_request_issue' r.pk %}">{% csrf_token %}<button type="submit" class="ui-button ui-button--primary">Cấp phát</button></form></td></tr>{% empty %}<tr><td colspan="4">Không có đề nghị chờ cấp phát.</td></tr>{% endfor %}</tbody></table>
+    <table class="ui-table"><caption class="ui-sr-only">Đề nghị văn phòng phẩm</caption><thead><tr><th scope="col">Số đề nghị</th><th scope="col">Người đề nghị</th><th scope="col">Vật tư</th><th scope="col">Thao tác</th></tr></thead><tbody>
+    {% for r in approved %}<tr><td>{{ r.request_no }}</td><td>{{ r.employee }}</td><td>{% for line in r.items.all %}{{ line.item.item_name }} × {{ line.quantity_requested|ui_number }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</td><td><form method="post" action="{% url 'portal:supply_request_issue' r.pk %}" data-ui-form>{% include "ui/error_summary.html" %}{% csrf_token %}<button type="submit" class="ui-button ui-button--primary">Cấp phát</button></form></td></tr>{% empty %}<tr><td colspan="4">{% include "ui/empty_state.html" with title="Không có đề nghị chờ cấp phát." description="Danh sách trong phạm vi đang xem." icon="office" %}</td></tr>{% endfor %}</tbody></table>
   </div></section>
 </div>{% endblock %}

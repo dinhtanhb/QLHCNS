@@ -1,71 +1,58 @@
-{% extends "base.html" %}
+{% extends "portal/administration_base.html" %}
+{% load ui_components %}
 {% block title %}Vào sổ công văn{% endblock %}
-{% block content %}
-<div class="max-w-2xl bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <h1 class="text-lg font-bold text-gray-900 mb-4">Vào sổ Công văn</h1>
-    <form method="post" enctype="multipart/form-data" class="space-y-4">
+{% block administration_content %}
+<div class="ui-card">
+    {% include "ui/page_header.html" with title="Ghi nhận công văn mới" description="Tra cứu và xử lý thông tin trong phạm vi được cấp quyền." %}
+    <form method="post" enctype="multipart/form-data" class="ui-admin-form" data-ui-form>{% include "ui/error_summary.html" %}
         {% csrf_token %}
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Loại văn bản</label>
-            <select name="dispatch_type" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+            <div class="ui-field"><label for="dispatch_create-dispatch_type-9-{{ forloop.counter|default:'0' }}">Loại văn bản</label><select name="dispatch_type" required  id="dispatch_create-dispatch_type-9-{{ forloop.counter|default:'0' }}">
                 <option value="Incoming">Công văn đến</option>
                 <option value="Outgoing">Công văn đi</option>
                 <option value="InternalDirective">Chỉ đạo nội bộ</option>
-            </select>
+            </select></div>
         </div>
-        <div class="ui-layout-split grid grid-cols-2 gap-3">
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Số công văn</label>
-                <input type="text" name="dispatch_no" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Số hiệu gốc (nếu là CV đến)</label>
-                <input type="text" name="original_doc_no" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
+        <div class="ui-layout-split">
+            <div>{% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-dispatch_no-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="dispatch_no" label="Số công văn" type="text" required=True %}{% endwith %}{% endwith %}</div>
+            <div>{% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-original_doc_no-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="original_doc_no" label="Số hiệu gốc (nếu là CV đến)" type="text" %}{% endwith %}{% endwith %}</div>
         </div>
-        <div><label class="block text-sm font-medium text-gray-700 mb-1">Trích yếu nội dung</label>
-            <input type="text" name="title" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
-        <div><label class="block text-sm font-medium text-gray-700 mb-1">Cơ quan / Đơn vị ban hành</label>
-            <input type="text" name="issuing_organization" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
-        <div class="ui-layout-split grid grid-cols-2 gap-3">
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Ngày ban hành</label>
-                <input type="date" name="issue_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Ngày đến / Ngày gửi</label>
-                <input type="date" name="received_or_sent_date" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
+        <div>{% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-title-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="title" label="Trích yếu nội dung" type="text" required=True %}{% endwith %}{% endwith %}</div>
+        <div>{% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-issuing_organization-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="issuing_organization" label="Cơ quan / Đơn vị ban hành" type="text" required=True %}{% endwith %}{% endwith %}</div>
+        <div class="ui-layout-split">
+            <div>{% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-issue_date-5-"|add:row_number %}{% include "ui/field.html" with id=field_id name="issue_date" label="Ngày ban hành" type="date" required=True %}{% endwith %}{% endwith %}</div>
+            <div>{% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-received_or_sent_date-6-"|add:row_number %}{% include "ui/field.html" with id=field_id name="received_or_sent_date" label="Ngày đến / Ngày gửi" type="date" required=True %}{% endwith %}{% endwith %}</div>
         </div>
-        <div class="ui-layout-split grid grid-cols-2 gap-3">
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Độ khẩn</label>
-                <select name="urgency_level" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <div class="ui-layout-split">
+            <div><div class="ui-field"><label for="dispatch_create-urgency_level-10-{{ forloop.counter|default:'0' }}">Độ khẩn</label><select name="urgency_level"  id="dispatch_create-urgency_level-10-{{ forloop.counter|default:'0' }}">
                     <option value="Normal">Thường</option><option value="Urgent">Khẩn</option>
                     <option value="VeryUrgent">Thượng khẩn</option><option value="TopUrgent">Hỏa tốc</option>
-                </select></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Độ mật</label>
-                <select name="security_level" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+                </select></div></div>
+            <div><div class="ui-field"><label for="dispatch_create-security_level-11-{{ forloop.counter|default:'0' }}">Độ mật</label><select name="security_level"  id="dispatch_create-security_level-11-{{ forloop.counter|default:'0' }}">
                     <option value="Normal">Thường</option><option value="Confidential">Mật</option><option value="TopSecret">Tuyệt mật</option>
-                </select></div>
+                </select></div></div>
         </div>
-        <div class="ui-layout-split grid grid-cols-2 gap-3">
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Phòng ban chủ trì</label>
-                <select name="department" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <div class="ui-layout-split">
+            <div><div class="ui-field"><label for="dispatch_create-department-12-{{ forloop.counter|default:'0' }}">Phòng ban chủ trì</label><select name="department"  id="dispatch_create-department-12-{{ forloop.counter|default:'0' }}">
                     <option value="">-- Chọn --</option>
                     {% for d in departments %}<option value="{{ d.id }}">{{ d.department_name|ui_number }}</option>{% endfor %}
-                </select></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Người phụ trách chính</label>
-                <select name="assigned_to" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+                </select></div></div>
+            <div><div class="ui-field"><label for="dispatch_create-assigned_to-13-{{ forloop.counter|default:'0' }}">Người phụ trách chính</label><select name="assigned_to"  id="dispatch_create-assigned_to-13-{{ forloop.counter|default:'0' }}">
                     <option value="">-- Chọn --</option>
                     {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name|ui_number }}</option>{% endfor %}
-                </select></div>
+                </select></div></div>
         </div>
-        <div class="ui-layout-split grid grid-cols-2 gap-3">
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Người ký phát hành (nếu CV đi)</label>
-                <select name="signer" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+        <div class="ui-layout-split">
+            <div><div class="ui-field"><label for="dispatch_create-signer-14-{{ forloop.counter|default:'0' }}">Người ký phát hành (nếu CV đi)</label><select name="signer"  id="dispatch_create-signer-14-{{ forloop.counter|default:'0' }}">
                     <option value="">-- Chọn --</option>
                     {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name|ui_number }}</option>{% endfor %}
-                </select></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Hạn xử lý</label>
-                <input type="date" name="due_date" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"></div>
+                </select></div></div>
+            <div>{% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-due_date-7-"|add:row_number %}{% include "ui/field.html" with id=field_id name="due_date" label="Hạn xử lý" type="date" %}{% endwith %}{% endwith %}</div>
         </div>
-        <div><label class="block text-sm font-medium text-gray-700 mb-1">Tệp đính kèm scan</label>
-            <input type="file" name="attachment" class="w-full text-sm"></div>
-        <div class="flex gap-3 pt-2">
-            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-medium px-5 py-2.5 rounded-md transition">Vào sổ</button>
-            <a href="{% url 'portal:dispatch_list' %}" class="text-gray-500 hover:text-gray-700 px-5 py-2.5">Hủy</a>
+        <div><div class="ui-field"><label for="dispatch_create-attachment-8-{{ forloop.counter|default:'0' }}">Tệp đính kèm scan</label><input type="file" name="attachment"  id="dispatch_create-attachment-8-{{ forloop.counter|default:'0' }}"></div></div>
+        <div class="ui-admin-inline">
+            <button type="submit" class="ui-button ui-button--primary">Vào sổ</button>
+            <a href="{% url 'portal:dispatch_list' %}" class="ui-admin-link">Hủy</a>
         </div>
     </form>
 </div>

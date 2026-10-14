@@ -1,3 +1,4 @@
-{% extends "base.html" %}
+{% extends "portal/administration_base.html" %}
+{% load ui_components %}
 {% block title %}Duyệt đặt phòng họp{% endblock %}
-{% block content %}{% include "portal/_office_booking_approvals.html" with page_title="Duyệt đặt phòng họp" approve_url_name="portal:room_booking_approve" resource_kind="room" %}{% endblock %}
+{% block administration_content %}{% include "portal/_office_booking_approvals.html" with page_title="Duyệt đặt phòng họp" approve_url_name="portal:room_booking_approve" resource_kind="room" %}{% endblock %}

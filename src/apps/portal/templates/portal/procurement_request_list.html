@@ -1,107 +1,100 @@
-{% extends "base.html" %}
+{% extends "portal/administration_base.html" %}
+{% load ui_components %}
 
 {% block title %}Đề nghị mua sắm{% endblock %}
 
-{% block content %}
-<div class="space-y-6">
+{% block administration_content %}
+<div class="ui-admin-stack">
     <div>
-        <h1 class="text-xl font-bold text-gray-900">Đề nghị mua sắm</h1>
-        <p class="mt-1 text-sm text-gray-500">Tạo đề nghị, theo dõi trạng thái hoặc xử lý các đề nghị chờ duyệt.</p>
+        {% include "ui/page_header.html" with title="Đề nghị mua sắm" description="Tạo đề nghị, theo dõi trạng thái và xử lý yêu cầu mua sắm." %}
     </div>
 
     {% if can_create %}
-    <section class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 class="mb-4 text-base font-semibold text-gray-900">Tạo đề nghị mới</h2>
-        <form method="post" action="{% url 'portal:procurement_request_create' %}" class="space-y-4">
+    <section class="ui-card">
+        <h2 class="ui-card-title">Tạo đề nghị mới</h2>
+        <form method="post" action="{% url 'portal:procurement_request_create' %}" class="ui-admin-form" data-ui-form>{% include "ui/error_summary.html" %}
             {% csrf_token %}
             <div>
-                <label for="procurement-reason" class="mb-1 block text-sm font-medium text-gray-700">Lý do đề nghị</label>
-                <textarea id="procurement-reason" name="reason" rows="2" maxlength="1000"
-                    class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"></textarea>
+                <div class="ui-field"><label for="procurement-reason">Lý do đề nghị</label><textarea id="procurement-reason" name="reason" rows="2" maxlength="1000"
+                    ></textarea></div>
             </div>
             <div>
-                <div class="mb-2 flex items-center justify-between">
-                    <h3 class="text-sm font-medium text-gray-700">Hạng mục cần mua</h3>
-                    <button type="button" id="add-procurement-item" class="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">+ Thêm dòng</button>
+                <div class="ui-admin-inline">
+                    <h3 class="ui-field-label">Hạng mục cần mua</h3>
+                    <button type="button" id="add-procurement-item" class="ui-button ui-button--secondary">Thêm dòng</button>
                 </div>
-                <div id="procurement-items" class="space-y-2">
-                    <div class="grid grid-cols-1 gap-2 sm:grid-cols-12">
-                        <input name="item_name" required maxlength="300" placeholder="Tên hàng hóa/dịch vụ"
-                            class="rounded-md border border-gray-300 px-3 py-2 text-sm sm:col-span-6">
-                        <input name="quantity" required type="number" min="1" value="1" placeholder="Số lượng"
-                            class="rounded-md border border-gray-300 px-3 py-2 text-sm sm:col-span-2">
-                        <input name="estimated_cost" type="number" min="0" step="0.01" placeholder="Đơn giá dự kiến"
-                            class="rounded-md border border-gray-300 px-3 py-2 text-sm sm:col-span-4">
+                <div id="procurement-items" class="ui-admin-stack">
+                    <div class="ui-layout-split">
+                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-item_name-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="item_name" label="Tên hàng hóa/dịch vụ" type="text" maxlength="300" required=True %}{% endwith %}{% endwith %}
+                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-quantity-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" value="1" min="1" required=True %}{% endwith %}{% endwith %}
+                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-estimated_cost-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="estimated_cost" label="Đơn giá dự kiến" type="number" min="0" step="0.01" %}{% endwith %}{% endwith %}
                     </div>
                 </div>
             </div>
-            <button type="submit" class="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800">Gửi đề nghị</button>
+            <button type="submit" class="ui-button ui-button--primary">Gửi đề nghị</button>
         </form>
     </section>
     {% endif %}
 
-    <section class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        <div class="border-b border-gray-200 px-6 py-4">
-            <h2 class="text-base font-semibold text-gray-900">{% if can_approve %}Danh sách đề nghị{% else %}Đề nghị của tôi{% endif %}</h2>
+    <section class="ui-card">
+        <div>
+            <h2 class="ui-card-title">{% if can_approve %}Danh sách đề nghị{% else %}Đề nghị của tôi{% endif %}</h2>
         </div>
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
-                <thead class="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-600">
+        <div class="ui-scroll mobile-table-scroll" tabindex="0" role="region" aria-label="Đề nghị mua sắm; cuộn ngang để xem đầy đủ">
+            <table class="ui-table"><caption class="ui-sr-only">Đề nghị mua sắm</caption>
+                <thead>
                     <tr>
-                        <th class="px-4 py-3">Mã đề nghị</th>
-                        <th class="px-4 py-3">Ngày</th>
-                        {% if can_approve %}<th class="px-4 py-3">Người đề nghị</th><th class="px-4 py-3">Phòng ban</th>{% endif %}
-                        <th class="px-4 py-3">Hạng mục</th>
-                        <th class="px-4 py-3">Lý do</th>
-                        <th class="px-4 py-3 text-right">Dự toán</th>
-                        <th class="px-4 py-3">Trạng thái</th>
-                        {% if can_approve %}<th class="px-4 py-3">Thao tác</th>{% endif %}
+                        <th scope="col" >Mã đề nghị</th>
+                        <th scope="col" >Ngày</th>
+                        {% if can_approve %}<th scope="col" >Người đề nghị</th><th scope="col" >Phòng ban</th>{% endif %}
+                        <th scope="col" >Hạng mục</th>
+                        <th scope="col" >Lý do</th>
+                        <th scope="col" class="ui-number">Dự toán</th>
+                        <th scope="col" >Trạng thái</th>
+                        {% if can_approve %}<th scope="col" >Thao tác</th>{% endif %}
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody>
                     {% for r in requests %}
-                    <tr class="align-top hover:bg-gray-50">
-                        <td class="whitespace-nowrap px-4 py-3 font-medium text-gray-900">{{ r.request_no|ui_number }}</td>
-                        <td class="whitespace-nowrap px-4 py-3">{{ r.request_date|date:"d/m/Y" }}</td>
-                        {% if can_approve %}<td class="px-4 py-3">{{ r.requested_by.full_name|ui_number }}</td><td class="px-4 py-3">{{ r.department.department_name|ui_number }}</td>{% endif %}
-                        <td class="px-4 py-3">
-                            <ul class="space-y-1">
+                    <tr>
+                        <td>{{ r.request_no|ui_number }}</td>
+                        <td>{{ r.request_date|date:"d/m/Y" }}</td>
+                        {% if can_approve %}<td>{{ r.requested_by.full_name|ui_number }}</td><td>{{ r.department.department_name|ui_number }}</td>{% endif %}
+                        <td>
+                            <ul>
                                 {% for item in r.items.all %}
                                 <li>{{ item.item_name|ui_number }} × {{ item.quantity|ui_number }}</li>
-                                {% empty %}<li class="text-gray-400">Không có hạng mục</li>{% endfor %}
+                                {% empty %}<li class="ui-text-muted">Không có hạng mục</li>{% endfor %}
                             </ul>
                         </td>
-                        <td class="max-w-xs px-4 py-3 text-gray-600">{{ r.reason|default:"—"|ui_number }}</td>
-                        <td class="whitespace-nowrap px-4 py-3 text-right">{{ r.total_estimated_cost|floatformat:"0g" }}</td>
-                        <td class="whitespace-nowrap px-4 py-3">
-                            <span class="rounded-full px-2.5 py-1 text-xs font-medium
-                                {% if r.status == 'Approved' or r.status == 'Purchased' %}bg-green-100 text-green-800
-                                {% elif r.status == 'Rejected' %}bg-red-100 text-red-700
-                                {% else %}bg-amber-100 text-amber-800{% endif %}">{{ r.get_status_display|ui_number }}</span>
+                        <td>{{ r.reason|default:"—"|ui_number }}</td>
+                        <td class="ui-number">{{ r.total_estimated_cost|ui_vnd }}</td>
+                        <td>
+                            {% ui_badge "procurement.procurementrequest:status" r.status r.get_status_display %}
                         </td>
                         {% if can_approve %}
-                        <td class="whitespace-nowrap px-4 py-3">
+                        <td>
                             {% if r.status == "Pending" %}
-                            <div class="flex flex-wrap gap-2">
-                                <form method="post" action="{% url 'portal:procurement_request_approve' r.pk %}">
+                            <div class="ui-admin-inline">
+                                <form method="post" action="{% url 'portal:procurement_request_approve' r.pk %}" data-ui-form>{% include "ui/error_summary.html" %}
                                     {% csrf_token %}<input type="hidden" name="decision" value="Approved">
-                                    <button class="text-xs font-medium text-green-700 hover:underline" type="submit">Duyệt</button>
+                                    <button class="ui-button ui-button--secondary" type="submit">Duyệt</button>
                                 </form>
-                                <form method="post" action="{% url 'portal:procurement_request_approve' r.pk %}">
+                                <form data-ui-confirm="Xác nhận xử lý yêu cầu này?" method="post" action="{% url 'portal:procurement_request_approve' r.pk %}" data-ui-form>{% include "ui/error_summary.html" %}
                                     {% csrf_token %}<input type="hidden" name="decision" value="Rejected">
-                                    <button class="text-xs font-medium text-red-700 hover:underline" type="submit">Từ chối</button>
+                                    <button class="ui-button ui-button--danger" type="submit">Từ chối</button>
                                 </form>
                             </div>
                             {% elif r.status == "Approved" %}
-                            <form method="post" action="{% url 'portal:procurement_request_mark_purchased' r.pk %}">
-                                {% csrf_token %}<button class="text-xs font-medium text-blue-700 hover:underline" type="submit">Đánh dấu đã mua</button>
+                            <form method="post" action="{% url 'portal:procurement_request_mark_purchased' r.pk %}" data-ui-form>{% include "ui/error_summary.html" %}
+                                {% csrf_token %}<button class="ui-button ui-button--secondary" type="submit">Đánh dấu đã mua</button>
                             </form>
                             {% else %}—{% endif %}
                         </td>
                         {% endif %}
                     </tr>
                     {% empty %}
-                    <tr><td colspan="{% if can_approve %}9{% else %}6{% endif %}" class="px-4 py-10 text-center text-gray-500">Chưa có đề nghị mua sắm.</td></tr>
+                    <tr><td colspan="{% if can_approve %}9{% else %}6{% endif %}" >{% include "ui/empty_state.html" with title="Chưa có đề nghị mua sắm." description="Danh sách trong phạm vi đang xem." icon="office" %}</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -113,10 +106,23 @@
 <script>
     document.getElementById("add-procurement-item").addEventListener("click", function () {
         const row = document.createElement("div");
-        row.className = "grid grid-cols-1 gap-2 sm:grid-cols-12";
-        row.innerHTML = '<input name="item_name" required maxlength="300" placeholder="Tên hàng hóa/dịch vụ" class="rounded-md border border-gray-300 px-3 py-2 text-sm sm:col-span-6">' +
-            '<input name="quantity" required type="number" min="1" value="1" placeholder="Số lượng" class="rounded-md border border-gray-300 px-3 py-2 text-sm sm:col-span-2">' +
-            '<input name="estimated_cost" type="number" min="0" step="0.01" placeholder="Đơn giá dự kiến" class="rounded-md border border-gray-300 px-3 py-2 text-sm sm:col-span-4">';
+        row.className = "ui-layout-split";
+        const index = document.getElementById("procurement-items").children.length;
+        const fields = [
+            {name:"item_name", label:"Tên hàng hóa/dịch vụ", type:"text", required:true, maxlength:"300"},
+            {name:"quantity", label:"Số lượng", type:"number", required:true, min:"1", value:"1"},
+            {name:"estimated_cost", label:"Đơn giá dự kiến", type:"number", min:"0", step:"0.01"}
+        ];
+        fields.forEach(field => {
+            const wrapper = document.createElement("div"); wrapper.className = "ui-field";
+            const label = document.createElement("label"), input = document.createElement("input");
+            input.id = "procurement-item-" + index + "-" + field.name;
+            label.htmlFor = input.id; label.textContent = field.label;
+            Object.entries(field).filter(([key]) => key !== "label").forEach(([key,value]) => {
+                if (key === "required") input.required = value; else input.setAttribute(key,value);
+            });
+            wrapper.append(label,input); row.appendChild(wrapper);
+        });
         document.getElementById("procurement-items").appendChild(row);
     });
 </script>
