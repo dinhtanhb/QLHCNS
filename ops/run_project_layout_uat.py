@@ -46,7 +46,8 @@ def main():
     password = next(line.split(': ', 1)[1] for line in (folder / 'DEMO_ACCOUNTS.txt').read_text(encoding='utf-8').splitlines() if line.startswith('Mật khẩu'))
     admin, _ = User.objects.get_or_create(username='demo-layout-admin')
     admin.is_staff = admin.is_superuser = admin.is_active = True
-    admin.set_password(password)
+    if not admin.check_password(password):
+        admin.set_password(password)
     admin.save()
     # Parameterized pages and POST endpoints have separate business-flow suites.
     excluded = {'login', 'logout', 'service_worker', 'notification_mark_all_read',
@@ -76,11 +77,13 @@ def main():
         page.wait_for_load_state('networkidle')
         for route in routes:
             try:
-                response = page.goto(base + route, wait_until='domcontentloaded')
+                response = page.goto(base + route, wait_until='networkidle')
             except Exception as error:
-                if 'ERR_HTTP_RESPONSE_CODE_FAILURE' not in str(error):
+                if not any(message in str(error) for message in ('ERR_HTTP_RESPONSE_CODE_FAILURE', 'chrome-error://chromewebdata/')):
                     raise
                 response = page.request.get(base + route)
+                if response.status == 200:
+                    response = page.goto(base + route, wait_until='networkidle')
             report['pages'][route] = response.status
             check(response.status in (200, 403, 405), route + ' response ' + str(response.status))
             if response.status != 200:

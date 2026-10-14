@@ -6,7 +6,9 @@
     <h1 class="text-lg font-bold text-gray-900">Báo cáo Định biên nhân sự</h1>
 
 </div>
-<section class="ui-card ui-query-card no-print">
+
+<div class="ui-card ui-results-card">
+<div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Lọc năm định biên">
 <div class="ui-query-fields">
 {% include "ui/field.html" with id="report-headcount-year" name="year" label="Năm" options_template="ui/query_options/report_headcount-year.html" %}
@@ -14,9 +16,7 @@
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"year" %}
 </form>
 <p class="ui-results-count" aria-live="polite">Có {{ plans|length|ui_number }} phòng ban phù hợp.</p>
-</section>
-
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+</div>
     <div class="overflow-x-auto mobile-table-scroll">
         <table class="w-full text-sm">
         <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Phòng ban</th><th class="py-2 pr-4">Định biên kế hoạch</th><th class="py-2 pr-4">Thực tế</th><th class="py-2">Chênh lệch</th></tr></thead>

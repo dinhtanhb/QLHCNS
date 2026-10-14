@@ -6,7 +6,9 @@
   <div><h1 class="ui-page-title">Quản lý quyết định nhân sự</h1><p class="ui-hr-text">Tra cứu bản nháp, trạng thái duyệt và quyết định đã ban hành.</p></div>
   {% if can_manage_decisions %}<a href="{% url 'portal:hcns_catalog' %}?group=decision" class="ui-button ui-button--primary">+ Soạn quyết định</a>{% endif %}
 </div>
-<section class="ui-card ui-query-card no-print">
+
+<section class="ui-card ui-results-card" aria-label="Danh sách quyết định">
+<div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Tìm và lọc quyết định" role="search">
 <div class="ui-query-fields">
 {% include "ui/field.html" with id="personnel-decision-list-q" name="q" label="Tìm kiếm" value=query %}
@@ -15,8 +17,8 @@
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"q,status" %}
 </form>
 <p class="ui-results-count" aria-live="polite">Có {{ page_obj.paginator.count|ui_number }} quyết định phù hợp.</p>
-</section>
-<div class="ui-card ui-scroll decision-results" role="region" tabindex="0" aria-label="Danh sách quyết định nhân sự">
+</div>
+<div class="ui-scroll decision-results" role="region" tabindex="0" aria-label="Danh sách quyết định nhân sự">
   <table class="ui-table ui-hr-table"><caption class="ui-visually-hidden">Quản lý quyết định nhân sự</caption>
     <thead class="ui-hr-text"><tr><th scope="col">Số quyết định</th><th scope="col">Loại</th><th scope="col">Nhân viên</th><th scope="col">Ngày quyết định</th><th scope="col">Trạng thái</th><th scope="col">Ngày lưu</th></tr></thead>
     <tbody>
@@ -34,4 +36,5 @@
   </table>
 </div>
 {% if page_obj.has_other_pages %}<nav class="ui-pagination" aria-label="Phân trang">{% if page_obj.has_previous %}<a class="ui-button" href="?q={{ query|urlencode }}&amp;status={{ selected_status|urlencode }}&amp;page={{ page_obj.previous_page_number }}">← Trước</a>{% endif %}<span>Trang {{ page_obj.number|ui_number }} / {{ page_obj.paginator.num_pages|ui_number }}</span>{% if page_obj.has_next %}<a class="ui-button" href="?q={{ query|urlencode }}&amp;status={{ selected_status|urlencode }}&amp;page={{ page_obj.next_page_number }}">Tiếp →</a>{% endif %}</nav>{% endif %}
+</section>
 {% endblock %}

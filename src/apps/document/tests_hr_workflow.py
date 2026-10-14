@@ -44,6 +44,33 @@ class HRWorkflowTests(TestCase):
     def history(self, kind, **data):
         return self.client.post(reverse('portal:hr_employee_history_create', args=[self.employee.pk, kind]), data)
 
+    def test_workflow_groups_actions_and_preserves_failed_comment(self):
+        from django.core.exceptions import ValidationError
+        decision = PersonnelDecision.objects.create(
+            employee=self.employee, template_slug='salary-decision',
+            decision_no='SYN-LAYOUT', decision_date=date(2026, 10, 14), status='Draft',
+        )
+        self.client.force_login(self.hr_manager)
+        detail = reverse('portal:personnel_decision_detail', args=[decision.pk])
+        response = self.client.get(detail)
+        self.assertContains(response, 'class="ui-card ui-workflow no-print"')
+        self.assertContains(response, '<details class="ui-workflow-secondary">')
+        self.assertContains(response, 'data-ui-disclosure-close')
+        self.assertNotContains(response, 'class="ui-hr-form no-print"')
+        with patch.object(PersonnelDecision, 'full_clean', side_effect=ValidationError('Synthetic validation error')):
+            response = self.client.post(
+                reverse('portal:personnel_decision_transition', args=[decision.pk, 'cancel']),
+                {'comment': '<Synthetic reason & layout>'}, follow=True,
+            )
+        decision.refresh_from_db()
+        self.assertEqual(decision.status, 'Draft')
+        self.assertContains(response, '<details class="ui-workflow-secondary" open>')
+        self.assertContains(response, '&lt;Synthetic reason &amp; layout&gt;')
+        self.assertContains(response, 'Synthetic validation error')
+        self.assertNotIn('decision_workflow_error', self.client.session)
+        response = self.client.get(detail)
+        self.assertNotContains(response, '&lt;Synthetic reason &amp; layout&gt;')
+
     def test_future_salary_save_draft_and_historical_export(self):
         old = EmployeeSalary.objects.create(employee=self.employee, current_basic_salary=10000000, effective_date=date(2020, 1, 1))
         response = self.client.post(reverse('portal:hr_salary_create', args=[self.employee.pk]),

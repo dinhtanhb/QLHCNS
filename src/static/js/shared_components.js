@@ -30,6 +30,12 @@
    if(!menu.contains(event.target)&&menu.matches(':popover-open'))position();
   },true);
  });
+ document.querySelectorAll('[data-ui-disclosure-close]').forEach(button => {
+  button.addEventListener('click',()=>{
+   const disclosure=button.closest('details');
+   if(disclosure){disclosure.open=false;disclosure.querySelector('summary')?.focus();}
+  });
+ });
  document.querySelectorAll('form[data-ui-form]').forEach(form => {
   const summary=form.querySelector('[data-ui-errors]');
   const controls=()=>Array.from(form.elements).filter(e=>e.matches?.('input,select,textarea')&&e.type!=='hidden'&&e.willValidate&&!e.classList.contains('ui-number-display'));

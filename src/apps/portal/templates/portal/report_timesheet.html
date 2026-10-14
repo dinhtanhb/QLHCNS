@@ -12,7 +12,10 @@
         <button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">🖨 In</button>
     </div>
 </div>
-<section class="ui-card ui-query-card no-print">
+
+<div class="ui-card ui-results-card">
+    <h2 class="text-center font-bold mb-4">Báo cáo Chấm công tháng {{ month }}/{{ year|ui_year }}</h2>
+<div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Lọc kỳ chấm công">
 <div class="ui-query-fields">
 {% include "ui/field.html" with id="report-timesheet-month" name="month" label="Tháng" options_template="ui/query_options/report_timesheet-month.html" %}
@@ -21,10 +24,8 @@
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"month,year" %}
 </form>
 <p class="ui-results-count" aria-live="polite">Có {{ rows|length|ui_number }} nhân viên phù hợp.</p>
-</section>
+</div>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <h2 class="text-center font-bold mb-4">Báo cáo Chấm công tháng {{ month }}/{{ year|ui_year }}</h2>
     <div class="overflow-x-auto">
     <table class="w-full text-sm border border-gray-300 border-collapse">
         <thead>

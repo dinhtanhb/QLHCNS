@@ -7,7 +7,8 @@
     <a href="{% url 'portal:kpi_assign_create' %}" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Tạo chỉ tiêu mới</a>
 </div>
 
-<section class="ui-card ui-query-card no-print">
+<div class="ui-card ui-results-card">
+<div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Lọc kỳ KPI">
 <div class="ui-query-fields">
 {% include "ui/field.html" with id="kpi-score-list-period" name="period" label="Kỳ KPI" options_template="ui/query_options/kpi_score_list-period.html" %}
@@ -15,9 +16,7 @@
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"period" %}
 </form>
 <p class="ui-results-count" aria-live="polite">Có {{ results|length|ui_number }} chỉ tiêu phù hợp.</p>
-</section>
-
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+</div>
     <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead>

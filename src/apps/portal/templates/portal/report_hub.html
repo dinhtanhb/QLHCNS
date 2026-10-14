@@ -8,7 +8,9 @@
     <div><h1 class="ui-page-title">Báo cáo điều hành</h1><p class="ui-page-description">Tổng hợp số liệu từ các phân hệ đang có trong IHRMS.</p></div>
 
   </header>
-<section class="ui-card ui-query-card no-print">
+
+<section class="ui-card ui-results-card ui-results-group" aria-label="Kết quả báo cáo điều hành">
+<div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Lọc kỳ báo cáo">
 <div class="ui-query-fields">
 {% include "ui/field.html" with id="report-hub-from-date" name="from_date" label="Từ ngày" type="date" value=from_date|date:'Y-m-d' %}
@@ -17,9 +19,7 @@
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"from_date,to_date" %}
 </form>
 
-</section>
-
-  <div class="ui-page-actions" role="group" aria-label="Xuất báo cáo">
+</div>  <div class="ui-page-actions" role="group" aria-label="Xuất báo cáo">
     <a class="ui-button ui-button--secondary" href="{% url 'portal:report_hub_export' 'xlsx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Xuất Excel</a>
     <a class="ui-button ui-button--secondary" href="{% url 'portal:report_hub_export' 'docx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Xuất Word</a>
     <a class="ui-button ui-button--secondary" href="{% url 'portal:report_hub_export' 'pptx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Tạo slide</a>
@@ -48,7 +48,7 @@
       <details class="report-data-details">
         <summary>Xem số liệu theo tháng</summary>
         <div class="ui-scroll report-table-scroll" role="region" tabindex="0" aria-label="Bảng biến động nhân sự theo tháng">
-          <table class="ui-table ui-table--movement report-data-table"><caption>Số liệu biến động nhân sự theo tháng</caption><colgroup><col class="ui-col-small"><col class="ui-col-small"><col class="ui-col-small"><col class="ui-col-small"><col class="ui-col-small"></colgroup><thead><tr><th scope="col">Tháng</th><th scope="col">Tuyển mới</th><th scope="col">Nghỉ việc</th><th scope="col">Điều chuyển</th><th scope="col">Bổ nhiệm</th></tr></thead>
+          <table class="ui-table ui-table--movement report-data-table"><caption class="ui-visually-hidden">Số liệu biến động nhân sự theo tháng</caption><colgroup><col class="ui-col-small"><col class="ui-col-small"><col class="ui-col-small"><col class="ui-col-small"><col class="ui-col-small"></colgroup><thead><tr><th scope="col">Tháng</th><th scope="col">Tuyển mới</th><th scope="col">Nghỉ việc</th><th scope="col">Điều chuyển</th><th scope="col">Bổ nhiệm</th></tr></thead>
             <tbody>{% for row in month_rows %}<tr><th scope="row">{{ row.label|ui_number }}</th><td class="ui-number">{{ row.new_hires|ui_number }}</td><td class="ui-number">{{ row.departures|ui_number }}</td><td class="ui-number">{{ row.transfers|ui_number }}</td><td class="ui-number">{{ row.promotions|ui_number }}</td></tr>{% endfor %}</tbody>
           </table>
         </div>
@@ -70,5 +70,6 @@
       <div class="metric-grid">{% for metric in section.metrics %}<div class="metric" data-tone="{% if metric.value > 0 %}{{ metric.tone }}{% else %}neutral{% endif %}"><span class="metric-label">{{ metric.label|ui_number }}</span><strong class="metric-value">{{ metric.display|ui_number }}</strong></div>{% endfor %}</div>
     </section>
   {% endfor %}</div>
+</section>
 </div>
 {% endblock %}

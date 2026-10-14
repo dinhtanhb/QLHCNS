@@ -81,6 +81,8 @@ def main():
                             if version=='after':check(False,key+' fields visible')
                             continue
                         if version=='after':
+                            if name!='admin':
+                                check(form.evaluate("f=>{const c=f.closest('.ui-results-card');return !!c&&!c.classList.contains('no-print')&&!!c.querySelector('table,.hcns-cards,.grid-cols-7,.ui-kpi-grid');}"),key+' filter shares result card')
                             check(not geometry['overflow'],key+' no overflow')
                             check(geometry['height']>=44 and geometry['font']>=14,key+' control size/font')
                             check(geometry['wrapped'] or geometry['baseline']<=1 and 0<=geometry['gap']<=17,key+' action follows final field')
@@ -101,6 +103,22 @@ def main():
                     # Enter submits the native GET. Check reset URL and retained field values.
                     fields=form.locator('[name]').evaluate_all('xs=>xs.map(x=>[x.name,x.value])')
                     button=form.get_by_role('button',name='Áp dụng',exact=True)
+                    last_field=form.locator('input:not([type=hidden]),select').last
+                    last_field.focus()
+                    # Edge date inputs expose day/month/year/calendar tab stops
+                    # inside the same native control before advancing to Apply.
+                    for _ in range(8):
+                        page.keyboard.press('Tab')
+                        if not last_field.evaluate('x=>document.activeElement===x'):
+                            break
+                    check(button.evaluate('x=>document.activeElement===x'),name+' Tab from final field to Apply')
+                    page.keyboard.press('Tab')
+                    check(form.get_by_role('link',name='Xóa lọc',exact=True).evaluate('x=>document.activeElement===x'),name+' Tab from Apply to Reset')
+                    # Browser zoom halves the effective CSS viewport. CSS `zoom`
+                    # would leave media queries at 1440px and is not equivalent.
+                    page.set_viewport_size({'width':720,'height':500})
+                    check(page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),name+' 200 percent effective viewport fits')
+                    page.set_viewport_size({'width':1440,'height':1000})
                     text_field=form.locator('input[type=text]')
                     if text_field.count():text_field.first.focus()
                     else:button.focus()
@@ -116,6 +134,20 @@ def main():
                     check(not page.locator('.ui-query-actions a').count(),name+' reset clears applied filters')
                     cleared=parse_qs(urlsplit(href).query)
                     check(all(k not in cleared for k,v in fields if k not in ('metric','on_date')),name+' reset URL excludes filters')
+                    # Empty text searches retain the toolbar and real results container.
+                    if name in ('employees','decisions','dispatch','people'):
+                        empty=base+route+('&' if '?' in route else '?')+'q=SYNTHETIC-NO-MATCH-RESULTS'
+                        page.goto(empty,wait_until='networkidle')
+                        check(page.locator('.ui-results-card .ui-query-bar').count()==1,name+' empty result toolbar retained')
+                    if name=='employees':
+                        page.goto(base+route,wait_until='networkidle')
+                        page.set_viewport_size({'width':720,'height':500})
+                        check(page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),name+' 200 percent effective viewport fits')
+                        trigger=page.locator('.ui-row-dropdown button').first
+                        trigger.focus();page.keyboard.press('Enter')
+                        check(page.locator('.ui-row-popover:popover-open').count()==1,'employee action dropdown keyboard opens')
+                        page.keyboard.press('Escape')
+                        check(trigger.evaluate('x=>document.activeElement===x'),'employee dropdown Escape restores focus')
             context.close()
         browser.close()
     report['passed']=not report['failures']

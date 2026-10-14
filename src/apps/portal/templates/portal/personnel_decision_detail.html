@@ -13,19 +13,40 @@
     {% if can_download_word %}<a class="ui-button" href="{% url 'portal:personnel_decision_word' decision.pk %}">Tải Word</a>{% endif %}
     {% if document %}<button id="hcns-print" type="button" class="ui-button">In / lưu PDF</button>{% endif %}
     {% if decision.issued_file %}<a class="ui-button" href="{{ decision.issued_file.url }}">Tải PDF đã ký</a>{% endif %}
-    {% if can_edit_decision %}<a class="ui-button ui-button--primary" href="{% url 'portal:hcns_draft' decision.template_slug %}?decision_id={{ decision.pk }}">Sửa bản nháp</a>{% endif %}
+    {% if can_edit_decision %}<a class="ui-button ui-button--secondary" href="{% url 'portal:hcns_draft' decision.template_slug %}?decision_id={{ decision.pk }}">Sửa bản nháp</a>{% endif %}
   </div>
 </div>
-{% if messages %}{% for message in messages %}<p class="ui-hr-text no-print">{{ message|ui_number }}</p>{% endfor %}{% endif %}
-{% if can_submit_decision %}<form class="ui-hr-form no-print" method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'submit' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% csrf_token %}{% include "ui/error_summary.html" %}<button class="ui-button ui-button--primary">Trình duyệt</button></form>{% endif %}
-{% if can_approve_decision %}
-<div class="ui-card decision-workflow no-print">
-  <form method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'approve' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% csrf_token %}{% include "ui/error_summary.html" %}<label class="ui-field-label">Ý kiến duyệt<textarea name="comment" rows="2" class="ui-hr-input"></textarea></label><button class="ui-button ui-button--primary">Duyệt</button></form>
-  <form method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'reject' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% csrf_token %}{% include "ui/error_summary.html" %}<label class="ui-field-label">Lý do từ chối<textarea name="comment" rows="2" required class="ui-hr-input"></textarea></label><button class="ui-button">Từ chối</button></form>
-</div>
+{% if can_submit_decision or can_approve_decision or can_issue_decision or can_cancel_decision %}
+<section class="ui-card ui-workflow no-print" aria-labelledby="decision-workflow-title">
+  <h2 id="decision-workflow-title" class="ui-card-title">Xử lý quyết định</h2>
+  <div class="ui-workflow-body">
+{% if can_submit_decision %}
+<form class="ui-workflow-form" method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'submit' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% csrf_token %}{% include "ui/error_summary.html" %}
+{% if workflow_error.action == "submit" %}<p class="ui-field-error" role="alert">{{ workflow_error.message }}</p>{% endif %}<button type="submit" class="ui-button ui-button--primary">Trình duyệt</button></form>
 {% endif %}
-{% if can_issue_decision %}<form class="ui-hr-form no-print" method="post" enctype="multipart/form-data" action="{% url 'portal:personnel_decision_transition' decision.pk 'issue' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% csrf_token %}{% include "ui/error_summary.html" %}<label class="ui-field-label">PDF đã ký<input type="file" name="issued_file" accept="application/pdf,.pdf" required class="ui-hr-input"></label><label class="ui-field-label">Ghi chú<input name="comment" maxlength="2000" class="ui-hr-input"></label><button class="ui-button ui-button--primary">Ghi nhận ban hành</button></form>{% endif %}
-{% if can_cancel_decision %}<form class="ui-hr-form no-print" method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'cancel' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% csrf_token %}{% include "ui/error_summary.html" %}<label class="ui-field-label">Lý do hủy<input name="comment" maxlength="2000" class="ui-hr-input"></label><button class="ui-button">Hủy bản nháp</button></form>{% endif %}
+{% if can_approve_decision %}
+<form class="ui-workflow-form" method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'approve' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% csrf_token %}{% include "ui/error_summary.html" %}
+{% if workflow_error.action == "approve" %}<p class="ui-field-error" role="alert">{{ workflow_error.message }}</p>{% endif %}<label for="decision-approve-comment" class="ui-field-label">Ý kiến duyệt<textarea id="decision-approve-comment" name="comment" rows="2" class="ui-hr-input">{% if workflow_error.action == "approve" %}{{ workflow_error.comment }}{% endif %}</textarea></label><button type="submit" class="ui-button ui-button--primary">Duyệt</button></form>
+{% endif %}
+{% if can_issue_decision %}
+<form class="ui-workflow-form" method="post" enctype="multipart/form-data" action="{% url 'portal:personnel_decision_transition' decision.pk 'issue' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% csrf_token %}{% include "ui/error_summary.html" %}
+{% if workflow_error.action == "issue" %}<p class="ui-field-error" role="alert">{{ workflow_error.message }}</p>{% endif %}<label for="decision-issued-file" class="ui-field-label">PDF đã ký<input id="decision-issued-file" type="file" name="issued_file" accept="application/pdf,.pdf" required class="ui-hr-input"></label><label for="decision-issue-comment" class="ui-field-label">Ghi chú<input id="decision-issue-comment" name="comment" value="{% if workflow_error.action == "issue" %}{{ workflow_error.comment }}{% endif %}" maxlength="2000" class="ui-hr-input"></label><button type="submit" class="ui-button ui-button--primary">Ghi nhận ban hành</button></form>
+{% endif %}
+{% if can_approve_decision %}
+<details class="ui-workflow-secondary"{% if workflow_error.action == "reject" %} open{% endif %}><summary class="ui-button ui-button--secondary">Từ chối</summary>
+<form class="ui-workflow-form" method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'reject' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% csrf_token %}{% include "ui/error_summary.html" %}
+{% if workflow_error.action == "reject" %}<p class="ui-field-error" role="alert">{{ workflow_error.message }}</p>{% endif %}<label for="decision-reject-comment" class="ui-field-label">Lý do từ chối<textarea id="decision-reject-comment" name="comment" rows="2" required class="ui-hr-input">{% if workflow_error.action == "reject" %}{{ workflow_error.comment }}{% endif %}</textarea></label><div class="ui-workflow-actions"><button type="submit" class="ui-button">Từ chối</button><button type="button" class="ui-button ui-button--secondary" data-ui-disclosure-close>Đóng</button></div></form>
+</details>
+{% endif %}
+{% if can_cancel_decision %}
+<details class="ui-workflow-secondary"{% if workflow_error.action == "cancel" %} open{% endif %}><summary class="ui-button ui-button--secondary">Hủy bản nháp</summary>
+<form class="ui-workflow-form" method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'cancel' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% csrf_token %}{% include "ui/error_summary.html" %}
+{% if workflow_error.action == "cancel" %}<p class="ui-field-error" role="alert">{{ workflow_error.message }}</p>{% endif %}<label for="decision-cancel-comment" class="ui-field-label">Lý do hủy<input id="decision-cancel-comment" name="comment" value="{% if workflow_error.action == "cancel" %}{{ workflow_error.comment }}{% endif %}" maxlength="2000" class="ui-hr-input"></label><div class="ui-workflow-actions"><button type="submit" class="ui-button">Hủy bản nháp</button><button type="button" class="ui-button ui-button--secondary" data-ui-disclosure-close>Đóng</button></div></form>
+</details>
+{% endif %}
+  </div>
+</section>
+{% endif %}
 {% if document %}<div class="ui-scroll" tabindex="0" role="region" aria-label="Bảng dữ liệu nhân sự">{% include "document/hcns/document.html" with document=document %}</div>{% elif is_employee_recipient %}<p class="ui-hr-text">Quyết định đã ban hành. Tải PDF đã ký ở phía trên để xem nội dung chính thức.</p>{% endif %}
 {% if can_view_workflow %}<section class="ui-card decision-history no-print" aria-label="Lịch sử xử lý quyết định">
   <h2 class="ui-card-title">Lịch sử xử lý</h2>

@@ -95,6 +95,30 @@ class ProjectLayoutTests(TestCase):
         self.assertNotIn('ui-query-',(root/'static/css/project_layout.css').read_text())
         self.assertNotIn('justify-content:flex-end',css[css.index('.ui-query-actions {'):css.index('.ui-page {')])
 
+    def test_filter_and_results_share_a_card_without_hidden_results(self):
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[2]
+        files = [p for p in (root / 'apps').rglob('*.html')
+                 if 'class="ui-query-bar"' in p.read_text(encoding='utf-8')]
+        self.assertEqual(len(files), 14)
+        for path in files:
+            with self.subTest(template=path.name):
+                source = path.read_text(encoding='utf-8')
+                self.assertIn('ui-results-card', source)
+                self.assertIn('<div class="ui-query-card no-print">', source)
+                self.assertNotIn('ui-card ui-query-card no-print', source)
+                title = source.split('{% block title %}', 1)[1].split('{% endblock %}', 1)[0]
+                self.assertNotIn('</section>', title)
+
+    def test_changed_cascade_assets_have_fresh_versions(self):
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[2]
+        base = (root / 'templates/base.html').read_text(encoding='utf-8')
+        for name in ('project_layout.css', 'shared_components.css', 'shared_components.js'):
+            self.assertIn(name + "' %}?v=20261014-results-workflow", base)
+        worker = (root / 'static/js/service-worker.js').read_text(encoding='utf-8')
+        self.assertIn('ihrms-static-v15-results-workflow-20261014', worker)
+
     def test_reset_filter_excludes_scope_and_empty_values(self):
         from django.http import QueryDict
         from apps.common.templatetags.ui_components import ui_has_filters

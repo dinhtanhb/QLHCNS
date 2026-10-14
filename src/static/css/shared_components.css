@@ -1,6 +1,14 @@
 /* Shared screen components; paper layouts are isolated in print_forms.css. */
 @media screen {
- .portal-app .ui-main .ui-query-card,.portal-app .ui-main .ui-page .ui-card.ui-query-card { padding:var(--ui-space-4); margin-block:var(--ui-space-4); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-card); background:var(--ui-surface); color:var(--ui-text); box-shadow:var(--ui-shadow-card); }
+ .portal-app .ui-main .ui-results-card { min-width:0; margin-block:var(--ui-space-4); }
+ .portal-app .ui-main .ui-results-card > .ui-query-card { padding:0 0 var(--ui-space-4); margin:0 0 var(--ui-space-4); border-bottom:var(--ui-border-width) solid var(--ui-card-border); background:var(--ui-surface); color:var(--ui-text); }
+ .portal-app .ui-main .ui-results-card > .ui-card-title { margin-top:0; }
+ .ui-query-meta { display:flex; flex-wrap:wrap; align-items:baseline; gap:var(--ui-space-2) var(--ui-space-4); margin-top:var(--ui-space-3); }
+ .ui-query-meta :is(.ui-results-count,.ui-query-note) { margin:0; }
+ .ui-query-note { margin-top:var(--ui-space-2); font-size:var(--ui-font-size-small); color:var(--ui-text-muted); }
+ .ui-results-group { display:grid; gap:var(--ui-space-4); }
+ .ui-results-group > * { min-width:0; max-width:100%; }
+ .ui-results-group > .ui-query-card { margin-bottom:0; }
  .portal-app .ui-main .ui-query-bar { display:flex; flex-wrap:wrap; align-items:flex-end; gap:var(--ui-space-3) var(--ui-space-4); min-width:0; }
  .ui-query-fields { display:contents; }
  .portal-app .ui-main .ui-query-bar .ui-field { flex:1 1 16rem; max-width:24rem; min-width:0; }
@@ -17,6 +25,20 @@
  .decision-results tr:has(.ui-state) td { border-bottom:0; }
  @media(min-width:600px) and (max-width:1023px) { .portal-app .ui-main .ui-query-card .ui-query-bar .ui-field:nth-child(n) { flex:1 1 calc(50% - var(--ui-space-4)); max-width:calc(50% - var(--ui-space-4)); } .ui-query-actions { flex-basis:100%; } }
  @media(max-width:599px) { .portal-app .ui-main .ui-query-card .ui-query-bar .ui-field:nth-child(n) { flex:1 1 100%; max-width:100%; } .ui-query-actions { flex:1 1 100%; } .portal-app .ui-main .ui-query-actions .ui-button { flex:1; } }
+ /* Workflow layouts are opt-in and never style paper documents. */
+ .portal-app .ui-main .ui-workflow { margin:0; }
+ .ui-workflow-body { display:flex; flex-wrap:wrap; align-items:flex-start; gap:var(--ui-space-4); }
+ .ui-workflow-form { display:grid; align-content:start; gap:var(--ui-space-2); min-width:0; max-width:100%; }
+ .ui-workflow-form:has([name=comment],input[type=file]) { width:min(100%,28rem); }
+ .ui-workflow-form :is(input,textarea) { display:block; width:100%; max-width:100%; margin-top:var(--ui-space-2); }
+ .ui-workflow-form > .ui-button { justify-self:start; }
+ .ui-workflow-actions { display:flex; flex-wrap:wrap; gap:var(--ui-space-2); }
+ .ui-workflow-secondary { min-width:0; max-width:100%; }
+ .ui-workflow-secondary > summary { cursor:pointer; list-style:none; }
+ .ui-workflow-secondary > summary::-webkit-details-marker { display:none; }
+ .ui-workflow-secondary[open] { flex:1 1 28rem; }
+ .ui-workflow-secondary[open] > summary { margin-bottom:var(--ui-space-3); }
+ @media(max-width:599px) { .ui-workflow-body > * { flex-basis:100%; width:100%; } }
  .ui-page { display:grid; gap:var(--ui-space-6); min-width:0; }
  .portal-app .ui-main .ui-page .ui-page-header { display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:var(--ui-space-4); }
  .portal-app .ui-main .ui-page .ui-page-title { margin:0; font-size:var(--ui-font-size-title); font-weight:var(--ui-font-weight-heading); line-height:var(--ui-line-height-heading); color:var(--ui-text); overflow-wrap:anywhere; }

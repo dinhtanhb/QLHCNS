@@ -18,7 +18,11 @@
 
         </div>
     </div>
-<section class="ui-card ui-query-card no-print">
+
+
+
+    <div class="ui-card ui-results-card">
+<div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Lọc hoạt động">
 <div class="ui-query-fields">
 {% include "ui/field.html" with id="dashboard-month" name="month" label="Tháng" type="month" value=month %}
@@ -27,9 +31,7 @@
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"month,cbda" %}
 </form>
 <p class="ui-results-count" aria-live="polite">Có {{ total_activities|ui_number }} hoạt động phù hợp.</p>
-</section>
-
-
+</div>
     {% if is_overview %}
     <div class="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-5">
         <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Hoạt động trong kỳ</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold">{{ total_activities|ui_number }}</p></div>
@@ -39,8 +41,6 @@
         <div class="ihrms-kpi-card rounded-xl border bg-white p-4"><p class="text-xs text-gray-500">Chưa có Task</p><p class="ihrms-kpi-value mt-1 text-2xl font-bold">{{ without_task_count|ui_number }}</p></div>
     </div>
     {% endif %}
-
-    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">

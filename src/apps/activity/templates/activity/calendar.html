@@ -15,7 +15,9 @@
 
         </div>
     </div>
-<section class="ui-card ui-query-card no-print">
+
+    <div class="ui-card ui-results-card overflow-hidden rounded-xl">
+<div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Lọc lịch hoạt động">
 <div class="ui-query-fields">
 {% include "ui/field.html" with id="calendar-month" name="month" label="Tháng" type="month" value=month %}
@@ -24,10 +26,7 @@
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"month,cbda" %}
 </form>
 
-</section>
-
-
-    <div class="w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+</div>
         <div class="w-full">
             <div class="grid grid-cols-7 border-b border-gray-200 bg-gray-50 text-[10px] font-semibold text-gray-700 sm:text-sm">
                 {% for weekday in weekdays %}

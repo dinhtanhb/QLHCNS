@@ -28,7 +28,11 @@
     </div>
 
     <!-- Bộ lọc tìm kiếm -->
-    <section class="ui-card ui-query-card no-print">
+
+
+    <!-- Bảng danh sách công văn -->
+    <div class="ui-card ui-results-card">
+<div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Tìm và lọc công văn" role="search">
 <div class="ui-query-fields">
 {% include "ui/field.html" with id="dispatch-list-q" name="q" label="Tìm kiếm" value=search_query %}
@@ -38,10 +42,7 @@
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"q,type,status" %}
 </form>
 <p class="ui-results-count" aria-live="polite">Có {{ page_obj.paginator.count|ui_number }} công văn phù hợp.</p>
-</section>
-
-    <!-- Bảng danh sách công văn -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+</div>
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-gray-600">
                 <thead class="bg-gray-50 border-b border-gray-200 text-gray-700 font-semibold uppercase tracking-wider">

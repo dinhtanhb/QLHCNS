@@ -417,6 +417,11 @@ def personnel_decision_detail(request, pk):
         not can_manage and not can_approve and decision.status == "Issued"
         and request.user.employee_id == decision.employee_id
     )
+    workflow_error = request.session.get("decision_workflow_error", {})
+    if workflow_error.get("decision_id") == decision.pk:
+        request.session.pop("decision_workflow_error", None)
+    else:
+        workflow_error = {}
     return render(request, "portal/personnel_decision_detail.html", {
         "decision": decision,
         "document": None if is_employee_recipient else rendered,
@@ -424,6 +429,7 @@ def personnel_decision_detail(request, pk):
         "is_employee_recipient": is_employee_recipient,
         "can_view_workflow": can_manage or can_approve,
         "can_download_word": not is_employee_recipient,
+        "workflow_error": {} if is_employee_recipient else workflow_error,
         "can_edit_decision": can_manage and decision.status in ("Draft", "Rejected"),
         "can_submit_decision": can_manage and decision.status == "Draft",
         "can_approve_decision": can_approve and decision.status == "PendingApproval" and last_submission and last_submission.created_by_id != request.user.pk,
@@ -450,6 +456,15 @@ def personnel_decision_word(request, pk):
     return _export(request, context)
 
 
+def _decision_workflow_error(request, pk, action, comment, message):
+    """Preserve bounded user input through the existing error redirect."""
+    request.session["decision_workflow_error"] = {
+        "decision_id": pk, "action": action, "comment": comment[:2000], "message": message,
+    }
+    messages.error(request, message)
+    return redirect("portal:personnel_decision_detail", pk=pk)
+
+
 @login_required
 @never_cache
 @require_POST
@@ -462,38 +477,31 @@ def personnel_decision_transition(request, pk, action):
             if not has_permission(request.user, "manage_hr"):
                 return HttpResponseForbidden("Anh/chị không có quyền trình duyệt quyết định.")
             if decision.status != "Draft":
-                messages.error(request, "Chỉ bản nháp mới được trình duyệt.")
-                return redirect("portal:personnel_decision_detail", pk=pk)
+                return _decision_workflow_error(request, pk, action, comment, "Chỉ bản nháp mới được trình duyệt.")
             if not decision.decision_no or not decision.decision_date:
-                messages.error(request, "Cần có số quyết định và ngày quyết định trước khi trình duyệt.")
-                return redirect("portal:personnel_decision_detail", pk=pk)
+                return _decision_workflow_error(request, pk, action, comment, "Cần có số quyết định và ngày quyết định trước khi trình duyệt.")
             decision.status = "PendingApproval"
             history_action = "Submitted"
         elif action in ("approve", "reject"):
             if not has_permission(request.user, "approve_personnel_decision"):
                 return HttpResponseForbidden("Anh/chị không có quyền duyệt quyết định.")
             if decision.status != "PendingApproval":
-                messages.error(request, "Quyết định không còn ở trạng thái chờ duyệt.")
-                return redirect("portal:personnel_decision_detail", pk=pk)
+                return _decision_workflow_error(request, pk, action, comment, "Quyết định không còn ở trạng thái chờ duyệt.")
             latest_submission = decision.history.filter(action="Submitted").order_by("-pk").first()
             if latest_submission and latest_submission.created_by_id == request.user.pk:
-                messages.error(request, "Người trình duyệt không được tự duyệt quyết định này.")
-                return redirect("portal:personnel_decision_detail", pk=pk)
+                return _decision_workflow_error(request, pk, action, comment, "Người trình duyệt không được tự duyệt quyết định này.")
             if action == "reject" and not comment:
-                messages.error(request, "Nhập lý do từ chối để lưu lịch sử xử lý.")
-                return redirect("portal:personnel_decision_detail", pk=pk)
+                return _decision_workflow_error(request, pk, action, comment, "Nhập lý do từ chối để lưu lịch sử xử lý.")
             decision.status = "Approved" if action == "approve" else "Rejected"
             history_action = "Approved" if action == "approve" else "Rejected"
         elif action == "issue":
             if not has_permission(request.user, "manage_hr"):
                 return HttpResponseForbidden("Anh/chị không có quyền ban hành quyết định.")
             if decision.status != "Approved":
-                messages.error(request, "Chỉ quyết định đã duyệt mới được ban hành.")
-                return redirect("portal:personnel_decision_detail", pk=pk)
+                return _decision_workflow_error(request, pk, action, comment, "Chỉ quyết định đã duyệt mới được ban hành.")
             signed_pdf = request.FILES.get("issued_file")
             if not signed_pdf:
-                messages.error(request, "Tải PDF đã ký lên để ghi nhận ban hành.")
-                return redirect("portal:personnel_decision_detail", pk=pk)
+                return _decision_workflow_error(request, pk, action, comment, "Tải PDF đã ký lên để ghi nhận ban hành.")
             decision.issued_file = signed_pdf
             decision.issued_at = timezone.now()
             decision.status = "Issued"
@@ -502,8 +510,7 @@ def personnel_decision_transition(request, pk, action):
             if not has_permission(request.user, "manage_hr"):
                 return HttpResponseForbidden("Anh/chị không có quyền hủy quyết định.")
             if decision.status not in ("Draft", "Rejected"):
-                messages.error(request, "Chỉ bản nháp hoặc quyết định bị từ chối mới được hủy.")
-                return redirect("portal:personnel_decision_detail", pk=pk)
+                return _decision_workflow_error(request, pk, action, comment, "Chỉ bản nháp hoặc quyết định bị từ chối mới được hủy.")
             decision.status = "Cancelled"
             history_action = "Cancelled"
         else:
@@ -513,8 +520,7 @@ def personnel_decision_transition(request, pk, action):
         try:
             decision.full_clean()
         except ValidationError as error:
-            messages.error(request, "; ".join(error.messages))
-            return redirect("portal:personnel_decision_detail", pk=pk)
+            return _decision_workflow_error(request, pk, action, comment, "; ".join(error.messages))
         decision.save()
         _record_decision_event(decision, history_action, previous_status, comment, request.user)
         if history_action == "Submitted":

@@ -5,16 +5,6 @@
 {% block personal_content %}
 <div class="ui-followup-page">
 <header class="ui-page-header no-print"><h1 class="ui-page-title">Bảng chấm công</h1><div class="ui-page-actions"><button onclick="window.print()" class="ui-button" type="button">{% include "_shell_icon.html" with name="office" %}In bảng công</button></div></header>
-<section class="ui-card ui-query-card no-print">
-<form method="get" class="ui-query-bar" aria-label="Chọn kỳ chấm công">
-<div class="ui-query-fields">
-{% include "ui/field.html" with id="timesheet-month-month" name="month" label="Tháng" options_template="ui/query_options/timesheet_month-month.html" %}
-{% include "ui/field.html" with id="timesheet-month-year" name="year" label="Năm" options_template="ui/query_options/timesheet_month-year.html" %}
-</div>
-{% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"month,year" %}
-</form>
-
-</section>
 
 <section class="ui-card no-print"><h2 class="ui-card-title">Ghi nhận giờ làm việc</h2><form method="post" action="{% url 'portal:timesheet_entry_create' %}" data-ui-form>{% csrf_token %}{% include "ui/error_summary.html" %}<div class="ui-form-grid">
 <div class="ui-field"><label for="timesheet-work-date">Ngày làm việc <span class="ui-required" aria-hidden="true">*</span></label><input id="timesheet-work-date" type="date" name="work_date" required value="{{ year|ui_year }}-{{ month|stringformat:'02d' }}-01" min="{{ year|ui_year }}-{{ month|stringformat:'02d' }}-01"><p class="ui-field-error" id="timesheet-work-date-error" hidden></p></div>
@@ -23,7 +13,17 @@
 {% include "ui/field.html" with id="timesheet-hours" name="hours" type="number" step="0.5" label="Số giờ" placeholder="Số giờ" required=True %}
 </div><div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm dòng chấm công</button></div></form></section>
 <!-- KHUNG BẢNG CHẤM CÔNG — theo đúng layout mẫu -->
-<div class="timesheet-document ui-card">
+<div class="timesheet-document ui-card ui-results-card">
+<div class="ui-query-card no-print">
+<form method="get" class="ui-query-bar" aria-label="Chọn kỳ chấm công">
+<div class="ui-query-fields">
+{% include "ui/field.html" with id="timesheet-month-month" name="month" label="Tháng" options_template="ui/query_options/timesheet_month-month.html" %}
+{% include "ui/field.html" with id="timesheet-month-year" name="year" label="Năm" options_template="ui/query_options/timesheet_month-year.html" %}
+</div>
+{% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"month,year" %}
+</form>
+
+</div>
     <div class="">
         <h1 class="">BẢNG CHẤM CÔNG</h1>
     </div>

@@ -2,7 +2,8 @@
 {% block title %}{{ title }}{% endblock %}
 {% block content %}<div class="ui-page">
 <header class="ui-page-header"><div><h1 class="ui-page-title">{{ title }}</h1><p class="ui-page-description">{{ scope }}{% if metric == 'approved' %} · {{ on_date|ui_date }}{% else %} · Hiện tại{% endif %}</p></div><a class="ui-button" href="{% url 'portal:dashboard' %}">Về Dashboard</a></header>
-<section class="ui-card ui-query-card no-print">
+<section class="ui-card ui-results-card" aria-label="Danh sách nhân sự">
+<div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Tìm nhân viên trong chỉ số" role="search">
 <div class="ui-query-fields"><input type="hidden" name="metric" value="{{ metric }}"><input type="hidden" name="on_date" value="{{ on_date|date:'Y-m-d' }}">
 {% include "ui/field.html" with id="dashboard-people-q" name="q" label="Tìm kiếm" value=q %}
@@ -10,7 +11,7 @@
 {% url "portal:dashboard_people" as reset_base %}{% with reset_metric=metric|urlencode reset_date=on_date|date:"Y-m-d" %}{% with reset_url=reset_base|add:"?metric="|add:reset_metric|add:"&on_date="|add:reset_date %}{% include "ui/query_actions.html" with reset_url=reset_url has_filters=request.GET|ui_has_filters:"q" %}{% endwith %}{% endwith %}
 </form>
 <p class="ui-results-count" aria-live="polite">Có {{ page_obj.paginator.count|ui_number }} người phù hợp.</p>
-</section><section class="ui-card">
+</div>
 {% if metric == 'approved' %}<p class="ui-field-help">Đơn nghỉ đã được duyệt có khoảng ngày bao gồm ngày đã chọn. Mỗi người chỉ tính một lần.</p>{% endif %}
-<div class="ui-scroll" tabindex="0" role="region" aria-label="Chi tiết chỉ số nhân sự"><table class="ui-table"><caption>{{ title }}</caption><thead><tr><th scope="col">Mã NV</th><th scope="col">Họ tên</th><th scope="col">Phòng ban</th><th scope="col">Trạng thái</th></tr></thead><tbody>{% for person in page_obj %}<tr><td>{{ person.employee_code }}</td><td>{% if can_open_profile %}<a class="ui-table-link" href="{% url 'portal:hr_employee_detail' person.pk %}">{{ person.full_name }}</a>{% else %}{{ person.full_name }}{% endif %}</td><td>{{ person.department|default:'—' }}</td><td>{% ui_badge "hrm.employee:employment_status" person.employment_status %}</td></tr>{% empty %}<tr><td colspan="4">Không có nhân sự phù hợp.</td></tr>{% endfor %}</tbody></table></div>
+<div class="ui-scroll" tabindex="0" role="region" aria-label="Chi tiết chỉ số nhân sự"><table class="ui-table"><caption class="ui-visually-hidden">{{ title }}</caption><thead><tr><th scope="col">Mã NV</th><th scope="col">Họ tên</th><th scope="col">Phòng ban</th><th scope="col">Trạng thái</th></tr></thead><tbody>{% for person in page_obj %}<tr><td>{{ person.employee_code }}</td><td>{% if can_open_profile %}<a class="ui-table-link" href="{% url 'portal:hr_employee_detail' person.pk %}">{{ person.full_name }}</a>{% else %}{{ person.full_name }}{% endif %}</td><td>{{ person.department|default:'—' }}</td><td>{% ui_badge "hrm.employee:employment_status" person.employment_status %}</td></tr>{% empty %}<tr><td colspan="4">Không có nhân sự phù hợp.</td></tr>{% endfor %}</tbody></table></div>
 {% include "portal/_pagination.html" with standard=True %}</section></div>{% endblock %}

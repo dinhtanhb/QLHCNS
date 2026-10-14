@@ -12,7 +12,9 @@
         <button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">🖨 In</button>
     </div>
 </div>
-<section class="ui-card ui-query-card no-print">
+
+<section class="ui-card ui-results-card ui-results-group" aria-label="Kết quả biến động nhân sự">
+<div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Lọc kỳ biến động nhân sự">
 <div class="ui-query-fields">
 {% include "ui/field.html" with id="report-personnel-changes-from-date" name="from_date" label="Từ ngày" type="date" value=from_date %}
@@ -21,9 +23,7 @@
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"from_date,to_date" %}
 </form>
 
-</section>
-
-<h2 class="text-center font-bold mb-4">Từ {{ from_date|ui_number }} đến {{ to_date|ui_number }}</h2>
+</div><h2 class="text-center font-bold mb-4">Từ {{ from_date|ui_number }} đến {{ to_date|ui_number }}</h2>
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
     <h3 class="font-bold text-sm mb-2">🟢 Tuyển mới ({{ new_hires|length|ui_number }})</h3>
@@ -76,4 +76,5 @@
     </table>
     </div>
 </div>
+</section>
 {% endblock %}

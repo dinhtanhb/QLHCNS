@@ -7,8 +7,9 @@
   <div><h1>Biểu mẫu hành chính nhân sự</h1><p>{{ available_count|ui_number }} mẫu có thể sử dụng · soạn nội dung, xem trước và xuất tệp</p></div>
   {% if own_employee %}<a class="hcns-button ui-button" href="?employee_id={{ own_employee.pk }}">Điền từ hồ sơ của tôi</a>{% endif %}
 </div>
-{% if employees %}
-<section class="ui-card ui-query-card no-print">
+
+<section class="ui-card ui-results-card" aria-label="Danh mục biểu mẫu">
+{% if employees %}<div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Chọn hồ sơ điền biểu mẫu">
 <div class="ui-query-fields">
 {% include "ui/field.html" with id="catalog-employee-id" name="employee_id" label="Điền thông tin từ hồ sơ nhân viên" options_template="ui/query_options/catalog-employee_id.html" %}
@@ -16,8 +17,7 @@
 {% with reset_group=request.GET.group|urlencode %}{% with reset_url=request.path|add:"?group="|add:reset_group %}{% include "ui/query_actions.html" with reset_url=reset_url has_filters=request.GET|ui_has_filters:"employee_id" %}{% endwith %}{% endwith %}
 </form>
 <p class="ui-results-count" aria-live="polite">Có {{ available_count|ui_number }} biểu mẫu phù hợp.</p>
-</section>
-{% endif %}
+</div>{% endif %}
 {% if selected_employee %}<p class="hcns-notice">Đã chọn hồ sơ nhân viên. Mở mẫu để điền các trường tương ứng từ hồ sơ; những mục chưa có dữ liệu cần được bổ sung trước khi xuất.</p>{% endif %}
 <p class="hcns-notice">Các bản xuất là bản soạn thảo để kiểm tra và ký. Soạn hoặc xuất mẫu không tự lưu thay đổi vào hồ sơ, không gửi đơn và không thực hiện phê duyệt.</p>
 {% for group in groups %}{% if group.forms %}
@@ -30,4 +30,5 @@
   {% endfor %}</div>
 </section>
 {% endif %}{% endfor %}
+</section>
 {% endblock %}
