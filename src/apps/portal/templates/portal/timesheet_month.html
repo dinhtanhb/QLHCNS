@@ -1,5 +1,5 @@
 {% extends "portal/personal_base.html" %}
-{% load ui_components %}
+{% load static ui_components %}
 {% load l10n ui_components %}
 {% block title %}Bảng chấm công{% endblock %}
 {% block personal_content %}
@@ -13,6 +13,7 @@
 {% include "ui/field.html" with id="timesheet-hours" name="hours" type="number" step="0.5" label="Số giờ" placeholder="Số giờ" required=True %}
 </div><div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm dòng chấm công</button></div></form></section>
 <!-- KHUNG BẢNG CHẤM CÔNG — theo đúng layout mẫu -->
+{% with balance_used=balance.used_days balance_remaining=balance.remaining_days %}
 <div class="timesheet-document ui-card ui-results-card">
 <div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Chọn kỳ chấm công">
@@ -24,62 +25,56 @@
 </form>
 
 </div>
-    <div class="">
-        <h1 class="">BẢNG CHẤM CÔNG</h1>
+    <div class="timesheet-print-heading ui-print-only">
+        <img src="{% static 'img/logo.png' %}" alt="VietHealth">
+        <span>Phụ lục 1</span>
     </div>
-    <div class="">
+    <div class="timesheet-title">
+        <h1>BẢNG CHẤM CÔNG</h1>
+    </div>
+    <div class="timesheet-information">
         <p><span class="ui-font-label">Họ và tên:</span> {{ summary.employee.full_name|ui_number }}</p>
         <p><span class="ui-font-label">Chức vụ:</span> {{ summary.employee.position|ui_number }}</p>
-        <p><span class="ui-font-label">Phòng/Ban:</span> {{ summary.employee.department|ui_number }}</p>
+        <p><span class="ui-font-label"><span class="ui-screen-only">Phòng/Ban:</span><span class="ui-print-only">Phòng/Ban/Dự án:</span></span> <span>{{ summary.employee.department|ui_number }}{% if timesheet_project %}<span class="ui-print-only"> · {{ timesheet_project.project_name }}</span>{% endif %}</span></p>
         <p><span class="ui-font-label">Thời gian:</span> Tháng {{ month }} năm {{ year|ui_year }}</p>
     </div>
 
     <div class="mobile-table-scroll ui-scroll" role="region" tabindex="0" aria-label="Bảng công trong tháng">
         <table class="ui-table ui-personal-timesheet-table">
+        <colgroup><col class="timesheet-day-column"><col class="timesheet-work-column"><col class="timesheet-hours-column"></colgroup>
         <thead>
-            <tr class="">
-                <th scope="col" class="">Ngày</th>
-                <th scope="col" class="">Công việc</th>
-                <th scope="col" class="">Tổng giờ/ngày</th>
+            {% if timesheet_project %}
+            <tr class="ui-print-only timesheet-project-header">
+                <th scope="col" rowspan="2">Ngày</th><th scope="col">Dự án {{ timesheet_project.project_code }}</th><th scope="col" rowspan="2">Tổng giờ/ngày</th>
             </tr>
+            <tr><th scope="col" class="ui-screen-only">Ngày</th><th scope="col">Công việc</th><th scope="col" class="ui-screen-only">Tổng giờ/ngày</th></tr>
+            {% else %}
+            <tr><th scope="col">Ngày</th><th scope="col">Công việc</th><th scope="col">Tổng giờ/ngày</th></tr>
+            {% endif %}
         </thead>
         <tbody>
         {% for row in day_rows %}
-            {% if row.is_weekend %}
-            <tr class="ui-timesheet-weekend">
+        {% if forloop.revcounter == 2 %}</tbody><tbody class="timesheet-ending">{% endif %}
+            <tr{% if row.is_weekend %} class="ui-timesheet-weekend"{% elif row.holiday %} class="ui-timesheet-holiday"{% endif %}>
                 <td class="ui-text-center">{{ row.day|ui_number }}</td>
-                <td class=""></td>
-                <td class=""></td>
-            </tr>
-            {% elif row.holiday %}
-            <tr class="ui-timesheet-holiday">
-                <td class="ui-text-center">{{ row.day|ui_number }}</td>
-                <td class="">+ Nghỉ lễ: {{ row.holiday.holiday_name|ui_number }}</td>
-                <td class="ui-text-center">0</td>
-            </tr>
-            {% else %}
-            <tr>
-                <td class="ui-text-center">{{ row.day|ui_number }}</td>
-                <td class="">
+                <td>
                     {% for e in row.entries %}
-                    <div class="">
-                        <span>+ {% if e.project %}[{{ e.project.project_code|ui_number }}] {% endif %}{{ e.task_description|default:""|ui_number }}</span>
+                    <div class="timesheet-work-entry">
+                        <span>+ {% if e.project %}<span{% if timesheet_project %} class="ui-screen-only"{% endif %}>[{{ e.project.project_code|ui_number }}] </span>{% endif %}{{ e.task_description|default:""|ui_number }}</span>
                         <form method="post" action="{% url 'portal:timesheet_entry_delete' e.pk %}" class="no-print" data-ui-confirm="Xóa dòng chấm công này?" data-ui-confirm-title="Xác nhận xóa dòng chấm công" data-ui-confirm-label="Xóa dòng">
-                            {% csrf_token %}
-                            <button type="submit" class="ui-button">Xóa</button>
+                            {% csrf_token %}<button type="submit" class="ui-button">Xóa</button>
                         </form>
                     </div>
-                    {% endfor %}
+                    {% empty %}{% if row.holiday %}+ Nghỉ lễ: {{ row.holiday.holiday_name|ui_number }}{% endif %}{% endfor %}
                 </td>
-                <td class="ui-text-center">{{ row.day_total|ui_number }}</td>
+                <td class="ui-text-center timesheet-day-total">{% if row.entries %}{{ row.day_total|ui_number }}{% elif row.holiday %}0{% elif not row.is_weekend %}{{ row.day_total|ui_number }}{% endif %}</td>
             </tr>
-            {% endif %}
         {% endfor %}
-        <tr class="ui-font-label">
+        <tr class="ui-screen-only ui-font-label">
             <td class="" colspan="2">Tổng số giờ làm việc trong tháng</td>
             <td class="ui-text-center">{{ total_hours|ui_number }}</td>
         </tr>
-        <tr>
+        <tr class="ui-screen-only">
             <td class="" colspan="3">
                 <strong>
                 Tổng số giờ cần làm trong tháng: {{ base_days|ui_number }} ngày
@@ -90,51 +85,74 @@
             </td>
         </tr>
                 {% for a in allocations %}
-        <tr class="ui-font-label">
+        <tr class="ui-screen-only ui-font-label">
             <td class="" colspan="2">Phân bổ thời gian ({{ a.project.project_code|ui_number }}) (%)</td>
             <td class="ui-text-center">{{ a.allocation_percent|ui_number }}%</td>
         </tr>
         {% endfor %}
-        <tr class="ui-font-label">
+        <tr class="ui-screen-only ui-font-label">
             <td class="" colspan="2">Số thời gian ngoài giờ</td>
             <td class="">{{ diff_hours|ui_number }}</td>
         </tr>
-        </tbody>
-    </table>
+        <tr class="ui-print-only ui-font-label">
+            <td></td><td>Tổng số giờ làm việc trong tháng</td>
+            <td class="ui-text-center">{{ total_hours|ui_number }}</td>
+        </tr>
+        <tr class="ui-print-only">
+            <td></td><td>
+                <strong>
+                Tổng số giờ cần làm trong tháng: {{ base_days|ui_number }} ngày
+                {% if approved_leave_total %}- {{ approved_leave_total|ui_number }} ngày nghỉ đã duyệt{% endif %}
+                = {{ required_days|floatformat:"1g" }} ngày × {{ hours_per_day|floatformat:"1g" }}h
+                = {{ required_hours|floatformat:"-2g" }}h
+                </strong>
+            </td><td></td>
+        </tr>
+                {% for a in allocations %}
+        <tr class="ui-print-only ui-font-label">
+            <td></td><td>Phân bổ thời gian{% if not timesheet_project %} ({{ a.project.project_code|ui_number }}){% endif %} (%)</td>
+            <td class="ui-text-center">{{ a.allocation_percent|ui_number }}%</td>
+        </tr>
+        {% endfor %}
+        <tr class="ui-print-only ui-font-label">
+            <td></td><td>Số thời gian ngoài giờ</td>
+            <td class="">{{ diff_hours|ui_number }}</td>
+        </tr>
+        <tr class="timesheet-summary-row ui-print-only"><td colspan="3">{% include "portal/_timesheet_print_summary.html" %}</td></tr></tbody>
+        </table>
     </div>
-
         <!-- Tổng hợp + Chữ ký: 2 cột song song -->
-    <div class="timesheet-summary-layout">
+    <div class="timesheet-summary-layout no-print">
         <form method="post" action="{% url 'portal:timesheet_summary_update' %}" class="timesheet-summary-form" data-ui-form>
             {% csrf_token %}
             <input type="hidden" name="year" value="{{ year|ui_year }}">
             <input type="hidden" name="month" value="{{ month }}">
             {% if summary.status == "Approved" %}
-            <span class="ui-print-only"><span class="">Đã duyệt — không thể tự sửa</span></span><span class="ui-screen-only ui-badge ui-badge--success">{% include "_shell_icon.html" with name="success" %}Đã duyệt — không thể tự sửa</span>
+            <span class="ui-screen-only ui-badge ui-badge--success">{% include "_shell_icon.html" with name="success" %}Đã duyệt — không thể tự sửa</span>
             {% else %}
-            <span class="ui-print-only"><span class="">Chờ quản lý duyệt</span></span><span class="ui-screen-only ui-badge ui-badge--warning">{% include "_shell_icon.html" with name="warning" %}Chờ quản lý duyệt</span>
+            <span class="ui-screen-only ui-badge ui-badge--warning">{% include "_shell_icon.html" with name="warning" %}Chờ quản lý duyệt</span>
             {% endif %}
             <fieldset class="ui-form-fieldset" {% if summary.status == "Approved" %}disabled{% endif %}>
             <div class="">
                 <div class="timesheet-leave-row">
                     <label for="timesheet-sick-days" class="ui-field-label">Số ngày nghỉ ốm trong tháng:</label>
-                    <input id="timesheet-sick-days" type="number" step="0.5" name="sick_days" value="{{ summary.sick_days|unlocalize }}" class="timesheet-leave-input"><span class="ui-print-only">{{ summary.sick_days|ui_number }}</span>
+                    <input id="timesheet-sick-days" type="number" step="0.5" name="sick_days" value="{{ summary.sick_days|unlocalize }}" class="timesheet-leave-input">
                 </div>
                 <div class="timesheet-leave-row">
                     <label for="timesheet-maternity-days" class="ui-field-label">Số ngày thai sản trong tháng:</label>
-                    <input id="timesheet-maternity-days" type="number" step="0.5" name="maternity_days" value="{{ summary.maternity_days|unlocalize }}" class="timesheet-leave-input"><span class="ui-print-only">{{ summary.maternity_days|ui_number }}</span>
+                    <input id="timesheet-maternity-days" type="number" step="0.5" name="maternity_days" value="{{ summary.maternity_days|unlocalize }}" class="timesheet-leave-input">
                 </div>
                 <div class="timesheet-leave-row">
                     <label for="timesheet-compensatory-days" class="ui-field-label">Số ngày nghỉ bù trong tháng:</label>
-                    <input id="timesheet-compensatory-days" type="number" step="0.5" name="compensatory_days" value="{{ summary.compensatory_days|unlocalize }}" class="timesheet-leave-input"><span class="ui-print-only">{{ summary.compensatory_days|ui_number }}</span>
+                    <input id="timesheet-compensatory-days" type="number" step="0.5" name="compensatory_days" value="{{ summary.compensatory_days|unlocalize }}" class="timesheet-leave-input">
                 </div>
                 <div class="timesheet-leave-row">
                     <label for="timesheet-annual-leave-days" class="ui-field-label">Số ngày nghỉ phép trong tháng:</label>
-                    <input id="timesheet-annual-leave-days" type="number" step="0.5" name="annual_leave_days" value="{{ summary.annual_leave_days|unlocalize }}" class="timesheet-leave-input"><span class="ui-print-only">{{ summary.annual_leave_days|ui_number }}</span>
+                    <input id="timesheet-annual-leave-days" type="number" step="0.5" name="annual_leave_days" value="{{ summary.annual_leave_days|unlocalize }}" class="timesheet-leave-input">
                 </div>
                 <div class="timesheet-leave-row">
                     <label for="timesheet-unpaid-leave-days" class="ui-field-label">Số ngày nghỉ không lương trong tháng:</label>
-                    <input id="timesheet-unpaid-leave-days" type="number" step="0.5" name="unpaid_leave_days" value="{{ summary.unpaid_leave_days|unlocalize }}" class="timesheet-leave-input"><span class="ui-print-only">{{ summary.unpaid_leave_days|ui_number }}</span>
+                    <input id="timesheet-unpaid-leave-days" type="number" step="0.5" name="unpaid_leave_days" value="{{ summary.unpaid_leave_days|unlocalize }}" class="timesheet-leave-input">
                 </div>
                 {% if balance %}
                 <div class="ui-timesheet-balance-row ui-timesheet-balance-total">
@@ -143,11 +161,11 @@
                 </div>
                 <div class="ui-timesheet-balance-row">
                     <label class="ui-field-label">Số ngày phép đã sử dụng (lũy kế):</label>
-                    <span class="ui-font-label">{{ balance.used_days|ui_number }}</span>
+                    <span class="ui-font-label">{{ balance_used|ui_number }}</span>
                 </div>
                 <div class="ui-timesheet-balance-row">
                     <label class="ui-field-label">Số ngày phép còn lại:</label>
-                    <span class="ui-text-success">{{ balance.remaining_days|ui_number }}</span>
+                    <span class="ui-text-success">{{ balance_remaining|ui_number }}</span>
                 </div>
                 {% endif %}
             </div>
@@ -167,6 +185,7 @@
         </div>
     </div>
 </div>
+{% endwith %}
 {% include "ui/confirm_dialog.html" %}
 </div>
 {% endblock %}

@@ -1,6 +1,7 @@
 /* Paper layout is independent of responsive screen grids and theme tokens. */
 @media print {
   @page { size:A4 portrait; margin:12mm; }
+  @page timesheet { size:A4 portrait; margin:15mm 17mm 15mm 30mm; }
   @page inventory-landscape { size:A4 landscape; margin:12mm; }
   .portal-app .ui-print-landscape { page:inventory-landscape; }
   html, body.portal-app { background:#fff !important; color:#000 !important; }
@@ -19,26 +20,55 @@
   .portal-app table tr { break-inside:avoid; }
   .portal-app .ui-text-center { text-align:center; }
   .portal-app .ui-font-label { font-weight:700; }
-  .portal-app main :not(.hcns-paper):not(.hcns-paper *) { color:#000 !important; background-color:transparent !important; box-shadow:none !important; }
+  .portal-app main :not(.hcns-paper):not(.hcns-paper *) { color:#000 !important; box-shadow:none !important; }
+  .portal-app main :not(.hcns-paper):not(.hcns-paper *):not(.timesheet-document):not(.timesheet-document *) { background-color:transparent !important; }
   .portal-app main div[class*="rounded"]:not(.hcns-paper):not(.hcns-paper *) { border:0 !important; border-radius:0 !important; padding:0 !important; }
   .portal-app main table:not(.hcns-paper *) { width:100%; border-collapse:collapse; }
   .portal-app main :is(th,td):not(.hcns-paper *) { border-color:#555 !important; }
-  .portal-app .timesheet-document { font-family:Arial,sans-serif; font-size:9pt; line-height:1.2; }
-  .portal-app .timesheet-document h1 { font-size:13pt; font-weight:700; text-align:center; margin:0 0 3mm; }
-  .portal-app .timesheet-document p { margin:0 0 1mm; }
-  .portal-app .timesheet-document .ui-table { margin-top:3mm; table-layout:fixed; font-size:8.5pt; }
-  .portal-app .timesheet-document .ui-table :is(th,td) { padding:.6mm 1mm; }
-  .portal-app .timesheet-document .ui-table th:first-child { width:10%; }
-  .portal-app .timesheet-document .ui-table th:last-child { width:20%; }
-  .portal-app .timesheet-summary-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:6mm; margin-top:4mm; break-inside:avoid; }
-  .portal-app .timesheet-summary-form { display:block; margin:0; }
-  .portal-app .timesheet-summary-form fieldset { border:0; margin:2mm 0 0; padding:0; }
-  .portal-app .timesheet-summary-form :is(input,.ui-number-display,.ui-number-input) { display:none !important; }
+  /* BCC uses its own named A4 page. Its blue is an explicit print-reference color. */
+  .portal-app .timesheet-document {
+    page:timesheet; --timesheet-print-weekend:#5B9BD5;
+    font-family:"Times New Roman",Times,"Liberation Serif",serif;
+    font-size:10.4pt; line-height:1.15; background:#fff !important;
+  }
+  .portal-app .timesheet-document .timesheet-print-heading { display:flex !important; justify-content:space-between; align-items:flex-start; margin:0 0 2mm; }
+  .portal-app .timesheet-print-heading img { display:block !important; width:36mm; height:auto; }
+  .portal-app .timesheet-print-heading span { font-weight:400; padding-top:1mm; }
+  .portal-app .timesheet-document h1 { font-size:18pt; font-weight:700; text-align:center; margin:0 0 7mm; }
+  .portal-app .timesheet-document p { margin:0; }
+  .portal-app .timesheet-information { margin:0 0 4mm 15mm; font-style:italic; }
+  .portal-app .timesheet-information p { display:flex; gap:1mm; margin-bottom:1mm; }
+  .portal-app .timesheet-information .ui-font-label { flex:0 0 32mm; font-weight:400; }
+  .portal-app .timesheet-information p > :last-child { min-width:0; }
+  .portal-app .timesheet-document .ui-personal-timesheet-table {
+    /* Reserve one CSS pixel for Chromium's rounded collapsed border extents. */
+    width:calc(100% - 1px) !important; min-width:0 !important; max-width:100% !important;
+    margin:0; table-layout:fixed; border-collapse:collapse;
+    font-family:inherit; font-size:10.4pt; line-height:1.15; border:0;
+  }
+  .portal-app .timesheet-document .timesheet-day-column { width:9%; }
+  .portal-app .timesheet-document .timesheet-work-column { width:81%; }
+  .portal-app .timesheet-document .timesheet-hours-column { width:10%; }
+  .portal-app .timesheet-document .ui-table :is(th,td) { border:.5pt solid #000 !important; padding:1mm .7mm; vertical-align:top; overflow-wrap:anywhere; }
+  .portal-app .timesheet-document .ui-table th { width:auto; text-align:center; font-weight:700; background:#fff !important; vertical-align:middle; }
+  .portal-app .timesheet-document .ui-table td:last-child:not([colspan]) { text-align:right; }
+  .portal-app .timesheet-document .ui-table td:first-child:not([colspan]) { text-align:center; }
+  .portal-app .timesheet-document .ui-table tr { height:7mm; break-inside:avoid; }
+  .portal-app .timesheet-document tr.ui-print-only { display:table-row !important; }
+  .portal-app .timesheet-document .ui-timesheet-weekend > td {
+    background-color:var(--timesheet-print-weekend) !important;
+    print-color-adjust:exact; -webkit-print-color-adjust:exact;
+  }
+  .portal-app .timesheet-document .ui-timesheet-holiday > td { background:#fff !important; }
+  .portal-app .timesheet-document .timesheet-ending { break-inside:avoid; }
+  .portal-app .timesheet-document .timesheet-summary-row > td { border:0 !important; padding:4mm 0 0; }
+  .portal-app .timesheet-summary-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:4mm; margin:0; break-inside:avoid; text-align:left; }
   .portal-app .timesheet-leave-row,.portal-app .ui-timesheet-balance-row { display:flex; justify-content:space-between; align-items:baseline; gap:2mm; margin:0 0 1.5mm; }
-  .portal-app .timesheet-leave-row label,.portal-app .ui-timesheet-balance-row label { font-size:9pt; font-weight:400; }
+  .portal-app .timesheet-print-summary :is(.timesheet-leave-row,.ui-timesheet-balance-row) > :first-child { font-size:10pt; font-weight:400; }
   .portal-app .ui-timesheet-signatures { display:grid; grid-template-columns:1fr 1fr; gap:3mm; text-align:center; }
-  .portal-app .ui-timesheet-signature { display:flex; flex-direction:column; min-height:25mm; }
-  .portal-app .ui-timesheet-signature-name { margin-top:auto; }
+  .portal-app .ui-timesheet-signature { display:flex; flex-direction:column; min-width:0; font-weight:700; }
+  /* Explicit space wins over the document's p margin reset; no flex auto-margin dependency. */
+  .portal-app .timesheet-document .ui-timesheet-signature-name { margin-top:23mm; font-weight:700; }
   /* HCNS profile page size/margins and Times New Roman typesetting stay authoritative. */
   .portal-app .hcns-paper { border:0; box-shadow:none; overflow:visible; }
   .portal-app .hcns-paper :is(.hcns-decision-head,.hcns-decision-foot,.hcns-signatures) { break-inside:avoid; }

@@ -113,7 +113,12 @@ def main():
                 check(table.evaluate('x=>getComputedStyle(x).borderCollapse==="collapse" && x.getBoundingClientRect().width > document.querySelector("main").getBoundingClientRect().width*.95'), 'timesheet full-width paper table')
                 check(table.evaluate('x=>{const a=x.getBoundingClientRect(),b=document.querySelector("main").getBoundingClientRect();return a.left>=b.left-1&&a.right<=b.right+1}'), 'timesheet borders stay inside paper margins')
                 check(table.locator('tbody tr').count() >= 34, 'timesheet all days and totals retained')
-                check(page.locator('.timesheet-summary-layout').evaluate('x=>getComputedStyle(x).display==="grid"'), 'timesheet summary and signatures in columns')
+                check(page.locator('.timesheet-print-heading img').is_visible(), 'timesheet print logo retained')
+                check(page.locator('.timesheet-document').evaluate('x=>getComputedStyle(x).page==="timesheet"'), 'timesheet named A4 page')
+                check(table.evaluate('x=>parseFloat(getComputedStyle(x).fontSize)>=13.33&&getComputedStyle(x).fontFamily.includes("Times New Roman")'), 'timesheet serif body >=10pt')
+                check(not any(value in page.locator('.timesheet-document').inner_text() for value in ('Chờ quản lý duyệt','Đã duyệt')), 'timesheet approval state excluded')
+                check(page.locator('.timesheet-summary-layout:visible .ui-timesheet-signature').evaluate_all('xs=>xs.every(x=>x.lastElementChild.getBoundingClientRect().top-x.firstElementChild.getBoundingClientRect().bottom>=22*96/25.4)'), 'timesheet signature space >=22mm')
+                check(page.locator('.timesheet-summary-layout:visible').evaluate('x=>getComputedStyle(x).display==="grid"'), 'timesheet summary and signatures in columns')
                 check(page.locator('.timesheet-leave-row input,.timesheet-leave-row .ui-number-display').evaluate_all('xs=>xs.every(x=>!x.checkVisibility())'), 'timesheet controls excluded')
                 check(page.locator('.timesheet-leave-row .ui-print-only').evaluate_all('xs=>xs.length===5&&xs.every(x=>x.checkVisibility())'), 'timesheet saved leave values visible')
             if name.startswith('legacy-'):

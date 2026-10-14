@@ -1,0 +1,19 @@
+{% load ui_components %}
+<div class="timesheet-summary-layout">
+  <div class="timesheet-print-summary">
+    <div class="timesheet-leave-row"><span>Số ngày nghỉ ốm trong tháng:</span><span class="ui-print-only">{{ summary.sick_days|ui_number }}</span></div>
+    <div class="timesheet-leave-row"><span>Số ngày thai sản trong tháng:</span><span class="ui-print-only">{{ summary.maternity_days|ui_number }}</span></div>
+    <div class="timesheet-leave-row"><span>Số ngày nghỉ bù trong tháng:</span><span class="ui-print-only">{{ summary.compensatory_days|ui_number }}</span></div>
+    <div class="timesheet-leave-row"><span>Số ngày nghỉ phép trong tháng:</span><span class="ui-print-only">{{ summary.annual_leave_days|ui_number }}</span></div>
+    <div class="timesheet-leave-row"><span>Số ngày nghỉ không lương trong tháng:</span><span class="ui-print-only">{{ summary.unpaid_leave_days|ui_number }}</span></div>
+    {% if balance %}
+    <div class="ui-timesheet-balance-row"><span>Tổng ngày phép năm {{ year|ui_year }}:</span><span>{{ balance.allocated_days|ui_number }}</span></div>
+    <div class="ui-timesheet-balance-row"><span>Số ngày phép đã sử dụng:</span><span>{{ balance_used|ui_number }}</span></div>
+    <div class="ui-timesheet-balance-row"><span>Số ngày phép còn lại:</span><span>{{ balance_remaining|ui_number }}</span></div>
+    {% endif %}
+  </div>
+  <div class="ui-timesheet-signatures">
+    <div class="ui-timesheet-signature"><p class="ui-font-label">Quản lý trực tiếp</p><p class="ui-timesheet-signature-name">{{ summary.employee.manager.full_name|default:"—"|ui_number }}</p></div>
+    <div class="ui-timesheet-signature"><p class="ui-font-label">Chữ ký nhân viên</p><p class="ui-timesheet-signature-name">{{ summary.employee.full_name|ui_number }}</p></div>
+  </div>
+</div>

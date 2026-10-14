@@ -288,6 +288,7 @@ def timesheet_month(request):
 
     context = {
         "day_rows": day_rows, "year": year, "month": month,
+        "timesheet_project": next(iter(projects_used)) if len(projects_used) == 1 else None,
         "total_hours": total_hours,
         "base_days": base_days, "hours_per_day": hours_per_day,
         "required_days": required_days, "required_hours": required_hours,
@@ -486,4 +487,3 @@ def holiday_delete(request, pk):
     holiday.save(update_fields=["is_active"])
     messages.success(request, "Đã xóa ngày lễ.")
     return redirect("portal:holiday_list")
-

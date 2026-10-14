@@ -27,8 +27,8 @@ def main():
     output = folder / 'asset-cache-uat'
     output.mkdir(exist_ok=True)
     state = {'port': args.baseline_port}
-    old_cache = 'ihrms-static-v14-search-accent-20261013'
-    new_cache = 'ihrms-static-v15-results-workflow-20261014'
+    old_cache = 'ihrms-static-v15-results-workflow-20261014'
+    new_cache = 'ihrms-static-v16-bcc-print-20261014'
     old_css = """@media screen {
     .portal-app .ui-main .ui-query-bar {display:grid;grid-template-columns:minmax(0,1fr) auto;}
     .portal-app .ui-main .ui-query-actions {grid-column:2;}
@@ -79,6 +79,7 @@ def main():
         page.evaluate('async()=>{await navigator.serviceWorker.ready;}')
         page.wait_for_function('()=>!!navigator.serviceWorker.controller')
         page.reload(wait_until='networkidle')
+        check(old_cache in page.evaluate('()=>caches.keys()'), 'previous release worker cache populated')
         gap = """()=>{const f=document.querySelector('.ui-query-bar');const x=f.querySelector('.ui-field input').getBoundingClientRect();const b=f.querySelector('button[type=submit]').getBoundingClientRect();return b.left-x.right;}"""
         before = page.evaluate(gap)
         check(before > 100, 'stale retained CSS reproduces detached action')
@@ -99,6 +100,11 @@ def main():
         check(old_cache not in keys, 'old worker cache retired')
         page.reload(wait_until='networkidle')
         check(0 <= page.evaluate(gap) <= 17, 'layout survives controlling worker reload')
+        page.goto(base+'/portal/timesheet/?month=9&year=2026',wait_until='networkidle')
+        check(page.locator('link[href*="print_forms.css"]').get_attribute('href').endswith('v=20261014-bcc-timesheet-final'), 'fresh print stylesheet URL loaded')
+        page.emulate_media(media='print')
+        check(page.locator('.ui-personal-timesheet-table').evaluate('x=>getComputedStyle(x).fontFamily.includes("Times New Roman")&&parseFloat(getComputedStyle(x).fontSize)>=13.33'), 'warm cache loads BCC print font')
+        page.emulate_media(media='screen')
         page.screenshot(path=str(output / 'updated-css.png'), full_page=True)
         browser.close()
     proxy.shutdown()

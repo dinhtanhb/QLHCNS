@@ -114,10 +114,12 @@ class ProjectLayoutTests(TestCase):
         from pathlib import Path
         root = Path(__file__).resolve().parents[2]
         base = (root / 'templates/base.html').read_text(encoding='utf-8')
-        for name in ('project_layout.css', 'shared_components.css', 'shared_components.js'):
+        for name in ('shared_components.css', 'shared_components.js'):
             self.assertIn(name + "' %}?v=20261014-results-workflow", base)
+        self.assertIn("project_layout.css' %}?v=20261014-bcc-timesheet-final", base)
+        self.assertIn("print_forms.css' %}?v=20261014-bcc-timesheet-final", base)
         worker = (root / 'static/js/service-worker.js').read_text(encoding='utf-8')
-        self.assertIn('ihrms-static-v15-results-workflow-20261014', worker)
+        self.assertIn('ihrms-static-v16-bcc-print-20261014', worker)
 
     def test_reset_filter_excludes_scope_and_empty_values(self):
         from django.http import QueryDict
