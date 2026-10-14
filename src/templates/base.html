@@ -71,7 +71,9 @@
                 <button type="button" data-menu-trigger aria-controls="menu-canhan" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='person' %}<span class="ui-nav-label">Cá nhân</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
                 <div id="menu-canhan" class="ui-nav-panel" hidden>
                     <a href="{% url 'portal:profile' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'profile' %}aria-current="page"{% endif %}><span class="ui-nav-label">Hồ sơ cá nhân</span></a>
+                    {% if request.user.employee_id %}
                     <a href="{% url 'portal:profile_change_request_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'profile_change_request_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Yêu cầu cập nhật hồ sơ</span></a>
+                    {% endif %}
                     <a href="{% url 'portal:org_chart' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'org_chart' %}aria-current="page"{% endif %}><span class="ui-nav-label">Sơ đồ tổ chức</span></a>
                     <a href="{% url 'portal:timesheet_month' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'timesheet_month' %}aria-current="page"{% endif %}><span class="ui-nav-label">Bảng công</span></a>
                     <a href="{% url 'portal:leave_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'leave_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Nghỉ phép</span></a>

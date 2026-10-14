@@ -2,6 +2,31 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-14 — Hành chính: khôi phục Hủy và ẩn liên kết ngoài quyền
+
+**Tóm tắt cho chủ dự án**
+
+- Khôi phục Hủy đặt phòng/xe cho chủ đơn ở Pending/Approved; xác nhận và Escape hoạt động, không sửa view hủy.
+- Ẩn xuất công văn bằng đúng `_can_view_reports(request)` và ẩn yêu cầu hồ sơ của tài khoản chưa gắn hồ sơ; 8 link 403 cũ → 0.
+- 20 route × 9 vai trò giữ HTTP/form hiện hành ngoài form Hủy được khôi phục; không tăng truy vấn.
+- Edge: 162 kiểm tra bố cục/3 trang và 31 kiểm tra luồng ghi đạt; 37 PDF chung và BCC vẫn đạt.
+- Giữ hai template mồ côi, gỡ khỏi danh sách đã render; giấy sổ công văn được xử lý ở commit tiếp theo.
+- Commit `ui: administration follow-up`, bản sao review ngoài repo; không deploy.
+
+**Đầu lượt/phạm vi:** yêu cầu 8744364a, main/origin `110b893d7757bbdd732becde077fb9423c332506` khớp 0/0, giữ AGENTS.md và reference ngoài phạm vi. Đọc UI Ux Pro Max, tra UX xác nhận/focus; dùng quy trình PDF để kiểm bản in. Không đổi model/migration/quyền/guard/URL/tham số/cách tính/dependency.
+
+**Nguyên nhân và sửa:** quan hệ `Employee.user_account` đã là User, `.user` không tồn tại nên điều kiện cũ luôn sai. Template so `b.employee_id == request.user.employee_id`, không truy cập quan hệ ngược gây N+1; thêm điều kiện Pending/Approved rõ ràng, không hiện cho Rejected/Cancelled/Completed hoặc người khác. Hai model hiện không có trạng thái Completed; test template vẫn kiểm trường hợp này để phòng hiển thị sai. Form giữ URL/CSRF và dialog có tiêu đề/nhãn Hủy rõ. Dispatch context thêm duy nhất cờ chỉ đọc gọi đúng hàm `_can_view_reports` của reporting; cả link màn hình và bản in cũ đều được ẩn theo cờ. Menu hồ sơ dùng employee_id đã có, không query thêm. Không nới quyền ở đích.
+
+**Test trước/sau:** 4 test mới probe thật trên archive 110b893: 3 test UI thất bại với 7 subtest đúng lỗi đã nêu; test POST hủy backend vốn đúng nên vẫn đạt trên mã cũ. Sau sửa chạy lại cùng test và bộ UI. Helper bỏ ngoại lệ 403 của Hành chính. `ops/run_administration_contract_uat.py --directory "$env:TEMP/ihrms-finance-followup-20261014" --phase before`, rồi `--phase after --allow-cancel-ui`: 180 trường hợp, không thay HTTP hoặc các form khác, không tăng query; 8 link lỗi trước → 0 sau. Tùy chọn chỉ loại form `/rooms/.../cancel/` và `/vehicles/.../cancel/` khỏi so sánh form vì đó là thay đổi được yêu cầu; trạng thái/quyền nút được test riêng. Test menu cũ yêu cầu giữ mọi link kể cả link lỗi của tài khoản chưa gắn hồ sơ đã được cập nhật đúng một kỳ vọng UI này, không đổi assertion nghiệp vụ.
+
+**UAT và in:** `ops/run_administration_workflow_uat.py` trên DB/media giả ngoài repo, port 8782: 31 kiểm tra đạt; cả phòng/xe tạo→mở Hủy→Escape không ghi→xác nhận lưu Cancelled và thông báo. `ops/run_project_layout_uat.py --account demo-hr --only /portal/rooms/ /portal/vehicles/ /portal/dispatches/`: 162 kiểm tra, 0 lỗi, 1920/1440/1024/768/390px × sáng/tối, bàn phím và reduced motion. `ops/run_print_layout_uat.py`: 380 kiểm tra/37 PDF đạt. `ops/run_timesheet_print_uat.py --phase after`: 645 kiểm tra/8 tình huống/32 PDF đạt. Các runner dùng directory `ihrms-finance-followup-20261014`, packages Playwright trong TEMP và DB dùng một lần; không ghi dữ liệu thật. TEMP followup-stable-print xuất cùng bản ghi trên archive 110b893 port 8784 và nguồn cuối 8782; đối chiếu pixel/text lưu tại followup-print-comparison: 37/37 giống nhau. Không sửa CSS in ở commit này. Kiểm tra trước đây giữ pixel cũ đã bỏ sót UI thừa trong sổ công văn; commit in tiếp theo bổ sung kiểm tra giấy riêng thay vì coi ảnh cũ là mẫu đạt.
+
+**Kiểm tra nguồn cuối:** git diff --check, pip check, Django check, makemigrations --check --dry-run đạt, không migration; contrast 198 cặp/0 lỗi. Full suite SQLite và SQL Server dùng TEMP project-layout-final-tests.py gọi ops/run_tests.py, DB/media cách ly; kết quả cuối SQLite: 536 test/191,495s, OK (7 skip); SQL Server: 536 test/250,874s, OK, không skip, exit 0. Các lượt đầu thất bại ở kiểm kê menu cũ không được dùng làm kết quả đạt.
+
+**Template mồ côi và ghi nhận backend:** rg trên views/urls/include/test không thấy route cho office_incoming_list.html và office_outgoing_list.html; chỉ còn chính nội dung hai template. Giữ nguyên tệp, loại khỏi TEMPLATES render/UAT; đề xuất chủ dự án chọn xóa hoặc đăng ký route trong đợt riêng. View room_booking_cancel/vehicle_booking_cancel vẫn gán Cancelled mà chưa chặn trạng thái hiện tại; POST thủ công có thể hủy đơn đã kết thúc/từ chối. Chỉ ghi nhận, không sửa backend theo yêu cầu. Không thêm kiểm trạng thái hoặc quyền mới.
+
+**Bàn giao/giới hạn:** bản sao `D:/QLHCNS-Backups/IHRMS_Review_20261014_AdministrationFollowup.zip`, manifest tree và SHA-256 từng tệp được mở lại xác minh; không env/DB/media/log/tài khoản/bí mật/reference thật. Metadata SHA remote/CI ngoài repo cùng tên đợt. Chưa screen reader, zoom 200% thực, phiên tài khoản thật hoặc máy in vật lý. Nhật ký mục này chốt trước commit; trạng thái CI sau push nằm trong metadata bàn giao. Không force-push/deploy.
+
 ## 2026-10-14 — Giai đoạn 5: Hành chính
 
 **Tóm tắt cho chủ dự án**

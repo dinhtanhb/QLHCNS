@@ -47,13 +47,15 @@ class AppShellTests(TestCase):
         return render_to_string("base.html", {}, request=request)
 
     def expected_navigation(self, user):
-        """Independent inventory of links from the pre-shell base layout."""
+        """Navigation inventory, excluding unusable personal requests for unlinked accounts."""
         def url(name):
             return reverse("portal:" + name)
         expected = [url(name) for name in (
-            "dashboard", "profile", "profile_change_request_list", "org_chart",
+            "dashboard", "profile", "org_chart",
             "timesheet_month", "leave_list", "kpi_my_list", "payslip_list",
         )]
+        if user.employee_id:
+            expected.append(url("profile_change_request_list"))
         permission = lambda name: has_permission(user, name)
         if permission("manage_hr"):
             expected += [url(name) for name in ("hr_employee_list", "hr_contract_list", "lifecycle_case_list", "hcns_catalog", "profile_change_request_list")]

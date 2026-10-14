@@ -14,8 +14,7 @@ from apps.document.models import DispatchBook, OfficialDispatch
 
 TEMPLATES = ('asset_admin_list','asset_list','dispatch_create','dispatch_detail','dispatch_list',
     'disposal_request_detail','disposal_request_form','disposal_request_list','document_approval_list',
-    'document_list','event_list','inventory_session_detail','inventory_session_list','office_incoming_list',
-    'office_outgoing_list','procurement_request_list','room_booking_approval_list','room_booking_list',
+    'document_list','event_list','inventory_session_detail','inventory_session_list','procurement_request_list','room_booking_approval_list','room_booking_list',
     'supply_request_approval_list','supply_request_list','vehicle_booking_approval_list','vehicle_booking_list')
 
 
@@ -46,23 +45,19 @@ class AdministrationUITests(TestCase):
                     self.assertIn('scope="col"',text)
 
     def test_roles_links_and_csrf_keep_existing_denials_explicit(self):
-        # These eight pre-existing navigation denials were reproduced BEFORE this UI change.
-        # Permission changes require a separate project-owner decision.
+        # Every rendered link must now be usable; report and profile guards stay unchanged.
         for code in ('EMPLOYEE','DEPT_MANAGER','HR_OFFICER','HR_MANAGER','DIRECTOR','FINANCE_OFFICER','SYS_ADMIN'):
             user=self.user(code,True);self.client.force_login(user)
             disposal=AssetDisposalRequest.objects.create(request_no='ADMIN-'+code,request_date=date(2026,10,1),location_name='Văn phòng giả',requested_by=user.employee)
             dispatch=OfficialDispatch.objects.create(dispatch_no='ADMIN-'+code,dispatch_type='Incoming',dispatch_book=self.book,title='Công văn giả',issuing_organization='Tổ chức giả',issue_date=date(2026,10,1),received_or_sent_date=date(2026,10,1),assigned_to=user.employee,department=self.department)
-            names=[n for n in TEMPLATES if n not in ('office_incoming_list','office_outgoing_list','disposal_request_form','dispatch_detail','disposal_request_detail','inventory_session_detail')]
+            names=[n for n in TEMPLATES if n not in ('disposal_request_form','dispatch_detail','disposal_request_detail','inventory_session_detail')]
             routes=[reverse('portal:'+n) for n in names]+[reverse('portal:disposal_request_create'),reverse('portal:dispatch_detail',args=[dispatch.pk]),reverse('portal:disposal_request_detail',args=[disposal.pk]),reverse('portal:inventory_session_detail',args=[self.session.pk])]
-            known={}
-            if code in ('EMPLOYEE','DEPT_MANAGER'):
-                known={f'/reports/export/dispatches/?type={kind}':403 for kind in ('Incoming','Outgoing')}
             for url in routes:
                 with self.subTest(role=code,url=url):
                     response=self.client.get(url)
                     self.assertIn(response.status_code,(200,302))
                     if response.status_code!=200:continue
-                    assert_internal_links(self,response,known_denials=known)
+                    assert_internal_links(self,response)
                     for form in Forms(response.content.decode()).forms:
                         if form['attrs'].get('method','').lower()=='post':
                             self.assertTrue(any(x.get('name')=='csrfmiddlewaretoken' for x in form['fields']))

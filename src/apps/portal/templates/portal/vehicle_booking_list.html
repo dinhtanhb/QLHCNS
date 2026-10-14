@@ -36,11 +36,11 @@
                 {% ui_badge "office.vehiclebooking:status" b.status b.get_status_display %}
             </td>
             <td>
-                {% if b.employee.user_account.user == request.user %}
-                <form method="post" action="{% url 'portal:vehicle_booking_cancel' b.pk %}" data-ui-confirm="Hủy đặt xe này?" data-ui-form>{% include "ui/error_summary.html" %}
+                {% if b.employee_id == request.user.employee_id %}{% if b.status == 'Pending' or b.status == 'Approved' %}
+                <form method="post" action="{% url 'portal:vehicle_booking_cancel' b.pk %}" data-ui-confirm="Hủy đặt xe này?" data-ui-confirm-title="Hủy đặt xe" data-ui-confirm-label="Hủy đặt xe" data-ui-form>{% include "ui/error_summary.html" %}
                     {% csrf_token %}<button type="submit" class="ui-button ui-button--danger">Hủy</button>
                 </form>
-                {% endif %}
+                {% endif %}{% endif %}
             </td>
         </tr>
         {% empty %}<tr><td colspan="6" >{% include "ui/empty_state.html" with title="Chưa có lịch đặt xe nào." description="Danh sách trong phạm vi đang xem." icon="office" %}</td></tr>{% endfor %}

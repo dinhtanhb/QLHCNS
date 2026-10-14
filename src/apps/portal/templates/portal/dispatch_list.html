@@ -11,12 +11,14 @@
             {% include "ui/page_header.html" with title="Công văn và văn bản hành chính" description="Tra cứu và xử lý thông tin trong phạm vi được cấp quyền." %}
         </div>
         <div class="ui-page-actions ui-admin-inline">
+            {% if can_export_dispatches %}
             <a href="{% url 'reporting:export_dispatches' %}?type=Incoming" class="ui-admin-link">
                  Xuất Sổ CV Đến (.xlsx)
             </a>
             <a href="{% url 'reporting:export_dispatches' %}?type=Outgoing" class="ui-admin-link">
                  Xuất Sổ CV Đi (.xlsx)
             </a>
+            {% endif %}
             {% if is_management %}
             <a href="{% url 'portal:dispatch_create' %}" class="ui-button ui-button--secondary">
                 + Tiếp nhận / Vào sổ công văn

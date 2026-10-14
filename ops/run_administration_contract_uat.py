@@ -5,7 +5,7 @@ from datetime import date
 
 
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--directory',type=Path,required=True);p.add_argument('--phase',choices=('before','after'),required=True);p.add_argument('--baseline-templates',type=Path);a=p.parse_args();root=Path(__file__).resolve().parents[1];f=a.directory.resolve()
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--directory',type=Path,required=True);p.add_argument('--phase',choices=('before','after'),required=True);p.add_argument('--baseline-templates',type=Path);p.add_argument('--allow-cancel-ui',action='store_true');a=p.parse_args();root=Path(__file__).resolve().parents[1];f=a.directory.resolve()
  if f==root or root in f.parents:p.error('External synthetic data required.')
  marker=json.loads((f/'synthetic-demo.json').read_text(encoding='utf-8'))
  if marker.get('synthetic_only') is not True:p.error('Synthetic marker required.')
@@ -67,7 +67,12 @@ def main():
      if isinstance(value,dict):return {k:normalize(v) for k,v in value.items() if not (k=='value' and v=='' or k=='type' and v=='text')}
      return value
     for prop in ('status','forms'):
-     if normalize(report['cases'][key][prop])!=normalize(old[prop]):report['failures'].append(key+' changed '+prop)
+     current_value, old_value = report['cases'][key][prop], old[prop]
+     if a.allow_cancel_ui and prop=='forms':
+      # Authorized UI restoration adds owner-only POST forms; all other forms stay exact.
+      def without_cancel(forms):return [f for f in forms if not (f['action'].endswith('/cancel/') and ('/rooms/' in f['action'] or '/vehicles/' in f['action']))]
+      current_value,old_value=without_cancel(current_value),without_cancel(old_value)
+     if normalize(current_value)!=normalize(old_value):report['failures'].append(key+' changed '+prop)
     if query_count>old['queries']:report['failures'].append(key+' increased queries '+str(old['queries'])+' -> '+str(query_count))
     for target,status in report['links'][code].items():
      if status not in (200,302) and status!=baseline['links'][code].get(target):report['failures'].append(code+' new broken link '+target+' '+str(status))

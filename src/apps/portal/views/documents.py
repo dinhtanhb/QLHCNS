@@ -11,6 +11,7 @@ from apps.notification.services import notify, notify_many, notify_with_email_dr
 from apps.organization.models import Department
 from apps.hrm.models import Employee
 from apps.document.models import Document, DocumentApproval
+from apps.reporting.views import _can_view_reports
 from .common import _friendly_error, _get_employee, _role_code, _paginated_context
 
 
@@ -132,6 +133,7 @@ def dispatch_list(request):
         "selected_status": status or "",
         "search_query": search or "",
         "is_management": is_mgmt,
+        "can_export_dispatches": _can_view_reports(request),
     })
 
 

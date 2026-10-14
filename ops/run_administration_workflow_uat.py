@@ -46,10 +46,11 @@ def main():
    page.goto(base+reverse('portal:'+route));form=page.locator('form[action="'+reverse('portal:'+route.replace('_list','_create'))+'"]');field='room' if route.startswith('room') else 'vehicle';form.locator('[name='+field+']').select_option(str(resource.pk));form.locator('[name=purpose]').fill('Họp thử '+stamp);start=timezone.localtime()+timedelta(days=60);form.locator('[name=start_time]').fill(start.strftime('%Y-%m-%dT%H:%M'));form.locator('[name=end_time]').fill((start+timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M'))
    for name,value in extra.items():form.locator('[name='+name+']').fill(value)
    submit(form.locator('button[type=submit]'));check(model.objects.filter(employee=person,**{field:resource}).exists(),route+' create persisted');check(page.locator('.ui-alert--success').count()>0,route+' create notice')
-   # Current ownership condition may hide cancellation even for the owner; record without changing guard.
+   # Owner cancellation is required; Escape must leave the pending reservation intact.
    record=model.objects.filter(employee=person,**{field:resource}).latest('pk');cancel=page.locator('form[action="'+reverse('portal:'+route.replace('_list','_cancel'),args=[record.pk])+'"]')
+   check(cancel.count()==1,route+' owner cancel visible')
    if cancel.count():
-    cancel.locator('button').click();page.keyboard.press('Escape');record.refresh_from_db();check(record.status=='Pending',route+' cancel Escape retains state');submit(cancel.locator('button'));record.refresh_from_db();check(record.status=='Cancelled',route+' cancel persisted')
+    cancel.locator('button').click();page.keyboard.press('Escape');record.refresh_from_db();check(record.status=='Pending',route+' cancel Escape retains state');submit(cancel.locator('button'));record.refresh_from_db();check(record.status=='Cancelled',route+' cancel persisted');check(page.locator('.ui-alert--success').count()>0,route+' cancel notice')
    else:report.setdefault('existing_limits',[]).append(route+' owner cancellation hidden by existing template condition')
   # Two procurement rows, including the dynamically added labeled row.
   page.goto(base+reverse('portal:procurement_request_list'));form=page.locator('form[action="'+reverse('portal:procurement_request_create')+'"]');form.locator('[name=reason]').fill('Mua sắm giả '+stamp);page.locator('#add-procurement-item').click()

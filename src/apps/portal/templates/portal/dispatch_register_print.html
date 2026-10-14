@@ -10,13 +10,13 @@
             <p class="text-xs text-gray-500 mt-1">Theo dõi, phân công và xử lý công văn đến, công văn đi và chỉ đạo điều hành.</p>
         </div>
         <div class="ui-page-actions flex flex-wrap gap-2">
-            <a href="{% url 'reporting:export_dispatches' %}?type=Incoming" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition">
+            {% if can_export_dispatches %}<a href="{% url 'reporting:export_dispatches' %}?type=Incoming" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition">
                 &#128229; Xuất Sổ CV Đến (.xlsx)
             </a>
             <a href="{% url 'reporting:export_dispatches' %}?type=Outgoing" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition">
                 &#128228; Xuất Sổ CV Đi (.xlsx)
             </a>
-            {% if is_management %}
+            {% endif %}{% if is_management %}
             <a href="{% url 'portal:dispatch_create' %}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-blue-700 text-white hover:bg-blue-800 transition">
                 + Tiếp nhận / Vào sổ công văn
             </a>
