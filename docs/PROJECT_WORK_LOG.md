@@ -2,6 +2,50 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-14 — Lưới form, Bước A: đo căn lề trước sửa
+
+**Tóm tắt cho chủ dự án**
+
+- Bước này chỉ thêm công cụ và test; chưa sửa mã giao diện biểu mẫu.
+- Kiểm kê146 route có tên ngoài Django Admin; 9 tài khoản, 7 độ rộng, sáng/tối:6.146 lượt đo và875 mục HTTP/không có shell/không phải HTML được ghi lý do.
+- Đo trước:5.178 vi phạm lặp theo route/vai trò/kích thước/theme; chưa phải0 lỗi và chưa đóng giai đoạn.
+- Ca sửa nhân viên1756×920 tái hiện lệch lưới, mép ô, trường dài hẹp, thiếu nhóm, chú thích và nút; chưa tái hiện lề219/76px, thực đo62/62px.
+- Chủ dự án chọn ưu tiên hàng đầy và cho điều chỉnh span; giữ thứ tự Tab, không đổi tên/required/CSRF và dữ liệu gửi.
+- Tiếp theo B–D: một nguồn lưới12 cột, chuyển các form, echo ngày tiếng Việt; E chỉ đóng khi kiểm tra cuối đạt và giới hạn được công bố.
+
+**Công cụ:** ops/run_layout_alignment_audit.py dùng Edge trên database/media giả tách riêng tại TEMP/ihrms-form-grid-20261014, baseline source archive71b6a2f port8791. URLResolver lấy146 route có tên của portal/report/private-files, không có route còn thiếu đối số. Django Admin dùng khung riêng, không được tuyên bố đã đo UI Admin. Có --only, --accounts, --widths, --workers, --output-dir; --seed tạo bản ghi giả còn thiếu chỉ khi runtime có marker synthetic_only và ở ngoài repository. Chín tài khoản gồm HR/superuser/giám đốc/quản lý/nhân viên/kế toán/sysadmin/chưa liên kết. Chỉ đo HTML có .ui-main; 302/403/404/405/tệp tải hoặc không shell ghi riêng; không tính là UI pass. Chạy ba phiên Edge đồng thời, đăng nhập tuần tự, SQLite timeout30. Dữ liệu giả được chuẩn bị xong trước lượt baseline cuối; không dùng kết quả các lượt đang bổ sung fixture làm mốc cuối. Waiver mặc định ops/layout_waivers.json rỗng; không tự miễn trừ vi phạm.
+
+**Nguyên nhân và giới hạn đo:** audit đọc hình học main/wrap/page/field/input, đường cột12, đỉnh/chiều cao, khoảng hàng, nhãn/chữ44px/14px, hint, nút, tràn trang và số đã đánh dấu; ghi JSON, markdown và ảnh ngoài Git. CSSOM hồi quy HR xác nhận các URL asset cũ thật đang tải và luật active. Có8 khai báo columns kể cả breakpoint trong4 tệp: hr_ui18/61/62, ui_controls45, shared_components58/173 và project_layout10/18; mô tả “năm nơi” của yêu cầu là các nguồn/luật mâu thuẫn, không ghi sai thành5 tệp. 60/40 có trong form từ project_layout, hr UI có2/3 cột và caps28rem làm mép input không khớp ô. Các lượt cũ chỉ đo tỷ lệ/tràn/focus, không đối chiếu cạnh trường, hint, nhóm và hàng nút, nên bỏ sót lỗi. Trên source71 hiện tại, .ui-main x286/w1440, .ui-page x318/w1376, sidebar256 và viewport1756 cho lề khả dụng62/62px. 219/76px trong ảnh chủ dự án chưa tái hiện; không khẳng định nguyên nhân cache/zoom hoặc bù margin riêng khi chưa có bằng chứng. Ảnh được khoanh rect/codes bằng xử lý chứng cứ ngoài app; không thay CSS ứng dụng để giả lập lỗi.
+
+**Sửa chính công cụ trước chốt mốc:** bản đầu nhầm mọi p, gồm lỗi ẩn, là hint; đã giới hạn .ui-field-help/.ui-hr-text nhìn thấy. CSSOM Edge có cssRules rỗng ngay trên style rule nên phải ghi selector/style trước khi duyệt lồng. Form Client lần đầu thiếu HTTP_HOST tạo400 DisallowedHost; đã sửa host127.0.0.1 và cấm400/500. Không lấy những lượt này làm pass/baseline. Mốc cuối:7.021 mục gồm6.146 lượt hình học và875 mục skip có lý do,0 lỗi chạy runner;5.178 vi phạm thật theo các phép đo đã cài (exit1 đúng kỳ vọng). Counts: hint168, date language1792, đường cột1008, chiều cao hàng96, trường dài184, nút836, nhãn336, nhóm140, h1 126, tràn72, mép ô420. DATE_ECHO lưu trong chứng cứ trước nhưng chưa đưa vào tổng Bước A; bắt buộc ở nguồn sau. Không coi phép đo tự động là chứng nhận mọi khía cạnh nhìn bằng mắt.
+
+| Mô-đun/nhóm route | Vi phạm trước | Sau |
+|---|---:|---|
+| lifecycle | 84 | Chưa sửa ở Bước A |
+| profile | 240 | Chưa sửa ở Bước A |
+| leave | 540 | Chưa sửa ở Bước A |
+| task | 460 | Chưa sửa ở Bước A |
+| activity | 196 | Chưa sửa ở Bước A |
+| kpi | 42 | Chưa sửa ở Bước A |
+| dispatch | 112 | Chưa sửa ở Bước A |
+| timesheet | 666 | Chưa sửa ở Bước A |
+| recruitment | 78 | Chưa sửa ở Bước A |
+| report | 168 | Chưa sửa ở Bước A |
+| holiday | 66 | Chưa sửa ở Bước A |
+| vehicle | 90 | Chưa sửa ở Bước A |
+| event | 54 | Chưa sửa ở Bước A |
+| inventory | 148 | Chưa sửa ở Bước A |
+| hr | 1878 | Chưa sửa ở Bước A |
+| disposal | 132 | Chưa sửa ở Bước A |
+| finance | 168 | Chưa sửa ở Bước A |
+| asset | 56 | Chưa sửa ở Bước A |
+
+**Form/query baseline:** ops/run_form_contract_uat.py ghi1.314 trường hợp146route×9tài khoản trên cùng dữ liệu giả với71b6a2f. Giữ thứ tự input/select/textarea/button, name, required, action/method/enctype, defaults, options và CSRF presence; chỉ chuẩn hóa token xoay và bỏ thuộc tính trình bày. Không xuất mật khẩu/cookie. Hai test parser kiểm rằng đổi required/default/action/option/thứ tự bị phát hiện, còn fieldset/class/id/CSRF xoay không làm đổi contract. Đây là GET/form/query contract, không phải kiểm POST nghiệp vụ. Các luồng ghi phải chạy lại sau chuyển form; dữ liệu giả này không phải dữ liệu vận hành.
+
+**Lệnh/kết quả cuối:** venv/Scripts/python.exe ops/run_layout_alignment_audit.py --directory "$env:TEMP/ihrms-form-grid-20261014" --packages-dir "$env:TEMP/ihrms-planning-qa-packages-20261014" --source-root "$env:TEMP/ihrms-dashboard-baseline-71b6a2f" --port 8791 --phase before --workers 3 --output-dir "$env:TEMP/ihrms-form-grid-20261014/alignment-before-release" (ghi tham số --port 8791 / --workers 3 khi chạy): exit1,5.178 vi phạm,0 lỗi chạy. ops/run_form_contract_uat.py --directory cùng runtime --source-root cùng archive --phase before: exit0/1.314 trường hợp/0 lỗi. Focused parser2 test OK. Full nguồn cuối qua TEMP/project-layout-final-tests.py gọi ops/run_tests.py: SQLite544/186.858s OK(7skip); SQL Server đang bổ sung kết quả trước commit. git diff --check và py_compile hai runner đạt. Bước A không sửa CSS/template nên không tuyên bố đã sửa UI hoặc chạy lại giấy in trong commit này; giấy37/PDF/BCC đã kiểm riêng ở commitDashboarda75c0e8 trước đó. BướcB thay CSS chung bắt buộc chạy lại toàn bộ in/cache/contrast/luồng.
+
+**Bàn giao Bước A:** bản sao source review/manifest/hash và chứng cứ ở D:/QLHCNS-Backups với nhãn LayoutAudit; không chứa env/database/media/log/account secrets/private references. Commit riêng ops: layout alignment audit trên main, SHA/remote/CI trong metadata cạnh ZIP. Tiếp tục làm B–E, chưa đóng giai đoạn, chưa deploy. Chưa kiểm screen reader, zoom200%, tài khoản thật và máy in thật; khung219/76px chưa tái hiện. Nhật ký cùng đợt tiếp theo phải ghi danh sách form chuyển, nguồn lưới còn lại, vi phạm sau và contact sheet so cùng khung.
+
 ## 2026-10-14 — Dashboard: bố cục nhóm theo quyền
 
 **Tóm tắt cho chủ dự án**

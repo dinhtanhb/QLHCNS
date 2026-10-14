@@ -1,0 +1,87 @@
+"""Compare existing form wire contracts/query counts on external synthetic data."""
+import argparse
+from html.parser import HTMLParser
+import json
+from pathlib import Path
+
+from run_layout_alignment_audit import configure, inventory
+
+
+class FormContract(HTMLParser):
+    """Retain DOM submission order, defaults and validation; omit presentation."""
+    ignored = {'class','id','style','placeholder','lang','rows','cols','tabindex',
+               'aria-describedby','aria-labelledby','aria-label','aria-live','aria-invalid',
+               'data-ui-form','data-ui-date'}
+
+    def __init__(self, html):
+        super().__init__()
+        self.forms=[]
+        self.form=None
+        self.field=None
+        self.option=None
+        self.feed(html)
+
+    def attrs(self, pairs):
+        attrs={key:value for key,value in pairs if key not in self.ignored and not key.startswith('aria-')}
+        if attrs.get('name')=='csrfmiddlewaretoken':attrs['value']='CSRF_PRESENT'
+        return attrs
+
+    def handle_starttag(self, tag, pairs):
+        attrs=self.attrs(pairs)
+        if tag=='form':
+            self.form={'attrs':attrs,'fields':[]};self.forms.append(self.form)
+        elif self.form is not None and tag in ('input','select','textarea','button'):
+            self.field={'tag':tag,'attrs':attrs}
+            self.form['fields'].append(self.field)
+        elif self.field is not None and tag=='option':
+            self.option={'attrs':attrs,'text':''};self.field.setdefault('options',[]).append(self.option)
+
+    def handle_data(self,data):
+        if self.option is not None:self.option['text']+=data
+        elif self.field is not None and self.field['tag']=='textarea':self.field['text']=self.field.get('text','')+data
+
+    def handle_endtag(self,tag):
+        if tag=='option' and self.option is not None:self.option['text']=self.option['text'].strip();self.option=None
+        if tag in ('select','textarea','button'):self.field=None
+        if tag=='form':self.form=None;self.field=None
+
+
+def main():
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--directory',type=Path,required=True);p.add_argument('--source-root',type=Path)
+    p.add_argument('--phase',choices=('before','after'),required=True);p.add_argument('--only',nargs='+')
+    args=p.parse_args();root=(args.source_root or Path(__file__).resolve().parents[1]).resolve();folder=args.directory.resolve()
+    if root==folder or root in folder.parents:p.error('External synthetic runtime required')
+    configure(root,folder)
+    from django.core.cache import cache
+    from django.db import connection
+    from django.test import Client
+    from django.test.utils import CaptureQueriesContext
+    from apps.security.models import User
+    routes=inventory(args.only)
+    report={'synthetic_only':True,'cases':{},'failures':[]}
+    baseline=json.loads((folder/'form-contract-before.json').read_text(encoding='utf-8')) if args.phase=='after' else None
+    for account in ('demo-layout-admin','demo-hr','demo-director','demo-manager','demo-employee','demo-finance','demo-hr-officer','demo-sys','demo-unlinked'):
+        client=Client();client.force_login(User.objects.get(username=account))
+        for route in routes:
+            if 'url' not in route:continue
+            cache.clear()
+            with CaptureQueriesContext(connection) as queries:response=client.get(route['url'],HTTP_HOST='127.0.0.1')
+            key=account+' '+route['name']
+            case={'status':response.status_code,'selects':sum(q['sql'].lstrip().upper().startswith('SELECT') for q in queries)}
+            if response.status_code==200 and 'text/html' in response.get('Content-Type',''):
+                case['forms']=FormContract(response.content.decode()).forms
+            if getattr(response,'streaming',False):response.close()
+            report['cases'][key]=case
+            if case['status'] in (400,500):report['failures'].append(key+' unexpected HTTP '+str(case['status']))
+            if baseline:
+                old=baseline['cases'].get(key)
+                if old is None:report['failures'].append(key+' missing baseline')
+                elif old['status']!=case['status'] or old.get('forms')!=case.get('forms'):report['failures'].append(key+' HTTP/form contract changed')
+                elif case['selects']>old['selects']:report['failures'].append(key+' SELECT count increased')
+    (folder/('form-contract-'+args.phase+'.json')).write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
+    print(json.dumps({'cases':len(report['cases']),'failures':report['failures']}))
+    return bool(report['failures'])
+
+
+if __name__=='__main__':raise SystemExit(main())
