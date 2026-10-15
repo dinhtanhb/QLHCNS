@@ -22,6 +22,13 @@
  @media(max-width:600px) {
   .portal-app .ui-main .ui-inline-create { grid-template-columns:minmax(0,1fr); }
  }
+ .portal-app .ui-main .ui-login-wrap { display:flex; justify-content:center; align-items:center; min-height:calc(70vh - var(--ui-header-min-height)); padding-block:var(--ui-space-8); }
+ .portal-app .ui-main .ui-login-wrap .ui-card { width:100%; max-width:24rem; margin:0 auto; padding:var(--ui-space-8); }
+ .portal-app .ui-main .ui-login-wrap .ui-login-header { text-align:center; margin-bottom:var(--ui-space-6); }
+ .portal-app .ui-main .ui-login-wrap .ui-login-logo { height:2.5rem; width:auto; margin:0 auto var(--ui-space-3); display:block; }
+ .portal-app .ui-main .ui-login-wrap .ui-field { display:grid; gap:var(--ui-space-1); }
+ .portal-app .ui-main .ui-login-wrap .ui-field label { font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); color:var(--ui-text); }
+ .portal-app .ui-main .ui-login-wrap .ui-field input { width:100%; }
 }
 
 @media print { .ui-inline-create { display:none; } }

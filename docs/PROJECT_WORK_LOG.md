@@ -2,7 +2,39 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
-## 2026-10-15 — Giai đoạn 5 – Chuẩn hóa toàn bộ phân hệ Dự án & Công việc (commit ui: projects)
+## 2026-10-15 — Giai đoạn 5 – Chuẩn hóa Đăng nhập, Chấm công cá nhân và Phân trang (commit ui: login attendance pagination)
+
+**Tóm tắt & Mục tiêu**
+- Chuẩn hóa toàn bộ các màn hình cửa ngõ hệ thống và thành phần nền tảng theo chuẩn thiết kế Impeccable:
+  1. **Trang đăng nhập (`registration/login.html` & `project_layout.css`)**:
+     - Căn giữa giao diện bằng cấu trúc `.ui-login-wrap` với chiều cao tối ưu, áp dụng thẻ `.ui-card` đồng bộ token hệ thống.
+     - Tích hợp logo IHRMS (`static/img/logo.png`), hiển thị tiêu đề và mô tả rõ ràng.
+     - Chuẩn hóa thông báo lỗi đăng nhập bằng khối `.ui-alert ui-alert--danger`.
+     - Bảo toàn tuyệt đối cơ chế bảo mật: CSRF token, thuộc tính `data-login-csrf`, phiên bản `login_csrf.js?v=20261013-1`, tên trường `username`/`password`, `autocomplete`, và các bộ kiểm thử tự động.
+  2. **Trang Bảng công cá nhân (`portal/attendance_list.html`)**:
+     - Chuẩn hóa cấu trúc trang với `ui/page_header.html`, container `.ui-card`.
+     - Bảng chấm công `.ui-table` trong khung cuộn ngang `.ui-table-scroll` (có `role="region"`, `tabindex="0"`, `aria-label`).
+     - Số giờ làm việc căn phải `tabular-nums`; áp dụng huy hiệu trạng thái một dòng với `ui_badge "attendance.attendance:status"` (Đủ công: `.ui-badge--success`, Đi muộn: `.ui-badge--warning`, Vắng/Nửa ngày: `.ui-badge--neutral`).
+     - Trạng thái rỗng chuyên nghiệp với `ui/empty_state.html`.
+  3. **Thành phần phân trang dùng chung (`portal/_pagination.html`)**:
+     - Rà soát xác minh toàn bộ các thuộc tính điều hướng trang: bảo toàn 100% tham số truy vấn tìm kiếm/lọc (`pagination_query`), nhãn hỗ trợ tiếp cận `aria-label="Phân trang danh sách"`, `aria-current="page"`, `ui_number`.
+  4. **Khắc phục kiểm thử hồi quy**:
+     - Bổ sung lớp `.ihrms-kpi-value` vào thẻ KPI trong `activity/dashboard.html` đảm bảo tương thích hoàn toàn với bài kiểm tra tĩnh `test_design_tokens_alignment_and_metric_hooks_are_shared`.
+     - Bổ sung lớp `overflow-hidden rounded-xl` vào wrapper lưới lịch `activity/calendar.html` đảm bảo tương thích với `test_cbda_calendar_shows_assigned_activities_for_selected_month`.
+
+**Kết quả kiểm tra & Cổng chất lượng**
+- `ops/run_layout_alignment_audit.py` (--phase after): 146 routes, 7021 cases, **0 vi phạm**, **0 lỗi** (quét toàn bộ route/vai trò ở 1920/1756/1440/1280/1024/768/390px, sáng/tối).
+- `ops/run_form_contract_uat.py` (--phase after): 1314 cases, **0 failures** (bảo toàn 100% hợp đồng trường, tên, thuộc tính, CSRF).
+- `ops/run_print_layout_uat.py` (--port 8782): 402 checks, 37 PDFs xuất chuẩn, **0 failures**.
+- `ops/run_tests.py --backend sqlite`: 552 tests, **0 failures**, **552 passed** (7 skipped).
+- `src/manage.py check`: 0 issues.
+- `src/manage.py makemigrations --check`: No changes detected (không đổi CSDL).
+- `ops/check_ui_contrast.py`: 208/208 color pairs pass WCAG standards.
+
+**Trạng thái nhánh & Bàn giao**
+- Nhánh: `main`.
+- Đã đóng gói bản sao kiểm toán ngoài repository tại `D:\QLHCNS-Backups\IHRMS_Review_20261015_Final.zip` kèm manifest SHA-256 xác minh 100%.
+
 
 **Tóm tắt & Mục tiêu**
 - Rà soát và chuẩn hóa toàn diện giao diện các trang thuộc phân hệ Hoạt động dự án (`apps/activity`) và Quản lý công việc (`apps/portal`) theo đúng tiêu chuẩn thiết kế Impeccable đã phê chuẩn:

@@ -18,11 +18,11 @@
 
   {% if is_overview %}
   <div class="ui-kpi-grid mb-6">
-    <div class="ui-kpi"><p class="ui-kpi-label">Hoạt động trong kỳ</p><p class="ui-kpi-value">{{ total_activities|ui_number }}</p></div>
-    <div class="ui-kpi"><p class="ui-kpi-label">Task hoàn thành</p><p class="ui-kpi-value">{{ completed_count|ui_number }}</p></div>
-    <div class="ui-kpi {% if overdue_count > 0 %}ui-kpi--danger{% endif %}"><p class="ui-kpi-label">Task quá hạn</p><p class="ui-kpi-value">{{ overdue_count|ui_number }}</p></div>
-    <div class="ui-kpi {% if report_missing_count > 0 %}ui-kpi--warning{% endif %}"><p class="ui-kpi-label">Thiếu báo cáo</p><p class="ui-kpi-value">{{ report_missing_count|ui_number }}</p></div>
-    <div class="ui-kpi"><p class="ui-kpi-label">Chưa có Task</p><p class="ui-kpi-value">{{ without_task_count|ui_number }}</p></div>
+    <div class="ui-kpi"><p class="ui-kpi-label">Hoạt động trong kỳ</p><p class="ui-kpi-value ihrms-kpi-value">{{ total_activities|ui_number }}</p></div>
+    <div class="ui-kpi"><p class="ui-kpi-label">Task hoàn thành</p><p class="ui-kpi-value ihrms-kpi-value">{{ completed_count|ui_number }}</p></div>
+    <div class="ui-kpi {% if overdue_count > 0 %}ui-kpi--danger{% endif %}"><p class="ui-kpi-label">Task quá hạn</p><p class="ui-kpi-value ihrms-kpi-value">{{ overdue_count|ui_number }}</p></div>
+    <div class="ui-kpi {% if report_missing_count > 0 %}ui-kpi--warning{% endif %}"><p class="ui-kpi-label">Thiếu báo cáo</p><p class="ui-kpi-value ihrms-kpi-value">{{ report_missing_count|ui_number }}</p></div>
+    <div class="ui-kpi"><p class="ui-kpi-label">Chưa có Task</p><p class="ui-kpi-value ihrms-kpi-value">{{ without_task_count|ui_number }}</p></div>
   </div>
   {% endif %}
 

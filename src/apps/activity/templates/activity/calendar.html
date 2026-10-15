@@ -25,7 +25,7 @@
     </form>
   </div>
 
-  <div class="w-full" role="region" aria-label="Lưới lịch tháng {{ month_label|ui_number }}" tabindex="0">
+  <div class="w-full overflow-hidden rounded-xl" role="region" aria-label="Lưới lịch tháng {{ month_label|ui_number }}" tabindex="0">
     <div class="grid grid-cols-7 border-b border-gray-200 bg-gray-50 text-xs font-semibold sm:text-sm">
       {% for weekday in weekdays %}
         <div class="min-w-0 border-r border-gray-200 px-1 py-2 text-center leading-tight sm:px-3 sm:py-3 last:border-r-0">{{ weekday|ui_number }}</div>
