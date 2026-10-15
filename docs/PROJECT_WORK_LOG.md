@@ -13,8 +13,10 @@ Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết qu�
      - Bổ sung trường ẩn chuyển hướng `<input type="hidden" name="next" value="{{ next|default:'' }}">` đảm bảo chuyển tiếp đúng trang đích sau đăng nhập.
      - Định dạng multi-line cho 7 quy tắc `.ui-login-wrap` trong `project_layout.css` giúp mã nguồn rõ ràng và dễ theo dõi git diff.
      - Bảo toàn tuyệt đối cơ chế bảo mật: CSRF token, thuộc tính `data-login-csrf`, phiên bản `login_csrf.js?v=20261013-1`, tên trường `username`/`password`, `autocomplete`, và các bộ kiểm thử tự động.
-  2. **Trang Bảng công cá nhân (`portal/attendance_list.html`)**:
+  2. **Trang Bảng công cá nhân (`portal/attendance_list.html` & `views/attendance.py`)**:
      - Chuẩn hóa cấu trúc trang với `ui/page_header.html`, container `.ui-card`.
+     - Chuyển đổi view sang phân trang chuẩn hệ thống với `_paginated_context(request, qs, "records", per_page=31)`, loại bỏ giới hạn cắt cứng `[:31]`, bảo toàn trọn vẹn tham số lọc URL thông qua `pagination_query`.
+     - Tích hợp cụm điều hướng phân trang dùng chung `portal/_pagination.html` với chuẩn lớp `.ui-pagination` ngay bên dưới `.ui-table-scroll`.
      - Bảng chấm công `.ui-table` trong khung cuộn ngang `.ui-table-scroll` (có `role="region"`, `tabindex="0"`, `aria-label`).
      - Số giờ làm việc căn phải `tabular-nums`; áp dụng huy hiệu trạng thái một dòng với `ui_badge "attendance.attendance:status"` (Đủ công: `.ui-badge--success`, Đi muộn: `.ui-badge--warning`, Vắng/Nửa ngày: `.ui-badge--neutral`).
      - Trạng thái rỗng chuyên nghiệp với `ui/empty_state.html`.

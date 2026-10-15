@@ -23,7 +23,7 @@ from apps.attendance.models import ProjectTimeAllocation
 from apps.common.params import parse_int
 from django.utils import timezone
 from apps.hrm.models import Employee
-from .common import _friendly_error, _get_employee, _role_code
+from .common import _friendly_error, _get_employee, _role_code, _paginated_context
 
 
 
@@ -49,8 +49,12 @@ def _approvable_leave_requests(request):
 @login_required
 def attendance_list(request):
     employee = _get_employee(request)
-    records = Attendance.objects.filter(employee=employee).order_by("-attendance_date")[:31] if employee else []
-    return render(request, "portal/attendance_list.html", {"records": records})
+    if employee:
+        qs = Attendance.objects.filter(employee=employee).order_by("-attendance_date")
+        context = _paginated_context(request, qs, "records", per_page=31)
+    else:
+        context = {"records": [], "page_obj": None}
+    return render(request, "portal/attendance_list.html", context)
 
 
 def _leave_balance(employee, year=None):

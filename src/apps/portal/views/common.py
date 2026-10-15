@@ -18,8 +18,8 @@ def _paginate(request, queryset, per_page=20, param="page"):
     return Paginator(queryset, per_page).get_page(request.GET.get(param) or 1)
 
 
-def _paginated_context(request, queryset, name):
-    page = _paginate(request, queryset)
+def _paginated_context(request, queryset, name, per_page=20):
+    page = _paginate(request, queryset, per_page=per_page)
     filters = request.GET.copy()
     filters.pop('page', None)
     return {name: page, 'page_obj': page, 'pagination_query': filters.urlencode()}
