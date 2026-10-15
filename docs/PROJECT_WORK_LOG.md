@@ -20,6 +20,8 @@ Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết qu�
 
 **Còn mở:** triển khai các bước2–5, kiểm focused từng bước và fullSQLite/SQLServer trên nguồn cuối, UAT layout/form/print/cache/workflow, xem ảnh và phê bình lại, ZIP/hash, commit/push/remote/CI. Chưa screen reader, zoom native200%, tài khoản thật/máy in thật; không báo đạt khi thiếu chứng cứ.
 
+**Bước2 — visual system tokens:** thêm token opt-in h1/h2/nhãn/KPI/số vừa/số công việc, line-height và trọng lượng500/600; thêm space5(20px), border-subtle ánh xạ card-border hiện có. Không đổi giá trị palette, control hoặc token đang được giấy in sử dụng. Bump URL ui_tokens và worker v27. Áp layout/typeset trên hệ Operate hiện có; không có dependency/font/CDN mới. Kiểm focused: `ops/check_ui_contrast.py`, `git diff --check`; kết quả lưu cùng runtime, triển khai token vào Dashboard ở bước3.
+
 ## 2026-10-15 — Dashboard gọn, Dự án lên đầu và donut hợp đồng
 
 **Tóm tắt cho chủ dự án**

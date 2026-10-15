@@ -12,10 +12,26 @@
     --ui-font-weight-label: 600;
     --ui-font-weight-heading: 700;
     --ui-numeric-variant: tabular-nums;
+    /* Opt-in hierarchy for operating dashboards and numerical reports. */
+    --ui-text-h1: 1.5rem;
+    --ui-leading-h1: 2rem;
+    --ui-text-h2: 1.125rem;
+    --ui-leading-h2: 1.75rem;
+    --ui-text-label: 0.875rem;
+    --ui-leading-label: 1.25rem;
+    --ui-text-kpi: 2rem;
+    --ui-leading-kpi: 2.5rem;
+    --ui-text-stat: 1.5rem;
+    --ui-leading-stat: 2rem;
+    --ui-text-work: 1.75rem;
+    --ui-weight-medium: 500;
+    --ui-weight-semibold: 600;
+    --ui-border-subtle: var(--ui-card-border);
     --ui-space-1: 0.25rem;
     --ui-space-2: 0.5rem;
     --ui-space-3: 0.75rem;
     --ui-space-4: 1rem;
+    --ui-space-5: 1.25rem;
     --ui-space-6: 1.5rem;
     --ui-space-8: 2rem;
     --ui-space-12: 3rem;
