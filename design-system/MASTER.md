@@ -1,5 +1,13 @@
 # IHRMS — Design system đã duyệt
 
+## Trang chủ và bảng số liệu — chuẩn thay thế ngày 15/10/2026
+
+Dashboard/Định biên dùng thang opt-in h1/h2/nhãn/KPI/số vừa:24/32,18/28,14/20,32/40,24/32; trọng lượng600 cho tiêu đề/số,500 cho nhãn/link. Số công việc28/32. Nền trang và thẻ là hai mặt phẳng; thẻ viền subtle, không bóng, đệm ngang20/dọc16–20px, gap thẻ16px/nhóm32px. Không dùng trần chiều cao để ép toàn trang; các quy định mật độ/chiều cao cũ bên dưới không còn áp dụng cho hai trang này. Thứ tự nhóm và tỷ lệ60/40 giữ nguyên; màn hình đầu1440×900 ưu tiên header/KPI/công việc/Dự án khi được cấp quyền. Giám đốc gọn bằng số dòng, không nén chữ/đệm.
+
+### Bảng số liệu & báo cáo
+
+Tiêu đề24/32 và mô tả muted; bộ lọc cùng số kết quả nằm trong thẻ kết quả có viền/bo/đệm20px. Nhãn Năm cách control8px, không dự trữ hai dòng cho bộ lọc một nhãn. Nút áp dụng/xóa liền sau control. Bảng chỉ kẻ ngang nhạt; tiêu đề muted14/500, cột số và tiêu đề số căn phải/tabular; hàng tối thiểu44px. Chênh lệch giữ số gốc cho máy/in và diễn giải bằng “Vượt/Thiếu/Đủ”; cảnh báo kèm icon/chữ/nền nhẹ. Vùng bảng hẹp có nhãn, focus và hướng dẫn cuộn ngang. CSS màn hình không thay giấy in. Chuẩn mới chỉ triển khai tại report_headcount trong đợt này; các báo cáo khác chưa chuyển.
+
 ## Trang chủ gọn — 15/10/2026
 
 Thứ tự: KPI chính → Công việc của tôi → Dự án → Nhân sự → Hành chính → Tuyển dụng. Quy chuẩn này thay thứ tự/cách dựng thẻ ở các mục cũ; quyền và nguồn dữ liệu giữ nguyên, khối ngoài quyền không dựng trong HTML. Dự án giữ5 số kể cả0 theo guard hiện hữu; Giao công việc ở header Dự án. Không thêm số liệu để lấp ô hoặc thêm selector tuần chưa được duyệt.
