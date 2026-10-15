@@ -9,7 +9,9 @@ Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết qu�
   1. **Trang đăng nhập (`registration/login.html` & `project_layout.css`)**:
      - Căn giữa giao diện bằng cấu trúc `.ui-login-wrap` với chiều cao tối ưu, áp dụng thẻ `.ui-card` đồng bộ token hệ thống.
      - Tích hợp logo IHRMS (`static/img/logo.png`), hiển thị tiêu đề và mô tả rõ ràng.
-     - Chuẩn hóa thông báo lỗi đăng nhập bằng khối `.ui-alert ui-alert--danger`.
+     - Chuẩn hóa thông báo lỗi đăng nhập bằng khối `.ui-alert ui-alert--danger`: ưu tiên hiển thị chi tiết từ `form.non_field_errors` (hỗ trợ hiển thị cảnh báo khóa tài khoản từ `django-axes` hoặc tài khoản ngưng hoạt động), fallback về `"Sai tên đăng nhập hoặc mật khẩu."`.
+     - Bổ sung trường ẩn chuyển hướng `<input type="hidden" name="next" value="{{ next|default:'' }}">` đảm bảo chuyển tiếp đúng trang đích sau đăng nhập.
+     - Định dạng multi-line cho 7 quy tắc `.ui-login-wrap` trong `project_layout.css` giúp mã nguồn rõ ràng và dễ theo dõi git diff.
      - Bảo toàn tuyệt đối cơ chế bảo mật: CSRF token, thuộc tính `data-login-csrf`, phiên bản `login_csrf.js?v=20261013-1`, tên trường `username`/`password`, `autocomplete`, và các bộ kiểm thử tự động.
   2. **Trang Bảng công cá nhân (`portal/attendance_list.html`)**:
      - Chuẩn hóa cấu trúc trang với `ui/page_header.html`, container `.ui-card`.

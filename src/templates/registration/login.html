@@ -12,11 +12,20 @@
         {% if form.errors %}
             <div class="ui-alert ui-alert--danger" role="alert">
                 {% include '_shell_icon.html' with name='danger' %}
-                <span class="ui-alert-content">Sai tên đăng nhập hoặc mật khẩu.</span>
+                <span class="ui-alert-content">
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    {% else %}
+                        Sai tên đăng nhập hoặc mật khẩu.
+                    {% endif %}
+                </span>
             </div>
         {% endif %}
         <form method="post" class="ui-form-stack" data-login-csrf>
             {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next|default:'' }}">
             <div class="ui-field">
                 <label for="login_username">Tên đăng nhập</label>
                 <input id="login_username" type="text" name="username" autocomplete="username" required>
