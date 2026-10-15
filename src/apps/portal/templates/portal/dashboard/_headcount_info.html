@@ -1,4 +1,4 @@
-{% load ui_components %}<p>Active hiện tại và định biên kế hoạch năm; cùng thang đo. Thanh đậm: thực tế; thanh mảnh: kế hoạch. Giữ thứ tự phòng ban từ nguồn.</p>
+{% load ui_components %}<p>Active hiện tại và định biên kế hoạch năm; cùng thang đo. Thanh tô: thực tế; vạch đứng: kế hoạch. Phòng lệch kế hoạch nhiều nhất được hiển thị trước.</p>
 <table class="home-data-table">
 <caption>Xem bảng dữ liệu định biên</caption>
 <thead>
@@ -9,7 +9,7 @@
 <th scope="col">Tỷ lệ</th>
 </tr>
 </thead>
-<tbody>{% for row in data.rows %}<tr>
+<tbody>{% for row in data.all_rows|default:data.rows %}<tr>
 <th scope="row">{{ row.department_name }}</th>
 <td>{{ row.actual|ui_number }}</td>
 <td>{{ row.planned|default_if_none:'—'|ui_number }}</td>

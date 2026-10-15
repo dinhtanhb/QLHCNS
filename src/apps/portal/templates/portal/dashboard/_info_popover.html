@@ -1,5 +1,5 @@
 <details class="home-info">
-<summary>{% include '_shell_icon.html' with name='info' %}<span>Cách tính</span>
+<summary aria-label="Cách tính{% if info_label %}: {{ info_label }}{% endif %}">{% include '_shell_icon.html' with name='info' %}<span class="sr-only">Cách tính</span>
 </summary>
 <div class="home-info-body">{% if content_template %}{% include content_template %}{% else %}<p>{{ note }}</p>{% endif %}</div>
 </details>

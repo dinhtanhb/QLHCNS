@@ -1,13 +1,4 @@
-{% load ui_components %}<section id="group-admin" aria-labelledby="group-admin-title">{% include 'portal/dashboard/_group_header.html' with key='admin' title='Hành chính' create=dashboard_layout.create_dispatch create2=dashboard_layout.assign_task %}
-<section class="ui-card" id="dashboard-queue" aria-labelledby="dashboard-queue-title">
-<header class="home-card-header">
-<h3 id="dashboard-queue-title">{% include '_shell_icon.html' with name='checklist' %}Việc cần xử lý</h3></header>
-<ul class="home-list">{% for item in dashboard_layout.queue %}<li>
-<span>{{ item.label }}</span>
-<strong>{{ item.value|ui_number }}</strong>
-<a class="home-text-link" href="{{ item.href }}">Xử lý →</a>
-</li>{% empty %}<li>Không có việc cần xử lý hôm nay</li>{% endfor %}</ul>{% if dashboard_layout.totals %}<dl class="home-inline-totals">{% for item in dashboard_layout.totals %}<div>
-<dt>{{ item.label }}</dt>
-<dd>{{ item.value|ui_number }}</dd>
-</div>{% endfor %}</dl>{% endif %}{% include 'portal/dashboard/_info_popover.html' with note='Theo phạm vi và trạng thái hiện tại của danh sách nghiệp vụ. Số chờ duyệt không đồng nghĩa có thể tự duyệt đơn của mình.' %}</section>{% if dashboard_layout.leave %}{% include 'portal/dashboard/_recent_leave.html' with data=dashboard_layout.leave %}{% endif %}
-</section>
+{% load ui_components %}<section id="group-admin" aria-labelledby="group-admin-title">{% include 'portal/dashboard/_group_header.html' with key='admin' title='Hành chính' create=dashboard_layout.create_dispatch %}
+{% if not dashboard_layout.queue %}<p class="home-queue-empty" id="dashboard-queue">{% include '_shell_icon.html' with name='check' %}Không có việc cần xử lý hôm nay</p>{% endif %}
+{% if dashboard_layout.leave or dashboard_layout.queue %}<div class="ui-layout-split home-row{% if not dashboard_layout.leave or not dashboard_layout.queue %} home-row--single{% endif %}">{% if dashboard_layout.leave %}{% include 'portal/dashboard/_recent_leave.html' with data=dashboard_layout.leave %}{% endif %}{% if dashboard_layout.queue %}{% include 'portal/dashboard/_admin_queue.html' %}{% endif %}</div>{% endif %}
+{% if dashboard_layout.totals %}<dl class="home-inline-totals">{% for item in dashboard_layout.totals %}<div><dt>{{ item.label }}</dt><dd>{{ item.value|ui_number }}</dd>{% if item.href %}<a href="{{ item.href }}">Xem →</a>{% endif %}</div>{% endfor %}</dl>{% endif %}</section>

@@ -2,6 +2,25 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-15 — Dashboard gọn, Dự án lên đầu và donut hợp đồng
+
+**Tóm tắt cho chủ dự án**
+
+- Đang triển khai bốn commit riêng theo yêu cầu đính kèm; chỉ làm trên main, baseline `225bafc` đã khớp origin/main 0/0.
+- Giữ 60/40 cho các cặp nội dung (kể cả Công việc của tôi theo lời nhắn mới nhất, thay 50/50 trong tệp); một cột trên điện thoại.
+- Thu gọn thẻ, đưa giải thích vào nút thông tin; không bỏ khối nghiệp vụ hay thay nguồn số liệu/quyền.
+- Dự án sẽ đứng sau Công việc của tôi và hiện đủ năm số kể cả 0 khi quyền hiện có cho phép; khôi phục donut từ 71b6a2f.
+- Mọi tạo/ghi thử nghiệm chỉ trên SQLite/media ngoài repo; chưa deploy, chưa xác nhận tài khoản thật/đọc màn hình/zoom trình duyệt 200%.
+- Kết quả, số đo và bản sao cuối được bổ sung trong cùng mục trước bàn giao; không dùng kết quả lượt form để thay kiểm thử đợt này.
+
+**Bước 1 — mật độ và cấu trúc:** `home_dashboard.css`, template Dashboard và partial KPI/công việc/HR/Hành chính/Tuyển dụng; popover details mở bằng Enter, đóng Escape/blur/click ngoài, không đẩy nội dung. Cấp h1/h2/h3 theo nhóm; rút nhãn hiển thị nhưng giữ tên đầy đủ bằng title; bỏ dòng Hiện tại và chú thích kỹ thuật trên mặt thẻ. Bảng định biên cho hỗ trợ tiếp cận giữ toàn bộ phòng; bản nhìn thấy sắp độ lệch và giới hạn6/4 theo vai trò. Cập nhật phần hiển thị nhãn Closed thành Đã đóng, không đổi giá trị lưu. Nguồn `dashboard_data.py` giữ nguyên.
+
+**Kiểm tra bước 1:** `venv/Scripts/python.exe ops/run_tests.py --backend sqlite apps.portal.test_home_dashboard_layout apps.portal.test_home_dashboard` đạt17 test, exit0 (log `step1-tests3.log`). Lượt đầu phát hiện3 test cũ: điều kiện6 phòng ở Director và ẩn tuyển dụng0 được cập nhật theo đặc tả mới; nhãn Quá hạn/Hết hạn hôm nay được khôi phục, không bỏ hồi quy. Audit đầu200 ca/6 lỗi tràn390; sửa bảng mobile và giữ trường hợp tên dài, lượt mobile0 lỗi. Lượt cuối đủ7 độ rộng/9 tài khoản/sáng tối đạt200 ca,0 vi phạm,0 lỗi chạy, exit0; baseline cũng0 vi phạm. Không thêm miễn trừ. Bản đo bước đầu KPI104px, My work72px; ngân sách toàn trang chưa đạt và tiếp tục xử lý trong các bước kế tiếp.
+
+**Runtime/bằng chứng:** `%TEMP%/ihrms-dashboard-compact-20261015`; baseline archive225bafc port8797, nguồn mới port8796; ảnh trước4 bậc đã chụp. `run_dashboard_group_contract_uat.py --phase before` exit0, SELECT theo employee/manager/hr-officer/hr/director/finance/sys/layout-admin/unlinked =10/14/18/23/18/10/5/20/5. Đây là baseline DTO/link/GET-write, không phải nghiệm thu nguồn cuối. Hai tài khoản sys/unlinked được công cụ tạo trong DB giả; admin do project UAT tạo. Lượt `--seed` toàn route ban đầu dừng ở thiếu Payroll, không ghi là đạt; chỉ các fixture đã tạo trong DB giả bị ảnh hưởng, không đụng vận hành.
+
+**Tầng 2 Dự án:** không bật. `views/core.py` có tổng tháng và prefetched task đầu của từng hoạt động; `apps/activity/views.py` có lịch tháng, `task_list` chỉ có scope, chưa có selector/bộ lọc tuần dùng lại. Đề xuất riêng: nguồn Task theo `visible_activities_for`, điều kiện due_date trong tuần, loại Done/Cancelled, giới hạn5; cần phê duyệt bộ lọc đích và khoảng1 SELECT thêm. Chưa thực hiện truy vấn/hàm hay URL mới.
+
 ## 2026-10-15 — Lưới form 12 cột, chuyển biểu mẫu và cổng kiểm tra bố cục
 
 **Tóm tắt cho chủ dự án**

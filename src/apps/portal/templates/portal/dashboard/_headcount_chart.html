@@ -1,16 +1,10 @@
 {% load ui_components l10n %}<section class="ui-card" id="dashboard-headcount" aria-labelledby="dashboard-headcount-title">
-<header class="home-card-header">
-<h3 id="dashboard-headcount-title">{% include '_shell_icon.html' with name='people' %}Định biên năm {{ dashboard_snapshot.plan_year|unlocalize }}</h3>
-<a href="{% url 'portal:report_headcount' %}?year={{ dashboard_snapshot.plan_year|unlocalize }}" class="home-text-link">Xem tất cả ({{ data.total }} phòng) →</a>
-</header>
-{% if data.state == 'error' %}{% include 'ui/empty_state.html' with state='error' title='Không tải được dữ liệu' %}{% else %}<ul class="home-list home-capacity">{% for row in data.rows %}<li>
-<div class="home-capacity-heading">
-<strong>{{ row.department_name }}</strong>
-<span>{{ row.actual|ui_number }} / {% if row.planned == None %}—{% else %}{{ row.planned|ui_number }}{% endif %}{% if row.gap < 0 %} — <strong class="home-warning">{% include '_shell_icon.html' with name='warning' %}Vượt kế hoạch {{ row.gap|stringformat:'d'|cut:'-' }}</strong>{% endif %}</span>
-</div>{% if row.planned == None %}<p>{{ row.note|default:'Chưa nhập kế hoạch' }}</p>{% else %}<div class="home-bars" aria-label="Thực tế và kế hoạch">
-<span class="home-bar home-bar-actual" style="width:{{ row.actual_width }}%">
-</span>
-<span class="home-bar home-bar-plan" style="width:{{ row.planned_width }}%">
-</span>
-</div>{% if row.note %}<p>{{ row.note }}</p>{% endif %}{% endif %}</li>{% endfor %}</ul>{% endif %}
-{% include 'portal/dashboard/_info_popover.html' with content_template='portal/dashboard/_headcount_info.html' %}</section>
+<header class="home-card-header"><h3 id="dashboard-headcount-title">{% include '_shell_icon.html' with name='people' %}Định biên {{ dashboard_snapshot.plan_year|unlocalize }}</h3><a href="{% url 'portal:report_headcount' %}?year={{ dashboard_snapshot.plan_year|unlocalize }}" class="home-text-link">Xem tất cả ({{ data.total }} phòng) →</a>{% include 'portal/dashboard/_info_popover.html' with content_template='portal/dashboard/_headcount_info.html' info_label='Định biên' %}</header>
+{% if data.state == 'error' %}{% include 'ui/empty_state.html' with state='error' title='Không tải được dữ liệu' %}{% else %}<ul class="home-capacity">{% for row in data.rows %}<li>
+<span class="home-department-name" title="{{ row.department_name }}">{{ row.department_name }}</span>
+{% if row.planned != None %}<span class="home-capacity-track" aria-hidden="true"><span class="home-capacity-fill{% if row.gap < 0 %} home-capacity-fill--over{% endif %}" style="width:{{ row.bar_width }}%"></span><span class="home-plan-marker" style="width:{{ row.plan_width }}%"></span></span>{% else %}<span class="home-plan-missing">Chưa nhập kế hoạch</span>{% endif %}
+<span class="home-capacity-value">{{ row.actual|ui_number }} / {{ row.planned|default_if_none:'—'|ui_number }}</span>
+{% if row.gap < 0 %}<span class="home-warning home-capacity-alert">{% include '_shell_icon.html' with name='warning' %}Vượt {{ row.over|ui_number }}</span>{% endif %}
+</li>{% endfor %}</ul>{% endif %}
+
+<div class="sr-only">{% include 'portal/dashboard/_headcount_info.html' %}</div></section>

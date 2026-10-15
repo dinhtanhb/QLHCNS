@@ -30,7 +30,7 @@ class GroupedDashboardTests(SimpleTestCase):
         self.assertEqual(result["limit"], 3)
         for key in ("history", "leave"):
             self.assertEqual(len(result[key]["rows"]), 3)
-        self.assertEqual(len(result["headcount"]["rows"]), 6)
+        self.assertEqual(len(result["headcount"]["rows"]), 4)
         self.assertEqual(len(result["contracts"]["upcoming_rows"]), 3)
         self.assertEqual([group["key"] for group in result["groups"]],
                          ["hr", "admin", "recruitment"])
@@ -47,7 +47,7 @@ class GroupedDashboardTests(SimpleTestCase):
         result = self.build({"postings": {"value": 0}, "queue": {"rows": []}},
                             show_project_activity_summary=True, activity_overdue=2,
                             activity_total=0)
-        self.assertFalse(result["recruitment"])
+        self.assertEqual(result["recruitment"][0]["value"], 0)
         self.assertFalse(result["queue"])
         self.assertEqual(len(result["projects"]), 1)
         self.assertEqual(result["projects"][0]["value"], 2)

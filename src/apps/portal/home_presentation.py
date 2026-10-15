@@ -155,6 +155,12 @@ def grouped_dashboard(user, context, presentation):
     for item in layout["main"]:
         if not any(x.get("label")==item.get("label") for x in unique):unique.append(item)
     layout["main"]=unique
+    short_labels = {"Nhân sự đang quản lý": "Nhân sự quản lý", "Nghỉ được duyệt trong ngày": "Nghỉ phép hôm nay",
+                    "Hợp đồng sắp hết hạn (≤60 ngày)": "Hợp đồng sắp hết hạn",
+                    "Công việc phòng chưa hoàn thành": "Việc phòng chưa xong", "Nhân sự vào làm trong tháng": "Vào làm trong tháng"}
+    for item in layout["main"]:
+        item["short_label"] = short_labels.get(item["label"], item["label"])
+
     layout["status_counts"] = counts
     layout["main_keys"] = [m.get("key") for m in layout["main"]]
     layout["my_checklist"] = next((item for item in presentation["home_queue"]
@@ -180,10 +186,22 @@ def grouped_dashboard(user, context, presentation):
             if card.get("value",0) and not card.get("warning") and card["label"] not in {m["label"] for m in layout["main"]}:
                 if "Nhân viên" not in card["label"]:layout["totals"].append(card)
     headcount=sections.get("headcount",{})
-    layout["headcount"] = dict(headcount, rows=headcount.get("rows",[])[:6], total=len(headcount.get("rows",[]))) if headcount.get("rows") or headcount.get("state")=="error" else None
+    # Geometry only; sort copies, preserving all DTO values and the full SR table.
+    capacity = sorted(headcount.get("rows", []), key=lambda row: abs(row.get("gap") or 0), reverse=True)
+    display_rows = []
+    for original in capacity[:4 if compact else 6]:
+        row = dict(original)
+        maximum = max(row.get("actual", 0), row.get("planned") or 0, 1)
+        actual = row.get("actual", 0)
+        planned = row.get("planned")
+        row.update(bar_width=f"{actual * 100 / maximum:.4f}",
+                   plan_width=f"{(planned or 0) * 100 / maximum:.4f}",
+                   over=abs(row.get("gap") or 0))
+        display_rows.append(row)
+    layout["headcount"] = dict(headcount, rows=display_rows, all_rows=headcount.get("rows", []), total=len(capacity)) if capacity or headcount.get("state")=="error" else None
     contracts=sections.get("contracts",{})
     uncontracted=snapshot.get("uncontracted",{})
-    layout["contracts"] = dict(contracts,upcoming_rows=contracts.get("upcoming_rows",[])[:limit],overdue_rows=contracts.get("overdue_rows",[])[:limit]) if contracts else None
+    layout["contracts"] = dict(contracts,upcoming_rows=contracts.get("upcoming_rows",[])[:min(limit, 4)],overdue_rows=contracts.get("overdue_rows",[])[:limit]) if contracts else None
     layout["show_expiring"] = bool(contracts and (contracts.get("upcoming_count") or contracts.get("overdue_count") or uncontracted.get("value") or contracts.get("state")=="error"))
     layout["show_distribution"] = bool(contracts.get("types"))
     history=sections.get("history",{})
@@ -195,8 +213,9 @@ def grouped_dashboard(user, context, presentation):
     recruitment=[]
     for key in ("postings","candidates","requests"):
         data=sections.get(key)
-        if data and (data.get("value") or data.get("state")=="error"):
-            recruitment.append(dict(data,key=key))
+        if data:
+            rows = [dict(row, label="Đã đóng" if row.get("code") == "Closed" else row["label"]) for row in data.get("rows", [])]
+            recruitment.append(dict(data, key=key, rows=rows))
     layout["recruitment"] = recruitment
     project_rows=[]
     if context.get("show_project_activity_summary"):

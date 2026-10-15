@@ -1,6 +1,6 @@
 {% extends "base.html" %}{% load static ui_components %}
 {% block title %}Trang chủ{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261014-grouped"><script src="{% static 'js/home_dashboard.js' %}?v=20261014-grouped" defer></script>{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261015-compact-1"><script src="{% static 'js/home_dashboard.js' %}?v=20261015-compact-1" defer></script>{% endblock %}
 {% block content %}
 <div class="ui-page home-dashboard" data-density="{{ dashboard_layout.density }}">
 <header class="home-page-header">
@@ -9,7 +9,7 @@
 <p class="home-period">Ngày vận hành {{ dashboard_snapshot.operational_date|ui_date }} · {{ dashboard_snapshot.scope_label }} · Cập nhật {{ dashboard_snapshot.generated_at|date:"H:i" }}</p>
 </div>
 <div class="home-header-actions">{% if dashboard_layout.report_action %}<a href="{{ dashboard_layout.report_action.href }}" class="home-text-link">Mở báo cáo điều hành →</a>{% endif %}{% include 'portal/dashboard/_info_popover.html' with content_template='portal/dashboard/_info_metrics.html' %}</div>
-{% if dashboard_layout.groups|length >= 3 %}<nav class="home-jumps" aria-label="Nhảy tới nhóm thông tin">{% for group in dashboard_layout.groups %}<a href="#group-{{ group.key }}">{{ group.label }}</a>{% endfor %}</nav>{% endif %}</header>
+<nav hidden class="home-jumps" aria-label="Nhảy tới nhóm thông tin">{% for group in dashboard_layout.groups %}<a href="#group-{{ group.key }}">{{ group.label }}</a>{% endfor %}</nav></header>
 {% if not employee %}<section class="ui-card home-profile-warning" aria-labelledby="profile-warning-title">{% include '_shell_icon.html' with name='warning' %}<div>
 <h2 id="profile-warning-title">Tài khoản chưa gắn hồ sơ nhân viên</h2>
 <p>Liên hệ Phòng Nhân sự để liên kết hồ sơ và sử dụng thao tác cá nhân.</p>{% if profile_setup %}<a class="home-text-link" href="{{ profile_setup.href }}">{{ profile_setup.label }} →</a>{% endif %}</div>
