@@ -1,0 +1,3 @@
+{% load ui_components %}<p>Đơn tạo trong 30 ngày; trạng thái hiện tại. Loại nghỉ chi tiết chỉ hiển thị theo quyền nhân sự.</p>
+<p>{{ data.total|ui_number }} đơn gần đây; {% if dashboard_layout.density == 'compact' %}2{% else %}3{% endif %} đơn mới nhất ở bảng tổng quan.</p>
+<ul>{% for row in data.all_rows %}<li>{% if data.global_scope %}{{ row.employee__full_name }} · {% endif %}{{ row.type_label }} · {{ row.from_date|ui_date }}–{{ row.to_date|ui_date }} · {% ui_badge 'leave.leaverequest:status' row.status %}</li>{% endfor %}</ul>

@@ -28,8 +28,9 @@ class GroupedDashboardTests(SimpleTestCase):
                     "requests": {"value": 1, "rows": []}}
         result = self.build(sections, permissions=("approve_personnel_decision",))
         self.assertEqual(result["limit"], 3)
-        for key in ("history", "leave"):
-            self.assertEqual(len(result[key]["rows"]), 3)
+        self.assertEqual(len(result["history"]["rows"]), 3)
+        self.assertEqual(len(result["leave"]["rows"]), 2)
+        self.assertEqual(len(result["leave"]["all_rows"]), 8)
         self.assertEqual(len(result["headcount"]["rows"]), 4)
         self.assertEqual(len(result["contracts"]["upcoming_rows"]), 3)
         self.assertEqual([group["key"] for group in result["groups"]],
@@ -42,6 +43,17 @@ class GroupedDashboardTests(SimpleTestCase):
         self.assertFalse(result["groups"])
         self.assertIsNone(result["leave"])
         self.assertFalse(result["project_allowed"])
+
+    def test_capacity_marker_and_excess_use_local_geometry_without_changing_counts(self):
+        result = self.build({"headcount": {"rows": [
+            {"department_name": "Phòng vượt", "actual": 33, "planned": 3, "gap": -30},
+            {"department_name": "Phòng thiếu", "actual": 1, "planned": 5, "gap": 4},
+        ]}})
+        over, under = result["headcount"]["rows"]
+        self.assertEqual((over["actual"], over["planned"], over["gap"]), (33, 3, -30))
+        self.assertAlmostEqual(float(over["plan_width"]), 100 * 3 / 33, places=3)
+        self.assertAlmostEqual(float(over["over_width"]), 100 * 30 / 33, places=3)
+        self.assertEqual(under["over_width"], "0.0000")
 
     def test_zero_sections_hide_and_positive_project_is_retained(self):
         result = self.build({"postings": {"value": 0}, "queue": {"rows": []}},
@@ -67,6 +79,25 @@ class GroupedDashboardTests(SimpleTestCase):
                     "metrics": [{"key": "managed", "label": "Nhân sự đang quản lý", "value": 5}]}
         before = deepcopy(snapshot)
         with patch("apps.portal.home_presentation.has_permission", return_value=False):
-            grouped_dashboard(SimpleNamespace(), {"dashboard_snapshot": snapshot},
-                              {"home_actions": [], "home_queue": [], "home_groups": []})
+            result = grouped_dashboard(SimpleNamespace(), {"dashboard_snapshot": snapshot},
+                                       {"home_actions": [], "home_queue": [], "home_groups": []})
         self.assertEqual(snapshot, before)
+        self.assertIsNone(result["joined"])
+
+
+class CompactDonutTests(SimpleTestCase):
+    def test_restored_svg_uses_supplied_geometry_and_alternative_table(self):
+        from django.template.loader import render_to_string
+        groups = [dict(index=i, chart_index=i, total=i, share_display=50, share_width="50",
+                       dash="50 50", offset="0", label_x="50", label_y="14",
+                       contract_type__contract_type_name="Loại giả " + str(i)) for i in (1, 2)]
+        data = dict(types=groups, total=3)
+        html = render_to_string("portal/dashboard/_contract_distribution.html", {"data": data})
+        self.assertIn('class="dashboard-donut"', html)
+        self.assertEqual(html.count('class="dashboard-slice-label"'), 2)
+        self.assertIn('stroke-dasharray="50 50"', html)
+        self.assertIn('Bảng loại hợp đồng', html)
+        self.assertIn('aria-labelledby="dashboard-donut-title dashboard-donut-desc"', html)
+        self.assertIn('2 · 50%', html)
+        self.assertNotIn('class="dashboard-donut"', render_to_string(
+            "portal/dashboard/_contract_distribution.html", {"data": dict(types=groups[:1], total=1)}))

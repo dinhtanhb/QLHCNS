@@ -221,7 +221,7 @@ class PhaseOneSmokeTests(TestCase):
         self.assertIsNone(section["href"])
         self.client.force_login(user)
         html=self.client.get(reverse("portal:dashboard")).content.decode()
-        self.assertIn('class="home-type-list"',html)
+        self.assertIn('class="home-type-list dashboard-type-labels"',html)
         self.assertIn("Hết hạn hôm nay",html)
         self.assertIn("Quá hạn cần rà soát",html)
         kinds[1].delete()

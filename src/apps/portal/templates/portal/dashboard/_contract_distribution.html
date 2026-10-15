@@ -1,15 +1,6 @@
 {% load ui_components %}<section class="ui-card" id="dashboard-contract-types" aria-labelledby="dashboard-types-title">
 <header class="home-card-header">
-<h3 id="dashboard-types-title">{% include '_shell_icon.html' with name='pie' %}Cơ cấu loại hợp đồng</h3>
+<h3 id="dashboard-types-title">{% include '_shell_icon.html' with name='pie' %}Cơ cấu loại hợp đồng</h3>{% include 'portal/dashboard/_info_popover.html' with content_template='portal/dashboard/_contract_info.html' info_label='Cơ cấu loại hợp đồng' %}
 </header>
-<p>{{ data.total|ui_number }} hợp đồng đang hiệu lực</p>
-<ul class="home-type-list">{% for group in data.types %}<li>
-<div>
-<span>{{ group.contract_type__contract_type_name }}</span>
-<strong>{{ group.total|ui_number }} · {{ group.share_display|ui_number }}%</strong>
-</div>
-<span class="home-type-track" aria-hidden="true">
-<span style="width:{{ group.share_width }}%">
-</span>
-</span>
-</li>{% endfor %}</ul>{% include 'portal/dashboard/_info_popover.html' with content_template='portal/dashboard/_contract_info.html' %}</section>
+{% include 'portal/dashboard/_hr_contract_donut.html' %}
+<div class="sr-only">{% include 'portal/dashboard/_contract_info.html' %}</div></section>

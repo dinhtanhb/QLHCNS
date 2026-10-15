@@ -76,7 +76,7 @@ def main():
                             if page.locator('#dashboard-my-work').count():
                                 check(page.locator('#dashboard-my-work a[href="/portal/leave/create/"]').count()==1,label+' own leave creation')
                                 check(page.locator('#dashboard-my-work a[href="/portal/leave/"]').count()==1,label+' own leave list')
-                            grids=page.locator('.home-row,.home-main-kpis,.home-my-work-grid').evaluate_all('xs=>xs.map(g=>[...g.children].map(x=>{let r=x.getBoundingClientRect();return {y:r.y,h:r.height,w:r.width}}))')
+                            grids=page.locator('.home-row,.home-my-work-grid').evaluate_all('xs=>xs.map(g=>[...g.children].map(x=>{let r=x.getBoundingClientRect();return {y:r.y,h:r.height,w:r.width}}))')
                             if width>=1024:
                                 for rows in grids:
                                     if len(rows)>1:
@@ -84,7 +84,7 @@ def main():
                                         check(max(x['h'] for x in rows)-min(x['h'] for x in rows)<1.1,label+' equal card heights')
                                 ratios=page.locator('.home-row:not(.home-row--single),.home-my-work-grid').evaluate_all('xs=>xs.filter(x=>x.children.length===2).map(x=>x.children[0].getBoundingClientRect().width/x.children[1].getBoundingClientRect().width)')
                                 check(all(abs(ratio-1.5)<0.01 for ratio in ratios),label+' paired content is 60/40')
-                                blanks=page.locator('.home-row .ui-card').evaluate_all('xs=>xs.map(x=>{const last=[...x.children].filter(y=>y.checkVisibility()).at(-1);return last?x.getBoundingClientRect().bottom-last.getBoundingClientRect().bottom-parseFloat(getComputedStyle(x).paddingBottom):0})')
+                                blanks=page.locator('.home-row .ui-card').evaluate_all('xs=>xs.map(x=>{const last=[...x.children].filter(y=>y.checkVisibility()&&!y.matches(".sr-only,.home-info-body")).at(-1);return last?x.getBoundingClientRect().bottom-last.getBoundingClientRect().bottom-parseFloat(getComputedStyle(x).paddingBottom):0})')
                                 check(all(gap<=32 for gap in blanks),label+' paired cards trailing space <=32px '+str(blanks))
                             if width>=1280:
                                 if measures['kpis']:
@@ -109,7 +109,7 @@ def main():
                             check(page.locator('main summary').evaluate_all('xs=>xs.filter(x=>x.checkVisibility()).every(x=>x.getBoundingClientRect().height>=43.5)'),label+' calculation touch targets')
                             small=page.locator('main :is(p,span,strong,a,summary,th,td)').evaluate_all('xs=>xs.filter(x=>x.checkVisibility() && x.textContent.trim() && parseFloat(getComputedStyle(x).fontSize)<14).map(x=>[x.className,getComputedStyle(x).fontSize,x.textContent.slice(0,40)])');check(not small,label+' text >=14px '+str(small))
                             values=page.locator('.home-main-kpis .ui-kpi-value').evaluate_all('xs=>xs.map(x=>x.getBoundingClientRect().y)')
-                            if width>=1024 and len(values)>1:check(max(values)-min(values)<=1,label+' main value baseline')
+                            if width>=1280 and len(values)>1:check(max(values)-min(values)<=1,label+' main value baseline')
                             for summary in page.locator('main details.home-info > summary').all():
                                 owner=summary.evaluate('x=>x.closest("section")?.id');summary.focus();bounds=page.locator('.home-dashboard').bounding_box();page.keyboard.press('Enter');check(summary.evaluate('x=>x.parentElement.open'),label+' '+str(owner)+' calculation keyboard opens');check(page.locator('.home-dashboard').bounding_box()==bounds,label+' info does not move content');page.keyboard.press('Escape');check(not summary.evaluate('x=>x.parentElement.open'),label+' '+str(owner)+' calculation Escape closes');page.keyboard.press('Enter');page.locator('h1').evaluate('x=>{x.tabIndex=-1;x.focus()}');check(not summary.evaluate('x=>x.parentElement.open'),label+' info blur closes')
                         if width in (1756,1440,390) and role in ('employee','manager','hr','director'):

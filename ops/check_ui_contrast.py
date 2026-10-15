@@ -50,7 +50,9 @@ def ratio(foreground, background):
 
 
 def pairings():
-    pairs = []
+    pairs = [("text", "divider", 3), ("warning-text", "divider", 3),
+             ("chart-series", "divider", 3), ("info-text", "surface", 3),
+             ("warning-text", "surface", 3)]
     for bg in ("bg", "surface", "surface-raised", "hover-bg"):
         pairs.extend((fg, bg, 4.5) for fg in ("text", "text-muted", "link"))
         pairs.extend((fg, bg, 3) for fg in ("border", "focus"))

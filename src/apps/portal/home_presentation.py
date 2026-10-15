@@ -196,20 +196,23 @@ def grouped_dashboard(user, context, presentation):
         planned = row.get("planned")
         row.update(bar_width=f"{actual * 100 / maximum:.4f}",
                    plan_width=f"{(planned or 0) * 100 / maximum:.4f}",
+                   over_width=f"{max(actual - (planned or 0), 0) * 100 / maximum:.4f}" if planned is not None else "0",
                    over=abs(row.get("gap") or 0))
         display_rows.append(row)
     layout["headcount"] = dict(headcount, rows=display_rows, all_rows=headcount.get("rows", []), total=len(capacity)) if capacity or headcount.get("state")=="error" else None
     contracts=sections.get("contracts",{})
     uncontracted=snapshot.get("uncontracted",{})
-    layout["contracts"] = dict(contracts,upcoming_rows=contracts.get("upcoming_rows",[])[:min(limit, 4)],overdue_rows=contracts.get("overdue_rows",[])[:limit]) if contracts else None
+    layout["contracts"] = dict(contracts,upcoming_rows=contracts.get("upcoming_rows",[])[:3],overdue_rows=contracts.get("overdue_rows",[])[:limit]) if contracts else None
     layout["show_expiring"] = bool(contracts and (contracts.get("upcoming_count") or contracts.get("overdue_count") or uncontracted.get("value") or contracts.get("state")=="error"))
     layout["show_distribution"] = bool(contracts.get("types"))
     history=sections.get("history",{})
     layout["history"] = dict(history,rows=history.get("rows",[])[:limit],total=len(history.get("rows",[]))) if history.get("rows") or history.get("state")=="error" else None
     joined=sections.get("joined",{})
-    layout["joined"] = joined if joined.get("value") and joined not in layout["main"] else None
+    layout["joined"] = joined if joined and not any(
+        item.get("label") == joined.get("label") for item in layout["main"]
+    ) else None
     leave=sections.get("global_leave") or (sections.get("own_leave") if layout["manager"] else None)
-    layout["leave"] = dict(leave,rows=leave.get("rows",[])[:limit],total=len(leave.get("rows",[])),key="global_leave" if leave.get("global_scope") else "own_leave") if leave and (leave.get("rows") or leave.get("state")=="error") else None
+    layout["leave"] = dict(leave,rows=leave.get("rows",[])[:2 if compact else 3],all_rows=leave.get("rows",[]),total=len(leave.get("rows",[])),key="global_leave" if leave.get("global_scope") else "own_leave") if leave and (leave.get("rows") or leave.get("state")=="error") else None
     recruitment=[]
     for key in ("postings","candidates","requests"):
         data=sections.get(key)
@@ -228,6 +231,7 @@ def grouped_dashboard(user, context, presentation):
             project_rows.append(dict(label=label, value=value,
                 warning=bool(value and key in ("activity_overdue", "activity_report_missing"))))
     layout["projects"]=project_rows
+    layout["project_empty"]=not any(row["value"] for row in project_rows)
     layout["project_allowed"]=bool(context.get("show_project_activity_summary"))
     hr=bool(layout["show_expiring"] or layout["show_distribution"] or layout["headcount"] or layout["history"] or layout["joined"])
     admin=bool(layout["queue"] or layout["leave"] or layout["totals"] or sections.get("queue"))

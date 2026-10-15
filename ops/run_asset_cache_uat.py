@@ -27,12 +27,8 @@ def main():
     output = folder / 'asset-cache-uat'
     output.mkdir(exist_ok=True)
     state = {'port': args.baseline_port}
-    old_cache = 'ihrms-static-v20-dashboard-grouped-20261014'
-    new_cache = 'ihrms-static-v22-form-grid-20261015'
-    old_css = """@media screen {
-    .portal-app .ui-main .ui-query-bar {display:grid !important;grid-template-columns:minmax(0,1fr) auto !important;}
-    .portal-app .ui-main .ui-query-actions {grid-column:2 !important;}
-    }"""
+    old_cache = 'ihrms-static-v22-form-grid-20261015'
+    new_cache = 'ihrms-static-v25-dashboard-donut-20261015'
     checks = []
 
     def check(ok, label):
@@ -50,8 +46,6 @@ def main():
             connection.request(self.command, self.path, body=body, headers=dict(self.headers))
             response = connection.getresponse()
             payload = response.read()
-            if state['port'] == args.baseline_port and self.path.startswith('/static/css/tailwind.css'):
-                payload += old_css.encode()
             self.send_response(response.status)
             for key, value in response.getheaders():
                 if key.lower() not in ('content-length','transfer-encoding','connection','server','date'):
@@ -75,21 +69,21 @@ def main():
         page.locator('[name=password]').fill(password)
         page.locator('main form button[type=submit]').click()
         page.wait_for_load_state('networkidle')
-        page.goto(base + '/portal/hr/employees/', wait_until='networkidle')
+        page.goto(base + '/portal/', wait_until='networkidle')
         page.evaluate('async()=>{await navigator.serviceWorker.ready;}')
         page.wait_for_function('()=>!!navigator.serviceWorker.controller')
         page.reload(wait_until='networkidle')
         check(old_cache in page.evaluate('()=>caches.keys()'), 'previous release worker cache populated')
-        gap = """()=>{const f=document.querySelector('.ui-query-bar');const x=f.querySelector('.ui-field input').getBoundingClientRect();const b=f.querySelector('button[type=submit]').getBoundingClientRect();return b.left-x.right;}"""
+        gap = "()=>document.querySelector('.home-main-metric').getBoundingClientRect().height"
         before = page.evaluate(gap)
-        check(before > 100, 'stale retained CSS reproduces detached action')
+        check(before > 104, 'previous dashboard card height reproduced from warm cache')
         page.screenshot(path=str(output / 'stale-css.png'), full_page=True)
         # Normal reload, retaining cookies, browser cache and the old CacheStorage.
         state['port'] = args.port
         page.reload(wait_until='networkidle')
         after = page.evaluate(gap)
-        check(0 <= after <= 17, 'normal reload loads new inline asset URLs')
-        check(page.locator('.ui-results-card .ui-query-bar').count() == 1, 'updated result grouping visible')
+        check(0 < after <= 104, 'normal reload loads compact dashboard asset URL')
+        check(page.locator('.home-work-card').count() == 2, 'updated compact work cards visible')
         page.evaluate('async()=>{const r=await navigator.serviceWorker.getRegistration();await r.update();}')
         for _ in range(100):
             keys = page.evaluate('()=>caches.keys()')
@@ -99,7 +93,7 @@ def main():
         check(new_cache in keys, 'new worker cache activated')
         check(old_cache not in keys, 'old worker cache retired')
         page.reload(wait_until='networkidle')
-        check(0 <= page.evaluate(gap) <= 17, 'layout survives controlling worker reload')
+        check(0 < page.evaluate(gap) <= 104, 'layout survives controlling worker reload')
         page.goto(base+'/portal/timesheet/?month=9&year=2026',wait_until='networkidle')
         check(page.locator('link[href*="print_forms.css"]').get_attribute('href').endswith('v=20261014-dispatch-register'), 'fresh print stylesheet URL loaded')
         page.emulate_media(media='print')
@@ -109,8 +103,8 @@ def main():
         browser.close()
     proxy.shutdown()
     proxy.server_close()
-    (output / 'result.json').write_text(json.dumps({'checks':checks,'before_gap':before,'after_gap':after,'passed':True,'synthetic_only':True},ensure_ascii=False,indent=2),encoding='utf-8')
-    print(json.dumps({'checks':len(checks),'before_gap':before,'after_gap':after,'passed':True}))
+    (output / 'result.json').write_text(json.dumps({'checks':checks,'before_height':before,'after_height':after,'passed':True,'synthetic_only':True},ensure_ascii=False,indent=2),encoding='utf-8')
+    print(json.dumps({'checks':len(checks),'before_height':before,'after_height':after,'passed':True}))
 
 
 if __name__ == '__main__':
