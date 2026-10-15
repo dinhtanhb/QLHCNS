@@ -1,0 +1,10 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label for="dispatch_detail-new_status-2-{{ forloop.counter|default:'0' }}">Cập nhật trạng thái văn bản</label><select name="new_status"  id="dispatch_detail-new_status-2-{{ forloop.counter|default:'0' }}">
+                        {% for val, label in status_choices %}
+                        <option value="{{ val }}" {% if dispatch.status == val %}selected{% endif %}>{{ label|ui_number }}</option>
+                        {% endfor %}
+                    </select>
+{% elif widget_key == "f1" %}
+<label for="dispatch_detail-comment-3-{{ forloop.counter|default:'0' }}">Ý kiến / Nội dung xử lý</label><textarea name="comment" rows="3" required  id="dispatch_detail-comment-3-{{ forloop.counter|default:'0' }}"></textarea>
+{% endif %}

@@ -96,7 +96,7 @@ class PersonalUITests(TestCase):
         MonthlyAttendanceSummary.objects.create(employee=user.employee, year=2026, month=10, status="Approved")
         self.client.force_login(user)
         response = self.client.get(reverse("portal:timesheet_month"), {"month":10,"year":2026})
-        self.assertContains(response, '<fieldset class="ui-form-fieldset" disabled>')
+        self.assertContains(response, '<fieldset class="ui-form-section" disabled>')
         self.assertContains(response, 'Đã duyệt — không thể tự sửa')
         self.assertContains(response, 'ui-print-only')
         self.assertContains(response, 'id="ui-confirm-dialog"', count=1)

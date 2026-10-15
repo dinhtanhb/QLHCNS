@@ -12,7 +12,7 @@
     {% if can_create %}
     <section class="ui-card">
         <h2 class="ui-card-title">Tạo đề nghị mới</h2>
-        <form method="post" action="{% url 'portal:procurement_request_create' %}" class="ui-admin-form" data-ui-form>{% include "ui/error_summary.html" %}
+        <form method="post" action="{% url 'portal:procurement_request_create' %}" class="ui-admin-form ui-form-stack" data-ui-form>{% include "ui/error_summary.html" %}
             {% csrf_token %}
             <div>
                 <div class="ui-field"><label for="procurement-reason">Lý do đề nghị</label><textarea id="procurement-reason" name="reason" rows="2" maxlength="1000"
@@ -24,10 +24,10 @@
                     <button type="button" id="add-procurement-item" class="ui-button ui-button--secondary">Thêm dòng</button>
                 </div>
                 <div id="procurement-items" class="ui-admin-stack">
-                    <div class="ui-layout-split">
-                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-item_name-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="item_name" label="Tên hàng hóa/dịch vụ" type="text" maxlength="300" required=True %}{% endwith %}{% endwith %}
-                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-quantity-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" value="1" min="1" required=True %}{% endwith %}{% endwith %}
-                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-estimated_cost-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="estimated_cost" label="Đơn giá dự kiến" type="number" min="0" step="0.01" %}{% endwith %}{% endwith %}
+                    <div class="ui-form-grid">
+                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-item_name-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="item_name" label="Tên hàng hóa/dịch vụ" type="text" maxlength="300" required=True  span="4" %}{% endwith %}{% endwith %}
+                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-quantity-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" value="1" min="1" required=True  span="4" %}{% endwith %}{% endwith %}
+                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-estimated_cost-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="estimated_cost" label="Đơn giá dự kiến" type="number" min="0" step="0.01"  span="4" tablet_span="12" %}{% endwith %}{% endwith %}
                     </div>
                 </div>
             </div>
@@ -106,7 +106,7 @@
 <script>
     document.getElementById("add-procurement-item").addEventListener("click", function () {
         const row = document.createElement("div");
-        row.className = "ui-layout-split";
+        row.className = "ui-form-grid";
         const index = document.getElementById("procurement-items").children.length;
         const fields = [
             {name:"item_name", label:"Tên hàng hóa/dịch vụ", type:"text", required:true, maxlength:"300"},
@@ -114,7 +114,7 @@
             {name:"estimated_cost", label:"Đơn giá dự kiến", type:"number", min:"0", step:"0.01"}
         ];
         fields.forEach(field => {
-            const wrapper = document.createElement("div"); wrapper.className = "ui-field";
+            const wrapper = document.createElement("div"); wrapper.className = "ui-field ui-field--4";
             const label = document.createElement("label"), input = document.createElement("input");
             input.id = "procurement-item-" + index + "-" + field.name;
             label.htmlFor = input.id; label.textContent = field.label;

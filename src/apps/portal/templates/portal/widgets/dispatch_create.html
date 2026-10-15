@@ -1,0 +1,34 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label for="dispatch_create-dispatch_type-9-{{ forloop.counter|default:'0' }}">Loại văn bản</label><select name="dispatch_type" required  id="dispatch_create-dispatch_type-9-{{ forloop.counter|default:'0' }}">
+                <option value="Incoming">Công văn đến</option>
+                <option value="Outgoing">Công văn đi</option>
+                <option value="InternalDirective">Chỉ đạo nội bộ</option>
+            </select>
+{% elif widget_key == "f1" %}
+<label for="dispatch_create-urgency_level-10-{{ forloop.counter|default:'0' }}">Độ khẩn</label><select name="urgency_level"  id="dispatch_create-urgency_level-10-{{ forloop.counter|default:'0' }}">
+                    <option value="Normal">Thường</option><option value="Urgent">Khẩn</option>
+                    <option value="VeryUrgent">Thượng khẩn</option><option value="TopUrgent">Hỏa tốc</option>
+                </select>
+{% elif widget_key == "f2" %}
+<label for="dispatch_create-security_level-11-{{ forloop.counter|default:'0' }}">Độ mật</label><select name="security_level"  id="dispatch_create-security_level-11-{{ forloop.counter|default:'0' }}">
+                    <option value="Normal">Thường</option><option value="Confidential">Mật</option><option value="TopSecret">Tuyệt mật</option>
+                </select>
+{% elif widget_key == "f3" %}
+<label for="dispatch_create-department-12-{{ forloop.counter|default:'0' }}">Phòng ban chủ trì</label><select name="department"  id="dispatch_create-department-12-{{ forloop.counter|default:'0' }}">
+                    <option value="">-- Chọn --</option>
+                    {% for d in departments %}<option value="{{ d.id }}">{{ d.department_name|ui_number }}</option>{% endfor %}
+                </select>
+{% elif widget_key == "f4" %}
+<label for="dispatch_create-assigned_to-13-{{ forloop.counter|default:'0' }}">Người phụ trách chính</label><select name="assigned_to"  id="dispatch_create-assigned_to-13-{{ forloop.counter|default:'0' }}">
+                    <option value="">-- Chọn --</option>
+                    {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name|ui_number }}</option>{% endfor %}
+                </select>
+{% elif widget_key == "f5" %}
+<label for="dispatch_create-signer-14-{{ forloop.counter|default:'0' }}">Người ký phát hành (nếu CV đi)</label><select name="signer"  id="dispatch_create-signer-14-{{ forloop.counter|default:'0' }}">
+                    <option value="">-- Chọn --</option>
+                    {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name|ui_number }}</option>{% endfor %}
+                </select>
+{% elif widget_key == "f6" %}
+<label for="dispatch_create-attachment-8-{{ forloop.counter|default:'0' }}">Tệp đính kèm scan</label><input type="file" name="attachment"  id="dispatch_create-attachment-8-{{ forloop.counter|default:'0' }}">
+{% endif %}

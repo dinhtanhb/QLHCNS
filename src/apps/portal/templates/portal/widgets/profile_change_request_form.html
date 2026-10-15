@@ -1,0 +1,6 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label for="field_name">Thông tin cần thay đổi <span class="ui-required" aria-hidden="true">*</span></label><select id="field_name" name="field_name" required><option value="">Chọn thông tin</option><option value="personal_email">Email cá nhân</option><option value="mobile_phone">Số điện thoại</option><option value="address">Địa chỉ</option></select><p class="ui-field-error" id="field_name-error" hidden></p>
+{% elif widget_key == "f1" %}
+<label for="new_value">Thông tin mới <span class="ui-required" aria-hidden="true">*</span></label><textarea id="new_value" name="new_value" rows="3" required maxlength="500"></textarea><p class="ui-field-error" id="new_value-error" hidden></p>
+{% endif %}

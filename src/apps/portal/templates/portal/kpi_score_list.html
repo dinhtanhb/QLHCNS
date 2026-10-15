@@ -32,10 +32,7 @@
 <td class="ui-number">{{ r.actual|default_if_none:"—"|ui_number }}</td>
 <td class="ui-number">{{ r.achievement|ui_number }}%</td>
 <td>
-<form method="post" action="{% url 'portal:kpi_score_update' r.pk %}" class="ui-planning-form-row" data-ui-form>{% csrf_token %}<div class="ui-field">
-<label for="kpi-actual-{{ r.pk }}">Thực tế</label>
-<input id="kpi-actual-{{ r.pk }}" aria-label="Thực tế {{ r.employee }} {{ r.kpi_template }}" type="number" step="0.01" name="actual" value="{{ r.actual|default_if_none:''|unlocalize }}">
-</div>
+<form method="post" action="{% url 'portal:kpi_score_update' r.pk %}" class="ui-planning-form-row" data-ui-form>{% csrf_token %}{% include "ui/field.html" with widget_template="portal/widgets/kpi_score_list.html" widget_key="f0" span="3" %}
 <button type="submit" class="ui-button ui-button--primary">Lưu</button>
 </form>
 </td>

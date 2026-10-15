@@ -1,0 +1,30 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label for="hr-hr_contract_form-employee" class="ui-field-label">Nhân viên</label>
+            <select id="hr-hr_contract_form-employee" name="employee" required >
+                {% for e in employees %}<option value="{{ e.id }}" {% if e.pk|stringformat:"s" == selected_employee %}selected{% endif %}>{{ e.employee_code|ui_number }} - {{ e.full_name|ui_number }}</option>{% endfor %}
+            </select>
+{% elif widget_key == "f1" %}
+<label for="hr-hr_contract_form-contract_type" class="ui-field-label">Loại hợp đồng</label>
+            <select id="hr-hr_contract_form-contract_type" name="contract_type" required >
+                {% for t in contract_types %}<option value="{{ t.id }}">{{ t.contract_type_name|ui_number }}</option>{% endfor %}
+            </select>
+{% elif widget_key == "f2" %}
+<label for="hr-hr_contract_form-contract_no" class="ui-field-label">Số hợp đồng</label>
+            <input id="hr-hr_contract_form-contract_no" type="text" name="contract_no" required >
+{% elif widget_key == "f3" %}
+<label for="hr-hr_contract_form-start_date" class="ui-field-label">Ngày bắt đầu</label>
+                <input id="hr-hr_contract_form-start_date" type="date" name="start_date" required >
+{% elif widget_key == "f4" %}
+<label for="hr-hr_contract_form-end_date" class="ui-field-label">Ngày kết thúc</label>
+                <input id="hr-hr_contract_form-end_date" type="date" name="end_date"  aria-describedby="hr-hr_contract_form-end_date-help">
+                <p class="ui-hr-text" id="hr-hr_contract_form-end_date-help">Để trống nếu là hợp đồng không xác định thời hạn</p>
+{% elif widget_key == "f5" %}
+<label for="hr-hr_contract_form-basic_salary" class="ui-field-label">Lương cơ bản</label>
+            <input id="hr-hr_contract_form-basic_salary" type="number" name="basic_salary" required >
+{% elif widget_key == "f6" %}
+<label for="hr-hr_contract_form-status" class="ui-field-label">Trạng thái</label>
+            <select id="hr-hr_contract_form-status" name="status" >
+                <option value="Draft">Nháp</option><option value="Active">Đang hiệu lực</option>
+            </select>
+{% endif %}

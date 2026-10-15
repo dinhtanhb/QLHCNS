@@ -66,6 +66,7 @@ def main():
         for route in routes:
             if 'url' not in route:continue
             cache.clear()
+            connection.queries_log.clear()
             with CaptureQueriesContext(connection) as queries:response=client.get(route['url'],HTTP_HOST='127.0.0.1')
             key=account+' '+route['name']
             case={'status':response.status_code,'selects':sum(q['sql'].lstrip().upper().startswith('SELECT') for q in queries)}

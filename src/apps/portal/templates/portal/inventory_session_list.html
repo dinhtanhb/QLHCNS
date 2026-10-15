@@ -8,14 +8,16 @@
 {% if not can_manage_asset %}<p>Chế độ chỉ xem các đợt kiểm kê.</p>{% endif %}
 {% if can_manage_asset %}<div class="ui-card">
     <h2 class="ui-card-title">Tạo đợt kiểm kê mới</h2>
-    <form method="post" action="{% url 'portal:inventory_session_create' %}" class="ui-inline-create ui-admin-form" data-ui-form>{% include "ui/error_summary.html" %}
+    <form method="post" action="{% url 'portal:inventory_session_create' %}" class="ui-form-stack ui-admin-form" data-ui-form><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
         {% csrf_token %}
-        <div class="ui-inline-create-fields">
-{% include "ui/field.html" with id="inventory-session-name" name="session_name" label="Tên đợt" placeholder="Ví dụ: Kiểm kê cuối năm 2026" required=True %}
-{% include "ui/field.html" with id="inventory-office-name" name="office_name" label="Văn phòng / Bộ phận" required=True %}
-{% include "ui/field.html" with id="inventory-datetime" name="inventory_datetime" type="datetime-local" label="Thời điểm" required=True %}
-</div><button type="submit" class="ui-button ui-button--primary">Tạo đợt kiểm kê</button>
-    </form>
+
+{% include "ui/field.html" with id="inventory-session-name" name="session_name" label="Tên đợt" placeholder="Ví dụ: Kiểm kê cuối năm 2026" required=True  span="4" %}
+{% include "ui/field.html" with id="inventory-office-name" name="office_name" label="Văn phòng / Bộ phận" required=True  span="4" %}
+{% include "ui/field.html" with id="inventory-datetime" name="inventory_datetime" type="datetime-local" label="Thời điểm" required=True  span="4" tablet_span="12" %}
+<div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Tạo đợt kiểm kê</button></div>
+
+</div></form>
 </div>
 {% endif %}
 <div class="ui-card"><h2 class="ui-card-title">Danh sách</h2>

@@ -5,14 +5,16 @@
 {% include "ui/page_header.html" with title="Người phụ thuộc" description="Đăng ký người phụ thuộc để giảm trừ thuế thu nhập cá nhân." %}
 <section class="ui-card" aria-labelledby="dependent-create-title">
     <h2 id="dependent-create-title" class="ui-card-title">Thêm người phụ thuộc</h2>
-    <form data-ui-form method="post" class="ui-finance-form">{% include "ui/error_summary.html" %}
+    <form data-ui-form method="post" class="ui-form-stack ui-finance-form"><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
         {% csrf_token %}
-        {% include "ui/field.html" with id="dependent-employee" name="employee" label="Nhân viên" required=True options_template="portal/_finance_employee_options.html" %}
-        {% include "ui/field.html" with id="dependent-full_name" name="full_name" label="Họ tên người phụ thuộc" type="text" required=True %}
-        {% include "ui/field.html" with id="dependent-relationship" name="relationship" label="Quan hệ" type="text" placeholder="Ví dụ: Con, Cha, Mẹ" required=True %}
-        {% include "ui/field.html" with id="dependent-registered_from" name="registered_from" label="Đăng ký từ" type="date" required=True %}
-        <button type="submit" class="ui-button ui-button--primary">Thêm người phụ thuộc</button>
-    </form>
+        {% include "ui/field.html" with id="dependent-employee" name="employee" label="Nhân viên" required=True options_template="portal/_finance_employee_options.html"  span="6" %}
+        {% include "ui/field.html" with id="dependent-full_name" name="full_name" label="Họ tên người phụ thuộc" type="text" required=True  span="6" %}
+        {% include "ui/field.html" with id="dependent-relationship" name="relationship" label="Quan hệ" type="text" placeholder="Ví dụ: Con, Cha, Mẹ" required=True  span="6" %}
+        {% include "ui/field.html" with id="dependent-registered_from" name="registered_from" label="Đăng ký từ" type="date" required=True  span="6" %}
+        <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm người phụ thuộc</button></div>
+
+</div></form>
 </section>
 <section class="ui-card" aria-labelledby="dependent-list-title">
 <h2 id="dependent-list-title" class="ui-card-title">Người phụ thuộc đã đăng ký</h2>

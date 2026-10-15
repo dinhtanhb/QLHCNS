@@ -3,6 +3,7 @@
 
 {% block title %}Biên bản {{ req.get_disposal_type_display|default_if_none:""|ui_number }}{% endblock %}
 {% block content %}
+<div class="ui-paper-preview">
 <style>@media print { header, nav, .no-print { display: none !important; } main { max-width: 100% !important; padding: 0 !important; } }</style>
 <div class="no-print mb-4"><button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">🖨 In</button></div>
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
@@ -53,5 +54,6 @@
         <div><p class="font-semibold text-xs">Thành viên<br>(Ký, ghi rõ họ tên)</p><p class="font-medium mt-10">{{ m.employee.full_name|default_if_none:""|ui_number }}</p></div>
         {% endfor %}
     </div>
+</div>
 </div>
 {% endblock %}

@@ -7,23 +7,19 @@
 {% if can_create_event %}
 <div class="ui-card">
     <h2 class="ui-card-title">Tạo sự kiện mới</h2>
-    <form method="post" class="ui-admin-form-grid" data-ui-form>{% include "ui/error_summary.html" %}
+    <form method="post" class="ui-form-stack" data-ui-form><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
         {% csrf_token %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-title-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="title" label="Tiêu đề" type="text" required=True %}{% endwith %}{% endwith %}
-        <div class="ui-field"><label for="event_list-event_type-6-{{ forloop.counter|default:'0' }}">Loại sự kiện</label><select name="event_type"  id="event_list-event_type-6-{{ forloop.counter|default:'0' }}">
-            <option value="Meeting">Họp</option><option value="Training">Đào tạo</option>
-            <option value="FieldTrip">Công tác</option><option value="Company">Sự kiện Trung tâm</option><option value="Other">Khác</option>
-        </select></div>
-        <div class="ui-field"><label for="event_list-department-7-{{ forloop.counter|default:'0' }}">Phòng ban</label><select name="department"  id="event_list-department-7-{{ forloop.counter|default:'0' }}">
-            <option value="">-- Toàn Trung tâm --</option>
-            {% for d in departments %}<option value="{{ d.id }}">{{ d.department_name|ui_number }}</option>{% endfor %}
-        </select></div>
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-start_time-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="start_time" label="Bắt đầu" type="datetime-local" required=True %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-end_time-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="end_time" label="Kết thúc" type="datetime-local" required=True %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-location-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="location" label="Địa điểm" type="text" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-description-5-"|add:row_number %}{% include "ui/field.html" with id=field_id name="description" label="Mô tả" type="text" %}{% endwith %}{% endwith %}
-        <button type="submit" class="ui-button ui-button--primary">Tạo sự kiện</button>
-    </form>
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-title-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="title" label="Tiêu đề" type="text" required=True  span="4" %}{% endwith %}{% endwith %}
+        {% include "ui/field.html" with widget_template="portal/widgets/event_list.html" widget_key="f0"  span="4" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/event_list.html" widget_key="f1"  span="4" %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-start_time-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="start_time" label="Bắt đầu" type="datetime-local" required=True  span="4" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-end_time-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="end_time" label="Kết thúc" type="datetime-local" required=True  span="4" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-location-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="location" label="Địa điểm" type="text"  span="4" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-description-5-"|add:row_number %}{% include "ui/field.html" with id=field_id name="description" label="Mô tả" type="text"  span="12" %}{% endwith %}{% endwith %}
+        <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Tạo sự kiện</button></div>
+
+</div></form>
 </div>
 {% endif %}
 

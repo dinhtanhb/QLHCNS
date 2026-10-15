@@ -4,13 +4,15 @@
 {% block hr_content %}
 <div class="ui-hr-stack">
   <div class="ui-card"><h1 class="ui-page-title">Mở checklist onboarding/offboarding</h1><p class="ui-hr-text">Thao tác này tạo bản chụp đầu việc theo mẫu. Lưu hồ sơ nhân viên không tự mở checklist.</p></div>
-  <form method="post" class="ui-hr-form" data-ui-form>{% csrf_token %}{% include "ui/error_summary.html" %}
-    <div><label class="ui-field-label" for="employee_id">Nhân viên</label><select id="employee_id" name="employee_id" required class="ui-hr-input"><option value="">Chọn nhân viên</option>{% for employee in employees %}<option value="{{ employee.pk }}">{{ employee.employee_code|ui_number }} — {{ employee.full_name|ui_number }}</option>{% endfor %}</select></div>
-    <div><label class="ui-field-label" for="case_type">Loại checklist</label><select id="case_type" name="case_type" required class="ui-hr-input"><option value="">Chọn loại</option><option value="Onboarding">Tiếp nhận</option><option value="Offboarding">Nghỉ việc</option></select></div>
-    <div><label class="ui-field-label" for="template_id">Mẫu checklist</label><select id="template_id" name="template_id" required class="ui-hr-input"><option value="">Chọn mẫu</option>{% for template in templates %}<option value="{{ template.pk }}" data-type="{{ template.template_type }}">{{ template.template_name|ui_number }} — {{ template.get_template_type_display|ui_number }}</option>{% endfor %}</select></div>
-    <div><label class="ui-field-label" for="effective_date">Ngày nghỉ việc hiệu lực (offboarding)</label><input id="effective_date" type="date" name="effective_date" class="ui-hr-input"><p class="ui-hr-text">Onboarding dùng ngày vào làm trong hồ sơ.</p></div>
-    <button class="ui-button ui-button--primary">Tạo checklist</button>
-  </form>
+  <form method="post" class="ui-form-stack" data-ui-form><div class="ui-form-grid">
+{% csrf_token %}{% include "ui/error_summary.html" %}
+    {% include "ui/field.html" with widget_template="lifecycle/widgets/case_create.html" widget_key="f0"  span="3" %}
+    {% include "ui/field.html" with widget_template="lifecycle/widgets/case_create.html" widget_key="f1"  span="3" %}
+    {% include "ui/field.html" with widget_template="lifecycle/widgets/case_create.html" widget_key="f2"  span="3" %}
+    {% include "ui/field.html" with widget_template="lifecycle/widgets/case_create.html" widget_key="f3"  span="3" %}
+    <div class="ui-form-actions"><button class="ui-button ui-button--primary">Tạo checklist</button></div>
+
+</div></form>
 </div>
 <script>
 (() => {

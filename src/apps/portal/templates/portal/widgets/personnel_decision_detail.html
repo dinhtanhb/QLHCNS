@@ -1,0 +1,12 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label for="decision-approve-comment" class="ui-field-label">Ý kiến duyệt<textarea id="decision-approve-comment" name="comment" rows="2" >{% if workflow_error.action == "approve" %}{{ workflow_error.comment }}{% endif %}</textarea></label>
+{% elif widget_key == "f1" %}
+<label for="decision-issued-file" class="ui-field-label">PDF đã ký<input id="decision-issued-file" type="file" name="issued_file" accept="application/pdf,.pdf" required ></label>
+{% elif widget_key == "f2" %}
+<label for="decision-issue-comment" class="ui-field-label">Ghi chú<input id="decision-issue-comment" name="comment" value="{% if workflow_error.action == "issue" %}{{ workflow_error.comment }}{% endif %}" maxlength="2000" ></label>
+{% elif widget_key == "f3" %}
+<label for="decision-reject-comment" class="ui-field-label">Lý do từ chối<textarea id="decision-reject-comment" name="comment" rows="2" required >{% if workflow_error.action == "reject" %}{{ workflow_error.comment }}{% endif %}</textarea></label>
+{% elif widget_key == "f4" %}
+<label for="decision-cancel-comment" class="ui-field-label">Lý do hủy<input id="decision-cancel-comment" name="comment" value="{% if workflow_error.action == "cancel" %}{{ workflow_error.comment }}{% endif %}" maxlength="2000" ></label>
+{% endif %}

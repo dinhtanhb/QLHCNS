@@ -1,0 +1,14 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label class="ui-field-label" for="recruitment-1-candidate_code">Mã ứng viên</label><input id="recruitment-1-candidate_code" type="text" name="candidate_code" placeholder="Mã ứng viên" required class="" {% if request.method == 'POST' %}value="{{ request.POST.candidate_code }}"{% endif %}>
+{% elif widget_key == "f1" %}
+<label class="ui-field-label" for="recruitment-1-full_name">Họ tên</label><input id="recruitment-1-full_name" type="text" name="full_name" placeholder="Họ tên" required class="" {% if request.method == 'POST' %}value="{{ request.POST.full_name }}"{% endif %}>
+{% elif widget_key == "f2" %}
+<label class="ui-field-label" for="recruitment-1-phone_number">Số điện thoại</label><input id="recruitment-1-phone_number" type="text" name="phone_number" placeholder="Số điện thoại" required class="" {% if request.method == 'POST' %}value="{{ request.POST.phone_number }}"{% endif %}>
+{% elif widget_key == "f3" %}
+<label class="ui-field-label" for="recruitment-1-email">Email</label><input id="recruitment-1-email" type="email" name="email" placeholder="Email" required class="" {% if request.method == 'POST' %}value="{{ request.POST.email }}"{% endif %}>
+{% elif widget_key == "f4" %}
+<label class="ui-field-label" for="recruitment-1-current_address">Địa chỉ hiện tại</label><input id="recruitment-1-current_address" type="text" name="current_address" placeholder="Địa chỉ hiện tại" class="" {% if request.method == 'POST' %}value="{{ request.POST.current_address }}"{% endif %}>
+{% elif widget_key == "f5" %}
+<label class="ui-field-label" for="recruitment-1-source">Nguồn ứng tuyển</label><input id="recruitment-1-source" type="text" name="source" placeholder="Nguồn ứng tuyển" class="" {% if request.method == 'POST' %}value="{{ request.POST.source }}"{% endif %}>
+{% endif %}

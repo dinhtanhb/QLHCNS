@@ -1,0 +1,9 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label for="office_outgoing_list-signed_by-6-{{ forloop.counter|default:'0' }}">Người ký</label><select name="signed_by" required  id="office_outgoing_list-signed_by-6-{{ forloop.counter|default:'0' }}">
+            <option value="">-- Chọn người ký (GĐ/PGĐ) --</option>
+            {% for d in directors %}<option value="{{ d.id }}">{{ d.full_name|ui_number }}</option>{% endfor %}
+        </select>
+{% elif widget_key == "f1" %}
+<label for="office_outgoing_list-attachment-5-{{ forloop.counter|default:'0' }}">Tệp đính kèm</label><input type="file" name="attachment" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.webp,.txt,.csv,.zip,.rar,.7z"  title="Chấp nhận PDF, Word, Excel, PowerPoint, ảnh, txt, csv, zip. Tối đa 20 MB." id="office_outgoing_list-attachment-5-{{ forloop.counter|default:'0' }}">
+{% endif %}

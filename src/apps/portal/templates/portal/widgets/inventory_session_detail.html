@@ -1,0 +1,20 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label for="inventory_session_detail-employee-2-{{ forloop.counter|default:'0' }}">Nhân viên</label><select name="employee" required  id="inventory_session_detail-employee-2-{{ forloop.counter|default:'0' }}">
+            {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name|ui_number }}</option>{% endfor %}
+        </select>
+{% elif widget_key == "f1" %}
+<label for="inventory_session_detail-role-3-{{ forloop.counter|default:'0' }}">Vai trò</label><select name="role" required  id="inventory_session_detail-role-3-{{ forloop.counter|default:'0' }}">
+            <option value="Chairman">Trưởng ban kiểm kê</option>
+            <option value="Member">Thành viên kiểm kê</option>
+            <option value="Recorder">Người lập biên bản</option>
+        </select>
+{% elif widget_key == "f2" %}
+<label for="inventory_session_detail-actual_condition-4-{{ forloop.counter|default:'0' }}">Tình trạng thực tế</label><select name="actual_condition"  id="inventory_session_detail-actual_condition-4-{{ forloop.counter|default:'0' }}">
+                        <option value="Normal" {% if l.actual_condition == "Normal" %}selected{% endif %}>Bình thường</option>
+                        <option value="Damaged" {% if l.actual_condition == "Damaged" %}selected{% endif %}>Hư hỏng</option>
+                        <option value="Lost" {% if l.actual_condition == "Lost" %}selected{% endif %}>Mất/Thất lạc</option>
+                    </select>
+{% elif widget_key == "f3" %}
+<label for="inventory_session_detail-recommendation-5-{{ forloop.counter|default:'0' }}">Kiến nghị</label><textarea name="recommendation"  id="inventory_session_detail-recommendation-5-{{ forloop.counter|default:'0' }}"></textarea>
+{% endif %}

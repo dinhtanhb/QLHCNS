@@ -31,14 +31,18 @@
             <td class="">
                 {% if r.status == 'Pending' %}
                 <div class="ui-page-actions">
-                    <form data-ui-confirm="Duyệt đề xuất tuyển dụng này?" data-ui-confirm-label="Duyệt" data-ui-confirm-tone="primary" method="post" action="{% url 'portal:recruitment_approve' r.pk %}">
+                    <form data-ui-confirm="Duyệt đề xuất tuyển dụng này?" data-ui-confirm-label="Duyệt" data-ui-confirm-tone="primary" method="post" action="{% url 'portal:recruitment_approve' r.pk %}" class="ui-form-stack"><div class="ui-form-grid">
+
                         {% csrf_token %}<input type="hidden" name="decision" value="Approved">
-                        <button type="submit" class="ui-button ui-button--primary">Duyệt</button>
-                    </form>
-                    <form data-ui-confirm="Từ chối đề xuất tuyển dụng này?" data-ui-confirm-label="Từ chối" method="post" action="{% url 'portal:recruitment_approve' r.pk %}">
+                        <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Duyệt</button></div>
+
+</div></form>
+                    <form data-ui-confirm="Từ chối đề xuất tuyển dụng này?" data-ui-confirm-label="Từ chối" method="post" action="{% url 'portal:recruitment_approve' r.pk %}" class="ui-form-stack"><div class="ui-form-grid">
+
                         {% csrf_token %}<input type="hidden" name="decision" value="Rejected">
-                        <button type="submit" class="ui-button ui-button--danger">Từ chối</button>
-                    </form>
+                        <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--danger">Từ chối</button></div>
+
+</div></form>
                 </div>
                 {% endif %}
             </td>

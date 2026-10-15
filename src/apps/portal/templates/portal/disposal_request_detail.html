@@ -9,10 +9,12 @@
     <div class="ui-admin-inline">
         <a href="{% url 'portal:disposal_request_print' req.pk %}" class="ui-button ui-button--secondary">Xem/In đề nghị</a>
         {% if req.status == "Pending" and can_approve %}
-        <form method="post" data-ui-confirm="Duyệt đề nghị thanh lý này?" data-ui-form>{% include "ui/error_summary.html" %}
+        <form method="post" data-ui-confirm="Duyệt đề nghị thanh lý này?" data-ui-form class="ui-form-stack"><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
             {% csrf_token %}<input type="hidden" name="action" value="approve">
-            <button type="submit" class="ui-button ui-button--primary"> Duyệt đề nghị</button>
-        </form>
+            <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary"> Duyệt đề nghị</button></div>
+
+</div></form>
         {% endif %}
     </div>
 </div>
@@ -22,34 +24,27 @@
     <div class="ui-card">
         <h2 class="ui-card-title">Thành viên kiểm tra</h2>
         {% for m in members %}<p>{{ m.employee.full_name|ui_number }} — {{ m.get_participation_display|ui_number }}</p>{% endfor %}
-        {% if can_manage_asset %}<form method="post" class="ui-admin-form-inline" data-ui-form>{% include "ui/error_summary.html" %}
+        {% if can_manage_asset %}<form method="post" class="ui-form-stack ui-admin-form-inline" data-ui-form><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
             {% csrf_token %}<input type="hidden" name="action" value="add_member">
-            <div class="ui-field"><label for="disposal_request_detail-employee-18-{{ forloop.counter|default:'0' }}">Nhân viên</label><select name="employee" required  id="disposal_request_detail-employee-18-{{ forloop.counter|default:'0' }}">
-                {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name|ui_number }}</option>{% endfor %}
-            </select></div>
-            <div class="ui-field"><label for="disposal_request_detail-role-19-{{ forloop.counter|default:'0' }}">Vai trò</label><select name="role"  id="disposal_request_detail-role-19-{{ forloop.counter|default:'0' }}">
-                <option value="DeptInCharge">Phụ trách bộ phận</option>
-                <option value="Chairman">Trưởng ban</option>
-                <option value="Member" selected>Thành viên</option>
-                <option value="Requester">Người đề nghị</option>
-            </select></div>
-            <div class="ui-field"><label for="disposal_request_detail-participation-20-{{ forloop.counter|default:'0' }}">Hình thức tham gia</label><select name="participation"  id="disposal_request_detail-participation-20-{{ forloop.counter|default:'0' }}">
-                <option value="Direct">Trực tiếp</option><option value="VideoCall">Video call</option>
-            </select></div>
-            <button type="submit" class="ui-button ui-button--primary">Thêm</button>
-        </form>
+            {% include "ui/field.html" with widget_template="portal/widgets/disposal_request_detail.html" widget_key="f0"  span="4" %}
+            {% include "ui/field.html" with widget_template="portal/widgets/disposal_request_detail.html" widget_key="f1"  span="4" %}
+            {% include "ui/field.html" with widget_template="portal/widgets/disposal_request_detail.html" widget_key="f2"  span="4" tablet_span="12" %}
+            <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm</button></div>
+
+</div></form>
         {% endif %}
     </div>
     {% if can_manage_asset %}<div class="ui-card">
         <h2 class="ui-card-title">Thêm tài sản đề nghị thanh lý</h2>
-        <form method="post" class="ui-admin-form" data-ui-form>{% include "ui/error_summary.html" %}
+        <form method="post" class="ui-form-stack ui-admin-form" data-ui-form><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
             {% csrf_token %}<input type="hidden" name="action" value="add_item">
-            <div class="ui-field"><label for="disposal_request_detail-asset-21-{{ forloop.counter|default:'0' }}">Tài sản</label><select name="asset" required  id="disposal_request_detail-asset-21-{{ forloop.counter|default:'0' }}">
-                {% for a in assets %}<option value="{{ a.id }}">{{ a.asset_code|ui_number }} - {{ a.asset_name|ui_number }}</option>{% endfor %}
-            </select></div>
-            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-damage_description-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="damage_description" label="Tình trạng hư hỏng" type="text" required=True %}{% endwith %}{% endwith %}
-            <button type="submit" class="ui-button ui-button--primary">Thêm tài sản</button>
-        </form>
+            {% include "ui/field.html" with widget_template="portal/widgets/disposal_request_detail.html" widget_key="f3"  span="6" %}
+            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-damage_description-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="damage_description" label="Tình trạng hư hỏng" type="text" required=True  span="6" %}{% endwith %}{% endwith %}
+            <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm tài sản</button></div>
+
+</div></form>
     </div>{% endif %}
 </div>
 
@@ -68,19 +63,21 @@
                 <a href="{% url 'portal:disposal_minutes_print' it.minutes.pk %}" class="ui-admin-link">Xem biên bản</a>
                 {% elif req.status == "Approved" and can_manage_asset %}
                 <details><summary class="ui-button ui-button--secondary">+ Lập biên bản thanh lý</summary>
-                <form data-ui-confirm="Xác nhận xử lý yêu cầu này?" method="post" action="{% url 'portal:disposal_minutes_create' it.pk %}" class="ui-layout-split ui-admin-form-grid" data-ui-form>{% include "ui/error_summary.html" %}
+                <form data-ui-confirm="Xác nhận xử lý yêu cầu này?" method="post" action="{% url 'portal:disposal_minutes_create' it.pk %}" class="ui-form-stack" data-ui-form><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
                     {% csrf_token %}
-                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-decision_date-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="decision_date" label="Ngày quyết định" type="date" required=True %}{% endwith %}{% endwith %}
-                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-origin_country-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="origin_country" label="Nước sản xuất" type="text" %}{% endwith %}{% endwith %}
-                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-manufacture_year-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="manufacture_year" label="Năm sản xuất" type="number" %}{% endwith %}{% endwith %}
-                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-put_into_use_year-5-"|add:row_number %}{% include "ui/field.html" with id=field_id name="put_into_use_year" label="Năm đưa vào sử dụng" type="number" %}{% endwith %}{% endwith %}
-                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-original_value-6-"|add:row_number %}{% include "ui/field.html" with id=field_id name="original_value" label="Nguyên giá" type="number" %}{% endwith %}{% endwith %}
-                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-depreciated_value-7-"|add:row_number %}{% include "ui/field.html" with id=field_id name="depreciated_value" label="Giá trị hao mòn" type="number" %}{% endwith %}{% endwith %}
-                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-disposal_cost-8-"|add:row_number %}{% include "ui/field.html" with id=field_id name="disposal_cost" label="Chi phí thanh lý" type="number" %}{% endwith %}{% endwith %}
-                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-recovery_value-9-"|add:row_number %}{% include "ui/field.html" with id=field_id name="recovery_value" label="Giá trị thu hồi" type="number" %}{% endwith %}{% endwith %}
-                    <div class="ui-field"><label for="disposal_request_detail-conclusion-23-{{ forloop.counter|default:'0' }}">Kết luận của Ban thanh lý</label><textarea name="conclusion" required  id="disposal_request_detail-conclusion-23-{{ forloop.counter|default:'0' }}"></textarea></div>
-                    <button type="submit" class="ui-button ui-button--primary">Lập biên bản (chuyển tài sản sang 'Đã thanh lý')</button>
-                </form>
+                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-decision_date-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="decision_date" label="Ngày quyết định" type="date" required=True  span="3" %}{% endwith %}{% endwith %}
+                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-origin_country-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="origin_country" label="Nước sản xuất" type="text"  span="3" %}{% endwith %}{% endwith %}
+                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-manufacture_year-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="manufacture_year" label="Năm sản xuất" type="number"  span="3" %}{% endwith %}{% endwith %}
+                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-put_into_use_year-5-"|add:row_number %}{% include "ui/field.html" with id=field_id name="put_into_use_year" label="Năm đưa vào sử dụng" type="number"  span="3" %}{% endwith %}{% endwith %}
+                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-original_value-6-"|add:row_number %}{% include "ui/field.html" with id=field_id name="original_value" label="Nguyên giá" type="number"  span="3" %}{% endwith %}{% endwith %}
+                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-depreciated_value-7-"|add:row_number %}{% include "ui/field.html" with id=field_id name="depreciated_value" label="Giá trị hao mòn" type="number"  span="3" %}{% endwith %}{% endwith %}
+                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-disposal_cost-8-"|add:row_number %}{% include "ui/field.html" with id=field_id name="disposal_cost" label="Chi phí thanh lý" type="number"  span="3" %}{% endwith %}{% endwith %}
+                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-recovery_value-9-"|add:row_number %}{% include "ui/field.html" with id=field_id name="recovery_value" label="Giá trị thu hồi" type="number"  span="3" %}{% endwith %}{% endwith %}
+                    {% include "ui/field.html" with widget_template="portal/widgets/disposal_request_detail.html" widget_key="f4"  span="12" %}
+                    <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Lập biên bản (chuyển tài sản sang 'Đã thanh lý')</button></div>
+
+</div></form>
                 </details>
                 {% else %}<span class="ui-text-muted">Chờ duyệt đề nghị</span>{% endif %}
             </td>
@@ -99,17 +96,16 @@
         <p>Số {{ req.decision_no|ui_number }} ngày {{ req.decision_date|ui_date }}</p>
         <a href="{% url 'portal:disposal_decision_print' req.pk %}" class="ui-admin-link">Xem/In Quyết định</a>
         {% elif can_manage_asset %}
-        <form method="post" class="ui-admin-form" data-ui-form>{% include "ui/error_summary.html" %}
+        <form method="post" class="ui-form-stack ui-admin-form" data-ui-form><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
             {% csrf_token %}<input type="hidden" name="action" value="issue_decision">
-            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-decision_no-10-"|add:row_number %}{% include "ui/field.html" with id=field_id name="decision_no" label="Số Quyết định (VD: 01a-26/QĐ-VH)" type="text" required=True %}{% endwith %}{% endwith %}
-            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-decision_date-11-"|add:row_number %}{% include "ui/field.html" with id=field_id name="decision_date" label="Ngày quyết định" type="date" required=True %}{% endwith %}{% endwith %}
-            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-committee_decision_no-12-"|add:row_number %}{% include "ui/field.html" with id=field_id name="committee_decision_no" label="Số QĐ thành lập Hội đồng (VD: 01b-26/QĐ-VH)" type="text" %}{% endwith %}{% endwith %}
-            <div class="ui-field"><label for="disposal_request_detail-decided_by-22-{{ forloop.counter|default:'0' }}">Người ký</label><select name="decided_by" required  id="disposal_request_detail-decided_by-22-{{ forloop.counter|default:'0' }}">
-                <option value="">-- Người ký (GĐ/PGĐ) --</option>
-                {% for d in directors %}<option value="{{ d.id }}">{{ d.full_name|ui_number }}</option>{% endfor %}
-            </select></div>
-            <button type="submit" class="ui-button ui-button--primary">Ban hành Quyết định</button>
-        </form>
+            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-decision_no-10-"|add:row_number %}{% include "ui/field.html" with id=field_id name="decision_no" label="Số Quyết định (VD: 01a-26/QĐ-VH)" type="text" required=True  span="3" %}{% endwith %}{% endwith %}
+            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-decision_date-11-"|add:row_number %}{% include "ui/field.html" with id=field_id name="decision_date" label="Ngày quyết định" type="date" required=True  span="3" %}{% endwith %}{% endwith %}
+            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-committee_decision_no-12-"|add:row_number %}{% include "ui/field.html" with id=field_id name="committee_decision_no" label="Số QĐ thành lập Hội đồng (VD: 01b-26/QĐ-VH)" type="text"  span="3" %}{% endwith %}{% endwith %}
+            {% include "ui/field.html" with widget_template="portal/widgets/disposal_request_detail.html" widget_key="f5"  span="3" %}
+            <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Ban hành Quyết định</button></div>
+
+</div></form>
         {% endif %}
     </div>
 
@@ -118,15 +114,17 @@
         {% if req.status == "Completed" %}
         <a href="{% url 'portal:disposal_execution_print' req.pk %}" class="ui-admin-link">Xem/In Biên bản tiêu hủy</a>
         {% elif can_manage_asset %}
-        <form method="post" class="ui-admin-form" data-ui-form>{% include "ui/error_summary.html" %}
+        <form method="post" class="ui-form-stack ui-admin-form" data-ui-form><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
             {% csrf_token %}<input type="hidden" name="action" value="record_execution">
-            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-execution_datetime-13-"|add:row_number %}{% include "ui/field.html" with id=field_id name="execution_datetime" label="Thời điểm bắt đầu" type="datetime-local" required=True %}{% endwith %}{% endwith %}
-            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-execution_end_time-14-"|add:row_number %}{% include "ui/field.html" with id=field_id name="execution_end_time" label="Giờ kết thúc" type="time" required=True %}{% endwith %}{% endwith %}
-            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-disposal_reason-15-"|add:row_number %}{% include "ui/field.html" with id=field_id name="disposal_reason" label="Lý do thanh lý" type="text" value=req.disposal_reason %}{% endwith %}{% endwith %}
-            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-destroy_form-16-"|add:row_number %}{% include "ui/field.html" with id=field_id name="destroy_form" label="Hình thức tiêu hủy (VD: Hủy đốt)" type="text" %}{% endwith %}{% endwith %}
-            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-handling_method-17-"|add:row_number %}{% include "ui/field.html" with id=field_id name="handling_method" label="Biện pháp xử lý sau (VD: Tập kết điểm thu gom rác)" type="text" %}{% endwith %}{% endwith %}
-            <button type="submit" class="ui-button ui-button--primary">Xác nhận đã thực hiện</button>
-        </form>
+            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-execution_datetime-13-"|add:row_number %}{% include "ui/field.html" with id=field_id name="execution_datetime" label="Thời điểm bắt đầu" type="datetime-local" required=True  span="6" %}{% endwith %}{% endwith %}
+            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-execution_end_time-14-"|add:row_number %}{% include "ui/field.html" with id=field_id name="execution_end_time" label="Giờ kết thúc" type="time" required=True  span="6" %}{% endwith %}{% endwith %}
+            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-disposal_reason-15-"|add:row_number %}{% include "ui/field.html" with id=field_id name="disposal_reason" label="Lý do thanh lý" type="text" value=req.disposal_reason  span="4" %}{% endwith %}{% endwith %}
+            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-destroy_form-16-"|add:row_number %}{% include "ui/field.html" with id=field_id name="destroy_form" label="Hình thức tiêu hủy (VD: Hủy đốt)" type="text"  span="4" %}{% endwith %}{% endwith %}
+            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-handling_method-17-"|add:row_number %}{% include "ui/field.html" with id=field_id name="handling_method" label="Biện pháp xử lý sau (VD: Tập kết điểm thu gom rác)" type="text"  span="4" tablet_span="12" %}{% endwith %}{% endwith %}
+            <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Xác nhận đã thực hiện</button></div>
+
+</div></form>
         {% endif %}
     </div>
 </div>

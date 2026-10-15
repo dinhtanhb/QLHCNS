@@ -55,3 +55,15 @@ def ui_bound_field(field):
     if identifiers:
         attrs["aria-describedby"] = " ".join(identifiers)
     return field.as_widget(attrs=attrs)
+
+
+@register.filter
+def ui_default_span(field):
+    """Presentation only; never inspect choices or evaluate a queryset."""
+    widget = getattr(getattr(field, 'field', None), 'widget', None)
+    kind = getattr(widget, 'input_type', '')
+    if kind in ('date', 'month', 'number'):
+        return 3
+    if widget and widget.__class__.__name__ in ('Textarea', 'SelectMultiple', 'CheckboxSelectMultiple'):
+        return 12
+    return 4

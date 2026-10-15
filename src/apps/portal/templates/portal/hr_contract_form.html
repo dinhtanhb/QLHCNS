@@ -4,35 +4,23 @@
 {% block hr_content %}
 <div class="ui-card">
     <h1 class="ui-page-title">Tạo hợp đồng lao động</h1>
-    <form method="post" class="ui-hr-form" data-ui-form>
+    <form method="post" class="ui-form-stack" data-ui-form><div class="ui-form-grid">
+
         {% csrf_token %}{% include "ui/error_summary.html" %}
-        <div><label for="hr-hr_contract_form-employee" class="ui-field-label">Nhân viên</label>
-            <select id="hr-hr_contract_form-employee" name="employee" required class="ui-hr-input">
-                {% for e in employees %}<option value="{{ e.id }}" {% if e.pk|stringformat:"s" == selected_employee %}selected{% endif %}>{{ e.employee_code|ui_number }} - {{ e.full_name|ui_number }}</option>{% endfor %}
-            </select></div>
-        <div><label for="hr-hr_contract_form-contract_type" class="ui-field-label">Loại hợp đồng</label>
-            <select id="hr-hr_contract_form-contract_type" name="contract_type" required class="ui-hr-input">
-                {% for t in contract_types %}<option value="{{ t.id }}">{{ t.contract_type_name|ui_number }}</option>{% endfor %}
-            </select></div>
-        <div><label for="hr-hr_contract_form-contract_no" class="ui-field-label">Số hợp đồng</label>
-            <input id="hr-hr_contract_form-contract_no" type="text" name="contract_no" required class="ui-hr-input"></div>
-        <div class="ui-form-grid">
-            <div><label for="hr-hr_contract_form-start_date" class="ui-field-label">Ngày bắt đầu</label>
-                <input id="hr-hr_contract_form-start_date" type="date" name="start_date" required class="ui-hr-input"></div>
-            <div><label for="hr-hr_contract_form-end_date" class="ui-field-label">Ngày kết thúc</label>
-                <input id="hr-hr_contract_form-end_date" type="date" name="end_date" class="ui-hr-input">
-                <p class="ui-hr-text">Để trống nếu là hợp đồng không xác định thời hạn</p></div>
-        </div>
-        <div><label for="hr-hr_contract_form-basic_salary" class="ui-field-label">Lương cơ bản</label>
-            <input id="hr-hr_contract_form-basic_salary" type="number" name="basic_salary" required class="ui-hr-input"></div>
-        <div><label for="hr-hr_contract_form-status" class="ui-field-label">Trạng thái</label>
-            <select id="hr-hr_contract_form-status" name="status" class="ui-hr-input">
-                <option value="Draft">Nháp</option><option value="Active">Đang hiệu lực</option>
-            </select></div>
-        <div class="ui-page-actions">
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f0"  span="4" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f1"  span="4" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f2"  span="4" %}
+
+            {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f3"  span="3" %}
+            {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f4"  span="3" %}
+
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f5"  span="3" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f6"  span="3" tablet_span="12" %}
+
+
+</div><div class="ui-page-actions ui-form-actions">
             <button type="submit" class="ui-button ui-button--primary">Lưu</button>
             <a href="{% url 'portal:hr_contract_list' %}" class="ui-button">Hủy</a>
-        </div>
-    </form>
+        </div></form>
 </div>
 {% endblock %}

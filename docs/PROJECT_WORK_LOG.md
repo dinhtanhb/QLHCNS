@@ -2,6 +2,84 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-15 — Lưới form 12 cột, chuyển biểu mẫu và cổng kiểm tra bố cục
+
+**Tóm tắt cho chủ dự án**
+
+- Một nguồn lưới 12 cột; bỏ lưới form 60/40 và giới hạn chiều rộng xung đột. Ưu tiên hàng đầy theo lựa chọn của chủ dự án, giữ thứ tự trường.
+- Hồ sơ có bốn nhóm; nhãn, chú thích, ngày tiếng Việt và hàng nút dùng thành phần chung. Tỷ lệ 60/40 chỉ còn cho vùng nội dung trang.
+- Lượt chốt nguồn đạt 0 vi phạm/0 lỗi chạy, không miễn trừ; 1.314 trường hợp form/HTTP/truy vấn không có khác biệt.
+- Edge đã xác nhận luồng hồ sơ/hợp đồng/nghỉ phép/Dashboard, Hành chính, Kế hoạch, Kế toán và xử lý quyết định; không dùng dữ liệu thật.
+- 37 PDF khớp text và raster với nguồn trước sửa; full547 test SQLite/SQL Server đều đạt trên nguồn cuối.
+- Đóng gói nguồn và ảnh review có manifest/hash; commit gộp B–E trên main, xác minh remote/CI theo SHA trong metadata bàn giao.
+
+**Phạm vi và nguyên nhân:** `shared_components.css` sở hữu duy nhất `.ui-form-grid`; bỏ khai báo cột ở `hr_ui.css`, `ui_controls.css`, `project_layout.css` và luật form Hành chính/Kế toán cũ. Thực tế baseline có 8 khai báo kể cả breakpoint trong 4 tệp, không phải 5 tệp như giả thuyết ban đầu; nguồn sau chỉ một khai báo trong một tệp. Không thêm `!important`/`:has()` để suy cột. `ui/field.html` nhận span/tablet_span/hint/error và widget con giữ nguyên control cũ; `ui/form_section.html` cung cấp fieldset/legend. Bộ lọc giữ kích thước riêng. Khoảng nhóm24/gap16/nút44/chữ14 dùng token, nhãn dự trữ hai dòng để không lệch ô khi xuống dòng. Form dài trên mobile có thanh nút dính đáy và khoảng cuộn focus.
+
+**Khung và giới hạn tái hiện:** đo baseline `hr_employee_edit`1756×920 thấy lề62/62px, không tái hiện219/76px từ ảnh chủ dự án; không giả định nguyên nhân rồi bù margin riêng. Khung căn giữa hiện hữu được giữ và đo lại ở mọi độ rộng/vai trò. Giấy in dài được bọc vùng xem cuộn chỉ trên màn hình; không đổi khổ giấy, nội dung, API/model/migration/quyền/URL/tham số hay tên/required/CSRF/default/options của control. Những lần trước chủ yếu đo tỷ lệ60/40/tràn/focus, chưa đo đường cột, mép ô và nhịp hàng, nên bỏ sót lỗi form.
+
+**Template:** hồ sơ/chi tiết nhân viên, hợp đồng, quyết định, lifecycle; tuyển dụng/ứng viên/phỏng vấn/offer; nghỉ phép/thay đổi hồ sơ/chấm công; công văn/công văn văn phòng; tài sản/kiểm kê/thanh lý/đặt phòng/xe/VPP/mua sắm; kỳ lương/người phụ thuộc/thuế/chạy lương; giao/chấm KPI/ngày lễ/lịch. Có43 template màn hình chứa POST bị chạm,89 thẻ form tĩnh gồm cả thao tác chỉ có nút; không đồng nghĩa89 form nhập liệu. Hoạt động và công việc chỉ sửa bố cục vì audit đã báo lỗi ở chúng; không mở rộng nghiệp vụ. Hàng động mua sắm giữ cấu trúc con và nút Thêm dòng; lần so đầu bắt được thứ tự nút đổi, đã khôi phục. Bảng nhập nhiều dòng giữ bảng/nhãn/chiều cao. Không sửa login hoặc attendance_list. Template base chỉ đổi phiên bản asset; worker tăng lên v22-form-grid-20261015, build lại Tailwind, module CSS đổi URL phiên bản.
+
+**Đo và công cụ:** runtime DB/media/tài khoản giả ngoài repo tại `%TEMP%/ihrms-form-grid-20261014`; archive71b6a2f port8791 là nguồn trước sửa, nguồn hiện tại port8790; archive0d72c85 port8792 dùng thử cache v20→v22. Không deploy. `ops/run_form_grid_uat.py` lưu36 ảnh toàn trang và contact sheet9 mô-đun trước/sau1756/390px, kiểm tra echo ngày/tháng, ISO FormData, nhãn/ID, Tab, focus trên mobile ở hai theme. `AGENTS.md` thêm cổng audit và `MASTER.md` ghi quy chuẩn; giữ nguyên dòng trống cục bộ ngoài phạm vi trong AGENTS và thư mục tham khảo riêng ngoài Git.
+
+**Các lỗi kiểm thử đã xử lý:** hint ẩn không phải chú thích nhìn thấy; đo trường dài theo lưới bên trong thay vì bề rộng form có padding. Trường hợp optional hint của template ban đầu thiếu biến gây lỗi render đã sửa và thêm hồi quy; HTML fieldset BCC đã được sửa và kiểm tra toàn trang. Test Tab ban đầu chọn cả ô tìm kiếm header nên so sai đích; đã giới hạn form nội dung, không đổi Tab của ứng dụng. Lượt BCC đầu thiếu marker fixture khi sao DB giả cũ gây trùng khóa; chỉ khôi phục marker của chính bộ dữ liệu giả, không đụng dữ liệu vận hành. Không dùng các lượt lỗi làm bằng chứng đạt. So form cuối chạy tuần tự sau workflow, vì dữ liệu giả/position/options thay đổi trong lúc chạy song song có thể tạo chênh lệch giả.
+
+**Bảo vệ in:** hồi quy402 kiểm tra/37 PDF và BCC8 tình huống661 kiểm tra đã đạt. So raster phát hiện riêng tiêu đề BCC đổi từ block sang inline do gắn ui-print-only, dù text/số trang còn giống; đã bỏ lớp đó khỏi h1, chỉ ẩn wrapper tiêu đề lặp bằng CSS screen. Không sửa print_forms.css. Đây là lý do phải so ảnh: kiểm tra cũ về cỡ chữ/khổ/số trang không đủ bắt khác biệt display và khoảng tiêu đề. So37 PDF trước/sau cuối vẫn là điều kiện bàn giao; không lấy kết quả trước bản sửa làm đạt.
+
+**Kiểm tra đã xác nhận trước chốt nguồn:** full547 SQLite đạt (7 skip), full547 SQL Server đạt ở lượt trước sửa nhỏ cuối; các lượt bị ngắt sau đó không tính đạt. Focused35 đạt; HTML209 trang không lỗi parser. Edge workflow355 kiểm tra/32 ảnh và DB dùng một lần đã hủy; Hành chính31, Kế hoạch21, Kế toán205, Quyết định130/22 ảnh đạt. Project layout73 trang1600 kiểm tra đạt; bộ lọc1801 kiểm tra/300 số đo đạt; ngày/bàn phím46 kiểm tra/36 ảnh đạt; cache9 kiểm tra đạt (khoảng trường–nút597,09→16px, reload giữ cache/cookie). pip check/check/makemigrations đạt, không migration; contrast198 cặp đạt (sáng min chữ5,100/UI3,506; tối7,007/3,982). Kết quả nguồn cuối ghi dưới.
+
+**Lệnh tái lập:** dùng `venv/Scripts/python.exe`, `$r="$env:TEMP\ihrms-form-grid-20261014"`, `$q="$env:TEMP\ihrms-planning-qa-packages-20261014"`, `$p="$env:TEMP\ihrms-pdf-qa-packages-20261014"`; không phải đường dẫn dữ liệu vận hành.
+
+```powershell
+git diff --check
+venv\Scripts\python.exe -m pip check
+venv\Scripts\python.exe ops/check_ui_contrast.py
+venv\Scripts\python.exe ops/run_layout_alignment_audit.py --directory $r --packages-dir $q --port 8790 --phase after --output-dir "$r\alignment-deliver"
+venv\Scripts\python.exe ops/run_form_contract_uat.py --directory $r --source-root "$env:TEMP\ihrms-dashboard-baseline-71b6a2f" --phase before
+venv\Scripts\python.exe ops/run_form_contract_uat.py --directory $r --phase after
+venv\Scripts\python.exe ops/run_form_grid_uat.py --directory $r --packages-dir $q --pdf-packages-dir $p --port 8790 --baseline-port 8791
+venv\Scripts\python.exe ops/run_print_layout_uat.py --directory $r --packages-dir $q --pdf-packages-dir $p --port 8790
+venv\Scripts\python.exe ops/run_timesheet_print_uat.py --directory $r --packages-dir $q --pdf-packages-dir $p --port 8790 --phase after
+venv\Scripts\python.exe ops/run_project_layout_uat.py --directory $r --packages-dir $q --port 8790
+venv\Scripts\python.exe ops/run_filter_bar_uat.py --directory $r --packages-dir $q --port 8790 --baseline-port 8791
+venv\Scripts\python.exe ops/run_asset_cache_uat.py --directory $r --packages-dir $q --port 8790 --baseline-port 8792
+venv\Scripts\python.exe ops/run_tests.py --backend sqlite
+venv\Scripts\python.exe ops/run_tests.py --backend sqlserver
+```
+
+Wrapper test ngoài repo chỉ dùng MD5 cho fixture để tăng tốc và chuyển log ra TEMP, gọi đúng `ops/run_tests.py`; SQLite dùng bộ nhớ/media tạm, SQL Server tên test_ihrms_UUID mới, không dùng DB vận hành. Lấy `$LASTEXITCODE` ngay sau lệnh Python và lưu bằng chứng ngoài repo. Các runner workflow cùng tham số `--directory $r --packages-dir $q --port 8790`; browser workflow tổng dùng `--backend sqlite --packages-dir $q --output-dir "$env:TEMP\ihrms-form-grid-workflows-20261014"`.
+
+**Chốt nguồn ngày15/10:** `alignment-deliver/result.json`:146 route,9 tài khoản,7 độ rộng/hai theme;7.021 mục gồm6.146 hình học và875 HTTP/không shell/không HTML có lý do;0 vi phạm,0 lỗi,waivers rỗng,exit0. Form contract chạy lại tuần tự trên cùng DB giả ổn định:1.314 trường hợp,0 khác biệt/không tăng SELECT,exit0. Không dùng lượt bị ngắt hoặc đang có workflow ghi dữ liệu làm pass. HTML209 trang không lỗi. Full suite cuối:SQLite547 test/200,562s/7 skip,SQL Server547 test/371,568s/không skip,hai exit0 (`forms-deliver-sqlite.log`, `forms-deliver-sqlserver.log`). Build CSS và diff check cuối đạt. Framework check/makemigrations dùng settings SQLite tạm, không ghi DB vận hành.
+
+**So ảnh mobile và siết cổng cuối:** ảnh nghỉ phép ban đầu dùng quản trị chưa gắn hồ sơ chỉ hiện cảnh báo; đã chụp lại bằng HR gắn hồ sơ và dùng Kế toán cho form người phụ thuộc. Runner kiểm tra có form thật trước khi chụp,46 kiểm tra/36 ảnh đạt. So ảnh còn bắt được hai nút cao/rộng không đều và textarea bị min-height của shell đè; đã sửa nhóm nút mobile chiếm đủ hàng, dùng cùng component cho nút Hủy của công việc/công văn, textarea tối thiểu hai control-height, bỏ cộng đôi khoảng cách hàng nút. Audit bổ sung FORM_BUTTON_HEIGHT/WIDTH, bắt14 vi phạm ở lượt trung gian; sau sửa lượt toàn bộ đạt0 nêu trên. CSS/JS URL cuối20261015-form-grid-final và worker v22; cache9 kiểm tra dùng CSS cũ giả lập trên v20, xác nhận reload nhận bản cuối và loại cache cũ, không phải đo phiên trình duyệt thật của chủ dự án.
+
+**Luồng Tuyển dụng bổ sung:** Edge trên runtime giả tạo ứng viên, lên lịch/kết quả phỏng vấn, tạo offer với số Việt Nam, chấp nhận, Escape xác nhận tiếp nhận rồi tiếp nhận thật:15 kiểm tra đạt; kiểm DB/thông báo/trang đích và mở lại Dashboard. Giữ hành vi hiện hữu: tiếp nhận đánh dấu Hired rồi mở hồ sơ điền sẵn, chưa tạo Employee cho tới khi lưu hồ sơ. Script tái lập `%TEMP%/form-grid-recruitment-workflow.py`, chứng cứ `recruitment-grid-workflow/result.json`; không thêm nghiệp vụ. Các workflow355/31/21/205/130, print402 và BCC661 đều đã chạy lại sau chỉnh nút/textarea cuối.
+
+| Nhóm route | Trước | Sau cuối |
+|---|---:|---:|
+| lifecycle |84|0|
+| profile |240|0|
+| leave |540|0|
+| task |460|0|
+| activity |196|0|
+| kpi |42|0|
+| dispatch |112|0|
+| timesheet |666|0|
+| recruitment |78|0|
+| report |168|0|
+| holiday |66|0|
+| vehicle |90|0|
+| event |54|0|
+| inventory |148|0|
+| hr |1878|0|
+| disposal |132|0|
+| finance |168|0|
+| asset |56|0|
+| Tổng |5178|0|
+
+**PDF và ảnh chốt:** `form-grid-print-comparison/result.json`:37/37 cùng text và raster,exit0; baseline được render lại cùng ngày15/10 để không nhầm ngày hiện tại14→15 là hồi quy. `print-layout-uat`402 kiểm tra/37PDF, `bcc-print-after`661 kiểm tra/8 tình huống đều exit0. `form-grid-uat/contact-sheet-1756.png` và390.png cùng36 ảnh toàn trang trước/sau lưu ngoài repo. Nguồn review `D:/QLHCNS-Backups/IHRMS_Review_20261015_FormGrid.zip`; chứng cứ `IHRMS_FormGrid_Proof_20261015.zip`; manifest/tree/hash từng tệp và trạng thái commit/push/CI nằm tại `IHRMS_FormGrid_20261015.delivery.json`. ZIP nguồn loại bí mật/DB/media/log/tài khoản/reference riêng, không phải backup phục hồi dữ liệu. Bước A0d72c85 đã xác minh CI38579276418 success; đợt B–E gộp một commit để không bàn giao trạng thái nửa chuyển form.
+
+**Giới hạn và việc chủ dự án làm:** chưa kiểm screen reader, zoom native200%, tài khoản thật hoặc máy in thật; đây không phải UAT phiên Edge đang mở của chủ dự án. Thử nghiệm CSS zoom2 đạt1756 nhưng tràn ở390; không coi CSS zoom là zoom native hoặc dùng nó làm bằng chứng đạt. Thử preference trên profile Edge giả không làm đổi devicePixelRatio, nên cũng chưa chứng nhận zoom native. Nhập ngày native khi tắt JS vẫn dùng được và giữ ISO. Phạm vi đào tạo hiện chỉ đọc đăng ký vì không có route tạo đăng ký; không tự thêm nghiệp vụ. Chủ dự án cần duyệt ảnh trước/sau và thử zoom native200%/máy in/tài khoản thật sau khi nhận bản bàn giao; không cần xóa cache. Không deploy.
+
 ## 2026-10-14 — Lưới form, Bước A: đo căn lề trước sửa
 
 **Tóm tắt cho chủ dự án**

@@ -1,0 +1,26 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label class="ui-field-label" for="recruitment-2-result-{{ i.pk }}">Kết quả phỏng vấn</label><select id="recruitment-2-result-{{ i.pk }}" name="result" class=""><option value="Pass">Đạt</option><option value="Fail">Không đạt</option></select>
+{% elif widget_key == "f1" %}
+<label class="ui-field-label" for="recruitment-2-comments-{{ i.pk }}">Nhận xét</label><input id="recruitment-2-comments-{{ i.pk }}" type="text" name="comments" placeholder="Nhận xét" class="">
+{% elif widget_key == "f2" %}
+<label class="ui-field-label" for="recruitment-3-interview_date">Thời gian phỏng vấn</label><input id="recruitment-3-interview_date" type="datetime-local" name="interview_date" required class="">
+{% elif widget_key == "f3" %}
+<label class="ui-field-label" for="recruitment-3-interview_type">Hình thức phỏng vấn</label><select id="recruitment-3-interview_type" name="interview_type" required class="">
+                <option value="Trực tiếp">Trực tiếp</option>
+                <option value="Online">Online</option>
+                <option value="Qua điện thoại">Qua điện thoại</option>
+            </select>
+{% elif widget_key == "f4" %}
+<label class="ui-field-label" for="recruitment-3-interviewer">Người phỏng vấn</label><select id="recruitment-3-interviewer" name="interviewer" required class="">
+                {% for e in interviewers %}<option value="{{ e.id }}">{{ e.full_name|ui_number }}</option>{% endfor %}
+            </select>
+{% elif widget_key == "f5" %}
+<label class="ui-field-label" for="recruitment-4-status-{{ o.pk }}">Trạng thái offer</label><select id="recruitment-4-status-{{ o.pk }}" name="status" class=""><option value="Accepted">Đã chấp nhận</option><option value="Declined">Đã từ chối</option></select>
+{% elif widget_key == "f6" %}
+<label class="ui-field-label" for="recruitment-5-offer_date">Ngày gửi offer</label><input id="recruitment-5-offer_date" type="date" name="offer_date" required class="">
+{% elif widget_key == "f7" %}
+<label class="ui-field-label" for="recruitment-5-expected_join_date">Ngày dự kiến vào làm</label><input id="recruitment-5-expected_join_date" type="date" name="expected_join_date" required class="">
+{% elif widget_key == "f8" %}
+<label class="ui-field-label" for="recruitment-5-salary_offer">Mức lương đề nghị</label><input id="recruitment-5-salary_offer" type="number" name="salary_offer" placeholder="Mức lương đề nghị" required class="">
+{% endif %}

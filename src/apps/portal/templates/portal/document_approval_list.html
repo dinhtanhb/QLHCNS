@@ -20,16 +20,20 @@
             <td>v{{ d.version_no|ui_number }}</td>
             <td>
                 <div class="ui-page-actions">
-                    <form method="post" action="{% url 'portal:document_approve' d.pk %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% include "ui/error_summary.html" %}
+                    <form method="post" action="{% url 'portal:document_approve' d.pk %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary" class="ui-form-stack"><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
                         {% csrf_token %}{% include "ui/error_summary.html" %}
                         <input type="hidden" name="decision" value="Approved">
-                        <button type="submit" class="ui-button ui-button--primary">Duyệt</button>
-                    </form>
-                    <form method="post" action="{% url 'portal:document_approve' d.pk %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary">{% include "ui/error_summary.html" %}
+                        <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Duyệt</button></div>
+
+</div></form>
+                    <form method="post" action="{% url 'portal:document_approve' d.pk %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary" class="ui-form-stack"><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
                         {% csrf_token %}{% include "ui/error_summary.html" %}
                         <input type="hidden" name="decision" value="Rejected">
-                        <button type="submit" class="ui-button ui-button--secondary">Từ chối</button>
-                    </form>
+                        <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--secondary">Từ chối</button></div>
+
+</div></form>
                 </div>
             </td>
         </tr>

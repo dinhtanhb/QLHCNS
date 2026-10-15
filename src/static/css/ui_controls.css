@@ -38,10 +38,5 @@
  .portal-app .ui-main :is(input,select):disabled:not([type=hidden]):not([type=checkbox]):not([type=radio]):not(.hcns-paper *):not(.ui-number-source),
  .portal-app .ui-main :is(button,.report-button,.hcns-button)[disabled]:disabled:not(.hcns-paper *) { background:var(--ui-disabled-bg); color:var(--ui-disabled-text); border-color:var(--ui-disabled-border); cursor:not-allowed; }
  .portal-app .ui-main input[readonly]:not(.hcns-paper *):not(.ui-number-source) { background:var(--ui-surface-raised); }
- /* Screen forms use readable field widths instead of stretching across a page. */
- .portal-app .ui-main .ui-page :is(.ui-field input,.ui-field select,.ui-hr-input):not([type=hidden]):not([type=checkbox]):not([type=radio]):not(.ui-number-source):not(.hcns-editor *):not(.hcns-paper *) { max-width:28rem; }
- .portal-app .ui-main .ui-page .ui-field :is(input[type=date],input[type=month],input[type=time]) { max-width:14rem; }
- .portal-app .ui-main .ui-page .ui-field input[name$=year] { max-width:10rem; }
- @media(min-width:1280px) { .ui-hr .ui-form-grid:not(.hcns-editor *) { grid-template-columns:repeat(3,minmax(0,1fr)); } }
  @media(max-width:600px) { .portal-app .ui-main :is(button,.hcns-button,.report-button,a[class*=rounded]):not(.hcns-paper *) { max-width:100%; white-space:normal; text-align:center; } }
 }

@@ -1,0 +1,7 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+
+<label for="kpi-actual-{{ r.pk }}">Thực tế</label>
+<input id="kpi-actual-{{ r.pk }}" aria-label="Thực tế {{ r.employee }} {{ r.kpi_template }}" type="number" step="0.01" name="actual" value="{{ r.actual|default_if_none:''|unlocalize }}">
+
+{% endif %}

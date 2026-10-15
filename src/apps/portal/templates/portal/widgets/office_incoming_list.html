@@ -1,0 +1,15 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label for="office_incoming_list-attachment-6-{{ forloop.counter|default:'0' }}">Tệp đính kèm</label><input type="file" name="attachment" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.webp,.txt,.csv,.zip,.rar,.7z"  title="Chấp nhận PDF, Word, Excel, PowerPoint, ảnh, txt, csv, zip. Tối đa 20 MB." id="office_incoming_list-attachment-6-{{ forloop.counter|default:'0' }}">
+{% elif widget_key == "f1" %}
+<label for="office_incoming_list-handler-7-{{ forloop.counter|default:'0' }}">Người xử lý</label><select name="handler"  id="office_incoming_list-handler-7-{{ forloop.counter|default:'0' }}">
+                        <option value="">-- Chưa phân công --</option>
+                        {% for e in employees %}<option value="{{ e.id }}" {% if d.handler_id == e.id %}selected{% endif %}>{{ e.full_name|ui_number }}</option>{% endfor %}
+                    </select>
+{% elif widget_key == "f2" %}
+<label for="office_incoming_list-status-8-{{ forloop.counter|default:'0' }}">Trạng thái</label><select name="status"  id="office_incoming_list-status-8-{{ forloop.counter|default:'0' }}">
+                        <option value="New" {% if d.status == "New" %}selected{% endif %}>Mới nhận</option>
+                        <option value="Processing" {% if d.status == "Processing" %}selected{% endif %}>Đang xử lý</option>
+                        <option value="Done" {% if d.status == "Done" %}selected{% endif %}>Đã xử lý xong</option>
+                    </select>
+{% endif %}

@@ -33,28 +33,32 @@
         <p class="mt-1 text-blue-800">Cần tải báo cáo lên SharePoint trước khi đánh dấu công việc hoàn thành.</p>
         {% endif %}
         {% if is_owner %}
-        <form method="post" enctype="multipart/form-data" class="mt-3 flex flex-wrap items-center gap-3">
+        <form method="post" enctype="multipart/form-data" class="ui-form-stack mt-3 flex flex-wrap items-center gap-3"><div class="ui-form-grid">
+
             {% csrf_token %}
             <input type="hidden" name="action" value="upload_activity_report">
-            <input type="file" name="report_file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.txt,.csv,.zip" required class="text-sm">
-            <button type="submit" class="rounded-md bg-blue-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-800">Tải báo cáo lên SharePoint</button>
-        </form>
+            <div class="ui-field ui-field--12"><label for="task-report-file">Tệp báo cáo</label><input id="task-report-file" type="file" name="report_file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.txt,.csv,.zip" required class="text-sm"></div>
+            <div class="ui-form-actions"><button type="submit" class="rounded-md bg-blue-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-800">Tải báo cáo lên SharePoint</button></div>
+
+</div></form>
         {% endif %}
     </div>
     {% endif %}
 
     {% if is_owner %}
-    <form method="post" class="mt-4 flex items-center gap-3">
+    <form method="post" class="ui-form-stack mt-4 flex items-center gap-3"><div class="ui-form-grid">
+
         {% csrf_token %}
         <input type="hidden" name="action" value="update_status">
-        <label class="text-sm font-medium text-gray-700">Cập nhật trạng thái:</label>
-        <select name="status" class="rounded-md border border-gray-300 px-3 py-1.5 text-sm">
+        <div class="ui-field ui-field--12"><label for="task-status">Cập nhật trạng thái</label>
+        <select id="task-status" name="status" class="rounded-md border border-gray-300 px-3 py-1.5 text-sm">
             {% for value, label in task.STATUS_CHOICES %}
             <option value="{{ value }}" {% if task.status == value %}selected{% endif %}>{{ label|ui_number }}</option>
             {% endfor %}
-        </select>
-        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-1.5 rounded-md transition">Lưu</button>
-    </form>
+        </select></div>
+        <div class="ui-form-actions"><button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-1.5 rounded-md transition">Lưu</button></div>
+
+</div></form>
     {% endif %}
 </div>
 
@@ -71,12 +75,14 @@
         <p class="text-gray-400 text-sm">Chưa có bình luận nào.</p>
         {% endfor %}
     </div>
-    <form method="post" class="flex gap-2">
+    <form method="post" class="ui-form-stack flex gap-2"><div class="ui-form-grid">
+
         {% csrf_token %}
         <input type="hidden" name="action" value="add_comment">
-        <input type="text" name="comment_text" placeholder="Viết bình luận..." required
-            class="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Gửi</button>
-    </form>
+        <div class="ui-field ui-field--12"><label for="task-comment">Nội dung bình luận</label><input id="task-comment" type="text" name="comment_text" placeholder="Viết bình luận..." required
+            class="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
+        <div class="ui-form-actions"><button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Gửi</button></div>
+
+</div></form>
 </div>
 {% endblock %}

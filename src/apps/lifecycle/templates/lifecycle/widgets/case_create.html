@@ -1,0 +1,10 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label class="ui-field-label" for="employee_id">Nhân viên</label><select id="employee_id" name="employee_id" required ><option value="">Chọn nhân viên</option>{% for employee in employees %}<option value="{{ employee.pk }}">{{ employee.employee_code|ui_number }} — {{ employee.full_name|ui_number }}</option>{% endfor %}</select>
+{% elif widget_key == "f1" %}
+<label class="ui-field-label" for="case_type">Loại checklist</label><select id="case_type" name="case_type" required ><option value="">Chọn loại</option><option value="Onboarding">Tiếp nhận</option><option value="Offboarding">Nghỉ việc</option></select>
+{% elif widget_key == "f2" %}
+<label class="ui-field-label" for="template_id">Mẫu checklist</label><select id="template_id" name="template_id" required ><option value="">Chọn mẫu</option>{% for template in templates %}<option value="{{ template.pk }}" data-type="{{ template.template_type }}">{{ template.template_name|ui_number }} — {{ template.get_template_type_display|ui_number }}</option>{% endfor %}</select>
+{% elif widget_key == "f3" %}
+<label class="ui-field-label" for="effective_date">Ngày nghỉ việc hiệu lực (offboarding)</label><input id="effective_date" type="date" name="effective_date"  aria-describedby="effective_date-help"><p class="ui-hr-text" id="effective_date-help">Onboarding dùng ngày vào làm trong hồ sơ.</p>
+{% endif %}

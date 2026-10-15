@@ -10,7 +10,6 @@
  .ui-administration .ui-admin-stack,.ui-administration .ui-admin-form { display:grid; gap:var(--ui-space-4); min-width:0; }
  .ui-administration .ui-admin-inline,.ui-administration .ui-admin-form-inline { display:flex; flex-wrap:wrap; align-items:end; gap:var(--ui-space-3); min-width:0; }
  .ui-administration .ui-admin-inline > .ui-page-header { flex:1 1 24rem; margin:0; }
- .ui-administration .ui-admin-form-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--ui-space-4); align-items:end; }
  .ui-administration .ui-admin-form-inline > .ui-field { flex:1 1 13rem; min-width:0; }
  .ui-administration .ui-field :is(input,select,textarea) { width:100%; max-width:100%; min-width:0; }
  .ui-administration .ui-field textarea { min-height:6rem; }
@@ -29,5 +28,4 @@
  .ui-administration form > .ui-button { justify-self:start; }
  .ui-administration .ui-button { white-space:normal; }
  .ui-administration .ui-admin-counted { background:var(--ui-surface-raised); }
- @media(min-width:1024px) { .ui-administration .ui-admin-form-grid { grid-template-columns:var(--ui-split-columns); } }
 }

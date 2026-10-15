@@ -1,0 +1,4 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label for="asset-{{ item.pk }}" class="ui-field-label">Liên kết lịch sử cấp phát/thu hồi (nếu có)</label><select id="asset-{{ item.pk }}" name="asset_allocation_id" ><option value="">Chọn lịch sử tài sản</option>{% for allocation in allocations %}<option value="{{ allocation.pk }}">{{ allocation.asset.asset_code|ui_number }} — {{ allocation.assigned_date|date:"d/m/Y" }}{% if allocation.return_date %} — thu hồi {{ allocation.return_date|date:"d/m/Y" }}{% endif %}</option>{% endfor %}</select>
+{% endif %}

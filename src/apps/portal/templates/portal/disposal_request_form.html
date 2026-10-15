@@ -4,16 +4,15 @@
 {% block administration_content %}
 <div class="ui-card">
     {% include "ui/page_header.html" with title="Tạo đề nghị thanh lý tài sản" description="Tra cứu và xử lý thông tin trong phạm vi được cấp quyền." %}
-    <form method="post" class="ui-admin-form" data-ui-form>{% include "ui/error_summary.html" %}
+    <form method="post" class="ui-form-stack ui-admin-form" data-ui-form><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
         {% csrf_token %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_form-request_no-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="request_no" label="Số đề nghị" type="text" required=True %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_form-request_date-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="request_date" label="Ngày đề nghị" type="date" required=True %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_form-location_name-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="location_name" label="Địa điểm kiểm tra (VD: Văn phòng Trung tâm)" type="text" required=True %}{% endwith %}{% endwith %}
-        <div class="ui-field"><label for="disposal_request_form-disposal_type-4-{{ forloop.counter|default:'0' }}">Hình thức thanh lý</label><select name="disposal_type" required  id="disposal_request_form-disposal_type-4-{{ forloop.counter|default:'0' }}">
-            <option value="Liquidate">Thanh lý</option>
-            <option value="Destroy">Tiêu hủy</option>
-        </select></div>
-        <button type="submit" class="ui-button ui-button--primary">Tạo đề nghị</button>
-    </form>
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_form-request_no-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="request_no" label="Số đề nghị" type="text" required=True  span="3" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_form-request_date-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="request_date" label="Ngày đề nghị" type="date" required=True  span="3" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_form-location_name-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="location_name" label="Địa điểm kiểm tra (VD: Văn phòng Trung tâm)" type="text" required=True  span="3" %}{% endwith %}{% endwith %}
+        {% include "ui/field.html" with widget_template="portal/widgets/disposal_request_form.html" widget_key="f0"  span="3" %}
+        <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Tạo đề nghị</button></div>
+
+</div></form>
 </div>
 {% endblock %}

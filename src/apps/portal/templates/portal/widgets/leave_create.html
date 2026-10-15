@@ -1,0 +1,6 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label for="leave-type">Loại nghỉ phép <span class="ui-required" aria-hidden="true">*</span></label><select id="leave-type" name="leave_type" required>{% for lt in leave_types %}<option value="{{ lt.id }}">{{ lt.leave_type_name }}</option>{% endfor %}</select><p class="ui-field-error" id="leave-type-error" hidden></p>
+{% elif widget_key == "f1" %}
+<label for="leave-reason">Lý do</label><textarea id="leave-reason" name="reason" rows="3"></textarea>
+{% endif %}

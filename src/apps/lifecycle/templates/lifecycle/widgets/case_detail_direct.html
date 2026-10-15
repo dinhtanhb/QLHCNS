@@ -1,0 +1,6 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label class="ui-field-label" for="assignee-{{ item.pk }}">Người được giao</label><select id="assignee-{{ item.pk }}" name="assigned_to_user_id" required class=""><option value="">Chọn người có vai trò {{ item.responsible_role_code|ui_number }}</option>{% for user_option in users %}{% if user_option.role.role_code == item.responsible_role_code %}<option value="{{ user_option.pk }}" {% if item.assigned_to_user_id == user_option.pk %}selected{% endif %}>{{ user_option.employee.full_name|ui_number }}</option>{% endif %}{% endfor %}</select>
+{% elif widget_key == "f1" %}
+<label for="skip-{{ item.pk }}" class="ui-field-label">Lý do nếu bỏ qua</label><input id="skip-{{ item.pk }}" name="skip_reason" maxlength="500" class="">
+{% endif %}

@@ -1,0 +1,4 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label for="note-{{ item.pk }}">Ý kiến xử lý</label><textarea id="note-{{ item.pk }}" name="note" maxlength="500" rows="2"></textarea>
+{% endif %}

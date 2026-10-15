@@ -130,8 +130,10 @@ def main():
                             if width>=1440:
                                 check(table.evaluate('x=>x.getBoundingClientRect().width<=x.parentElement.clientWidth+1'),label+' KPI actions fit wide table')
                         if width in (1440,390):page.screenshot(path=str(output/(route.strip('/').replace('/','-')+f'-{width}-{theme}.png')),full_page=True)
+                    form_columns=page.locator('.ui-form-grid').evaluate_all("xs=>xs.filter(x=>x.checkVisibility()).map(x=>getComputedStyle(x).gridTemplateColumns.split(' ').length)")
+                    check(all(n==12 for n in form_columns),label+' form uses twelve columns')
                     if width == 1440:
-                        grids = page.locator('.ui-planning-grid,.ui-layout-split,.ui-detail-grid,.ui-detail-sections,.ui-finance-grid,.ui-recruitment-grid,.ui-report-export-grid,.report-visuals,.report-section-grid,.timesheet-summary-layout,.ui-form-grid:not(.ui-form-grid--three)').evaluate_all('''xs=>xs.filter(x=>x.getBoundingClientRect().width && !x.closest('.hcns-paper,.hcns-editor')).map(x=>getComputedStyle(x).gridTemplateColumns.split(' ').map(parseFloat))''')
+                        grids = page.locator('.ui-planning-grid,.ui-layout-split,.ui-detail-grid,.ui-detail-sections,.ui-finance-grid,.ui-recruitment-grid,.ui-report-export-grid,.report-visuals,.report-section-grid,.timesheet-summary-layout').evaluate_all('''xs=>xs.filter(x=>x.getBoundingClientRect().width && !x.closest('.hcns-paper,.hcns-editor')).map(x=>getComputedStyle(x).gridTemplateColumns.split(' ').map(parseFloat))''')
                         for cols in grids:
                             if len(cols) == 2:
                                 check(abs(cols[0]/sum(cols)-.6)<.003, label + ' split 60/40')
@@ -155,7 +157,7 @@ def main():
         page.locator('[name=session_name]').fill(name)
         page.locator('[name=office_name]').fill('Synthetic office with a long label for responsive testing')
         page.locator('[name=inventory_datetime]').fill('2026-10-13T10:00')
-        page.locator('form.ui-inline-create button').click()
+        page.locator('form.ui-admin-form button[type=submit]').click()
         page.wait_for_load_state('networkidle')
         check(InventorySession.objects.filter(session_name=name).count() == 1, 'inventory POST saved exactly once')
         check(name in page.locator('main').inner_text(), 'inventory saved record visible at destination')

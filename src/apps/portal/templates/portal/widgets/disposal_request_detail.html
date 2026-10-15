@@ -1,0 +1,28 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label for="disposal_request_detail-employee-18-{{ forloop.counter|default:'0' }}">Nhân viên</label><select name="employee" required  id="disposal_request_detail-employee-18-{{ forloop.counter|default:'0' }}">
+                {% for e in employees %}<option value="{{ e.id }}">{{ e.full_name|ui_number }}</option>{% endfor %}
+            </select>
+{% elif widget_key == "f1" %}
+<label for="disposal_request_detail-role-19-{{ forloop.counter|default:'0' }}">Vai trò</label><select name="role"  id="disposal_request_detail-role-19-{{ forloop.counter|default:'0' }}">
+                <option value="DeptInCharge">Phụ trách bộ phận</option>
+                <option value="Chairman">Trưởng ban</option>
+                <option value="Member" selected>Thành viên</option>
+                <option value="Requester">Người đề nghị</option>
+            </select>
+{% elif widget_key == "f2" %}
+<label for="disposal_request_detail-participation-20-{{ forloop.counter|default:'0' }}">Hình thức tham gia</label><select name="participation"  id="disposal_request_detail-participation-20-{{ forloop.counter|default:'0' }}">
+                <option value="Direct">Trực tiếp</option><option value="VideoCall">Video call</option>
+            </select>
+{% elif widget_key == "f3" %}
+<label for="disposal_request_detail-asset-21-{{ forloop.counter|default:'0' }}">Tài sản</label><select name="asset" required  id="disposal_request_detail-asset-21-{{ forloop.counter|default:'0' }}">
+                {% for a in assets %}<option value="{{ a.id }}">{{ a.asset_code|ui_number }} - {{ a.asset_name|ui_number }}</option>{% endfor %}
+            </select>
+{% elif widget_key == "f4" %}
+<label for="disposal_request_detail-conclusion-23-{{ forloop.counter|default:'0' }}">Kết luận của Ban thanh lý</label><textarea name="conclusion" required  id="disposal_request_detail-conclusion-23-{{ forloop.counter|default:'0' }}"></textarea>
+{% elif widget_key == "f5" %}
+<label for="disposal_request_detail-decided_by-22-{{ forloop.counter|default:'0' }}">Người ký</label><select name="decided_by" required  id="disposal_request_detail-decided_by-22-{{ forloop.counter|default:'0' }}">
+                <option value="">-- Người ký (GĐ/PGĐ) --</option>
+                {% for d in directors %}<option value="{{ d.id }}">{{ d.full_name|ui_number }}</option>{% endfor %}
+            </select>
+{% endif %}

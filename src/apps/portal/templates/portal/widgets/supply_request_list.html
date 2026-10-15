@@ -1,0 +1,17 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label for="supply_request_list-item-4-{{ forloop.counter|default:'0' }}">Vật tư</label><select name="item"  id="supply_request_list-item-4-{{ forloop.counter|default:'0' }}">
+                    <option value="">-- Chọn vật tư --</option>
+                    {% for i in items %}<option value="{{ i.id }}">{{ i.item_name|ui_number }} ({{ i.unit|ui_number }})</option>{% endfor %}
+                </select>
+{% elif widget_key == "f1" %}
+<label for="supply_request_list-item-5-{{ forloop.counter|default:'0' }}">Vật tư</label><select name="item"  id="supply_request_list-item-5-{{ forloop.counter|default:'0' }}">
+                    <option value="">-- Chọn vật tư (dòng 2, tùy chọn) --</option>
+                    {% for i in items %}<option value="{{ i.id }}">{{ i.item_name|ui_number }} ({{ i.unit|ui_number }})</option>{% endfor %}
+                </select>
+{% elif widget_key == "f2" %}
+<label for="supply_request_list-item-6-{{ forloop.counter|default:'0' }}">Vật tư</label><select name="item"  id="supply_request_list-item-6-{{ forloop.counter|default:'0' }}">
+                    <option value="">-- Chọn vật tư (dòng 3, tùy chọn) --</option>
+                    {% for i in items %}<option value="{{ i.id }}">{{ i.item_name|ui_number }} ({{ i.unit|ui_number }})</option>{% endfor %}
+                </select>
+{% endif %}

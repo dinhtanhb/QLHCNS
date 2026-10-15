@@ -6,17 +6,17 @@
 
 <div class="ui-card">
     <h2 class="ui-card-title">Đặt xe mới</h2>
-    <form method="post" action="{% url 'portal:vehicle_booking_create' %}" class="ui-admin-form-grid" data-ui-form>{% include "ui/error_summary.html" %}
+    <form method="post" action="{% url 'portal:vehicle_booking_create' %}" class="ui-form-stack" data-ui-form><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
         {% csrf_token %}
-        <div class="ui-field"><label for="vehicle_booking_list-vehicle-5-{{ forloop.counter|default:'0' }}">Xe</label><select name="vehicle" required  id="vehicle_booking_list-vehicle-5-{{ forloop.counter|default:'0' }}">
-            {% for v in vehicles %}<option value="{{ v.id }}">{{ v.vehicle_name|ui_number }} ({{ v.plate_number|ui_number }})</option>{% endfor %}
-        </select></div>
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="vehicle_booking_list-destination-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="destination" label="Điểm đến" type="text" required=True %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="vehicle_booking_list-purpose-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="purpose" label="Mục đích" type="text" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="vehicle_booking_list-start_time-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="start_time" label="Bắt đầu" type="datetime-local" required=True %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="vehicle_booking_list-end_time-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="end_time" label="Kết thúc" type="datetime-local" required=True %}{% endwith %}{% endwith %}
-        <button type="submit" class="ui-button ui-button--primary">Đặt xe</button>
-    </form>
+        {% include "ui/field.html" with widget_template="portal/widgets/vehicle_booking_list.html" widget_key="f0"  span="6" %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="vehicle_booking_list-destination-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="destination" label="Điểm đến" type="text" required=True  span="6" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="vehicle_booking_list-purpose-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="purpose" label="Mục đích" type="text"  span="4" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="vehicle_booking_list-start_time-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="start_time" label="Bắt đầu" type="datetime-local" required=True  span="4" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="vehicle_booking_list-end_time-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="end_time" label="Kết thúc" type="datetime-local" required=True  span="4" tablet_span="12" %}{% endwith %}{% endwith %}
+        <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Đặt xe</button></div>
+
+</div></form>
     <p class="ui-text-muted">Yêu cầu sẽ ở trạng thái "Chờ duyệt" cho tới khi Hành chính duyệt.</p>
 </div>
 

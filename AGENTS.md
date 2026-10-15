@@ -37,3 +37,5 @@ Theo yêu cầu chủ dự án ngày 13/10/2026, sau mỗi đợt sửa mã ph�
 
 
 Mọi thay đổi CSS dùng chung, `ui-card`, `ui-scroll`, dải lọc hoặc template có biểu mẫu in bắt buộc chạy `ops/run_print_layout_uat.py` và so ảnh/số đo PDF trong cùng lượt; mỗi lần sửa `print_forms.css` phải tăng `?v=` trong `base.html`. Không dùng số trang hoặc HTTP/HTML đạt để thay thế kiểm tra mẫu chuẩn, màu in, viền, ngắt trang và khoảng ký. Ghi trong nhật ký vì sao kiểm thử cũ bỏ sót lỗi in nếu đang sửa hồi quy.
+
+Mọi thay đổi CSS dùng chung hoặc template có form/bảng/thẻ phải chạy `ops/run_layout_alignment_audit.py` trước khi commit; ghi số vi phạm trước/sau, backend, vai trò, độ rộng và thư mục bằng chứng vào nhật ký. Chỉ đóng giai đoạn khi lượt quét toàn bộ route/vai trò ở 1920/1756/1440/1280/1024/768/390px, sáng/tối có 0 vi phạm ngoài `ops/layout_waivers.json`. Miễn trừ phải có route, tiêu chí, lý do và người duyệt; không tự miễn trừ để làm xanh kiểm thử. Bàn giao kèm contact sheet trước/sau các trang chính theo mô-đun ở 1756px và 390px. So hợp đồng form/truy vấn với baseline trên cùng DB giả bằng `ops/run_form_contract_uat.py`; giữ bản in độc lập với lưới màn hình.

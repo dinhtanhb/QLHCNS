@@ -39,10 +39,11 @@
     <section class="mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <h2 class="text-lg font-semibold">Tải bộ hồ sơ theo mẫu của Trung tâm</h2>
         <p class="mt-1 text-sm text-gray-600">CBDA hoàn thiện biểu mẫu Excel trên máy tính, xuất thành 2 tệp PDF (đề xuất hoạt động và dự trù kinh phí), sau đó tải hai PDF lên SharePoint. Excel không cần tải lên IHRMS.</p>
-        <form method="post" enctype="multipart/form-data" class="mt-5 space-y-4">
+        <form method="post" enctype="multipart/form-data" class="ui-form-stack mt-5 space-y-4"><div class="ui-form-grid">
+
             {% csrf_token %}<input type="hidden" name="action" value="upload">
             {% if upload_form.non_field_errors %}<div class="text-sm text-red-700">{{ upload_form.non_field_errors|ui_number }}</div>{% endif %}
-            <div class="ui-layout-split grid gap-4 md:grid-cols-2">
+
                 {% for field in upload_form %}
                 <label class="block text-sm font-medium text-gray-800">{{ field.label|ui_number }}{% if field.field.required %} <span class="text-red-600">*</span>{% endif %}
                     {{ field|ui_number }}
@@ -50,9 +51,10 @@
                     {% for error in field.errors %}<span class="mt-1 block text-xs text-red-700">{{ error|ui_number }}</span>{% endfor %}
                 </label>
                 {% endfor %}
-            </div>
-            <button class="rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white hover:bg-blue-800">Lưu hồ sơ</button>
-        </form>
+
+            <div class="ui-form-actions"><button class="rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white hover:bg-blue-800">Lưu hồ sơ</button></div>
+
+</div></form>
     </section>
     {% endif %}
 
@@ -62,12 +64,14 @@
     <section class="mt-6 rounded-xl border border-indigo-200 bg-indigo-50 p-6">
         <h2 class="text-lg font-semibold text-indigo-950">ĐPV gửi Giám đốc dự án phê duyệt</h2>
         <p class="mt-1 text-sm text-indigo-900">IHRMS sẽ mở thư nháp trong Outlook. Tải hai PDF bên dưới, đính kèm vào thư, thêm CC hoặc sửa nội dung nếu cần, kiểm tra rồi tự bấm Gửi.</p>
-        <form method="post" class="mt-4 flex flex-wrap items-end gap-3">
+        <form method="post" class="ui-form-stack mt-4 flex flex-wrap items-end gap-3"><div class="ui-form-grid">
+
             {% csrf_token %}<input type="hidden" name="action" value="prepare_email">
             <label class="block min-w-72 flex-1 text-sm font-medium">{{ send_form.approver.label|ui_number }}{{ send_form.approver|ui_number }}</label>
             {% for error in send_form.approver.errors %}<span class="text-sm text-red-700">{{ error|ui_number }}</span>{% endfor %}
-            <button class="rounded-lg bg-indigo-700 px-4 py-2 font-semibold text-white hover:bg-indigo-800">Soạn thư trong Outlook</button>
-        </form>
+            <div class="ui-form-actions"><button class="rounded-lg bg-indigo-700 px-4 py-2 font-semibold text-white hover:bg-indigo-800">Soạn thư trong Outlook</button></div>
+
+</div></form>
     </section>
     {% endif %}
     {% endif %}
@@ -76,13 +80,15 @@
     {% if can_decide %}
     <section class="mt-6 rounded-xl border border-amber-200 bg-white p-6 shadow-sm">
         <h2 class="text-lg font-semibold">Quyết định của Giám đốc dự án</h2>
-        <form method="post" action="{% url 'portal:activity_proposal_decide' package.pk %}" class="mt-4 space-y-4">
+        <form method="post" action="{% url 'portal:activity_proposal_decide' package.pk %}" class="ui-form-stack mt-4 space-y-4"><div class="ui-form-grid">
+
             {% csrf_token %}
             {% for field in decision_form %}
             <label class="block text-sm font-medium">{{ field.label|ui_number }}{{ field|ui_number }}{% for error in field.errors %}<span class="block text-xs text-red-700">{{ error|ui_number }}</span>{% endfor %}</label>
             {% endfor %}
-            <button class="rounded-lg bg-green-700 px-4 py-2 font-semibold text-white hover:bg-green-800">Ghi nhận quyết định</button>
-        </form>
+            <div class="ui-form-actions"><button class="rounded-lg bg-green-700 px-4 py-2 font-semibold text-white hover:bg-green-800">Ghi nhận quyết định</button></div>
+
+</div></form>
     </section>
     {% endif %}
 </main>

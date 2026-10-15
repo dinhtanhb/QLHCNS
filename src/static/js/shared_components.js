@@ -90,3 +90,34 @@
  dialog.querySelector('[data-ui-confirm-accept]').addEventListener('click',()=>{const action=pending;if(!action)return;pending=null;approved.add(action.form);dialog.close();action.form.requestSubmit(action.submitter||undefined);});
  dialog.addEventListener('close',()=>{pending=null;if(origin?.isConnected)origin.focus();});
 })();
+
+/* Native dates remain usable without JavaScript; only their readable echo is added. */
+(() => {
+ 'use strict';
+ function enhanceDates() {
+  document.querySelectorAll('input[type=date],input[type=month]').forEach((input,index) => {
+   if(input.closest('.hcns-paper'))return;
+   input.lang='vi';
+   if(input.dataset.dateEchoReady)return;
+   input.dataset.dateEchoReady='true';
+   const echo=document.createElement('p');echo.className='ui-date-echo ui-screen-only';
+   echo.id=(input.id||('ui-date-'+index))+'-echo';echo.setAttribute('aria-live','polite');
+   input.after(echo);
+   input.setAttribute('aria-describedby',[input.getAttribute('aria-describedby'),echo.id].filter(Boolean).join(' '));
+   const update=()=>{
+    const match=input.value.match(/^(\d{4})-(\d{2})(?:-(\d{2}))?$/);
+    if(!match){echo.textContent='';const query=input.closest('.ui-query-bar');if(query)query.classList.toggle('ui-query-bar--date-echo',[...query.querySelectorAll('.ui-date-echo')].some(x=>x.textContent));return;}
+    const date=new Date(Number(match[1]),Number(match[2])-1,Number(match[3]||1));
+    const text=input.type==='month'?new Intl.DateTimeFormat('vi-VN',{month:'long',year:'numeric'}).format(date):new Intl.DateTimeFormat('vi-VN',{weekday:'long'}).format(date)+', '+match[3]+'/'+match[2]+'/'+match[1];
+    echo.textContent=text.charAt(0).toUpperCase()+text.slice(1);
+    const query=input.closest('.ui-query-bar');
+    if(query)query.classList.toggle('ui-query-bar--date-echo',[...query.querySelectorAll('.ui-date-echo')].some(x=>x.textContent));
+   };
+   input.addEventListener('input',update);input.addEventListener('change',update);update();
+  });
+ }
+ enhanceDates();
+ new MutationObserver(enhanceDates).observe(document.body,{childList:true,subtree:true});
+ const updateActions=()=>document.querySelectorAll('form.ui-form-stack').forEach(form=>form.classList.toggle('ui-form-long',form.scrollHeight>innerHeight));
+ updateActions();window.addEventListener('resize',updateActions);
+})();

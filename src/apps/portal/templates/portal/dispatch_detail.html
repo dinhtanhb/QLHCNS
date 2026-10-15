@@ -92,29 +92,27 @@
         <h2 class="ui-card-title">
              Cập nhật tiến độ & Báo cáo kết quả xử lý
         </h2>
-        <form method="post" class="ui-admin-form" data-ui-form>{% include "ui/error_summary.html" %}
+        <form method="post" class="ui-form-stack ui-admin-form" data-ui-form><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
             {% csrf_token %}
-            <div class="ui-layout-split">
-                <div>
-                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_detail-action_type-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="action_type" label="Loại hành động" type="text" value="Báo cáo tiến độ" %}{% endwith %}{% endwith %}
-                </div>
-                <div>
-                    <div class="ui-field"><label for="dispatch_detail-new_status-2-{{ forloop.counter|default:'0' }}">Cập nhật trạng thái văn bản</label><select name="new_status"  id="dispatch_detail-new_status-2-{{ forloop.counter|default:'0' }}">
-                        {% for val, label in status_choices %}
-                        <option value="{{ val }}" {% if dispatch.status == val %}selected{% endif %}>{{ label|ui_number }}</option>
-                        {% endfor %}
-                    </select></div>
-                </div>
-            </div>
-            <div>
-                <div class="ui-field"><label for="dispatch_detail-comment-3-{{ forloop.counter|default:'0' }}">Ý kiến / Nội dung xử lý</label><textarea name="comment" rows="3" required  id="dispatch_detail-comment-3-{{ forloop.counter|default:'0' }}"></textarea></div>
-            </div>
-            <div class="ui-admin-inline">
+
+
+                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_detail-action_type-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="action_type" label="Loại hành động" type="text" value="Báo cáo tiến độ"  span="6" %}{% endwith %}{% endwith %}
+
+
+                    {% include "ui/field.html" with widget_template="portal/widgets/dispatch_detail.html" widget_key="f0"  span="6" %}
+
+
+
+                {% include "ui/field.html" with widget_template="portal/widgets/dispatch_detail.html" widget_key="f1"  span="12" %}
+
+
+
+</div><div class="ui-admin-inline ui-form-actions">
                 <button type="submit" class="ui-button ui-button--primary">
                     Gửi cập nhật tiến độ
                 </button>
-            </div>
-        </form>
+            </div></form>
     </div>
 
     <!-- Lịch sử luân chuyển & xử lý -->

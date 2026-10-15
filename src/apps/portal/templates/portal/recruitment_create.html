@@ -4,40 +4,20 @@
 {% block recruitment_content %}
 {% include "ui/page_header.html" with title="Tạo đề xuất tuyển dụng" %}
 <div class="ui-card">
-    <form data-ui-form method="post" class="ui-recruitment-form">{% include "ui/error_summary.html" %}
+    <form data-ui-form method="post" class="ui-form-stack ui-recruitment-form"><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
         {% csrf_token %}
-        <div>
+        {% include "ui/field.html" with widget_template="portal/widgets/recruitment_create.html" widget_key="f0"  span="6" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/recruitment_create.html" widget_key="f1"  span="6" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/recruitment_create.html" widget_key="f2"  span="4" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/recruitment_create.html" widget_key="f3"  span="4" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/recruitment_create.html" widget_key="f4"  span="4" tablet_span="12" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/recruitment_create.html" widget_key="f5"  span="12" %}
 
-            <label class="ui-field-label" for="recruitment-1-request_code">Mã đề xuất</label><input id="recruitment-1-request_code" type="text" name="request_code" required class="ui-recruitment-input" {% if request.method == 'POST' %}value="{{ request.POST.request_code }}"{% endif %}>
-        </div>
-        <div>
 
-            <label class="ui-field-label" for="recruitment-1-department">Phòng ban</label><select id="recruitment-1-department" name="department" required class="ui-recruitment-input">
-                {% for d in departments %}<option value="{{ d.id }}"{% if request.POST.department == d.id|stringformat:"s" %} selected{% endif %}>{{ d.department_name|ui_number }}</option>{% endfor %}
-            </select>
-        </div>
-        <div>
-
-            <label class="ui-field-label" for="recruitment-1-position">Vị trí cần tuyển</label><select id="recruitment-1-position" name="position" required class="ui-recruitment-input">
-                {% for p in positions %}<option value="{{ p.id }}"{% if request.POST.position == p.id|stringformat:"s" %} selected{% endif %}>{{ p.position_name|ui_number }}</option>{% endfor %}
-            </select>
-        </div>
-        <div>
-
-            <label class="ui-field-label" for="recruitment-1-required_quantity">Số lượng cần</label><input id="recruitment-1-required_quantity" type="number" name="required_quantity" min="1" value="{% if request.method == 'POST' %}{{ request.POST.required_quantity }}{% else %}1{% endif %}" required class="ui-recruitment-input">
-        </div>
-        <div>
-
-            <label class="ui-field-label" for="recruitment-1-required_date">Ngày cần có người</label><input id="recruitment-1-required_date" type="date" name="required_date" required class="ui-recruitment-input" {% if request.method == 'POST' %}value="{{ request.POST.required_date }}"{% endif %}>
-        </div>
-        <div>
-
-            <label class="ui-field-label" for="recruitment-1-request_reason">Lý do tuyển dụng</label><textarea id="recruitment-1-request_reason" name="request_reason" rows="3" class="ui-recruitment-input">{{ request.POST.request_reason }}</textarea>
-        </div>
-        <div class="ui-page-actions">
+</div><div class="ui-page-actions ui-form-actions">
             <button type="submit" class="ui-button ui-button--primary">Gửi đề xuất</button>
             <a href="{% url 'portal:recruitment_list' %}" class="ui-button ui-button--secondary">Hủy</a>
-        </div>
-    </form>
+        </div></form>
 </div>
 {% endblock %}

@@ -1,0 +1,7 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label for="disposal_request_form-disposal_type-4-{{ forloop.counter|default:'0' }}">Hình thức thanh lý</label><select name="disposal_type" required  id="disposal_request_form-disposal_type-4-{{ forloop.counter|default:'0' }}">
+            <option value="Liquidate">Thanh lý</option>
+            <option value="Destroy">Tiêu hủy</option>
+        </select>
+{% endif %}

@@ -1,0 +1,12 @@
+{% load ui_components l10n %}
+{% if widget_key == "f0" %}
+<label for="event_list-event_type-6-{{ forloop.counter|default:'0' }}">Loại sự kiện</label><select name="event_type"  id="event_list-event_type-6-{{ forloop.counter|default:'0' }}">
+            <option value="Meeting">Họp</option><option value="Training">Đào tạo</option>
+            <option value="FieldTrip">Công tác</option><option value="Company">Sự kiện Trung tâm</option><option value="Other">Khác</option>
+        </select>
+{% elif widget_key == "f1" %}
+<label for="event_list-department-7-{{ forloop.counter|default:'0' }}">Phòng ban</label><select name="department"  id="event_list-department-7-{{ forloop.counter|default:'0' }}">
+            <option value="">-- Toàn Trung tâm --</option>
+            {% for d in departments %}<option value="{{ d.id }}">{{ d.department_name|ui_number }}</option>{% endfor %}
+        </select>
+{% endif %}

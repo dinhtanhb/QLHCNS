@@ -11,16 +11,18 @@
 {% if can_manage_office %}
 <div class="no-print ui-card">
     <h2 class="ui-card-title">Ghi nhận công văn đến mới</h2>
-    <form method="post" action="{% url 'portal:office_incoming_create' %}" enctype="multipart/form-data" class="ui-admin-form-grid" data-ui-form>{% include "ui/error_summary.html" %}
+    <form method="post" action="{% url 'portal:office_incoming_create' %}" enctype="multipart/form-data" class="ui-form-stack" data-ui-form><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
         {% csrf_token %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_incoming_list-incoming_no-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="incoming_no" label="Số công văn đến" type="text" required=True %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_incoming_list-incoming_date-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="incoming_date" label="Ngày đến" type="date" required=True %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_incoming_list-sender-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="sender" label="Nơi gửi" type="text" required=True %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_incoming_list-subject-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="subject" label="Trích yếu / Nội dung" type="text" required=True %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_incoming_list-due_date-5-"|add:row_number %}{% include "ui/field.html" with id=field_id name="due_date" label="Hạn xử lý" type="date" %}{% endwith %}{% endwith %}
-        <div class="ui-field"><label for="office_incoming_list-attachment-6-{{ forloop.counter|default:'0' }}">Tệp đính kèm</label><input type="file" name="attachment" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.webp,.txt,.csv,.zip,.rar,.7z"  title="Chấp nhận PDF, Word, Excel, PowerPoint, ảnh, txt, csv, zip. Tối đa 20 MB." id="office_incoming_list-attachment-6-{{ forloop.counter|default:'0' }}"></div>
-        <button type="submit" class="ui-button ui-button--primary">Ghi nhận công văn đến</button>
-    </form>
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_incoming_list-incoming_no-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="incoming_no" label="Số công văn đến" type="text" required=True  span="6" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_incoming_list-incoming_date-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="incoming_date" label="Ngày đến" type="date" required=True  span="6" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_incoming_list-sender-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="sender" label="Nơi gửi" type="text" required=True  span="4" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_incoming_list-subject-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="subject" label="Trích yếu / Nội dung" type="text" required=True  span="4" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_incoming_list-due_date-5-"|add:row_number %}{% include "ui/field.html" with id=field_id name="due_date" label="Hạn xử lý" type="date"  span="4" tablet_span="12" %}{% endwith %}{% endwith %}
+        {% include "ui/field.html" with widget_template="portal/widgets/office_incoming_list.html" widget_key="f0"  span="12" %}
+        <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Ghi nhận công văn đến</button></div>
+
+</div></form>
 </div>
 {% endif %}
 
@@ -42,15 +44,8 @@
                 {% if can_manage_office %}
                 <form method="post" action="{% url 'portal:office_incoming_assign' d.pk %}" class="ui-admin-form-inline" data-ui-form>{% include "ui/error_summary.html" %}
                     {% csrf_token %}
-                    <div class="ui-field"><label for="office_incoming_list-handler-7-{{ forloop.counter|default:'0' }}">Người xử lý</label><select name="handler"  id="office_incoming_list-handler-7-{{ forloop.counter|default:'0' }}">
-                        <option value="">-- Chưa phân công --</option>
-                        {% for e in employees %}<option value="{{ e.id }}" {% if d.handler_id == e.id %}selected{% endif %}>{{ e.full_name|ui_number }}</option>{% endfor %}
-                    </select></div>
-                    <div class="ui-field"><label for="office_incoming_list-status-8-{{ forloop.counter|default:'0' }}">Trạng thái</label><select name="status"  id="office_incoming_list-status-8-{{ forloop.counter|default:'0' }}">
-                        <option value="New" {% if d.status == "New" %}selected{% endif %}>Mới nhận</option>
-                        <option value="Processing" {% if d.status == "Processing" %}selected{% endif %}>Đang xử lý</option>
-                        <option value="Done" {% if d.status == "Done" %}selected{% endif %}>Đã xử lý xong</option>
-                    </select></div>
+                    {% include "ui/field.html" with widget_template="portal/widgets/office_incoming_list.html" widget_key="f1" span="4" %}
+                    {% include "ui/field.html" with widget_template="portal/widgets/office_incoming_list.html" widget_key="f2" span="4" %}
                     <button type="submit" class="ui-button ui-button--primary">Lưu</button>
                 </form>
                 {% else %}{{ d.handler|default:"Chưa phân công"|ui_number }}{% endif %}

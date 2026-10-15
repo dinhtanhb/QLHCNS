@@ -4,18 +4,20 @@
 {% block recruitment_content %}
 {% include "ui/page_header.html" with title="Thêm ứng viên mới" %}
 <div class="ui-card">
-    <form data-ui-form method="post" class="ui-recruitment-form">{% include "ui/error_summary.html" %}
+    <form data-ui-form method="post" class="ui-form-stack ui-recruitment-form"><div class="ui-form-grid">
+{% include "ui/error_summary.html" %}
         {% csrf_token %}
-        <label class="ui-field-label" for="recruitment-1-candidate_code">Mã ứng viên</label><input id="recruitment-1-candidate_code" type="text" name="candidate_code" placeholder="Mã ứng viên" required class="ui-recruitment-input" {% if request.method == 'POST' %}value="{{ request.POST.candidate_code }}"{% endif %}>
-        <label class="ui-field-label" for="recruitment-1-full_name">Họ tên</label><input id="recruitment-1-full_name" type="text" name="full_name" placeholder="Họ tên" required class="ui-recruitment-input" {% if request.method == 'POST' %}value="{{ request.POST.full_name }}"{% endif %}>
-        <label class="ui-field-label" for="recruitment-1-phone_number">Số điện thoại</label><input id="recruitment-1-phone_number" type="text" name="phone_number" placeholder="Số điện thoại" required class="ui-recruitment-input" {% if request.method == 'POST' %}value="{{ request.POST.phone_number }}"{% endif %}>
-        <label class="ui-field-label" for="recruitment-1-email">Email</label><input id="recruitment-1-email" type="email" name="email" placeholder="Email" required class="ui-recruitment-input" {% if request.method == 'POST' %}value="{{ request.POST.email }}"{% endif %}>
-        <label class="ui-field-label" for="recruitment-1-current_address">Địa chỉ hiện tại</label><input id="recruitment-1-current_address" type="text" name="current_address" placeholder="Địa chỉ hiện tại" class="ui-recruitment-input" {% if request.method == 'POST' %}value="{{ request.POST.current_address }}"{% endif %}>
-        <label class="ui-field-label" for="recruitment-1-source">Nguồn ứng tuyển</label><input id="recruitment-1-source" type="text" name="source" placeholder="Nguồn ứng tuyển" class="ui-recruitment-input" {% if request.method == 'POST' %}value="{{ request.POST.source }}"{% endif %}>
-        <div class="ui-page-actions">
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f0"  span="3" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f1"  span="6" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f2"  span="3" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f3"  span="4" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f4"  span="4" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f5"  span="4" %}
+
+
+</div><div class="ui-page-actions ui-form-actions">
             <button type="submit" class="ui-button ui-button--primary">Lưu</button>
             <a href="{% url 'portal:hr_candidate_list' %}" class="ui-button ui-button--secondary">Hủy</a>
-        </div>
-    </form>
+        </div></form>
 </div>
 {% endblock %}

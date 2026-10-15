@@ -21,7 +21,6 @@
 @media(max-width:767px) { .ui-finance .ui-finance-grid { grid-template-columns:1fr; } .ui-finance .ui-page-actions { align-items:stretch; } .ui-finance .ui-button { white-space:normal; text-align:center; } }
 @media(min-width:768px) {
  .ui-finance .ui-finance-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
- .ui-finance form.ui-finance-form:has([name=registered_from]),.ui-finance form.ui-finance-form:has([name=form_type][value=bracket]) { grid-template-columns:repeat(2,minmax(0,1fr)); align-items:end; }
  .ui-finance form.ui-finance-form > .ui-error-summary { grid-column:1 / -1; }
 }
 @media(min-width:1024px) { .ui-finance .ui-finance-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }

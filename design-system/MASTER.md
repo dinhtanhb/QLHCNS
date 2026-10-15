@@ -122,7 +122,21 @@ CSS/JS thay đổi phải có URL phiên bản mới, kể cả stylesheet nạp
 ## Kế hoạch — lịch, đào tạo và bảng nhập KPI
 
 - Lịch công tác giữ thành phần Hành chính; ngày lễ có nhãn chữ/ngày theo ui_date, không chỉ phân biệt bằng màu. Đào tạo dùng trạng thái ui_badge và thông báo rõ tài khoản chưa gắn hồ sơ; portal hiện chỉ đọc danh sách đã đăng ký.
-- Form giao KPI dùng nhãn thường trực, error_summary và hai cột nội dung 60/40 từ 1024px; màn hình hẹp xếp theo thứ tự đọc. Không đổi người được giao, tên chỉ tiêu, kỳ, trọng số hoặc công thức.
+- Form giao KPI dùng nhãn thường trực, error_summary và lưới form 12 cột; tỷ lệ 60/40 chỉ dành cho hai vùng nội dung của trang. Màn hình hẹp xếp theo thứ tự đọc. Không đổi người được giao, tên chỉ tiêu, kỳ, trọng số hoặc công thức.
 - Bảng chấm KPI có caption, scope, vùng cuộn được focus; cột số ui-number căn phải và chữ số tabular. Mỗi ô thực tế có ID riêng và tên nhân viên/tiêu chí; 0 là số hợp lệ, năm trong kỳ giữ nguyên 2026.
 - Dải lọc kỳ giữ ui-query-card/ui-query-bar/query_actions, nút ngay sau trường, Áp dụng/Enter, Xóa lọc khi có lọc và số kết quả. Không thêm lọc/sắp xếp/phân trang. Nút tối thiểu 44px, chữ 14px, sáng/tối và reduced-motion theo token hiện có.
 - Không thêm route đăng ký đào tạo hoặc sửa giấy in. Khi cập nhật asset, tăng URL/cache và chạy hồi quy PDF chung/BCC trên nguồn cuối.
+
+## Lưới form — quy chuẩn ngày 14/10/2026
+
+`shared_components.css` là nguồn duy nhất khai báo cột cho `.ui-form-grid`: 12 cột bằng nhau, gap `--ui-space-4`, căn đỉnh. Tỷ lệ 60/40 chỉ dùng cho hai vùng nội dung của trang (`ui-layout-split`), không áp lên trường hoặc form. Không dùng `!important` hay `:has()` để suy đoán số cột.
+
+Dùng `ui/field.html`: span 3 cho mã/ngày/tháng/số; 4 cho tên, họ, điện thoại, email và select thông thường; 6 cho họ tên đầy đủ hoặc trường dài; 12 cho địa chỉ, ghi chú, lý do, mô tả, chọn nhiều. Mặc định date/month/number là 3, text/email/tel/select là 4, textarea là 12; gán span rõ khi cần. Theo quyết định chủ dự án, được tăng span để hàng đầy 12 và giữ thứ tự Tab/DOM; không đổi tên, required, giá trị, lựa chọn hay CSRF. Tablet 768–1023px: trường ngắn/vừa/dài chiếm 6 cột, trường cuối lẻ có thể dùng `tablet_span="12"`; dưới 768px tất cả chiếm 12 cột. Form nhập nhiều dòng giữ cấu trúc bảng.
+
+Form dài chia `fieldset.ui-form-section` với legend 14px đậm, đường phân cách nhẹ, khoảng nhóm 24px. Hồ sơ nhân viên gồm Danh tính, Giấy tờ, Liên hệ, Công việc. Nhãn có for/id, luôn hiện trên ô; chú thích/lỗi nằm trong ô và được aria-describedby tham chiếu. Dự trữ hai dòng nhãn trong lưới để nhãn xuống dòng không làm lệch ô; hàng cao theo trường cao nhất, khoảng hàng 16px. Ô chiếm đủ chiều rộng cột, cao ít nhất 44px, chữ ít nhất 14px; textarea nhiều dòng. Không đặt giới hạn max-width riêng cho trường trong form.
+
+Hàng nút `ui-form-actions` căn trái đường cột đầu, nút chính trước, Hủy sau, gap 8px và cách nhóm cuối 24px. Dưới 600px các nút chia đều; form dài trên mobile có thanh nút dính đáy, focus có khoảng cuộn tránh bị che. Nút nguy hiểm giữ xác nhận nghiệp vụ hiện có.
+
+Khung `.ui-main` dùng độ rộng tối đa token và căn giữa; đo lề hai bên sai số tối đa 2px cả khi đổi trạng thái sidebar. Ô date/month vẫn dùng control native, lang vi và giá trị POST chuẩn; JS thêm `.ui-date-echo` với aria-live polite, ngày hiện thứ tiếng Việt cùng dd/mm/yyyy, tháng hiện tên tháng/năm, để trống khi chưa chọn. Không JS vẫn nhập được ngày. Echo và khối thao tác không in; giấy HCNS/BCC giữ bố cục độc lập.
+
+Cổng bàn giao: audit căn lề toàn bộ route/vai trò/7 độ rộng/hai theme, form contract và truy vấn cùng DB giả, Edge workflows, PDF ảnh/số đo, cache cũ, full suite hai backend. Không dùng HTTP200 hoặc số trang PDF thay chứng cứ hình học/ảnh. Kết quả và phần chưa kiểm thử chỉ ghi tại [nhật ký dự án](../docs/PROJECT_WORK_LOG.md).
