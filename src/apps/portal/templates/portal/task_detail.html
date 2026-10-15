@@ -2,6 +2,7 @@
 {% load ui_components %}
 {% block title %}{{ task.task_name|ui_number }}{% endblock %}
 {% block content %}
+<div class="ui-page">
 <div class="mb-4">
   <a href="{% url 'portal:task_list' %}" class="ui-button ui-button--secondary mb-3">← Danh sách công việc</a>
   <div class="ui-card">
@@ -97,5 +98,6 @@
       </div>
     </div>
   </form>
+</div>
 </div>
 {% endblock %}

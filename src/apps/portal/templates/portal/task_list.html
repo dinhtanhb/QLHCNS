@@ -2,6 +2,7 @@
 {% load ui_components %}
 {% block title %}Công việc{% endblock %}
 {% block content %}
+<div class="ui-page">
 <header class="ui-page-header">
   <div>
     <h1 class="ui-page-title">{% if is_project_overview %}Giao việc &amp; hoàn tất — Hoạt động dự án{% else %}Công việc của tôi{% endif %}</h1>
@@ -74,13 +75,13 @@
         </tr>
         {% empty %}
         <tr>
-          <td colspan="{% if is_project_overview %}8{% else %}6{% endif %}" class="py-6 text-center text-gray-400">
+          <td colspan="{% if is_project_overview %}8{% else %}6{% endif %}">
             {% if task_scope_name == "assigned_by_me" %}
-              Anh/chị chưa giao công việc nào.
+              {% include "ui/empty_state.html" with title="Anh/chị chưa giao công việc nào." description="Chọn '+ Giao việc mới' để phân công nhiệm vụ cho nhân viên." icon="folder" %}
             {% elif task_scope_name == "activity_overview" %}
-              Chưa có Task báo cáo trong phạm vi hoạt động được phép xem.
+              {% include "ui/empty_state.html" with title="Chưa có Task báo cáo trong phạm vi hoạt động được phép xem." description="Các công việc phát sinh từ hoạt động dự án sẽ xuất hiện tại đây." icon="folder" %}
             {% else %}
-              Chưa có công việc nào được giao cho anh/chị.
+              {% include "ui/empty_state.html" with title="Chưa có công việc nào được giao cho anh/chị." description="Khi có công việc mới được phân công, thông tin sẽ được cập nhật tại đây." icon="folder" %}
             {% endif %}
           </td>
         </tr>
@@ -88,5 +89,6 @@
       </tbody>
     </table>
   </div>
+</div>
 </div>
 {% endblock %}

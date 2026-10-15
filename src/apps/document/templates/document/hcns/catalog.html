@@ -12,7 +12,7 @@
 {% if employees %}<div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Chọn hồ sơ điền biểu mẫu">
 <div class="ui-query-fields">
-{% include "ui/field.html" with id="catalog-employee-id" name="employee_id" label="Điền thông tin từ hồ sơ nhân viên" options_template="ui/query_options/catalog-employee_id.html" %}
+{% include "ui/field.html" with id="catalog-employee-id" name="employee_id" label="Điền thông tin từ hồ sơ nhân viên" options_template="ui/query_options/catalog-employee_id.html" size="wide" %}
 </div>
 {% with reset_group=request.GET.group|urlencode %}{% with reset_url=request.path|add:"?group="|add:reset_group %}{% include "ui/query_actions.html" with reset_url=reset_url has_filters=request.GET|ui_has_filters:"employee_id" %}{% endwith %}{% endwith %}
 </form>

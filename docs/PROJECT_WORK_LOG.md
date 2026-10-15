@@ -2,6 +2,42 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-16 — Chuẩn hóa bố cục Dự án, Tinh gọn ô nhập và Triệt tiêu yêu cầu Ctrl + F5 (commit ui: compact form grid and project layout)
+
+**Tóm tắt & Mục tiêu**
+- Khắc phục triệt để 3 vấn đề người dùng phản hồi theo tiêu chuẩn thiết kế Impeccable:
+  1. **Triệt tiêu hiện tượng phải bấm `Ctrl + F5` mới cập nhật giao diện**:
+     - Nâng phiên bản cache tĩnh của Service Worker trong `src/static/js/service-worker.js` từ `ihrms-static-v29-dashboard-design-20261015` lên `ihrms-static-v30-ui-compact-20261016`.
+     - Kích hoạt cơ chế tự động xóa sạch bộ nhớ cache cũ khi Service Worker activate (`self.skipWaiting()` và `self.clients.claim()`).
+     - Tăng tham số phiên bản `?v=20261016-ui-compact` đồng bộ cho các stylesheet và script dùng chung trong `src/templates/base.html` (`ui_controls.css`, `shared_components.css`, `project_layout.css`, `shared_components.js`).
+     - Đồng bộ các bài kiểm tra phiên bản asset tĩnh trong `src/apps/portal/tests_mobile.py` (`test_design_tokens_alignment_and_metric_hooks_are_shared`) và `src/apps/portal/test_project_layout.py` (`test_changed_cascade_assets_have_fresh_versions`).
+  2. **Chuẩn hóa bố cục và phân cấp thị giác phân hệ Hoạt động dự án (`apps/activity`) & Công việc (`apps/portal`)**:
+     - Bổ sung wrapper chuẩn hệ thống `<div class="ui-page ui-activity">` (và `<div class="ui-page">`) cho:
+       - `activity/dashboard.html`: Đồng bộ `ui/page_header.html`, căn lề thẻ KPI, tối ưu dải lọc tháng (`size="compact"`) và CBDA (`size="narrow"`), thay thế empty state bảng bằng thành phần chuẩn `ui/empty_state.html`.
+       - `portal/task_list.html`: Bọc `.ui-page`, chuẩn hóa thanh tác vụ và chuyển toàn bộ các trường hợp rỗng sang `ui/empty_state.html`.
+       - `activity/proposal_approval_list.html`: Bọc `.ui-page ui-activity`, thay thế khối text xám trơn bằng `ui/empty_state.html`.
+       - `activity/proposal_detail.html` & `activity/proposal_email_draft.html`: Bọc `.ui-page ui-activity`, làm sạch nhịp hiển thị và căn chỉnh nút thao tác.
+       - `activity/calendar.html`: Bọc `.ui-page ui-activity`, tinh gọn ô lọc tháng (`size="compact"`) và CBDA (`size="narrow"`).
+  3. **Thu gọn và chuẩn hóa kích thước các ô điền/chọn thông tin**:
+     - Tái cấu trúc lưới `.ui-form-grid` tại `portal/asset_admin_list.html`:
+       - Hàng 1 (Nhận diện thiết bị): `asset_code` (4) + `asset_name` (4) + `asset_type` (4) = 12.
+       - Hàng 2 (Xuất xứ): `serial_number` (4) + `brand` (4) + `funding_source` (4) = 12.
+       - Hàng 3 (Mua sắm & địa điểm): `purchase_date` (3) + `location` (5) + `quantity` (2) + `unit` (2) = 12 (triệt tiêu hoàn toàn ô ngày mua và địa điểm bị kéo giãn 50% màn hình desktop).
+       - Hàng 4 (Giá trị & ghi chú): `purchase_value` (4) + `note` (8) = 12.
+     - Tái cấu trúc form giao việc `portal/task_create.html`: Bọc `.ui-page`, cân đối `task_code` (4) + `task_name` (8) = 12; `assigned_to` (4) + `priority` (2) + `start_date` (3) + `due_date` (3) = 12; `description` (12).
+     - Tinh gọn dải lọc `document/hcns/catalog.html`: Gán `size="wide"` cho trường `employee_id` để tránh tràn kích thước không cần thiết.
+
+**Kết quả kiểm tra & Cổng chất lượng**
+- `ops/run_form_contract_uat.py` (--directory TEMP --phase after): 1314 cases, **0 failures** (bảo toàn 100% hợp đồng trường, tên, thuộc tính, CSRF, trật tự DOM và logic POST).
+- `ops/run_tests.py --backend sqlite`: 552 tests, **0 failures**, **552 passed** (7 skipped).
+- `ops/check_ui_contrast.py`: 208/208 color pairs pass WCAG standards (min text: light 5.100:1, dark 7.007:1).
+- `src/manage.py check`: 0 issues.
+- `src/manage.py makemigrations --check`: No changes detected (không thay đổi CSDL / 0 migration).
+
+**Trạng thái nhánh & Bàn giao**
+- Nhánh: `main`.
+- Đã đóng gói bản sao kiểm toán ngoài repository tại `D:\QLHCNS-Backups\IHRMS_Review_20261016_UI_Compact.zip` (1548 tệp, manifest SHA-256 xác minh 100% không lỗi).
+
 ## 2026-10-15 — Giai đoạn 5 – Chuẩn hóa Đăng nhập, Chấm công cá nhân và Phân trang (commit ui: login attendance pagination)
 
 **Tóm tắt & Mục tiêu**

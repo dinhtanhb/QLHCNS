@@ -2,6 +2,7 @@
 {% load ui_components %}
 {% block title %}Soạn thư xin phê duyệt{% endblock %}
 {% block content %}
+<div class="ui-page ui-activity">
 <div class="mb-4">
   <a href="{% url 'portal:activity_proposal' activity.pk %}" class="ui-button ui-button--secondary mb-3">← Quay lại hồ sơ hoạt động</a>
   <div class="ui-card">
@@ -53,5 +54,6 @@
       </div>
     </form>
   </div>
+</div>
 </div>
 {% endblock %}

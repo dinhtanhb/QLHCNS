@@ -2,6 +2,7 @@
 {% load ui_components %}
 {% block title %}Duyệt đề xuất hoạt động{% endblock %}
 {% block content %}
+<div class="ui-page ui-activity">
 <header class="ui-page-header">
   <div>
     <h1 class="ui-page-title">Đề xuất đang chờ duyệt</h1>
@@ -51,7 +52,8 @@
     </table>
   </div>
   {% else %}
-  <div class="py-8 text-center text-gray-400">Hiện không có đề xuất nào đang chờ bạn duyệt.</div>
+  {% include "ui/empty_state.html" with title="Hiện không có đề xuất nào đang chờ bạn duyệt." description="Khi có hồ sơ đề xuất hoạt động được gửi đến tài khoản của bạn, danh sách sẽ hiển thị tại đây." icon="folder" %}
   {% endif %}
+</div>
 </div>
 {% endblock %}
