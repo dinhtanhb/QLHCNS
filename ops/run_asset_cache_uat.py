@@ -27,8 +27,8 @@ def main():
     output = folder / 'asset-cache-uat'
     output.mkdir(exist_ok=True)
     state = {'port': args.baseline_port}
-    old_cache = 'ihrms-static-v22-form-grid-20261015'
-    new_cache = 'ihrms-static-v26-dashboard-compact-20261015'
+    old_cache = 'ihrms-static-v26-dashboard-compact-20261015'
+    new_cache = 'ihrms-static-v29-dashboard-design-20261015'
     checks = []
 
     def check(ok, label):
@@ -76,13 +76,13 @@ def main():
         check(old_cache in page.evaluate('()=>caches.keys()'), 'previous release worker cache populated')
         gap = "()=>document.querySelector('.home-main-metric').getBoundingClientRect().height"
         before = page.evaluate(gap)
-        check(before > 104, 'previous dashboard card height reproduced from warm cache')
+        check(before > 0, 'previous dashboard visible from warm cache')
         page.screenshot(path=str(output / 'stale-css.png'), full_page=True)
         # Normal reload, retaining cookies, browser cache and the old CacheStorage.
         state['port'] = args.port
         page.reload(wait_until='networkidle')
         after = page.evaluate(gap)
-        check(0 < after <= 104, 'normal reload loads compact dashboard asset URL')
+        check(page.locator('.home-main-metric').first.evaluate('x=>parseFloat(getComputedStyle(x).paddingTop)>=16'), 'normal reload loads dashboard visual system padding')
         check(page.locator('.home-work-card').count() == 2, 'updated compact work cards visible')
         page.evaluate('async()=>{const r=await navigator.serviceWorker.getRegistration();await r.update();}')
         for _ in range(100):
@@ -93,7 +93,7 @@ def main():
         check(new_cache in keys, 'new worker cache activated')
         check(old_cache not in keys, 'old worker cache retired')
         page.reload(wait_until='networkidle')
-        check(0 < page.evaluate(gap) <= 104, 'layout survives controlling worker reload')
+        check(page.locator('.home-main-metric').first.evaluate('x=>parseFloat(getComputedStyle(x).paddingTop)>=16&&getComputedStyle(x).boxShadow==="none"'), 'visual system survives controlling worker reload')
         page.goto(base+'/portal/timesheet/?month=9&year=2026',wait_until='networkidle')
         check(page.locator('link[href*="print_forms.css"]').get_attribute('href').endswith('v=20261014-dispatch-register'), 'fresh print stylesheet URL loaded')
         page.emulate_media(media='print')

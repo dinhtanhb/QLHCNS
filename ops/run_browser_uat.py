@@ -252,7 +252,7 @@ def main():
             values = page.locator('#dashboard-status .ui-kpi-value').all_text_contents()
             check([x.strip() for x in values] == ['12','1','5','0'], 'Grouped main managed/approved/upcoming/queue counts match fixed fixture')
             check('Đang làm 10 · Thử việc 1 · Nghỉ dài hạn 1' in page.locator('#dashboard-status').inner_text(), 'Status breakdown remains visible without duplicate cards')
-            check(values[2].strip() == '5' and page.locator('#dashboard-contracts .home-contracts>li').count() == 3, 'D to D+60 inclusive count retained; compact preview limited to three rows')
+            check(values[2].strip() == '5' and page.locator('#dashboard-contracts .home-contracts>li').count() == 5, 'D to D+60 inclusive count retained; HR preview shows five rows')
             check('Quá hạn cần rà soát · 1' in page.locator('#dashboard-contracts').inner_text(), 'Overdue separate from upcoming')
             check(page.locator('.dashboard-donut-total strong').inner_text() == '7' and page.locator('.dashboard-donut-total span').inner_text() == 'hợp đồng', 'Effective contracts count contracts, not employees')
             check(page.locator('.home-type-list li').count() == 2, 'Two contract types have directly labelled tracks plus data table')

@@ -84,26 +84,42 @@ def main():
                                         check(max(x['h'] for x in rows)-min(x['h'] for x in rows)<1.1,label+' equal card heights')
                                 ratios=page.locator('.home-row:not(.home-row--single),.home-my-work-grid').evaluate_all('xs=>xs.filter(x=>x.children.length===2).map(x=>x.children[0].getBoundingClientRect().width/x.children[1].getBoundingClientRect().width)')
                                 check(all(abs(ratio-1.5)<0.01 for ratio in ratios),label+' paired content is 60/40')
-                                blanks=page.locator('.home-row .ui-card').evaluate_all('xs=>xs.map(x=>{const last=[...x.children].filter(y=>y.checkVisibility()&&!y.matches(".sr-only,.home-info-body")).at(-1);return last?x.getBoundingClientRect().bottom-last.getBoundingClientRect().bottom-parseFloat(getComputedStyle(x).paddingBottom):0})')
-                                check(all(gap<=32 for gap in blanks),label+' paired cards trailing space <=32px '+str(blanks))
-                            if width>=1280:
-                                if page.locator('#group-recruitment').count():check(page.locator('#group-recruitment').bounding_box()['height']<=96.1,label+' recruitment strip <=96')
-                                check(page.locator('.home-page-header').bounding_box()['height']<=56.1,label+' page header <=56')
-                                if measures['kpis']:
-                                    heights=[x['h'] for x in measures['kpis']]
-                                    check(max(heights)<=104.1 and max(heights)-min(heights)<=1,label+' KPI <=104 and equal')
-                                if measures['work']:check(max(x['h'] for x in measures['work'])<=72.1,label+' own work <=72')
-                                check(all(x['h']<=28.1 and x['nowrap']=='nowrap' for x in measures['badges']),label+' badge <=28 and nowrap')
-                                check(all(x['h']<=(36.1 if x['decision'] else 40.1) for x in measures['lists']),label+' compact list heights')
+                            quality=page.locator('.home-dashboard').evaluate(r"""root=>{
+ const rect=x=>x.getBoundingClientRect(), near=(a,b)=>Math.abs(a-b)<=2;
+ const visible=x=>x.checkVisibility()&&!x.closest('.sr-only,.home-info-body');
+ const cards=[...root.querySelectorAll('.ui-card')].filter(visible);
+ const body=[...root.querySelectorAll('p,span,a,th,td,dt,dd')].filter(visible);
+ const spacing=[...root.children].filter(x=>visible(x)&&x.matches('section'));
+ const scales=[['h1',24,32],['h2',18,28],['.ui-kpi-value',32,40],['.home-work-card .home-work-value',28,32],['.home-project-metrics dd,.home-recruitment-metrics .home-work-value',24,32]];
+ const rows=[...root.querySelectorAll('.home-list>li,.home-capacity>li,.home-type-list>li')].filter(visible);
+ const targets=[...root.querySelectorAll('a,summary')].filter(visible);
+ const overlaps=targets.some((x,i)=>targets.slice(i+1).some(y=>{if(x.contains(y)||y.contains(x))return false;const a=rect(x),b=rect(y);return Math.min(a.right,b.right)-Math.max(a.left,b.left)>1&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>1}));
+ const capacity=[...root.querySelectorAll('.home-capacity>li')];
+ const align=selector=>{const xs=capacity.map(x=>x.querySelector(selector)).filter(Boolean).map(x=>rect(x).x);return !xs.length||Math.max(...xs)-Math.min(...xs)<=1};
+ const metrics=[...root.querySelectorAll('.home-project-metrics,.home-recruitment-metrics')];
+ return {
+  padding:cards.every(x=>['paddingTop','paddingBottom','paddingLeft','paddingRight'].every(k=>parseFloat(getComputedStyle(x)[k])>=16)),
+  cardGap:[...root.querySelectorAll('.home-row,.home-my-work-grid,.home-main-kpis')].every(x=>near(parseFloat(getComputedStyle(x).gap),16)),
+  groupGap:near(parseFloat(getComputedStyle(root).rowGap),32),
+  sectionGap:spacing.filter(x=>x.children.length>1).every(x=>near(parseFloat(getComputedStyle(x).rowGap),12)),
+  type:scales.every(([selector,size,line])=>[...root.querySelectorAll(selector)].filter(visible).every(x=>near(parseFloat(getComputedStyle(x).fontSize),size)&&near(parseFloat(getComputedStyle(x).lineHeight),line))),
+  rows:rows.every(x=>rect(x).height>=(x.querySelector('a')?43.5:39.5)),
+  targets:targets.every(x=>rect(x).height>=43.5&&rect(x).width>=43.5),
+  overlaps,
+  capacityAligned:innerWidth<1280||['.home-department-name','.home-capacity-track','.home-capacity-value','.home-capacity-alert'].every(align),
+  metricsAligned:innerWidth<768||metrics.every(x=>{const ys=[...x.querySelectorAll('.home-work-value,dd')].filter(y=>y.parentElement.parentElement===x).map(y=>rect(y).y);return !ys.length||Math.max(...ys)-Math.min(...ys)<=1}),
+  noShadow:cards.every(x=>getComputedStyle(x).boxShadow==='none'),
+  kpiHeights:[...root.querySelectorAll('.home-main-metric')].map(x=>rect(x).height),
+  focusTokens:getComputedStyle(root).getPropertyValue('--ui-focus-width').trim()==='3px'
+ };
+}""")
+                            for criterion in ('padding','cardGap','groupGap','sectionGap','type','rows','targets','capacityAligned','metricsAligned','noShadow','focusTokens'):
+                                check(quality[criterion],label+' visual system '+criterion)
+                            check(not quality['overlaps'],label+' hit targets do not overlap')
+                            if width>=1280 and quality['kpiHeights']:check(max(quality['kpiHeights'])-min(quality['kpiHeights'])<=1,label+' equal KPI heights')
                             if width==1440:
                                 for key in ('dashboard-status','dashboard-my-work','group-projects'):
                                     if key in measures['blocks']:check(measures['blocks'][key]['bottom']<=900,label+' first fold '+key)
-                                if 'group-hr' in measures['blocks']:check(measures['blocks']['group-hr']['y']<900,label+' first fold HR')
-                                if role=='hr':
-                                    check(measures['document_height']<=1260,label+' HR document <=1260')
-                                    if 'group-hr' in measures['blocks']:check(measures['blocks']['group-hr']['h']<=520,label+' HR section <=520')
-                                if role=='director':check(measures['document_height']<=990,label+' Director document <=990')
-                                if role=='employee':check(measures['document_height']<=900,label+' Employee document <=900')
                             if width==1440 and page.locator('#dashboard-my-work').count():
                                 bottom=page.locator('#dashboard-my-work').bounding_box()['y']+page.locator('#dashboard-my-work').bounding_box()['height']
                                 check(bottom<=900,label+' first fold includes my work')

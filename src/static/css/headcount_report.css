@@ -5,7 +5,7 @@
  .headcount-report h1 { margin:0; color:var(--ui-text); font-size:var(--ui-text-h1); line-height:var(--ui-leading-h1); font-weight:var(--ui-weight-semibold); }
  .headcount-report .headcount-page-header p { margin:var(--ui-space-2) 0 0; color:var(--ui-text-muted); }
  .headcount-report .ui-results-card.headcount-results-card { margin:0; padding:var(--ui-space-5); min-width:0; background:var(--ui-surface); border:var(--ui-border-width) solid var(--ui-border-subtle); border-radius:var(--ui-radius-card); box-shadow:none; }
- .headcount-report .headcount-query.ui-query-bar .ui-field label { min-height:0; margin-bottom:var(--ui-space-2); color:var(--ui-text-muted); font-weight:var(--ui-weight-medium); }
+ .headcount-report .ui-query-bar .ui-field label { min-height:0; margin-bottom:var(--ui-space-2); color:var(--ui-text-muted); font-weight:var(--ui-weight-medium); }
  .headcount-report .headcount-scroll { max-width:100%; overflow-x:auto; }
  .headcount-report .headcount-scroll-hint { display:none; margin:0 0 var(--ui-space-3); color:var(--ui-text-muted); }
  .headcount-report .headcount-table { min-width:640px; border-collapse:collapse; table-layout:fixed; color:var(--ui-text); font-size:var(--ui-text-label); line-height:var(--ui-leading-label); }
