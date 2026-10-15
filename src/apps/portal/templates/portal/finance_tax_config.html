@@ -12,16 +12,15 @@
             {% csrf_token %}
             <input type="hidden" name="form_type" value="insurance">
 
-            {% include "ui/field.html" with id="insurance-effective_from" name="effective_from" label="Hiệu lực từ" type="date" required=True  span="6" %}
+            {% include "ui/field.html" with id="insurance-effective_from" name="effective_from" label="Hiệu lực từ" type="date" required=True span="6" %}
+            {% include "ui/field.html" with id="insurance-legal_reference" name="legal_reference" label="Căn cứ pháp lý" type="text" span="6" %}
 
-                {% include "ui/field.html" with id="insurance-employee_social_insurance_rate" name="employee_social_insurance_rate" label="NLĐ — BHXH (%)" type="number" step="0.01" required=True %}
-                {% include "ui/field.html" with id="insurance-employee_health_insurance_rate" name="employee_health_insurance_rate" label="NLĐ — BHYT (%)" type="number" step="0.01" required=True %}
-                {% include "ui/field.html" with id="insurance-employee_unemployment_insurance_rate" name="employee_unemployment_insurance_rate" label="NLĐ — BHTN (%)" type="number" step="0.01" required=True %}
-                {% include "ui/field.html" with id="insurance-employer_social_insurance_rate" name="employer_social_insurance_rate" label="Trung tâm — BHXH (%)" type="number" step="0.01" required=True %}
-                {% include "ui/field.html" with id="insurance-employer_health_insurance_rate" name="employer_health_insurance_rate" label="Trung tâm — BHYT (%)" type="number" step="0.01" required=True %}
-                {% include "ui/field.html" with id="insurance-employer_unemployment_insurance_rate" name="employer_unemployment_insurance_rate" label="Trung tâm — BHTN (%)" type="number" step="0.01" required=True %}
-
-            {% include "ui/field.html" with id="insurance-legal_reference" name="legal_reference" label="Căn cứ pháp lý" type="text"  span="6" %}
+            {% include "ui/field.html" with id="insurance-employee_social_insurance_rate" name="employee_social_insurance_rate" label="NLĐ — BHXH (%)" type="number" step="0.01" required=True span="4" %}
+            {% include "ui/field.html" with id="insurance-employee_health_insurance_rate" name="employee_health_insurance_rate" label="NLĐ — BHYT (%)" type="number" step="0.01" required=True span="4" %}
+            {% include "ui/field.html" with id="insurance-employee_unemployment_insurance_rate" name="employee_unemployment_insurance_rate" label="NLĐ — BHTN (%)" type="number" step="0.01" required=True span="4" %}
+            {% include "ui/field.html" with id="insurance-employer_social_insurance_rate" name="employer_social_insurance_rate" label="Trung tâm — BHXH (%)" type="number" step="0.01" required=True span="4" %}
+            {% include "ui/field.html" with id="insurance-employer_health_insurance_rate" name="employer_health_insurance_rate" label="Trung tâm — BHYT (%)" type="number" step="0.01" required=True span="4" %}
+            {% include "ui/field.html" with id="insurance-employer_unemployment_insurance_rate" name="employer_unemployment_insurance_rate" label="Trung tâm — BHTN (%)" type="number" step="0.01" required=True span="4" %}
             <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm cấu hình</button></div>
 
 </div></form>
@@ -37,11 +36,11 @@
             {% csrf_token %}
             <input type="hidden" name="form_type" value="deduction">
 
-            {% include "ui/field.html" with id="deduction-effective_from" name="effective_from" label="Hiệu lực từ" type="date" required=True  span="12" %}
+            {% include "ui/field.html" with id="deduction-effective_from" name="effective_from" label="Hiệu lực từ" type="date" required=True span="12" %}
 
-            {% include "ui/field.html" with id="deduction-self_deduction_monthly" name="self_deduction_monthly" label="Giảm trừ bản thân (đ/tháng)" type="number" required=True  span="12" %}
+            {% include "ui/field.html" with id="deduction-self_deduction_monthly" name="self_deduction_monthly" label="Giảm trừ bản thân (đ/tháng)" type="number" required=True span="6" %}
 
-            {% include "ui/field.html" with id="deduction-dependent_deduction_monthly" name="dependent_deduction_monthly" label="Giảm trừ mỗi người phụ thuộc (đ/tháng)" type="number" required=True  span="12" %}
+            {% include "ui/field.html" with id="deduction-dependent_deduction_monthly" name="dependent_deduction_monthly" label="Giảm trừ mỗi người phụ thuộc (đ/tháng)" type="number" required=True span="6" %}
             <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm cấu hình</button></div>
 
 </div></form>
@@ -57,11 +56,11 @@
 {% include "ui/error_summary.html" %}
         {% csrf_token %}
         <input type="hidden" name="form_type" value="bracket">
-        {% include "ui/field.html" with id="tax-bracket-effective_from" name="effective_from" label="Hiệu lực từ" type="date" required=True  span="3" %}
-        {% include "ui/field.html" with id="tax-bracket-bracket_no" name="bracket_no" label="Bậc thuế" type="number" required=True  span="3" %}
-        {% include "ui/field.html" with id="tax-bracket-income_from_monthly" name="income_from_monthly" label="Thu nhập từ (đ/tháng)" type="number" required=True  span="3" %}
-        {% include "ui/field.html" with id="tax-bracket-income_to_monthly" name="income_to_monthly" label="Thu nhập đến (đ/tháng, để trống nếu vô hạn)" type="number"  span="3" %}
-        {% include "ui/field.html" with id="tax-bracket-tax_rate" name="tax_rate" label="Thuế suất (%)" type="number" step="0.01" required=True %}
+        {% include "ui/field.html" with id="tax-bracket-effective_from" name="effective_from" label="Hiệu lực từ" type="date" required=True span="4" %}
+        {% include "ui/field.html" with id="tax-bracket-bracket_no" name="bracket_no" label="Bậc thuế" type="number" required=True span="4" %}
+        {% include "ui/field.html" with id="tax-bracket-tax_rate" name="tax_rate" label="Thuế suất (%)" type="number" step="0.01" required=True span="4" %}
+        {% include "ui/field.html" with id="tax-bracket-income_from_monthly" name="income_from_monthly" label="Thu nhập từ (đ/tháng)" type="number" required=True span="6" %}
+        {% include "ui/field.html" with id="tax-bracket-income_to_monthly" name="income_to_monthly" label="Thu nhập đến (đ/tháng, để trống nếu vô hạn)" type="number" span="6" %}
         <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm bậc</button></div>
 
 </div></form>

@@ -2,6 +2,30 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-15 — Tinh chỉnh bố cục gọn gàng, thu gọn ô nhập và gom 2 hàng × 3 ô danh mục biểu mẫu theo phản ánh kiểm thử
+
+**Tóm tắt cho chủ dự án**
+- Tiếp nhận và xử lý triệt để 3 phản ánh kiểm thử thực tế từ ảnh chụp màn hình của chủ dự án:
+  1. **Danh mục Biểu mẫu HCNS / Tuyển dụng (`catalog.html` / `hcns_forms.css` / `project_layout.css`)**:
+     - Phát hiện nguyên nhân gốc: quy tắc CSS cũ tại `project_layout.css` ép `.hcns-cards` chia theo tỉ lệ split 2 cột (`minmax(0,3fr) minmax(0,2fr)`) trên màn hình desktop (>=1280px), khiến 6 thẻ biểu mẫu bị dãn to và tách làm 3 hàng × 2 ô.
+     - Đã loại bỏ `.hcns-cards` khỏi danh sách 2 cột tại `project_layout.css`; chuẩn hóa lưới `.hcns-cards` trong `hcns_forms.css` thành 3 cột cố định trên desktop (`repeat(3, minmax(0, 1fr))`), 2 cột trên tablet và 1 cột trên mobile.
+     - Kết quả: 6 biểu mẫu được gom hoàn hảo thành **2 hàng, mỗi hàng 3 ô** gọn gàng, cân đối, dễ thao tác theo đúng yêu cầu chủ dự án. Tăng asset version `hcns_forms.css` thành `?v=20261015-ui-compact`.
+  2. **Chạy lương hàng tháng — Tạo kỳ lương mới (`finance_period_list.html`)**:
+     - Khắc phục lỗi ô nhập "Tháng" và "Năm" bị kéo dãn 50% chiều rộng toàn màn hình (`span="6"`).
+     - Thu gọn kích thước ô nhập thành `span="2"` trên desktop (~200px), tự co giãn 6 cột trên tablet và 12 cột trên mobile. Nhập liệu 1-2 chữ số cho Tháng và 4 chữ số cho Năm hiển thị tự nhiên, không còn ô trống mênh mông, thao tác nhanh gọn.
+  3. **Biểu thuế TNCN lũy tiến & Cấu hình Thuế/Bảo hiểm (`finance_tax_config.html`)**:
+     - Cân đối form Biểu thuế TNCN lũy tiến thành 2 hàng hợp lý:
+       * Hàng 1 (Đặc tả bậc): Hiệu lực từ (`span="4"`), Bậc thuế (`span="4"`), Thuế suất (%) (`span="4"`) — 3 ô trên 1 hàng, chấm dứt tình trạng ô Thuế suất đứng đơn độc kéo dài 100% toàn màn hình ở hàng dưới.
+       * Hàng 2 (Ngưỡng thu nhập): Thu nhập từ (`span="6"`), Thu nhập đến (`span="6"`) — 2 ô nằm cạnh nhau, đủ không gian hiển thị nhãn dài mà không gãy dòng luộm thuộm.
+     - Tối ưu thêm form Thêm tỷ lệ Bảo hiểm (gom 3 tỷ lệ NLĐ thành 1 hàng 3 ô `span="4"`, 3 tỷ lệ Trung tâm thành 1 hàng 3 ô `span="4"`, thay vì 6 hàng kéo dài full-width) và form Giảm trừ gia cảnh (Giảm trừ bản thân `span="6"` và Phụ thuộc `span="6"` nằm cùng hàng).
+- **Kiểm tra và xác nhận**:
+  - `python src/manage.py check`: 0 issues.
+  - `python src/manage.py makemigrations --check --dry-run`: 0 migration, không đổi CSDL.
+  - `git diff --check`: 0 lỗi khoảng trắng.
+  - `ops/check_ui_contrast.py`: 208/208 cặp màu đạt chuẩn WCAG.
+  - `test_project_layout` + `test_layout_audit_tools`: 18/18 tests OK.
+  - `apps.portal` full test suite: 247/247 tests OK (3 skipped, 221s). Toàn bộ form wire contract (ID, name, method, action, validation, CSRF) bảo toàn 100%.
+
 ## 2026-10-15 — Rà soát bố cục, kích thước và sắp xếp ô nhập/chọn thông tin toàn hệ thống
 
 **Tóm tắt cho chủ dự án**
