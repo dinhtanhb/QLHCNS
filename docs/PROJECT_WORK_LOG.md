@@ -2,6 +2,24 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-15 — Dashboard và báo cáo định biên: thang chữ, nhịp và mặt phẳng
+
+**Tóm tắt cho chủ dự án**
+- Cải thiện hai trang bằng Impeccable; giữ navy–teal, dữ liệu/quyền/liên kết và giấy in.
+- Bỏ trần pixel cũ; ưu tiên phân cấp, đệm16–20px, gap16/32px và cuộn tự nhiên.
+- main bắt đầu tại f9c1395, fetch/remote khớp, ahead/behind0/0; giữ thư mục ảnh tham chiếu chưa tracked.
+- Tách năm commit: phê bình → token → Dashboard → báo cáo → kiểm tra nghiệm thu.
+- Chỉ dùng DB/media/tài khoản giả bên ngoài repository; chưa deploy.
+- Kết quả cuối, ảnh và giới hạn được bổ sung tại chính mục này trước bàn giao.
+
+**Impeccable/ngữ cảnh:** nạp `C:/Users/dinht/.agents/skills/impeccable/SKILL.md`, chạy `scripts/impeccable.cmd context --target src/apps/portal/templates/portal/dashboard.html` exit0; đọc DESIGN, MASTER, ui_tokens và hai ảnh `design-system/reference/layout`. Không có thư mục Atoms trên đĩa. Skill dùng chung hoạt động; không có bản `.agents/skills/impeccable` trong repo, không cài/đổi skill thay thế. Đây là cải tạo hai bề mặt hiện có trong hệ nhận diện đã chốt; không tạo thế giới thương hiệu mới/PRODUCT giả định. Phiên bản có layout/typeset/quieter/distill/harden/adapt/polish; không có arrange/normalize, dùng layout và token/MASTER để chuẩn hóa.
+
+**Bước1 — critique:** hai assessment độc lập theo skill: A xem32 ảnh Dashboard bốn vai trò ở1440/1756 sáng/tối first/full, hai ảnh chủ dự án và live; B quét markup và xem browser mới desktop/mobile. Chỉ đọc B sau khi A hoàn tất; tổng hợp `docs/DASHBOARD_DESIGN_CRITIQUE.md`,24/40 trước sửa, năm tiêu chí đều chưa đạt. Detector26 advisory line0 màu đen là false positive template Django không resolve static; không thêm ignore/waiver. Browser CUA không cho mutation nên không overlay; B đóng tab, không mở server phụ. Live8796 còn template cached compact-final nên không gọi là bằng chứng đúng toàn HEAD. Baseline archivef9c1395 mới port8811, nguồn mới8810; restart nguồn mới khi đổi template. Questions skipped vì brief đã quyết định chi tiết. Kiểm tra tài liệu UTF-8, `git diff --check`; phần triển khai chưa bắt đầu ở commit critique.
+
+**Runtime/baseline:** `%TEMP%/ihrms-dashboard-design-20261015`, SQLite/media giả sao từ fixture synthetic_only đã có, nguồn baseline `%TEMP%/ihrms-dashboard-design-baseline-f9c1395`. Không dùng DB vận hành. `ops/run_form_contract_uat.py --directory <runtime> --source-root <baseline> --phase before`:1.314ca/0 lỗi,exit0. Đang chụp baseline và chạy audit trước trên nguồn archive. Dữ liệu richer toàn route có SELECT Director19/admin21; ghi đúng mốc thực đo, không thay bằng số18/20 từ runtime ít fixture. So Dashboard chín tài khoản và số liệu/GET-write trên cùng DB trước/sau, không đổi truy vấn để ép số.
+
+**Còn mở:** triển khai các bước2–5, kiểm focused từng bước và fullSQLite/SQLServer trên nguồn cuối, UAT layout/form/print/cache/workflow, xem ảnh và phê bình lại, ZIP/hash, commit/push/remote/CI. Chưa screen reader, zoom native200%, tài khoản thật/máy in thật; không báo đạt khi thiếu chứng cứ.
+
 ## 2026-10-15 — Dashboard gọn, Dự án lên đầu và donut hợp đồng
 
 **Tóm tắt cho chủ dự án**
