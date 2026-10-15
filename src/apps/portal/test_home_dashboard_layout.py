@@ -29,7 +29,7 @@ class GroupedDashboardTests(SimpleTestCase):
         result = self.build(sections, permissions=("approve_personnel_decision",))
         self.assertEqual(result["limit"], 3)
         self.assertEqual(len(result["history"]["rows"]), 3)
-        self.assertEqual(len(result["leave"]["rows"]), 2)
+        self.assertEqual(len(result["leave"]["rows"]), 3)
         self.assertEqual(len(result["leave"]["all_rows"]), 8)
         self.assertEqual(len(result["headcount"]["rows"]), 4)
         self.assertEqual(len(result["contracts"]["upcoming_rows"]), 3)

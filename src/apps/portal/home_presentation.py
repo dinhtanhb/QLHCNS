@@ -155,11 +155,12 @@ def grouped_dashboard(user, context, presentation):
     for item in layout["main"]:
         if not any(x.get("label")==item.get("label") for x in unique):unique.append(item)
     layout["main"]=unique
-    short_labels = {"Nhân sự đang quản lý": "Nhân sự quản lý", "Nghỉ được duyệt trong ngày": "Nghỉ phép hôm nay",
+    short_labels = {"Nhân sự đang quản lý": "Nhân sự đang quản lý", "Nghỉ được duyệt trong ngày": "Nghỉ được duyệt hôm nay",
                     "Hợp đồng sắp hết hạn (≤60 ngày)": "Hợp đồng sắp hết hạn",
                     "Công việc phòng chưa hoàn thành": "Việc phòng chưa xong", "Nhân sự vào làm trong tháng": "Vào làm trong tháng"}
     for item in layout["main"]:
         item["short_label"] = short_labels.get(item["label"], item["label"])
+        item["attention"] = bool(item.get("value") and "chờ duyệt" in item["label"].lower())
 
     layout["status_counts"] = counts
     layout["main_keys"] = [m.get("key") for m in layout["main"]]
@@ -202,7 +203,7 @@ def grouped_dashboard(user, context, presentation):
     layout["headcount"] = dict(headcount, rows=display_rows, all_rows=headcount.get("rows", []), total=len(capacity)) if capacity or headcount.get("state")=="error" else None
     contracts=sections.get("contracts",{})
     uncontracted=snapshot.get("uncontracted",{})
-    layout["contracts"] = dict(contracts,upcoming_rows=contracts.get("upcoming_rows",[])[:3],overdue_rows=contracts.get("overdue_rows",[])[:limit]) if contracts else None
+    layout["contracts"] = dict(contracts,upcoming_rows=contracts.get("upcoming_rows",[])[:limit],overdue_rows=contracts.get("overdue_rows",[])[:limit]) if contracts else None
     layout["show_expiring"] = bool(contracts and (contracts.get("upcoming_count") or contracts.get("overdue_count") or uncontracted.get("value") or contracts.get("state")=="error"))
     layout["show_distribution"] = bool(contracts.get("types"))
     history=sections.get("history",{})
@@ -212,7 +213,7 @@ def grouped_dashboard(user, context, presentation):
         item.get("label") == joined.get("label") for item in layout["main"]
     ) else None
     leave=sections.get("global_leave") or (sections.get("own_leave") if layout["manager"] else None)
-    layout["leave"] = dict(leave,rows=leave.get("rows",[])[:2 if compact else 3],all_rows=leave.get("rows",[]),total=len(leave.get("rows",[])),key="global_leave" if leave.get("global_scope") else "own_leave") if leave and (leave.get("rows") or leave.get("state")=="error") else None
+    layout["leave"] = dict(leave,rows=leave.get("rows",[])[:limit],all_rows=leave.get("rows",[]),total=len(leave.get("rows",[])),key="global_leave" if leave.get("global_scope") else "own_leave") if leave and (leave.get("rows") or leave.get("state")=="error") else None
     recruitment=[]
     for key in ("postings","candidates","requests"):
         data=sections.get(key)

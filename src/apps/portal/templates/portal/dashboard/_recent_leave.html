@@ -1,12 +1,12 @@
 {% load ui_components %}<section class="ui-card" id="phase2-{{ data.key }}" aria-labelledby="recent-leave-title">
 <header class="home-card-header">
-<h3 id="recent-leave-title">{% include '_shell_icon.html' with name='calendar' %}Đơn nghỉ gần đây{% if not data.global_scope %} của tôi{% endif %}</h3>{% if data.href %}<a class="home-text-link" href="{{ data.href }}">Xem tất cả →</a>{% endif %}{% include 'portal/dashboard/_info_popover.html' with content_template='portal/dashboard/_leave_info.html' info_label='Đơn nghỉ' %}</header>{% if data.state == 'error' %}{% include 'ui/empty_state.html' with state='error' title='Không tải được dữ liệu' %}{% else %}
+<h3 id="recent-leave-title">Đơn nghỉ gần đây{% if not data.global_scope %} của tôi{% endif %}</h3>{% if data.href %}<a class="home-text-link" href="{{ data.href }}">Xem tất cả →</a>{% endif %}{% include 'portal/dashboard/_info_popover.html' with content_template='portal/dashboard/_leave_info.html' info_label='Đơn nghỉ' %}</header>{% if data.state == 'error' %}{% include 'ui/empty_state.html' with state='error' title='Không tải được dữ liệu' %}{% else %}
 <table class="home-data-table home-leave-table">
 <caption class="sr-only">Đơn nghỉ trong phạm vi được xem</caption>
-<thead><tr>{% if data.global_scope %}<th scope="col">Nhân viên</th>{% endif %}<th scope="col">Loại nghỉ</th><th scope="col">Thời gian</th><th scope="col">Trạng thái</th></tr></thead>
+<thead><tr>{% if data.global_scope %}<th class="home-leave-employee" scope="col">Nhân viên</th>{% endif %}<th scope="col">Loại nghỉ</th><th scope="col">Thời gian</th><th class="home-leave-status" scope="col">Trạng thái</th></tr></thead>
 <tbody>{% for row in data.rows %}<tr>
 {% if data.global_scope %}<th scope="row"><span class="home-leave-name" title="{{ row.employee__full_name }}">{{ row.employee__full_name }}</span><span class="home-table-secondary">{{ row.employee__employee_code }}</span></th>{% endif %}
-<td data-label="Loại nghỉ">{{ row.type_label }}</td><td data-label="Thời gian">{{ row.from_date|date:'d/m' }}–{{ row.to_date|date:'d/m' }}</td><td data-label="Trạng thái">{% ui_badge 'leave.leaverequest:status' row.status %}</td>
+<td data-label="Loại nghỉ">{{ row.type_label }}</td><td class="home-leave-period" data-label="Thời gian">{{ row.from_date|date:'d/m' }}–{{ row.to_date|date:'d/m' }}</td><td data-label="Trạng thái">{% ui_badge 'leave.leaverequest:status' row.status %}</td>
 </tr>{% endfor %}</tbody>
 </table>
 {% endif %}</section>

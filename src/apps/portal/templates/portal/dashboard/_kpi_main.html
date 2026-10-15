@@ -1,3 +1,10 @@
 {% load ui_components %}{% if dashboard_layout.main %}<section id="dashboard-status" aria-label="KPI chính">
-<div class="home-main-kpis" data-count="{{ dashboard_layout.main|length }}">{% for item in dashboard_layout.main %}{% if item.href %}<a href="{{ item.href }}"{% else %}<div{% endif %} class="ui-card home-main-metric"><div class="home-metric-heading">{% include '_shell_icon.html' with name=item.icon|default:'people' %}<span title="{{ item.label }}">{{ item.short_label|default:item.label }}</span></div><strong class="ui-kpi-value">{{ item.value|ui_number }}</strong><p class="home-metric-note">{% if item.key == 'managed' %}Đang làm {{ dashboard_layout.status_counts.active|ui_number }} · Thử việc {{ dashboard_layout.status_counts.probation|ui_number }} · Nghỉ dài hạn {{ dashboard_layout.status_counts.onleave|ui_number }}{% elif item.overdue %}{{ item.overdue|ui_number }} quá hạn{% elif item.period_label != 'Hiện tại' %}{{ item.period_label }}{% endif %}</p>{% if item.href %}</a>{% else %}</div>{% endif %}{% endfor %}</div>
+<div class="home-main-kpis" data-count="{{ dashboard_layout.main|length }}">
+{% for item in dashboard_layout.main %}
+{% if item.href %}<a href="{{ item.href }}"{% else %}<div{% endif %} class="ui-card home-main-metric">
+<div class="home-metric-heading"><span class="home-metric-label" title="{{ item.label }}">{{ item.short_label|default:item.label }}{% if item.attention %}<i class="home-attention-dot" aria-hidden="true"></i><span class="sr-only"> · Cần chú ý</span>{% endif %}</span>{% include '_shell_icon.html' with name=item.icon|default:'people' %}</div>
+<strong class="ui-kpi-value">{{ item.value|ui_number }}</strong>
+<p class="home-metric-note">{% if item.key == 'managed' %}Đang làm {{ dashboard_layout.status_counts.active|ui_number }} · Thử việc {{ dashboard_layout.status_counts.probation|ui_number }} · Nghỉ dài hạn {{ dashboard_layout.status_counts.onleave|ui_number }}{% elif item.overdue %}{{ item.overdue|ui_number }} quá hạn{% elif item.period_label != 'Hiện tại' %}{{ item.period_label }}{% endif %}</p>
+{% if item.href %}</a>{% else %}</div>{% endif %}
+{% endfor %}</div>
 </section>{% endif %}

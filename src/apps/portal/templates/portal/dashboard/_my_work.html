@@ -2,7 +2,7 @@
 <h2 id="my-work-title" class="home-card-title">Công việc của tôi</h2>
 <div class="home-my-work-grid">
 <div class="ui-card home-work-card" role="group" aria-labelledby="my-leave-title">
-<h3 id="my-leave-title">{% include '_shell_icon.html' with name='calendar' %}Đơn nghỉ của tôi đang chờ duyệt</h3>
+<h3 id="my-leave-title">Đơn nghỉ của tôi đang chờ duyệt</h3>
 <div class="home-work-bottom">
 <strong class="home-work-value">{{ my_pending_leaves|ui_number }}</strong>
 <div class="home-work-actions">
@@ -12,7 +12,7 @@
 </div>
 </div>
 <div class="ui-card home-work-card" role="group" aria-labelledby="my-task-title">
-<h3 id="my-task-title">{% include '_shell_icon.html' with name='briefcase' %}Công việc của tôi chưa hoàn thành</h3>
+<h3 id="my-task-title">Công việc của tôi chưa hoàn thành</h3>
 <div class="home-work-bottom">
 <strong class="home-work-value">{{ my_open_tasks|ui_number }}</strong>
 <a href="{% url 'portal:task_list' %}?scope=assigned_to_me" class="home-text-link">Mở công việc →</a>

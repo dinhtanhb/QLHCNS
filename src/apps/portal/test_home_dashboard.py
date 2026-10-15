@@ -60,7 +60,7 @@ class HomeDashboardTests(TestCase):
                     self.assertEqual(bool(ctx.get("is_manager_view")), role == "DEPT_MANAGER" and linked)
                     self.assertEqual(bool(ctx.get("show_project_activity_summary")), has_permission(user, "view_activity_dashboard"))
                     html = response.content.decode()
-                    main = html.split('class="ui-page home-dashboard"', 1)[1]
+                    main = html.split('class="home-dashboard"', 1)[1]
                     self.assertEqual('id="profile-warning-title"' in main, not linked)
                     self.assertEqual(bool(ctx.get("profile_setup")), not linked and has_permission(user, "manage_hr"))
                     actions = {a["href"] for a in ctx["home_actions"]}
@@ -262,7 +262,7 @@ class PhaseOneSmokeTests(TestCase):
         self.assertEqual(list(page.context["requests"].values_list("pk",flat=True)),list(approvable_leave_requests(user).values_list("pk",flat=True)))
         snapshot=dashboard_snapshot(user,user.employee)
         self.assertEqual(snapshot["sections"]["queue"]["rows"][0]["value"],1)
-        html=self.client.get(reverse("portal:dashboard")).content.decode().split('class="ui-page home-dashboard"',1)[1]
+        html=self.client.get(reverse("portal:dashboard")).content.decode().split('class="home-dashboard"',1)[1]
         self.assertNotIn('method="post"',html)
         response=self.client.post(reverse("portal:leave_approve",args=[leave.pk]),{"decision":"Approved"})
         self.assertEqual(response.status_code,302)
