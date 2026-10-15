@@ -80,6 +80,8 @@ Wrapper test ngoài repo chỉ dùng MD5 cho fixture để tăng tốc và chuy�
 
 **Giới hạn và việc chủ dự án làm:** chưa kiểm screen reader, zoom native200%, tài khoản thật hoặc máy in thật; đây không phải UAT phiên Edge đang mở của chủ dự án. Thử nghiệm CSS zoom2 đạt1756 nhưng tràn ở390; không coi CSS zoom là zoom native hoặc dùng nó làm bằng chứng đạt. Thử preference trên profile Edge giả không làm đổi devicePixelRatio, nên cũng chưa chứng nhận zoom native. Nhập ngày native khi tắt JS vẫn dùng được và giữ ISO. Phạm vi đào tạo hiện chỉ đọc đăng ký vì không có route tạo đăng ký; không tự thêm nghiệp vụ. Chủ dự án cần duyệt ảnh trước/sau và thử zoom native200%/máy in/tài khoản thật sau khi nhận bản bàn giao; không cần xóa cache. Không deploy.
 
+**Dọn nguồn và giao Git:** commit giao diện `b755a381d83591cdc5a6928149ebe6a8bec52702` đã push main và CI38662944349 success. Sau đó xóa duy nhất partial `portal/widgets/procurement_request_list.html` không có caller, còn sót từ lượt chuyển tự động đã hoàn nguyên cấu trúc dòng mua sắm; không thay markup đang render. Trên nguồn đã dọn, full547 SQLite/215,642s/7 skip và full547 SQL Server/425,570s đạt, hai exit0. Audit toàn bộ chạy lại tại `alignment-cleanup`:146 route/7.021 mục/0 vi phạm/0 lỗi; Edge thành phần46 kiểm tra/36 ảnh đạt, exit0. Kết quả in/workflow trước xóa vẫn áp dụng vì không caller nào dùng tệp đã xóa. Bản sao được tạo lại theo staged tree cuối, mở lại xác minh SHA-256 từng tệp; metadata ngoài Git ghi SHA commit dọn nguồn, remote0/0 và CI theo SHA để không tạo vòng commit chỉ nhằm ghi chính SHA của nó. Giữ nguyên thay đổi dòng trống AGENTS và thư mục reference riêng chưa theo dõi.
+
 ## 2026-10-14 — Lưới form, Bước A: đo căn lề trước sửa
 
 **Tóm tắt cho chủ dự án**
