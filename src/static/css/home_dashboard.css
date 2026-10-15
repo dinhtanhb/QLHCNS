@@ -109,5 +109,12 @@
  #main-content .home-recruitment-metrics { flex-direction:column; }
  #main-content .home-work-actions { flex-wrap:wrap; }
  }
+ #main-content .home-project-heading { display:flex; align-items:center; gap:var(--ui-space-3); }
+ #main-content .home-project-metrics { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:var(--ui-space-3); }
+ #main-content .home-project-metrics>div { min-width:0; }
+ #main-content .home-project-metrics dt { display:flex; align-items:center; gap:4px; }
+ #main-content .home-project-metrics dd { margin:0; font-size:24px; line-height:28px; font-weight:var(--ui-font-weight-label); }
+ #main-content .home-dashboard .home-project-strip { padding-block:var(--ui-space-3); }
+ @media(max-width:767px) { #main-content .home-project-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } }
  @media(prefers-reduced-motion:reduce) {#main-content .home-dashboard *{ scroll-behavior:auto; transition:none; } }
 }

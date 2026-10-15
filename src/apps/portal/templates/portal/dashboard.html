@@ -1,6 +1,6 @@
 {% extends "base.html" %}{% load static ui_components %}
 {% block title %}Trang chủ{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261015-compact-1"><script src="{% static 'js/home_dashboard.js' %}?v=20261015-compact-1" defer></script>{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home_dashboard.css' %}?v=20261015-compact-2"><script src="{% static 'js/home_dashboard.js' %}?v=20261015-compact-2" defer></script>{% endblock %}
 {% block content %}
 <div class="ui-page home-dashboard" data-density="{{ dashboard_layout.density }}">
 <header class="home-page-header">
@@ -16,9 +16,9 @@
 </section>{% endif %}
 {% include 'portal/dashboard/_kpi_main.html' %}
 {% if employee %}{% include 'portal/dashboard/_my_work.html' %}{% endif %}
+{% if dashboard_layout.project_allowed %}{% include 'portal/dashboard/_group_projects.html' %}{% endif %}
 {% if dashboard_layout.show_hr %}{% include 'portal/dashboard/_group_hr.html' %}{% endif %}
 {% if dashboard_layout.show_admin %}{% include 'portal/dashboard/_group_admin.html' %}{% endif %}
 {% if dashboard_layout.recruitment %}{% include 'portal/dashboard/_group_recruitment.html' %}{% endif %}
-{% if dashboard_layout.project_allowed %}{% include 'portal/dashboard/_group_projects.html' %}{% endif %}
 </div>
 {% endblock %}

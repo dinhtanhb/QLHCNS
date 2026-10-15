@@ -1,11 +1,4 @@
-{% load ui_components %}<section id="group-projects" aria-labelledby="group-projects-title">{% include 'portal/dashboard/_group_header.html' with key='projects' title='Dự án' %}{% if dashboard_layout.projects %}<section class="ui-card" aria-labelledby="home-project-title">
-<header class="home-card-header">
-<h3 id="home-project-title">{% include '_shell_icon.html' with name='folder' %}Tiến độ hoạt động dự án</h3>
-<a class="home-text-link" href="{% url 'portal:activity_dashboard' %}?month={{ activity_month }}">Mở Dashboard hoạt động →</a>
-</header>
-<dl class="home-inline-totals">{% for item in dashboard_layout.projects %}<div>
-<dt>{% if item.warning %}{% include '_shell_icon.html' with name='warning' %}{% endif %}{{ item.label }}</dt>
-<dd>{{ item.value|ui_number }}</dd>
-</div>{% endfor %}</dl>
-</section>{% else %}<p class="home-project-empty">Dự án: chưa có hoạt động trong tháng này — <a class="home-text-link" href="{% url 'portal:activity_dashboard' %}?month={{ activity_month }}">Mở Dashboard hoạt động →</a>
-</p>{% endif %}</section>
+﻿{% load ui_components %}<section id="group-projects" aria-labelledby="group-projects-title">
+<header class="home-group-header"><div class="home-project-heading"><h2 id="group-projects-title">Dự án</h2><span>Tháng {{ activity_month_label }}</span></div><div class="home-header-actions">{% if dashboard_layout.assign_task %}<a class="ui-button ui-button--primary" href="{{ dashboard_layout.assign_task.href }}">Giao công việc</a>{% endif %}<a class="home-text-link" href="{% url 'portal:activity_dashboard' %}?month={{ activity_month }}">Mở Dashboard hoạt động →</a><a class="home-text-link" href="{% url 'portal:activity_calendar' %}?month={{ activity_month }}">Lịch →</a><a class="home-text-link" href="{% url 'portal:task_list' %}?scope=activity_overview">Công việc →</a></div></header>
+<section class="ui-card home-project-strip" aria-label="Tiến độ hoạt động dự án"><dl class="home-project-metrics">{% for item in dashboard_layout.projects %}<div{% if item.warning %} class="home-warning"{% endif %}><dt>{% if item.warning %}{% include '_shell_icon.html' with name='warning' %}{% endif %}{{ item.label }}</dt><dd>{{ item.value|ui_number }}</dd></div>{% endfor %}</dl></section>
+</section>

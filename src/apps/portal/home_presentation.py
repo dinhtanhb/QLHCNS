@@ -128,7 +128,7 @@ def grouped_dashboard(user, context, presentation):
     metrics = {m["key"]: dict(m) for m in snapshot.get("metrics", [])}
     def add(item):
         if item and item.get("value") is not None and len(layout["main"]) < 4:
-            layout["main"].append(item)
+            layout["main"].append(dict(item))
     if layout["manager"]:
         item = metrics.get("managed")
         if item: item["label"] = "Nhân viên trong phòng"
@@ -219,15 +219,21 @@ def grouped_dashboard(user, context, presentation):
     layout["recruitment"] = recruitment
     project_rows=[]
     if context.get("show_project_activity_summary"):
-        for key,label in (("activity_overdue","Task quá hạn"),("activity_report_missing","Task thiếu báo cáo"),("activity_total","Hoạt động trong tháng"),("activity_completed","Task báo cáo hoàn thành"),("activity_without_task","Hoạt động chưa có Task")):
-            if context.get(key):project_rows.append(dict(label=label,value=context[key],warning=key in ("activity_overdue","activity_report_missing")))
+        for key, label in (("activity_total", "Hoạt động trong tháng"),
+                           ("activity_completed", "Task báo cáo hoàn thành"),
+                           ("activity_overdue", "Task quá hạn"),
+                           ("activity_report_missing", "Task thiếu báo cáo"),
+                           ("activity_without_task", "Hoạt động chưa có Task")):
+            value = context.get(key, 0)
+            project_rows.append(dict(label=label, value=value,
+                warning=bool(value and key in ("activity_overdue", "activity_report_missing"))))
     layout["projects"]=project_rows
     layout["project_allowed"]=bool(context.get("show_project_activity_summary"))
     hr=bool(layout["show_expiring"] or layout["show_distribution"] or layout["headcount"] or layout["history"] or layout["joined"])
     admin=bool(layout["queue"] or layout["leave"] or layout["totals"] or sections.get("queue"))
+    if layout["project_allowed"]:layout["groups"].append(dict(key="projects",label="Dự án"))
     if hr:layout["groups"].append(dict(key="hr",label="Nhân sự"))
     if admin:layout["groups"].append(dict(key="admin",label="Hành chính"))
     if recruitment:layout["groups"].append(dict(key="recruitment",label="Tuyển dụng"))
-    if project_rows or layout["project_allowed"]:layout["groups"].append(dict(key="projects",label="Dự án"))
     layout["show_hr"],layout["show_admin"]=hr,admin
     return layout

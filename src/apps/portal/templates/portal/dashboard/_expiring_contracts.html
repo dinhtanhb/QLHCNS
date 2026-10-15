@@ -3,5 +3,5 @@
 {% if data.state == 'error' %}{% include 'ui/empty_state.html' with state='error' title='Không tải được dữ liệu' %}{% else %}
 {% if data.overdue_count %}<p class="home-warning">{% include '_shell_icon.html' with name='warning' %}Quá hạn cần rà soát · {{ data.overdue_count|ui_number }} hợp đồng</p>{% endif %}
 <ul class="home-list home-contracts">{% for row in data.upcoming_rows %}<li><strong title="{{ row.employee__full_name }} · {{ row.contract_no }}">{{ row.employee__full_name }}</strong><span title="{{ row.contract_no }}">{{ row.contract_no }}</span><time>{{ row.end_date|date:'d/m/Y' }}</time><span class="ui-badge ui-badge--warning">{% if row.days == 0 %}Hết hạn hôm nay{% else %}Còn {{ row.days|ui_number }} ngày{% endif %}</span></li>{% endfor %}</ul>
-{% if dashboard_snapshot.uncontracted.value %}<p class="home-warning">{{ dashboard_snapshot.uncontracted.value|ui_number }} hồ sơ chưa có hợp đồng — <a href="{{ dashboard_snapshot.uncontracted.href }}">Tạo hợp đồng</a></p>{% endif %}{% endif %}
+{% if dashboard_snapshot.uncontracted.value %}<p class="home-warning">Có {{ dashboard_snapshot.uncontracted.value|ui_number }} hồ sơ chưa có hợp đồng — <a href="{{ dashboard_snapshot.uncontracted.href }}">Tạo hợp đồng</a></p>{% endif %}{% endif %}
 </section>

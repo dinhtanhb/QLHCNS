@@ -49,6 +49,24 @@ class GroupedDashboardTests(SimpleTestCase):
                             activity_total=0)
         self.assertEqual(result["recruitment"][0]["value"], 0)
         self.assertFalse(result["queue"])
-        self.assertEqual(len(result["projects"]), 1)
-        self.assertEqual(result["projects"][0]["value"], 2)
-        self.assertTrue(result["projects"][0]["warning"])
+        self.assertEqual(len(result["projects"]), 5)
+        self.assertEqual(result["projects"][2]["value"], 2)
+        self.assertTrue(result["projects"][2]["warning"])
+
+    def test_project_scope_keeps_all_zero_values_and_precedes_hr(self):
+        result = self.build({"headcount": {"rows": [{"actual": 1}]},
+                             "requests": {"value": 0}}, show_project_activity_summary=True)
+        self.assertEqual([group["key"] for group in result["groups"]],
+                         ["projects", "hr", "recruitment"])
+        self.assertEqual([row["value"] for row in result["projects"]], [0] * 5)
+        self.assertFalse(any(row["warning"] for row in result["projects"]))
+        self.assertFalse(self.build({}, show_project_activity_summary=False)["projects"])
+
+    def test_fallback_metric_does_not_mutate_snapshot(self):
+        snapshot = {"sections": {"joined": {"value": 2, "label": "Nhân sự vào làm trong tháng"}},
+                    "metrics": [{"key": "managed", "label": "Nhân sự đang quản lý", "value": 5}]}
+        before = deepcopy(snapshot)
+        with patch("apps.portal.home_presentation.has_permission", return_value=False):
+            grouped_dashboard(SimpleNamespace(), {"dashboard_snapshot": snapshot},
+                              {"home_actions": [], "home_queue": [], "home_groups": []})
+        self.assertEqual(snapshot, before)
