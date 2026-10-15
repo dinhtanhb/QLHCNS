@@ -12,10 +12,10 @@
 
 
             {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-dispatch_no-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="dispatch_no" label="Số công văn" type="text" required=True  span="4" %}{% endwith %}{% endwith %}
-            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-original_doc_no-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="original_doc_no" label="Số hiệu gốc (nếu là CV đến)" type="text"  span="4" %}{% endwith %}{% endwith %}
+            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-original_doc_no-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="original_doc_no" label="Số hiệu gốc (nếu là CV đến)" type="text" span="4" tablet_span="12" %}{% endwith %}{% endwith %}
 
         {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-title-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="title" label="Trích yếu nội dung" type="text" required=True span="12" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-issuing_organization-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="issuing_organization" label="Cơ quan / Đơn vị ban hành" type="text" required=True span="6" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-issuing_organization-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="issuing_organization" label="Cơ quan / Đơn vị ban hành" type="text" required=True span="6" tablet_span="12" %}{% endwith %}{% endwith %}
         {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-issue_date-5-"|add:row_number %}{% include "ui/field.html" with id=field_id name="issue_date" label="Ngày ban hành" type="date" required=True span="3" %}{% endwith %}{% endwith %}
         {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-received_or_sent_date-6-"|add:row_number %}{% include "ui/field.html" with id=field_id name="received_or_sent_date" label="Ngày đến / Ngày gửi" type="date" required=True span="3" %}{% endwith %}{% endwith %}
 

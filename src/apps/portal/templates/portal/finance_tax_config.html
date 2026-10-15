@@ -54,11 +54,13 @@
 {% include "ui/error_summary.html" %}
         {% csrf_token %}
         <input type="hidden" name="form_type" value="bracket">
-        {% include "ui/field.html" with id="tax-bracket-effective_from" name="effective_from" label="Hiệu lực từ" type="date" required=True span="2" %}
-        {% include "ui/field.html" with id="tax-bracket-bracket_no" name="bracket_no" label="Bậc thuế" type="number" required=True span="2" %}
-        {% include "ui/field.html" with id="tax-bracket-income_from_monthly" name="income_from_monthly" label="Thu nhập từ (đ/tháng)" type="number" required=True span="3" %}
-        {% include "ui/field.html" with id="tax-bracket-income_to_monthly" name="income_to_monthly" label="Thu nhập đến (đ/tháng, để trống nếu vô hạn)" type="number" span="3" %}
-        {% include "ui/field.html" with id="tax-bracket-tax_rate" name="tax_rate" label="Thuế suất (%)" type="number" step="0.01" required=True span="2" %}
+        {% include "ui/field.html" with id="tax-bracket-effective_from" name="effective_from" label="Hiệu lực từ" type="date" required=True span="6" %}
+        {% include "ui/field.html" with id="tax-bracket-bracket_no" name="bracket_no" label="Bậc thuế" type="number" required=True span="6" %}
+
+        {% include "ui/field.html" with id="tax-bracket-income_from_monthly" name="income_from_monthly" label="Thu nhập từ (đ/tháng)" type="number" required=True span="6" %}
+        {% include "ui/field.html" with id="tax-bracket-income_to_monthly" name="income_to_monthly" label="Thu nhập đến (đ/tháng, để trống nếu vô hạn)" type="number" span="6" %}
+
+        {% include "ui/field.html" with id="tax-bracket-tax_rate" name="tax_rate" label="Thuế suất (%)" type="number" step="0.01" required=True span="12" %}
         <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm bậc</button></div>
 
 </div></form>

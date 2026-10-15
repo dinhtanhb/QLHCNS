@@ -41,6 +41,18 @@ MEASURE = r"""() => {
    const near=(edge,end=false)=>Array.from({length:13},(_,i)=>r.x+i*(col+gap)-(end&&i?gap:0)).some(x=>Math.abs(x-edge)<=1);
    if(innerWidth>=1024&&(!near(fr.x)||!near(fr.right,true)))fail('COLUMN_LINE',field,{grid:r,field:fr,columns:s.gridTemplateColumns});
    if(Math.abs(fr.right-cr.right)>1||Math.abs(fr.x-cr.x)>1)fail('FIELD_EDGE',c,{field:fr,control:cr});
+    const source=c.id?.endsWith('-display')?document.getElementById(c.id.replace(/-display$/,'')):null;
+    const effType=source?source.type:c.type;
+    const name=(source?source.name||source.id:c.name||c.id||'').toLowerCase(),tag=c.tagName.toLowerCase();
+    let minW=176;
+    if(effType==='date'||effType==='month'||effType==='datetime-local'||effType==='time')minW=148;
+    else if(tag==='select')minW=160;
+    else if(effType==='number'||c.inputMode==='numeric'||c.inputMode==='decimal'){
+      if(['salary','income','value','price','cost','amount','deduction'].some(k=>name.includes(k)))minW=144;
+      else minW=96;
+    }
+    else if(['code','serial','unit'].some(k=>name.includes(k))||name==='no'||name.endsWith('_no'))minW=112;
+    if(cr.w<minW-1)fail('MIN_FIELD_WIDTH',c,{width:cr.w,minExpected:minW,type:effType||tag,name:c.name});
   }
   for(const row of rows){const ys=row.fields.map(x=>x.control.y),hs=row.fields.map(x=>x.control.h);if(Math.max(...ys)-Math.min(...ys)>1)fail('ROW_TOP',g,row);if(Math.max(...hs)-Math.min(...hs)>1)fail('ROW_HEIGHT',g,row);}
   for(let i=0;i<rows.length-1;i++){const bottom=Math.max(...rows[i].fields.map(x=>x.field.bottom)),next=rows[i+1].y,between=[...g.children].some(x=>visible(x)&&rect(x).y>=bottom&&rect(x).bottom<=next&&!x.matches('.ui-field'));if(!between&&Math.abs(next-bottom-(parseFloat(s.rowGap)||0))>1)fail('ROW_GAP',g,{bottom,next,gap:next-bottom,expected:s.rowGap});}

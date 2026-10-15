@@ -7,10 +7,11 @@
 <form method="post" class="ui-form-stack ui-planning-form" data-ui-form><div class="ui-form-grid">
 {% csrf_token %}{% include "ui/error_summary.html" %}
 
-{% include "ui/field.html" with id="kpi-employee" name="employee" label="Nhân viên" required=True options_template="ui/planning_options/employees.html"  span="4" %}
-{% include "ui/field.html" with id="kpi-template" name="kpi_template" label="Chỉ số KPI" required=True options_template="ui/planning_options/templates.html"  span="4" %}
-{% include "ui/field.html" with id="kpi-period" name="kpi_period" label="Kỳ đánh giá" required=True options_template="ui/planning_options/periods.html"  span="2" %}
-{% include "ui/field.html" with id="kpi-target" name="target" label="Chỉ tiêu" type="number" step="0.01" required=True  span="2" %}
+{% include "ui/field.html" with id="kpi-employee" name="employee" label="Nhân viên" required=True options_template="ui/planning_options/employees.html"  span="6" %}
+{% include "ui/field.html" with id="kpi-template" name="kpi_template" label="Chỉ số KPI" required=True options_template="ui/planning_options/templates.html"  span="6" %}
+
+{% include "ui/field.html" with id="kpi-period" name="kpi_period" label="Kỳ đánh giá" required=True options_template="ui/planning_options/periods.html"  span="6" %}
+{% include "ui/field.html" with id="kpi-target" name="target" label="Chỉ tiêu" type="number" step="0.01" required=True  span="6" %}
 
 
 

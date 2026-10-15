@@ -9,10 +9,10 @@
     <form method="post" action="{% url 'portal:room_booking_create' %}" class="ui-form-stack" data-ui-form><div class="ui-form-grid">
 {% include "ui/error_summary.html" %}
         {% csrf_token %}
-        {% include "ui/field.html" with widget_template="portal/widgets/room_booking_list.html" widget_key="f0"  span="3" %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="room_booking_list-purpose-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="purpose" label="Mục đích" type="text" required=True  span="3" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="room_booking_list-start_time-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="start_time" label="Bắt đầu" type="datetime-local" required=True  span="3" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="room_booking_list-end_time-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="end_time" label="Kết thúc" type="datetime-local" required=True  span="3" %}{% endwith %}{% endwith %}
+        {% include "ui/field.html" with widget_template="portal/widgets/room_booking_list.html" widget_key="f0"  span="6" %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="room_booking_list-purpose-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="purpose" label="Mục đích" type="text" required=True  span="6" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="room_booking_list-start_time-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="start_time" label="Bắt đầu" type="datetime-local" required=True  span="6" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="room_booking_list-end_time-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="end_time" label="Kết thúc" type="datetime-local" required=True  span="6" %}{% endwith %}{% endwith %}
         <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Đặt phòng</button></div>
 
 </div></form>

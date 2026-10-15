@@ -9,10 +9,10 @@
 <fieldset class="ui-form-section"><legend>Danh tính</legend><div class="ui-form-grid">
 {% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f0"  span="4" %}
 {% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f1"  span="4" %}
-{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f2"  span="4" %}
-{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f3"  span="6" %}
-{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f4"  span="3" %}
-{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f5"  span="3" %}
+{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f2"  span="4" tablet_span="12" %}
+{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f3"  span="12" %}
+{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f4"  span="6" %}
+{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f5"  span="6" %}
 </div></fieldset>
 <fieldset class="ui-form-section"><legend>Giấy tờ</legend><div class="ui-form-grid">
 {% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f6"  span="4" %}
@@ -28,11 +28,11 @@
 <fieldset class="ui-form-section"><legend>Công việc</legend><div class="ui-form-grid">
 {% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f13"  span="3" %}
 {% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f14"  span="3" %}
-{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f15"  span="6" %}
-{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f16"  span="3" %}
-{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f17"  span="3" %}
-{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f18"  span="3" %}
-{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f19"  span="3" tablet_span="12" %}
+{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f15"  span="6" tablet_span="12" %}
+{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f16"  span="6" %}
+{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f17"  span="6" %}
+{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f18"  span="6" %}
+{% include "ui/field.html" with widget_template="portal/widgets/hr_employee_form.html" widget_key="f19"  span="6" %}
 {% if current_department_inactive %}<div class="ui-field--12"><p class="ui-hr-text">Phòng ban hiện tại đã ngừng hoạt động — vui lòng chọn phòng ban mới nếu cần điều chuyển nhân viên.</p></div>{% endif %}
 </div></fieldset>
 <div class="ui-page-actions ui-form-actions">

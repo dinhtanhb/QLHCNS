@@ -2,6 +2,31 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-15 — Chốt chất lượng hệ thống form và kiểm toán căn chỉnh (commit fix(ui): consolidate form grid after review)
+
+**Tóm tắt & Mục tiêu**
+- Khắc phục triệt để 3 vấn đề kiến trúc và căn chỉnh của hệ thống form sau rà soát `7b1c85e`:
+  1. **Loại bỏ hệ lưới song song**: Xóa hoàn toàn `.ui-form-lines` / `.ui-form-line` khỏi `shared_components.css`. Đưa `supply_request_list.html` về một `.ui-form-grid` duy nhất với các span hàng (8+4=12, tablet_span="12"). Mở rộng test kiểm toán tĩnh `test_layout_audit_tools.py` cấm xuất hiện bất kỳ hệ lưới form nào khác ngoài `.ui-form-grid`.
+  2. **Thay thế bộ chọn mong manh trong dải lọc**: Thay thế triệt để các bộ chọn CSS `:has(select:is([name=...]))` bằng tham số kích thước `size="narrow|wide|compact"` trên `ui/field.html` (`ui-field--filter-narrow`, `ui-field--filter-wide`, `ui-field--filter-compact`), gán tường minh tại template, loại bỏ phụ thuộc tên trường cứng trong CSS.
+  3. **Ngăn chặn co hẹp trường ở 1024–1279px**: Bổ sung `container-type: inline-size` vào `.ui-form-grid` cùng các container query điều chỉnh độ rộng linh hoạt khi khung hẹp; cấm dùng `span="2"` cho các trường tiền tệ và ngày tháng; bố trí lại các hàng biểu mẫu bảo toàn nguyên vẹn thứ tự trường (Row contract) và đạt độ rộng tự nhiên tối ưu.
+  4. **Tích hợp tiêu chí MIN_FIELD_WIDTH vào Layout Audit**: Cập nhật `ops/run_layout_alignment_audit.py` đo lường chiều rộng thực tế của tất cả các ô nhập/chọn trên màn hình (ngày/tháng ≥ 148px, tiền ≥ 144px, số ≥ 96px, mã/serial/unit ≥ 112px, select ≥ 160px, văn bản ≥ 176px).
+  5. **Đính chính quy tắc bố cục**: Làm rõ quy tắc lưới: hàng chỉ được ngắn khi là hàng cuối cùng của nhóm logic (như `vehicle_booking_list` hàng 3+3, `activity_form` hàng cuối 6); bổ sung span còn thiếu cho `inventory_session_detail` và `timesheet_month`.
+  6. **Không sửa các tệp không có route**: Giữ nguyên `office_incoming_list.html` và `office_outgoing_list.html` để chuyển chủ dự án quyết định tại `docs/Viec_Cho_Chu_Du_An_Quyet_Dinh.md`.
+
+**Kết quả kiểm tra & Cổng chất lượng**
+- `ops/run_layout_alignment_audit.py` (sau sửa): 146 routes, 7021 cases, **0 vi phạm**, **0 lỗi** (không bổ sung bất kỳ miễn trừ layout waiver nào).
+- `ops/run_form_contract_uat.py` (sau sửa): 1314 cases, **0 failures** (bảo toàn 100% thứ tự trường, name, required, CSRF).
+- `ops/run_print_layout_uat.py` (--port 8782): 402 checks, 37 PDFs xuất chuẩn, **0 failures**.
+- `ops/run_timesheet_print_uat.py` (--port 8782 --phase after): 645 checks, 8 cases, **0 failures**.
+- `src/manage.py test apps.portal`: 247 tests OK (bao gồm 18 bài kiểm tra tĩnh bố cục và công cụ audit).
+- `src/manage.py check`: 0 issues.
+- `src/manage.py makemigrations --check`: No changes detected (không thay đổi CSDL).
+- `ops/check_ui_contrast.py`: 208 pairs, 0 failures.
+
+**Trạng thái nhánh & Bàn giao**
+- Nhánh: `main`.
+- Tạo bản sao ngoài repository, kiểm tra SHA-256 từng file trước khi commit và push.
+
 ## 2026-10-15 — Rà soát và thu gọn toàn diện ô nhập/chọn cho tất cả nhóm nghiệp vụ theo phản ánh kiểm thử
 
 **Tóm tắt cho chủ dự án**

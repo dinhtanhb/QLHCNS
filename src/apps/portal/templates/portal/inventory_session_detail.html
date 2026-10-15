@@ -48,7 +48,7 @@
                 <form method="post" action="{% url 'portal:inventory_line_update' l.pk %}" class="ui-admin-form-inline" data-ui-form>{% include "ui/error_summary.html" %}
                     {% csrf_token %}
                     {% include "ui/field.html" with widget_template="portal/widgets/inventory_session_detail.html" widget_key="f2" span="4" %}
-                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="inventory_session_detail-note-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="note" label="Ghi chú" type="text" value=l.note|default:'' %}{% endwith %}{% endwith %}
+                    {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="inventory_session_detail-note-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="note" label="Ghi chú" type="text" value=l.note|default:'' span="8" %}{% endwith %}{% endwith %}
                     <button type="submit" class="ui-button ui-button--primary">Xác nhận</button>
                 </form>
                 {% else %}{{ l.get_actual_condition_display|ui_number }}{% endif %}

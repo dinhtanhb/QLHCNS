@@ -45,11 +45,16 @@ class FormGridComponentTests(SimpleTestCase):
                 if '.ui-form-grid' in selector and 'grid-template-columns:' in body:
                     owners.append(path.name)
         self.assertEqual(owners, ['shared_components.css'])
+        for path in (source / 'static/css').glob('*.css'):
+            if path.name == 'tailwind.css':
+                continue
+            content = path.read_text(encoding='utf-8')
+            self.assertIsNone(re.search(r'\b(?:ui-form-lines|ui-form-line)\b', content))
         for path in (source / 'apps').rglob('*.html'):
             if 'hcns' in path.parts or 'print' in path.stem:
                 continue
             with self.subTest(template=path.name):
-                self.assertIsNone(re.search(r'\b(?:ui-hr-input|ui-hr-form|ui-form-grid--three)\b', path.read_text(encoding='utf-8')))
+                self.assertIsNone(re.search(r'\b(?:ui-hr-input|ui-hr-form|ui-form-grid--three|ui-form-lines|ui-form-line)\b', path.read_text(encoding='utf-8')))
 
     def test_optional_hint_error_and_spans_keep_accessible_controls(self):
         output = render_to_string('ui/field.html', {'id':'example', 'name':'unchanged', 'label':'Name'})
