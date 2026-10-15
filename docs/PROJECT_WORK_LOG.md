@@ -2,7 +2,43 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
-## 2026-10-15 — Giai đoạn 5 – Chuẩn hóa toàn bộ hệ thống Báo cáo (commit ui: reports)
+## 2026-10-15 — Giai đoạn 5 – Chuẩn hóa toàn bộ phân hệ Dự án & Công việc (commit ui: projects)
+
+**Tóm tắt & Mục tiêu**
+- Rà soát và chuẩn hóa toàn diện giao diện các trang thuộc phân hệ Hoạt động dự án (`apps/activity`) và Quản lý công việc (`apps/portal`) theo đúng tiêu chuẩn thiết kế Impeccable đã phê chuẩn:
+  1. **Kiểm kê quyền truy cập và ma trận vai trò**:
+     - Bảo toàn 100% các bộ lọc quyền: `is_hr_manager_or_admin`, `is_board_or_hr`, `can_approve_activity_proposals`, bộ lọc đề xuất của cá nhân/phòng ban/phê duyệt dự án.
+     - Giữ nguyên các thao tác duyệt, từ chối, gửi duyệt, chuẩn bị dự thảo email, tải tài liệu SharePoint; không thêm bớt trường dữ liệu, không đổi tên input, action hay CSRF token.
+  2. **Trang tổng quan hoạt động dự án (`activity/dashboard.html` & `_dashboard_actions.html`)**:
+     - Chuẩn hóa header trang với `ui/page_header.html`, tách các nút tác vụ điều hướng sang `_dashboard_actions.html` phục vụ responsive.
+     - Áp dụng hệ thẻ KPI `.ui-kpi-grid` với các chỉ số đề xuất: Chờ duyệt, Đã duyệt, Đang thực hiện, Hoàn thành.
+     - Chuyển đổi bảng danh sách đề xuất gần đây sang `.ui-table` chuẩn thanh thoát, bao bọc trong container cuộn `.ui-table-scroll` hỗ trợ màn hình hẹp, huy hiệu trạng thái một dòng với họ `.ui-badge--*`.
+  3. **Chi tiết đề xuất dự án (`activity/proposal_detail.html`)**:
+     - Tái cấu trúc thành các thẻ `.ui-card` phân cấp rõ ràng: Thông tin chung, Nội dung hoạt động, Dự toán kinh phí, Hồ sơ đính kèm và Lịch sử phê duyệt.
+     - Bảo toàn hợp đồng form (FormContract): Giữ nguyên cấu trúc các nút bấm duyệt/từ chối/upload tài liệu, thông báo lỗi dùng `.ui-alert`.
+  4. **Danh sách & Chi tiết công việc (`portal/task_list.html`, `portal/task_detail.html`)**:
+     - Chuẩn hóa `task_list.html` với `ui/page_header.html`, dải nút lọc phạm vi (Tất cả / Việc của tôi / Phòng ban) theo chuẩn `.ui-button`, bảng danh sách công việc `.ui-table`.
+     - Tinh chỉnh `task_detail.html` với thẻ thông tin công việc, danh sách bình luận `.ui-comment-list`, form cập nhật tiến độ và tải tệp SharePoint đồng bộ.
+  5. **Lịch hoạt động & Danh sách phê duyệt (`activity/calendar.html`, `activity/proposal_approval_list.html`)**:
+     - Chuẩn hóa lưới lịch tháng `calendar.html` hiển thị rõ ràng ngày tháng và các sự kiện dự án, độ tương phản cao, responsive trên di động.
+     - Áp dụng `ui/page_header.html` và `.ui-table` cho `proposal_approval_list.html`.
+  6. **Dự thảo email & Biểu mẫu tạo hoạt động (`activity/proposal_email_draft.html`, `activity/activity_form.html`, `portal/widgets/task_create.html`)**:
+     - Chuẩn hóa khung soạn email đề xuất dự án `proposal_email_draft.html` với thẻ chi tiết người nhận/nội dung và form xác nhận gửi.
+     - Tinh chỉnh `activity_form.html` và `task_create.html` loại bỏ các class Tailwind dư thừa, giữ nguyên 100% hợp đồng form và nhịp lưới.
+
+**Kết quả kiểm tra & Cổng chất lượng**
+- `ops/run_layout_alignment_audit.py` (--phase after): 146 routes, 7021 cases, **0 vi phạm**, **0 lỗi** (quét toàn bộ route/vai trò ở 1920/1756/1440/1280/1024/768/390px, sáng/tối).
+- `ops/run_form_contract_uat.py` (--phase after): 1314 cases, **0 failures** (bảo toàn 100% hợp đồng trường, tên, thuộc tính, CSRF).
+- `ops/run_print_layout_uat.py` (--port 8782): 402 checks, 37 PDFs xuất chuẩn, **0 failures**.
+- `src/manage.py test apps.portal.tests apps.portal.test_project_layout apps.portal.test_home_dashboard`: 60/60 tests OK.
+- `src/manage.py check`: 0 issues.
+- `src/manage.py makemigrations --check`: No changes detected (không đổi CSDL).
+- `ops/check_ui_contrast.py`: 208/208 color pairs pass WCAG standards.
+
+**Trạng thái nhánh & Bàn giao**
+- Nhánh: `main`.
+- Đã đóng gói bản sao kiểm toán ngoài repository tại `D:\QLHCNS-Backups\IHRMS_Review_20261015_Projects.zip` kèm manifest SHA-256 xác minh 100%.
+
 
 **Tóm tắt & Mục tiêu**
 - Rà soát và chuẩn hóa toàn diện giao diện các trang Báo cáo phân hệ Portal (`report_personnel_changes`, `report_timesheet`, `report_budget`, `report_headcount`, `_pagination`) theo tiêu chuẩn thiết kế Impeccable đã chốt:

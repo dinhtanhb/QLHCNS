@@ -1,65 +1,92 @@
 {% extends "base.html" %}
+{% load ui_components %}
 {% block title %}Công việc{% endblock %}
 {% block content %}
-<div class="flex items-center justify-between mb-4">
-    <div>
-        <h1 class="text-lg font-bold text-gray-900">{% if is_project_overview %}Giao việc &amp; hoàn tất — Hoạt động dự án{% else %}Công việc của tôi{% endif %}</h1>
-        {% if is_project_overview %}<p class="mt-1 max-w-3xl text-sm text-gray-600">Công văn đi đã phát hành chỉ kích hoạt giao Task, không xác định ngày hoạt động. ĐPV/quản lý nhập ngày bắt đầu và kết thúc trong kế hoạch hoạt động; hạn Task là 10 ngày làm việc sau ngày kết thúc, không tính Thứ Bảy, Chủ Nhật và ngày nghỉ đã khai báo trong IHRMS. CBDA tải báo cáo lên SharePoint trước khi chọn Hoàn thành.</p>{% endif %}
-    </div>
-    {% if can_assign_task %}
-    <a href="{% url 'portal:task_create' %}" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">+ Giao việc mới</a>
+<header class="ui-page-header">
+  <div>
+    <h1 class="ui-page-title">{% if is_project_overview %}Giao việc &amp; hoàn tất — Hoạt động dự án{% else %}Công việc của tôi{% endif %}</h1>
+    {% if is_project_overview %}
+      <p class="ui-page-description">Công văn đi đã phát hành chỉ kích hoạt giao Task, không xác định ngày hoạt động. ĐPV/quản lý nhập ngày bắt đầu và kết thúc trong kế hoạch hoạt động; hạn Task là 10 ngày làm việc sau ngày kết thúc. CBDA tải báo cáo lên SharePoint trước khi chọn Hoàn thành.</p>
     {% endif %}
-</div>
+  </div>
+  {% if can_assign_task %}
+  <div class="ui-page-actions">
+    <a href="{% url 'portal:task_create' %}" class="ui-button ui-button--primary">+ Giao việc mới</a>
+  </div>
+  {% endif %}
+</header>
+
 {% if can_view_task_scopes %}
 <nav class="mb-4 flex flex-wrap gap-2" aria-label="Phạm vi công việc">
-    {% if is_project_overview %}
-    <a href="{% url 'portal:task_list' %}?scope=activity_overview"
-       {% if task_scope_name == "activity_overview" %}aria-current="page"{% endif %}
-       class="rounded-md border px-4 py-2 text-sm font-medium {% if task_scope_name == 'activity_overview' %}border-blue-700 bg-blue-700 text-white{% else %}border-gray-300 bg-white text-gray-700 hover:bg-gray-50{% endif %}">Theo dõi hoạt động</a>
-    {% endif %}
-    <a href="{% url 'portal:task_list' %}{% if is_project_overview %}?scope=assigned_to_me{% endif %}"
-       {% if task_scope_name == "assigned_to_me" %}aria-current="page"{% endif %}
-       class="rounded-md border px-4 py-2 text-sm font-medium {% if task_scope_name == 'assigned_to_me' %}border-blue-700 bg-blue-700 text-white{% else %}border-gray-300 bg-white text-gray-700 hover:bg-gray-50{% endif %}">Việc của tôi</a>
-    <a href="{% url 'portal:task_list' %}?scope=assigned_by_me"
-       {% if task_scope_name == "assigned_by_me" %}aria-current="page"{% endif %}
-       class="rounded-md border px-4 py-2 text-sm font-medium {% if task_scope_name == 'assigned_by_me' %}border-blue-700 bg-blue-700 text-white{% else %}border-gray-300 bg-white text-gray-700 hover:bg-gray-50{% endif %}">Việc tôi đã giao</a>
+  {% if is_project_overview %}
+  <a href="{% url 'portal:task_list' %}?scope=activity_overview"
+     {% if task_scope_name == "activity_overview" %}aria-current="page"{% endif %}
+     class="ui-button {% if task_scope_name == 'activity_overview' %}ui-button--primary{% else %}ui-button--secondary{% endif %}">Theo dõi hoạt động</a>
+  {% endif %}
+  <a href="{% url 'portal:task_list' %}{% if is_project_overview %}?scope=assigned_to_me{% endif %}"
+     {% if task_scope_name == "assigned_to_me" %}aria-current="page"{% endif %}
+     class="ui-button {% if task_scope_name == 'assigned_to_me' %}ui-button--primary{% else %}ui-button--secondary{% endif %}">Việc của tôi</a>
+  <a href="{% url 'portal:task_list' %}?scope=assigned_by_me"
+     {% if task_scope_name == "assigned_by_me" %}aria-current="page"{% endif %}
+     class="ui-button {% if task_scope_name == 'assigned_by_me' %}ui-button--primary{% else %}ui-button--secondary{% endif %}">Việc tôi đã giao</a>
 </nav>
 {% endif %}
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <div class="overflow-x-auto">
-    <table class="w-full text-sm">
-        <thead>
-            <tr class="text-left text-gray-500 border-b border-gray-200">
-                <th class="py-2 pr-4">Mã</th><th class="py-2 pr-4">Tên công việc</th>
-                {% if is_project_overview %}<th class="py-2 pr-4">CBDA phụ trách</th><th class="py-2 pr-4">Hoạt động</th>{% endif %}
-                <th class="py-2 pr-4">Bắt đầu</th><th class="py-2 pr-4">Hạn</th><th class="py-2 pr-4">Hoàn thành</th><th class="py-2 pr-4">Ưu tiên</th><th class="py-2">Trạng thái</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
+
+<div class="ui-card">
+  <div class="overflow-x-auto mobile-table-scroll ui-scroll" role="region" aria-label="Bảng danh sách công việc; cuộn ngang để xem đủ cột" tabindex="0">
+    <table class="ui-table">
+      <caption class="ui-sr-only">Danh sách công việc</caption>
+      <thead>
+        <tr>
+          <th scope="col">Mã</th>
+          <th scope="col">Tên công việc</th>
+          {% if is_project_overview %}
+            <th scope="col">CBDA phụ trách</th>
+            <th scope="col">Hoạt động</th>
+          {% endif %}
+          <th scope="col">Bắt đầu</th>
+          <th scope="col">Hạn</th>
+          <th scope="col">Hoàn thành</th>
+          <th scope="col">Ưu tiên</th>
+          <th scope="col">Trạng thái</th>
+        </tr>
+      </thead>
+      <tbody>
         {% for t in tasks %}
-        <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{% url 'portal:task_detail' t.pk %}'">
-            <td class="py-2.5 pr-4 text-gray-500">{{ t.task_code|ui_number }}</td>
-            <td class="py-2.5 pr-4 font-medium text-blue-700">{{ t.task_name|ui_number }}</td>
-            {% if is_project_overview %}<td class="py-2.5 pr-4">{{ t.assigned_to_employee.full_name|ui_number }}</td><td class="py-2.5 pr-4">{{ t.activity.activity_code|default:"—"|ui_number }}</td>{% endif %}
-            <td class="py-2.5 pr-4">{{ t.start_date|date:"d/m/Y"|default:"—" }}</td>
-            <td class="py-2.5 pr-4">{{ t.due_date|date:"d/m/Y"|default:"—" }}</td>
-            <td class="py-2.5 pr-4">{{ t.completed_date|date:"d/m/Y"|default:"—" }}</td>
-            <td class="py-2.5 pr-4">{{ t.get_priority_display|ui_number }}</td>
-            <td class="py-2.5">
-                <span class="px-2.5 py-1 rounded-full text-xs font-medium
-                    {% if t.status == 'Done' %}bg-green-100 text-green-700
-                    {% elif t.status == 'InProgress' %}bg-blue-100 text-blue-700
-                    {% elif t.status == 'Cancelled' %}bg-gray-100 text-gray-600
-                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
-                    {{ t.get_status_display|ui_number }}
-                </span>
-            </td>
+        <tr>
+          <td class="text-muted">{{ t.task_code|ui_number }}</td>
+          <td>
+            <a href="{% url 'portal:task_detail' t.pk %}" class="ui-table-link font-medium">{{ t.task_name|ui_number }}</a>
+          </td>
+          {% if is_project_overview %}
+            <td>{{ t.assigned_to_employee.full_name|ui_number }}</td>
+            <td>{{ t.activity.activity_code|default:"—"|ui_number }}</td>
+          {% endif %}
+          <td>{{ t.start_date|date:"d/m/Y"|default:"—" }}</td>
+          <td>{{ t.due_date|date:"d/m/Y"|default:"—" }}</td>
+          <td>{{ t.completed_date|date:"d/m/Y"|default:"—" }}</td>
+          <td>{{ t.get_priority_display|ui_number }}</td>
+          <td>
+            <span class="ui-badge {% if t.status == 'Done' %}ui-badge--success{% elif t.status == 'InProgress' %}ui-badge--info{% elif t.status == 'Cancelled' %}ui-badge--neutral{% else %}ui-badge--warning{% endif %}">
+              {{ t.get_status_display|ui_number }}
+            </span>
+          </td>
         </tr>
         {% empty %}
-        <tr><td colspan="{% if is_project_overview %}9{% else %}7{% endif %}" class="py-6 text-center text-gray-400">{% if task_scope_name == "assigned_by_me" %}Anh/chị chưa giao công việc nào.{% elif task_scope_name == "activity_overview" %}Chưa có Task báo cáo trong phạm vi hoạt động được phép xem.{% else %}Chưa có công việc nào được giao cho anh/chị.{% endif %}</td></tr>
+        <tr>
+          <td colspan="{% if is_project_overview %}8{% else %}6{% endif %}" class="py-6 text-center text-gray-400">
+            {% if task_scope_name == "assigned_by_me" %}
+              Anh/chị chưa giao công việc nào.
+            {% elif task_scope_name == "activity_overview" %}
+              Chưa có Task báo cáo trong phạm vi hoạt động được phép xem.
+            {% else %}
+              Chưa có công việc nào được giao cho anh/chị.
+            {% endif %}
+          </td>
+        </tr>
         {% endfor %}
-        </tbody>
+      </tbody>
     </table>
-    </div>
+  </div>
 </div>
 {% endblock %}

@@ -2,43 +2,58 @@
 {% load ui_components %}
 {% block title %}{{ page_title|ui_number }}{% endblock %}
 {% block content %}
-<div class="mx-auto max-w-4xl px-4 py-6 sm:px-6">
-    <div class="mb-6">
-        <a href="{% url 'portal:activity_dashboard' %}" class="text-sm font-medium text-blue-700 hover:underline">← Quay lại dashboard hoạt động</a>
-        <p class="mt-4 text-sm font-semibold uppercase tracking-wide text-blue-700">Hoạt động dự án</p>
-        <h1 class="mt-1 text-2xl font-bold text-gray-900">{{ page_title|ui_number }}</h1>
-        <p class="mt-1 text-sm text-gray-600">Nhập thông tin kế hoạch và phân công CBDA. Gắn công văn đi đã phát hành để tự tạo Task báo cáo.</p>
-    </div>
-
-    <form method="post" class="ui-form-stack ui-card">
-{% csrf_token %}
-{% if form.non_field_errors %}<div class="ui-error-summary">{{ form.non_field_errors|ui_number }}</div>{% endif %}
-<fieldset class="ui-form-section"><legend>Thông tin hoạt động</legend><div class="ui-form-grid">{% for field in form %}
-{% if field.name == "activity_code" %}{% include "ui/field.html" with field=field span="6" %}
-{% elif field.name == "activity_name" %}{% include "ui/field.html" with field=field span="6" %}
-{% elif field.name == "project" %}{% include "ui/field.html" with field=field span="6" %}
-{% elif field.name == "location" %}{% include "ui/field.html" with field=field span="6" %}
-{% elif field.name == "participants" %}{% include "ui/field.html" with field=field span="12" %}
-{% elif field.name == "status" %}{% include "ui/field.html" with field=field span="6" %}
-{% endif %}{% endfor %}</div>
-</fieldset>
-<fieldset class="ui-form-section"><legend>Mục đích và kết quả</legend><div class="ui-form-grid">{% for field in form %}
-{% if field.name == "purpose" %}{% include "ui/field.html" with field=field span="12" %}
-{% elif field.name == "expected_output" %}{% include "ui/field.html" with field=field span="12" %}
-{% endif %}{% endfor %}</div>
-</fieldset>
-<fieldset class="ui-form-section"><legend>Lịch và người phụ trách</legend><div class="ui-form-grid">{% for field in form %}
-{% if field.name == "start_date" %}{% include "ui/field.html" with field=field span="6" %}
-{% elif field.name == "end_date" %}{% include "ui/field.html" with field=field span="6" %}
-{% elif field.name == "lead_cbda" %}{% include "ui/field.html" with field=field span="6" %}
-{% elif field.name == "coordinator" %}{% include "ui/field.html" with field=field span="6" %}
-{% elif field.name == "outgoing_document" %}{% include "ui/field.html" with field=field span="12" %}
-{% endif %}{% endfor %}</div>
-<p class="mt-3 rounded-lg bg-blue-50 p-3 text-sm text-blue-800">ĐPV/quản lý tự nhập ngày bắt đầu và ngày kết thúc theo kế hoạch thực tế. Ngày phát hành công văn chỉ kích hoạt việc giao Task, không dùng làm ngày bắt đầu. Hạn báo cáo là 10 ngày làm việc sau ngày kết thúc (không tính Thứ Bảy, Chủ Nhật và ngày nghỉ đã khai báo trong IHRMS). Nếu đổi lịch, Task được cập nhật ngày và có thông báo cho người liên quan.</p>
-</fieldset>
-<div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">{{ submit_label|ui_number }}</button><a href="{% url 'portal:activity_dashboard' %}" class="ui-button ui-button--secondary">Hủy</a></div>
-</form>
+<div class="mb-4">
+  <a href="{% url 'portal:activity_dashboard' %}" class="ui-button ui-button--secondary mb-3">← Quay lại dashboard hoạt động</a>
+  {% include "ui/page_header.html" with title=page_title description="Nhập thông tin kế hoạch và phân công CBDA. Gắn công văn đi đã phát hành để tự tạo Task báo cáo." %}
 </div>
+
+<form method="post" class="ui-form-stack ui-card">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="ui-error-summary">{{ form.non_field_errors|ui_number }}</div>{% endif %}
+  <fieldset class="ui-form-section">
+    <legend>Thông tin hoạt động</legend>
+    <div class="ui-form-grid">
+      {% for field in form %}
+        {% if field.name == "activity_code" %}{% include "ui/field.html" with field=field span="6" %}
+        {% elif field.name == "activity_name" %}{% include "ui/field.html" with field=field span="6" %}
+        {% elif field.name == "project" %}{% include "ui/field.html" with field=field span="6" %}
+        {% elif field.name == "location" %}{% include "ui/field.html" with field=field span="6" %}
+        {% elif field.name == "participants" %}{% include "ui/field.html" with field=field span="12" %}
+        {% elif field.name == "status" %}{% include "ui/field.html" with field=field span="6" %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  </fieldset>
+  <fieldset class="ui-form-section">
+    <legend>Mục đích và kết quả</legend>
+    <div class="ui-form-grid">
+      {% for field in form %}
+        {% if field.name == "purpose" %}{% include "ui/field.html" with field=field span="12" %}
+        {% elif field.name == "expected_output" %}{% include "ui/field.html" with field=field span="12" %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  </fieldset>
+  <fieldset class="ui-form-section">
+    <legend>Lịch và người phụ trách</legend>
+    <div class="ui-form-grid">
+      {% for field in form %}
+        {% if field.name == "start_date" %}{% include "ui/field.html" with field=field span="6" %}
+        {% elif field.name == "end_date" %}{% include "ui/field.html" with field=field span="6" %}
+        {% elif field.name == "lead_cbda" %}{% include "ui/field.html" with field=field span="6" %}
+        {% elif field.name == "coordinator" %}{% include "ui/field.html" with field=field span="6" %}
+        {% elif field.name == "outgoing_document" %}{% include "ui/field.html" with field=field span="12" %}
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="ui-alert ui-alert--info mt-3">ĐPV/quản lý tự nhập ngày bắt đầu và ngày kết thúc theo kế hoạch thực tế. Ngày phát hành công văn chỉ kích hoạt việc giao Task, không dùng làm ngày bắt đầu. Hạn báo cáo là 10 ngày làm việc sau ngày kết thúc (không tính Thứ Bảy, Chủ Nhật và ngày nghỉ đã khai báo trong IHRMS). Nếu đổi lịch, Task được cập nhật ngày và có thông báo cho người liên quan.</div>
+  </fieldset>
+  <div class="ui-form-actions">
+    <button type="submit" class="ui-button ui-button--primary">{{ submit_label|ui_number }}</button>
+    <a href="{% url 'portal:activity_dashboard' %}" class="ui-button ui-button--secondary">Hủy</a>
+  </div>
+</form>
+
 {{ activity_code_names|json_script:"activity-code-names" }}
 <script>
 document.addEventListener("DOMContentLoaded", function () {

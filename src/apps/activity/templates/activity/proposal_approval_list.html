@@ -1,31 +1,57 @@
 {% extends "base.html" %}
+{% load ui_components %}
 {% block title %}Duyệt đề xuất hoạt động{% endblock %}
 {% block content %}
-<main class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-    <div class="flex flex-wrap items-end justify-between gap-3">
-        <div>
-            <p class="text-sm font-semibold uppercase tracking-wide text-blue-700">Hoạt động dự án</p>
-            <h1 class="mt-1 text-2xl font-bold text-gray-900">Đề xuất đang chờ duyệt</h1>
-            <p class="mt-2 text-sm text-gray-600">Danh sách chỉ gồm hồ sơ được gửi đích danh cho tài khoản của bạn.</p>
-        </div>
-        <a href="{% url 'portal:activity_dashboard' %}" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">Dashboard hoạt động</a>
-    </div>
-    <section class="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        {% if packages %}
-        <div class="overflow-x-auto"><table class="w-full text-left text-sm">
-            <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-600"><tr><th class="px-4 py-3">Hoạt động</th><th class="px-4 py-3">Dự án</th><th class="px-4 py-3">CBDA / ĐPV</th><th class="px-4 py-3">Người gửi</th><th class="px-4 py-3">Ngày gửi</th><th class="px-4 py-3">Hồ sơ</th></tr></thead>
-            <tbody class="divide-y divide-gray-100">
-            {% for package in packages %}<tr class="align-top hover:bg-gray-50">
-                <td class="px-4 py-4"><strong>{{ package.activity.activity_code|ui_number }}</strong><span class="mt-1 block">{{ package.activity.activity_name|ui_number }}</span><span class="mt-1 block text-xs text-gray-500">Phiên bản {{ package.version|ui_number }}</span></td>
-                <td class="px-4 py-4">{{ package.activity.project.project_name|ui_number }}</td>
-                <td class="px-4 py-4">{{ package.activity.lead_cbda.full_name|ui_number }}<span class="mt-1 block text-xs text-gray-500">ĐPV: {{ package.activity.coordinator.full_name|default:"Chưa phân công"|ui_number }}</span></td>
-                <td class="px-4 py-4">{{ package.submitted_by.get_full_name|default:package.submitted_by.username|ui_number }}</td>
-                <td class="whitespace-nowrap px-4 py-4">{{ package.submitted_at|date:"d/m/Y H:i" }}</td>
-                <td class="px-4 py-4"><a class="font-semibold text-blue-700 underline" href="{% url 'portal:activity_proposal' package.activity_id %}">Xem và xử lý</a></td>
-            </tr>{% endfor %}
-            </tbody>
-        </table></div>
-        {% else %}<div class="p-8 text-center text-gray-600">Hiện không có đề xuất nào đang chờ bạn duyệt.</div>{% endif %}
-    </section>
-</main>
+<header class="ui-page-header">
+  <div>
+    <h1 class="ui-page-title">Đề xuất đang chờ duyệt</h1>
+    <p class="ui-page-description">Danh sách chỉ gồm hồ sơ được gửi đích danh cho tài khoản của bạn.</p>
+  </div>
+  <div class="ui-page-actions">
+    <a href="{% url 'portal:activity_dashboard' %}" class="ui-button ui-button--secondary">Dashboard hoạt động</a>
+  </div>
+</header>
+
+<div class="ui-card">
+  {% if packages %}
+  <div class="overflow-x-auto mobile-table-scroll ui-scroll" role="region" aria-label="Bảng đề xuất đang chờ duyệt; cuộn ngang để xem đủ cột" tabindex="0">
+    <table class="ui-table">
+      <caption class="ui-sr-only">Đề xuất hoạt động đang chờ duyệt</caption>
+      <thead>
+        <tr>
+          <th scope="col">Hoạt động</th>
+          <th scope="col">Dự án</th>
+          <th scope="col">CBDA / ĐPV</th>
+          <th scope="col">Người gửi</th>
+          <th scope="col">Ngày gửi</th>
+          <th scope="col">Hồ sơ</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for package in packages %}
+        <tr class="align-top">
+          <td>
+            <strong>{{ package.activity.activity_code|ui_number }}</strong>
+            <span class="mt-1 block font-medium">{{ package.activity.activity_name|ui_number }}</span>
+            <span class="mt-1 block text-xs text-muted">Phiên bản {{ package.version|ui_number }}</span>
+          </td>
+          <td>{{ package.activity.project.project_name|ui_number }}</td>
+          <td>
+            {{ package.activity.lead_cbda.full_name|ui_number }}
+            <span class="mt-1 block text-xs text-muted">ĐPV: {{ package.activity.coordinator.full_name|default:"Chưa phân công"|ui_number }}</span>
+          </td>
+          <td>{{ package.submitted_by.get_full_name|default:package.submitted_by.username|ui_number }}</td>
+          <td class="whitespace-nowrap">{{ package.submitted_at|date:"d/m/Y H:i" }}</td>
+          <td>
+            <a class="ui-table-link font-medium" href="{% url 'portal:activity_proposal' package.activity_id %}">Xem và xử lý</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="py-8 text-center text-gray-400">Hiện không có đề xuất nào đang chờ bạn duyệt.</div>
+  {% endif %}
+</div>
 {% endblock %}

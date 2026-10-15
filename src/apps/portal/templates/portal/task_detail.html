@@ -1,88 +1,101 @@
 {% extends "base.html" %}
+{% load ui_components %}
 {% block title %}{{ task.task_name|ui_number }}{% endblock %}
 {% block content %}
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-    <div class="flex items-start justify-between mb-2">
-        <div>
-            <p class="text-xs text-gray-400">{{ task.task_code|ui_number }}</p>
-            <h1 class="text-lg font-bold text-gray-900">{{ task.task_name|ui_number }}</h1>
-        </div>
-        <span class="px-2.5 py-1 rounded-full text-xs font-medium
-            {% if task.status == 'Done' %}bg-green-100 text-green-700
-            {% elif task.status == 'InProgress' %}bg-blue-100 text-blue-700
-            {% elif task.status == 'Cancelled' %}bg-gray-100 text-gray-600
-            {% else %}bg-yellow-100 text-yellow-800{% endif %}">
-            {{ task.get_status_display|ui_number }}
-        </span>
+<div class="mb-4">
+  <a href="{% url 'portal:task_list' %}" class="ui-button ui-button--secondary mb-3">← Danh sách công việc</a>
+  <div class="ui-card">
+    <div class="flex items-start justify-between gap-3 mb-2">
+      <div>
+        <p class="text-xs text-muted font-semibold">{{ task.task_code|ui_number }}</p>
+        <h1 class="ui-page-title mt-1">{{ task.task_name|ui_number }}</h1>
+      </div>
+      <span class="ui-badge {% if task.status == 'Done' %}ui-badge--success{% elif task.status == 'InProgress' %}ui-badge--info{% elif task.status == 'Cancelled' %}ui-badge--neutral{% else %}ui-badge--warning{% endif %}">
+        {{ task.get_status_display|ui_number }}
+      </span>
     </div>
-    <p class="text-gray-600 text-sm mb-4">{{ task.description|default:"Không có mô tả."|linebreaks|ui_number }}</p>
-    <dl class="ui-layout-split grid grid-cols-2 gap-y-2 text-sm text-gray-600 border-t border-gray-100 pt-4">
-        <div><dt class="inline text-gray-400">Người giao việc: </dt><dd class="inline font-medium">{{ task.assigned_by_employee|ui_number }}</dd></div>
-        <div><dt class="inline text-gray-400">Người phụ trách: </dt><dd class="inline font-medium">{{ task.assigned_to_employee|ui_number }}</dd></div>
-        <div><dt class="inline text-gray-400">Ngày bắt đầu: </dt><dd class="inline font-medium">{{ task.start_date|date:"d/m/Y"|default:"—" }}</dd></div>
-        <div><dt class="inline text-gray-400">Hạn hoàn thành: </dt><dd class="inline font-medium">{{ task.due_date|date:"d/m/Y"|default:"—" }}</dd></div>
-        <div><dt class="inline text-gray-400">Ngày hoàn thành thực tế: </dt><dd class="inline font-medium">{{ task.completed_date|date:"d/m/Y"|default:"Chưa hoàn thành" }}</dd></div>
+    <p class="text-sm text-muted mb-4">{{ task.description|default:"Không có mô tả."|linebreaksbr|ui_number }}</p>
+    <dl class="ui-layout-split grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-sm border-t border-gray-100 pt-4">
+      <div><dt class="inline text-muted">Người giao việc: </dt><dd class="inline font-medium">{{ task.assigned_by_employee|ui_number }}</dd></div>
+      <div><dt class="inline text-muted">Người phụ trách: </dt><dd class="inline font-medium">{{ task.assigned_to_employee|ui_number }}</dd></div>
+      <div><dt class="inline text-muted">Ngày bắt đầu: </dt><dd class="inline font-medium">{{ task.start_date|date:"d/m/Y"|default:"—" }}</dd></div>
+      <div><dt class="inline text-muted">Hạn hoàn thành: </dt><dd class="inline font-medium">{{ task.due_date|date:"d/m/Y"|default:"—" }}</dd></div>
+      <div class="sm:col-span-2"><dt class="inline text-muted">Ngày hoàn thành thực tế: </dt><dd class="inline font-medium">{{ task.completed_date|date:"d/m/Y"|default:"Chưa hoàn thành" }}</dd></div>
     </dl>
 
     {% if task.activity_id %}
-    <div class="mt-4 rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm">
-        <p class="font-semibold text-blue-900">Báo cáo hoạt động</p>
-        {% if task.report_file %}
-        <p class="mt-1">Đã tải lên: <a class="text-blue-700 underline" href="{{ task.report_file.url }}" target="_blank" rel="noopener">Mở tệp báo cáo</a></p>
-        {% else %}
-        <p class="mt-1 text-blue-800">Cần tải báo cáo lên SharePoint trước khi đánh dấu công việc hoàn thành.</p>
-        {% endif %}
-        {% if is_owner %}
-        <form method="post" enctype="multipart/form-data" class="ui-form-stack mt-3 flex flex-wrap items-center gap-3"><div class="ui-form-grid">
-
-            {% csrf_token %}
-            <input type="hidden" name="action" value="upload_activity_report">
-            <div class="ui-field ui-field--12"><label for="task-report-file">Tệp báo cáo</label><input id="task-report-file" type="file" name="report_file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.txt,.csv,.zip" required class="text-sm"></div>
-            <div class="ui-form-actions"><button type="submit" class="rounded-md bg-blue-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-800">Tải báo cáo lên SharePoint</button></div>
-
-</div></form>
-        {% endif %}
+    <div class="mt-4 ui-alert ui-alert--info">
+      <p class="font-semibold">Báo cáo hoạt động</p>
+      {% if task.report_file %}
+        <p class="mt-1">Đã tải lên: <a class="ui-table-link inline" href="{{ task.report_file.url }}" target="_blank" rel="noopener">Mở tệp báo cáo</a></p>
+      {% else %}
+        <p class="mt-1">Cần tải báo cáo lên SharePoint trước khi đánh dấu công việc hoàn thành.</p>
+      {% endif %}
+      {% if is_owner %}
+      <form method="post" enctype="multipart/form-data" class="ui-form-stack mt-3">
+        <div class="ui-form-grid">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="upload_activity_report">
+          <div class="ui-field ui-field--8">
+            <label for="task-report-file">Tệp báo cáo</label>
+            <input id="task-report-file" type="file" name="report_file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.txt,.csv,.zip" required>
+          </div>
+          <div class="ui-form-actions">
+            <button type="submit" class="ui-button ui-button--primary">Tải báo cáo lên SharePoint</button>
+          </div>
+        </div>
+      </form>
+      {% endif %}
     </div>
     {% endif %}
 
     {% if is_owner %}
-    <form method="post" class="ui-form-stack mt-4 flex items-center gap-3"><div class="ui-form-grid">
-
+    <form method="post" class="ui-form-stack mt-4 pt-4 border-t border-gray-100">
+      <div class="ui-form-grid">
         {% csrf_token %}
         <input type="hidden" name="action" value="update_status">
-        <div class="ui-field ui-field--12"><label for="task-status">Cập nhật trạng thái</label>
-        <select id="task-status" name="status" class="rounded-md border border-gray-300 px-3 py-1.5 text-sm">
+        <div class="ui-field ui-field--6">
+          <label for="task-status">Cập nhật trạng thái</label>
+          <select id="task-status" name="status">
             {% for value, label in task.STATUS_CHOICES %}
             <option value="{{ value }}" {% if task.status == value %}selected{% endif %}>{{ label|ui_number }}</option>
             {% endfor %}
-        </select></div>
-        <div class="ui-form-actions"><button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-1.5 rounded-md transition">Lưu</button></div>
-
-</div></form>
+          </select>
+        </div>
+        <div class="ui-form-actions">
+          <button type="submit" class="ui-button ui-button--primary">Lưu</button>
+        </div>
+      </div>
+    </form>
     {% endif %}
+  </div>
 </div>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <h2 class="text-sm font-bold text-gray-900 mb-3">Bình luận</h2>
-    <div class="space-y-3 mb-4">
-        {% for c in comments %}
-        <div class="text-sm border-b border-gray-50 pb-2">
-            <span class="font-medium text-gray-800">{{ c.employee|ui_number }}</span>
-            <span class="text-gray-400 text-xs">— {{ c.comment_date|date:"d/m/Y H:i" }}</span>
-            <p class="text-gray-600 mt-0.5">{{ c.comment_text|ui_number }}</p>
-        </div>
-        {% empty %}
-        <p class="text-gray-400 text-sm">Chưa có bình luận nào.</p>
-        {% endfor %}
+<div class="ui-card">
+  <h2 class="text-base font-semibold mb-3">Bình luận</h2>
+  <div class="space-y-3 mb-4">
+    {% for c in comments %}
+    <div class="text-sm border-b border-gray-100 pb-2">
+      <span class="font-medium">{{ c.employee|ui_number }}</span>
+      <span class="text-xs text-muted">— {{ c.comment_date|date:"d/m/Y H:i" }}</span>
+      <p class="text-muted mt-0.5">{{ c.comment_text|ui_number }}</p>
     </div>
-    <form method="post" class="ui-form-stack flex gap-2"><div class="ui-form-grid">
-
-        {% csrf_token %}
-        <input type="hidden" name="action" value="add_comment">
-        <div class="ui-field ui-field--12"><label for="task-comment">Nội dung bình luận</label><input id="task-comment" type="text" name="comment_text" placeholder="Viết bình luận..." required
-            class="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
-        <div class="ui-form-actions"><button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">Gửi</button></div>
-
-</div></form>
+    {% empty %}
+    <p class="text-sm text-muted">Chưa có bình luận nào.</p>
+    {% endfor %}
+  </div>
+  <form method="post" class="ui-form-stack">
+    <div class="ui-form-grid">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="add_comment">
+      <div class="ui-field ui-field--10">
+        <label for="task-comment">Nội dung bình luận</label>
+        <input id="task-comment" type="text" name="comment_text" placeholder="Viết bình luận..." required>
+      </div>
+      <div class="ui-form-actions">
+        <button type="submit" class="ui-button ui-button--primary">Gửi</button>
+      </div>
+    </div>
+  </form>
 </div>
 {% endblock %}

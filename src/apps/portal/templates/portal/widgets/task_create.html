@@ -1,46 +1,38 @@
 {% load ui_components l10n %}
 {% if widget_key == "f0" %}
-
-            <label for="task_create-task_code" class="block text-sm font-medium text-gray-700 mb-1">Mã công việc</label>
-            <input type="text" name="task_code" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" id="task_create-task_code">
+  <label for="task_create-task_code">Mã công việc</label>
+  <input type="text" name="task_code" required id="task_create-task_code">
 
 {% elif widget_key == "f1" %}
-
-            <label for="task_create-task_name" class="block text-sm font-medium text-gray-700 mb-1">Tên công việc</label>
-            <input type="text" name="task_name" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" id="task_create-task_name">
+  <label for="task_create-task_name">Tên công việc</label>
+  <input type="text" name="task_name" required id="task_create-task_name">
 
 {% elif widget_key == "f2" %}
-
-            <label for="task_create-description" class="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
-            <textarea name="description" rows="3" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" id="task_create-description"></textarea>
+  <label for="task_create-description">Mô tả</label>
+  <textarea name="description" rows="3" id="task_create-description"></textarea>
 
 {% elif widget_key == "f3" %}
-
-            <label for="task_create-assigned_to_employee" class="block text-sm font-medium text-gray-700 mb-1">Giao cho nhân viên</label>
-            <select name="assigned_to_employee" required class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" id="task_create-assigned_to_employee">
-                {% for e in candidates %}
-                <option value="{{ e.id }}">{{ e.employee_code|ui_number }} - {{ e.full_name|ui_number }}</option>
-                {% endfor %}
-            </select>
+  <label for="task_create-assigned_to_employee">Giao cho nhân viên</label>
+  <select name="assigned_to_employee" required id="task_create-assigned_to_employee">
+    {% for e in candidates %}
+      <option value="{{ e.id }}">{{ e.employee_code|ui_number }} - {{ e.full_name|ui_number }}</option>
+    {% endfor %}
+  </select>
 
 {% elif widget_key == "f4" %}
-
-            <label for="task_create-priority" class="block text-sm font-medium text-gray-700 mb-1">Độ ưu tiên</label>
-            <select name="priority" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" id="task_create-priority">
-                <option value="Low">Thấp</option>
-                <option value="Normal" selected>Bình thường</option>
-                <option value="High">Cao</option>
-                <option value="Urgent">Khẩn cấp</option>
-            </select>
+  <label for="task_create-priority">Độ ưu tiên</label>
+  <select name="priority" id="task_create-priority">
+    <option value="Low">Thấp</option>
+    <option value="Normal" selected>Bình thường</option>
+    <option value="High">Cao</option>
+    <option value="Urgent">Khẩn cấp</option>
+  </select>
 
 {% elif widget_key == "f5" %}
-
-                <label for="task_create-start_date" class="block text-sm font-medium text-gray-700 mb-1">Ngày bắt đầu</label>
-                <input type="date" name="start_date" value="{{ today|date:'Y-m-d' }}" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" id="task_create-start_date">
+  <label for="task_create-start_date">Ngày bắt đầu</label>
+  <input type="date" name="start_date" value="{{ today|date:'Y-m-d' }}" id="task_create-start_date">
 
 {% elif widget_key == "f6" %}
-
-                <label for="task_create-due_date" class="block text-sm font-medium text-gray-700 mb-1">Hạn hoàn thành</label>
-                <input type="date" name="due_date" class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" id="task_create-due_date">
-
+  <label for="task_create-due_date">Hạn hoàn thành</label>
+  <input type="date" name="due_date" id="task_create-due_date">
 {% endif %}

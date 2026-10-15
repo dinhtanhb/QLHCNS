@@ -1,0 +1,5 @@
+{% if can_manage_activities %}
+<a href="{% url 'portal:activity_create' %}" class="ui-button ui-button--primary">+ Tạo hoạt động</a>
+{% endif %}
+<a href="{% url 'portal:activity_calendar' %}?month={{ month }}{% if selected_cbda %}&amp;cbda={{ selected_cbda }}{% endif %}" class="ui-button ui-button--secondary">Xem lịch</a>
+
