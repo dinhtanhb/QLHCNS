@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Giao việc mới{% endblock %}
 {% block content %}
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <h1 class="text-lg font-bold text-gray-900 mb-4">Giao việc mới</h1>
-    <form method="post" class="ui-form-stack space-y-4"><div class="ui-form-grid">
+<div class="ui-card">
+    <h1 class="ui-page-title">Giao việc mới</h1>
+    <form method="post" class="ui-form-stack" data-ui-form><div class="ui-form-grid">
 
         {% csrf_token %}
         {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f0"  span="6" %}

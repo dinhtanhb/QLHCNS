@@ -25,8 +25,8 @@
                 </div>
                 <div id="procurement-items" class="ui-admin-stack">
                     <div class="ui-form-grid">
-                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-item_name-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="item_name" label="Tên hàng hóa/dịch vụ" type="text" maxlength="300" required=True  span="4" %}{% endwith %}{% endwith %}
-                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-quantity-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" value="1" min="1" required=True  span="4" %}{% endwith %}{% endwith %}
+                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-item_name-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="item_name" label="Tên hàng hóa/dịch vụ" type="text" maxlength="300" required=True  span="6" %}{% endwith %}{% endwith %}
+                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-quantity-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" value="1" min="1" required=True  span="2" %}{% endwith %}{% endwith %}
                         {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-estimated_cost-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="estimated_cost" label="Đơn giá dự kiến" type="number" min="0" step="0.01"  span="4" tablet_span="12" %}{% endwith %}{% endwith %}
                     </div>
                 </div>
@@ -109,12 +109,12 @@
         row.className = "ui-form-grid";
         const index = document.getElementById("procurement-items").children.length;
         const fields = [
-            {name:"item_name", label:"Tên hàng hóa/dịch vụ", type:"text", required:true, maxlength:"300"},
-            {name:"quantity", label:"Số lượng", type:"number", required:true, min:"1", value:"1"},
-            {name:"estimated_cost", label:"Đơn giá dự kiến", type:"number", min:"0", step:"0.01"}
+            {name:"item_name", label:"Tên hàng hóa/dịch vụ", type:"text", required:true, maxlength:"300", span:"6"},
+            {name:"quantity", label:"Số lượng", type:"number", required:true, min:"1", value:"1", span:"2"},
+            {name:"estimated_cost", label:"Đơn giá dự kiến", type:"number", min:"0", step:"0.01", span:"4"}
         ];
         fields.forEach(field => {
-            const wrapper = document.createElement("div"); wrapper.className = "ui-field ui-field--4";
+            const wrapper = document.createElement("div"); wrapper.className = "ui-field ui-field--" + field.span;
             const label = document.createElement("label"), input = document.createElement("input");
             input.id = "procurement-item-" + index + "-" + field.name;
             label.htmlFor = input.id; label.textContent = field.label;

@@ -2,6 +2,16 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-15 — Rà soát bố cục, kích thước và sắp xếp ô nhập/chọn thông tin toàn hệ thống
+
+**Tóm tắt cho chủ dự án**
+- Rà soát toàn bộ các trang biểu mẫu theo phản ánh của chủ dự án và bộ quy chuẩn Impeccable.
+- Khắc phục lỗi kéo giãn full-width trên trang Đề nghị văn phòng phẩm: chuyển 3 dòng vật tư thành các cặp ô (Vật tư 8 cột + Số lượng 4 cột) nằm trên cùng hàng trong `.ui-form-line`.
+- Khắc phục lỗi ép cứng 13rem cho thẻ `<select>` trong `.ui-query-bar`: mở rộng ô chọn thực thể (nhân viên, phòng ban, dự án) từ 18-28rem, giải phóng nhãn dài "Điền thông tin từ hồ sơ nhân viên" khỏi việc bị bóp nghẹt 3 dòng trên trang Biểu mẫu tuyển dụng/HCNS.
+- Nâng cấp `shared_components.css`: bổ sung đầy đủ nhịp lưới 12 cột (`.ui-field--2`, `.ui-field--5`, `.ui-field--7`, `.ui-field--8`, `.ui-field--9`, `.ui-field--10`) và lớp container `.ui-form-lines` / `.ui-form-line`.
+- Tối ưu hóa các biểu mẫu khác: Đề nghị mua sắm (hàng hóa 6 - số lượng 2 - đơn giá 4), Vào sổ công văn (trích yếu 6 - cơ quan 6), Tạo công việc (chuyển sang ui-card và ui-page-title), Chấm công (ngày 2 - dự án 3 - công việc 5 - số giờ 2), Tạo chỉ tiêu KPI (nhân viên 4 - chỉ số 4 - kỳ 2 - chỉ tiêu 2), Danh mục ngày lễ (mã 3 - tên 6 - ngày 3).
+- Toàn bộ wire contract giữ nguyên 100% (không đổi method, action, field name, CSRF, validations); 0 migration; full 247 portal tests pass.
+
 ## 2026-10-15 — Dashboard và báo cáo định biên: thang chữ, nhịp và mặt phẳng
 
 **Tóm tắt cho chủ dự án**
