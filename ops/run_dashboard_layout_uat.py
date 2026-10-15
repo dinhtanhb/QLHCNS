@@ -87,6 +87,8 @@ def main():
                                 blanks=page.locator('.home-row .ui-card').evaluate_all('xs=>xs.map(x=>{const last=[...x.children].filter(y=>y.checkVisibility()&&!y.matches(".sr-only,.home-info-body")).at(-1);return last?x.getBoundingClientRect().bottom-last.getBoundingClientRect().bottom-parseFloat(getComputedStyle(x).paddingBottom):0})')
                                 check(all(gap<=32 for gap in blanks),label+' paired cards trailing space <=32px '+str(blanks))
                             if width>=1280:
+                                if page.locator('#group-recruitment').count():check(page.locator('#group-recruitment').bounding_box()['height']<=96.1,label+' recruitment strip <=96')
+                                check(page.locator('.home-page-header').bounding_box()['height']<=56.1,label+' page header <=56')
                                 if measures['kpis']:
                                     heights=[x['h'] for x in measures['kpis']]
                                     check(max(heights)<=104.1 and max(heights)-min(heights)<=1,label+' KPI <=104 and equal')

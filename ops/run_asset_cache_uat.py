@@ -28,7 +28,7 @@ def main():
     output.mkdir(exist_ok=True)
     state = {'port': args.baseline_port}
     old_cache = 'ihrms-static-v22-form-grid-20261015'
-    new_cache = 'ihrms-static-v25-dashboard-donut-20261015'
+    new_cache = 'ihrms-static-v26-dashboard-compact-20261015'
     checks = []
 
     def check(ok, label):

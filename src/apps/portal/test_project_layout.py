@@ -119,7 +119,7 @@ class ProjectLayoutTests(TestCase):
         self.assertIn("project_layout.css' %}?v=20261015-form-grid-final", base)
         self.assertIn("print_forms.css' %}?v=20261014-dispatch-register", base)
         worker = (root / 'static/js/service-worker.js').read_text(encoding='utf-8')
-        self.assertIn('ihrms-static-v25-dashboard-donut-20261015', worker)
+        self.assertIn('ihrms-static-v26-dashboard-compact-20261015', worker)
 
     def test_reset_filter_excludes_scope_and_empty_values(self):
         from django.http import QueryDict
