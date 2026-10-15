@@ -2,6 +2,53 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-15 — Rà soát và thu gọn toàn diện ô nhập/chọn cho tất cả nhóm nghiệp vụ theo phản ánh kiểm thử
+
+**Tóm tắt cho chủ dự án**
+- Tiếp nhận phản ánh từ chủ dự án kèm ảnh chụp thực tế: các ô nhập liệu số, ngày tháng, mã số, đơn vị tính trên các form nghiệp vụ bị kéo giãn quá rộng (chiếm 33% đến 50% màn hình desktop ~450px-700px), gây khó xem, tốn diện tích và khó thao tác.
+- Đã thực hiện rà soát và tái cấu trúc lưới bố cục (`.ui-form-grid`) cho 16 biểu mẫu trải dài qua toàn bộ các nhóm nghiệp vụ (Tài chính, Tài sản, Hành chính, Nhân sự, Tuyển dụng, Hoạt động dự án) theo nguyên tắc:
+  1. Phân bổ nhịp cột theo kích thước tự nhiên của dữ liệu: `span="2"` cho số lượng nhỏ / đơn vị tính / tỷ lệ / số thứ tự; `span="3"` cho ngày tháng / mã số / số tiền nhỏ / dropdown ngắn; `span="4"` - `span="6"` cho tên gọi / phòng ban / địa chỉ / vị trí; `span="12"` cho trích yếu / mô tả dài / tệp đính kèm.
+  2. Gom các ô liên quan trên cùng 1 hàng gọn gàng: mỗi hàng trong `.ui-form-grid` đều đạt tổng 12 cột, triệt tiêu khoảng trống thừa và tuân thủ tuyệt đối quy tắc `ROW_HOLE` và `COLUMN_LINE`.
+  3. Bảo toàn 100% wire contract: không thay đổi bất kỳ `id`, `name`, `type`, `required`, `method`, `action`, CSRF token hay logic validation nào của biểu mẫu.
+- **Chi tiết tinh chỉnh theo từng phân hệ**:
+  1. **Tài chính**:
+     - *Biểu thuế TNCN lũy tiến (`finance_tax_config.html`)*: Thu gọn toàn bộ 5 ô từ 2 hàng dãn to thành **1 hàng duy nhất** cực kỳ gọn: Hiệu lực từ (`span="2"`), Bậc thuế (`span="2"`), Thu nhập từ (`span="3"`), Thu nhập đến (`span="3"`), Thuế suất (`span="2"`) = 12 cột.
+     - *Thêm Giảm trừ gia cảnh (`finance_tax_config.html`)*: Cân đối thành 1 hàng 3 ô (`span="4"` + `span="4"` + `span="4"` = 12 cột).
+     - *Đăng ký Người phụ thuộc (`finance_dependent_list.html`)*: Thu gọn từ 2 hàng kéo dãn thành **1 hàng duy nhất gồm 4 ô**: Nhân viên (`span="3"`), Họ tên (`span="4"`), Quan hệ (`span="3"`), Hiệu lực từ (`span="2"`) = 12 cột.
+  2. **Quản lý Tài sản**:
+     - *Thêm tài sản mới (`asset_admin_list.html`)*: Cải tổ 12 trường từ 4 hàng × 3 ô dãn rộng (450px) thành **3 hàng × 4 ô cân đối**:
+       * Hàng 1: Mã tài sản (3) + Tên tài sản (4) + Loại (3) + Số serial (2) = 12.
+       * Hàng 2: Nhãn hiệu (3) + Nguồn vốn (3) + Ngày mua (3) + Vị trí (3) = 12.
+       * Hàng 3: Số lượng (2) + Đơn vị tính (2) + Nguyên giá (2) + Ghi chú (6) = 12.
+       * Các trường số lượng ("1"), đơn vị tính ("chiếc"), serial giờ đây nhỏ gọn, tự nhiên.
+     - *Đợt kiểm kê tài sản (`inventory_session_list.html`)*: Tên đợt (`span="5"`), Văn phòng (`span="4"`), Thời điểm (`span="3"`) = 12 cột.
+     - *Ban kiểm kê (`inventory_session_detail.html`)*: Phân bổ Nhân viên (`span="8"`), Vai trò (`span="4"`) = 12 cột.
+  3. **Hành chính & Văn phòng**:
+     - *Đặt xe (`vehicle_booking_list.html`)*: Hàng 1 (Xe 4 + Đến 4 + Mục đích 4 = 12); Hàng 2 thu gọn 2 ô datetime-local thành compact `span="3"` (Bắt đầu 3 + Kết thúc 3).
+     - *Sổ công văn đến (`office_incoming_list.html`)*: Hàng 1 gồm 4 ô gọn: Số CV (3) + Ngày đến (3) + Nơi gửi (3) + Hạn (3) = 12; Hàng 2: Trích yếu (12).
+     - *Sổ công văn đi (`office_outgoing_list.html`)*: Hàng 1 gồm 4 ô gọn: Số CV (3) + Ngày gửi (3) + Nơi nhận (3) + Người ký (3) = 12; Hàng 2: Trích yếu (12); Hàng 3: Tệp đính kèm (12).
+     - *Vào sổ công văn chung (`dispatch_create.html`)*: Thu gọn Ngày ban hành (`span="3"`), Ngày đến/gửi (`span="3"`), Cơ quan (`span="6"`).
+     - *Lịch công tác / Sự kiện (`event_list.html`)*: Hàng 1 (Tiêu đề 6 + Loại sự kiện 3 + Phòng ban 3 = 12); Hàng 2 (Bắt đầu 3 + Kết thúc 3 + Địa điểm 6 = 12); Hàng 3: Mô tả (12).
+  4. **Nhân sự & Tuyển dụng**:
+     - *Đề xuất tuyển dụng (`recruitment_create.html`)*: Hàng 1 (Mã đề xuất 6 + Phòng ban 6 = 12); Hàng 2 (Vị trí 6 + Số lượng cần 3 + Ngày cần 3 = 12); Hàng 3: Lý do tuyển dụng (12).
+     - *Hợp đồng lao động (`hr_contract_form.html`)*: Hàng 1 (Nhân viên 5 + Loại HĐ 4 + Số HĐ 3 = 12); Hàng 2 (Ngày BĐ 3 + Ngày KT 3 + Lương cơ bản 3 + Trạng thái 3 = 12).
+     - *Hồ sơ nhân viên mục Công việc (`hr_employee_form.html`)*: Hàng 1 (Ngày vào 3 + Ngày nghỉ 3 + Phòng ban 6 = 12); Hàng 2 (Vị trí 3 + Chức danh 3 + Quản lý 3 + Trạng thái làm việc 3 = 12) — thu gọn hoàn toàn 2 hàng 6+6 cũ thành 1 hàng 4 ô thanh thoát.
+     - *Thêm ứng viên tuyển dụng (`hr_candidate_form.html`)*: Hàng 1 (Mã 3 + Họ tên 6 + SĐT 3 = 12); Hàng 2 (Email 3 + Địa chỉ 6 + Nguồn 3 = 12).
+     - *Tạo đơn nghỉ phép (`leave_create.html`)*: Loại nghỉ phép (`span="6"`), Từ ngày (`span="3"`), Đến ngày (`span="3"`) = 12; Lý do (`span="12"`).
+  5. **Hoạt động dự án**:
+     - *Tạo hoạt động dự án (`activity_form.html`)*: Thu gọn Ngày bắt đầu (`span="3"`), Ngày kết thúc (`span="3"`), CBDA (`span="3"`), ĐPV (`span="3"`) = 12 cột.
+- **Kiểm tra và xác nhận**:
+  - `python src/manage.py check`: 0 issues.
+  - `python src/manage.py makemigrations --check --dry-run`: 0 migration, không sửa CSDL.
+  - `git diff --check`: 0 lỗi thụt lề/khoảng trắng.
+  - `ops/check_ui_contrast.py`: 208/208 cặp màu đạt chuẩn tương phản WCAG.
+  - `ops/run_tests.py --backend sqlite apps.portal.test_project_layout apps.portal.test_layout_audit_tools`: 18/18 tests OK.
+  - `ops/run_tests.py --backend sqlite apps.portal`: 247/247 tests OK (skipped=3).
+- **Trạng thái nhánh & bàn giao**:
+  - Nhánh duy nhất: `main`.
+  - Tạo bản sao mã nguồn ngoài repository, kiểm tra tính toàn vẹn SHA-256 từng file trước khi commit/push.
+
+
 ## 2026-10-15 — Tinh chỉnh bố cục gọn gàng, thu gọn ô nhập và gom 2 hàng × 3 ô danh mục biểu mẫu theo phản ánh kiểm thử
 
 **Tóm tắt cho chủ dự án**

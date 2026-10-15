@@ -8,10 +8,10 @@
     <form data-ui-form method="post" class="ui-form-stack ui-finance-form"><div class="ui-form-grid">
 {% include "ui/error_summary.html" %}
         {% csrf_token %}
-        {% include "ui/field.html" with id="dependent-employee" name="employee" label="Nhân viên" required=True options_template="portal/_finance_employee_options.html"  span="6" %}
-        {% include "ui/field.html" with id="dependent-full_name" name="full_name" label="Họ tên người phụ thuộc" type="text" required=True  span="6" %}
-        {% include "ui/field.html" with id="dependent-relationship" name="relationship" label="Quan hệ" type="text" placeholder="Ví dụ: Con, Cha, Mẹ" required=True  span="6" %}
-        {% include "ui/field.html" with id="dependent-registered_from" name="registered_from" label="Đăng ký từ" type="date" required=True  span="6" %}
+        {% include "ui/field.html" with id="dependent-employee" name="employee" label="Nhân viên" required=True options_template="portal/_finance_employee_options.html" span="3" %}
+        {% include "ui/field.html" with id="dependent-full_name" name="full_name" label="Họ tên người phụ thuộc" type="text" required=True span="4" %}
+        {% include "ui/field.html" with id="dependent-relationship" name="relationship" label="Quan hệ" type="text" placeholder="Ví dụ: Con, Cha, Mẹ" required=True span="3" %}
+        {% include "ui/field.html" with id="dependent-registered_from" name="registered_from" label="Đăng ký từ" type="date" required=True span="2" %}
         <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm người phụ thuộc</button></div>
 
 </div></form>

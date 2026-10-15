@@ -12,9 +12,9 @@
 {% include "ui/error_summary.html" %}
         {% csrf_token %}
 
-{% include "ui/field.html" with id="inventory-session-name" name="session_name" label="Tên đợt" placeholder="Ví dụ: Kiểm kê cuối năm 2026" required=True  span="4" %}
+{% include "ui/field.html" with id="inventory-session-name" name="session_name" label="Tên đợt" placeholder="Ví dụ: Kiểm kê cuối năm 2026" required=True  span="5" %}
 {% include "ui/field.html" with id="inventory-office-name" name="office_name" label="Văn phòng / Bộ phận" required=True  span="4" %}
-{% include "ui/field.html" with id="inventory-datetime" name="inventory_datetime" type="datetime-local" label="Thời điểm" required=True  span="4" tablet_span="12" %}
+{% include "ui/field.html" with id="inventory-datetime" name="inventory_datetime" type="datetime-local" label="Thời điểm" required=True  span="3" tablet_span="12" %}
 <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Tạo đợt kiểm kê</button></div>
 
 </div></form>
