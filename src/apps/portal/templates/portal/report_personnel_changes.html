@@ -2,79 +2,146 @@
 {% load ui_components %}
 {% block title %}Báo cáo Biến động nhân sự{% endblock %}
 {% block content %}
-<style>
-    @media print { header, nav, .no-print { display: none !important; } main { max-width: 100% !important; padding: 0 !important; } }
-</style>
-<div class="flex items-center justify-between mb-4 no-print">
-    <h1 class="text-lg font-bold text-gray-900">Báo cáo Biến động nhân sự</h1>
-    <div class="flex gap-3">
-
-        <button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">🖨 In</button>
-    </div>
-</div>
+{% include "ui/page_header.html" with title="Báo cáo Biến động nhân sự" description="Theo dõi nhân sự tuyển mới, thôi việc, điều chuyển và bổ nhiệm trong kỳ." actions_template="portal/_report_print_action.html" %}
 
 <section class="ui-card ui-results-card ui-results-group" aria-label="Kết quả biến động nhân sự">
-<div class="ui-query-card no-print">
-<form method="get" class="ui-query-bar" aria-label="Lọc kỳ biến động nhân sự">
-<div class="ui-query-fields">
-{% include "ui/field.html" with id="report-personnel-changes-from-date" name="from_date" label="Từ ngày" type="date" value=from_date %}
-{% include "ui/field.html" with id="report-personnel-changes-to-date" name="to_date" label="Đến ngày" type="date" value=to_date %}
-</div>
-{% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"from_date,to_date" %}
-</form>
+  <div class="ui-query-card no-print">
+    <form method="get" class="ui-query-bar" aria-label="Lọc kỳ biến động nhân sự">
+      <div class="ui-query-fields">
+        {% include "ui/field.html" with id="report-personnel-changes-from-date" name="from_date" label="Từ ngày" type="date" value=from_date %}
+        {% include "ui/field.html" with id="report-personnel-changes-to-date" name="to_date" label="Đến ngày" type="date" value=to_date %}
+      </div>
+      {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"from_date,to_date" %}
+    </form>
+  </div>
+  <h2 class="text-center font-bold mb-4">Từ {{ from_date|ui_number }} đến {{ to_date|ui_number }}</h2>
 
-</div><h2 class="text-center font-bold mb-4">Từ {{ from_date|ui_number }} đến {{ to_date|ui_number }}</h2>
-
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-    <h3 class="font-bold text-sm mb-2">🟢 Tuyển mới ({{ new_hires|length|ui_number }})</h3>
-    <div class="overflow-x-auto mobile-table-scroll">
-        <table class="w-full text-sm">
-        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-1.5 pr-4">Mã NV</th><th class="py-1.5 pr-4">Họ tên</th><th class="py-1.5 pr-4">Phòng ban</th><th class="py-1.5">Ngày vào làm</th></tr></thead>
-        <tbody class="divide-y divide-gray-100">
-        {% for e in new_hires %}<tr><td class="py-1.5 pr-4">{{ e.employee_code|ui_number }}</td><td class="py-1.5 pr-4">{{ e.full_name|ui_number }}</td><td class="py-1.5 pr-4">{{ e.department|ui_number }}</td><td class="py-1.5">{{ e.join_date|ui_number }}</td></tr>
-        {% empty %}<tr><td colspan="4" class="py-3 text-gray-400">Không có.</td></tr>{% endfor %}
+  <div class="ui-card mb-4">
+    <h3 class="font-bold text-sm mb-2 flex items-center gap-2">
+      <span class="ui-badge ui-badge--success">Tuyển mới</span>
+      <span>({{ new_hires|length|ui_number }})</span>
+    </h3>
+    <div class="overflow-x-auto mobile-table-scroll ui-scroll" role="region" aria-label="Bảng nhân sự tuyển mới; cuộn ngang để xem đủ cột" tabindex="0">
+      <table class="ui-table">
+        <caption class="ui-sr-only">Danh sách nhân sự tuyển mới</caption>
+        <thead>
+          <tr>
+            <th scope="col">Mã NV</th>
+            <th scope="col">Họ tên</th>
+            <th scope="col">Phòng ban</th>
+            <th scope="col">Ngày vào làm</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in new_hires %}
+          <tr>
+            <td>{{ e.employee_code|ui_number }}</td>
+            <td class="font-medium">{{ e.full_name|ui_number }}</td>
+            <td>{{ e.department|ui_number }}</td>
+            <td>{{ e.join_date|ui_date }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="py-3 text-center text-gray-400">Không có nhân sự tuyển mới trong kỳ.</td></tr>
+          {% endfor %}
         </tbody>
-    </table>
+      </table>
     </div>
-</div>
+  </div>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-    <h3 class="font-bold text-sm mb-2">🔴 Nghỉ việc ({{ departures|length|ui_number }})</h3>
-    <div class="overflow-x-auto mobile-table-scroll">
-        <table class="w-full text-sm">
-        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-1.5 pr-4">Mã NV</th><th class="py-1.5 pr-4">Họ tên</th><th class="py-1.5 pr-4">Phòng ban</th><th class="py-1.5">Ngày nghỉ việc</th></tr></thead>
-        <tbody class="divide-y divide-gray-100">
-        {% for e in departures %}<tr><td class="py-1.5 pr-4">{{ e.employee_code|ui_number }}</td><td class="py-1.5 pr-4">{{ e.full_name|ui_number }}</td><td class="py-1.5 pr-4">{{ e.department|ui_number }}</td><td class="py-1.5">{{ e.leave_date|ui_number }}</td></tr>
-        {% empty %}<tr><td colspan="4" class="py-3 text-gray-400">Không có.</td></tr>{% endfor %}
+  <div class="ui-card mb-4">
+    <h3 class="font-bold text-sm mb-2 flex items-center gap-2">
+      <span class="ui-badge ui-badge--danger">Nghỉ việc</span>
+      <span>({{ departures|length|ui_number }})</span>
+    </h3>
+    <div class="overflow-x-auto mobile-table-scroll ui-scroll" role="region" aria-label="Bảng nhân sự thôi việc; cuộn ngang để xem đủ cột" tabindex="0">
+      <table class="ui-table">
+        <caption class="ui-sr-only">Danh sách nhân sự thôi việc</caption>
+        <thead>
+          <tr>
+            <th scope="col">Mã NV</th>
+            <th scope="col">Họ tên</th>
+            <th scope="col">Phòng ban</th>
+            <th scope="col">Ngày nghỉ việc</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in departures %}
+          <tr>
+            <td>{{ e.employee_code|ui_number }}</td>
+            <td class="font-medium">{{ e.full_name|ui_number }}</td>
+            <td>{{ e.department|ui_number }}</td>
+            <td>{{ e.leave_date|ui_date }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="py-3 text-center text-gray-400">Không có nhân sự nghỉ việc trong kỳ.</td></tr>
+          {% endfor %}
         </tbody>
-    </table>
+      </table>
     </div>
-</div>
+  </div>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-    <h3 class="font-bold text-sm mb-2">🔀 Điều chuyển ({{ transfers|length|ui_number }})</h3>
-    <div class="overflow-x-auto mobile-table-scroll">
-        <table class="w-full text-sm">
-        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-1.5 pr-4">Nhân viên</th><th class="py-1.5 pr-4">Từ phòng</th><th class="py-1.5 pr-4">Đến phòng</th><th class="py-1.5">Ngày hiệu lực</th></tr></thead>
-        <tbody class="divide-y divide-gray-100">
-        {% for t in transfers %}<tr><td class="py-1.5 pr-4">{{ t.employee|ui_number }}</td><td class="py-1.5 pr-4">{{ t.from_department|ui_number }}</td><td class="py-1.5 pr-4">{{ t.to_department|ui_number }}</td><td class="py-1.5">{{ t.effective_date|ui_number }}</td></tr>
-        {% empty %}<tr><td colspan="4" class="py-3 text-gray-400">Không có.</td></tr>{% endfor %}
+  <div class="ui-card mb-4">
+    <h3 class="font-bold text-sm mb-2 flex items-center gap-2">
+      <span class="ui-badge ui-badge--info">Điều chuyển</span>
+      <span>({{ transfers|length|ui_number }})</span>
+    </h3>
+    <div class="overflow-x-auto mobile-table-scroll ui-scroll" role="region" aria-label="Bảng điều chuyển nhân sự; cuộn ngang để xem đủ cột" tabindex="0">
+      <table class="ui-table">
+        <caption class="ui-sr-only">Danh sách nhân sự điều chuyển</caption>
+        <thead>
+          <tr>
+            <th scope="col">Nhân viên</th>
+            <th scope="col">Từ phòng</th>
+            <th scope="col">Đến phòng</th>
+            <th scope="col">Ngày hiệu lực</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in transfers %}
+          <tr>
+            <td class="font-medium">{{ t.employee|ui_number }}</td>
+            <td>{{ t.from_department|ui_number }}</td>
+            <td>{{ t.to_department|ui_number }}</td>
+            <td>{{ t.effective_date|ui_date }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="py-3 text-center text-gray-400">Không có nhân sự điều chuyển trong kỳ.</td></tr>
+          {% endfor %}
         </tbody>
-    </table>
+      </table>
     </div>
-</div>
+  </div>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <h3 class="font-bold text-sm mb-2">⬆️ Bổ nhiệm / Thăng chức ({{ promotions|length|ui_number }})</h3>
-    <div class="overflow-x-auto mobile-table-scroll">
-        <table class="w-full text-sm">
-        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-1.5 pr-4">Nhân viên</th><th class="py-1.5 pr-4">Vị trí cũ</th><th class="py-1.5 pr-4">Vị trí mới</th><th class="py-1.5">Ngày hiệu lực</th></tr></thead>
-        <tbody class="divide-y divide-gray-100">
-        {% for p in promotions %}<tr><td class="py-1.5 pr-4">{{ p.employee|ui_number }}</td><td class="py-1.5 pr-4">{{ p.old_position|ui_number }}</td><td class="py-1.5 pr-4">{{ p.new_position|ui_number }}</td><td class="py-1.5">{{ p.effective_date|ui_number }}</td></tr>
-        {% empty %}<tr><td colspan="4" class="py-3 text-gray-400">Không có.</td></tr>{% endfor %}
+  <div class="ui-card">
+    <h3 class="font-bold text-sm mb-2 flex items-center gap-2">
+      <span class="ui-badge ui-badge--accent">Bổ nhiệm / Thăng chức</span>
+      <span>({{ promotions|length|ui_number }})</span>
+    </h3>
+    <div class="overflow-x-auto mobile-table-scroll ui-scroll" role="region" aria-label="Bảng bổ nhiệm và thăng chức; cuộn ngang để xem đủ cột" tabindex="0">
+      <table class="ui-table">
+        <caption class="ui-sr-only">Danh sách nhân sự bổ nhiệm và thăng chức</caption>
+        <thead>
+          <tr>
+            <th scope="col">Nhân viên</th>
+            <th scope="col">Vị trí cũ</th>
+            <th scope="col">Vị trí mới</th>
+            <th scope="col">Ngày hiệu lực</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in promotions %}
+          <tr>
+            <td class="font-medium">{{ p.employee|ui_number }}</td>
+            <td>{{ p.old_position|ui_number }}</td>
+            <td>{{ p.new_position|ui_number }}</td>
+            <td>{{ p.effective_date|ui_date }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="py-3 text-center text-gray-400">Không có nhân sự bổ nhiệm hoặc thăng chức trong kỳ.</td></tr>
+          {% endfor %}
         </tbody>
-    </table>
+      </table>
     </div>
-</div>
+  </div>
 </section>
 {% endblock %}

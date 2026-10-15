@@ -2,6 +2,42 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-15 — Giai đoạn 5 – Chuẩn hóa toàn bộ hệ thống Báo cáo (commit ui: reports)
+
+**Tóm tắt & Mục tiêu**
+- Rà soát và chuẩn hóa toàn diện giao diện các trang Báo cáo phân hệ Portal (`report_personnel_changes`, `report_timesheet`, `report_budget`, `report_headcount`, `_pagination`) theo tiêu chuẩn thiết kế Impeccable đã chốt:
+  1. **Kiểm kê quyền truy cập báo cáo**:
+     - Phân tích và đối chiếu hàm `_can_view_reports(request)`: Tại `src/apps/reporting/views.py` kiểm tra permission `"view_report_center"`, phục vụ trung tâm dữ liệu và phân tích tổng quan; tại `src/apps/portal/views/reports_planning.py` kiểm tra permission `"view_reports"`, phục vụ báo cáo tác nghiệp kế hoạch và nhân sự.
+     - Bảo toàn tuyệt đối quyền hạn và ma trận phân quyền: Giữ độc lập hai hàm kiểm tra, không hợp nhất, không thay đổi logic; bảo vệ dữ liệu nhạy cảm của Báo cáo ngân sách và Biến động nhân sự, không nới lỏng hay thu hẹp phạm vi phòng ban được phép xem của người dùng.
+  2. **Biến động nhân sự (`report_personnel_changes.html`)**:
+     - Loại bỏ toàn bộ 4 emoji section (`🟢 Tuyển mới`, `🔴 Nghỉ việc`, `🔀 Điều chuyển`, `⬆️ Bổ nhiệm / Thăng chức`), thay bằng nhãn ngữ nghĩa với huy hiệu chuẩn một dòng: `.ui-badge--success`, `.ui-badge--danger`, `.ui-badge--info`, `.ui-badge--accent`.
+     - Thay nút In emoji `🖨` cũ bằng action template dùng chung `portal/_report_print_action.html` (`ui-button ui-button--secondary`).
+     - Định dạng ngày tháng bằng `ui_date` (`%d/%m/%Y`), bảng dữ liệu `.ui-table` với `caption.ui-sr-only`, bảo toàn đúng 4 wrapper `mobile-table-scroll` đáp ứng kiểm thử responsive `tests_mobile.py`.
+  3. **Chấm công & Tồn phép (`report_timesheet.html`)**:
+     - Loại bỏ khối `<style> @media print ... </style>` nhúng trang; áp dụng `ui/page_header.html` kèm nút In báo cáo.
+     - Cải tổ bảng từ viền thô `border-gray-300` sang bảng `.ui-table` chuẩn thanh thoát; số giờ căn phải `tabular-nums`; trạng thái "chờ duyệt" dùng `.ui-badge--warning`; giữ năm thô (`ui_year`).
+  4. **Ngân sách năm (`report_budget.html`)**:
+     - Áp dụng `ui/page_header.html`, thẻ bộ lọc `ui-query-card`, bảng `.ui-table`. Cột số tiền sử dụng bộ lọc tiền tệ chuẩn `ui_vnd` (`xxx.xxx đ`), số dư âm hiển thị cảnh báo, container cuộn có `role="region"` và tabindex đầy đủ.
+  5. **Định biên nhân sự (`report_headcount.html`)**:
+     - Dọn sạch các lớp Tailwind dư thừa trên thead (`text-left text-gray-500 border-b border-gray-200`, `py-2 pr-4`), đồng bộ cấu trúc `ui-page-header`, bảo toàn 100% bố cục và lớp chuyên biệt `headcount_report.css` cùng các selector kiểm thử.
+  6. **Phân trang dùng chung (`_pagination.html`)**:
+     - Chuẩn hóa thống nhất toàn bộ về cấu trúc `.ui-pagination` với `.ui-button`, `aria-label="Phân trang danh sách"`, `aria-current="page"`, `ui_number`, triệt tiêu toàn bộ lớp Tailwind cũ (`text-gray-600`, `text-blue-700 underline`, `flex gap-4`).
+  7. **Tinh chỉnh căn chỉnh form tài sản (`asset_admin_list.html`)**:
+     - Bổ sung `tablet_span="12"` cho trường `purchase_value` để trên màn hình tablet (768px–1023px) mỗi hàng đạt trọn vẹn 12 cột, giải quyết triệt để 8 trường hợp `ROW_HOLE` tại 768px.
+
+**Kết quả kiểm tra & Cổng chất lượng**
+- `ops/run_layout_alignment_audit.py` (--phase after): 146 routes, 7021 cases, **0 vi phạm**, **0 lỗi** (quét toàn bộ route/vai trò ở 1920/1756/1440/1280/1024/768/390px, sáng/tối).
+- `ops/run_form_contract_uat.py` (--phase after): 1314 cases, **0 failures** (bảo toàn 100% hợp đồng trường, tên, thuộc tính, CSRF).
+- `ops/run_print_layout_uat.py` (--port 8782): 402 checks, 37 PDFs xuất chuẩn, **0 failures**.
+- `src/manage.py test apps.portal.test_headcount_design apps.portal.tests_mobile apps.portal.test_project_layout apps.portal.tests_shared_components`: 24/24 tests OK.
+- `src/manage.py check`: 0 issues.
+- `src/manage.py makemigrations --check`: No changes detected.
+- `ops/check_ui_contrast.py`: 208/208 color pairs pass WCAG standards.
+
+**Trạng thái nhánh & Bàn giao**
+- Nhánh: `main`.
+- Đã đóng gói bản sao kiểm toán ngoài repository tại `D:\QLHCNS-Backups\IHRMS_Review_20261015_Reports.zip` kèm manifest SHA-256 xác minh 100%.
+
 ## 2026-10-15 — Chốt chất lượng hệ thống form và kiểm toán căn chỉnh (commit fix(ui): consolidate form grid after review)
 
 **Tóm tắt & Mục tiêu**

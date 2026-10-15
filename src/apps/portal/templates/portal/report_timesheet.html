@@ -2,60 +2,54 @@
 {% load ui_components %}
 {% block title %}Báo cáo Chấm công{% endblock %}
 {% block content %}
-<style>
-    @media print { header, nav, .no-print { display: none !important; } main { max-width: 100% !important; padding: 0 !important; } }
-</style>
-<div class="flex items-center justify-between mb-4 no-print">
-    <h1 class="text-lg font-bold text-gray-900">Báo cáo Chấm công & Tồn phép</h1>
-    <div class="flex gap-3">
-
-        <button onclick="window.print()" class="bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-md transition">🖨 In</button>
-    </div>
-</div>
+{% include "ui/page_header.html" with title="Báo cáo Chấm công & Tồn phép" description="Tổng hợp số giờ làm việc thực tế, giờ chuẩn theo lịch và số ngày nghỉ phép còn lại." actions_template="portal/_report_print_action.html" %}
 
 <div class="ui-card ui-results-card">
-    <h2 class="text-center font-bold mb-4">Báo cáo Chấm công tháng {{ month }}/{{ year|ui_year }}</h2>
-<div class="ui-query-card no-print">
-<form method="get" class="ui-query-bar" aria-label="Lọc kỳ chấm công">
-<div class="ui-query-fields">
-{% include "ui/field.html" with id="report-timesheet-month" name="month" label="Tháng" options_template="ui/query_options/report_timesheet-month.html" %}
-{% include "ui/field.html" with id="report-timesheet-year" name="year" label="Năm" options_template="ui/query_options/report_timesheet-year.html" %}
-</div>
-{% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"month,year" %}
-</form>
-<p class="ui-results-count" aria-live="polite">Có {{ rows|length|ui_number }} nhân viên phù hợp.</p>
-</div>
+  <h2 class="text-center font-bold mb-4">Báo cáo Chấm công tháng {{ month|ui_number }}/{{ year|ui_year }}</h2>
+  <div class="ui-query-card no-print">
+    <form method="get" class="ui-query-bar" aria-label="Lọc kỳ chấm công">
+      <div class="ui-query-fields">
+        {% include "ui/field.html" with id="report-timesheet-month" name="month" label="Tháng" options_template="ui/query_options/report_timesheet-month.html" %}
+        {% include "ui/field.html" with id="report-timesheet-year" name="year" label="Năm" options_template="ui/query_options/report_timesheet-year.html" %}
+      </div>
+      {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"month,year" %}
+    </form>
+    <p class="ui-results-count" aria-live="polite">Có {{ rows|length|ui_number }} nhân viên phù hợp.</p>
+  </div>
 
-    <div class="overflow-x-auto">
-    <table class="w-full text-sm border border-gray-300 border-collapse">
-        <thead>
-            <tr class="bg-gray-100">
-                <th class="border border-gray-300 px-2 py-1.5 text-left">Nhân viên</th>
-                <th class="border border-gray-300 px-2 py-1.5 text-left">Phòng ban</th>
-                <th class="border border-gray-300 px-2 py-1.5">Giờ đã làm</th>
-                <th class="border border-gray-300 px-2 py-1.5">Giờ cần làm</th>
-                <th class="border border-gray-300 px-2 py-1.5">Chênh lệch</th>
-                <th class="border border-gray-300 px-2 py-1.5">Phép còn lại (năm)</th>
-            </tr>
-        </thead>
-        <tbody>
+  <div class="overflow-x-auto mobile-table-scroll ui-scroll" role="region" aria-label="Bảng tổng hợp chấm công tháng {{ month|ui_number }}/{{ year|ui_year }}; cuộn ngang để xem đủ cột" tabindex="0">
+    <table class="ui-table">
+      <caption class="ui-sr-only">Báo cáo chấm công tháng {{ month|ui_number }}/{{ year|ui_year }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">Nhân viên</th>
+          <th scope="col">Phòng ban</th>
+          <th scope="col" class="ui-number">Giờ đã làm</th>
+          <th scope="col" class="ui-number">Giờ cần làm</th>
+          <th scope="col" class="ui-number">Chênh lệch</th>
+          <th scope="col" class="ui-number">Phép còn lại (năm)</th>
+        </tr>
+      </thead>
+      <tbody>
         {% for r in rows %}
         <tr>
-            <td class="border border-gray-300 px-2 py-1.5">
-                {{ r.employee.employee_code|ui_number }} - {{ r.employee.full_name|ui_number }}
-                {% if r.has_pending_summary %}<span class="inline-block bg-amber-100 text-amber-700 text-xs font-medium px-1.5 py-0.5 rounded ml-1">chờ duyệt</span>{% endif %}
-            </td>
-            <td class="border border-gray-300 px-2 py-1.5">{{ r.employee.department|ui_number }}</td>
-            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ r.total_hours|ui_number }}</td>
-            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ r.required_hours|ui_number }}</td>
-            <td class="border border-gray-300 px-2 py-1.5 text-center {% if r.diff_hours < 0 %}text-red-600{% else %}text-green-700{% endif %}">{{ r.diff_hours|ui_number }}</td>
-            <td class="border border-gray-300 px-2 py-1.5 text-center">{{ r.leave_remaining|default:"—"|ui_number }}</td>
+          <td>
+            <span class="font-medium">{{ r.employee.employee_code|ui_number }} - {{ r.employee.full_name|ui_number }}</span>
+            {% if r.has_pending_summary %}
+              <span class="ui-badge ui-badge--warning ml-1">chờ duyệt</span>
+            {% endif %}
+          </td>
+          <td>{{ r.employee.department|ui_number }}</td>
+          <td class="ui-number tabular-nums">{{ r.total_hours|ui_number }}</td>
+          <td class="ui-number tabular-nums">{{ r.required_hours|ui_number }}</td>
+          <td class="ui-number tabular-nums {% if r.diff_hours < 0 %}text-red-600{% else %}text-green-700{% endif %}">{{ r.diff_hours|ui_number }}</td>
+          <td class="ui-number tabular-nums">{{ r.leave_remaining|default:"—"|ui_number }}</td>
         </tr>
         {% empty %}
-        <tr><td colspan="6" class="py-6 text-center text-gray-400">Không có dữ liệu.</td></tr>
+        <tr><td colspan="6" class="py-6 text-center text-gray-400">Không có dữ liệu chấm công cho kỳ đã chọn.</td></tr>
         {% endfor %}
-        </tbody>
+      </tbody>
     </table>
-    </div>
+  </div>
 </div>
 {% endblock %}

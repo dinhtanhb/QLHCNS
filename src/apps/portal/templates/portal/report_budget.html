@@ -2,36 +2,44 @@
 {% load ui_components %}
 {% block title %}Báo cáo Ngân sách{% endblock %}
 {% block content %}
-<div class="flex items-center justify-between mb-4">
-    <h1 class="text-lg font-bold text-gray-900">Báo cáo Ngân sách năm</h1>
-
-</div>
+{% include "ui/page_header.html" with title="Báo cáo Ngân sách năm" description="Theo dõi ngân sách kế hoạch được duyệt và tình hình chi tiêu thực tế theo từng hạng mục." %}
 
 <div class="ui-card ui-results-card">
-<div class="ui-query-card no-print">
-<form method="get" class="ui-query-bar" aria-label="Lọc năm ngân sách">
-<div class="ui-query-fields">
-{% include "ui/field.html" with id="report-budget-year" name="year" label="Năm" options_template="ui/query_options/report_budget-year.html" %}
-</div>
-{% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"year" %}
-</form>
-<p class="ui-results-count" aria-live="polite">Có {{ rows|length|ui_number }} hạng mục phù hợp.</p>
-</div>
-    <div class="overflow-x-auto mobile-table-scroll">
-        <table class="w-full text-sm">
-        <thead><tr class="text-left text-gray-500 border-b border-gray-200"><th class="py-2 pr-4">Hạng mục</th><th class="py-2 pr-4">Phòng ban</th><th class="py-2 pr-4">Ngân sách duyệt</th><th class="py-2 pr-4">Đã chi</th><th class="py-2">Còn lại</th></tr></thead>
-        <tbody class="divide-y divide-gray-100">
+  <div class="ui-query-card no-print">
+    <form method="get" class="ui-query-bar" aria-label="Lọc năm ngân sách">
+      <div class="ui-query-fields">
+        {% include "ui/field.html" with id="report-budget-year" name="year" label="Năm" options_template="ui/query_options/report_budget-year.html" %}
+      </div>
+      {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"year" %}
+    </form>
+    <p class="ui-results-count" aria-live="polite">Có {{ rows|length|ui_number }} hạng mục phù hợp.</p>
+  </div>
+  <div class="overflow-x-auto mobile-table-scroll ui-scroll" role="region" aria-label="Bảng ngân sách năm {{ year|ui_year }}; cuộn ngang để xem đủ cột" tabindex="0">
+    <table class="ui-table">
+      <caption class="ui-sr-only">Báo cáo ngân sách năm {{ year|ui_year }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">Hạng mục</th>
+          <th scope="col">Phòng ban</th>
+          <th scope="col" class="ui-number">Ngân sách duyệt</th>
+          <th scope="col" class="ui-number">Đã chi</th>
+          <th scope="col" class="ui-number">Còn lại</th>
+        </tr>
+      </thead>
+      <tbody>
         {% for r in rows %}
         <tr>
-            <td class="py-2 pr-4 font-medium">{{ r.budget.get_category_display|ui_number }}</td>
-            <td class="py-2 pr-4">{{ r.budget.department|default:"Toàn Trung tâm"|ui_number }}</td>
-            <td class="py-2 pr-4">{{ r.budget.allocated_amount|floatformat:"0g" }} đ</td>
-            <td class="py-2 pr-4">{{ r.actual|floatformat:"0g" }} đ</td>
-            <td class="py-2 {% if r.remaining < 0 %}text-red-600{% else %}text-green-700{% endif %}">{{ r.remaining|floatformat:"0g" }} đ</td>
+          <td class="font-medium">{{ r.budget.get_category_display|ui_number }}</td>
+          <td>{{ r.budget.department|default:"Toàn Trung tâm"|ui_number }}</td>
+          <td class="ui-number tabular-nums">{{ r.budget.allocated_amount|ui_vnd }}</td>
+          <td class="ui-number tabular-nums">{{ r.actual|ui_vnd }}</td>
+          <td class="ui-number tabular-nums {% if r.remaining < 0 %}text-red-600{% else %}text-green-700{% endif %}">{{ r.remaining|ui_vnd }}</td>
         </tr>
-        {% empty %}<tr><td colspan="5" class="py-6 text-center text-gray-400">Chưa có ngân sách cho năm {{ year|ui_year }}.</td></tr>{% endfor %}
-        </tbody>
+        {% empty %}
+        <tr><td colspan="5" class="py-6 text-center text-gray-400">Chưa có ngân sách cho năm {{ year|ui_year }}.</td></tr>
+        {% endfor %}
+      </tbody>
     </table>
-    </div>
+  </div>
 </div>
 {% endblock %}
