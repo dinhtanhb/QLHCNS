@@ -1,4 +1,5 @@
 /* Screen-only reporting pattern; original print cells retain their raw values. */
+@layer pages {
 @media screen {
  .headcount-report { display:grid; gap:var(--ui-space-6); max-width:var(--ui-content-max-width); margin-inline:auto; min-width:0; color:var(--ui-text); font-size:var(--ui-text-label); line-height:var(--ui-leading-label); }
  .headcount-report .headcount-page-header { margin:0; }
@@ -22,4 +23,5 @@
  .headcount-report .headcount-gap .ui-icon { width:var(--ui-icon-medium); height:var(--ui-icon-medium); }
  .headcount-report :is(a,button,input,select,.headcount-scroll):focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:var(--ui-focus-offset); }
  @media(max-width:767px) { .headcount-report .headcount-scroll-hint { display:block; } }
+}
 }

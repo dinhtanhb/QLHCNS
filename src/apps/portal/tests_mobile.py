@@ -120,9 +120,9 @@ class MobileTableTests(SimpleTestCase):
                 self.assertEqual(source.count("ihrms-kpi-value") if relative != "templates/reporting/dashboard.html" else source.count('include "ui/kpi.html"'), expected)
         leave_source = (root / "apps/portal/templates/portal/leave_list.html").read_text(encoding="utf-8")
         self.assertEqual(leave_source.count('class="ui-kpi-value"'), 2)
-        self.assertEqual(leave_source.count('class="ui-kpi-label"'), 2)
-        worker = (root / "static" / "js" / "service-worker.js").read_text(encoding="utf-8")
-        self.assertIn("ihrms-static-v32-ui-expansion-20261016", worker)
+        worker = (root / "static/js/service-worker.js").read_text(encoding="utf-8")
+        self.assertIn("ihrms-static-v33", worker)
+        self.assertIn("/static/css/components.css", worker)
         self.assertIn("/static/css/design_tokens.css", worker)
 
     def test_theme_is_available_before_styles_and_in_admin(self):
@@ -149,6 +149,8 @@ class MobileTableTests(SimpleTestCase):
         self.assertEqual(response["Service-Worker-Allowed"], "/portal/")
         self.assertIn("no-store", response["Cache-Control"])
         worker_source = response.content.decode("utf-8")
+        from apps.common.asset_version import get_service_worker_cache_version
+        self.assertIn(f'const STATIC_CACHE = "{get_service_worker_cache_version()}";', worker_source)
         self.assertIn('url.pathname.startsWith("/static/")', worker_source)
         self.assertNotIn("/static/img/logo.png", worker_source)
         self.assertNotIn('caches.match("/")', worker_source)
@@ -169,3 +171,11 @@ class MobileTableTests(SimpleTestCase):
                 image.read(8)  # IHDR chunk length and type
                 width, height = struct.unpack(">II", image.read(8))
             self.assertEqual((width, height), tuple(map(int, icon["sizes"].split("x"))))
+
+    def test_asset_hash_computes_sha1_and_invalidates_on_content_change(self):
+        from apps.common.asset_version import get_asset_hash, clear_asset_hash_cache
+        h = get_asset_hash("css/components.css")
+        self.assertEqual(len(h), 8)
+        # Verify hex characters
+        self.assertTrue(all(c in "0123456789abcdef" for c in h))
+

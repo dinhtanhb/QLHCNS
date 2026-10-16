@@ -83,6 +83,13 @@ def pairings():
     # Phase-two bounded lists and timestamp/count text reuse the same tokens.
     pairs.extend((("text", "surface", 4.5), ("text-muted", "surface", 4.5),
                   ("link", "surface", 4.5), ("focus", "surface", 3)))
+    # Refactoring UI emphasis tokens & card header tint
+    pairs.extend((("brand-700", "surface", 4.5),
+                  ("brand-700", "surface-tint", 4.5),
+                  ("text", "surface-tint", 4.5),
+                  ("text-muted", "surface-tint", 4.5),
+                  ("brand-600", "surface", 3),
+                  ("brand-600", "surface-tint", 3)))
     return pairs
 
 

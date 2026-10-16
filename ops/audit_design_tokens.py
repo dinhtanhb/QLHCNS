@@ -14,8 +14,8 @@ if hasattr(sys.stdout, "reconfigure"):
 if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8")
 
-# Paths to scan
-EXCLUDE_CSS = {"tailwind.css", "admin.css"}
+# Paths to scan (screen CSS; print and vendor stylesheets excluded from screen token audit)
+EXCLUDE_CSS = {"tailwind.css", "admin.css", "print_forms.css", "hcns_forms.css"}
 ALLOWED_TYPE_SCALE_PX = {14, 16, 18, 20, 24, 30, 36, 48, 60, 72}
 ALLOWED_TYPE_SCALE_REM = {0.875, 1.0, 1.125, 1.25, 1.5, 1.875, 2.25, 3.0, 3.75, 4.5}
 ALLOWED_SPACING_PX = {0, 1, 2, 4, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192, 256, 384, 512, 640, 768}

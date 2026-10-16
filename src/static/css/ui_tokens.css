@@ -1,5 +1,5 @@
 /* Refactoring UI Architecture — Cascade Layers & Design Tokens */
-@layer tokens, base, components, layouts, pages;
+@layer legacy, reset, tokens, base, components, layouts, pages;
 
 @layer tokens {
 :root {
@@ -164,10 +164,15 @@ html[data-theme="light"] {
     --ui-action-hover: var(--ui-brand-hover);
     --ui-on-action: var(--ui-on-brand);
 
+    --ui-surface-tint: #f2f9f6;
+    --ui-brand-600: #0b7461;
+    --ui-brand-700: #085e50;
+
     --ui-card-border: #d9e3df;
     --ui-sidebar-muted: #4b6171;
     --ui-sidebar-divider: #d9e3df;
-    --ui-sidebar-focus: #0b7461;}
+    --ui-sidebar-focus: #0b7461;
+}
 
 html[data-theme="dark"] {
     --ui-sidebar-bg: #0c233b;
@@ -227,7 +232,12 @@ html[data-theme="dark"] {
     --ui-action-hover: var(--ui-brand-hover);
     --ui-on-action: var(--ui-on-brand);
 
-    --ui-card-border: #314955;}
+    --ui-surface-tint: #132a26;
+    --ui-brand-600: #63dbc2;
+    --ui-brand-700: #8ee7d4;
+
+    --ui-card-border: #314955;
+}
 
 /* Variables only; consumers must explicitly use these motion tokens. */
 @media (prefers-reduced-motion: reduce) {

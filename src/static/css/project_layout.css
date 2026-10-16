@@ -1,73 +1,61 @@
 /* Application screen layout. Paper templates and admin navigation are separate. */
+@layer layouts {
 @media screen {
- .portal-app .ui-main { --ui-split-columns:minmax(0,3fr) minmax(0,2fr); }
+ .ui-main { --ui-split-columns:minmax(0,3fr) minmax(0,2fr); }
 
- .portal-app .ui-main :is(.text-xs,[class~="text-[10px]"],[class~="text-[11px]"],[class~="text-[12px]"],small):not(.hcns-paper *):not(svg *):not(.hcns-editor *) { font-size:var(--ui-font-size-small); }
- .portal-app .ui-main :is(.ui-layout-split) > :is(.col-span-2,[class~="md:col-span-2"],[class~="sm:col-span-2"]) { grid-column:1 / -1; }
- .portal-app .ui-main .ui-layout-split { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--ui-space-4); }
- .portal-app .ui-main :is(.decision-workflow) { grid-template-columns:minmax(0,1fr); }
- .portal-app .ui-main :is(.ui-detail-grid,.ui-detail-sections,.ui-finance-grid,.ui-recruitment-grid,.ui-report-export-grid,.report-visuals,.report-section-grid,.timesheet-summary-layout):not(.hcns-editor *):not(.hcns-paper *) { grid-template-columns:minmax(0,1fr); gap:var(--ui-space-4); }
- .portal-app .ui-main .ui-inline-create { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:var(--ui-space-4); align-items:end; }
- .portal-app .ui-main .ui-inline-create-fields { display:grid; grid-template-columns:repeat(auto-fit,minmax(12rem,1fr)); gap:var(--ui-space-3); }
- .portal-app .ui-main .ui-inline-create-fields label { font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); }
- .portal-app .ui-main .ui-inline-create-fields input { display:block; width:100%; min-width:0; margin-top:var(--ui-space-2); }
- .portal-app .ui-main .ui-inline-create > .ui-button { justify-self:end; max-width:18rem; white-space:normal; }
+ .ui-main :is(.text-xs,[class~="text-[10px]"],[class~="text-[11px]"],[class~="text-[12px]"],small):not(.hcns-paper *):not(svg *):not(.hcns-editor *) { font-size:var(--ui-font-size-small); }
+ .ui-layout-split > :is(.col-span-2,[class~="md:col-span-2"],[class~="sm:col-span-2"]) { grid-column:1 / -1; }
+ .ui-layout-split { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--ui-space-4); }
+ .decision-workflow { grid-template-columns:minmax(0,1fr); }
+ :is(.ui-detail-grid,.ui-detail-sections,.ui-finance-grid,.ui-recruitment-grid,.ui-report-export-grid,.report-visuals,.report-section-grid,.timesheet-summary-layout):not(.hcns-editor *):not(.hcns-paper *) { grid-template-columns:minmax(0,1fr); gap:var(--ui-space-4); }
+ .ui-inline-create { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:var(--ui-space-4); align-items:end; }
+ .ui-inline-create-fields { display:grid; grid-template-columns:repeat(auto-fit,minmax(12rem,1fr)); gap:var(--ui-space-3); }
+ .ui-inline-create-fields label { font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); }
+ .ui-inline-create-fields input { display:block; width:100%; min-width:0; margin-top:var(--ui-space-2); }
+ .ui-inline-create > .ui-button { justify-self:end; max-width:18rem; white-space:normal; }
  @media(min-width:1280px) {
-  .portal-app .ui-main :is(.decision-workflow,.ui-recruitment-steps,.home-action-grid) { grid-template-columns:var(--ui-split-columns); }
-  .portal-app .ui-main :is(.ui-layout-split,.ui-detail-grid,.ui-detail-sections,.ui-finance-grid,.ui-recruitment-grid,.ui-report-export-grid,.report-visuals,.report-section-grid,.timesheet-summary-layout):not(.hcns-editor *):not(.hcns-paper *) { grid-template-columns:var(--ui-split-columns); }
-  .portal-app .ui-main .ui-page :is(.home-kpi-grid,.ui-kpi-grid,.phase2-metric-grid):has(> :last-child:nth-child(2)) { grid-template-columns:var(--ui-split-columns); }
+  :is(.decision-workflow,.ui-recruitment-steps,.home-action-grid) { grid-template-columns:var(--ui-split-columns); }
+  :is(.ui-layout-split,.ui-detail-grid,.ui-detail-sections,.ui-finance-grid,.ui-recruitment-grid,.ui-report-export-grid,.report-visuals,.report-section-grid,.timesheet-summary-layout):not(.hcns-editor *):not(.hcns-paper *) { grid-template-columns:var(--ui-split-columns); }
+  .ui-page :is(.home-kpi-grid,.ui-kpi-grid,.phase2-metric-grid):has(> :last-child:nth-child(2)) { grid-template-columns:var(--ui-split-columns); }
  }
- .portal-app .ui-main .ui-layout-split:has(> :only-child) { grid-template-columns:minmax(0,1fr); }
- .portal-app .ui-main :is(.ui-detail-sections,.ui-finance-grid,.ui-recruitment-grid,.ui-report-export-grid,.report-visuals,.report-section-grid):has(> :only-child) { grid-template-columns:minmax(0,1fr); }
+ .ui-layout-split:has(> :only-child) { grid-template-columns:minmax(0,1fr); }
+ :is(.ui-detail-sections,.ui-finance-grid,.ui-recruitment-grid,.ui-report-export-grid,.report-visuals,.report-section-grid):has(> :only-child) { grid-template-columns:minmax(0,1fr); }
  @media(max-width:600px) {
-  .portal-app .ui-main .ui-inline-create { grid-template-columns:minmax(0,1fr); }
+  .ui-inline-create { grid-template-columns:minmax(0,1fr); }
  }
- .portal-app .ui-main .ui-login-wrap {
+ .ui-login-wrap {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: calc(70vh - var(--ui-header-min-height));
   padding-block: var(--ui-space-8);
  }
- .portal-app .ui-main .ui-login-wrap .ui-card {
+ .ui-login-wrap .ui-card {
   width: 100%;
   max-width: 24rem;
   margin: 0 auto;
   padding: var(--ui-space-8);
  }
- .portal-app .ui-main .ui-login-wrap .ui-login-header {
+ .ui-login-wrap .ui-login-header {
   text-align: center;
   margin-bottom: var(--ui-space-6);
  }
- .portal-app .ui-main .ui-login-wrap .ui-login-logo {
+ .ui-login-wrap .ui-login-logo {
   height: 2.5rem;
   width: auto;
   margin: 0 auto var(--ui-space-3);
   display: block;
  }
- .portal-app .ui-main .ui-login-wrap .ui-field {
-  display: grid;
-  gap: var(--ui-space-1);
- }
- .portal-app .ui-main .ui-login-wrap .ui-field label {
-  font-size: var(--ui-font-size-small);
-  font-weight: var(--ui-font-weight-label);
-  color: var(--ui-text);
- }
- .portal-app .ui-main .ui-login-wrap .ui-field input {
-  width: 100%;
- }
- .portal-app .ui-main .ui-login-wrap .ui-form-actions {
+ .ui-login-wrap .ui-form-actions {
   display: flex;
   width: 100%;
   margin-top: var(--ui-space-3);
  }
- .portal-app .ui-main .ui-login-wrap .ui-button {
+ .ui-login-wrap .ui-button {
   width: 100%;
   justify-content: center;
-  min-height: 2.75rem;
-  font-size: var(--ui-font-size-body);
  }
+}
 }
 
 @media print { .ui-inline-create { display:none; } }

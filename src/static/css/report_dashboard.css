@@ -1,4 +1,5 @@
 /* Report hub uses the same type scale, colors and focus treatment as the portal. */
+@layer pages {
 .report-shell { max-width: 80rem; margin-inline: auto; color: var(--ui-text); }
 .report-toolbar, .report-filter, .report-actions, .section-heading, .section-links { display: flex; flex-wrap: wrap; gap: .75rem; }
 .report-toolbar { align-items: end; justify-content: space-between; }
@@ -19,7 +20,7 @@
 .report-headlines { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .75rem; margin-top: .75rem; }
 .headline { display: flex; min-width: 0; min-height: 5.75rem; flex-direction: column; border: 1px solid var(--ui-border); border-radius: var(--ui-radius-card); background: var(--ui-surface); padding: .75rem; box-shadow:var(--ui-shadow-card); }
 .headline-label { display: block; min-height: 2.8em; color: var(--ui-text-muted); font-size: var(--ui-font-size-small); line-height: 1.4; }
-.headline-value { display: block; margin-top: auto; color: var(--ui-text); font-size: 1.375rem; line-height: 1.2; }
+.headline-value { display: block; margin-top: auto; color: var(--ui-text); font-size: 1.25rem; line-height: 1.2; }
 .headline[data-tone="danger"] .headline-value { color:var(--ui-danger-text); }
 .report-visuals, .report-section-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 1rem; margin-top: 1.5rem; }
 .report-section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -55,7 +56,7 @@
 .metric-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .55rem; margin-top: .9rem; }
 .metric { display: flex; min-width: 0; min-height: 5.75rem; flex-direction: column; border: 1px solid var(--ui-border); border-radius: var(--ui-radius-card); background:var(--ui-surface); padding: .7rem; }
 .metric-label { display: block; min-height: 3.5em; color: var(--ui-text-muted); font-size: var(--ui-font-size-small); line-height: 1.35; }
-.metric-value { display: block; margin-top: auto; overflow-wrap: break-word; color: var(--ui-text); font-size: 1.0625rem; line-height: 1.2; }
+.metric-value { display: block; margin-top: auto; overflow-wrap: break-word; color: var(--ui-text); font-size: 1rem; line-height: 1.2; }
 .metric[data-tone="red"] .metric-value { color: var(--ui-danger-text); }.metric[data-tone="amber"] .metric-value { color: var(--ui-warning-text); }.metric[data-tone="green"] .metric-value { color: var(--ui-success-text); }
 @media (max-width: 900px) { .report-headlines { grid-template-columns: repeat(3, minmax(0, 1fr)); }.metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 768px) { .report-visuals, .report-section-grid { grid-template-columns: 1fr; }.report-toolbar, .report-filter { width: 100%; }.report-filter > div { flex: 1 1 10rem; }.report-input { width: 100%; min-width: 0; }.section-links { justify-content: flex-start; } }
@@ -64,3 +65,4 @@
 @media (max-width: 380px) { .report-headlines { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .report-button { transition: none; } }
 .report-shell :is(.headline-value, .metric-value) { width: 100%; text-align: center; font-variant-numeric: tabular-nums; }
+}

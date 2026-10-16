@@ -1,4 +1,5 @@
 /* Opt-in operating surface. Paper geometry and other portal pages are independent. */
+@layer pages {
 @media screen {
  .home-dashboard {
   --ui-dash-donut-size:144px;
@@ -12,8 +13,8 @@
  .home-dashboard h1 { font-size:var(--ui-text-h1); line-height:var(--ui-leading-h1); }
  .home-dashboard h2 { font-size:var(--ui-text-h2); line-height:var(--ui-leading-h2); }
  .home-dashboard h3 { font-size:var(--ui-text-label); line-height:var(--ui-leading-label); font-weight:var(--ui-weight-medium); color:var(--ui-text-muted); }
- .home-dashboard a { color:var(--ui-link); font-weight:var(--ui-weight-medium); text-underline-offset:var(--ui-space-1); }
- .home-dashboard a:hover { text-decoration:underline; }
+ .home-dashboard a:not(.ui-button) { color:var(--ui-link); font-weight:var(--ui-weight-medium); text-underline-offset:var(--ui-space-1); }
+ .home-dashboard a:not(.ui-button):hover { text-decoration:underline; }
  .home-dashboard .ui-icon { width:var(--ui-icon-medium); height:var(--ui-icon-medium); flex:none; vertical-align:middle; color:var(--ui-text-muted); }
  .home-dashboard .home-period,.home-dashboard .home-metric-note,.home-dashboard .home-footnote,.home-dashboard .home-table-secondary { color:var(--ui-text-muted); }
  .home-dashboard .home-page-header { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:var(--ui-space-1) var(--ui-space-4); margin-bottom:calc(-1 * var(--ui-space-2)); }
@@ -46,9 +47,6 @@
  .home-dashboard .home-work-bottom { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:var(--ui-space-3); }
  .home-dashboard .home-work-value { font-size:var(--ui-text-work); line-height:var(--ui-leading-stat); font-weight:var(--ui-weight-semibold); font-variant-numeric:var(--ui-numeric-variant); }
  .home-dashboard .home-text-link,.home-dashboard .home-jumps a,.home-dashboard .home-list a { display:inline-flex; align-items:center; min-height:var(--ui-target-min); min-width:var(--ui-target-min); }
- .home-dashboard .ui-button { display:inline-flex; align-items:center; justify-content:center; min-height:var(--ui-target-min); padding:var(--ui-space-2) var(--ui-space-4); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); font:inherit; font-weight:var(--ui-weight-medium); white-space:nowrap; text-decoration:none; }
- .home-dashboard .ui-button--primary { background:var(--ui-brand); color:var(--ui-on-brand); border-color:var(--ui-brand); }
- .home-dashboard .ui-button--primary:hover { background:var(--ui-brand-hover); text-decoration:none; }
  .home-dashboard .home-joined-chip { gap:var(--ui-space-2); padding-inline:var(--ui-space-3); border-radius:var(--ui-radius-control); background:var(--ui-surface-raised); }
  .home-dashboard .home-info { position:relative; flex:none; margin:0; }
  .home-dashboard .home-info summary { display:flex; align-items:center; justify-content:center; width:var(--ui-target-min); min-height:var(--ui-target-min); list-style:none; cursor:pointer; border-radius:var(--ui-radius-control); }
@@ -121,7 +119,7 @@
  .home-dashboard .dashboard-donut-wrap { position:relative; flex:none; width:var(--ui-dash-donut-size); height:var(--ui-dash-donut-size); }
  .home-dashboard .dashboard-donut { width:100%; height:100%; }
  .home-dashboard .dashboard-slice { stroke:var(--ui-chart-color); }
- .home-dashboard .dashboard-slice-label { fill:var(--ui-surface); font-size:10px; font-weight:var(--ui-weight-semibold); stroke:var(--ui-text); stroke-width:.6px; paint-order:stroke; }
+ .home-dashboard .dashboard-slice-label { fill:var(--ui-surface); font-size:var(--ui-font-size-caption); font-weight:var(--ui-weight-semibold); stroke:var(--ui-text); stroke-width:.6px; paint-order:stroke; }
  .home-dashboard .dashboard-donut-total { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none; }
  .home-dashboard .dashboard-donut-total strong { font-size:var(--ui-text-stat); line-height:var(--ui-leading-stat); font-weight:var(--ui-weight-semibold); font-variant-numeric:var(--ui-numeric-variant); }
  .home-dashboard .dashboard-type-labels { flex:1; min-width:0; }
@@ -175,4 +173,5 @@
   .home-dashboard .home-queue-list a { grid-column:1/-1; }
  }
  @media(prefers-reduced-motion:reduce) { .home-dashboard a.ui-card { transition:none; } .home-dashboard * { scroll-behavior:auto; } }
+}
 }

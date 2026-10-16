@@ -56,11 +56,20 @@ def dashboard_people(request):
 
 def service_worker(request):
     """Serve the portal-only worker with its scope explicitly limited to /portal/."""
+    from apps.common.asset_version import get_service_worker_cache_version
+    import re
     worker_path = settings.BASE_DIR / "static" / "js" / "service-worker.js"
     try:
         worker_source = worker_path.read_text(encoding="utf-8")
     except OSError as exc:
         raise Http404("Service worker file not found") from exc
+
+    active_version = get_service_worker_cache_version()
+    worker_source = re.sub(
+        r'const STATIC_CACHE\s*=\s*["\'][^"\']+["\'];',
+        f'const STATIC_CACHE = "{active_version}";',
+        worker_source,
+    )
 
     response = HttpResponse(worker_source, content_type="application/javascript; charset=utf-8")
     response["Cache-Control"] = "no-cache, no-store, must-revalidate"

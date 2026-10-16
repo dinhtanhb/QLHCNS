@@ -1,4 +1,5 @@
 /* App shell only; loaded after page CSS. No print-paper recoloring. */
+@layer layouts {
 @media screen {
  .portal-app .ui-topbar :is(.ui-breadcrumb,.ui-user-summary small,.ui-unread-badge,.ui-role-badge), .portal-app .ui-sidebar .ui-nav-section-label { font-size:var(--ui-font-size-small); }
  .ui-demo-banner { text-align:center; padding:4px 12px; background:var(--ui-warning-bg); color:var(--ui-warning-text); font-size:var(--ui-font-size-small); }
@@ -80,44 +81,44 @@
     .ui-nav-section-label { margin:var(--ui-space-3) var(--ui-space-3) var(--ui-space-1); color:var(--ui-sidebar-muted); font-size:var(--ui-font-size-caption); }
     .ui-nav-separator { border-top:var(--ui-border-width) solid var(--ui-divider); margin:var(--ui-space-2) 0; }
     .ui-nav-tooltip { position:fixed; z-index:var(--ui-layer-toast); max-width:var(--ui-sidebar-width); padding:var(--ui-space-2) var(--ui-space-3); background:var(--ui-surface); color:var(--ui-text); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); box-shadow:var(--ui-shadow-card); font-size:var(--ui-font-size-small); overflow-wrap:anywhere; }
-    .portal-app .ui-main { min-width:0; max-width:var(--ui-content-max-width); padding:var(--ui-space-4); margin:0 auto; scroll-margin-top:calc(var(--ui-shell-header-height) + var(--ui-space-4)); }
-    .portal-app .ui-main :is(a,button,input,select,textarea) { scroll-margin-block:calc(var(--ui-shell-header-height) + var(--ui-space-4)); }
+    .ui-main { min-width:0; max-width:var(--ui-content-max-width); padding:var(--ui-space-4); margin:0 auto; scroll-margin-top:calc(var(--ui-shell-header-height) + var(--ui-space-4)); }
+    .ui-main :is(a,button,input,select,textarea) { scroll-margin-block:calc(var(--ui-shell-header-height) + var(--ui-space-4)); }
     .ui-alert { display:flex; align-items:flex-start; gap:var(--ui-space-3); padding:var(--ui-space-3) var(--ui-space-4); margin-bottom:var(--ui-space-4); border:var(--ui-border-width) solid var(--ui-info-border); border-radius:var(--ui-radius-control); background:var(--ui-info-bg); color:var(--ui-info-text); }
     .ui-alert-content { flex:1; min-width:0; overflow-wrap:anywhere; }
     .ui-alert--success { background:var(--ui-success-bg); color:var(--ui-success-text); border-color:var(--ui-success-border); }
     .ui-alert--warning { background:var(--ui-warning-bg); color:var(--ui-warning-text); border-color:var(--ui-warning-border); }
     .ui-alert--danger { background:var(--ui-danger-bg); color:var(--ui-danger-text); border-color:var(--ui-danger-border); }
     /* Compatibility for page content; no redesign of its structure or data. */
-    .portal-app .ui-main :is(input,select,textarea):not(.hcns-paper *):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]) { background:var(--ui-surface); color:var(--ui-text); min-height:var(--ui-control-height); border-radius:var(--ui-radius-control); box-shadow:none; }
-    .portal-app .ui-main :is(a,button)[class*="bg-blue-"][class*="text-white"],
-    .portal-app .ui-main :is(a,button)[class*="bg-indigo-"][class*="text-white"] { background:var(--ui-brand); color:var(--ui-on-brand); box-shadow:none; }
-    .portal-app .ui-main :is(a,button)[class*="bg-blue-"][class*="text-white"]:hover { background:var(--ui-brand-hover); }
-    .portal-app .ui-main :is(a,button)[class*="bg-red-"][class*="text-white"] { background:var(--ui-danger-text); color:var(--ui-danger-bg); }
-    .portal-app .ui-main :is(a,button)[class*="bg-green-"][class*="text-white"] { background:var(--ui-success-text); color:var(--ui-success-bg); }
-    .portal-app .ui-main :is(a,button):active { transform:none; }
-    .portal-app .ui-main :is(button,input,select,textarea):disabled { opacity:1; background:var(--ui-disabled-bg); color:var(--ui-disabled-text); border-color:var(--ui-disabled-border); }
-    .portal-app .ui-main .bg-white:not(.hcns-paper):not(.hcns-paper *),
-    .portal-app .ui-main .home-kpi-grid > .bg-white:not(.hcns-paper *) { background:var(--ui-surface); box-shadow:var(--ui-shadow-card); }
-    .portal-app .ui-main table:not(.hcns-paper *) { font-size:var(--ui-font-size-small); }
-    .portal-app .ui-main .ihrms-kpi-value:not(.hcns-paper *) { color:var(--ui-text); }
-    .portal-app .ui-main .ihrms-kpi-value.ui-kpi-warning { color:var(--ui-warning-text); }
-    .portal-app .ui-main .ihrms-kpi-value.ui-kpi-danger { color:var(--ui-danger-text); }
-    .portal-app .ui-main :is(a,button)[class*="text-white"][class*="bg-amber-"],
-    .portal-app .ui-main :is(a,button)[class*="text-white"][class*="bg-yellow-"] { background:var(--ui-warning-text); color:var(--ui-warning-bg); }
-    .portal-app .ui-main :is(a,button)[class*="text-white"][class*="bg-emerald-"] { background:var(--ui-success-text); color:var(--ui-success-bg); }
-    .portal-app .ui-main :is(a,button)[class*="text-white"] { white-space:nowrap; flex-shrink:0; }
-    .portal-app .ui-main :is([class*="text-blue-"],[class*="text-indigo-"],[class*="text-purple-"]):not(a):not(button):not(a *):not(button *):not(.hcns-paper *) { color:var(--ui-text); }
-    .portal-app .ui-main :is([class*="bg-blue-"],[class*="bg-indigo-"],[class*="bg-purple-"]):not(a):not(button):not(a *):not(button *):not(.ui-chart-series-fill):not(.hcns-paper *):not(.hcns-paper) { background:var(--ui-surface-raised); }
-    .portal-app .ui-main .ui-chart-series-fill { background:var(--ui-chart-series); }
-    .portal-app .ui-main .mobile-table-scroll { min-width:0; }
-    .portal-app .ui-main .home-overview-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .ui-main :is(input,select,textarea):not(.hcns-paper *):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]) { background:var(--ui-surface); color:var(--ui-text); min-height:var(--ui-control-height); border-radius:var(--ui-radius-control); box-shadow:none; }
+    .ui-main :is(a,button)[class*="bg-blue-"][class*="text-white"],
+    .ui-main :is(a,button)[class*="bg-indigo-"][class*="text-white"] { background:var(--ui-brand); color:var(--ui-on-brand); box-shadow:none; }
+    .ui-main :is(a,button)[class*="bg-blue-"][class*="text-white"]:hover { background:var(--ui-brand-hover); }
+    .ui-main :is(a,button)[class*="bg-red-"][class*="text-white"] { background:var(--ui-danger-text); color:var(--ui-danger-bg); }
+    .ui-main :is(a,button)[class*="bg-green-"][class*="text-white"] { background:var(--ui-success-text); color:var(--ui-success-bg); }
+    .ui-main :is(a,button):active { transform:none; }
+    .ui-main :is(button,input,select,textarea):disabled { opacity:1; background:var(--ui-disabled-bg); color:var(--ui-disabled-text); border-color:var(--ui-disabled-border); }
+    .ui-main .bg-white:not(.hcns-paper):not(.hcns-paper *),
+    .ui-main .home-kpi-grid > .bg-white:not(.hcns-paper *) { background:var(--ui-surface); box-shadow:var(--ui-shadow-card); }
+    .ui-main table:not(.hcns-paper *) { font-size:var(--ui-font-size-small); }
+    .ui-main .ihrms-kpi-value:not(.hcns-paper *) { color:var(--ui-text); }
+    .ui-main .ihrms-kpi-value.ui-kpi-warning { color:var(--ui-warning-text); }
+    .ui-main .ihrms-kpi-value.ui-kpi-danger { color:var(--ui-danger-text); }
+    .ui-main :is(a,button)[class*="text-white"][class*="bg-amber-"],
+    .ui-main :is(a,button)[class*="text-white"][class*="bg-yellow-"] { background:var(--ui-warning-text); color:var(--ui-warning-bg); }
+    .ui-main :is(a,button)[class*="text-white"][class*="bg-emerald-"] { background:var(--ui-success-text); color:var(--ui-success-bg); }
+    .ui-main :is(a,button)[class*="text-white"] { white-space:nowrap; flex-shrink:0; }
+    .ui-main :is([class*="text-blue-"],[class*="text-indigo-"],[class*="text-purple-"]):not(a):not(button):not(a *):not(button *):not(.hcns-paper *) { color:var(--ui-text); }
+    .ui-main :is([class*="bg-blue-"],[class*="bg-indigo-"],[class*="bg-purple-"]):not(a):not(button):not(a *):not(button *):not(.ui-chart-series-fill):not(.hcns-paper *):not(.hcns-paper) { background:var(--ui-surface-raised); }
+    .ui-main .ui-chart-series-fill { background:var(--ui-chart-series); }
+    .ui-main .mobile-table-scroll { min-width:0; }
+    .ui-main .home-overview-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); }
     .ui-drawer-lock { overflow:hidden; }
     @media (min-width:360px) { .ui-topbar-row { padding-inline:var(--ui-space-3); } }
     @media (min-width:768px) {
         .ui-brand-full { display:inline; } .ui-brand-short { display:none; }
         .ui-user-summary { display:block; }
-        .portal-app .ui-main { padding:var(--ui-space-6); }
-        .portal-app .ui-main .home-overview-kpis { grid-template-columns:repeat(3,minmax(0,1fr)); }
+        .ui-main { padding:var(--ui-space-6); }
+        .ui-main .home-overview-kpis { grid-template-columns:repeat(3,minmax(0,1fr)); }
     }
     @media (min-width:1024px) {
         .ui-sidebar { display:block; top:var(--ui-shell-header-height); z-index:var(--ui-layer-sticky); max-width:none; }
@@ -129,19 +130,20 @@
         .portal-app[data-sidebar-collapsed="true"] :is(.ui-nav-trigger,.ui-nav-link) { padding:var(--ui-space-2); justify-content:center; }
         .portal-app[data-sidebar-collapsed="true"] :is(.ui-nav-label,.ui-nav-chevron,.ui-nav-section-label) { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
         .portal-app[data-sidebar-collapsed="true"] .ui-nav-panel { display:none; }
-        .portal-app .ui-main .home-overview-kpis { grid-template-columns:repeat(3,minmax(0,1fr)); }
+        .ui-main .home-overview-kpis { grid-template-columns:repeat(3,minmax(0,1fr)); }
     }
     @media (min-width:1440px) {
         .ui-topbar-row { padding-inline:var(--ui-space-6); }
-        .portal-app .ui-main { padding:var(--ui-space-8); }
-        .portal-app .ui-main .home-overview-kpis { grid-template-columns:repeat(6,minmax(0,1fr)); }
+        .ui-main { padding:var(--ui-space-8); }
+        .ui-main .home-overview-kpis { grid-template-columns:repeat(6,minmax(0,1fr)); }
     }
     @media (prefers-reduced-motion:reduce) {
         .portal-app *, .portal-app *::before, .portal-app *::after { animation-duration:var(--ui-motion-feedback) !important; transition-duration:var(--ui-motion-feedback) !important; scroll-behavior:auto !important; }
     }
 }
+}
 @media print {
     .ui-topbar, .ui-sidebar, .ui-drawer-overlay, .ui-skip-link, .ui-nav-tooltip { display:none !important; }
     .ui-main-wrap.has-sidebar { padding-left:0; }
-    .portal-app .ui-main { max-width:none; margin:0; padding:0; }
+    .ui-main { max-width:none; margin:0; padding:0; }
 }

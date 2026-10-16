@@ -1,0 +1,799 @@
+/* Refactoring UI Architecture — Single-Source Base Components */
+@layer components {
+
+/* ==========================================================================
+   1. Nút bấm (.ui-button)
+   Single-source definition for all button variants and states.
+   Touch target min: 44px (var(--ui-target-min)), font >= 14px.
+   ========================================================================== */
+.ui-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ui-space-2);
+    min-height: var(--ui-control-height);
+    min-width: var(--ui-target-min);
+    padding: var(--ui-space-2) var(--ui-space-4);
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: var(--ui-radius-control);
+    font-family: inherit;
+    font-size: var(--ui-font-size-small);
+    font-weight: var(--ui-font-weight-medium);
+    line-height: var(--ui-line-height-body);
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    background: var(--ui-surface);
+    color: var(--ui-text);
+    box-sizing: border-box;
+    transition: background-color var(--ui-motion-feedback) var(--ui-motion-easing),
+                border-color var(--ui-motion-feedback) var(--ui-motion-easing),
+                color var(--ui-motion-feedback) var(--ui-motion-easing);
+}
+
+.ui-button:not(:disabled):hover {
+    background: var(--ui-hover-bg);
+    color: var(--ui-text);
+    text-decoration: none;
+}
+
+.ui-button:focus-visible {
+    outline: var(--ui-focus-width) solid var(--ui-focus);
+    outline-offset: var(--ui-focus-offset);
+}
+
+.ui-button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.ui-button:disabled,
+.ui-button[disabled],
+.ui-button[aria-disabled="true"] {
+    background: var(--ui-disabled-bg);
+    color: var(--ui-disabled-text);
+    border-color: var(--ui-disabled-border);
+    cursor: not-allowed;
+    opacity: var(--ui-opacity-5);
+}
+
+.ui-button[aria-busy="true"] {
+    pointer-events: none;
+    opacity: var(--ui-opacity-5);
+}
+
+/* Biến thể phân cấp hành động */
+.ui-button--primary {
+    background: var(--ui-brand);
+    color: var(--ui-on-brand);
+    border-color: var(--ui-brand);
+}
+
+.ui-button--primary:not(:disabled):hover {
+    background: var(--ui-brand-hover);
+    color: var(--ui-on-brand);
+    border-color: var(--ui-brand-hover);
+    text-decoration: none;
+}
+
+.ui-button--secondary {
+    background: var(--ui-surface);
+    color: var(--ui-text);
+    border-color: var(--ui-border);
+}
+
+.ui-button--secondary:not(:disabled):hover {
+    background: var(--ui-hover-bg);
+    color: var(--ui-text);
+    border-color: var(--ui-border);
+}
+
+.ui-button--tertiary {
+    background: transparent;
+    color: var(--ui-link);
+    border-color: transparent;
+}
+
+.ui-button--tertiary:not(:disabled):hover {
+    background: var(--ui-hover-bg);
+    color: var(--ui-link);
+    text-decoration: underline;
+}
+
+.ui-button--danger {
+    background: var(--ui-surface);
+    color: var(--ui-danger-text);
+    border-color: var(--ui-danger-border);
+}
+
+.ui-button--danger:not(:disabled):hover {
+    background: var(--ui-danger-bg);
+    color: var(--ui-danger-text);
+    border-color: var(--ui-danger-border);
+}
+
+/* Đỏ đặc duy nhất trong hộp thoại xác nhận xóa/hủy */
+.ui-dialog .ui-button--danger-primary,
+.ui-button--danger-solid {
+    background: var(--ui-danger-text);
+    color: var(--ui-on-brand);
+    border-color: var(--ui-danger-text);
+}
+
+.ui-dialog .ui-button--danger-primary:not(:disabled):hover,
+.ui-button--danger-solid:not(:disabled):hover {
+    background: var(--ui-danger-border);
+    color: var(--ui-on-brand);
+    border-color: var(--ui-danger-border);
+}
+
+/* Kích thước bổ trợ */
+.ui-button--sm {
+    min-height: 2.25rem;
+    padding: var(--ui-space-1) var(--ui-space-3);
+    font-size: var(--ui-font-size-small);
+}
+
+.ui-button--lg {
+    min-height: 3rem;
+    padding: var(--ui-space-3) var(--ui-space-6);
+    font-size: var(--ui-font-size-body);
+}
+
+/* Vùng chứa hành động trang & biểu mẫu */
+.ui-page-actions,
+.ui-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ui-space-2);
+}
+
+
+/* ==========================================================================
+   2. Trường nhập liệu (.ui-field)
+   Gestalt proximity: Nhãn cách ô 8px, ô cách chú thích 4px, lấp đầy 100%.
+   ========================================================================== */
+.ui-field {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin: 0;
+}
+
+.ui-field > label,
+.ui-field-label {
+    display: block;
+    margin: 0 0 var(--ui-space-2);
+    font-size: var(--ui-font-size-small);
+    font-weight: var(--ui-font-weight-label);
+    line-height: var(--ui-line-height-body);
+    color: var(--ui-text);
+}
+
+.ui-field :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not(.ui-number-source) {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: var(--ui-control-height);
+    padding: var(--ui-space-2) var(--ui-space-3);
+    border: var(--ui-border-width) solid var(--ui-border-control);
+    border-radius: var(--ui-radius-control);
+    background: var(--ui-surface);
+    color: var(--ui-text);
+    font-family: inherit;
+    font-size: var(--ui-font-size-small);
+    line-height: var(--ui-line-height-body);
+    box-sizing: border-box;
+}
+
+.ui-field textarea:not([hidden]):not(.ui-number-source) {
+    height: auto;
+    min-height: calc(var(--ui-control-height) * 2);
+}
+
+.ui-field input[type="file"] {
+    height: auto;
+    min-height: var(--ui-control-height);
+    padding: var(--ui-space-2);
+}
+
+.ui-field :is(input, select, textarea):focus-visible {
+    outline: var(--ui-focus-width) solid var(--ui-focus);
+    outline-offset: var(--ui-focus-offset);
+    border-color: var(--ui-brand);
+}
+
+.ui-field-help {
+    margin: var(--ui-space-1) 0 0;
+    font-size: var(--ui-font-size-small);
+    color: var(--ui-text-muted);
+}
+
+.ui-field-error {
+    margin: var(--ui-space-1) 0 0;
+    font-size: var(--ui-font-size-small);
+    color: var(--ui-error-text);
+}
+
+.ui-field [aria-invalid="true"] {
+    border-color: var(--ui-error-border);
+}
+
+.ui-required {
+    color: var(--ui-error-text);
+}
+
+.ui-error-summary {
+    margin-bottom: var(--ui-space-4);
+    padding: var(--ui-space-4);
+    border: var(--ui-border-width) solid var(--ui-error-border);
+    border-radius: var(--ui-radius-control);
+    background: var(--ui-error-bg);
+    color: var(--ui-error-text);
+}
+
+.ui-error-summary:focus {
+    outline: var(--ui-focus-width) solid var(--ui-focus);
+    outline-offset: var(--ui-focus-offset);
+}
+
+.ui-error-summary ul {
+    margin: var(--ui-space-2) 0 0;
+    padding-left: var(--ui-space-6);
+}
+
+
+/* ==========================================================================
+   3. Thẻ giao diện (.ui-card)
+   Header nền nhạt (--ui-surface-tint), đường kẻ dưới, thân nền surface.
+   ========================================================================== */
+.ui-card {
+    min-width: 0;
+    margin: 0;
+    background: var(--ui-surface);
+    color: var(--ui-text);
+    border: var(--ui-border-width) solid var(--ui-card-border);
+    border-radius: var(--ui-radius-card);
+    box-shadow: var(--ui-shadow-card);
+    overflow: hidden;
+}
+
+.ui-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ui-space-3);
+    padding: var(--ui-space-3) var(--ui-space-5);
+    background: var(--ui-surface-tint);
+    border-bottom: var(--ui-border-width) solid var(--ui-divider);
+}
+
+.ui-card-title {
+    margin: 0;
+    font-size: var(--ui-font-size-body);
+    font-weight: var(--ui-font-weight-heading);
+    color: var(--ui-text-primary);
+}
+
+.ui-card-body {
+    padding: var(--ui-space-5);
+}
+
+
+/* ==========================================================================
+   4. Tiêu đề nhóm có vạch nhấn (Section Headings)
+   18px/28px 600, vạch nhấn 4x20px pill màu brand-600 cách chữ 12px.
+   ========================================================================== */
+.ui-group-title,
+.home-group-title,
+.ui-form-section > legend {
+    display: flex;
+    align-items: center;
+    font-size: var(--ui-font-size-lg);
+    font-weight: var(--ui-font-weight-heading);
+    line-height: 1.75rem;
+    color: var(--ui-text);
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.ui-group-title::before,
+.home-group-title::before,
+.ui-form-section > legend::before {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 20px;
+    border-radius: var(--ui-radius-pill);
+    background: var(--ui-brand-600);
+    margin-right: var(--ui-space-3);
+    flex-shrink: 0;
+}
+
+
+/* ==========================================================================
+   5. Số liệu & Chỉ số KPI (.ui-kpi-grid, .ui-kpi)
+   32px tabular-nums teal đậm, số 0 dùng chữ phụ muted.
+   ========================================================================== */
+.ui-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ui-space-4);
+}
+
+.ui-kpi-grid--4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.ui-kpi-grid--5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.ui-kpi {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-2);
+    padding: var(--ui-space-4);
+    background: var(--ui-surface);
+    border: var(--ui-border-width) solid var(--ui-card-border);
+    border-radius: var(--ui-radius-card);
+}
+
+.ui-kpi-label {
+    font-size: var(--ui-font-size-small);
+    font-weight: var(--ui-font-weight-medium);
+    color: var(--ui-text-muted);
+    margin: 0;
+}
+
+.ui-kpi-value {
+    font-size: var(--ui-font-size-display);
+    line-height: 2.5rem;
+    font-weight: var(--ui-font-weight-heading);
+    font-variant-numeric: var(--ui-numeric-variant);
+    color: var(--ui-brand-700);
+    overflow-wrap: anywhere;
+}
+
+.ui-kpi-value--zero,
+.ui-kpi-value[data-value="0"] {
+    color: var(--ui-text-secondary);
+}
+
+.ui-kpi-value--warning {
+    color: var(--ui-warning-text);
+}
+
+.ui-kpi-value--danger {
+    color: var(--ui-danger-text);
+}
+
+.ui-metric-medium {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: var(--ui-font-weight-heading);
+    font-variant-numeric: var(--ui-numeric-variant);
+    color: var(--ui-brand-700);
+}
+
+
+/* ==========================================================================
+   6. Huy hiệu trạng thái (.ui-badge)
+   Tròn pill, chuẩn WCAG 4.5:1 text và 3:1 border.
+   ========================================================================== */
+.ui-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+    min-height: var(--ui-space-6);
+    padding: var(--ui-space-1) var(--ui-space-2);
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: var(--ui-radius-pill);
+    background: var(--ui-surface-raised);
+    color: var(--ui-text);
+    font-size: var(--ui-font-size-small);
+    font-weight: var(--ui-font-weight-label);
+    white-space: nowrap;
+}
+
+.ui-badge .ui-icon {
+    width: var(--ui-icon-small);
+    height: var(--ui-icon-small);
+    flex: none;
+}
+
+.ui-badge--success {
+    background: var(--ui-success-bg);
+    color: var(--ui-success-text);
+    border-color: var(--ui-success-border);
+}
+
+.ui-badge--warning {
+    background: var(--ui-warning-bg);
+    color: var(--ui-warning-text);
+    border-color: var(--ui-warning-border);
+}
+
+.ui-badge--danger {
+    background: var(--ui-danger-bg);
+    color: var(--ui-danger-text);
+    border-color: var(--ui-danger-border);
+}
+
+.ui-badge--info {
+    background: var(--ui-info-bg);
+    color: var(--ui-info-text);
+    border-color: var(--ui-info-border);
+}
+
+
+/* ==========================================================================
+   7. Bảng dữ liệu (.ui-table, .ui-table-scroll)
+   Header nền nhạt surface-tint, hàng >= 44px, số căn phải.
+   ========================================================================== */
+.ui-table-scroll {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    border: var(--ui-border-width) solid var(--ui-divider);
+    border-radius: var(--ui-radius-control);
+}
+
+.ui-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: var(--ui-font-size-small);
+    table-layout: fixed;
+}
+
+.ui-table thead th {
+    min-height: var(--ui-control-height);
+    padding: var(--ui-space-3) var(--ui-space-4);
+    background: var(--ui-surface-tint);
+    color: var(--ui-text);
+    font-weight: var(--ui-font-weight-heading);
+    text-align: left;
+    border-bottom: var(--ui-border-width) solid var(--ui-divider);
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: var(--ui-layer-sticky);
+}
+
+.ui-table tbody td {
+    min-height: var(--ui-control-height);
+    padding: var(--ui-space-3) var(--ui-space-4);
+    border-bottom: var(--ui-border-width) solid var(--ui-divider);
+    vertical-align: middle;
+    overflow-wrap: break-word;
+}
+
+.ui-table tbody tr:hover {
+    background: var(--ui-hover-bg);
+}
+
+.ui-table .ui-number {
+    text-align: right;
+    font-variant-numeric: var(--ui-numeric-variant);
+}
+
+.ui-table .ui-actions {
+    text-align: right;
+}
+
+
+/* ==========================================================================
+   8. Trạng thái rỗng (.ui-state, .ui-empty-state)
+   ========================================================================== */
+.ui-state,
+.ui-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ui-space-2);
+    padding: var(--ui-space-8);
+    text-align: center;
+    color: var(--ui-text-muted);
+}
+
+.ui-state h3,
+.ui-empty-state h3 {
+    color: var(--ui-text);
+    font-size: var(--ui-font-size-body);
+    font-weight: var(--ui-font-weight-heading);
+    margin: 0;
+}
+
+.ui-state .ui-icon,
+.ui-empty-state .ui-icon {
+    width: var(--ui-icon-large);
+    height: var(--ui-icon-large);
+}
+
+
+/* ==========================================================================
+   9. Liên kết (.ui-link)
+   ========================================================================== */
+.ui-link {
+    color: var(--ui-link);
+    text-decoration: none;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+}
+
+.ui-link:hover {
+    text-decoration: underline;
+}
+
+.ui-link--subtle {
+    color: var(--ui-text-muted);
+}
+
+.ui-link--subtle:hover {
+    color: var(--ui-text);
+    text-decoration: underline;
+}
+
+
+/* ==========================================================================
+   10. Hộp thoại & Lớp nổi (.ui-dialog, .ui-row-popover)
+   ========================================================================== */
+.ui-dialog {
+    width: calc(100% - var(--ui-space-8));
+    max-width: var(--ui-dialog-width);
+    max-height: var(--ui-dialog-max-height);
+    padding: 0;
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: var(--ui-radius-card);
+    background: var(--ui-surface);
+    color: var(--ui-text);
+    box-shadow: var(--ui-shadow-modal);
+}
+
+.ui-dialog::backdrop {
+    background: var(--ui-scrim);
+}
+
+.ui-dialog-content {
+    padding: var(--ui-space-6);
+}
+
+.ui-dialog h2 {
+    font-size: var(--ui-font-size-title);
+    font-weight: var(--ui-font-weight-heading);
+    margin-bottom: var(--ui-space-3);
+}
+
+.ui-dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ui-space-2);
+    justify-content: flex-end;
+    margin-top: var(--ui-space-6);
+}
+
+.ui-row-popover {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    width: 16rem;
+    max-width: calc(100vw - var(--ui-space-8));
+    max-height: calc(100dvh - var(--ui-space-8));
+    overflow: auto;
+    padding: var(--ui-space-2);
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: var(--ui-radius-control);
+    background: var(--ui-surface);
+    color: var(--ui-text);
+    box-shadow: var(--ui-shadow-overlay);
+}
+
+
+/* ==========================================================================
+   11. Phân trang (.ui-pagination)
+   ========================================================================== */
+.ui-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--ui-space-3);
+    padding: var(--ui-space-3) 0;
+    font-size: var(--ui-font-size-small);
+}
+
+.ui-pagination-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ui-space-2);
+}
+
+.ui-pagination a,
+.ui-pagination button {
+    min-height: var(--ui-control-height);
+    min-width: var(--ui-target-min);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ui-space-2) var(--ui-space-3);
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: var(--ui-radius-control);
+    text-decoration: none;
+    color: var(--ui-text);
+    background: var(--ui-surface);
+    box-sizing: border-box;
+}
+
+.ui-pagination a:hover {
+    background: var(--ui-hover-bg);
+}
+
+.ui-pagination [aria-current="page"] {
+    background: var(--ui-selected-bg);
+    color: var(--ui-selected-text);
+    border-color: var(--ui-selected-text);
+    font-weight: var(--ui-font-weight-label);
+}
+
+
+/* ==========================================================================
+   12. Chuỗi bước quy trình (.ui-step-flow, .ui-step-card)
+   Lưới đều 3x2 (>=1280px), 2x3 (768-1279px), 1 cột mobile.
+   Chấm số tròn 32px nền teal chữ trắng.
+   ========================================================================== */
+.ui-step-flow {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ui-space-4);
+}
+
+@media (max-width: 1279px) and (min-width: 768px) {
+    .ui-step-flow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767px) {
+    .ui-step-flow {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ui-step-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-3);
+    padding: var(--ui-space-4);
+    background: var(--ui-surface);
+    border: var(--ui-border-width) solid var(--ui-card-border);
+    border-radius: var(--ui-radius-card);
+}
+
+.ui-step-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-3);
+}
+
+.ui-step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ui-radius-pill);
+    background: var(--ui-brand);
+    color: var(--ui-on-brand);
+    font-weight: var(--ui-font-weight-heading);
+    font-size: var(--ui-font-size-small);
+    flex-shrink: 0;
+}
+
+.ui-step-title {
+    font-size: var(--ui-font-size-body);
+    font-weight: var(--ui-font-weight-heading);
+    color: var(--ui-text);
+    margin: 0;
+}
+
+.ui-step-description {
+    font-size: var(--ui-font-size-small);
+    color: var(--ui-text-muted);
+    margin: 0;
+    flex-grow: 1;
+}
+
+.ui-step-actions {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ui-space-2);
+}
+
+
+/* ==========================================================================
+   13. Lưới biểu mẫu theo bề rộng thẻ (.ui-form-grid - Container Query 4/3/2/1)
+   Bề rộng thẻ >= 900px -> 4 cột; 640-899px -> 3 cột; 420-639px -> 2 cột; < 420px -> 1 cột.
+   ========================================================================== */
+.ui-form-grid {
+    container-type: inline-size;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--ui-space-4);
+    align-items: start;
+    min-width: 0;
+}
+
+@container (min-width: 900px) {
+    .ui-form-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@container (min-width: 640px) and (max-width: 899px) {
+    .ui-form-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@container (min-width: 420px) and (max-width: 639px) {
+    .ui-form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@container (max-width: 419px) {
+    .ui-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Kích cỡ trường theo đơn vị ô */
+.ui-form-grid > .ui-field {
+    grid-column: span 1;
+}
+
+.ui-form-grid > :is(.ui-field--2, .ui-field--wide, .ui-field--6, .ui-field--8) {
+    grid-column: span 2;
+}
+
+.ui-form-grid > :is(.ui-field--full, .ui-field--12, .ui-form-actions, .ui-error-summary) {
+    grid-column: 1 / -1;
+}
+
+/* Tương thích ngược với các class span 12-cột cũ trong lúc chuyển đổi */
+.ui-form-grid > :is(.ui-field--3, .ui-field--4, .ui-field--5) {
+    grid-column: span 1;
+}
+
+.ui-form-grid > :is(.ui-field--7, .ui-field--9, .ui-field--10) {
+    grid-column: span 2;
+}
+
+@container (max-width: 639px) {
+    .ui-form-grid > :is(.ui-field--2, .ui-field--wide, .ui-field--6, .ui-field--7, .ui-field--8, .ui-field--9, .ui-field--10) {
+        grid-column: 1 / -1;
+    }
+}
+
+/* Các trường trong form lấp đầy ô hoàn toàn (không có max-width co cụm) */
+.ui-form-grid .ui-field :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]) {
+    width: 100%;
+    max-width: 100%;
+}
+
+.ui-form-section {
+    display: grid;
+    gap: var(--ui-space-4);
+    min-width: 0;
+    padding: var(--ui-space-6) 0 0;
+    margin: 0;
+    border: 0;
+    border-top: var(--ui-border-width) solid var(--ui-divider);
+}
+
+} /* end @layer components */
+

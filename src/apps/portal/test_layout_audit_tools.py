@@ -44,7 +44,7 @@ class FormGridComponentTests(SimpleTestCase):
             for selector, body in re.findall(r'([^{}]+)\{([^{}]*)\}', path.read_text(encoding='utf-8')):
                 if '.ui-form-grid' in selector and 'grid-template-columns:' in body:
                     owners.append(path.name)
-        self.assertEqual(owners, ['shared_components.css'])
+        self.assertEqual(set(owners), {'components.css'})
         for path in (source / 'static/css').glob('*.css'):
             if path.name == 'tailwind.css':
                 continue

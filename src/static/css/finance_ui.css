@@ -1,4 +1,5 @@
 /* Finance screens only; no business calculations or HCNS print overrides. */
+@layer pages {
 @media screen {
 .ui-finance .ui-finance-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--ui-space-6); min-width:0; }
 .ui-finance .ui-finance-stack,.ui-finance .ui-finance-form { display:grid; gap:var(--ui-space-4); min-width:0; }
@@ -7,14 +8,14 @@
 .ui-finance .ui-finance-form .ui-button { justify-self:start; }
 .ui-finance .ui-finance-text { color:var(--ui-text-muted); font-size:var(--ui-font-size-small); margin:var(--ui-space-2) 0; overflow-wrap:anywhere; }
 .ui-finance .ui-finance-list { list-style:disc; padding-inline-start:var(--ui-space-6); margin-top:var(--ui-space-2); }
-.portal-app .ui-main .ui-page.ui-finance .ui-finance-input { display:block; width:100%; min-width:0; max-width:100%; height:var(--ui-control-height); padding:var(--ui-space-2) var(--ui-space-3); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); background:var(--ui-surface); color:var(--ui-text); font-size:var(--ui-font-size-small); }
+.ui-finance .ui-finance-input { display:block; width:100%; min-width:0; max-width:100%; height:var(--ui-control-height); padding:var(--ui-space-2) var(--ui-space-3); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); background:var(--ui-surface); color:var(--ui-text); font-size:var(--ui-font-size-small); }
 .ui-finance .ui-finance-table { min-width:calc(var(--ui-table-col-medium) * 4); }
 .ui-finance .ui-finance-payroll { min-width:calc(var(--ui-table-col-large) + var(--ui-table-col-medium) * 10 + var(--ui-table-col-small)); }
 .ui-finance .ui-scroll { position:relative; }
 .ui-finance .ui-table:has(.ui-state) { min-width:0; }
 .ui-finance .ui-table:has(.ui-state) thead { display:none; }
-.portal-app .ui-main .ui-page.ui-finance .ui-table .ui-number { text-align:right; font-variant-numeric:var(--ui-numeric-variant); }
-.portal-app .ui-main .ui-page.ui-finance .ui-table tbody :is(th,td) { white-space:normal; overflow-wrap:anywhere; }
+.ui-finance .ui-table .ui-number { text-align:right; font-variant-numeric:var(--ui-numeric-variant); }
+.ui-finance .ui-table tbody :is(th,td) { white-space:normal; overflow-wrap:anywhere; }
 .ui-finance :is(input,select):focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:var(--ui-focus-offset); }
 .ui-finance .ui-card-title { margin-block:var(--ui-space-3); }
 .ui-finance .ui-page-actions { align-items:center; }
@@ -25,4 +26,5 @@
 }
 @media(min-width:1024px) { .ui-finance .ui-finance-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(min-width:1440px) { .ui-finance .ui-finance-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+}
 }

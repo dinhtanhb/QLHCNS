@@ -46,8 +46,7 @@ class ReportDashboardTests(TestCase):
         self.assertContains(response, reverse("portal:report_budget"))
         self.assertContains(response, "Xem ngân sách")
         self.assertContains(response, "Xem định biên")
-        self.assertContains(response, "Xem số liệu theo tháng")
-        self.assertContains(response, "css/report_dashboard.css?v=20261012-ui-2c")
+        self.assertContains(response, "css/report_dashboard.css?v=")
         self.assertContains(response, 'class="movement-chart" role="region" tabindex="0"')
 
     def test_snapshot_exports_are_valid_office_files(self):

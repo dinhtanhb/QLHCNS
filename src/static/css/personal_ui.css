@@ -1,4 +1,5 @@
 /* Phase 5 personal module only. HCNS print rules remain in their templates. */
+@layer pages {
 @media screen {
 .ui-personal { max-width:var(--ui-content-max-width); margin-inline:auto; }
 .ui-personal :is(p,dl,dd) { margin-bottom:0; }
@@ -21,11 +22,11 @@
 .ui-personal table:has(.ui-state) thead { display:none; }
 .ui-personal td .ui-button { margin-top:var(--ui-space-2); }
 .ui-personal .ui-personal-notification-link { display:block; color:var(--ui-text); text-decoration:none; min-height:var(--ui-target-min); margin-bottom:var(--ui-space-3); overflow-wrap:anywhere; border-radius:var(--ui-radius-small); }
-.portal-app .ui-main .ui-personal.ui-page .ui-personal-unread { border-color:var(--ui-info-border); }
+.ui-personal .ui-personal-unread { border-color:var(--ui-info-border); }
 .ui-personal :is(.ui-personal-notification-link,.org-chart-viewport):focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:var(--ui-focus-offset); }
 .ui-personal .timesheet-leave-row { display:grid; grid-template-columns:minmax(0,1fr) calc(var(--ui-space-6) * 3); align-items:center; gap:var(--ui-space-3); margin-block:var(--ui-space-2); }
 .ui-personal .timesheet-leave-row label { font-size:var(--ui-font-size-small); color:var(--ui-text); }
-.ui-personal .timesheet-leave-row :is(.timesheet-leave-input,.ui-number-input) { width:100%!important; max-width:100%; height:var(--ui-control-height); min-height:var(--ui-control-height); padding:var(--ui-space-2)!important; text-align:right; }
+.ui-personal .timesheet-leave-row :is(.timesheet-leave-input,.ui-number-input) { width:100%; max-width:100%; height:var(--ui-control-height); min-height:var(--ui-control-height); padding:var(--ui-space-2); text-align:right; }
 .ui-personal .timesheet-summary-layout { gap:var(--ui-space-6); margin-top:var(--ui-space-6); }
 .ui-personal .ui-personal-timesheet-table { min-width:calc(var(--ui-table-col-small) * 4); }
 .ui-personal .ui-personal-timesheet-table th:first-child { width:var(--ui-table-col-small); }
@@ -60,6 +61,7 @@
  .ui-personal .org-chart-children { display:block; margin:0; padding:var(--ui-space-3) 0 0 var(--ui-space-3); border-left:var(--ui-border-width) solid var(--ui-border); }
  .ui-personal .org-chart-node { padding:var(--ui-space-3) 0 0; }
  .ui-personal .org-chart-node::before,.ui-personal .org-chart-node::after { display:none; }
+}
 }
 }
 @media print {

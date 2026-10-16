@@ -1,18 +1,20 @@
 @import url("design_tokens.css");
 
+@layer base {
 body { font-family:var(--ui-font-family); line-height:var(--ui-line-height-body); }
+
 /* Shared form controls: clear field edges and a consistent keyboard focus state. */
 input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]),
 select,
 textarea {
     width: 100%;
     min-height: 2.5rem;
-    border: 1px solid var(--ui-border) !important;
-    border-radius: 0.5rem;
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-control);
     background-color: var(--ui-surface);
-    padding: 0.5rem 0.75rem;
+    padding: var(--ui-space-2) var(--ui-space-3);
     color: var(--ui-text);
-    box-shadow:var(--ui-shadow-card);
+    box-shadow: var(--ui-shadow-card);
 }
 
 textarea {
@@ -21,19 +23,19 @@ textarea {
 
 input[type="file"] {
     min-height: 2.5rem;
-    border: 1px solid var(--ui-border) !important;
-    border-radius: 0.5rem;
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-control);
     background-color: var(--ui-surface);
-    padding: 0.4rem;
+    padding: var(--ui-space-1);
 }
 
 input:focus,
 select:focus,
 textarea:focus {
-    border-color: var(--ui-focus) !important;
+    border-color: var(--ui-focus);
     outline: 2px solid var(--ui-focus);
     outline-offset: 2px;
-    box-shadow:var(--ui-shadow-card);
+    box-shadow: var(--ui-shadow-card);
 }
 
 input[readonly] {
@@ -56,13 +58,13 @@ input[type="radio"] {
 }
 .ihrms-kpi-card { display: flex; flex-direction: column; min-width: 0; border-color:var(--ui-border); box-shadow:var(--ui-shadow-card); }
 .ihrms-kpi-card > p:first-child { min-height: 2.8em; line-height: 1.4; }
-.ihrms-kpi-card > .ihrms-kpi-value { margin-top: auto; padding-top: .5rem; }
+.ihrms-kpi-card > .ihrms-kpi-value { margin-top: auto; padding-top: var(--ui-space-2); }
 
 @media screen {
     .portal-app :is(h1, h2, h3):not(.hcns-paper *) { font-weight: 600; }
     .portal-app main :is(button, a)[class*="bg-blue-"],
     .portal-app main :is(button, a)[class*="bg-indigo-"] {
-        border-radius: .5rem;
+        border-radius: var(--ui-radius-card);
         transition: background-color 180ms, box-shadow 180ms;
     }
     .portal-app main :is(button, a)[class*="bg-"][class*="text-white"] {
@@ -80,16 +82,16 @@ input[type="radio"] {
 
 @media (prefers-reduced-motion: reduce) {
     .portal-app *, .portal-app *::before, .portal-app *::after {
-        animation-duration: .01ms !important;
-        transition-duration: .01ms !important;
-        scroll-behavior: auto !important;
+        animation-duration: var(--ui-motion-feedback, .01ms);
+        transition-duration: var(--ui-motion-feedback, .01ms);
+        scroll-behavior: auto;
     }
 }
 
 /* Organization chart: clear manager-to-report connectors with searchable cards. */
 .org-chart-viewport {
     overflow-x: auto;
-    padding: 0.75rem 0.25rem 1.5rem;
+    padding: var(--ui-space-3) var(--ui-space-1) var(--ui-space-6);
     overscroll-behavior-inline: contain;
 }
 
@@ -111,7 +113,7 @@ input[type="radio"] {
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    gap: 2rem;
+    gap: var(--ui-space-8);
     width: max-content;
     min-width: 100%;
 }
@@ -128,14 +130,14 @@ input[type="radio"] {
     width: 17rem;
     min-height: 7rem;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: var(--ui-space-3);
     border: 1px solid var(--ui-border);
     border-top: 3px solid var(--ui-border);
-    border-radius: 0.875rem;
+    border-radius: var(--ui-radius-card);
     background: var(--ui-surface);
-    padding: 0.875rem;
+    padding: var(--ui-space-3);
     text-align: left;
-    box-shadow:var(--ui-shadow-card);
+    box-shadow: var(--ui-shadow-card);
 }
 
 .org-chart-root-node > .org-chart-card {
@@ -149,7 +151,7 @@ input[type="radio"] {
     height: 2.5rem;
     flex: 0 0 auto;
     place-items: center;
-    border-radius: 9999px;
+    border-radius: var(--ui-radius-pill);
     background: var(--ui-surface-raised);
     color: var(--ui-text);
     font-weight: 600;
@@ -166,7 +168,7 @@ input[type="radio"] {
     width: max-content;
     justify-content: center;
     margin: 0 auto;
-    padding: 1.5rem 0 0;
+    padding: var(--ui-space-6) 0 0;
 }
 
 .org-chart-node {
@@ -175,14 +177,14 @@ input[type="radio"] {
     flex-direction: column;
     align-items: center;
     list-style: none;
-    padding: 1.5rem 0.75rem 0;
+    padding: var(--ui-space-6) var(--ui-space-3) 0;
 }
 
 .org-chart-node::before {
     position: absolute;
     top: 0;
     left: 50%;
-    height: 1.5rem;
+    height: var(--ui-space-6);
     border-left: 2px solid var(--ui-border);
     content: "";
 }
@@ -223,3 +225,4 @@ input[type="radio"] {
         width: 15rem;
     }
 }
+} /* end @layer base */

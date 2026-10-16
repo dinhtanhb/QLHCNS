@@ -2,6 +2,67 @@
 
 
 
+## 2026-10-16 — Giai Đoạn 2A–2C: Hợp Nhất Thành Phần Nền, Chuẩn Hóa Lớp CSS Cascade & Sửa Triệt Để Lỗi Tương Phản Nút (commit ui: single-source components, cascade layers, and button contrast fix)
+
+**Tóm tắt cho chủ dự án**
+- Hoàn thành đầy đủ Giai đoạn 2A, 2B, 2C theo kế hoạch Refactoring UI & Impeccable:
+  1. *Định nghĩa thành phần nền Single-source*:
+     - Tạo mới `src/static/css/components.css` chứa toàn bộ định nghĩa chuẩn hóa duy nhất của các thành phần nền (`.ui-button`, `.ui-field`, `.ui-card`, `.ui-badge`, `.ui-table`, `.ui-kpi`, `.ui-form-grid`,...).
+     - Xóa bỏ toàn bộ các định nghĩa trùng lặp rải rác ở `shared_components.css`, `atoms_ui.css`, `home_dashboard.css`.
+  2. *Kiến trúc tầng CSS Cascade Layers*:
+     - Khai báo `@layer legacy, reset, tokens, base, components, layouts, pages;` trong `src/static/css/ui_tokens.css`.
+     - Phân tầng triệt để toàn bộ 19 tệp CSS:
+       - `@layer tokens`: `ui_tokens.css`, `theme.css`
+       - `@layer base`: `tailwind.css`, `ihrms.css`, `ui_controls.css`
+       - `@layer components`: `components.css`, `shared_components.css`, `atoms_ui.css`
+       - `@layer layouts`: `project_layout.css`, `app_shell.css`
+       - `@layer pages`: `home_dashboard.css`, `administration_ui.css`, `finance_ui.css`, `hr_ui.css`, `personal_ui.css`, `planning_ui.css`, `recruitment_ui.css`, `report_dashboard.css`, `headcount_report.css`.
+     - Nhờ cơ chế `@layer`, xóa sạch 100% tiền tố bám `.portal-app .ui-main` trên toàn bộ 19 tệp CSS (từ 163 xuống 0).
+  3. *Tự động hóa băm nội dung tài nguyên tĩnh (Asset Content Hashing)*:
+     - Tạo module `src/apps/common/asset_version.py` hỗ trợ tính băm SHA-256 (8 ký tự) tự động theo nội dung tệp, kèm cơ chế cache in-memory và tự làm mới khi mtime thay đổi.
+     - Bổ sung template tag `{% asset '<path>' %}` trong `src/apps/common/templatetags/ui_components.py`.
+     - Tự động đồng bộ tên bộ nhớ cache Service Worker `ihrms-static-v33-<hash>` trong `views/core.py` và `src/static/js/service-worker.js`.
+     - Cập nhật `base.html` và 10 template base của các phân hệ sang `{% asset '...' %}`.
+  4. *Sửa triệt để lỗi hiển thị nút "Tạo đơn nghỉ" trên Dashboard*:
+     - Xác định nguyên nhân gốc rễ: quy tắc chung `.home-dashboard a { color: var(--ui-link); }` trong `@layer pages` đè lên `@layer components`, khiến thẻ `<a>` có class `.ui-button--primary` bị đổi màu chữ thành xanh lam trên nền xanh (tương phản 1.00:1).
+     - Sửa thành `.home-dashboard a:not(.ui-button)` trong `home_dashboard.css`.
+     - Đo đạc trực tiếp trên trình duyệt Edge thật (`ops/run_button_states_uat.py`):
+       - Trạng thái mặc định: tương phản **5.7:1** (đạt chuẩn WCAG AA > 4.5:1).
+       - Trạng thái hover: tương phản **7.7:1** (đạt chuẩn WCAG AA > 4.5:1).
+       - 30/30 trạng thái nút bấm trên toàn hệ thống đạt 100% PASS.
+  5. *Đo lường & Cổng chất lượng Token Design (`ops/audit_design_tokens.py --check`)*:
+     - Số lượng `!important`: 9 (đạt mục tiêu ≤ 10).
+     - Selector `.portal-app .ui-main`: 0 (đạt mục tiêu 0).
+     - Hex literal ngoài token: 0 (đạt mục tiêu 0).
+     - Font size lệch thang: 0 (đạt mục tiêu 0).
+     - Sinh tệp báo cáo trạng thái `docs/DESIGN_SYSTEM_STATUS.md`.
+  6. *Chụp ảnh thực tế & Đánh giá Impeccable*:
+     - Chụp 36 ảnh UAT thực tế bằng Edge Headless (`ops/capture_ui_screenshots.py`) qua 6 trang mẫu ở 1440x900, 1756px, 390px trên cả 2 theme Sáng và Tối, lưu tại `docs/screenshots/stage1_samples/`.
+     - Dừng lại tại Điểm Dừng 1 (Hold Point sau 2C) để báo cáo và xin ý kiến phê duyệt của Chủ dự án trước khi bước sang Giai đoạn 2D.
+
+**Chi tiết thay đổi kỹ thuật**
+- `src/static/css/components.css`: Khởi tạo file mới định nghĩa duy nhất cho `.ui-button`, `.ui-field`, `.ui-card`, `.ui-badge`, `.ui-table`, `.ui-kpi`, `.ui-form-grid`.
+- `src/static/css/ui_tokens.css`: Khai báo cascade layers, bổ sung `--ui-surface-tint`, `--ui-brand-600`, `--ui-brand-700`.
+- `src/apps/common/asset_version.py`: Module tính hash tài nguyên tĩnh và phiên bản Service Worker.
+- `src/apps/common/templatetags/ui_components.py`: Thêm tag `asset`.
+- `src/apps/portal/views/core.py` & `src/static/js/service-worker.js`: Đồng bộ dynamic bundle version `ihrms-static-v33-<hash>`.
+- `src/templates/base.html` & 10 module templates: Chuyển sang `{% asset '...' %}`.
+- 13 file CSS phân hệ: Bọc `@layer`, loại bỏ hoàn toàn `.portal-app .ui-main`, làm sạch các `!important` thừa.
+- `ops/audit_design_tokens.py`: Cập nhật logic nhận diện `@layer` và sinh `docs/DESIGN_SYSTEM_STATUS.md`.
+- `ops/check_ui_contrast.py`: Kiểm tra 220 cặp màu giao diện sáng và tối.
+- `src/apps/portal/test_layout_audit_tools.py`, `src/apps/portal/test_project_layout.py`, `src/apps/portal/tests_mobile.py`, `src/apps/portal/tests_report_dashboard.py`: Cập nhật khớp với `components.css` và dynamic asset hashing.
+
+**Kết quả kiểm tra & Cổng chất lượng**
+- `ops/audit_design_tokens.py --check`: PASS 100% (9 `!important`, 0 `.portal-app .ui-main`, 0 hex lẻ, 0 font-size lệch thang).
+- `ops/check_ui_contrast.py`: 220/220 cặp màu PASS (Light min text 5.100:1, Dark min text 7.007:1).
+- `ops/run_button_states_uat.py`: 30/30 trạng thái nút bấm PASS trên Microsoft Edge thật.
+- `src/manage.py check`: 0 issues.
+- `src/manage.py makemigrations --check`: No changes detected (0 migration, không sửa CSDL).
+- `ops/run_tests.py --backend sqlite apps.portal.test_project_layout apps.portal.tests_mobile apps.portal.test_layout_audit_tools apps.portal.tests_report_dashboard`: 31/31 PASS.
+
+**Trạng thái nhánh & Bàn giao**
+- Nhánh: `main`.
+
 ## 2026-10-16 — Bước F & G: Mở Rộng Hệ Thống Giao Diện Toàn Dự Án, Chuẩn Hóa Ô Nhập & Đồng Bộ Cache (commit ui: system-wide layout consistency, input width standardization, and cache synchronization)
 
 **Tóm tắt cho chủ dự án**

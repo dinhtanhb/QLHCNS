@@ -1,42 +1,30 @@
 /* Atoms-inspired portal presentation. Screen-only; business forms and HCNS paper stay intact. */
+@layer components {
 @media screen {
- .portal-app .ui-topbar { border-bottom-color:var(--ui-card-border); }
- .portal-app .ui-breadcrumb { min-height:var(--ui-space-8); padding:var(--ui-space-1) var(--ui-space-6) var(--ui-space-2); font-size:var(--ui-font-size-caption); color:var(--ui-text-muted); }
- .portal-app .ui-brand { letter-spacing:normal; }
- .portal-app .ui-sidebar { border-right-color:var(--ui-sidebar-divider); }
- .portal-app .ui-sidebar .ui-nav-panel { border-color:var(--ui-sidebar-divider); }
- .portal-app .ui-sidebar .ui-nav-separator { border-color:var(--ui-sidebar-divider); }
- .portal-app .ui-sidebar .ui-drawer-heading { color:var(--ui-sidebar-text); }
- .portal-app .ui-sidebar .ui-control { background:var(--ui-sidebar-bg); color:var(--ui-sidebar-text); border-color:var(--ui-sidebar-border); }
- .portal-app .ui-sidebar .ui-control:hover { background:var(--ui-sidebar-hover-bg); }
- .portal-app .ui-sidebar :is(.ui-nav-trigger,.ui-nav-link) { box-shadow:none; }
- .portal-app .ui-main .ui-page .ui-card { border-color:var(--ui-card-border); box-shadow:var(--ui-shadow-card); }
- .portal-app .ui-main .ui-page .ui-card > .ui-card-title:first-child { margin:calc(-1 * var(--ui-space-6)) calc(-1 * var(--ui-space-6)) var(--ui-space-6); padding:var(--ui-space-4) var(--ui-space-6); border-bottom:var(--ui-border-width) solid var(--ui-card-border); font-size:var(--ui-component-heading); }
- .portal-app .ui-main .ui-page .ui-card > .ui-scroll { position:relative; width:calc(100% + var(--ui-space-6) * 2); max-width:calc(100% + var(--ui-space-6) * 2); margin-inline:calc(-1 * var(--ui-space-6)); border-inline:0; border-radius:0; border-color:var(--ui-card-border); }
- .portal-app .ui-main .ui-page .ui-table thead th { color:var(--ui-text-muted); font-size:var(--ui-font-size-small); letter-spacing:var(--ui-letter-spacing-label); background:var(--ui-surface-raised); }
- .portal-app .ui-main .ui-page .ui-table tbody :is(th,td) { white-space:normal; overflow-wrap:anywhere; }
- .portal-app .ui-main .ui-page .ui-table caption { background:var(--ui-surface); color:var(--ui-text-muted); }
- .portal-app .ui-main .ui-page .ui-card.ui-kpi { position:relative; gap:var(--ui-space-2); }
- .portal-app .ui-main .ui-page .ui-kpi-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--ui-space-3); }
- .portal-app .ui-main .ui-page .ui-kpi-symbol { display:inline-flex; align-items:center; justify-content:center; min-width:var(--ui-target-min); min-height:var(--ui-target-min); border-radius:var(--ui-radius-control); background:var(--ui-brand-soft); color:var(--ui-brand); }
- .portal-app .ui-main .ui-page .ui-kpi-label { margin:0; font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); letter-spacing:var(--ui-letter-spacing-label); }
- .portal-app .ui-main .ui-page .ui-kpi-value { font-size:var(--ui-font-size-display); font-weight:var(--ui-font-weight-label); line-height:var(--ui-line-height-heading); }
- .portal-app .ui-main .ui-page .ui-kpi-period { padding-top:var(--ui-space-3); border-top:var(--ui-border-width) solid var(--ui-card-border); font-size:var(--ui-font-size-caption); }
- .portal-app .ui-main .ui-page .ui-kpi--warning { border-inline-start:var(--ui-active-marker-width) solid var(--ui-warning-border); }
- .portal-app .ui-main .ui-page .ui-kpi--danger { border-inline-start:var(--ui-active-marker-width) solid var(--ui-danger-border); }
- .portal-app .ui-main .home-dashboard .home-kpi-grid > .ui-kpi:first-child:not(.ui-kpi--warning):not(.ui-kpi--danger) { border-inline-start:var(--ui-active-marker-width) solid var(--ui-brand); }
- .portal-app .ui-main .home-dashboard .home-queue { display:grid; gap:var(--ui-space-3); }
- .portal-app .ui-main .home-dashboard .home-queue li { padding:0 var(--ui-space-3); border:var(--ui-border-width) solid var(--ui-card-border); border-radius:var(--ui-radius-control); background:var(--ui-surface-raised); }
- .portal-app .ui-main .home-dashboard .home-queue a { gap:var(--ui-space-3); }
- .portal-app .ui-main .ui-page .ui-person { display:flex; align-items:center; gap:var(--ui-space-3); min-width:0; }
- .portal-app .ui-main .ui-page .ui-person-avatar { display:inline-flex; flex:none; align-items:center; justify-content:center; width:var(--ui-target-min); height:var(--ui-target-min); border-radius:var(--ui-radius-pill); background:var(--ui-brand-soft); color:var(--ui-brand); font-size:var(--ui-font-size-body); font-weight:var(--ui-font-weight-heading); }
- .portal-app .ui-main .ui-page .ui-person-name { color:var(--ui-text); font-weight:var(--ui-font-weight-label); }
- .portal-app .ui-main .ui-page .ui-person-name:hover { color:var(--ui-link); text-decoration:underline; }
- .portal-app .ui-main .ui-page .ui-profile-heading { display:flex; gap:var(--ui-space-4); align-items:center; min-width:0; }
- .portal-app .ui-main .ui-page .ui-profile-heading .ui-person-avatar { width:var(--ui-header-min-height); height:var(--ui-header-min-height); font-size:var(--ui-font-size-title); }
- .portal-app .ui-main .ui-page .ui-detail-item { padding-block:var(--ui-space-3); border-bottom:var(--ui-border-width) solid var(--ui-card-border); }
- .portal-app .ui-main .ui-page .ui-detail-item dd { margin:0; }
- .portal-app .ui-main .ui-page .ui-badge { font-weight:var(--ui-font-weight-label); }
+ .ui-topbar { border-bottom-color:var(--ui-card-border); }
+ .ui-breadcrumb { min-height:var(--ui-space-8); padding:var(--ui-space-1) var(--ui-space-6) var(--ui-space-2); font-size:var(--ui-font-size-caption); color:var(--ui-text-muted); }
+ .ui-brand { letter-spacing:normal; }
+ .ui-sidebar { border-right-color:var(--ui-sidebar-divider); }
+ .ui-sidebar .ui-nav-panel { border-color:var(--ui-sidebar-divider); }
+ .ui-sidebar .ui-nav-separator { border-color:var(--ui-sidebar-divider); }
+ .ui-sidebar .ui-drawer-heading { color:var(--ui-sidebar-text); }
+ .ui-sidebar .ui-control { background:var(--ui-sidebar-bg); color:var(--ui-sidebar-text); border-color:var(--ui-sidebar-border); }
+ .ui-sidebar .ui-control:hover { background:var(--ui-sidebar-hover-bg); }
+ .ui-sidebar :is(.ui-nav-trigger,.ui-nav-link) { box-shadow:none; }
+ 
+ .home-dashboard .home-queue { display:grid; gap:var(--ui-space-3); }
+ .home-dashboard .home-queue li { padding:0 var(--ui-space-3); border:var(--ui-border-width) solid var(--ui-card-border); border-radius:var(--ui-radius-control); background:var(--ui-surface-raised); }
+ .home-dashboard .home-queue a { gap:var(--ui-space-3); }
+ 
+ .ui-person { display:flex; align-items:center; gap:var(--ui-space-3); min-width:0; }
+ .ui-person-avatar { display:inline-flex; flex:none; align-items:center; justify-content:center; width:var(--ui-target-min); height:var(--ui-target-min); border-radius:var(--ui-radius-pill); background:var(--ui-brand-soft); color:var(--ui-brand); font-size:var(--ui-font-size-body); font-weight:var(--ui-font-weight-heading); }
+ .ui-person-name { color:var(--ui-text); font-weight:var(--ui-font-weight-label); }
+ .ui-person-name:hover { color:var(--ui-link); text-decoration:underline; }
+ .ui-profile-heading { display:flex; gap:var(--ui-space-4); align-items:center; min-width:0; }
+ .ui-profile-heading .ui-person-avatar { width:var(--ui-header-min-height); height:var(--ui-header-min-height); font-size:var(--ui-font-size-title); }
+ .ui-detail-item { padding-block:var(--ui-space-3); border-bottom:var(--ui-border-width) solid var(--ui-card-border); }
+ .ui-detail-item dd { margin:0; }
+
  .ui-candidate-scroll { position:relative; max-width:100%; margin-top:var(--ui-space-6); overflow:auto; border-radius:var(--ui-radius-control); }
  .ui-candidate-scroll:focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:var(--ui-focus-offset); }
  .ui-candidate-board { display:flex; align-items:flex-start; gap:var(--ui-space-4); min-width:0; }
@@ -54,8 +42,10 @@
  .ui-candidate-info > div { display:flex; flex-wrap:wrap; gap:var(--ui-space-2); }
  .ui-candidate-info dt { color:var(--ui-text-muted); }
  .ui-candidate-info dd { margin:0; color:var(--ui-text); overflow-wrap:anywhere; }
- @media(min-width:768px) { .portal-app .ui-topbar-row { padding-inline:var(--ui-space-6); } }
- @media(min-width:1024px) { .portal-app .ui-main .home-action-grid { grid-template-columns:minmax(0,3fr) minmax(0,2fr); } }
- @media(min-width:1440px) { .portal-app .ui-main .home-dashboard .home-kpi-grid { gap:var(--ui-space-6); } }
- @media(max-width:767px) { .portal-app .ui-breadcrumb { padding-inline:var(--ui-space-4); } .portal-app .ui-main .ui-page .ui-kpi-value { font-size:var(--ui-font-size-title); } }
+ 
+ @media(min-width:768px) { .ui-topbar-row { padding-inline:var(--ui-space-6); } }
+ @media(min-width:1024px) { .home-action-grid { grid-template-columns:minmax(0,3fr) minmax(0,2fr); } }
+ @media(min-width:1440px) { .home-dashboard .home-kpi-grid { gap:var(--ui-space-6); } }
+ @media(max-width:767px) { .ui-breadcrumb { padding-inline:var(--ui-space-4); } }
+}
 }

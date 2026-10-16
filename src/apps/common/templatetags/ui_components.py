@@ -5,7 +5,18 @@ from django.utils import timezone
 from django.template.defaultfilters import floatformat
 from django.utils.translation import override
 from apps.common.ui_status import STATUS_BADGES, status_badge
+from apps.common.asset_version import get_asset_hash
+from django.templatetags.static import static
+
 register = template.Library()
+
+@register.simple_tag
+def asset(path):
+    """Return static URL with content-based ?v=<sha1-hash>."""
+    url = static(path)
+    h = get_asset_hash(path)
+    separator = "&" if "?" in url else "?"
+    return f"{url}{separator}v={h}"
 
 @register.filter
 def ui_has_filters(query, names):
