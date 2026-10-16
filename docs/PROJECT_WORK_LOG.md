@@ -2,6 +2,34 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-16 — Điểm Dừng 1: Báo Cáo Phê Bình Thiết Kế & Xác Minh Ảnh Thực Tế (commit ui: stage 1 visual critique and sample verification)
+
+**Tóm tắt cho chủ dự án**
+- Hoàn thành Điểm Dừng 1 theo đúng kế hoạch Refactoring UI: Xác minh 6 trang giao diện cốt lõi (Dashboard, Hồ sơ nhân viên, Form nhân viên, Form tài sản, Báo cáo cơ cấu, Đăng nhập) qua 3 độ phân giải (1440x900, 1756px, 390px) trên cả 2 theme Sáng / Tối.
+- Thu thập đầy đủ 36 ảnh chụp thực tế bằng Edge Headless UAT (`ops/capture_ui_screenshots.py`) lưu tại `docs/screenshots/stage1_samples/`.
+- Thực hiện phê bình thiết kế Impeccable toàn diện trên 5 tiêu chí:
+  1. *Phân cấp thị giác*: Duy nhất 1 nút chính primary solid trên mỗi ngữ cảnh; nút nhóm chuyển thành outline secondary tinh gọn; liên kết dạng chip không cạnh tranh nút bấm.
+  2. *Nhịp điệu & Khoảng cách*: Xử lý triệt để lỗi khoảng cách nhãn form ~36px (đưa về chuẩn 8px so với 16px row gap).
+  3. *Kiểu chữ*: Thang 14px đến 36px chuẩn, tuyệt đối không dùng đơn vị `em` và không có chữ đọc dưới 14px.
+  4. *Tiết chế*: Thiết kế phẳng không đổ bóng thẻ (`--ui-shadow-card: none`), chuẩn hóa 3 mức bo góc.
+  5. *Trợ năng*: Khắc phục vĩnh viễn lỗi tương phản hover nút "Tạo đơn nghỉ" (đạt 7.70:1 > 4.5:1), 208/208 cặp màu đạt chuẩn WCAG AA.
+- DỪNG LẠI tại Điểm Dừng 1 để trình bày kết quả cho Chủ dự án duyệt trước khi mở rộng Bước F cho toàn bộ các trang còn lại trong hệ thống.
+
+**Chi tiết thay đổi kỹ thuật**
+- `ops/capture_ui_screenshots.py`: Bổ sung công cụ tự động hóa chụp 36 ảnh màn hình UAT mẫu đa độ phân giải và đa theme trên Edge thực tế.
+- `docs/DESIGN_SYSTEM_CRITIQUE_STAGE1.md`: Tài liệu phê bình thiết kế 5 tiêu chí Impeccable kèm danh mục 36 ảnh UAT.
+- `docs/screenshots/stage1_samples/`: Thư mục lưu trữ 36 ảnh chụp màn hình kiểm thử thực tế.
+
+**Kết quả kiểm tra & Cổng chất lượng**
+- `ops/capture_ui_screenshots.py`: 36/36 ảnh chụp thành công (6 trang × 3 độ phân giải × 2 theme).
+- `ops/check_ui_contrast.py`: 208/208 cặp màu PASS chuẩn WCAG.
+- `src/manage.py check`: 0 issues.
+- `src/manage.py makemigrations --check`: No changes detected (0 migration / không sửa CSDL).
+- `ops/run_tests.py --backend sqlite apps.portal.test_project_layout apps.portal.tests_mobile`: 20/20 PASS.
+
+**Trạng thái nhánh & Bàn giao**
+- Nhánh: `main`.
+
 ## 2026-10-16 — Bước D: Phân Cấp Thị Giác & Thao Tác Chuẩn Xác (commit ui: action hierarchy and info hierarchy)
 
 **Tóm tắt cho chủ dự án**
