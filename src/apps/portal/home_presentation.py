@@ -134,7 +134,7 @@ def grouped_dashboard(user, context, presentation):
         if item: item["label"] = "Nhân viên trong phòng"
         add(item)
         queue = sections.get("queue", {}).get("rows", [])
-        if queue: add(dict(queue[0], label="Đơn nghỉ phòng chờ duyệt", icon="calendar"))
+        if queue: add(dict(queue[0], label="Cần duyệt và xử lý", icon="checklist"))
         if context.get("dept_open_tasks") is not None:
             add(dict(label="Công việc phòng chưa hoàn thành",value=context["dept_open_tasks"],icon="briefcase"))
         add(sections.get("joined"))
@@ -142,13 +142,16 @@ def grouped_dashboard(user, context, presentation):
         add(metrics.get("managed")); add(metrics.get("approved"))
         contracts = sections.get("contracts")
         if contracts and contracts.get("upcoming_count") is not None:
+            contract_href = reverse("portal:hr_contract_list") if has_permission(user, "manage_hr") else None
             add(dict(label="Hợp đồng sắp hết hạn (≤60 ngày)",value=contracts["upcoming_count"],icon="contract",
-                     note="Hợp đồng Active đã bắt đầu; đến 60 ngày tới.", overdue=contracts.get("overdue_count",0)))
+                     note="Hợp đồng Active đã bắt đầu; đến 60 ngày tới.", overdue=contracts.get("overdue_count",0),
+                     href=contract_href))
         else: add(sections.get("joined"))
         queue = sections.get("queue", {}).get("rows", [])
-        if queue: add(dict(queue[0], label="Đơn nghỉ chờ duyệt",icon="calendar"))
+        if queue: add(dict(queue[0], label="Cần duyệt và xử lý",icon="checklist"))
         elif context.get("open_tasks_company") is not None:
-            add(dict(label="Công việc đang mở toàn Trung tâm",value=context["open_tasks_company"],icon="briefcase"))
+            add(dict(label="Cần duyệt và xử lý",value=context["open_tasks_company"],icon="checklist",
+                     href=reverse("portal:task_list")))
         if len(layout["main"])<4 and "joined" in sections: add(sections["joined"])
     # Do not duplicate the joined counter when it fills a fallback main slot.
     unique=[]
@@ -157,10 +160,11 @@ def grouped_dashboard(user, context, presentation):
     layout["main"]=unique
     short_labels = {"Nhân sự đang quản lý": "Nhân sự đang quản lý", "Nghỉ được duyệt trong ngày": "Nghỉ được duyệt hôm nay",
                     "Hợp đồng sắp hết hạn (≤60 ngày)": "Hợp đồng sắp hết hạn",
+                    "Cần duyệt và xử lý": "Cần duyệt và xử lý",
                     "Công việc phòng chưa hoàn thành": "Việc phòng chưa xong", "Nhân sự vào làm trong tháng": "Vào làm trong tháng"}
     for item in layout["main"]:
         item["short_label"] = short_labels.get(item["label"], item["label"])
-        item["attention"] = bool(item.get("value") and "chờ duyệt" in item["label"].lower())
+        item["attention"] = bool(item.get("value") and ("chờ duyệt" in item["label"].lower() or "cần duyệt" in item["label"].lower()))
 
     layout["status_counts"] = counts
     layout["main_keys"] = [m.get("key") for m in layout["main"]]

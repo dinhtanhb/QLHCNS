@@ -57,6 +57,17 @@
  .portal-app .ui-main .ui-login-wrap .ui-field input {
   width: 100%;
  }
+ .portal-app .ui-main .ui-login-wrap .ui-form-actions {
+  display: flex;
+  width: 100%;
+  margin-top: var(--ui-space-3);
+ }
+ .portal-app .ui-main .ui-login-wrap .ui-button {
+  width: 100%;
+  justify-content: center;
+  min-height: 2.75rem;
+  font-size: var(--ui-font-size-body);
+ }
 }
 
 @media print { .ui-inline-create { display:none; } }

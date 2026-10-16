@@ -263,11 +263,11 @@ def main():
             check(statuses == list(Contract.objects.values_list('pk','status','end_date')), 'Dashboard GET never changes contract statuses/dates')
             all_links = page.locator('#dashboard-status a.home-main-metric').evaluate_all('(xs)=>xs.map(a=>a.getAttribute("href"))')
             links = [href for href in all_links if href.startswith(reverse('portal:dashboard_people'))]
-            check(len(links) == 2 and len(all_links) == 3, 'Managed/approved exact person drilldowns and existing approval queue link retained')
+            check(len(links) == 2 and len(all_links) == 4, 'Managed/approved exact person drilldowns, contract list, and approval queue link retained')
             for href, expected in zip(links, (12, 1)):
                 go(page, 'portal:dashboard')
                 with page.expect_navigation(wait_until='networkidle') as navigation:
-                    page.locator('#dashboard-status a.home-main-metric').filter(has=page.locator('strong')).all()[links.index(href)].click()
+                    page.locator(f'#dashboard-status a.home-main-metric[href="{href}"]').click()
                 check(navigation.value.status == 200 and page.locator('.ui-results-count').inner_text() == f'Có {expected} người phù hợp.', 'KPI destination equals displayed count: ' + href)
                 check(page.locator('tbody tr').count() == expected, 'KPI detail rows match count')
             go(page, 'portal:dashboard')
@@ -282,7 +282,7 @@ def main():
                         if label == 'contracts':
                             check(page.locator('tbody a').evaluate_all('(xs)=>xs.every(a=>{const x=a.getBoundingClientRect(),c=a.closest("td").getBoundingClientRect();return x.right<=c.right+1})'), f'All contract names bounded {width} {theme}')
                         if label == 'dashboard':
-                            check(page.locator('#dashboard-status a.home-main-metric').count() == 3, f'Two people drilldowns and existing queue link {width} {theme}')
+                            check(page.locator('#dashboard-status a.home-main-metric').count() == 4, f'Four clickable main metric links {width} {theme}')
                             if width >= 1440:
                                 cards=page.locator('.home-row').first.locator(':scope > section').evaluate_all('(xs)=>xs.map(x=>x.getBoundingClientRect().width)')
                         # Atoms reference gives the department chart more width;

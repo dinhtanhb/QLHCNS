@@ -50,11 +50,11 @@
  .portal-app .ui-main .ui-page .ui-card { min-width:0; margin:0; padding:var(--ui-space-6); background:var(--ui-surface); color:var(--ui-text); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-card); box-shadow:var(--ui-shadow-card); }
  .ui-card > h3 { overflow-wrap:anywhere; }
  .ui-card-title { margin:0 0 var(--ui-space-4); font-size:var(--ui-component-heading); font-weight:var(--ui-font-weight-label); }
- .portal-app .ui-main :is(.ui-page,.ui-form-actions) .ui-button,.ui-pagination .ui-button { display:inline-flex; align-items:center; justify-content:center; gap:var(--ui-space-2); min-height:var(--ui-control-height); min-width:var(--ui-target-min); padding:var(--ui-space-2) var(--ui-space-4); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); line-height:var(--ui-line-height-body); white-space:nowrap; flex-shrink:0; text-decoration:none; background:var(--ui-surface); color:var(--ui-text); cursor:pointer; }
- .portal-app .ui-main :is(.ui-page,.ui-form-actions) .ui-button--primary { background:var(--ui-brand); color:var(--ui-on-brand); border-color:var(--ui-brand); }
- .portal-app .ui-main :is(.ui-page,.ui-form-actions) .ui-button--danger,.ui-dialog .ui-button--danger { background:var(--ui-danger-text); color:var(--ui-danger-bg); border-color:var(--ui-danger-text); }
+ .portal-app .ui-main :is(.ui-page,.ui-form-actions,.ui-login-wrap) .ui-button,.ui-pagination .ui-button { display:inline-flex; align-items:center; justify-content:center; gap:var(--ui-space-2); min-height:var(--ui-control-height); min-width:var(--ui-target-min); padding:var(--ui-space-2) var(--ui-space-4); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); line-height:var(--ui-line-height-body); white-space:nowrap; flex-shrink:0; text-decoration:none; background:var(--ui-surface); color:var(--ui-text); cursor:pointer; }
+ .portal-app .ui-main :is(.ui-page,.ui-form-actions,.ui-login-wrap) .ui-button--primary { background:var(--ui-brand); color:var(--ui-on-brand); border-color:var(--ui-brand); }
+ .portal-app .ui-main :is(.ui-page,.ui-form-actions,.ui-login-wrap) .ui-button--danger,.ui-dialog .ui-button--danger { background:var(--ui-danger-text); color:var(--ui-danger-bg); border-color:var(--ui-danger-text); }
  .ui-button:not(:disabled):hover { background:var(--ui-hover-bg); }
- .portal-app .ui-main :is(.ui-page,.ui-form-actions) .ui-button--primary:not(:disabled):hover { background:var(--ui-brand-hover); }
+ .portal-app .ui-main :is(.ui-page,.ui-form-actions,.ui-login-wrap) .ui-button--primary:not(:disabled):hover { background:var(--ui-brand-hover); }
  .ui-button:focus-visible,.ui-scroll:focus-visible,.ui-pagination a:focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:var(--ui-focus-offset); }
 
  .ui-form-fieldset { min-width:0; border:0; padding:0; margin:0; }

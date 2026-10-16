@@ -2,6 +2,34 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-16 — Chuẩn hóa Nút Đăng nhập, Kích hoạt Click KPI Hợp đồng và Đổi KPI thứ 4 sang "Cần duyệt và xử lý" (commit fix(ui): login button styling and dashboard kpi links)
+
+**Tóm tắt & Mục tiêu**
+- Khắc phục nhanh 3 vấn đề người dùng phản hồi:
+  1. **Hiển thị chuẩn hóa Nút Đăng nhập (`login.html`, `shared_components.css`, `project_layout.css`)**:
+     - Bọc nút submit trong cụm container `<div class="ui-form-actions">`.
+     - Mở rộng bộ chọn `.portal-app .ui-main :is(.ui-page,.ui-form-actions,.ui-login-wrap) .ui-button` và `.ui-button--primary` trong `shared_components.css` để các button bên trong form đăng nhập luôn nhận đầy đủ styling nút chính (màu brand nền, chữ trắng, padding, border radius, hover state).
+     - Bổ sung quy tắc căn chỉnh riêng cho `.ui-login-wrap .ui-button`: chiều rộng 100%, chiều cao tối thiểu 2.75rem, căn giữa nội dung, tạo trải nghiệm trực quan, dễ thao tác và không còn tình trạng nút bị chìm hoặc hiển thị dạng văn bản trơn.
+  2. **Kích hoạt tính năng click cho KPI "Hợp đồng sắp hết hạn" (`home_presentation.py`)**:
+     - Bổ sung thuộc tính điều hướng `href=reverse("portal:hr_contract_list")` cho thẻ KPI "Hợp đồng sắp hết hạn (≤60 ngày)" khi người dùng có quyền `manage_hr`.
+     - Giúp thẻ chuyển từ `<div>` sang thẻ `<a>` có trạng thái hover, con trỏ pointer và khi bấm vào sẽ chuyển thẳng đến trang Quản lý danh sách hợp đồng lao động.
+  3. **Đổi KPI thứ 4 sang "Cần duyệt và xử lý" (`home_presentation.py`)**:
+     - Đổi nhãn hiển thị và `short_label` từ "Đơn nghỉ chờ duyệt" thành "Cần duyệt và xử lý".
+     - Sử dụng icon `checklist` thay cho icon lịch cũ, thể hiện chính xác tính chất danh sách hàng đợi công việc/phê duyệt của hệ thống.
+     - Cập nhật logic `attention`: kích hoạt chấm đỏ thông báo khi có việc chờ duyệt/xử lý (chứa từ khóa "chờ duyệt" hoặc "cần duyệt").
+     - Đồng bộ bài kiểm tra UAT trình duyệt trong `ops/run_browser_uat.py` (cả 4 thẻ KPI chính giờ đây đều là link điều hướng trực tiếp).
+
+**Kết quả kiểm tra & Cổng chất lượng**
+- `ops/run_tests.py --backend sqlite`: 552 tests, **0 failures**, **552 passed** (7 skipped).
+- `ops/check_ui_contrast.py`: 208/208 color pairs pass WCAG standards.
+- `src/manage.py check`: 0 issues.
+- `src/manage.py makemigrations --check`: No changes detected (không thay đổi CSDL / 0 migration).
+- Đã kiểm tra bảo mật đăng nhập và CSRF (`apps.security.test_login_csrf`): toàn bộ PASS.
+
+**Trạng thái nhánh & Bàn giao**
+- Nhánh: `main`.
+- Đã đóng gói bản sao kiểm toán ngoài repository tại `D:\QLHCNS-Backups\IHRMS_Review_20261016_Login_KPI.zip` (1548 tệp, manifest SHA-256 xác minh 100% khớp).
+
 ## 2026-10-16 — Chuẩn hóa bố cục Dự án, Tinh gọn ô nhập và Triệt tiêu yêu cầu Ctrl + F5 (commit ui: compact form grid and project layout)
 
 **Tóm tắt & Mục tiêu**
