@@ -6,19 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Cổng thông tin nhân viên{% endblock %} — IHRMS</title>
     <meta name="theme-color" content="">
-    <script src="{% static 'js/theme.js' %}?v=20261012-ui-2c"></script>
+    <script src="{% static 'js/theme.js' %}?v=20261016-ui-expansion"></script>
     <link rel="manifest" href="{% static 'manifest.json' %}">
     <link rel="apple-touch-icon" href="{% static 'img/ihrms-pwa-192.png' %}">
-    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}?v=20261015-dashboard-compact">
-    <link rel="stylesheet" href="{% static 'css/ihrms.css' %}?v=20261012-ui-2c">
-    <link rel="stylesheet" href="{% static 'css/theme.css' %}?v=20261012-ui-2c-4">
-    <link rel="stylesheet" href="{% static 'css/ui_tokens.css' %}?v=20261016-ui-layers">
+    <link rel="stylesheet" href="{% static 'css/tailwind.css' %}?v=20261016-ui-expansion">
+    <link rel="stylesheet" href="{% static 'css/ihrms.css' %}?v=20261016-ui-expansion">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}?v=20261016-ui-expansion">
+    <link rel="stylesheet" href="{% static 'css/ui_tokens.css' %}?v=20261016-ui-expansion">
     {% block extra_css %}{% endblock %}
-    <link rel="stylesheet" href="{% static 'css/app_shell.css' %}?v=20261016-ui-layers">
-    <link rel="stylesheet" href="{% static 'css/ui_controls.css' %}?v=20261016-ui-layers">
-    <link rel="stylesheet" href="{% static 'css/shared_components.css' %}?v=20261016-ui-layers">
-    <link rel="stylesheet" href="{% static 'css/atoms_ui.css' %}?v=20261016-ui-layers">
-    <link rel="stylesheet" href="{% static 'css/project_layout.css' %}?v=20261016-ui-layers">
+    <link rel="stylesheet" href="{% static 'css/app_shell.css' %}?v=20261016-ui-expansion">
+    <link rel="stylesheet" href="{% static 'css/ui_controls.css' %}?v=20261016-ui-expansion">
+    <link rel="stylesheet" href="{% static 'css/shared_components.css' %}?v=20261016-ui-expansion">
+    <link rel="stylesheet" href="{% static 'css/atoms_ui.css' %}?v=20261016-ui-expansion">
+    <link rel="stylesheet" href="{% static 'css/project_layout.css' %}?v=20261016-ui-expansion">
     <link rel="stylesheet" href="{% static 'css/print_forms.css' %}?v=20261014-dispatch-register" media="print">
 </head>
 <body class="portal-app min-h-screen">
@@ -212,9 +212,9 @@
         {% block content %}{% endblock %}
     </main>
     </div>
-    <script src="{% static 'js/app_shell.js' %}?v=20261012-ui-2c" defer></script>
-    <script src="{% static 'js/ui_numbers.js' %}?v=20261013-years" defer></script>
-    <script src="{% static 'js/shared_components.js' %}?v=20261016-ui-layers" defer></script>
+    <script src="{% static 'js/app_shell.js' %}?v=20261016-ui-expansion" defer></script>
+    <script src="{% static 'js/ui_numbers.js' %}?v=20261016-ui-expansion" defer></script>
+    <script src="{% static 'js/shared_components.js' %}?v=20261016-ui-expansion" defer></script>
     {% if user.is_authenticated and "/portal/" in request.path %}
     <script>
         if ('serviceWorker' in navigator) {

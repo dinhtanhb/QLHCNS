@@ -1,6 +1,7 @@
 {% extends "base.html" %}
-{% load ui_components %}
+{% load static ui_components %}
 {% block title %}Tiến độ hoạt động dự án{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/planning_ui.css' %}?v=20261016-ui-expansion">{% endblock %}
 {% block content %}
 <div class="ui-page ui-activity">
 {% include "ui/page_header.html" with title="Hoạt động dự án" description="Theo dõi người phụ trách, hạn báo cáo, trạng thái Task và tệp báo cáo trên SharePoint." actions_template="activity/_dashboard_actions.html" %}
@@ -18,7 +19,7 @@
   </div>
 
   {% if is_overview %}
-  <div class="ui-kpi-grid mb-6">
+  <div class="ui-kpi-grid ui-kpi-grid--5 mb-6">
     <div class="ui-kpi"><p class="ui-kpi-label">Hoạt động trong kỳ</p><p class="ui-kpi-value ihrms-kpi-value">{{ total_activities|ui_number }}</p></div>
     <div class="ui-kpi"><p class="ui-kpi-label">Task hoàn thành</p><p class="ui-kpi-value ihrms-kpi-value">{{ completed_count|ui_number }}</p></div>
     <div class="ui-kpi {% if overdue_count > 0 %}ui-kpi--danger{% endif %}"><p class="ui-kpi-label">Task quá hạn</p><p class="ui-kpi-value ihrms-kpi-value">{{ overdue_count|ui_number }}</p></div>

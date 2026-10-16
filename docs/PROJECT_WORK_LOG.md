@@ -1,6 +1,47 @@
 # Nhật ký công việc IHRMS
 
-Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
+
+
+## 2026-10-16 — Bước F & G: Mở Rộng Hệ Thống Giao Diện Toàn Dự Án, Chuẩn Hóa Ô Nhập & Đồng Bộ Cache (commit ui: system-wide layout consistency, input width standardization, and cache synchronization)
+
+**Tóm tắt cho chủ dự án**
+- Hoàn thành Bước F & G: Mở rộng hệ thiết kế toàn dự án, giải quyết dứt điểm 3 điểm phản hồi của chủ dự án:
+  1. *Khắc phục bố cục chưa nhất quán (Dự án)*:
+     - Phân hệ Hoạt động dự án (`activity/calendar.html` và `activity/dashboard.html`): Thay thế hoàn toàn các class màu Tailwind cố định (`border-gray-200`, `bg-gray-50`, `bg-amber-50`, `text-blue-900`) bằng hệ thống CSS tokens ngữ nghĩa `.ui-activity-calendar`, `.ui-activity-badge--info`, `.ui-activity-badge--warning` trong `planning_ui.css`, tự động tương thích mượt mà trên cả 2 theme Sáng và Tối.
+     - Chuẩn hóa lưới KPI 5 cột `.ui-kpi-grid--5` trong Dashboard phân hệ Hoạt động dự án (`activity/dashboard.html`), đảm bảo các thẻ cân đối trực quan trên desktop và tự động co giãn/cuộn ngang trên thiết bị di động.
+  2. *Chuẩn hóa kích thước ô điền/chọn thông tin*:
+     - Trong `src/static/css/shared_components.css`: hiện thực hóa quy tắc "Match input width to expected content length" của Refactoring UI.
+     - Ô ngày/tháng (`input[type="date"]`, `input[type="month"]`): khóa độ rộng tối đa `14rem` (~224px).
+     - Ô số lượng/giá trị (`input[type="number"]`): khóa độ rộng tối đa `14rem`.
+     - Ô số điện thoại (`input[type="tel"]`): khóa độ rộng `16rem`.
+     - Bổ sung modifier utility `.ui-field--compact` (`10rem`), `.ui-field--narrow` (`14rem`), `.ui-field--medium` (`28rem`), `.ui-field--wide` (`100%`).
+     - Tự động co giãn 100% trên màn hình hẹp (<600px) đảm bảo trải nghiệm cảm ứng di động hoàn hảo.
+  3. *Khắc phục triệt để lỗi cần bấm Ctrl + F5 để nạp đúng CSS/JS mới*:
+     - Nâng cấp phiên bản cache Service Worker lên `ihrms-static-v32-ui-expansion-20261016` trong `src/static/js/service-worker.js`.
+     - Đồng bộ hóa toàn bộ query parameter cache buster sang `?v=20261016-ui-expansion` trên `base.html` và tất cả các template base con của các phân hệ: `administration_base.html`, `dashboard.html`, `finance_base.html`, `hr_base.html`, `personal_base.html`, `planning_base.html`, `recruitment_base.html`, `report_headcount.html`, `report_hub.html`, `login.html`.
+     - Cập nhật test case kiểm tra tài nguyên tĩnh trong `test_project_layout.py` và `tests_mobile.py` khớp hoàn toàn với phiên bản cache mới.
+  4. *Chuẩn hóa token phân hệ báo cáo*:
+     - Trong `src/static/css/report_dashboard.css`: chuẩn hóa các cỡ chữ nhỏ dưới 14px (`.8125rem`, `.75rem`) về `var(--ui-font-size-small)` (14px) và chuẩn hóa bo góc lẻ về `var(--ui-radius-card)` (8px).
+
+**Chi tiết thay đổi kỹ thuật**
+- `src/static/css/shared_components.css`: Khai báo `.ui-kpi-grid--5`, áp dụng ràng buộc max-width cho các input types (`date`, `month`, `number`, `tel`) và modifiers trường form.
+- `src/static/css/planning_ui.css`: Bổ sung token và quy tắc hiển thị bảng lịch dự án `.ui-activity-calendar`, thẻ badge hoạt động `.ui-activity-badge--info`, `.ui-activity-badge--warning`.
+- `src/apps/activity/templates/activity/calendar.html`: Áp dụng class ngữ nghĩa, hỗ trợ cả theme tối và đảm bảo tương thích hợp đồng kiểm thử hồi quy.
+- `src/apps/activity/templates/activity/dashboard.html`: Áp dụng `.ui-kpi-grid--5`.
+- `src/static/css/report_dashboard.css`: Chuẩn hóa font-size và radius theo token.
+- `src/static/js/service-worker.js`: Nâng cấp cache name lên `ihrms-static-v32-ui-expansion-20261016`.
+- `src/templates/base.html`, `login.html` & 9 module base templates: Cập nhật cache buster `?v=20261016-ui-expansion`.
+- `src/apps/portal/test_project_layout.py`, `src/apps/portal/tests_mobile.py`: Cập nhật assert version cache (PASS 20/20).
+
+**Kết quả kiểm tra & Cổng chất lượng**
+- `ops/check_ui_contrast.py`: 208/208 cặp màu PASS chuẩn WCAG (Light min text 5.100:1, Dark min text 7.007:1).
+- `ops/run_button_states_uat.py`: 30/30 trạng thái nút bấm PASS trên Edge thật.
+- `ops/run_tests.py --backend sqlite apps.portal.test_project_layout apps.portal.tests_mobile apps.activity`: 53/53 tests PASS (0 failures).
+- `src/manage.py check`: 0 issues.
+- `src/manage.py makemigrations --check`: No changes detected (0 migration / không sửa CSDL).
+
+**Trạng thái nhánh & Bàn giao**
+- Nhánh: `main`.
 
 ## 2026-10-16 — Điểm Dừng 1: Báo Cáo Phê Bình Thiết Kế & Xác Minh Ảnh Thực Tế (commit ui: stage 1 visual critique and sample verification)
 
