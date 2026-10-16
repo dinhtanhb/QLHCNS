@@ -2,6 +2,32 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-16 — Bước D: Phân Cấp Thị Giác & Thao Tác Chuẩn Xác (commit ui: action hierarchy and info hierarchy)
+
+**Tóm tắt cho chủ dự án**
+- Hoàn thành Bước D: Chuẩn hóa phân cấp hành động theo nguyên tắc vàng "Exactly one primary solid button per main context/page".
+- **Dashboard**:
+  - Giữ lại duy nhất 1 nút chính primary solid là `Tạo đơn nghỉ` (`.ui-button--primary`), phục vụ hành động cá nhân thường xuyên nhất của nhân viên.
+  - Chuyển các nút tác vụ nhóm phân hệ `Giao công việc`, `Tạo hồ sơ nhân viên`, `Tạo công văn` sang nút phụ dạng outline thanh lịch (`.ui-button--secondary`).
+  - Bảo toàn liên kết `Vào làm trong tháng` dạng text-link/chip (`home-text-link home-joined-chip`) không cạnh tranh thị giác với các nút bấm thao tác.
+  - Chỉ số KPI chính thứ 4 (`Cần duyệt và xử lý`): logic hiển thị bảo đảm hiển thị chính xác số lượng hàng đợi hoặc công việc cần xử lý với icon `checklist` và chỉ bật chấm đỏ `attention` khi `value > 0`.
+- Đảm bảo 100% kiểm thử tĩnh, tương phản màu và kiểm thử layout đều PASS.
+
+**Chi tiết thay đổi kỹ thuật**
+- `src/apps/portal/templates/portal/dashboard/_group_header.html`: Đổi class nút `create` và `create2` từ `.ui-button--primary` sang `.ui-button--secondary`.
+- `src/apps/portal/templates/portal/dashboard/_group_hr.html`: Đổi nút `Tạo hồ sơ nhân viên` sang `.ui-button--secondary`.
+- `src/apps/portal/templates/portal/dashboard/_group_projects.html`: Đổi nút `Giao công việc` sang `.ui-button--secondary`.
+- `src/apps/portal/templates/portal/dashboard/_my_work.html`: Giữ nguyên nút `Tạo đơn nghỉ` là nút `.ui-button--primary` duy nhất trên trang chủ.
+
+**Kết quả kiểm tra & Cổng chất lượng**
+- `ops/check_ui_contrast.py`: 208/208 color pairs pass WCAG standards.
+- `src/manage.py check`: 0 issues.
+- `src/manage.py makemigrations --check`: No changes detected (0 migration / không sửa CSDL).
+- `ops/run_tests.py --backend sqlite apps.portal.test_project_layout apps.portal.tests_mobile`: 20/20 PASS.
+
+**Trạng thái nhánh & Bàn giao**
+- Nhánh: `main`.
+
 ## 2026-10-16 — Bước C: Hợp nhất Thành phần Nền Tảng Single-source (commit ui: base components single source)
 
 **Tóm tắt cho chủ dự án**
