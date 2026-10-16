@@ -1,5 +1,60 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-16 — Sửa hợp đồng card/form và bàn giao ba trang mẫu sau cea459c
+
+**Mục tiêu và trạng thái**
+- Thực hiện kế hoạch chủ dự án đã duyệt: giao diện phẳng, gọn, có khoảng thở; làm Dashboard, Quy trình tuyển dụng và Tài sản trước khi mở rộng template.
+- Đã xác nhận `main`, fetch `origin main`, HEAD gốc `cea459cea08bb8fa6d6ff42a690843f72df1651b` khớp remote, đọc ba mục nhật ký mới nhất. Chủ dự án đã cho phép tiếp tục với các tệp chưa theo dõi từ lượt trước; giữ nguyên và không đưa chúng vào commit.
+- **Bàn giao mẫu, chưa hoàn tất toàn hệ thống.** Audit mẫu đạt 0 vi phạm; audit rộng còn 1.522 vi phạm và 12 route chưa resolve fixture. Chưa đóng giai đoạn hoặc xác nhận toàn ứng dụng đạt chuẩn; chờ chủ dự án duyệt ảnh mẫu trước khi chuyển các phân hệ còn lại.
+
+**Thay đổi trong phạm vi**
+- `components.css`: giữ hợp đồng nội dung trực tiếp trong card, đệm màn hình 24px/16px mobile, không bóng, không cắt focus; thêm modifier sectioned/table để tránh đệm kép. Tiêu đề card 18px/600, khoảng cách 16px. Nút nhỏ vẫn có vùng chạm 44px, không co hẹp.
+- Lưới form query named container trên form có field/section/lớp bao thay vì query chính grid. Ngưỡng liên tục 420/640/900px; form chỉ có nút không tạo size container để tránh mất bề rộng nội tại trong flex. Giữ lưới giấy/in riêng.
+- Khung trang dùng lề 24px/16px; tên tài khoản dài được xuống dòng trong header. Control bo 8px. Dashboard thống nhất đệm, nhóm hành động wrap, tiêu đề card nội dung 18px; nhãn KPI vẫn 14px, giữ toàn bộ nội dung/drill-down.
+- Tuyển dụng dùng bề rộng vùng nội dung cho lưới 3/2/1, giữ sáu bước, quyền và các đích thao tác. Tài sản có trường số lượng/đơn vị một ô, ghi chú toàn hàng, tiêu đề “Danh sách tài sản”, bảng cuộn độc lập. Bỏ sticky hàng nút gây che field trên mobile; nút nằm cuối form.
+- Cập nhật `DESIGN.md`, `design-system/MASTER.md`, `docs/UI_DESIGN_SYSTEM.md`: thống nhất palette teal, card phẳng, phân cấp nút theo ngữ cảnh; thay hướng dẫn palette tím/lưới cũ mâu thuẫn. Không sửa URL, RBAC, field name, GET/POST, dữ liệu vận hành, model hoặc migration.
+- Công cụ: audit dùng số cột render thực thay giả định 12 cột, bổ sung inset/title/button/container checks; button UAT báo lỗi khi thiếu nút bắt buộc và đo cả secondary; cache UAT lấy version thật/content hash thay hằng số release cũ. Thêm `ops/run_ui_consistency_uat.py` cho mẫu, ảnh so sánh và luồng tạo trên DB giả.
+
+**Môi trường và lệnh kiểm tra đã chạy**
+Toàn bộ dữ liệu ghi chỉ thuộc SQLite/media giả tách biệt. Microsoft Edge headless do Playwright khởi chạy, không phải phiên đăng nhập trình duyệt của chủ dự án. Các biến đường dẫn dưới đây chỉ là cách rút gọn lệnh đã thực thi:
+```powershell
+$qa = 'C:/Users/dinht/AppData/Local/Temp/ihrms-consistency-20261016-synthetic_only'
+$pw = 'C:/Users/dinht/AppData/Local/Temp/ihrms_playwright_packages'
+$pdf = 'C:/Users/dinht/AppData/Local/Temp/ihrms-consistency-pdf-packages-20261016'
+$baseline = 'C:/Users/dinht/AppData/Local/Temp/ihrms-consistency-baseline-cea459c'
+venv/Scripts/python.exe ops/dashboard_demo.py create --directory $qa
+venv/Scripts/python.exe $baseline/ops/dashboard_demo.py serve --directory $qa --port 8791
+venv/Scripts/python.exe ops/dashboard_demo.py serve --directory $qa --port 8794
+venv/Scripts/python.exe ops/run_ui_consistency_uat.py --directory $qa --packages-dir $pw --port 8794 --flows
+venv/Scripts/python.exe ops/run_layout_alignment_audit.py --directory $qa --packages-dir $pw --source-root $baseline --port 8791 --phase before --output-dir $qa/alignment-baseline-final
+venv/Scripts/python.exe ops/run_layout_alignment_audit.py --directory $qa --packages-dir $pw --port 8794 --phase after --output-dir $qa/alignment-release
+venv/Scripts/python.exe ops/run_layout_alignment_audit.py --directory $qa --packages-dir $pw --port 8794 --phase after --only portal:dashboard portal:recruitment_hub portal:asset_admin_list --output-dir $qa/alignment-samples-release
+venv/Scripts/python.exe ops/run_form_contract_uat.py --source-root $baseline --directory $qa --phase before
+venv/Scripts/python.exe ops/run_form_contract_uat.py --directory $qa --phase after
+venv/Scripts/python.exe ops/run_print_layout_uat.py --directory $qa --packages-dir $pw --pdf-packages-dir $pdf --port 8792
+venv/Scripts/python.exe ops/run_asset_cache_uat.py --directory $qa --packages-dir $pw --port 8794 --baseline-port 8791
+venv/Scripts/python.exe ops/run_button_states_uat.py --packages-dir $pw --output-dir $qa/button-states-release
+venv/Scripts/python.exe ops/run_tests.py --backend sqlite apps.portal.test_project_layout apps.portal.tests_mobile apps.portal.test_layout_audit_tools apps.portal.tests_report_dashboard apps.portal.test_home_dashboard
+venv/Scripts/python.exe ops/audit_design_tokens.py --check
+venv/Scripts/python.exe ops/check_ui_contrast.py
+git diff --check
+```
+- UAT mẫu: exit 0, **130 checks, 0 failures**, 24 ảnh trước/sau (3 trang × 1756/390 × sáng/tối). Kiểm thêm 360/768/1024/1440, zoom 200% trên Tài sản, Tab giữa field, tên tài sản/tiêu đề dài, số cột tại 419/420/421/639/640/641/899/900/901px; xác nhận hàng nút dưới field cuối.
+- Luồng browser: thêm tài sản số lượng 2, thông báo thành công, trang đích/danh sách và ORM; tạo đề xuất tuyển dụng số lượng 2, thông báo/trang đích và trạng thái Pending trong ORM; tải lại Dashboard và mở “Tạo đơn nghỉ”. Không tự duyệt/gửi thư hay sửa hồ sơ thật.
+- Audit mẫu: exit 0, **4 route, 335 ca, 0 vi phạm, 0 lỗi**; gồm cả `dashboard_people` do bộ lọc route nhận tiền tố. Ma trận 9 tài khoản, 1920/1756/1440/1280/1024/768/390px và hai theme, theo quyền hiển thị.
+- Audit rộng: exit 1 đúng do vi phạm. Cùng bộ đo: **19.584 trước → 1.522 sau**; 146 route kiểm kê, 6.601 ca gồm 5.810 ca có số đo và 791 skip HTTP/không phải HTML; 12 route chưa resolve fixture. Không có lỗi runner. Còn CARD_INSET 1.032, ROW_TOP 78, ROW_GAP 360, ROW_HOLE 52; không còn OVERFLOW/FORM_CONTAINER/MIN_FIELD_WIDTH/CARD_TITLE trong các ca đã đo. Không thêm hoặc sửa waiver.
+- Form/query contract: exit 0, **1.206 ca mỗi lượt, 0 thay đổi HTTP/form contract, 0 tăng SELECT** trên cùng DB giả.
+- Print runner: baseline và bản sửa đều exit 0, **402 checks, 37 mẫu, 0 failures**. Tổng 38 PDF gồm bản stress ngắt trang. Lần đầu 5 PDF legacy khác do runner tạo mã/ID giả mới; render lại đúng cùng bản ghi trên hai nguồn, đối chiếu PyMuPDF: **38/38 giống số trang, chữ và raster**. Đã mở ảnh render mẫu kiểm kê để kiểm viền và khoảng ký. Không sửa `print_forms.css`; không có hồi quy in xác nhận được trong đợt này.
+- Regression cuối: exit 0, **45 tests passed**. Button states: exit 0, **48 trạng thái, 0 failures**. Cache: exit 0, **9 checks**, cập nhật worker/cache mà giữ session, đúng hash stylesheet in. Token audit PASS; contrast **220 cặp, 0 failures**. Django `check` và `makemigrations(check=True, dry_run=True)` qua cấu hình DB giả: 0 issues, không drift migration.
+- Các lỗi thiết lập đã xử lý: bổ sung tài khoản/fixture chỉ trong DB giả; cài phụ thuộc PDF vào thư mục ngoài repository khi gói cũ thiếu/hỏng. Các lượt scan trung gian không dùng để kết luận nguồn cuối. Kiểm thử cũ bỏ sót lỗi màn hình vì không đo inset/title/container và tự bỏ qua nút không tìm thấy; đợt này bổ sung kiểm tra render và xem ảnh.
+
+**Bằng chứng, bàn giao và việc còn mở**
+- Thư mục bằng chứng: `C:/Users/dinht/AppData/Local/Temp/ihrms-consistency-20261016-synthetic_only`; JSON/log theo tên lệnh. Ảnh/contact sheet: `consistency-uat/contact-sheet-{1756,390}-{light,dark}.png`, kèm ảnh toàn trang. Audit chi tiết: `alignment-release/result.json`, `alignment-release/report.md`; mẫu: `alignment-samples-release/result.json`. PDF và so sánh: `print-layout-before/`, `print-layout-uat/`, `print-comparison.json`.
+- Snapshot nguồn review ngoài repository: `C:/Users/dinht/AppData/Local/Temp/IHRMS_Review_2026-10-16_UI_Consistency_Samples.zip`; manifest ghi tree nguồn và SHA-256 từng tệp, mở lại ZIP để xác minh. Loại dữ liệu/secret/runtime và các tệp chưa theo dõi ngoài phạm vi. Đây không phải backup dữ liệu.
+- Nhánh `main`; commit của đợt mang thông điệp `ui: repair shared card and form contracts with verified sample layouts`. Commit/push và kiểm SHA remote được thực hiện ở bước bàn giao; SHA chính xác báo trong phản hồi cuối để tránh tự tham chiếu trong commit.
+- Chủ dự án cần xem bốn contact sheet sáng/tối, desktop/mobile và duyệt hướng ba trang mẫu. Sau duyệt mới chuyển template còn lại theo nhóm, xử lý 1.522 vi phạm cùng 12 fixture chưa resolve và chụp contact sheet từng phân hệ; chưa được tuyên bố gate toàn route đạt 0.
+- Chưa chạy full suite SQLite/SQL Server, chưa UAT riêng mọi trạng thái lỗi/trống và mọi giao dịch của các phân hệ chưa chuyển; chưa xác nhận WCAG toàn ứng dụng, CI đúng SHA, deploy/restart ứng dụng vận hành hoặc phiên browser của chủ dự án.
+
 
 
 ## 2026-10-16 — Giai Đoạn 2D: Chuẩn Hóa Phân Loại Nút Bấm Toàn Bộ Hệ Thống & Xác Thực Lưới Biểu Mẫu 4-3-2-1 (commit ui: system-wide button action classification and form grid verification)

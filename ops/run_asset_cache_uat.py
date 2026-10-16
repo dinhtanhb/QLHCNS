@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 import sys
 import http.client
+import re
+import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Thread
 
@@ -27,8 +29,24 @@ def main():
     output = folder / 'asset-cache-uat'
     output.mkdir(exist_ok=True)
     state = {'port': args.baseline_port}
-    old_cache = 'ihrms-static-v26-dashboard-compact-20261015'
-    new_cache = 'ihrms-static-v29-dashboard-design-20261015'
+    def cache_version(port):
+        connection = http.client.HTTPConnection('127.0.0.1', port)
+        try:
+            connection.request('GET', '/portal/service-worker.js')
+            response = connection.getresponse()
+            payload = response.read().decode('utf-8')
+            if response.status != 200:
+                raise RuntimeError('Service worker unavailable')
+            match = re.search(r'const STATIC_CACHE = [\"\']([^\"\']+)', payload)
+            if not match:
+                raise RuntimeError('Service worker cache version missing')
+            return match.group(1)
+        finally:
+            connection.close()
+    old_cache = cache_version(args.baseline_port)
+    new_cache = cache_version(args.port)
+    if old_cache == new_cache:
+        raise RuntimeError('Baseline and current assets must differ')
     checks = []
 
     def check(ok, label):
@@ -95,7 +113,8 @@ def main():
         page.reload(wait_until='networkidle')
         check(page.locator('.home-main-metric').first.evaluate('x=>parseFloat(getComputedStyle(x).paddingTop)>=16&&getComputedStyle(x).boxShadow==="none"'), 'visual system survives controlling worker reload')
         page.goto(base+'/portal/timesheet/?month=9&year=2026',wait_until='networkidle')
-        check(page.locator('link[href*="print_forms.css"]').get_attribute('href').endswith('v=20261014-dispatch-register'), 'fresh print stylesheet URL loaded')
+        expected_print_hash = hashlib.sha1((root/'src/static/css/print_forms.css').read_bytes()).hexdigest()[:8]
+        check(page.locator('link[href*="print_forms.css"]').get_attribute('href').endswith('v='+expected_print_hash), 'current print stylesheet content hash loaded')
         page.emulate_media(media='print')
         check(page.locator('.ui-personal-timesheet-table').evaluate('x=>getComputedStyle(x).fontFamily.includes("Times New Roman")&&parseFloat(getComputedStyle(x).fontSize)>=13.33'), 'warm cache loads BCC print font')
         page.emulate_media(media='screen')

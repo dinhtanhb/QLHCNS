@@ -202,6 +202,9 @@ def main():
                     ("Employee List", reverse("portal:hr_employee_list"), "a.ui-button:has-text('Thêm nhân viên')", "primary"),
                     ("Employee Form", reverse("portal:hr_employee_create"), "button[type=submit]", "primary"),
                     ("Employee Form Cancel", reverse("portal:hr_employee_create"), "a.ui-button:has-text('Hủy')", "secondary"),
+                    ("Recruitment", reverse("portal:recruitment_hub"), "a.ui-button--primary", "primary"),
+                    ("Recruitment secondary", reverse("portal:recruitment_hub"), "a.ui-button--secondary", "secondary"),
+                    ("Assets", reverse("portal:asset_admin_list"), "button[type=submit]", "primary"),
                     ("Login", reverse("portal:login"), "button[type=submit]", "primary"),
                 ]
 
@@ -211,6 +214,7 @@ def main():
                         page.goto(base + url_path, wait_until="networkidle")
                         btn = page.locator(sel).first
                         if btn.count() == 0:
+                            results["failures"].append(f"{ctx_name} ({theme}) required button missing: {sel}")
                             continue
 
                         # 1. Default
@@ -222,7 +226,7 @@ def main():
                             "state": "default", "color": col, "bg": bg, "contrast": round(ratio, 2)
                         }
                         results["tested_states"].append(state_res)
-                        if ratio < 4.5 and variant == "primary":
+                        if ratio < 4.5:
                             results["failures"].append(f"{ctx_name} {variant} ({theme}) default contrast {ratio:.2f}:1 < 4.5:1")
 
                         # 2. Hover
@@ -235,7 +239,7 @@ def main():
                             "theme": theme, "context": ctx_name, "variant": variant,
                             "state": "hover", "color": h_col, "bg": h_bg, "contrast": round(h_ratio, 2)
                         })
-                        if h_ratio < 4.5 and variant == "primary":
+                        if h_ratio < 4.5:
                             results["failures"].append(f"{ctx_name} {variant} ({theme}) hover contrast {h_ratio:.2f}:1 < 4.5:1")
 
                         # 3. Focus

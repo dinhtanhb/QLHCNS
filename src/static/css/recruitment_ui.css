@@ -11,9 +11,14 @@
 .ui-recruitment .ui-recruitment-form { margin-block:var(--ui-space-4); }
 .ui-recruitment .ui-recruitment-form > div { min-width:0; }
 .ui-recruitment .ui-recruitment-form .ui-button { justify-self:start; }
-.ui-recruitment .ui-recruitment-step { display:flex; flex-direction:column; gap:var(--ui-space-3); }
+.ui-recruitment .ui-recruitment-step { display:flex; flex-direction:column; gap:var(--ui-space-4); }
 .ui-recruitment .ui-recruitment-step .ui-button { align-self:flex-start; margin-top:auto; }
 .ui-recruitment .ui-recruitment-step .ui-card-title { margin:0; }
+.ui-recruitment:has(.ui-recruitment-steps) { container: recruitment / inline-size; }
+.ui-recruitment .ui-recruitment-steps { grid-template-columns:minmax(0,1fr); }
+.ui-recruitment .ui-recruitment-step .ui-recruitment-text { margin:0; }
+@container recruitment (min-width:640px) { .ui-recruitment .ui-recruitment-steps { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@container recruitment (min-width:1024px) { .ui-recruitment .ui-recruitment-steps { grid-template-columns:repeat(3,minmax(0,1fr)); } }
 .ui-recruitment .ui-recruitment-table { min-width:calc(var(--ui-table-col-small) * 6); }
 .ui-recruitment .ui-recruitment-table:has(.ui-state) { min-width:0; }
 .ui-recruitment .ui-recruitment-table:has(.ui-state) thead { display:none; }
@@ -21,7 +26,5 @@
 .ui-recruitment :is(input,select,textarea):focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:var(--ui-focus-offset); }
 .ui-recruitment .ui-card-title { margin-block:var(--ui-space-3); }
 @media(max-width:767px) { .ui-recruitment .ui-recruitment-grid { grid-template-columns:1fr; } .ui-recruitment .ui-page-actions { align-items:stretch; } .ui-recruitment .ui-button { white-space:normal; text-align:center; } }
-@media(min-width:768px) { .ui-recruitment .ui-recruitment-steps { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-@media(min-width:1024px) { .ui-recruitment .ui-recruitment-steps { grid-template-columns:repeat(3,minmax(0,1fr)); } }
 }
 }

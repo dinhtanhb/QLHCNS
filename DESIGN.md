@@ -75,7 +75,7 @@ Nếu phát hiện mâu thuẫn, ghi vào `docs/PROJECT_WORK_LOG.md` và chọn 
 ## Hướng thiết kế
 - **Màu:** một màu thương hiệu teal trên nền trung tính xanh nhẹ, sidebar sáng theo light và navy theo dark; bốn màu ngữ nghĩa success/warning/danger/info. Không gradient, không glow, không teal đơn sắc toàn trang.
 - **Chữ:** font hệ thống, đủ dấu tiếng Việt, không tải font từ CDN.
-- **Phong cách:** doanh nghiệp, dữ liệu dày, đáng tin cậy. Card có viền 1px và bóng nhẹ; bề mặt phẳng. Bảng, form dài và tài liệu luôn dùng bề mặt phẳng dễ đọc.
+- **Phong cách:** doanh nghiệp, dữ liệu dày, đáng tin cậy. Card phẳng, viền 1px, không bóng. Bảng, form dài và tài liệu luôn dùng bề mặt phẳng dễ đọc.
 - **Điều hướng:** desktop (từ 1024px) sidebar nhóm theo phân hệ, thu gọn được; dưới 1024px dùng drawer. Không dùng thanh menu ngang nhiều dropdown, không làm bottom bar.
 
 ## Token

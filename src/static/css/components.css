@@ -21,6 +21,7 @@
     font-weight: var(--ui-font-weight-medium);
     line-height: var(--ui-line-height-body);
     white-space: nowrap;
+    flex-shrink: 0;
     text-decoration: none;
     cursor: pointer;
     background: var(--ui-surface);
@@ -128,7 +129,7 @@
 
 /* Kích thước bổ trợ */
 .ui-button--sm {
-    min-height: 2.25rem;
+    min-height: var(--ui-control-height);
     padding: var(--ui-space-1) var(--ui-space-3);
     font-size: var(--ui-font-size-small);
 }
@@ -277,6 +278,31 @@
 
 .ui-card-body {
     padding: var(--ui-space-5);
+}
+
+/* Screen cards keep the direct-child contract used by existing templates.
+   Paper styles retain their independent geometry. */
+@media screen {
+    .ui-card {
+        padding: var(--ui-space-5);
+        box-shadow: none;
+        overflow: visible;
+    }
+    .ui-card--sectioned, .ui-card--table { padding: 0; }
+    .ui-card-header { flex-wrap: wrap; background: var(--ui-surface); }
+    .ui-card-title {
+        font-size: var(--ui-font-size-lg);
+        line-height: var(--ui-leading-h2);
+        overflow-wrap: anywhere;
+    }
+    .ui-card > .ui-card-title { margin-bottom: var(--ui-space-4); }
+    .ui-card--table > .ui-card-title { margin: 0; padding: var(--ui-space-5); }
+    .ui-card--table > .ui-scroll { border: 0; border-radius: 0 0 var(--ui-radius-card) var(--ui-radius-card); }
+    @media (max-width: 767px) {
+        .ui-card, .ui-card-body { padding: var(--ui-space-4); }
+        .ui-card--sectioned, .ui-card--table { padding: 0; }
+        .ui-card-header, .ui-card--table > .ui-card-title { padding: var(--ui-space-4); }
+    }
 }
 
 
@@ -719,7 +745,6 @@
    Bề rộng thẻ >= 900px -> 4 cột; 640-899px -> 3 cột; 420-639px -> 2 cột; < 420px -> 1 cột.
    ========================================================================== */
 .ui-form-grid {
-    container-type: inline-size;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--ui-space-4);
@@ -727,25 +752,33 @@
     min-width: 0;
 }
 
-@container (min-width: 900px) {
+/* The queried container must be an ancestor, never the grid itself. */
+@media screen {
+    .ui-form-stack:has(.ui-field), .ui-form-container, .ui-form-section {
+        container: ui-form / inline-size;
+    }
+    .ui-form-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@container ui-form (min-width: 900px) {
     .ui-form-grid {
         grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
 
-@container (min-width: 640px) and (max-width: 899px) {
+@container ui-form (640px <= width < 900px) {
     .ui-form-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
-@container (min-width: 420px) and (max-width: 639px) {
+@container ui-form (420px <= width < 640px) {
     .ui-form-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
-@container (max-width: 419px) {
+@container ui-form (width < 420px) {
     .ui-form-grid {
         grid-template-columns: 1fr;
     }
@@ -773,7 +806,7 @@
     grid-column: span 2;
 }
 
-@container (max-width: 639px) {
+@container ui-form (width < 640px) {
     .ui-form-grid > :is(.ui-field--2, .ui-field--wide, .ui-field--6, .ui-field--7, .ui-field--8, .ui-field--9, .ui-field--10) {
         grid-column: 1 / -1;
     }

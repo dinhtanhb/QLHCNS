@@ -118,6 +118,4 @@
  }
  enhanceDates();
  new MutationObserver(enhanceDates).observe(document.body,{childList:true,subtree:true});
- const updateActions=()=>document.querySelectorAll('form.ui-form-stack').forEach(form=>form.classList.toggle('ui-form-long',form.scrollHeight>innerHeight));
- updateActions();window.addEventListener('resize',updateActions);
 })();

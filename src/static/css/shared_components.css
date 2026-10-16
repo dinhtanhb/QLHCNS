@@ -41,7 +41,7 @@
  /* Page layout */
  .ui-page { display:grid; gap:var(--ui-space-6); min-width:0; }
  .ui-page .ui-page-header { display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:var(--ui-space-4); }
- .ui-page .ui-page-title { margin:0; font-size:var(--ui-font-size-title); font-weight:var(--ui-font-weight-heading); line-height:var(--ui-line-height-heading); color:var(--ui-text); overflow-wrap:anywhere; }
+ .ui-page .ui-page-title { margin:0; font-size:var(--ui-font-size-title); font-weight:700; line-height:var(--ui-line-height-heading); color:var(--ui-text); overflow-wrap:anywhere; }
  .ui-page-description { margin:var(--ui-space-2) 0 0; font-size:var(--ui-font-size-small); color:var(--ui-text-muted); }
 
  .ui-form-fieldset { min-width:0; border:0; padding:0; margin:0; }
@@ -134,7 +134,6 @@
  .ui-query-bar .ui-field { position:relative; }
  .ui-query-bar .ui-date-echo { position:absolute; top:100%; left:0; right:0; }
  .ui-query-bar--date-echo { padding-bottom:calc(var(--ui-space-6) * 2 + var(--ui-space-2)); }
- @media(max-width:767px) { .ui-form-long .ui-form-actions { position:sticky; bottom:0; z-index:var(--ui-layer-sticky); padding-block:var(--ui-space-3); background:var(--ui-surface); border-top:var(--ui-border-width) solid var(--ui-divider); } .ui-form-long :is(input,select,textarea) { scroll-margin-bottom:calc(var(--ui-control-height) + var(--ui-space-8)); } }
  @media(max-width:599px) { .ui-form-actions { justify-self:stretch; align-items:stretch; width:100%; } .ui-form-actions > :is(a,button) { flex:1 1 0; min-width:0; } }
 
  .ui-paper-preview { max-width:100%; overflow-x:auto; }

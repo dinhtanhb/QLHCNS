@@ -48,7 +48,7 @@
     --ui-space-32: 8rem;    /* 128px */
     /* Border radius: exactly three roles: control, card, pill */
     --ui-radius-small: 0.25rem;
-    --ui-radius-control: 0.25rem; /* 4px neutral */
+    --ui-radius-control: 0.5rem; /* 8px: shared buttons and single-line inputs */
     --ui-radius-card: 0.5rem;    /* 8px */
     --ui-radius-pill: 9999px;
     --ui-border-width: 1px;

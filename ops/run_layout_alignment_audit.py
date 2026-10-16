@@ -28,17 +28,28 @@ MEASURE = r"""() => {
  if(content&&wrap){const p=rect(wrap),c=rect(content),s=getComputedStyle(wrap),left=p.x+parseFloat(s.paddingLeft),right=p.right-parseFloat(s.paddingRight);measurements.frame={main:rect(main),wrap:p,content:c,left:c.x-left,right:right-c.right};if(Math.abs(measurements.frame.left-measurements.frame.right)>2)fail('FRAME',content,measurements.frame);}
  if(document.documentElement.scrollWidth>innerWidth+1)fail('OVERFLOW',main,{width:innerWidth,scrollWidth:document.documentElement.scrollWidth});
  const screen=x=>!x.closest('.hcns-paper,.hcns-editor,[hidden],.ui-number-source');
+ for(const card of main.querySelectorAll('.ui-card')){
+  if(!visible(card)||!screen(card)||card.closest('.ui-login-wrap'))continue;
+  if(card.matches('.ui-card--sectioned,.ui-card--table'))continue;
+  const s=getComputedStyle(card),minimum=innerWidth<768?16:24;
+  if(['paddingTop','paddingRight','paddingBottom','paddingLeft'].some(k=>parseFloat(s[k])<minimum-.5))fail('CARD_INSET',card,{minimum,padding:s.padding});
+ }
+ for(const title of main.querySelectorAll('.ui-card-title'))if(visible(title)&&screen(title)&&parseFloat(getComputedStyle(title).fontSize)<17.5)fail('CARD_TITLE',title,getComputedStyle(title).fontSize);
+ for(const button of main.querySelectorAll('.ui-button'))if(visible(button)&&screen(button)&&button.matches('a,button,input')){const s=getComputedStyle(button);if(rect(button).h<43.5)fail('BUTTON_HEIGHT',button,rect(button).h);if(parseFloat(s.fontSize)<14)fail('BUTTON_FONT',button,s.fontSize);}
  const controls=[...main.querySelectorAll('input,select,textarea')].filter(x=>visible(x)&&screen(x)&&!['hidden','checkbox','radio'].includes(x.type));
  for(const f of main.querySelectorAll('form')){const fields=controls.filter(x=>x.form===f);if(fields.length>12&&!f.querySelector('fieldset'))fail('FORM_GROUPS',f,fields.length);for(const c of fields){if(['full_name','address','reason','description','notes'].includes(c.name)&&rect(c.closest('.ui-field')||c).w<(rect(c.closest('.ui-form-grid')||f).w-parseFloat(getComputedStyle(c.closest('.ui-form-grid')||f).columnGap||0))/2-9)fail('LONG_FIELD',c,{width:rect(c).w,form:rect(f).w});const hint=(c.closest('.ui-field')||c.parentElement).querySelector('.ui-field-help,.ui-hr-text');if(hint&&visible(hint)&&!c.getAttribute('aria-describedby')?.split(' ').includes(hint.id))fail('HINT_ASSOCIATION',c,hint.textContent);}}
  for(const c of controls){const s=getComputedStyle(c);if(rect(c).h<43.5)fail('CONTROL_HEIGHT',c,rect(c).h);if(parseFloat(s.fontSize)<14)fail('FONT',c,s.fontSize);if(![...c.labels||[]].some(visible))fail('LABEL',c,c.name);if(['date','month'].includes(c.type)&&!c.parentElement.querySelector('.ui-date-echo'))fail('DATE_ECHO',c,c.type);if(['date','month'].includes(c.type)&&!c.hasAttribute('lang'))fail('DATE_LANGUAGE',c,c.type);}
- const grids=[...main.querySelectorAll('.ui-form-grid')].filter(x=>visible(x)&&screen(x));measurements.grids=[];
+ const grids=[...main.querySelectorAll('.ui-form-grid')].filter(x=>visible(x)&&screen(x)&&controls.some(c=>c.closest('.ui-form-grid')===x));measurements.grids=[];
  measurements.grid_rules=[];
  const rules=(items,source,active=true)=>{for(const rule of items){if(rule.selectorText?.includes('.ui-form-grid')&&rule.style?.gridTemplateColumns)measurements.grid_rules.push({source,selector:rule.selectorText,columns:rule.style.gridTemplateColumns,active});if(rule.cssRules)rules(rule.cssRules,source,active&&(!rule.conditionText||matchMedia(rule.conditionText).matches));}};
  for(const sheet of document.styleSheets){try{rules(sheet.cssRules,sheet.href||'inline')}catch(error){}}
- for(const g of grids){const r=rect(g),s=getComputedStyle(g),gap=parseFloat(s.columnGap)||0,col=(r.w-11*gap)/12;
+ for(const g of grids){const r=rect(g),s=getComputedStyle(g),gap=parseFloat(s.columnGap)||0,count=s.gridTemplateColumns.split(' ').filter(Boolean).length,col=(r.w-(count-1)*gap)/count;
+  let container=g.parentElement;while(container&&!getComputedStyle(container).containerName.split(' ').includes('ui-form'))container=container.parentElement;
+  if(!container)fail('FORM_CONTAINER',g,'Missing named ancestor');
+  else{const cs=getComputedStyle(container),width=container.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),expected=width>=900?4:width>=640?3:width>=420?2:1;if(count!==expected)fail('GRID_COLUMNS',g,{containerWidth:width,expected,count});}
   const fields=controls.filter(x=>x.closest('.ui-form-grid')===g),rows=[];
   for(const c of fields){const field=c.closest('.ui-field')||c.parentElement,fr=rect(field),cr=rect(c);let row=rows.find(x=>Math.abs(x.y-fr.y)<=1);if(!row){row={y:fr.y,fields:[]};rows.push(row);}row.fields.push({name:c.name,field:fr,control:cr});
-   const near=(edge,end=false)=>Array.from({length:13},(_,i)=>r.x+i*(col+gap)-(end&&i?gap:0)).some(x=>Math.abs(x-edge)<=1);
+   const near=(edge,end=false)=>Array.from({length:count+1},(_,i)=>r.x+i*(col+gap)-(end&&i?gap:0)).some(x=>Math.abs(x-edge)<=1);
    if(innerWidth>=1024&&(!near(fr.x)||!near(fr.right,true)))fail('COLUMN_LINE',field,{grid:r,field:fr,columns:s.gridTemplateColumns});
    if(Math.abs(fr.right-cr.right)>1||Math.abs(fr.x-cr.x)>1)fail('FIELD_EDGE',c,{field:fr,control:cr});
     const source=c.id?.endsWith('-display')?document.getElementById(c.id.replace(/-display$/,'')):null;
