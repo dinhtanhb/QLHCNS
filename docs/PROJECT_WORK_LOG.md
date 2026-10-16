@@ -2,6 +2,24 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-16 — Bước A: Đo đạc và Thiết lập Baseline Hệ Thống Thiết Kế (commit docs: design system audit baseline)
+
+**Tóm tắt cho chủ dự án**
+- Hoàn thành Bước A theo chuẩn Refactoring UI: đo đạc toàn diện 20 tệp CSS dự án và hệ thống template.
+- Ghi nhận baseline: 82 `!important`, 165 selector bám `.portal-app .ui-main`, 38 cỡ chữ phân biệt, 33 định nghĩa nút `ui-button` rải rác.
+- Tái hiện thành công lỗi tương phản hover nút "Tạo đơn nghỉ" trên Edge thật (`ops/run_button_states_uat.py --probe-issue`): tỷ lệ tương phản sụt từ 5.70:1 xuống 1.12:1 do xung đột độ ưu tiên CSS khiến nền nhạt đè lên chữ trắng.
+- Thiết lập công cụ kiểm tra tự động `ops/audit_design_tokens.py` và lưu trữ baseline tại `docs/DESIGN_SYSTEM_BASELINE.md`.
+
+**Chi tiết đo đạc baseline**
+- Số tệp CSS: 20 tệp (156.1 KB).
+- Số lượng `!important`: 82 vị trí.
+- Tiền tố `.portal-app .ui-main`: 165 bộ chọn.
+- Phân bố thành phần: `.ui-button` (33 định nghĩa), `.ui-field` (58 định nghĩa), `.ui-card` (20 định nghĩa), `.ui-badge` (14 định nghĩa), `.ui-table` (42 định nghĩa).
+- Kết quả Probe lỗi hover: Xác nhận trên Playwright/Edge: nút `Tạo đơn nghỉ` có màu chữ `rgb(255, 255, 255)`, nền hover `rgb(237, 244, 240)` dẫn đến tương phản 1.12:1 < 4.5:1 (vi phạm WCAG).
+
+**Trạng thái nhánh & Bàn giao**
+- Nhánh: `main`.
+
 ## 2026-10-16 — Chuẩn hóa Nút Đăng nhập, Kích hoạt Click KPI Hợp đồng và Đổi KPI thứ 4 sang "Cần duyệt và xử lý" (commit fix(ui): login button styling and dashboard kpi links)
 
 **Tóm tắt & Mục tiêu**
