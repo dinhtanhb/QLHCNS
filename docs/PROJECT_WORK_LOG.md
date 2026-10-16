@@ -2,6 +2,31 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-16 — Bước C: Hợp nhất Thành phần Nền Tảng Single-source (commit ui: base components single source)
+
+**Tóm tắt cho chủ dự án**
+- Hoàn thành Bước C: Xây dựng hệ thống thành phần chuẩn single-source cho `.ui-button` và `.ui-field` trong `src/static/css/shared_components.css`.
+- **Khắc phục vĩnh viễn lỗi tương phản hover nút "Tạo đơn nghỉ"**: `.ui-button--primary:not(:disabled):hover` được định nghĩa chính xác với màu nền thương hiệu đậm hơn (`--ui-brand-hover: #085e50`) và giữ nguyên chữ trắng (`--ui-on-brand: #ffffff`), nâng tỷ lệ tương phản đạt **7.70:1** (vượt chuẩn WCAG 4.5:1). Probe lỗi xác nhận hết vi phạm (`probe_issue_detected: false`).
+- **Khắc phục khoảng cách giả ~36px của form**: Loại bỏ `min-height` cố định 2 dòng trên nhãn (`.portal-app .ui-main .ui-form-grid .ui-field > label`), thiết lập margin-bottom tự nhiên `var(--ui-space-2)` (8px) giúp nhãn gắn chặt trực quan vào đúng ô nhập của nó theo nguyên tắc Gestalt proximity của Refactoring UI.
+- Thử nghiệm trên Edge thật (`ops/run_button_states_uat.py`): 30/30 trạng thái nút trên các giao diện chính (Dashboard, Employee List, Employee Form, Login) qua cả 2 theme sáng/tối đều PASS 100%.
+
+**Chi tiết thay đổi kỹ thuật**
+- `src/static/css/shared_components.css`:
+  - Định nghĩa chuẩn hoá độc lập khối `.ui-button`: không phụ thuộc vào tiền tố bọc ngoài `.portal-app .ui-main :is(...)`.
+  - Phân định rõ ràng các biến thể: `.ui-button--primary` (brand solid), `.ui-button--secondary` (outline surface), `.ui-button--tertiary` (ghost text/link), `.ui-button--danger` (cảnh báo nguy hiểm).
+  - Khắc phục xung đột hover: `.ui-button--primary:not(:disabled):hover` nạp với độ ưu tiên cao, bảo toàn `color: var(--ui-on-brand)`.
+  - Chuẩn hoá `.ui-field > label`: bỏ `min-height: calc(var(--ui-font-size-small) * var(--ui-line-height-body) * 2)`, thiết lập `margin: 0 0 var(--ui-space-2); line-height: var(--ui-line-height-body); color: var(--ui-text);`.
+
+**Kết quả kiểm tra & Cổng chất lượng**
+- `ops/run_button_states_uat.py`: 0 failures, 30 states PASS (Dashboard hover contrast: 7.70:1 > 4.5:1).
+- `ops/check_ui_contrast.py`: 208/208 color pairs pass WCAG standards.
+- `src/manage.py check`: 0 issues.
+- `src/manage.py makemigrations --check`: No changes detected (0 migration / không sửa CSDL).
+- `ops/run_tests.py --backend sqlite apps.portal.test_project_layout apps.portal.tests_mobile`: 20/20 PASS.
+
+**Trạng thái nhánh & Bàn giao**
+- Nhánh: `main`.
+
 ## 2026-10-16 — Bước B: Thiết lập Thang Thiết kế & Khung CSS Cascade Layers (commit ui: design tokens and cascade layers)
 
 **Tóm tắt cho chủ dự án**

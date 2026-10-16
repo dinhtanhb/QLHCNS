@@ -50,12 +50,20 @@
  .portal-app .ui-main .ui-page .ui-card { min-width:0; margin:0; padding:var(--ui-space-6); background:var(--ui-surface); color:var(--ui-text); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-card); box-shadow:var(--ui-shadow-card); }
  .ui-card > h3 { overflow-wrap:anywhere; }
  .ui-card-title { margin:0 0 var(--ui-space-4); font-size:var(--ui-component-heading); font-weight:var(--ui-font-weight-label); }
- .portal-app .ui-main :is(.ui-page,.ui-form-actions,.ui-login-wrap) .ui-button,.ui-pagination .ui-button { display:inline-flex; align-items:center; justify-content:center; gap:var(--ui-space-2); min-height:var(--ui-control-height); min-width:var(--ui-target-min); padding:var(--ui-space-2) var(--ui-space-4); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); line-height:var(--ui-line-height-body); white-space:nowrap; flex-shrink:0; text-decoration:none; background:var(--ui-surface); color:var(--ui-text); cursor:pointer; }
- .portal-app .ui-main :is(.ui-page,.ui-form-actions,.ui-login-wrap) .ui-button--primary { background:var(--ui-brand); color:var(--ui-on-brand); border-color:var(--ui-brand); }
- .portal-app .ui-main :is(.ui-page,.ui-form-actions,.ui-login-wrap) .ui-button--danger,.ui-dialog .ui-button--danger { background:var(--ui-danger-text); color:var(--ui-danger-bg); border-color:var(--ui-danger-text); }
- .ui-button:not(:disabled):hover { background:var(--ui-hover-bg); }
- .portal-app .ui-main :is(.ui-page,.ui-form-actions,.ui-login-wrap) .ui-button--primary:not(:disabled):hover { background:var(--ui-brand-hover); }
+ /* Single-source .ui-button system */
+ .ui-button { display:inline-flex; align-items:center; justify-content:center; gap:var(--ui-space-2); min-height:var(--ui-control-height); min-width:var(--ui-target-min); padding:var(--ui-space-2) var(--ui-space-4); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); line-height:var(--ui-line-height-body); white-space:nowrap; flex-shrink:0; text-decoration:none; background:var(--ui-surface); color:var(--ui-text); cursor:pointer; }
+ .ui-button:not(:disabled):hover { background:var(--ui-hover-bg); color:var(--ui-text); text-decoration:none; }
  .ui-button:focus-visible,.ui-scroll:focus-visible,.ui-pagination a:focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:var(--ui-focus-offset); }
+ .ui-button:disabled,.ui-button[disabled] { background:var(--ui-disabled-bg); color:var(--ui-disabled-text); border-color:var(--ui-disabled-border); cursor:not-allowed; }
+ .ui-button--primary { background:var(--ui-brand); color:var(--ui-on-brand); border-color:var(--ui-brand); }
+ .ui-button--primary:not(:disabled):hover { background:var(--ui-brand-hover); color:var(--ui-on-brand); border-color:var(--ui-brand-hover); text-decoration:none; }
+ .ui-button--secondary { background:var(--ui-surface); color:var(--ui-text); border-color:var(--ui-border); }
+ .ui-button--secondary:not(:disabled):hover { background:var(--ui-hover-bg); color:var(--ui-text); }
+ .ui-button--danger { background:var(--ui-danger-text); color:var(--ui-danger-bg); border-color:var(--ui-danger-text); }
+ .ui-button--danger:not(:disabled):hover { background:color-mix(in srgb, var(--ui-danger-text) 85%, black); color:var(--ui-danger-bg); border-color:color-mix(in srgb, var(--ui-danger-text) 85%, black); }
+ .ui-button--tertiary { background:transparent; color:var(--ui-link); border-color:transparent; }
+ .ui-button--tertiary:not(:disabled):hover { background:var(--ui-hover-bg); color:var(--ui-link); text-decoration:underline; }
+ .portal-app .ui-main :is(.ui-page,.ui-form-actions,.ui-login-wrap) .ui-button--primary:not(:disabled):hover { background:var(--ui-brand-hover); color:var(--ui-on-brand); }
 
  .ui-form-fieldset { min-width:0; border:0; padding:0; margin:0; }
  .ui-form-fieldset legend.ui-field-label { font-size:var(--ui-font-size-small); }
@@ -206,7 +214,7 @@
  .ui-form-section > legend { padding-inline:0 var(--ui-space-2); font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); }
  .portal-app .ui-main .ui-form-grid .ui-field :is(input,select):not([type=hidden]):not([type=checkbox]):not([type=radio]):not(.ui-number-source) { display:block; width:100%; min-width:0; max-width:none; height:var(--ui-control-height); margin:0; font-size:var(--ui-font-size-small); }
  .portal-app .ui-main .ui-form-grid .ui-field textarea:not(.hcns-paper *):not([hidden]):not(.ui-number-source) { display:block; width:100%; min-width:0; max-width:none; height:auto; min-height:calc(var(--ui-control-height) * 2); margin:0; font-size:var(--ui-font-size-small); }
- .portal-app .ui-main .ui-form-grid .ui-field > label { display:block; min-height:calc(var(--ui-font-size-small) * var(--ui-line-height-body) * 2); margin:0 0 var(--ui-space-2); font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); }
+ .portal-app .ui-main .ui-form-grid .ui-field > label { display:block; margin:0 0 var(--ui-space-2); font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); line-height:var(--ui-line-height-body); color:var(--ui-text); }
  .portal-app .ui-main .ui-form-actions { display:flex; align-items:center; justify-content:flex-start; flex-wrap:wrap; gap:var(--ui-space-2); margin:var(--ui-space-6) 0 0; justify-self:start; }
  .portal-app .ui-main .ui-form-stack > .ui-form-actions { margin-top:0; }
  .portal-app .ui-main :is(.ui-form-grid,.ui-form-section) > .ui-form-actions { margin-top:var(--ui-space-2); }
