@@ -8,11 +8,11 @@
 <div id="hcns-export-name" data-filename="{{ document.filename_stem }}" hidden></div>
 {% endif %}
 <div class="ui-page-header decision-page-header no-print">
-  <div>{% if can_view_workflow %}<a href="{% url 'portal:personnel_decision_list' %}" class="ui-button">← Quản lý quyết định</a>{% else %}<a href="{% url 'portal:dashboard' %}" class="ui-button">← Trang chủ</a>{% endif %}<h1 class="ui-page-title">{{ decision.decision_no|default:"Chưa đánh số"|ui_number }} · {{ decision.template_title|ui_number }}</h1><p class="ui-hr-text">{{ decision.employee.full_name|ui_number }} · {{ decision.employee.employee_code|ui_number }} · {% ui_badge "document.personneldecision:status" decision.status %}</p></div>
+  <div>{% if can_view_workflow %}<a href="{% url 'portal:personnel_decision_list' %}" class="ui-button ui-button--secondary">← Quản lý quyết định</a>{% else %}<a href="{% url 'portal:dashboard' %}" class="ui-button ui-button--secondary">← Trang chủ</a>{% endif %}<h1 class="ui-page-title">{{ decision.decision_no|default:"Chưa đánh số"|ui_number }} · {{ decision.template_title|ui_number }}</h1><p class="ui-hr-text">{{ decision.employee.full_name|ui_number }} · {{ decision.employee.employee_code|ui_number }} · {% ui_badge "document.personneldecision:status" decision.status %}</p></div>
   <div class="ui-page-actions">
-    {% if can_download_word %}<a class="ui-button" href="{% url 'portal:personnel_decision_word' decision.pk %}">Tải Word</a>{% endif %}
-    {% if document %}<button id="hcns-print" type="button" class="ui-button">In / lưu PDF</button>{% endif %}
-    {% if decision.issued_file %}<a class="ui-button" href="{{ decision.issued_file.url }}">Tải PDF đã ký</a>{% endif %}
+    {% if can_download_word %}<a class="ui-button ui-button--secondary" href="{% url 'portal:personnel_decision_word' decision.pk %}">Tải Word</a>{% endif %}
+    {% if document %}<button id="hcns-print" type="button" class="ui-button ui-button--secondary">In / lưu PDF</button>{% endif %}
+    {% if decision.issued_file %}<a class="ui-button ui-button--secondary" href="{{ decision.issued_file.url }}">Tải PDF đã ký</a>{% endif %}
     {% if can_edit_decision %}<a class="ui-button ui-button--secondary" href="{% url 'portal:hcns_draft' decision.template_slug %}?decision_id={{ decision.pk }}">Sửa bản nháp</a>{% endif %}
   </div>
 </div>
@@ -43,7 +43,7 @@
 <form class="ui-form-stack ui-workflow-form" method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'reject' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary"><div class="ui-form-grid">
 {% csrf_token %}{% include "ui/error_summary.html" %}
 {% if workflow_error.action == "reject" %}<p class="ui-field-error" role="alert">{{ workflow_error.message }}</p>{% endif %}{% include "ui/field.html" with widget_template="portal/widgets/personnel_decision_detail.html" widget_key="f3"  span="12" %}
-</div><div class="ui-workflow-actions"><button type="submit" class="ui-button">Từ chối</button><button type="button" class="ui-button ui-button--secondary" data-ui-disclosure-close>Đóng</button></div></form>
+</div><div class="ui-workflow-actions"><button type="submit" class="ui-button ui-button--danger">Từ chối</button><button type="button" class="ui-button ui-button--secondary" data-ui-disclosure-close>Đóng</button></div></form>
 </details>
 {% endif %}
 {% if can_cancel_decision %}
@@ -51,7 +51,7 @@
 <form class="ui-form-stack ui-workflow-form" method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'cancel' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary"><div class="ui-form-grid">
 {% csrf_token %}{% include "ui/error_summary.html" %}
 {% if workflow_error.action == "cancel" %}<p class="ui-field-error" role="alert">{{ workflow_error.message }}</p>{% endif %}{% include "ui/field.html" with widget_template="portal/widgets/personnel_decision_detail.html" widget_key="f4"  span="12" %}
-</div><div class="ui-workflow-actions"><button type="submit" class="ui-button">Hủy bản nháp</button><button type="button" class="ui-button ui-button--secondary" data-ui-disclosure-close>Đóng</button></div></form>
+</div><div class="ui-workflow-actions"><button type="submit" class="ui-button ui-button--danger">Hủy bản nháp</button><button type="button" class="ui-button ui-button--secondary" data-ui-disclosure-close>Đóng</button></div></form>
 </details>
 {% endif %}
   </div>

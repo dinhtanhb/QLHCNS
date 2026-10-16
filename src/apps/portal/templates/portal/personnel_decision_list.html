@@ -35,6 +35,6 @@
     </tbody>
   </table>
 </div>
-{% if page_obj.has_other_pages %}<nav class="ui-pagination" aria-label="Phân trang">{% if page_obj.has_previous %}<a class="ui-button" href="?q={{ query|urlencode }}&amp;status={{ selected_status|urlencode }}&amp;page={{ page_obj.previous_page_number }}">← Trước</a>{% endif %}<span>Trang {{ page_obj.number|ui_number }} / {{ page_obj.paginator.num_pages|ui_number }}</span>{% if page_obj.has_next %}<a class="ui-button" href="?q={{ query|urlencode }}&amp;status={{ selected_status|urlencode }}&amp;page={{ page_obj.next_page_number }}">Tiếp →</a>{% endif %}</nav>{% endif %}
+{% if page_obj.has_other_pages %}<nav class="ui-pagination" aria-label="Phân trang">{% if page_obj.has_previous %}<a class="ui-button ui-button--secondary" href="?q={{ query|urlencode }}&amp;status={{ selected_status|urlencode }}&amp;page={{ page_obj.previous_page_number }}">← Trước</a>{% endif %}<span>Trang {{ page_obj.number|ui_number }} / {{ page_obj.paginator.num_pages|ui_number }}</span>{% if page_obj.has_next %}<a class="ui-button ui-button--secondary" href="?q={{ query|urlencode }}&amp;status={{ selected_status|urlencode }}&amp;page={{ page_obj.next_page_number }}">Tiếp →</a>{% endif %}</nav>{% endif %}
 </section>
 {% endblock %}

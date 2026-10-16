@@ -4,7 +4,7 @@
 {% block title %}Bảng chấm công{% endblock %}
 {% block personal_content %}
 <div class="ui-followup-page">
-<header class="ui-page-header no-print"><h1 class="ui-page-title">Bảng chấm công</h1><div class="ui-page-actions"><button onclick="window.print()" class="ui-button" type="button">{% include "_shell_icon.html" with name="office" %}In bảng công</button></div></header>
+<header class="ui-page-header no-print"><h1 class="ui-page-title">Bảng chấm công</h1><div class="ui-page-actions"><button onclick="window.print()" class="ui-button ui-button--secondary" type="button">{% include "_shell_icon.html" with name="office" %}In bảng công</button></div></header>
 
 <section class="ui-card no-print"><h2 class="ui-card-title">Ghi nhận giờ làm việc</h2><form method="post" action="{% url 'portal:timesheet_entry_create' %}" data-ui-form class="ui-form-stack"><div class="ui-form-grid">
 {% csrf_token %}{% include "ui/error_summary.html" %}
@@ -66,7 +66,7 @@
                         <span>+ {% if e.project %}<span{% if timesheet_project %} class="ui-screen-only"{% endif %}>[{{ e.project.project_code|ui_number }}] </span>{% endif %}{{ e.task_description|default:""|ui_number }}</span>
                         <form method="post" action="{% url 'portal:timesheet_entry_delete' e.pk %}" class="ui-form-stack no-print" data-ui-confirm="Xóa dòng chấm công này?" data-ui-confirm-title="Xác nhận xóa dòng chấm công" data-ui-confirm-label="Xóa dòng"><div class="ui-form-grid">
 
-                            {% csrf_token %}<div class="ui-form-actions"><button type="submit" class="ui-button">Xóa</button></div>
+                            {% csrf_token %}<div class="ui-form-actions"><button type="submit" class="ui-button ui-button--danger">Xóa</button></div>
 
 </div></form>
                     </div>

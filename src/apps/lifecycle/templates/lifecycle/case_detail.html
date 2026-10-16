@@ -2,7 +2,7 @@
 {% load ui_components %}
 {% block title %}Checklist — {{ case.employee.full_name|ui_number }}{% endblock %}
 {% block hr_content %}
-{% if can_manage_lifecycle_case %}<p class="ui-hr-stack"><a href="{% url 'portal:hcns_catalog' %}?group=personnel&amp;employee_id={{ case.employee_id }}" class="ui-button">Soạn / xuất hồ sơ tiếp nhận và bàn giao</a></p>{% endif %}
+{% if can_manage_lifecycle_case %}<p class="ui-hr-stack"><a href="{% url 'portal:hcns_catalog' %}?group=personnel&amp;employee_id={{ case.employee_id }}" class="ui-button ui-button--secondary">Soạn / xuất hồ sơ tiếp nhận và bàn giao</a></p>{% endif %}
 <div class="ui-hr-stack">
   <div class="ui-card"><div class="ui-page-actions"><div><p class="ui-hr-text">{{ case.get_case_type_display|ui_number }}</p><h1 class="ui-page-title">{{ case.employee.full_name|ui_number }}</h1><p class="ui-hr-text">{{ case.employee.employee_code|ui_number }} · {{ case.template.template_name|ui_number }} · Hiệu lực {{ case.effective_date|date:"d/m/Y" }}</p></div>{% ui_badge "lifecycle.employeelifecyclecase:status" case.status %}</div></div>
   <div class="ui-hr-info">
@@ -15,7 +15,7 @@
       {% if item.asset_allocation %}<p class="ui-hr-text">Tài sản liên kết: {{ item.asset_allocation.asset.asset_code|ui_number }} · {{ item.asset_allocation.assigned_date|date:"d/m/Y" }}{% if item.asset_allocation.return_date %} — thu hồi {{ item.asset_allocation.return_date|date:"d/m/Y" }}{% endif %}</p>{% endif %}
       {% if item.skip_reason %}<p class="ui-hr-text">Lý do bỏ qua: {{ item.skip_reason|ui_number }}</p>{% endif %}
       {% if can_manage_lifecycle_case and item.status == "Pending" %}<form method="post" action="{% url 'portal:lifecycle_item_assign' item.pk %}" class="ui-form-stack" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary"><div class="ui-form-grid">
-{% csrf_token %}{% include "ui/error_summary.html" %}{% include "ui/field.html" with widget_template="lifecycle/widgets/case_detail_direct.html" widget_key="f0"  span="12" %}<div class="ui-form-actions"><button class="ui-button">Giao việc</button></div>
+{% csrf_token %}{% include "ui/error_summary.html" %}{% include "ui/field.html" with widget_template="lifecycle/widgets/case_detail_direct.html" widget_key="f0"  span="12" %}<div class="ui-form-actions"><button class="ui-button ui-button--primary">Giao việc</button></div>
 </div></form>{% endif %}
       {% if item.status == "Pending" and item.assigned_to_user_id == user.pk or item.status == "Pending" and can_manage_lifecycle_case %}<form method="post" action="{% url 'portal:lifecycle_item_update' item.pk %}" class="ui-form-stack" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary"><div class="ui-form-grid">
 {% csrf_token %}{% include "ui/error_summary.html" %}
@@ -23,7 +23,7 @@
         {% include "ui/field.html" with widget_template="lifecycle/widgets/case_detail_direct.html" widget_key="f1"  span="12" %}
 
 
-</div><div class="ui-page-actions ui-form-actions"><button name="action" value="done" class="ui-button ui-button--primary">Hoàn tất</button><button name="action" value="skip" class="ui-button">Bỏ qua</button></div></form>{% endif %}
+</div><div class="ui-page-actions ui-form-actions"><button name="action" value="done" class="ui-button ui-button--primary">Hoàn tất</button><button name="action" value="skip" class="ui-button ui-button--secondary">Bỏ qua</button></div></form>{% endif %}
     </article>{% empty %}<p class="ui-hr-text">Mẫu checklist chưa có đầu việc.</p>{% endfor %}
   </div>
 </div>

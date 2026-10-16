@@ -9,7 +9,7 @@
   </div>
   <div class="ui-card ui-scroll" tabindex="0" role="region" aria-label="Checklist nhân sự">
     <table class="ui-table ui-hr-table"><caption>Checklist nhân sự</caption><thead class="ui-hr-text"><tr><th scope="col" class="">Nhân viên</th><th scope="col" class="">Loại</th><th scope="col" class="">Ngày hiệu lực</th><th scope="col" class="">Mẫu</th><th scope="col" class="">Trạng thái</th><th scope="col" class="">Thao tác</th></tr></thead><tbody>
-      {% for case in cases %}<tr><td class="">{{ case.employee.full_name|ui_number }}</td><td class="">{{ case.get_case_type_display|ui_number }}</td><td class="">{{ case.effective_date|date:"d/m/Y" }}</td><td class="">{{ case.template.template_name|ui_number }}</td><td class="">{% ui_badge "lifecycle.employeelifecyclecase:status" case.status %}</td><td class=""><a class="ui-button" href="{% url 'portal:lifecycle_case_detail' case.pk %}">Mở</a></td></tr>
+      {% for case in cases %}<tr><td class="">{{ case.employee.full_name|ui_number }}</td><td class="">{{ case.get_case_type_display|ui_number }}</td><td class="">{{ case.effective_date|date:"d/m/Y" }}</td><td class="">{{ case.template.template_name|ui_number }}</td><td class="">{% ui_badge "lifecycle.employeelifecyclecase:status" case.status %}</td><td class=""><a class="ui-button ui-button--secondary" href="{% url 'portal:lifecycle_case_detail' case.pk %}">Mở</a></td></tr>
       {% empty %}<tr><td colspan="6" class="">{% include "ui/empty_state.html" with title="Chưa có hồ sơ onboarding/offboarding. HCNS có thể mở checklist theo mẫu đã được duyệt." description="Kiểm tra phạm vi tài khoản và các bộ lọc hiện tại; liên hệ HCNS nếu cần hỗ trợ." %}</td></tr>{% endfor %}
     </tbody></table>
   </div>

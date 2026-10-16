@@ -10,5 +10,5 @@
 {% include "ui/field.html" with id="leave-from-date" name="from_date" type="date" label="Từ ngày" required=True span="3" %}
 {% include "ui/field.html" with id="leave-to-date" name="to_date" type="date" label="Đến ngày" required=True span="3" tablet_span="12" %}
 {% include "ui/field.html" with widget_template="portal/widgets/leave_create.html" widget_key="f1"  span="12" %}
-</div></fieldset><div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Gửi đơn</button><a class="ui-button" href="{% url 'portal:leave_list' %}">Hủy</a></div></form></section>
+</div></fieldset><div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Gửi đơn</button><a class="ui-button ui-button--secondary" href="{% url 'portal:leave_list' %}">Hủy</a></div></form></section>
 {% endblock %}

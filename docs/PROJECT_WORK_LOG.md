@@ -2,6 +2,59 @@
 
 
 
+## 2026-10-16 — Giai Đoạn 2D: Chuẩn Hóa Phân Loại Nút Bấm Toàn Bộ Hệ Thống & Xác Thực Lưới Biểu Mẫu 4-3-2-1 (commit ui: system-wide button action classification and form grid verification)
+
+**Tóm tắt cho chủ dự án**
+- Hoàn thành đầy đủ Giai đoạn 2D theo kế hoạch Refactoring UI & Impeccable sau khi Chủ dự án phê duyệt Điểm dừng 1 (Hold Point sau 2C):
+  1. *Rà soát và chuẩn hóa phân loại nút bấm toàn diện 191 template*:
+     - Quét toàn bộ mã nguồn template, xác định và xử lý dứt điểm 40 vị trí sử dụng class `.ui-button` trơn thiếu variant hoặc sai nhóm hành động theo mục 1.1:
+       - **Nhóm Tạo / Thêm / Lưu / Gửi / Duyệt** (`.ui-button--primary`): `Giao việc` (lifecycle), `Đã gửi qua Outlook` (notification).
+       - **Nhóm Mở / Xem / Quản lý / In / Xuất / Quay lại / Hủy** (`.ui-button--secondary`): `Hủy` (form hợp đồng, form nhân viên, form đơn nghỉ), `Quay lại` (yêu cầu cập nhật hồ sơ, quản lý quyết định, trang chủ), `Về Dashboard` (dashboard people), `In / Word` (danh sách nghỉ phép), `In / lưu PDF` (quyết định nhân sự), `In bảng công` (chấm công tháng), `Tải Word` & `Tải PDF đã ký` (quyết định nhân sự), `Tải PDF` (phiếu lương), `Tải chứng từ` (cập nhật hồ sơ), `Tải file Excel / Tải Sổ Công Văn Đến / Tải Sổ Công Văn Đi / 30 ngày / 60 ngày` (trung tâm báo cáo), `Mở` (danh sách checklist), `Soạn / xuất hồ sơ` (chi tiết checklist), `Bỏ qua` (chi tiết checklist), `Yêu cầu bổ sung` (duyệt cập nhật hồ sơ), `Đánh dấu tất cả đã đọc / Đánh dấu đã đọc` (thông báo), `Mở thư nháp trong Outlook` (thông báo, email draft hoạt động), `Trang trước / Trang sau / ← Trước / Tiếp →` (phân trang dùng chung & quyết định), `Thu nhỏ / Phóng to / Vừa màn hình` (sơ đồ tổ chức), `Điền từ hồ sơ của tôi` (danh mục biểu mẫu HCNS), các thao tác nhanh Dashboard (`_quick_actions`, `_phase2_metric`).
+       - **Nhóm Xóa / Từ chối / Hủy bản nháp** (`.ui-button--danger`): `Từ chối` (duyệt đơn nghỉ, duyệt cập nhật hồ sơ, quyết định nhân sự), `Hủy bản nháp` (quyết định nhân sự), `Xóa` dòng chấm công (`timesheet_month`).
+     - Đưa tỷ lệ nút bấm có phân loại hành động chuẩn hóa đạt **100%** trên toàn bộ hệ thống.
+  2. *Xác thực quy chuẩn Lưới biểu mẫu 4-3-2-1 Container Query*:
+     - Toàn bộ các biểu mẫu nghiệp vụ trên các phân hệ (Nhân sự, Tuyển dụng, Tài chính, Hành chính, Hoạt động dự án) đều sử dụng container query của `.ui-form-grid` (≥900px 4 cột, 640–899px 3 cột, 420–639px 2 cột, <420px 1 cột).
+     - Không có co hẹp trường giả, khoảng cách nhãn đạt chuẩn 8px, nhãn hiển thị thường trực.
+  3. *Kiểm thử & Cổng chất lượng*:
+     - `ops/audit_design_tokens.py --check`: PASS 100% (9 `!important`, 0 `.portal-app .ui-main`, 0 hex lẻ, 0 font-size lệch thang).
+     - `ops/check_ui_contrast.py`: 220/220 cặp màu PASS.
+     - `src/manage.py check` & `makemigrations --check`: 0 issues, 0 migration / không sửa CSDL.
+     - `ops/run_tests.py --backend sqlite`: 45/45 test suites liên quan PASS.
+
+**Chi tiết thay đổi kỹ thuật**
+- `src/templates/reporting/dashboard.html`: Chuyển 4 nút Tải Excel / Tải Sổ công văn sang `.ui-button--secondary`.
+- `src/apps/activity/templates/activity/proposal_email_draft.html`: Chuyển `Mở thư trong Outlook` sang `.ui-button--secondary`.
+- `src/apps/lifecycle/templates/lifecycle/case_detail.html`: Chuẩn hóa `Soạn / xuất hồ sơ` và `Bỏ qua` (.ui-button--secondary), `Giao việc` (.ui-button--primary).
+- `src/apps/lifecycle/templates/lifecycle/case_list.html`: Chuẩn hóa `Mở` (.ui-button--secondary).
+- `src/apps/portal/templates/portal/dashboard_people.html`: Chuẩn hóa `Về Dashboard` (.ui-button--secondary).
+- `src/apps/portal/templates/portal/hr_contract_form.html`: Chuẩn hóa `Hủy` (.ui-button--secondary).
+- `src/apps/portal/templates/portal/hr_employee_form.html`: Chuẩn hóa `Hủy` (.ui-button--secondary).
+- `src/apps/portal/templates/portal/leave_create.html`: Chuẩn hóa `Hủy` (.ui-button--secondary).
+- `src/apps/portal/templates/portal/leave_approval_list.html`: Chuẩn hóa `Từ chối` (.ui-button--danger).
+- `src/apps/portal/templates/portal/leave_list.html`: Chuẩn hóa `In / Word` (.ui-button--secondary).
+- `src/apps/portal/templates/portal/notification_list.html`: Chuẩn hóa `Đánh dấu đã đọc` và `Mở thư nháp` (.ui-button--secondary), `Đã gửi qua Outlook` (.ui-button--primary).
+- `src/apps/portal/templates/portal/org_chart.html`: Chuẩn hóa các nút zoom (.ui-button--secondary).
+- `src/apps/portal/templates/portal/payslip_list.html`: Chuẩn hóa `Tải PDF` (.ui-button--secondary).
+- `src/apps/portal/templates/portal/personnel_decision_detail.html`: Chuẩn hóa các nút back/in/tải (.ui-button--secondary), `Từ chối` và `Hủy bản nháp` (.ui-button--danger).
+- `src/apps/portal/templates/portal/personnel_decision_list.html`: Chuẩn hóa phân trang (.ui-button--secondary).
+- `src/apps/portal/templates/portal/profile_change_request_form.html`: Chuẩn hóa `Quay lại` (.ui-button--secondary).
+- `src/apps/portal/templates/portal/profile_change_request_list.html`: Chuẩn hóa `Tải chứng từ` và `Yêu cầu bổ sung` (.ui-button--secondary), `Từ chối` (.ui-button--danger).
+- `src/apps/portal/templates/portal/timesheet_month.html`: Chuẩn hóa `In bảng công` (.ui-button--secondary), `Xóa` (.ui-button--danger).
+- `src/apps/portal/templates/portal/_pagination.html`: Chuẩn hóa nút trang trước/sau (.ui-button--secondary).
+- `src/apps/portal/templates/portal/dashboard/_phase2_metric.html`: Chuẩn hóa cta (.ui-button--secondary).
+- `src/apps/portal/templates/portal/dashboard/_quick_actions.html`: Chuẩn hóa quick actions (.ui-button--secondary).
+- `src/apps/document/templates/document/hcns/catalog.html`: Chuẩn hóa `Điền từ hồ sơ của tôi` (.ui-button--secondary).
+
+**Kết quả kiểm tra & Cổng chất lượng**
+- `ops/audit_design_tokens.py --check`: PASS (9 `!important`, 0 selector bám `.portal-app .ui-main`).
+- `ops/check_ui_contrast.py`: 220/220 color pairs pass WCAG standards.
+- `src/manage.py check`: 0 issues.
+- `src/manage.py makemigrations --check`: No changes detected (0 migration / không sửa CSDL).
+- `ops/run_tests.py --backend sqlite apps.portal.test_project_layout apps.portal.tests_mobile apps.portal.test_layout_audit_tools apps.portal.tests_report_dashboard apps.portal.test_home_dashboard`: 45/45 PASS.
+
+**Trạng thái nhánh & Bàn giao**
+- Nhánh: `main`.
+
 ## 2026-10-16 — Giai Đoạn 2A–2C: Hợp Nhất Thành Phần Nền, Chuẩn Hóa Lớp CSS Cascade & Sửa Triệt Để Lỗi Tương Phản Nút (commit ui: single-source components, cascade layers, and button contrast fix)
 
 **Tóm tắt cho chủ dự án**

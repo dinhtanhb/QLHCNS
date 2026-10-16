@@ -3,11 +3,11 @@
   <span>Trang {{ page_obj.number|ui_number }}/{{ page_obj.paginator.num_pages|ui_number }} · {{ page_obj.paginator.count|ui_number }} mục</span>
   <div class="ui-pagination-controls">
     {% if page_obj.has_previous %}
-      <a class="ui-button" rel="prev" href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Trang trước</a>
+      <a class="ui-button ui-button--secondary" rel="prev" href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Trang trước</a>
     {% endif %}
     <span class="ui-button" aria-current="page" aria-label="Trang hiện tại {{ page_obj.number }}">{{ page_obj.number|ui_number }}</span>
     {% if page_obj.has_next %}
-      <a class="ui-button" rel="next" href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Trang sau</a>
+      <a class="ui-button ui-button--secondary" rel="next" href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Trang sau</a>
     {% endif %}
   </div>
 </nav>

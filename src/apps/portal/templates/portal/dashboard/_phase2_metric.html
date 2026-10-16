@@ -4,6 +4,6 @@
 {% else %}{% include 'ui/kpi.html' with label=data.label value=data.value icon=data.icon href=data.href period=data.note only %}
 {% if data.rows or data.cta %}<div class="phase2-metric-footer">
 {% if data.rows %}<details class="phase2-breakdown"><summary>Trạng thái</summary><dl class="phase2-counts">{% for row in data.rows %}<div><dt>{{ row.label }}</dt><dd>{{ row.value|ui_number }}</dd></div>{% endfor %}</dl></details>{% endif %}
-{% if data.cta %}<a class="ui-button" href="{{ data.cta }}">{% if key == 'candidates' %}Xem ứng viên{% elif key == 'requests' %}Xem đề xuất{% else %}Tuyển dụng{% endif %}{% include '_shell_icon.html' with name='arrow' %}</a>{% endif %}
+{% if data.cta %}<a class="ui-button ui-button--secondary" href="{{ data.cta }}">{% if key == 'candidates' %}Xem ứng viên{% elif key == 'requests' %}Xem đề xuất{% else %}Tuyển dụng{% endif %}{% include '_shell_icon.html' with name='arrow' %}</a>{% endif %}
 </div>{% endif %}{% endif %}
 </section>
