@@ -115,11 +115,11 @@ class ProjectLayoutTests(TestCase):
         root = Path(__file__).resolve().parents[2]
         base = (root / 'templates/base.html').read_text(encoding='utf-8')
         for name in ('shared_components.css', 'shared_components.js'):
-            self.assertIn(name + "' %}?v=20261016-ui-compact", base)
-        self.assertIn("project_layout.css' %}?v=20261016-ui-compact", base)
+            self.assertIn(name + "' %}?v=20261016-ui-layers", base)
+        self.assertIn("project_layout.css' %}?v=20261016-ui-layers", base)
         self.assertIn("print_forms.css' %}?v=20261014-dispatch-register", base)
         worker = (root / 'static/js/service-worker.js').read_text(encoding='utf-8')
-        self.assertIn('ihrms-static-v30-ui-compact-20261016', worker)
+        self.assertIn('ihrms-static-v31-ui-layers-20261016', worker)
 
     def test_reset_filter_excludes_scope_and_empty_values(self):
         from django.http import QueryDict

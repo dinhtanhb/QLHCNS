@@ -1,16 +1,23 @@
-/* Approved IHRMS source tokens. Legacy variables point to ui-* in screen adapters. */
+/* Refactoring UI Architecture — Cascade Layers & Design Tokens */
+@layer tokens, base, components, layouts, pages;
+
+@layer tokens {
 :root {
     --ui-font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
-    --ui-font-size-caption: 0.75rem;
-    --ui-font-size-small: 0.875rem;
-    --ui-font-size-body: 1rem;
-    --ui-font-size-title: 1.5rem;
-    --ui-font-size-display: 2rem;
+    /* Type scale: px/rem only, never em. Minimum 14px for all UI text */
+    --ui-font-size-caption: 0.875rem; /* 14px */
+    --ui-font-size-small: 0.875rem;   /* 14px */
+    --ui-font-size-body: 1rem;        /* 16px */
+    --ui-font-size-lg: 1.125rem;      /* 18px */
+    --ui-font-size-xl: 1.25rem;       /* 20px */
+    --ui-font-size-title: 1.5rem;     /* 24px */
+    --ui-font-size-display: 2.25rem;  /* 36px */
     --ui-line-height-body: 1.5;
     --ui-line-height-heading: 1.25;
     --ui-font-weight-body: 400;
+    --ui-font-weight-medium: 500;
     --ui-font-weight-label: 600;
-    --ui-font-weight-heading: 700;
+    --ui-font-weight-heading: 600;
     --ui-numeric-variant: tabular-nums;
     /* Opt-in hierarchy for operating dashboards and numerical reports. */
     --ui-text-h1: 1.5rem;
@@ -19,26 +26,31 @@
     --ui-leading-h2: 1.75rem;
     --ui-text-label: 0.875rem;
     --ui-leading-label: 1.25rem;
-    --ui-text-kpi: 2rem;
+    --ui-text-kpi: 2.25rem;
     --ui-leading-kpi: 2.5rem;
     --ui-text-stat: 1.5rem;
     --ui-leading-stat: 2rem;
-    --ui-text-work: 1.75rem;
+    --ui-text-work: 1.5rem;
     --ui-weight-medium: 500;
     --ui-weight-semibold: 600;
     --ui-border-subtle: var(--ui-card-border);
-    --ui-space-1: 0.25rem;
-    --ui-space-2: 0.5rem;
-    --ui-space-3: 0.75rem;
-    --ui-space-4: 1rem;
-    --ui-space-5: 1.25rem;
-    --ui-space-6: 1.5rem;
-    --ui-space-8: 2rem;
-    --ui-space-12: 3rem;
+    /* Spacing scale: 4 8 12 16 24 32 48 64 96 128 */
+    --ui-space-1: 0.25rem;  /* 4px */
+    --ui-space-2: 0.5rem;   /* 8px */
+    --ui-space-3: 0.75rem;  /* 12px */
+    --ui-space-4: 1rem;     /* 16px */
+    --ui-space-5: 1.5rem;   /* 24px */
+    --ui-space-6: 1.5rem;   /* 24px */
+    --ui-space-8: 2rem;     /* 32px */
+    --ui-space-12: 3rem;    /* 48px */
+    --ui-space-16: 4rem;    /* 64px */
+    --ui-space-24: 6rem;    /* 96px */
+    --ui-space-32: 8rem;    /* 128px */
+    /* Border radius: exactly three roles: control, card, pill */
     --ui-radius-small: 0.25rem;
-    --ui-radius-control: 0.5rem;
-    --ui-radius-card: 0.75rem;
-    --ui-radius-pill: 999rem;
+    --ui-radius-control: 0.25rem; /* 4px neutral */
+    --ui-radius-card: 0.5rem;    /* 8px */
+    --ui-radius-pill: 9999px;
     --ui-border-width: 1px;
     --ui-transparent: transparent;
     --ui-focus-width: 3px;
@@ -50,6 +62,7 @@
     --ui-sidebar-collapsed-width: 4.5rem;
     --ui-header-min-height: 4rem;
     --ui-content-max-width: 90rem;
+    --ui-measure: 34em; /* 45-75 chars */
     --ui-icon-small: 1rem;
     --ui-icon-medium: 1.25rem;
     --ui-icon-large: 1.5rem;
@@ -72,6 +85,13 @@
     --ui-motion-feedback: 120ms;
     --ui-motion-panel: 180ms;
     --ui-motion-easing: ease-out;
+    /* Fixed opacity scale */
+    --ui-opacity-1: 0.05;
+    --ui-opacity-2: 0.1;
+    --ui-opacity-3: 0.2;
+    --ui-opacity-4: 0.4;
+    --ui-opacity-5: 0.6;
+    --ui-opacity-6: 0.8;
 }
 
 :root,
@@ -131,9 +151,18 @@ html[data-theme="light"] {
     --ui-error-text: var(--ui-danger-text);
     --ui-error-bg: var(--ui-danger-bg);
     --ui-error-border: var(--ui-danger-border);
-    --ui-shadow-card: 0 1px 3px rgb(15 23 42 / 0.08);
-    --ui-shadow-overlay: 0 8px 24px rgb(15 23 42 / 0.18);
+    --ui-shadow-card: none;
+    --ui-shadow-overlay: 0 4px 6px rgb(15 23 42 / 0.15);
+    --ui-shadow-modal: 0 15px 35px rgb(15 23 42 / 0.25);
     --ui-scrim: rgb(15 23 42 / 0.65);
+
+    --ui-text-primary: var(--ui-text);
+    --ui-text-secondary: var(--ui-text-muted);
+    --ui-text-tertiary: var(--ui-text-muted);
+    --ui-border-control: var(--ui-border);
+    --ui-action: var(--ui-brand);
+    --ui-action-hover: var(--ui-brand-hover);
+    --ui-on-action: var(--ui-on-brand);
 
     --ui-card-border: #d9e3df;
     --ui-sidebar-muted: #4b6171;
@@ -185,9 +214,18 @@ html[data-theme="dark"] {
     --ui-info-text: #7dd3fc;
     --ui-info-bg: #082f49;
     --ui-info-border: #7dd3fc;
-    --ui-shadow-card: 0 1px 3px rgb(0 0 0 / 0.3);
-    --ui-shadow-overlay: 0 8px 24px rgb(0 0 0 / 0.45);
+    --ui-shadow-card: none;
+    --ui-shadow-overlay: 0 4px 6px rgb(0 0 0 / 0.45);
+    --ui-shadow-modal: 0 15px 35px rgb(0 0 0 / 0.55);
     --ui-scrim: rgb(0 0 0 / 0.75);
+
+    --ui-text-primary: var(--ui-text);
+    --ui-text-secondary: var(--ui-text-muted);
+    --ui-text-tertiary: var(--ui-text-muted);
+    --ui-border-control: var(--ui-border);
+    --ui-action: var(--ui-brand);
+    --ui-action-hover: var(--ui-brand-hover);
+    --ui-on-action: var(--ui-on-brand);
 
     --ui-card-border: #314955;}
 
@@ -245,9 +283,19 @@ html[data-theme="dark"] {
     --ui-info-text: #7dd3fc;
     --ui-info-bg: #082f49;
     --ui-info-border: #7dd3fc;
-    --ui-shadow-card: 0 1px 3px rgb(0 0 0 / 0.3);
-    --ui-shadow-overlay: 0 8px 24px rgb(0 0 0 / 0.45);
+    --ui-shadow-card: none;
+    --ui-shadow-overlay: 0 4px 6px rgb(0 0 0 / 0.45);
+    --ui-shadow-modal: 0 15px 35px rgb(0 0 0 / 0.55);
     --ui-scrim: rgb(0 0 0 / 0.75);
 
+    --ui-text-primary: var(--ui-text);
+    --ui-text-secondary: var(--ui-text-muted);
+    --ui-text-tertiary: var(--ui-text-muted);
+    --ui-border-control: var(--ui-border);
+    --ui-action: var(--ui-brand);
+    --ui-action-hover: var(--ui-brand-hover);
+    --ui-on-action: var(--ui-on-brand);
+
     --ui-card-border: #314955;}
+}
 }

@@ -2,6 +2,36 @@
 
 Các mục được xếp theo ngày mới đến cũ. Trạng thái, kết quả kiểm tra và việc còn mở trong mỗi mục phản ánh thời điểm thực hiện, không tự thay thế kết quả của đợt sau.
 
+## 2026-10-16 — Bước B: Thiết lập Thang Thiết kế & Khung CSS Cascade Layers (commit ui: design tokens and cascade layers)
+
+**Tóm tắt cho chủ dự án**
+- Hoàn thành Bước B theo chuẩn Refactoring UI: thiết lập thang giá trị chuẩn xác cho typography, khoảng cách, bo góc, bóng mờ và màu sắc ngữ nghĩa trong `src/static/css/ui_tokens.css`.
+- Khai báo kiến trúc tầng CSS chuẩn `@layer tokens, base, components, layouts, pages;` và bọc toàn bộ token trong `@layer tokens`.
+- Nâng phiên bản cache tĩnh Service Worker lên `ihrms-static-v31-ui-layers-20261016` và cập nhật đồng bộ các stylesheet/script trong `base.html` lên `?v=20261016-ui-layers`.
+- Kiểm tra toàn diện WCAG tương phản: 208/208 cặp màu đạt chuẩn. Toàn bộ 552 bài kiểm thử tự động trên SQLite PASS (0 lỗi).
+
+**Chi tiết thay đổi kỹ thuật**
+- `src/static/css/ui_tokens.css`:
+  - Khai báo `@layer tokens, base, components, layouts, pages;` và `@layer tokens { ... }`.
+  - Chuẩn hóa thang chữ: Caption/Small 14px, Body 16px, Lg 18px, Xl 20px, Title 24px, Display 36px (100% rem/px, không dùng em, không vi phạm kích thước tối thiểu 14px).
+  - Chuẩn hóa thang khoảng cách: `--ui-space-1` (4px) đến `--ui-space-32` (128px).
+  - Chuẩn hóa bo góc theo 3 vai trò: `--ui-radius-control: 0.25rem` (4px), `--ui-radius-card: 0.5rem` (8px), `--ui-radius-pill: 9999px`.
+  - Khóa thang độ mờ cố định: `--ui-opacity-1` (0.05) đến `--ui-opacity-6` (0.8).
+  - Vô hiệu hóa bóng đổ thẻ `--ui-shadow-card: none` theo quy chuẩn thiết kế phẳng tiếp cận của dự án.
+  - Bổ sung các vai trò ngữ nghĩa: `--ui-text-primary`, `--ui-text-secondary`, `--ui-border-control`, `--ui-action`, `--ui-action-hover`, `--ui-on-action`.
+- `src/templates/base.html`: Tăng phiên bản tham số `?v=20261016-ui-layers` cho `ui_tokens.css`, `app_shell.css`, `ui_controls.css`, `shared_components.css`, `atoms_ui.css`, `project_layout.css`, `shared_components.js`.
+- `src/static/js/service-worker.js`: Nâng hằng số `STATIC_CACHE` lên `ihrms-static-v31-ui-layers-20261016`.
+- `src/apps/portal/test_project_layout.py` & `src/apps/portal/tests_mobile.py`: Cập nhật các assertion phiên bản asset và cache Service Worker tương ứng.
+
+**Kết quả kiểm tra & Cổng chất lượng**
+- `ops/check_ui_contrast.py`: 208/208 cặp màu PASS (light min text 5.100:1, dark min text 7.007:1).
+- `src/manage.py check`: 0 issues.
+- `src/manage.py makemigrations --check`: No changes detected (0 migration / không sửa CSDL).
+- `ops/run_tests.py --backend sqlite`: 552 passed, 0 failures (7 skipped do yêu cầu SQL Server).
+
+**Trạng thái nhánh & Bàn giao**
+- Nhánh: `main`.
+
 ## 2026-10-16 — Bước A: Đo đạc và Thiết lập Baseline Hệ Thống Thiết Kế (commit docs: design system audit baseline)
 
 **Tóm tắt cho chủ dự án**
