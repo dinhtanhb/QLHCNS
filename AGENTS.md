@@ -34,6 +34,10 @@ Khi được giao review, đọc [hướng dẫn review dự án](docs/Huong_Dan
 7. Commit các thay đổi đã kiểm và nhật ký trên `main`, push `origin main`, rồi xác minh SHA remote khớp HEAD và trạng thái ahead/behind. Theo yêu cầu chủ dự án ngày 13/10/2026, đây là bước mặc định đã được cho phép sau mỗi đợt sửa mã; không hỏi lại. Chỉ bỏ commit/push khi chủ dự án yêu cầu rõ trong đợt đó. Không force-push hoặc deploy theo quyền này.
 8. Báo tệp đã đổi, kết quả kiểm tra/giới hạn, đường dẫn bản sao, SHA commit/push và việc cần người dùng làm. Nếu kiểm tra hoặc push không hoàn tất, ghi lỗi và hướng xử lý trong nhật ký; không báo hoàn tất sai.
 
+## Migration và thay đổi schema
+
+Model và migration phải đi trong commit riêng có kế hoạch áp dụng/hoàn tác. Trước khi giao, chạy `sqlmigrate` trên SQLite và cấu hình SQL Server tạm, đối chiếu SQL thực với phạm vi được duyệt, rồi ghi nguồn yêu cầu nghiệp vụ truy vết được trong `PROJECT_WORK_LOG.md`. Dùng `ops/check_migration_state.py` để kiểm trạng thái chỉ đọc; công cụ này không thay thế backup, restore thử, migrate trên bản sao hay UAT. Không áp migration vào DB vận hành nếu chưa xác nhận đúng đích, backup và restore xác minh.
+
 ## Kiểm thử luồng nghiệp vụ trên trình duyệt
 
 Theo yêu cầu chủ dự án ngày 13/10/2026, sau mỗi đợt sửa mã phải kiểm thử lại các luồng nghiệp vụ bị ảnh hưởng trên ứng dụng đang chạy trong trình duyệt, không chỉ kiểm tra HTTP hoặc HTML tĩnh. Thao tác tạo/sửa/gửi/duyệt cần kiểm tra thông báo, trang đích, dữ liệu đã lưu và chỉ số Dashboard liên quan theo đặc tả đã duyệt. Với sửa giao diện, kiểm tra cả sáng/tối, màn hình rộng/hẹp, tên/nội dung dài và thao tác bàn phím.
