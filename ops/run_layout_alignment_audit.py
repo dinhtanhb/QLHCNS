@@ -36,8 +36,8 @@ MEASURE = r"""() => {
  }
  for(const title of main.querySelectorAll('.ui-card-title'))if(visible(title)&&screen(title)&&parseFloat(getComputedStyle(title).fontSize)<17.5)fail('CARD_TITLE',title,getComputedStyle(title).fontSize);
  for(const button of main.querySelectorAll('.ui-button'))if(visible(button)&&screen(button)&&button.matches('a,button,input')){const s=getComputedStyle(button);if(rect(button).h<43.5)fail('BUTTON_HEIGHT',button,rect(button).h);if(parseFloat(s.fontSize)<14)fail('BUTTON_FONT',button,s.fontSize);}
- const controls=[...main.querySelectorAll('input,select,textarea')].filter(x=>visible(x)&&screen(x)&&!['hidden','checkbox','radio'].includes(x.type));
- for(const f of main.querySelectorAll('form')){const fields=controls.filter(x=>x.form===f);if(fields.length>12&&!f.querySelector('fieldset'))fail('FORM_GROUPS',f,fields.length);for(const c of fields){if(['full_name','address','reason','description','notes'].includes(c.name)&&rect(c.closest('.ui-field')||c).w<(rect(c.closest('.ui-form-grid')||f).w-parseFloat(getComputedStyle(c.closest('.ui-form-grid')||f).columnGap||0))/2-9)fail('LONG_FIELD',c,{width:rect(c).w,form:rect(f).w});const hint=(c.closest('.ui-field')||c.parentElement).querySelector('.ui-field-help,.ui-hr-text');if(hint&&visible(hint)&&!c.getAttribute('aria-describedby')?.split(' ').includes(hint.id))fail('HINT_ASSOCIATION',c,hint.textContent);}}
+ const controls=[...main.querySelectorAll('input,select,textarea')].filter(x=>visible(x)&&screen(x)&&!x.matches('.ui-choice-search')&&!['hidden','checkbox','radio'].includes(x.type));
+ for(const f of main.querySelectorAll('form')){const fields=controls.filter(x=>x.form===f);if(fields.length>12&&!f.querySelector('fieldset'))fail('FORM_GROUPS',f,fields.length);for(const c of fields){if(!c.closest('.ui-form-grid--event')&&['full_name','address','reason','description','notes'].includes(c.name)&&rect(c.closest('.ui-field')||c).w<(rect(c.closest('.ui-form-grid')||f).w-parseFloat(getComputedStyle(c.closest('.ui-form-grid')||f).columnGap||0))/2-9)fail('LONG_FIELD',c,{width:rect(c).w,form:rect(f).w});const hint=(c.closest('.ui-field')||c.parentElement).querySelector('.ui-field-help,.ui-hr-text');if(hint&&visible(hint)&&!c.getAttribute('aria-describedby')?.split(' ').includes(hint.id))fail('HINT_ASSOCIATION',c,hint.textContent);}}
  for(const c of controls){const s=getComputedStyle(c);if(rect(c).h<43.5)fail('CONTROL_HEIGHT',c,rect(c).h);if(parseFloat(s.fontSize)<14)fail('FONT',c,s.fontSize);if(![...c.labels||[]].some(visible))fail('LABEL',c,c.name);if(['date','month'].includes(c.type)&&!c.parentElement.querySelector('.ui-date-echo'))fail('DATE_ECHO',c,c.type);if(['date','month'].includes(c.type)&&!c.hasAttribute('lang'))fail('DATE_LANGUAGE',c,c.type);}
  const grids=[...main.querySelectorAll('.ui-form-grid')].filter(x=>visible(x)&&screen(x)&&controls.some(c=>c.closest('.ui-form-grid')===x));measurements.grids=[];
  measurements.grid_rules=[];
@@ -46,12 +46,14 @@ MEASURE = r"""() => {
  for(const g of grids){const r=rect(g),s=getComputedStyle(g),gap=parseFloat(s.columnGap)||0,count=s.gridTemplateColumns.split(' ').filter(Boolean).length,col=(r.w-(count-1)*gap)/count;
   let container=g.parentElement;while(container&&!getComputedStyle(container).containerName.split(' ').includes('ui-form'))container=container.parentElement;
   if(!container)fail('FORM_CONTAINER',g,'Missing named ancestor');
-  else{const cs=getComputedStyle(container),width=container.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),expected=width>=900?4:width>=640?3:width>=420?2:1;if(count!==expected)fail('GRID_COLUMNS',g,{containerWidth:width,expected,count});}
+  else if(s.display==='grid'){const cs=getComputedStyle(container),width=container.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),expected=g.matches('.ui-form-grid--event')&&width>=1080?9:width>=900?(g.matches('.ui-form-grid--grouped,.ui-form-grid--long')?3:4):width>=640?3:width>=420?2:1;if(count!==expected)fail('GRID_COLUMNS',g,{containerWidth:width,expected,count});}
   const fields=controls.filter(x=>x.closest('.ui-form-grid')===g),rows=[];
-  for(const c of fields){const field=c.closest('.ui-field')||c.parentElement,fr=rect(field),cr=rect(c);let row=rows.find(x=>Math.abs(x.y-fr.y)<=1);if(!row){row={y:fr.y,fields:[]};rows.push(row);}row.fields.push({name:c.name,field:fr,control:cr});
-   const near=(edge,end=false)=>Array.from({length:count+1},(_,i)=>r.x+i*(col+gap)-(end&&i?gap:0)).some(x=>Math.abs(x-edge)<=1);
-   if(innerWidth>=1024&&(!near(fr.x)||!near(fr.right,true)))fail('COLUMN_LINE',field,{grid:r,field:fr,columns:s.gridTemplateColumns});
+  for(const c of fields){const field=c.closest('.ui-field')||c.parentElement,fr=rect(field),cr=rect(c.closest('.ui-select-control')||c);let row=rows.find(x=>Math.abs(x.y-fr.y)<=1);if(!row){row={y:fr.y,fields:[]};rows.push(row);}row.fields.push({name:c.name,field:fr,control:cr});
+   const tracks=s.gridTemplateColumns.split(' ').map(parseFloat).filter(Number.isFinite);
+   const near=(edge,end=false)=>{let x=r.x;const lines=[x];for(const track of tracks){x+=track;lines.push(end?x:x+gap);x+=gap;}return lines.some(x=>Math.abs(x-edge)<=1);};
+   if(s.display==='grid'&&innerWidth>=1024&&(!near(fr.x)||!near(fr.right,true)))fail('COLUMN_LINE',field,{grid:r,field:fr,columns:s.gridTemplateColumns});
    if(Math.abs(fr.right-cr.right)>1||Math.abs(fr.x-cr.x)>1)fail('FIELD_EDGE',c,{field:fr,control:cr});
+   if(s.display==='grid'&&g.matches('.ui-form-grid--grouped,.ui-form-grid--long')&&field.matches('.ui-field--regular')&&Math.abs(fr.w-col)>1)fail('REGULAR_SPAN',field,{width:fr.w,oneTrack:col});
     const source=c.id?.endsWith('-display')?document.getElementById(c.id.replace(/-display$/,'')):null;
     const effType=source?source.type:c.type;
     const name=(source?source.name||source.id:c.name||c.id||'').toLowerCase(),tag=c.tagName.toLowerCase();
@@ -67,13 +69,14 @@ MEASURE = r"""() => {
   }
   for(const row of rows){const ys=row.fields.map(x=>x.control.y),hs=row.fields.map(x=>x.control.h);if(Math.max(...ys)-Math.min(...ys)>1)fail('ROW_TOP',g,row);if(Math.max(...hs)-Math.min(...hs)>1)fail('ROW_HEIGHT',g,row);}
   for(let i=0;i<rows.length-1;i++){const bottom=Math.max(...rows[i].fields.map(x=>x.field.bottom)),next=rows[i+1].y,between=[...g.children].some(x=>visible(x)&&rect(x).y>=bottom&&rect(x).bottom<=next&&!x.matches('.ui-field'));if(!between&&Math.abs(next-bottom-(parseFloat(s.rowGap)||0))>1)fail('ROW_GAP',g,{bottom,next,gap:next-bottom,expected:s.rowGap});}
-  const nonlast=rows.slice(0,-1);for(const row of nonlast){const last=row.fields.at(-1);if(last&&r.right-last.field.right>col+gap+1)fail('ROW_HOLE',g,row);}
+  for(let i=0;i<rows.length-1;i++){const row=rows[i],last=row.fields.at(-1),next=rows[i+1],action=[...g.querySelectorAll('.ui-form-actions')].some(x=>visible(x)&&Math.abs(rect(x).y-row.y)<44),groupBreak=[...g.children].some(x=>visible(x)&&!x.matches('.ui-field')&&rect(x).y>row.y&&rect(x).y<next.y);if(last&&!action&&!groupBreak&&r.right-last.field.right-gap>=next.fields[0].field.w-1)fail('ROW_HOLE',g,row);}
+
   measurements.grids.push({selector:selector(g),rect:r,columns:s.gridTemplateColumns,rows});
  }
  for(const group of main.querySelectorAll('.ui-form-actions')){if(!visible(group)||!screen(group))continue;const buttons=[...group.children].filter(x=>x.matches('button,a')&&visible(x));if(buttons.length>1){const sizes=buttons.map(rect);if(Math.max(...sizes.map(x=>x.h))-Math.min(...sizes.map(x=>x.h))>1)fail('FORM_BUTTON_HEIGHT',group,sizes);if(innerWidth<600&&Math.max(...sizes.map(x=>x.w))-Math.min(...sizes.map(x=>x.w))>1)fail('FORM_BUTTON_WIDTH',group,sizes);}}
  const h1=[...main.querySelectorAll('h1')].filter(x=>visible(x)&&screen(x));if(h1.length!==1)fail('H1',main,h1.length);
- for(const f of main.querySelectorAll('form[method=post],form[method=POST]')){if(!visible(f)||!screen(f))continue;const b=[...f.querySelectorAll('button[type=submit],input[type=submit]')].find(visible),first=controls.find(x=>x.form===f);if(b&&first&&!b.closest('table,.ui-query-bar')&&Math.abs(rect(b).x-rect(first.closest('.ui-field')||first.parentElement).x)>1)fail('FORM_ACTION',b,{button:rect(b),first:rect(first)});}
- for(const q of main.querySelectorAll('.ui-query-bar')){const fields=[...q.querySelectorAll('input,select')].filter(x=>visible(x)&&x.type!=='hidden'&&!x.classList.contains('ui-number-source')),b=q.querySelector('button[type=submit]');if(!fields.length||!b||!visible(b))continue;const f=rect(fields.at(-1)),br=rect(b);if(Math.abs(f.bottom-br.bottom)<=1&&br.x-f.right>17)fail('FILTER_ACTION',b,{gap:br.x-f.right});}
+ for(const f of main.querySelectorAll('form[method=post],form[method=POST]')){if(!visible(f)||!screen(f))continue;const b=[...f.querySelectorAll('button[type=submit],input[type=submit]')].find(visible),formControls=controls.filter(x=>x.form===f),first=formControls[0],last=formControls.at(-1);if(b&&first&&!b.closest('table,.ui-query-bar')){const inline=b.closest('.ui-form-grid--inline,.ui-form-grid--event');if(inline&&last){const br=rect(b),lr=rect(last.closest('.ui-select-control')||last);if(Math.abs(br.y-lr.y)<=1&&br.x-lr.right>17)fail('FORM_ACTION_GAP',b,{button:br,last:lr});else if(br.y<lr.y-1)fail('FORM_ACTION_ORDER',b,{button:br,last:lr});}else if(Math.abs(rect(b).x-rect(first.closest('.ui-field')||first.parentElement).x)>1)fail('FORM_ACTION',b,{button:rect(b),first:rect(first)});}}
+ for(const q of main.querySelectorAll('.ui-query-bar')){const fields=[...q.querySelectorAll('input,select')].filter(x=>visible(x)&&x.type!=='hidden'&&!x.classList.contains('ui-number-source')),b=q.querySelector('button[type=submit]');if(!fields.length||!b||!visible(b))continue;const last=fields.at(-1),f=rect(last.closest('.ui-select-control')||last),br=rect(b);if(Math.abs(f.bottom-br.bottom)<=1&&br.x-f.right>17)fail('FILTER_ACTION',b,{gap:br.x-f.right});}
  for(const c of main.querySelectorAll('td.ui-number'))if(visible(c)&&screen(c)&&getComputedStyle(c).textAlign!=='right')fail('NUMBER_ALIGN',c,getComputedStyle(c).textAlign);
  return {violations,measurements};
 }"""
@@ -133,7 +136,9 @@ def inventory(only):
             kwargs={};unresolved=[]
             for key,converter in converters.items():
                 kind=converter.__class__.__name__
-                if key=='slug':kwargs[key]='labor-contract'
+                if key=='slug':
+                    from apps.document.hcns.catalog import FORMS
+                    kwargs[key]=next(iter(FORMS))
                 elif key=='history_type':kwargs[key]='transfer'
                 elif key=='export_format':kwargs[key]='xlsx'
                 elif key=='action':kwargs[key]='submit'
@@ -158,7 +163,11 @@ def seed_missing_fixtures():
     from django.utils import timezone
     allowed={'EmployeeProfileChangeRequest','EmployeeLifecycleCase','LifecycleChecklistItem',
              'ChecklistTemplate','ChecklistTemplateItem','Interview','Offer','Task','Activity','ActivityProposal',
-             'Payslip','Document','DocumentCategory','NotificationEmailOutbox'}
+             'Payslip','Payroll','PayrollPeriod','Document','DocumentCategory','NotificationEmailOutbox','Notification',
+             'EmployeeKPI','KPI','KPIPeriod','KPITemplate','KPICriterion','DispatchTracking','Dispatch','DispatchType','TimesheetEntry','Timesheet',
+             'Holiday','RoomBooking','MeetingRoom','VehicleBooking','Vehicle','SupplyRequest','SupplyItem',
+             'ProcurementRequest','ProcurementItem','Project','AssetType','Asset','InventorySession',
+             'OfficialDispatch','DispatchBook','MonthlyAttendanceSummary'}
     def make(model,depth=0):
         existing=model.objects.order_by('pk').first()
         if existing:return existing
@@ -168,7 +177,9 @@ def seed_missing_fixtures():
             if field.primary_key or field.auto_created or getattr(field,'auto_now',False) or getattr(field,'auto_now_add',False) or field.has_default() or field.null:continue
             if field.is_relation:values[field.name]=make(field.remote_field.model,depth+1)
             elif field.choices:values[field.name]=list(field.flatchoices)[0][0]
-            elif isinstance(field,models.DateTimeField):values[field.name]=timezone.now()
+            elif isinstance(field,models.DateTimeField):
+                from datetime import timedelta
+                values[field.name]=timezone.now()+timedelta(days=1,hours=2 if field.name in ('end_time','end_datetime') else 0)
             elif isinstance(field,models.DateField):values[field.name]=timezone.localdate()
             elif isinstance(field,(models.IntegerField,models.DecimalField,models.FloatField)):values[field.name]=1
             elif isinstance(field,models.BooleanField):values[field.name]=False
@@ -198,11 +209,12 @@ async def audit(args, routes, output):
                     case={'route':route['name'],'account':account,'url':route['url']}
                     try:
                         response=await page.request.get(base+route['url'],max_redirects=0);case['status']=response.status
+                        if response.status>=500 or response.status==400:cases.append(dict(case,error='Unexpected HTTP '+str(response.status)));continue
                         content_type=response.headers.get('content-type','')
                         if response.status!=200 or 'text/html' not in content_type:
                             case['skip']='HTTP '+str(response.status)+' or non-HTML '+content_type;cases.append(case);continue
                         await page.goto(base+route['url'],wait_until='load')
-                        if not await page.locator('.ui-main').count():case['skip']='No portal shell';cases.append(case);continue
+                        if not await page.locator('.ui-main').count():case['error']='HTML 200 missing portal shell';cases.append(case);continue
                         for width in args.widths:
                             await page.set_viewport_size({'width':width,'height':920})
                             for theme in ('light','dark'):

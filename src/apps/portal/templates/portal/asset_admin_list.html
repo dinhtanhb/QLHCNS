@@ -6,24 +6,24 @@
 {% if not can_manage_asset %}<p>Chế độ chỉ xem. Các thay đổi tài sản do Phòng HCNS quản lý.</p>{% endif %}
 {% if can_manage_asset %}<div class="ui-card">
     <h2 class="ui-card-title">Thêm tài sản mới</h2>
-    <form method="post" action="{% url 'portal:asset_admin_create' %}" class="ui-form-stack" data-ui-form><div class="ui-form-grid">
+    <form method="post" action="{% url 'portal:asset_admin_create' %}" class="ui-form-stack" data-ui-form><div class="ui-form-grid ui-form-grid--long">
 {% include "ui/error_summary.html" %}
         {% csrf_token %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-asset_code-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="asset_code" label="Mã số thiết bị" type="text" required=True span="4" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-asset_name-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="asset_name" label="Tên thiết bị" type="text" required=True span="4" %}{% endwith %}{% endwith %}
-        {% include "ui/field.html" with widget_template="portal/widgets/asset_admin_list.html" widget_key="f0" span="4" %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-asset_code-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="asset_code" value=submitted.asset_code label="Mã số thiết bị" type="text" required=True  width="regular" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-asset_name-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="asset_name" value=submitted.asset_name label="Tên thiết bị" type="text" required=True  width="regular" %}{% endwith %}{% endwith %}
+        {% include "ui/field.html" with widget_template="portal/widgets/asset_admin_list.html" widget_key="f0"  width="regular" %}
 
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-serial_number-5-"|add:row_number %}{% include "ui/field.html" with id=field_id name="serial_number" label="Số Seri" type="text" span="4" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-brand-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="brand" label="Nhãn hiệu" type="text" span="4" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-funding_source-6-"|add:row_number %}{% include "ui/field.html" with id=field_id name="funding_source" label="Nguồn mua sắm" type="text" span="4" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-serial_number-5-"|add:row_number %}{% include "ui/field.html" with id=field_id name="serial_number" value=submitted.serial_number label="Số Seri" type="text"  width="regular" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-brand-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="brand" value=submitted.brand choices=brand_choices label="Nhãn hiệu" type="text"  width="regular" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-funding_source-6-"|add:row_number %}{% include "ui/field.html" with id=field_id name="funding_source" value=submitted.funding_source choices=funding_choices label="Nguồn mua sắm" type="text"  width="regular" %}{% endwith %}{% endwith %}
 
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-purchase_date-7-"|add:row_number %}{% include "ui/field.html" with id=field_id name="purchase_date" label="Ngày mua" type="date" span="3" tablet_span="6" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-location-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="location" label="Địa điểm" type="text" span="5" tablet_span="6" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-quantity-8-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" value="1" span="4" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-unit-9-"|add:row_number %}{% include "ui/field.html" with id=field_id name="unit" label="Đơn vị tính" type="text" value="chiếc" span="4" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-purchase_date-7-"|add:row_number %}{% include "ui/field.html" with id=field_id name="purchase_date" value=submitted.purchase_date label="Ngày mua" type="date"  width="regular" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-location-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="location" value=submitted.location choices=location_choices label="Địa điểm" type="text"  width="regular" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-quantity-8-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" value=submitted.quantity|default_if_none:"1"  width="regular" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-unit-9-"|add:row_number %}{% include "ui/field.html" with id=field_id name="unit" choices=unit_choices label="Đơn vị tính" type="text" value=submitted.unit|default_if_none:"chiếc"  width="regular" %}{% endwith %}{% endwith %}
 
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-purchase_value-10-"|add:row_number %}{% include "ui/field.html" with id=field_id name="purchase_value" label="Nguyên giá" type="number" span="4" tablet_span="12" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-note-11-"|add:row_number %}{% include "ui/field.html" with id=field_id name="note" label="Ghi chú" type="text" span="12" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-purchase_value-10-"|add:row_number %}{% include "ui/field.html" with id=field_id name="purchase_value" value=submitted.purchase_value label="Nguyên giá" type="number"  width="regular" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="asset_admin_list-note-11-"|add:row_number %}{% include "ui/field.html" with id=field_id name="note" value=submitted.note label="Ghi chú" type="text"  width="full" %}{% endwith %}{% endwith %}
         <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm tài sản</button></div>
 
 </div></form>

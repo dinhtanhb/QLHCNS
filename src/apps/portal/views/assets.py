@@ -1,3 +1,4 @@
+from apps.common.ui_choices import remember_form, recalled_form
 from django.db import transaction
 from django.views.decorators.http import require_POST
 from apps.security.permissions import has_permission
@@ -51,11 +52,17 @@ def asset_admin_list(request):
         messages.error(request, "Anh/chị không có quyền xem thông tin tài sản.")
         return redirect("portal:dashboard")
     can_manage_asset = _can_manage_asset(request)
-    assets = Asset.objects.select_related("asset_type").order_by("asset_type__asset_group", "asset_code")
+    assets = list(Asset.objects.select_related("asset_type").order_by("asset_type__asset_group", "asset_code"))
+    from apps.common.ui_choices import text_choices
     return render(request, "portal/asset_admin_list.html", {
         "assets": assets,
         "asset_types": AssetType.objects.all() if can_manage_asset else AssetType.objects.none(),
         "can_manage_asset": can_manage_asset,
+        "submitted": recalled_form(request, "asset") or {"quantity": "1", "unit": "chiếc"},
+        "location_choices": text_choices(assets, "location") if can_manage_asset else [],
+        "brand_choices": text_choices(assets, "brand") if can_manage_asset else [],
+        "unit_choices": text_choices(assets, "unit") if can_manage_asset else [],
+        "funding_choices": text_choices(assets, "funding_source") if can_manage_asset else [],
     })
 
 
@@ -81,6 +88,7 @@ def asset_admin_create(request):
         messages.success(request, "Đã thêm tài sản.")
     except Exception as e:
         _friendly_error(request, e, "Không thể thêm.")
+        remember_form(request, "asset", ("asset_code", "asset_name", "asset_type", "location", "brand", "serial_number", "funding_source", "purchase_date", "quantity", "unit", "purchase_value", "note"))
     return redirect("portal:asset_admin_list")
 
 
@@ -89,9 +97,12 @@ def inventory_session_list(request):
     if not _can_view_asset(request):
         messages.error(request, "Anh/chị không có quyền xem thông tin tài sản.")
         return redirect("portal:dashboard")
-    sessions = InventorySession.objects.order_by("-inventory_datetime")
+    sessions = list(InventorySession.objects.order_by("-inventory_datetime"))
+    from apps.common.ui_choices import text_choices
     return render(request, "portal/inventory_session_list.html", {
         "sessions": sessions, "can_manage_asset": _can_manage_asset(request),
+        "submitted": recalled_form(request, "inventory"),
+        "office_choices": text_choices(sessions, "office_name") if _can_manage_asset(request) else [],
     })
 
 
@@ -115,6 +126,7 @@ def inventory_session_create(request):
         return redirect("portal:inventory_session_detail", pk=session.pk)
     except Exception as e:
         _friendly_error(request, e, "Không thể tạo.")
+        remember_form(request, "inventory", ("session_name", "office_name", "inventory_datetime"))
         return redirect("portal:inventory_session_list")
 
 

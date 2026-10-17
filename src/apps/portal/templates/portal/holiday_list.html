@@ -4,11 +4,11 @@
 {% include "ui/page_header.html" with title="Danh mục ngày lễ" %}
 <section class="ui-card">
 <h2 class="ui-card-title">Thêm ngày lễ mới</h2>
-<form method="post" class="ui-form-stack ui-planning-form-row" data-ui-form><div class="ui-form-grid">
+<form method="post" class="ui-form-stack ui-planning-form-row" data-ui-form><div class="ui-form-grid ui-form-grid--inline">
 {% csrf_token %}{% include "ui/error_summary.html" %}
-{% include "ui/field.html" with id="holiday-code" name="holiday_code" label="Mã ngày lễ" placeholder="Ví dụ: QK1_2026" required=True  span="3" %}
-{% include "ui/field.html" with id="holiday-name" name="holiday_name" label="Tên ngày lễ" required=True  span="6" %}
-{% include "ui/field.html" with id="holiday-date" name="holiday_date" label="Ngày lễ" type="date" required=True  span="3" tablet_span="12" %}
+{% include "ui/field.html" with id="holiday-code" name="holiday_code" label="Mã ngày lễ" placeholder="Ví dụ: QK1_2026" required=True  width="regular" %}
+{% include "ui/field.html" with id="holiday-name" name="holiday_name" label="Tên ngày lễ" required=True  width="regular" %}
+{% include "ui/field.html" with id="holiday-date" name="holiday_date" label="Ngày lễ" type="date" required=True  width="regular" %}
 <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm ngày lễ</button></div>
 
 </div></form>

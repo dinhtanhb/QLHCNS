@@ -78,3 +78,20 @@ class FormGridComponentTests(SimpleTestCase):
         self.assertIn('name="amount"', output)
         self.assertIn('value="-1"', output)
         self.assertIn('required', output)
+
+
+class CoverageReportTests(SimpleTestCase):
+    def test_partial_or_non_after_reports_are_rejected(self):
+        import copy
+        ops=Path(__file__).resolve().parents[3]/'ops'
+        with patch.object(sys,'path',[str(ops),*sys.path]):
+            spec=importlib.util.spec_from_file_location('project_forms_audit_test',ops/'run_project_forms_uat.py')
+            module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        accounts=('demo-layout-admin','demo-hr','demo-director','demo-manager','demo-employee','demo-finance','demo-hr-officer','demo-sys','demo-unlinked')
+        routes=[{'name':'example','url':'/example/'}]
+        report={'phase':'after','synthetic_only':True,'errors':[],'violations':[],'routes':routes,
+                'cases':[{'route':'example','account':a,'width':w,'theme':t} for a in accounts for w in (1920,1756,1440,1280,1024,768,390) for t in ('light','dark')]}
+        self.assertTrue(module.validate_coverage(report,routes))
+        for change in ({'phase':'before'},{'violations':[{}]},{'cases':report['cases'][:-1]},{'routes':[]}):
+            self.assertFalse(module.validate_coverage(dict(copy.deepcopy(report),**change),routes))
+        self.assertFalse(module.validate_coverage(report,routes+[{'name':'missing'}]))

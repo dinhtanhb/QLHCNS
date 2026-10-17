@@ -4,19 +4,19 @@
 {% block hr_content %}
 <div class="ui-card">
     <h1 class="ui-page-title">Tạo hợp đồng lao động</h1>
-    <form method="post" class="ui-form-stack" data-ui-form><div class="ui-form-grid">
+    <form method="post" class="ui-form-stack" data-ui-form><div class="ui-form-grid ui-form-grid--grouped">
 
         {% csrf_token %}{% include "ui/error_summary.html" %}
-        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f0"  span="6" %}
-        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f1"  span="6" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f0"  width="wide" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f1"  width="wide" %}
 
-        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f2"  span="12" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f2"  width="full" %}
 
-        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f3"  span="6" %}
-        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f4"  span="6" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f3"  width="wide" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f4"  width="wide" %}
 
-        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f5"  span="6" %}
-        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f6"  span="6" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f5"  width="wide" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_contract_form.html" widget_key="f6"  width="wide" %}
 
 
 </div><div class="ui-page-actions ui-form-actions">

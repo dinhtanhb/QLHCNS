@@ -4,15 +4,15 @@
 {% block recruitment_content %}
 {% include "ui/page_header.html" with title="Thêm ứng viên mới" %}
 <div class="ui-card">
-    <form data-ui-form method="post" class="ui-form-stack ui-recruitment-form"><div class="ui-form-grid">
+    <form data-ui-form method="post" class="ui-form-stack ui-recruitment-form"><div class="ui-form-grid ui-form-grid--grouped">
 {% include "ui/error_summary.html" %}
         {% csrf_token %}
-        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f0"  span="6" %}
-        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f1"  span="6" %}
-        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f2"  span="6" %}
-        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f3"  span="6" %}
-        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f4"  span="6" %}
-        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f5"  span="6" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f0"  width="regular" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f1"  width="full" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f2"  width="wide" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f3"  width="wide" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f4"  width="wide" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_form_direct.html" widget_key="f5"  width="wide" %}
 
 
 </div><div class="ui-page-actions ui-form-actions">

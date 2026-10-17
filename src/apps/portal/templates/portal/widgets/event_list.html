@@ -1,12 +1,16 @@
 {% load ui_components l10n %}
 {% if widget_key == "f0" %}
 <label for="event_list-event_type-6-{{ forloop.counter|default:'0' }}">Loại sự kiện</label><select name="event_type"  id="event_list-event_type-6-{{ forloop.counter|default:'0' }}">
-            <option value="Meeting">Họp</option><option value="Training">Đào tạo</option>
-            <option value="FieldTrip">Công tác</option><option value="Company">Sự kiện Trung tâm</option><option value="Other">Khác</option>
+            <option value="Meeting"{% if submitted.event_type == "Meeting" %} selected{% endif %}>Họp</option><option value="Training"{% if submitted.event_type == "Training" %} selected{% endif %}>Đào tạo</option>
+            <option value="FieldTrip"{% if submitted.event_type == "FieldTrip" %} selected{% endif %}>Công tác</option><option value="Company"{% if submitted.event_type == "Company" %} selected{% endif %}>Sự kiện Trung tâm</option><option value="Other"{% if submitted.event_type == "Other" %} selected{% endif %}>Khác</option>
         </select>
 {% elif widget_key == "f1" %}
 <label for="event_list-department-7-{{ forloop.counter|default:'0' }}">Phòng ban</label><select name="department"  id="event_list-department-7-{{ forloop.counter|default:'0' }}">
             <option value="">-- Toàn Trung tâm --</option>
-            {% for d in departments %}<option value="{{ d.id }}">{{ d.department_name|ui_number }}</option>{% endfor %}
+            {% for d in departments %}<option value="{{ d.id }}"{% if submitted.department == d.id|stringformat:"s" %} selected{% endif %}>{{ d.department_name|ui_number }}</option>{% endfor %}
         </select>
+{% elif widget_key == "mode" %}
+<label for="event-attendance-mode">Hình thức</label><select name="attendance_mode" id="event-attendance-mode">
+{% for code,label in attendance_modes %}<option value="{{ code }}"{% if submitted.attendance_mode == code or not submitted.attendance_mode and code == 'Offline' %} selected{% endif %}>{{ label }}</option>{% endfor %}
+</select>
 {% endif %}

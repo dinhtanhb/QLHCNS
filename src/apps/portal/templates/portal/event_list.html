@@ -7,16 +7,17 @@
 {% if can_create_event %}
 <div class="ui-card">
     <h2 class="ui-card-title">Tạo sự kiện mới</h2>
-    <form method="post" class="ui-form-stack" data-ui-form><div class="ui-form-grid">
+    <form method="post" class="ui-form-stack" data-ui-form><div class="ui-form-grid ui-form-grid--event">
 {% include "ui/error_summary.html" %}
         {% csrf_token %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-title-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="title" label="Tiêu đề" type="text" required=True  span="12" %}{% endwith %}{% endwith %}
-        {% include "ui/field.html" with widget_template="portal/widgets/event_list.html" widget_key="f0"  span="6" %}
-        {% include "ui/field.html" with widget_template="portal/widgets/event_list.html" widget_key="f1"  span="6" %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-start_time-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="start_time" label="Bắt đầu" type="datetime-local" required=True  span="3" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-end_time-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="end_time" label="Kết thúc" type="datetime-local" required=True  span="3" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-location-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="location" label="Địa điểm" type="text"  span="6" tablet_span="12" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-description-5-"|add:row_number %}{% include "ui/field.html" with id=field_id name="description" label="Mô tả" type="text"  span="12" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-title-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="title" value=submitted.title label="Tiêu đề" type="text" required=True  width="full" %}{% endwith %}{% endwith %}
+        {% include "ui/field.html" with widget_template="portal/widgets/event_list.html" widget_key="f0"  width="regular" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/event_list.html" widget_key="f1"  width="regular" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/event_list.html" widget_key="mode" width="regular" %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-start_time-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="start_time" value=submitted.start_time label="Bắt đầu" type="datetime-local" required=True  width="regular" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-end_time-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="end_time" value=submitted.end_time label="Kết thúc" type="datetime-local" required=True  width="regular" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-location-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="location" value=submitted.location choices=location_choices label="Địa điểm" type="text"  width="regular" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="event_list-description-5-"|add:row_number %}{% include "ui/field.html" with id=field_id name="description" value=submitted.description label="Mô tả" type="text"  width="full" %}{% endwith %}{% endwith %}
         <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Tạo sự kiện</button></div>
 
 </div></form>
@@ -28,7 +29,7 @@
     <div>
         <div class="ui-admin-inline">
             <p class="ui-font-label">{{ e.title|ui_number }}</p>
-            <span class="ui-text-muted">{{ e.get_event_type_display|ui_number }}</span>
+            <span class="ui-text-muted">{{ e.get_event_type_display|ui_number }} · {{ e.get_attendance_mode_display|default:"Chưa xác định" }}</span>
         </div>
         <p class="ui-text-muted">{{ e.start_time|date:"d/m/Y H:i" }} - {{ e.end_time|date:"H:i" }} {% if e.location %}· {{ e.location|ui_number }}{% endif %} {% if e.department %}· {{ e.department|ui_number }}{% endif %}</p>
         {% if e.description %}<p class="ui-text-muted">{{ e.description|ui_number }}</p>{% endif %}

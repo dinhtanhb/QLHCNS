@@ -194,3 +194,15 @@ Nút và input/select một dòng cao tối thiểu 44px, bo 8px, chữ 14px, pa
 ## Component opt-in Giai đoạn 4
 
 Quy chuẩn trang được triển khai qua `.ui-page`, `.ui-card`, `.ui-table`, `.ui-field`, `.ui-badge` và các partial dùng chung trên bốn trang mẫu. Các trang khác chưa chuyển layout. Cách dùng, registry trạng thái và kitchen sink xem [tài liệu thành phần](docs/UI_SHARED_COMPONENTS_PHASE4.md). Kết quả kiểm tra/việc còn mở chỉ ghi trong nhật ký dự án.
+
+## Hợp đồng form màn hình — 17/10/2026
+
+Chọn cấu trúc theo nghiệp vụ trong `docs/UI_FORM_REGISTRY.json`, không ép mọi form thành bốn cột. `.ui-form-grid--inline` cho form ngắn: nút liền sau control cuối, căn đáy; khoảng trống dư nằm sau nút. `.ui-form-grid--grouped` cho form vừa, `--long` cho form dài chia nhóm. `ui/field.html` dùng `width="regular|wide|full"`; span số chỉ tương thích cũ. Bộ lọc giữ `ui-query-bar` riêng; thao tác trong bảng giữ form POST độc lập.
+
+Form nhóm/dài giữ track đều theo vùng chứa (1/2/3 cột, ngưỡng 420/640px); trường thường chiếm một track kể cả cuối hàng, trường rộng chiếm hai track hoặc toàn hàng khi hẹp; ghi chú/địa chỉ dài có thể toàn hàng. Form ngắn chia phần dư theo nội dung và vẫn giữ nút liền field cuối. Nhãn luôn hiện; cùng hàng căn control theo nhãn cao nhất thực tế, không dành cố định hai dòng. Gap 16px; nhóm 24px; mobile xếp theo DOM, không bóp control. Control/nút tối thiểu 44px, chữ 14px. Nút form dài ở cuối nhóm, không sticky che focus. Form lồng trong khung hẹp wrap theo vùng chứa thực.
+
+Kiểm kê: Tên đợt → Văn phòng/Bộ phận → Thời điểm → nút, một hàng khi đủ chỗ. Đặt phòng: Phòng → Mục đích → Bắt đầu → Kết thúc → nút, một hàng khi đủ chỗ; hướng dẫn ở dưới. Sự kiện dùng `--event`, từ container 1080px: hàng 1 Tiêu đề/Loại/Phòng ban/Hình thức; hàng 2 Bắt đầu/Kết thúc/Địa điểm/Mô tả/nút. Hẹp hơn wrap theo thứ tự; không cắt dữ liệu để giữ số hàng.
+
+Danh mục dùng select gốc; từ 10 lựa chọn (trừ tháng/năm) có nút Tìm mở vùng tìm kiếm dùng chung, hỗ trợ bàn phím. Control gốc vẫn gửi đúng giá trị và hoạt động khi tắt JS. Văn bản dùng lại dùng `ui/text_choice.html` (input + datalist), chỉ lấy giá trị từ dữ liệu tài khoản được xem; vẫn nhập mới. Không gợi ý tên người hoặc nội dung tự do toàn hệ thống. Giữ dữ liệu khi validation thất bại.
+
+Hình thức sự kiện lưu `attendance_mode` Online/Offline; mới mặc định Offline, lịch sử NULL hiển thị Chưa xác định. Đây là ngoại lệ hợp đồng được duyệt; migration vận hành cần xác minh đích và backup riêng. Giấy/in giữ hợp đồng độc lập.

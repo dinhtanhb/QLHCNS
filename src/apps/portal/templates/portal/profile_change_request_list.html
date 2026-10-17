@@ -10,11 +10,11 @@
 {% if item.attachment %}<a class="ui-button ui-button--secondary" href="{% url 'portal:profile_change_request_attachment' item.pk %}">Tải chứng từ</a>{% endif %}
 {% if item.decision_note %}<p class="ui-page-description">Ý kiến Nhân sự: {{ item.decision_note }}</p>{% endif %}
 {% if item.status == "Pending" and can_approve_profile_change_request %}
-<form method="post" action="{% url 'portal:profile_change_request_decide' item.pk %}" class="ui-form-stack ui-personal-decision" data-ui-form data-ui-confirm="Gửi quyết định xử lý yêu cầu cập nhật hồ sơ này?" data-ui-confirm-title="Xác nhận xử lý hồ sơ" data-ui-confirm-label="Gửi quyết định" data-ui-confirm-tone="primary"><div class="ui-form-grid">
+<form method="post" action="{% url 'portal:profile_change_request_decide' item.pk %}" class="ui-form-stack ui-personal-decision" data-ui-form data-ui-confirm="Gửi quyết định xử lý yêu cầu cập nhật hồ sơ này?" data-ui-confirm-title="Xác nhận xử lý hồ sơ" data-ui-confirm-label="Gửi quyết định" data-ui-confirm-tone="primary"><div class="ui-form-grid ui-form-grid--inline">
 {% csrf_token %}
-{% include "ui/field.html" with widget_template="portal/widgets/profile_change_request_list.html" widget_key="f0"  span="12" %}
+{% include "ui/field.html" with widget_template="portal/widgets/profile_change_request_list.html" widget_key="f0"  width="full" %}
 
-</div><div class="ui-form-actions"><button name="decision" value="approve" class="ui-button ui-button--primary">Duyệt cập nhật</button><button name="decision" value="more_info" class="ui-button ui-button--secondary">Yêu cầu bổ sung</button><button name="decision" value="reject" class="ui-button ui-button--danger">Từ chối</button></div></form>{% endif %}
+<div class="ui-form-actions"><button name="decision" value="approve" class="ui-button ui-button--primary">Duyệt cập nhật</button><button name="decision" value="more_info" class="ui-button ui-button--secondary">Yêu cầu bổ sung</button><button name="decision" value="reject" class="ui-button ui-button--danger">Từ chối</button></div></div></form>{% endif %}
 </article>{% empty %}<section class="ui-card">{% include "ui/empty_state.html" with title="Chưa có yêu cầu cập nhật hồ sơ." description="Tạo yêu cầu khi cần sửa thông tin cá nhân; thông tin chỉ thay đổi sau khi Nhân sự duyệt." %}</section>{% endfor %}
 {% include "ui/confirm_dialog.html" %}
 {% endblock %}

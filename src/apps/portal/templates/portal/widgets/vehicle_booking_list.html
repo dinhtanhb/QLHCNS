@@ -1,6 +1,6 @@
 {% load ui_components l10n %}
 {% if widget_key == "f0" %}
 <label for="vehicle_booking_list-vehicle-5-{{ forloop.counter|default:'0' }}">Xe</label><select name="vehicle" required  id="vehicle_booking_list-vehicle-5-{{ forloop.counter|default:'0' }}">
-            {% for v in vehicles %}<option value="{{ v.id }}">{{ v.vehicle_name|ui_number }} ({{ v.plate_number|ui_number }})</option>{% endfor %}
+            {% for v in vehicles %}<option value="{{ v.id }}"{% if submitted.vehicle == v.id|stringformat:"s" %} selected{% endif %}>{{ v.vehicle_name|ui_number }} ({{ v.plate_number|ui_number }})</option>{% endfor %}
         </select>
 {% endif %}

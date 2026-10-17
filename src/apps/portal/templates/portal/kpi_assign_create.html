@@ -4,20 +4,20 @@
 {% include "ui/page_header.html" with title="Tạo chỉ tiêu KPI cho nhân viên" %}
 <section class="ui-card">
 <h2 class="ui-card-title">Thông tin chỉ tiêu</h2>
-<form method="post" class="ui-form-stack ui-planning-form" data-ui-form><div class="ui-form-grid">
+<form method="post" class="ui-form-stack ui-planning-form" data-ui-form><div class="ui-form-grid ui-form-grid--inline">
 {% csrf_token %}{% include "ui/error_summary.html" %}
 
-{% include "ui/field.html" with id="kpi-employee" name="employee" label="Nhân viên" required=True options_template="ui/planning_options/employees.html"  span="6" %}
-{% include "ui/field.html" with id="kpi-template" name="kpi_template" label="Chỉ số KPI" required=True options_template="ui/planning_options/templates.html"  span="6" %}
+{% include "ui/field.html" with id="kpi-employee" name="employee" label="Nhân viên" required=True options_template="ui/planning_options/employees.html"  width="regular" %}
+{% include "ui/field.html" with id="kpi-template" name="kpi_template" label="Chỉ số KPI" required=True options_template="ui/planning_options/templates.html"  width="regular" %}
 
-{% include "ui/field.html" with id="kpi-period" name="kpi_period" label="Kỳ đánh giá" required=True options_template="ui/planning_options/periods.html"  span="6" %}
-{% include "ui/field.html" with id="kpi-target" name="target" label="Chỉ tiêu" type="number" step="0.01" required=True  span="6" %}
+{% include "ui/field.html" with id="kpi-period" name="kpi_period" label="Kỳ đánh giá" required=True options_template="ui/planning_options/periods.html"  width="regular" %}
+{% include "ui/field.html" with id="kpi-target" name="target" label="Chỉ tiêu" type="number" step="0.01" required=True  width="regular" %}
 
 
 
-</div><div class="ui-form-actions">
+<div class="ui-form-actions">
 <button type="submit" class="ui-button ui-button--primary">Tạo</button>
 <a href="{% url 'portal:kpi_score_list' %}" class="ui-button ui-button--secondary">Hủy</a>
-</div></form>
+</div></div></form>
 </section>
 {% endblock %}

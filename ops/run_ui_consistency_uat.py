@@ -112,7 +112,8 @@ def main():
                 form = page.locator('form[action*="assets"]').first
                 if not form.count():
                     form = page.locator('form:has([name=asset_code])')
-                for width, expected in ((419,1),(420,2),(421,2),(639,2),(640,3),(641,3),(899,3),(900,4),(901,4)):
+                # The asset form now follows the long-form 1/2/3-column contract.
+                for width, expected in ((419,1),(420,2),(421,2),(639,2),(640,3),(641,3),(899,3),(900,3),(901,3)):
                     form.evaluate('(x,w)=>{x.style.width=w+"px";x.style.maxWidth="none"}', width)
                     columns = form.locator('.ui-form-grid').evaluate('(x)=>getComputedStyle(x).gridTemplateColumns.split(" ").length')
                     check(columns==expected, f'container {width}px -> {expected} columns')

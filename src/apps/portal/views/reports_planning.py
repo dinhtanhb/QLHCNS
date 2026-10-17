@@ -201,6 +201,7 @@ def event_list(request):
             event = Event(
                 title=request.POST.get("title"),
                 event_type=request.POST.get("event_type", "Meeting"),
+                attendance_mode=request.POST.get("attendance_mode", "Offline"),
                 department_id=department_id,
                 start_time=request.POST.get("start_time"),
                 end_time=request.POST.get("end_time"),
@@ -209,6 +210,8 @@ def event_list(request):
                 created_by_employee=employee,
                 created_by=request.user,
             )
+            if event.attendance_mode not in dict(Event.ATTENDANCE_MODE_CHOICES):
+                raise ValidationError('Hình thức phải là Online hoặc Offline.')
             event.full_clean()
             event.save()
             if event.department_id:
@@ -222,13 +225,18 @@ def event_list(request):
                     link="/portal/events/", created_by=request.user,
                 )
             messages.success(request, "Đã tạo sự kiện.")
+            return redirect("portal:event_list")
         except Exception as e:
             _friendly_error(request, e, "Không thể tạo.")
-        return redirect("portal:event_list")
 
     my_departments = managed_departments_for(request.user, global_roles=(HR_MANAGER,))
+    from apps.common.ui_choices import text_choices
+    events = list(events)
     return render(request, "portal/event_list.html", {
         "events": events, "can_create_event": _can_create_event(request), "departments": my_departments,
+        "location_choices": text_choices(events, "location"),
+        "submitted": request.POST if request.method == "POST" else {},
+        "attendance_modes": Event.ATTENDANCE_MODE_CHOICES,
     })
 
 

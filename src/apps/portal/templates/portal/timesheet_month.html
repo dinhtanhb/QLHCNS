@@ -6,23 +6,23 @@
 <div class="ui-followup-page">
 <header class="ui-page-header no-print"><h1 class="ui-page-title">Bảng chấm công</h1><div class="ui-page-actions"><button onclick="window.print()" class="ui-button ui-button--secondary" type="button">{% include "_shell_icon.html" with name="office" %}In bảng công</button></div></header>
 
-<section class="ui-card no-print"><h2 class="ui-card-title">Ghi nhận giờ làm việc</h2><form method="post" action="{% url 'portal:timesheet_entry_create' %}" data-ui-form class="ui-form-stack"><div class="ui-form-grid">
+<section class="ui-card no-print"><h2 class="ui-card-title">Ghi nhận giờ làm việc</h2><form method="post" action="{% url 'portal:timesheet_entry_create' %}" data-ui-form class="ui-form-stack"><div class="ui-form-grid ui-form-grid--inline">
 {% csrf_token %}{% include "ui/error_summary.html" %}
-{% include "ui/field.html" with widget_template="portal/widgets/timesheet_month.html" widget_key="f0"  span="6" %}
-{% include "ui/field.html" with widget_template="portal/widgets/timesheet_month.html" widget_key="f1"  span="6" %}
+{% include "ui/field.html" with widget_template="portal/widgets/timesheet_month.html" widget_key="f0"  width="regular" %}
+{% include "ui/field.html" with widget_template="portal/widgets/timesheet_month.html" widget_key="f1"  width="regular" %}
 
-{% include "ui/field.html" with id="timesheet-task" name="task_description" label="Công việc thực hiện" placeholder="Công việc thực hiện"  span="8" %}
-{% include "ui/field.html" with id="timesheet-hours" name="hours" type="number" step="0.5" label="Số giờ" placeholder="Số giờ" required=True  span="4" %}
+{% include "ui/field.html" with id="timesheet-task" name="task_description" label="Công việc thực hiện" placeholder="Công việc thực hiện"  width="regular" %}
+{% include "ui/field.html" with id="timesheet-hours" name="hours" type="number" step="0.5" label="Số giờ" placeholder="Số giờ" required=True  width="regular" %}
 
-</div><div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm dòng chấm công</button></div></form></section>
+<div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm dòng chấm công</button></div></div></form></section>
 <!-- KHUNG BẢNG CHẤM CÔNG — theo đúng layout mẫu -->
 {% with balance_used=balance.used_days balance_remaining=balance.remaining_days %}
 <div class="timesheet-document ui-card ui-results-card">
 <div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Chọn kỳ chấm công">
 <div class="ui-query-fields">
-{% include "ui/field.html" with id="timesheet-month-month" name="month" label="Tháng" options_template="ui/query_options/timesheet_month-month.html" size="compact" %}
-{% include "ui/field.html" with id="timesheet-month-year" name="year" label="Năm" options_template="ui/query_options/timesheet_month-year.html" size="compact" %}
+{% include "ui/field.html" with id="timesheet-month-month" name="month" label="Tháng" options_template="ui/query_options/timesheet_month-month.html" size="compact"  width="regular" %}
+{% include "ui/field.html" with id="timesheet-month-year" name="year" label="Năm" options_template="ui/query_options/timesheet_month-year.html" size="compact"  width="regular" %}
 </div>
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"month,year" %}
 </form>
@@ -138,12 +138,12 @@
             <span class="ui-screen-only ui-badge ui-badge--warning">{% include "_shell_icon.html" with name="warning" %}Chờ quản lý duyệt</span>
             {% endif %}
             <fieldset class="ui-form-section" {% if summary.status == "Approved" %}disabled{% endif %}>
-            <legend>Tổng hợp ngày nghỉ</legend><div class="ui-form-grid">
-                {% include "ui/field.html" with widget_template="portal/widgets/timesheet_month.html" widget_key="f2"  span="6" %}
-                {% include "ui/field.html" with widget_template="portal/widgets/timesheet_month.html" widget_key="f3"  span="6" %}
-                {% include "ui/field.html" with widget_template="portal/widgets/timesheet_month.html" widget_key="f4"  span="4" %}
-                {% include "ui/field.html" with widget_template="portal/widgets/timesheet_month.html" widget_key="f5"  span="4" %}
-                {% include "ui/field.html" with widget_template="portal/widgets/timesheet_month.html" widget_key="f6"  span="4" %}
+            <legend>Tổng hợp ngày nghỉ</legend><div class="ui-form-grid ui-form-grid--grouped">
+                {% include "ui/field.html" with widget_template="portal/widgets/timesheet_month.html" widget_key="f2"  width="wide" %}
+                {% include "ui/field.html" with widget_template="portal/widgets/timesheet_month.html" widget_key="f3"  width="wide" %}
+                {% include "ui/field.html" with widget_template="portal/widgets/timesheet_month.html" widget_key="f4"  width="regular" %}
+                {% include "ui/field.html" with widget_template="portal/widgets/timesheet_month.html" widget_key="f5"  width="regular" %}
+                {% include "ui/field.html" with widget_template="portal/widgets/timesheet_month.html" widget_key="f6"  width="regular" %}
                 {% if balance %}
                 <div class="ui-timesheet-balance-row ui-timesheet-balance-total">
                     <label class="ui-field-label">Tổng ngày phép năm {{ year|ui_year }}:</label>

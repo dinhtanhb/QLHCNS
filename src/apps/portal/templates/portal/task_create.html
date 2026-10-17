@@ -4,17 +4,17 @@
 <div class="ui-page">
 <div class="ui-card">
     <h1 class="ui-page-title">Giao việc mới</h1>
-    <form method="post" class="ui-form-stack" data-ui-form><div class="ui-form-grid">
+    <form method="post" class="ui-form-stack" data-ui-form><div class="ui-form-grid ui-form-grid--grouped">
 
         {% csrf_token %}
-        {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f0" span="4" tablet_span="6" %}
-        {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f1" span="8" tablet_span="6" %}
-        {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f2" span="12" %}
-        {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f3" span="4" tablet_span="6" %}
-        {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f4" span="2" tablet_span="6" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f0"  width="regular" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f1"  width="wide" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f2"  width="full" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f3"  width="regular" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f4"  width="regular" %}
 
-        {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f5" span="3" tablet_span="6" %}
-        {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f6" span="3" tablet_span="6" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f5"  width="regular" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f6"  width="regular" %}
 
         <div class="ui-form-actions">
             <button type="submit" class="ui-button ui-button--primary">Giao việc</button>

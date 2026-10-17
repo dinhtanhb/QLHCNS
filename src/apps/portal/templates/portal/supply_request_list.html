@@ -6,17 +6,17 @@
 
 <div class="ui-card">
     <h2 class="ui-card-title">Tạo đề nghị mới</h2>
-    <form method="post" action="{% url 'portal:supply_request_create' %}" data-ui-form class="ui-form-stack"><div class="ui-form-grid">
+    <form method="post" action="{% url 'portal:supply_request_create' %}" data-ui-form class="ui-form-stack"><div class="ui-form-grid ui-form-grid--grouped">
 {% include "ui/error_summary.html" %}
         {% csrf_token %}
-        {% include "ui/field.html" with widget_template="portal/widgets/supply_request_list.html" widget_key="f0" span="8" tablet_span="12" %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="supply_request_list-quantity-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" min="1" span="4" tablet_span="12" %}{% endwith %}{% endwith %}
+        {% include "ui/field.html" with widget_template="portal/widgets/supply_request_list.html" widget_key="f0"  width="wide" %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="supply_request_list-quantity-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" min="1"  width="regular" %}{% endwith %}{% endwith %}
 
-        {% include "ui/field.html" with widget_template="portal/widgets/supply_request_list.html" widget_key="f1" span="8" tablet_span="12" %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="supply_request_list-quantity-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" min="1" span="4" tablet_span="12" %}{% endwith %}{% endwith %}
+        {% include "ui/field.html" with widget_template="portal/widgets/supply_request_list.html" widget_key="f1"  width="wide" %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="supply_request_list-quantity-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" min="1"  width="regular" %}{% endwith %}{% endwith %}
 
-        {% include "ui/field.html" with widget_template="portal/widgets/supply_request_list.html" widget_key="f2" span="8" tablet_span="12" %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="supply_request_list-quantity-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" min="1" span="4" tablet_span="12" %}{% endwith %}{% endwith %}
+        {% include "ui/field.html" with widget_template="portal/widgets/supply_request_list.html" widget_key="f2"  width="wide" %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="supply_request_list-quantity-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" min="1"  width="regular" %}{% endwith %}{% endwith %}
 
         <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Gửi đề nghị</button></div>
 

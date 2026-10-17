@@ -8,7 +8,7 @@
 <div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Tìm nhân viên" role="search">
 <div class="ui-query-fields">
-{% include "ui/field.html" with id="hr-employee-list-q" name="q" label="Tìm kiếm" value=q %}
+{% include "ui/field.html" with id="hr-employee-list-q" name="q" label="Tìm kiếm" value=q  width="regular" %}
 </div>
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"q" %}
 </form>

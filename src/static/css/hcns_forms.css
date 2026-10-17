@@ -1,4 +1,5 @@
 .hcns-heading { display:flex; justify-content:space-between; gap:1rem; align-items:center; margin-bottom:1.25rem; }
+.hcns-export-summary { overflow-wrap:anywhere; }
 .hcns-heading h1 { font-size:1.5rem; font-weight:600; color:var(--ui-text); margin:.4rem 0; }
 .hcns-heading p,.hcns-heading a { font-size:.875rem; color:var(--ui-text-muted); }
 .hcns-notice { background:var(--ui-info-bg); border:1px solid var(--ui-border); border-radius:8px; padding:.85rem 1rem; font-size:.875rem; margin:1rem 0; line-height:1.6; }

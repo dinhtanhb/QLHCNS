@@ -65,4 +65,8 @@
 @media (max-width: 380px) { .report-headlines { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .report-button { transition: none; } }
 .report-shell :is(.headline-value, .metric-value) { width: 100%; text-align: center; font-variant-numeric: tabular-nums; }
+@media screen {
+ .report-shell .ui-card { padding:var(--ui-space-5); box-shadow:none; }
+ @media(max-width:767px) { .report-shell .ui-card { padding:var(--ui-space-4); } }
+}
 }

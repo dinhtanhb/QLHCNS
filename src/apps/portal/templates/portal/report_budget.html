@@ -8,7 +8,7 @@
   <div class="ui-query-card no-print">
     <form method="get" class="ui-query-bar" aria-label="Lọc năm ngân sách">
       <div class="ui-query-fields">
-        {% include "ui/field.html" with id="report-budget-year" name="year" label="Năm" options_template="ui/query_options/report_budget-year.html" %}
+        {% include "ui/field.html" with id="report-budget-year" name="year" label="Năm" options_template="ui/query_options/report_budget-year.html"  width="regular" %}
       </div>
       {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"year" %}
     </form>

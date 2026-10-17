@@ -11,15 +11,15 @@
 {% if can_access_outgoing_document %}
 <div class="no-print ui-card">
     <h2 class="ui-card-title">Ghi nhận công văn đi mới</h2>
-    <form method="post" action="{% url 'portal:office_outgoing_create' %}" enctype="multipart/form-data" class="ui-form-stack" data-ui-form><div class="ui-form-grid">
+    <form method="post" action="{% url 'portal:office_outgoing_create' %}" enctype="multipart/form-data" class="ui-form-stack" data-ui-form><div class="ui-form-grid ui-form-grid--grouped">
 {% include "ui/error_summary.html" %}
         {% csrf_token %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_outgoing_list-outgoing_no-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="outgoing_no" label="Số công văn đi" type="text" required=True  span="3" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_outgoing_list-outgoing_date-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="outgoing_date" label="Ngày gửi" type="date" required=True  span="3" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_outgoing_list-recipient-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="recipient" label="Nơi nhận" type="text" required=True  span="3" %}{% endwith %}{% endwith %}
-        {% include "ui/field.html" with widget_template="portal/widgets/office_outgoing_list.html" widget_key="f0"  span="3" %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_outgoing_list-subject-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="subject" label="Trích yếu / Nội dung" type="text" required=True  span="12" %}{% endwith %}{% endwith %}
-        {% include "ui/field.html" with widget_template="portal/widgets/office_outgoing_list.html" widget_key="f1"  span="12" %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_outgoing_list-outgoing_no-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="outgoing_no" label="Số công văn đi" type="text" required=True  width="regular" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_outgoing_list-outgoing_date-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="outgoing_date" label="Ngày gửi" type="date" required=True  width="regular" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_outgoing_list-recipient-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="recipient" label="Nơi nhận" type="text" required=True  width="regular" %}{% endwith %}{% endwith %}
+        {% include "ui/field.html" with widget_template="portal/widgets/office_outgoing_list.html" widget_key="f0"  width="regular" %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="office_outgoing_list-subject-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="subject" label="Trích yếu / Nội dung" type="text" required=True  width="full" %}{% endwith %}{% endwith %}
+        {% include "ui/field.html" with widget_template="portal/widgets/office_outgoing_list.html" widget_key="f1"  width="full" %}
         <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Ghi nhận công văn đi</button></div>
 
 </div></form>

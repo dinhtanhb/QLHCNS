@@ -18,9 +18,9 @@
   <div class="ui-query-card no-print">
     <form method="get" class="ui-query-bar" aria-label="Lọc lịch hoạt động">
       <div class="ui-query-fields">
-        {% include "ui/field.html" with id="calendar-month" name="month" label="Tháng" type="month" value=month size="compact" %}
+        {% include "ui/field.html" with id="calendar-month" name="month" label="Tháng" type="month" value=month size="compact"  width="regular" %}
         {% if is_overview %}
-          {% include "ui/field.html" with id="calendar-cbda" name="cbda" label="CBDA phụ trách" options_template="ui/query_options/calendar-cbda.html" size="narrow" %}
+          {% include "ui/field.html" with id="calendar-cbda" name="cbda" label="CBDA phụ trách" options_template="ui/query_options/calendar-cbda.html" size="narrow"  width="regular" %}
         {% endif %}
       </div>
       {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"month,cbda" %}

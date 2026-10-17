@@ -4,35 +4,35 @@
 {% block administration_content %}
 <div class="ui-card">
     {% include "ui/page_header.html" with title="Ghi nhận công văn mới" description="Tra cứu và xử lý thông tin trong phạm vi được cấp quyền." %}
-    <form method="post" enctype="multipart/form-data" class="ui-form-stack ui-admin-form" data-ui-form><fieldset class="ui-form-section"><legend>Thông tin công văn</legend><div class="ui-form-grid">
+    <form method="post" enctype="multipart/form-data" class="ui-form-stack ui-admin-form" data-ui-form><fieldset class="ui-form-section"><legend>Thông tin công văn</legend><div class="ui-form-grid ui-form-grid--long">
 {% include "ui/error_summary.html" %}
         {% csrf_token %}
 
-            {% include "ui/field.html" with widget_template="portal/widgets/dispatch_create.html" widget_key="f0"  span="4" %}
+            {% include "ui/field.html" with widget_template="portal/widgets/dispatch_create.html" widget_key="f0"  width="regular" %}
 
 
-            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-dispatch_no-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="dispatch_no" label="Số công văn" type="text" required=True  span="4" %}{% endwith %}{% endwith %}
-            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-original_doc_no-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="original_doc_no" label="Số hiệu gốc (nếu là CV đến)" type="text" span="4" tablet_span="12" %}{% endwith %}{% endwith %}
+            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-dispatch_no-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="dispatch_no" label="Số công văn" type="text" required=True  width="regular" %}{% endwith %}{% endwith %}
+            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-original_doc_no-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="original_doc_no" label="Số hiệu gốc (nếu là CV đến)" type="text"  width="regular" %}{% endwith %}{% endwith %}
 
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-title-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="title" label="Trích yếu nội dung" type="text" required=True span="12" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-issuing_organization-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="issuing_organization" label="Cơ quan / Đơn vị ban hành" type="text" required=True span="6" tablet_span="12" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-issue_date-5-"|add:row_number %}{% include "ui/field.html" with id=field_id name="issue_date" label="Ngày ban hành" type="date" required=True span="3" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-received_or_sent_date-6-"|add:row_number %}{% include "ui/field.html" with id=field_id name="received_or_sent_date" label="Ngày đến / Ngày gửi" type="date" required=True span="3" %}{% endwith %}{% endwith %}
-
-
-            </div></fieldset><fieldset class="ui-form-section"><legend>Phân loại và xử lý</legend><div class="ui-form-grid">
-{% include "ui/field.html" with widget_template="portal/widgets/dispatch_create.html" widget_key="f1"  span="4" %}
-            {% include "ui/field.html" with widget_template="portal/widgets/dispatch_create.html" widget_key="f2"  span="4" %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-title-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="title" label="Trích yếu nội dung" type="text" required=True  width="full" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-issuing_organization-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="issuing_organization" label="Cơ quan / Đơn vị ban hành" type="text" required=True  width="wide" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-issue_date-5-"|add:row_number %}{% include "ui/field.html" with id=field_id name="issue_date" label="Ngày ban hành" type="date" required=True  width="regular" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-received_or_sent_date-6-"|add:row_number %}{% include "ui/field.html" with id=field_id name="received_or_sent_date" label="Ngày đến / Ngày gửi" type="date" required=True  width="regular" %}{% endwith %}{% endwith %}
 
 
-            {% include "ui/field.html" with widget_template="portal/widgets/dispatch_create.html" widget_key="f3"  span="4" %}
-            {% include "ui/field.html" with widget_template="portal/widgets/dispatch_create.html" widget_key="f4"  span="4" %}
+            </div></fieldset><fieldset class="ui-form-section"><legend>Phân loại và xử lý</legend><div class="ui-form-grid ui-form-grid--long">
+{% include "ui/field.html" with widget_template="portal/widgets/dispatch_create.html" widget_key="f1"  width="regular" %}
+            {% include "ui/field.html" with widget_template="portal/widgets/dispatch_create.html" widget_key="f2"  width="regular" %}
 
 
-            {% include "ui/field.html" with widget_template="portal/widgets/dispatch_create.html" widget_key="f5"  span="4" %}
-            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-due_date-7-"|add:row_number %}{% include "ui/field.html" with id=field_id name="due_date" label="Hạn xử lý" type="date"  span="4" %}{% endwith %}{% endwith %}
+            {% include "ui/field.html" with widget_template="portal/widgets/dispatch_create.html" widget_key="f3"  width="regular" %}
+            {% include "ui/field.html" with widget_template="portal/widgets/dispatch_create.html" widget_key="f4"  width="regular" %}
 
-        {% include "ui/field.html" with widget_template="portal/widgets/dispatch_create.html" widget_key="f6"  span="12" %}
+
+            {% include "ui/field.html" with widget_template="portal/widgets/dispatch_create.html" widget_key="f5"  width="regular" %}
+            {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="dispatch_create-due_date-7-"|add:row_number %}{% include "ui/field.html" with id=field_id name="due_date" label="Hạn xử lý" type="date"  width="regular" %}{% endwith %}{% endwith %}
+
+        {% include "ui/field.html" with widget_template="portal/widgets/dispatch_create.html" widget_key="f6"  width="full" %}
 
 
 </div></fieldset><div class="ui-admin-inline ui-form-actions">

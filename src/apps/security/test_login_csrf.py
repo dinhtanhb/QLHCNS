@@ -22,7 +22,8 @@ class LoginCsrfTests(TestCase):
     def test_login_loads_scoped_sync_and_still_has_server_token(self):
         response = self.client.get(self.url)
         self.assertContains(response, 'data-login-csrf')
-        self.assertContains(response, 'js/login_csrf.js?v=20261013-1')
+        from apps.common.asset_version import get_asset_hash
+        self.assertContains(response, 'js/login_csrf.js?v='+get_asset_hash('js/login_csrf.js'))
         self.assertContains(response, 'name="csrfmiddlewaretoken"')
         self.assertIn("no-store", response.headers["Cache-Control"])
 

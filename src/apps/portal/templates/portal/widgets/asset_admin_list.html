@@ -1,6 +1,6 @@
 {% load ui_components l10n %}
 {% if widget_key == "f0" %}
 <label for="asset_admin_list-asset_type-12-{{ forloop.counter|default:'0' }}">Loại tài sản</label><select name="asset_type" required  id="asset_admin_list-asset_type-12-{{ forloop.counter|default:'0' }}">
-            {% for t in asset_types %}<option value="{{ t.id }}">{{ t.get_asset_group_display|ui_number }} — {{ t.asset_type_name|ui_number }}</option>{% endfor %}
+            {% for t in asset_types %}<option value="{{ t.id }}"{% if submitted.asset_type == t.id|stringformat:"s" %} selected{% endif %}>{{ t.get_asset_group_display|ui_number }} — {{ t.asset_type_name|ui_number }}</option>{% endfor %}
         </select>
 {% endif %}

@@ -12,37 +12,37 @@
   {% if form.non_field_errors %}<div class="ui-error-summary">{{ form.non_field_errors|ui_number }}</div>{% endif %}
   <fieldset class="ui-form-section">
     <legend>Thông tin hoạt động</legend>
-    <div class="ui-form-grid">
+    <div class="ui-form-grid ui-form-grid--long">
       {% for field in form %}
-        {% if field.name == "activity_code" %}{% include "ui/field.html" with field=field span="6" %}
-        {% elif field.name == "activity_name" %}{% include "ui/field.html" with field=field span="6" %}
-        {% elif field.name == "project" %}{% include "ui/field.html" with field=field span="6" %}
-        {% elif field.name == "location" %}{% include "ui/field.html" with field=field span="6" %}
-        {% elif field.name == "participants" %}{% include "ui/field.html" with field=field span="12" %}
-        {% elif field.name == "status" %}{% include "ui/field.html" with field=field span="6" %}
+        {% if field.name == "activity_code" %}{% include "ui/field.html" with field=field  width="wide" %}
+        {% elif field.name == "activity_name" %}{% include "ui/field.html" with field=field  width="wide" %}
+        {% elif field.name == "project" %}{% include "ui/field.html" with field=field  width="wide" %}
+        {% elif field.name == "location" %}{% include "ui/field.html" with field=field  width="wide" %}
+        {% elif field.name == "participants" %}{% include "ui/field.html" with field=field  width="full" %}
+        {% elif field.name == "status" %}{% include "ui/field.html" with field=field  width="wide" %}
         {% endif %}
       {% endfor %}
     </div>
   </fieldset>
   <fieldset class="ui-form-section">
     <legend>Mục đích và kết quả</legend>
-    <div class="ui-form-grid">
+    <div class="ui-form-grid ui-form-grid--long">
       {% for field in form %}
-        {% if field.name == "purpose" %}{% include "ui/field.html" with field=field span="12" %}
-        {% elif field.name == "expected_output" %}{% include "ui/field.html" with field=field span="12" %}
+        {% if field.name == "purpose" %}{% include "ui/field.html" with field=field  width="full" %}
+        {% elif field.name == "expected_output" %}{% include "ui/field.html" with field=field  width="full" %}
         {% endif %}
       {% endfor %}
     </div>
   </fieldset>
   <fieldset class="ui-form-section">
     <legend>Lịch và người phụ trách</legend>
-    <div class="ui-form-grid">
+    <div class="ui-form-grid ui-form-grid--long">
       {% for field in form %}
-        {% if field.name == "start_date" %}{% include "ui/field.html" with field=field span="6" %}
-        {% elif field.name == "end_date" %}{% include "ui/field.html" with field=field span="6" %}
-        {% elif field.name == "lead_cbda" %}{% include "ui/field.html" with field=field span="6" %}
-        {% elif field.name == "coordinator" %}{% include "ui/field.html" with field=field span="6" %}
-        {% elif field.name == "outgoing_document" %}{% include "ui/field.html" with field=field span="12" %}
+        {% if field.name == "start_date" %}{% include "ui/field.html" with field=field  width="wide" %}
+        {% elif field.name == "end_date" %}{% include "ui/field.html" with field=field  width="wide" %}
+        {% elif field.name == "lead_cbda" %}{% include "ui/field.html" with field=field  width="wide" %}
+        {% elif field.name == "coordinator" %}{% include "ui/field.html" with field=field  width="wide" %}
+        {% elif field.name == "outgoing_document" %}{% include "ui/field.html" with field=field  width="full" %}
         {% endif %}
       {% endfor %}
     </div>

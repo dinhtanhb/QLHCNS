@@ -48,10 +48,14 @@ class AnnualBudgetAdmin(BaseAuditAdmin):
 
 @admin.register(Event)
 class EventAdmin(BaseAuditAdmin):
-    list_display = ("title", "event_type", "department", "start_time", "end_time")
-    list_filter = ("event_type", "department")
+    list_display = ("title", "event_type", "attendance_mode_label", "department", "start_time", "end_time")
+    list_filter = ("event_type", "attendance_mode", "department")
     view_roles = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER", "DEPT_MANAGER", "DIRECTOR")
     edit_roles = ("SUPER_ADMIN", "HR_MANAGER", "DEPT_MANAGER")
+
+    @admin.display(description="Hình thức", ordering="attendance_mode")
+    def attendance_mode_label(self, obj):
+        return obj.get_attendance_mode_display() or "Chưa xác định"
 
     def scope_queryset(self, request, qs):
         role_code = self._role_code(request)

@@ -131,6 +131,11 @@ class Event(BaseAuditModel):
 
     title = models.CharField("Tiêu đề", max_length=300, db_column="Title")
     event_type = models.CharField("Loại sự kiện", max_length=30, choices=EVENT_TYPE_CHOICES, default="Meeting", db_column="EventType")
+    ATTENDANCE_MODE_CHOICES = [("Online", "Online"), ("Offline", "Offline")]
+    attendance_mode = models.CharField(
+        "Hình thức", max_length=10, choices=ATTENDANCE_MODE_CHOICES,
+        default="Offline", null=True, blank=True, db_column="AttendanceMode",
+    )
     department = models.ForeignKey(
         "organization.Department", verbose_name="Phòng ban", null=True, blank=True,
         on_delete=models.SET_NULL, db_column="DepartmentID", related_name="events",

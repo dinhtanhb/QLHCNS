@@ -11,8 +11,8 @@
 <div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Tìm và lọc quyết định" role="search">
 <div class="ui-query-fields">
-{% include "ui/field.html" with id="personnel-decision-list-q" name="q" label="Tìm kiếm" value=query %}
-{% if can_manage_decisions %}{% include "ui/field.html" with id="personnel-decision-list-status" name="status" label="Trạng thái" options_template="ui/query_options/personnel_decision_list-status.html" %}{% endif %}
+{% include "ui/field.html" with id="personnel-decision-list-q" name="q" label="Tìm kiếm" value=query  width="regular" %}
+{% if can_manage_decisions %}{% include "ui/field.html" with id="personnel-decision-list-status" name="status" label="Trạng thái" options_template="ui/query_options/personnel_decision_list-status.html"  width="regular" %}{% endif %}
 </div>
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"q,status" %}
 </form>

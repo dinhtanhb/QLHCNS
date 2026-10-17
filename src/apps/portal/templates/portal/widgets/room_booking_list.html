@@ -1,6 +1,6 @@
 {% load ui_components l10n %}
 {% if widget_key == "f0" %}
 <label for="room_booking_list-room-4-{{ forloop.counter|default:'0' }}">Phòng họp</label><select name="room" required  id="room_booking_list-room-4-{{ forloop.counter|default:'0' }}">
-            {% for r in rooms %}<option value="{{ r.id }}">{{ r.room_name|ui_number }} ({{ r.capacity|ui_number }} người)</option>{% endfor %}
+            {% for r in rooms %}<option value="{{ r.id }}"{% if submitted.room == r.id|stringformat:"s" %} selected{% endif %}>{{ r.room_name|ui_number }} ({{ r.capacity|ui_number }} người)</option>{% endfor %}
         </select>
 {% endif %}

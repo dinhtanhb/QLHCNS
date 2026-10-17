@@ -35,9 +35,9 @@
 <div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Tìm và lọc công văn" role="search">
 <div class="ui-query-fields">
-{% include "ui/field.html" with id="dispatch-list-q" name="q" label="Tìm kiếm" value=search_query %}
-{% include "ui/field.html" with id="dispatch-list-type" name="type" label="Loại văn bản" options_template="ui/query_options/dispatch_list-type.html" %}
-{% include "ui/field.html" with id="dispatch-list-status" name="status" label="Trạng thái" options_template="ui/query_options/dispatch_list-status.html" %}
+{% include "ui/field.html" with id="dispatch-list-q" name="q" label="Tìm kiếm" value=search_query  width="regular" %}
+{% include "ui/field.html" with id="dispatch-list-type" name="type" label="Loại văn bản" options_template="ui/query_options/dispatch_list-type.html"  width="regular" %}
+{% include "ui/field.html" with id="dispatch-list-status" name="status" label="Trạng thái" options_template="ui/query_options/dispatch_list-status.html"  width="regular" %}
 </div>
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"q,type,status" %}
 </form>

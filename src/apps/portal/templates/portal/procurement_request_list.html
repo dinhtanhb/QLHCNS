@@ -24,10 +24,10 @@
                     <button type="button" id="add-procurement-item" class="ui-button ui-button--secondary">Thêm dòng</button>
                 </div>
                 <div id="procurement-items" class="ui-admin-stack">
-                    <div class="ui-form-grid">
-                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-item_name-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="item_name" label="Tên hàng hóa/dịch vụ" type="text" maxlength="300" required=True  span="6" %}{% endwith %}{% endwith %}
-                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-quantity-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" value="1" min="1" required=True  span="2" %}{% endwith %}{% endwith %}
-                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-estimated_cost-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="estimated_cost" label="Đơn giá dự kiến" type="number" min="0" step="0.01"  span="4" tablet_span="12" %}{% endwith %}{% endwith %}
+                    <div class="ui-form-grid ui-form-grid--inline">
+                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-item_name-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="item_name" label="Tên hàng hóa/dịch vụ" type="text" maxlength="300" required=True  width="regular" %}{% endwith %}{% endwith %}
+                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-quantity-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="quantity" label="Số lượng" type="number" value="1" min="1" required=True  width="regular" %}{% endwith %}{% endwith %}
+                        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="procurement_request_list-estimated_cost-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="estimated_cost" label="Đơn giá dự kiến" type="number" min="0" step="0.01"  width="regular" %}{% endwith %}{% endwith %}
                     </div>
                 </div>
             </div>

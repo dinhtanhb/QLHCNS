@@ -812,6 +812,74 @@
     }
 }
 
+/* Named screen patterns: short rows, grouped/long forms and two-row events.
+   Fields retain DOM order; only explicit full-width groups break the flow. */
+@media screen {
+    .ui-form-grid > .ui-field--regular { grid-column: span 1; }
+    .ui-form-grid > .ui-field--wide { grid-column: span 2; }
+    .ui-form-grid > .ui-field--full { grid-column: 1 / -1; }
+    .ui-form-grid--inline {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: var(--ui-space-4);
+    }
+    .ui-form-grid--inline > .ui-field {
+        flex: 1 1 12rem;
+        min-width: 0;
+    }
+    .ui-form-grid--inline > .ui-field:has([name="purpose"]) { flex-grow: 2; }
+    .ui-form-grid--inline > .ui-field:has(.ui-select-control) { flex-basis:16rem; }
+    .ui-form-stack .ui-form-grid--inline > .ui-form-actions {
+        flex: 0 0 auto;
+        align-self: start;
+        margin: calc(var(--ui-font-size-small) * var(--ui-line-height-body) + var(--ui-space-2)) 0 0;
+        width: auto;
+    }
+    .ui-form-grid--inline > .ui-error-summary { flex-basis: 100%; }
+    .ui-form-grid--inline > .ui-field--full { flex-basis: 100%; }
+    .ui-form-grid > .ui-field { margin: 0; }
+    .ui-form-grid .ui-field :is(input,select,textarea) { margin: 0; }
+    .ui-form-grid--grouped, .ui-form-grid--long { display:grid; align-items:start; }
+    :is(.ui-form-grid--grouped,.ui-form-grid--long) > fieldset { grid-column:1 / -1; }
+    .ui-form-grid--event { display:flex; flex-wrap:wrap; align-items:flex-start; }
+    .ui-form-grid--event > .ui-field { flex:1 1 14rem; }
+    .ui-form-grid--event > .ui-field--wide { flex:2 1 24rem; }
+    .ui-form-grid--event > .ui-field--full { flex-basis:100%; }
+    .ui-form-grid--event > :is(.ui-form-actions,.ui-error-summary,fieldset) { flex-basis:100%; }
+    .ui-card.ui-kpi { padding: var(--ui-space-5); }
+    @media(max-width:767px) { .ui-card.ui-kpi { padding: var(--ui-space-4); } }
+}
+
+@container ui-form (min-width: 900px) {
+    .ui-form-grid--grouped, .ui-form-grid--long { grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+@container ui-form (width < 640px) {
+    .ui-form-grid > .ui-field--wide { grid-column: 1 / -1; }
+}
+@container ui-form (width < 600px) {
+    .ui-form-grid--inline > .ui-field { flex: 1 1 100%; }
+    .ui-form-stack .ui-form-grid--inline > .ui-form-actions { flex: 1 1 100%; margin-top: 0; }
+}
+@container ui-form (min-width: 1080px) {
+    .ui-form-grid--event {
+        display: grid;
+        grid-template-columns: repeat(8, minmax(0,1fr)) auto;
+    }
+    .ui-form-grid--event > :nth-child(1 of .ui-field) { grid-column: 1 / 4; }
+    .ui-form-grid--event > :nth-child(2 of .ui-field) { grid-column: 4 / 6; }
+    .ui-form-grid--event > :nth-child(3 of .ui-field) { grid-column: 6 / 8; }
+    .ui-form-grid--event > :nth-child(4 of .ui-field) { grid-column: 8 / -1; }
+    .ui-form-grid--event > :nth-child(5 of .ui-field) { grid-column: 1 / 3; }
+    .ui-form-grid--event > :nth-child(6 of .ui-field) { grid-column: 3 / 5; }
+    .ui-form-grid--event > :nth-child(7 of .ui-field) { grid-column: 5 / 7; }
+    .ui-form-grid--event > :nth-child(8 of .ui-field) { grid-column: 7 / 9; }
+    .ui-form-stack .ui-form-grid--event > .ui-form-actions {
+        grid-column: 9;
+        margin-top: calc(var(--ui-font-size-small) * var(--ui-line-height-body) + var(--ui-space-2));
+    }
+}
+
 /* Các trường trong form lấp đầy ô hoàn toàn (không có max-width co cụm) */
 .ui-form-grid .ui-field :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]) {
     width: 100%;

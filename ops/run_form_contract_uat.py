@@ -11,7 +11,7 @@ class FormContract(HTMLParser):
     """Retain DOM submission order, defaults and validation; omit presentation."""
     ignored = {'class','id','style','placeholder','lang','rows','cols','tabindex',
                'aria-describedby','aria-labelledby','aria-label','aria-live','aria-invalid',
-               'data-ui-form','data-ui-date'}
+               'data-ui-form','data-ui-date','list'}
 
     def __init__(self, html):
         super().__init__()
@@ -19,6 +19,7 @@ class FormContract(HTMLParser):
         self.form=None
         self.field=None
         self.option=None
+        self.in_datalist=False
         self.feed(html)
 
     def attrs(self, pairs):
@@ -27,6 +28,8 @@ class FormContract(HTMLParser):
         return attrs
 
     def handle_starttag(self, tag, pairs):
+        if tag=='datalist':self.in_datalist=True;return
+        if self.in_datalist:return
         attrs=self.attrs(pairs)
         if tag=='form':
             self.form={'attrs':attrs,'fields':[]};self.forms.append(self.form)
@@ -41,6 +44,8 @@ class FormContract(HTMLParser):
         elif self.field is not None and self.field['tag']=='textarea':self.field['text']=self.field.get('text','')+data
 
     def handle_endtag(self,tag):
+        if tag=='datalist':self.in_datalist=False;return
+        if self.in_datalist:return
         if tag=='option' and self.option is not None:self.option['text']=self.option['text'].strip();self.option=None
         if tag in ('select','textarea','button'):self.field=None
         if tag=='form':self.form=None;self.field=None
@@ -50,6 +55,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--directory',type=Path,required=True);p.add_argument('--source-root',type=Path)
     p.add_argument('--phase',choices=('before','after'),required=True);p.add_argument('--only',nargs='+')
+    p.add_argument('--allow-event-mode',action='store_true',help='Allow only the approved attendance_mode select addition on event_list.')
     args=p.parse_args();root=(args.source_root or Path(__file__).resolve().parents[1]).resolve();folder=args.directory.resolve()
     if root==folder or root in folder.parents:p.error('External synthetic runtime required')
     configure(root,folder)
@@ -78,8 +84,17 @@ def main():
             if baseline:
                 old=baseline['cases'].get(key)
                 if old is None:report['failures'].append(key+' missing baseline')
-                elif old['status']!=case['status'] or old.get('forms')!=case.get('forms'):report['failures'].append(key+' HTTP/form contract changed')
-                elif case['selects']>old['selects']:report['failures'].append(key+' SELECT count increased')
+                else:
+                    import copy
+                    if old['status']!=case['status']:report['failures'].append(key+' HTTP status changed')
+                    if case['selects']>old['selects']:report['failures'].append(key+' SELECT count increased')
+                    normalized=copy.deepcopy(case.get('forms'))
+                    if args.allow_event_mode and route['name']=='portal:event_list':
+                        modes=[f for form in normalized or [] for f in form['fields'] if f['attrs'].get('name')=='attendance_mode']
+                        allowed=len(modes)==1 and modes[0]['tag']=='select' and modes[0]['attrs']=={'name':'attendance_mode'} and modes[0].get('options')==[{'attrs':{'value':'Online'},'text':'Online'},{'attrs':{'value':'Offline','selected':None},'text':'Offline'}]
+                        if allowed:
+                            for form in normalized:form['fields']=[f for f in form['fields'] if f['attrs'].get('name')!='attendance_mode']
+                    if normalized!=old.get('forms'):report['failures'].append(key+' form contract changed')
     (folder/('form-contract-'+args.phase+'.json')).write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
     print(json.dumps({'cases':len(report['cases']),'failures':report['failures']}))
     return bool(report['failures'])

@@ -24,11 +24,11 @@
             <p>{{ i.interview_date|date:"d/m/Y H:i" }} — {{ i.interview_type|ui_number }} — PV: {{ i.interviewer|ui_number }}</p>
             <p class="ui-recruitment-text">Kết quả: {% ui_badge "recruitment.interview:result" i.result i.get_result_display %} {% if i.comments %}— {{ i.comments|ui_number }}{% endif %}</p>
             {% if can_manage_hr and i.result == "Pending" %}
-            <form data-ui-form method="post" action="{% url 'portal:hr_interview_result' i.pk %}" class="ui-form-stack ui-recruitment-form"><div class="ui-form-grid">
+            <form data-ui-form method="post" action="{% url 'portal:hr_interview_result' i.pk %}" class="ui-form-stack ui-recruitment-form"><div class="ui-form-grid ui-form-grid--inline">
 {% include "ui/error_summary.html" %}
                 {% csrf_token %}
-                {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f0"  span="6" %}
-                {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f1"  span="6" %}
+                {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f0"  width="regular" %}
+                {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f1"  width="regular" %}
                 <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Lưu</button></div>
 
 </div></form>
@@ -37,12 +37,12 @@
         {% empty %}<p class="ui-recruitment-text">Chưa có lịch phỏng vấn.</p>{% endfor %}
 
         {% if can_manage_hr %}
-        <form data-ui-form method="post" action="{% url 'portal:hr_interview_create' candidate.pk %}" class="ui-form-stack ui-recruitment-form"><div class="ui-form-grid">
+        <form data-ui-form method="post" action="{% url 'portal:hr_interview_create' candidate.pk %}" class="ui-form-stack ui-recruitment-form"><div class="ui-form-grid ui-form-grid--inline">
 {% include "ui/error_summary.html" %}
             {% csrf_token %}
-            {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f2"  span="4" %}
-            {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f3"  span="4" %}
-            {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f4"  span="4" tablet_span="12" %}
+            {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f2"  width="regular" %}
+            {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f3"  width="regular" %}
+            {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f4"  width="regular" %}
             <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">+ Lên lịch phỏng vấn</button></div>
 
 </div></form>
@@ -56,10 +56,10 @@
             <p>Ngày gửi: {{ o.offer_date|ui_date }} — Lương đề nghị: {{ o.salary_offer|floatformat:"0g" }} đ — Dự kiến vào làm: {{ o.expected_join_date|ui_date }}</p>
             <p class="ui-recruitment-text">Trạng thái: {% ui_badge "recruitment.offer:status" o.status o.get_status_display %}</p>
             {% if can_manage_hr and o.status == "Sent" %}
-            <form data-ui-form method="post" action="{% url 'portal:hr_offer_update_status' o.pk %}" class="ui-form-stack ui-recruitment-form"><div class="ui-form-grid">
+            <form data-ui-form method="post" action="{% url 'portal:hr_offer_update_status' o.pk %}" class="ui-form-stack ui-recruitment-form"><div class="ui-form-grid ui-form-grid--inline">
 {% include "ui/error_summary.html" %}
                 {% csrf_token %}
-                {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f5"  span="12" %}
+                {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f5"  width="full" %}
                 <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Cập nhật</button></div>
 
 </div></form>
@@ -68,12 +68,12 @@
         {% empty %}<p class="ui-recruitment-text">Chưa có offer.</p>{% endfor %}
 
         {% if can_manage_hr %}
-        <form data-ui-form method="post" action="{% url 'portal:hr_offer_create' candidate.pk %}" class="ui-form-stack ui-recruitment-form"><div class="ui-form-grid">
+        <form data-ui-form method="post" action="{% url 'portal:hr_offer_create' candidate.pk %}" class="ui-form-stack ui-recruitment-form"><div class="ui-form-grid ui-form-grid--inline">
 {% include "ui/error_summary.html" %}
             {% csrf_token %}
-            {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f6"  span="4" %}
-            {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f7"  span="4" %}
-            {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f8"  span="4" tablet_span="12" %}
+            {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f6"  width="regular" %}
+            {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f7"  width="regular" %}
+            {% include "ui/field.html" with widget_template="portal/widgets/hr_candidate_detail_direct.html" widget_key="f8"  width="regular" %}
             <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">+ Tạo Offer</button></div>
 
 </div></form>

@@ -7,7 +7,7 @@
 <h2 class="ui-card-title">Chỉ tiêu KPI</h2>
 <div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Lọc kỳ KPI">
-<div class="ui-query-fields">{% include "ui/field.html" with id="kpi-score-list-period" name="period" label="Kỳ KPI" options_template="ui/query_options/kpi_score_list-period.html" %}</div>{% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"period" %}</form>
+<div class="ui-query-fields">{% include "ui/field.html" with id="kpi-score-list-period" name="period" label="Kỳ KPI" options_template="ui/query_options/kpi_score_list-period.html"  width="regular" %}</div>{% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"period" %}</form>
 <p class="ui-results-count" aria-live="polite">Có {{ results|length|ui_number }} chỉ tiêu phù hợp.</p>
 </div>
 <div class="ui-scroll" tabindex="0" role="region" aria-label="Bảng chấm điểm KPI">
@@ -32,7 +32,7 @@
 <td class="ui-number">{{ r.actual|default_if_none:"—"|ui_number }}</td>
 <td class="ui-number">{{ r.achievement|ui_number }}%</td>
 <td>
-<form method="post" action="{% url 'portal:kpi_score_update' r.pk %}" class="ui-planning-form-row" data-ui-form>{% csrf_token %}{% include "ui/field.html" with widget_template="portal/widgets/kpi_score_list.html" widget_key="f0" span="3" %}
+<form method="post" action="{% url 'portal:kpi_score_update' r.pk %}" class="ui-planning-form-row" data-ui-form>{% csrf_token %}{% include "ui/field.html" with widget_template="portal/widgets/kpi_score_list.html" widget_key="f0"  width="regular" %}
 <button type="submit" class="ui-button ui-button--primary">Lưu</button>
 </form>
 </td>

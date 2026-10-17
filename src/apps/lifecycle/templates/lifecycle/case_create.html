@@ -4,12 +4,12 @@
 {% block hr_content %}
 <div class="ui-hr-stack">
   <div class="ui-card"><h1 class="ui-page-title">Mở checklist onboarding/offboarding</h1><p class="ui-hr-text">Thao tác này tạo bản chụp đầu việc theo mẫu. Lưu hồ sơ nhân viên không tự mở checklist.</p></div>
-  <form method="post" class="ui-form-stack" data-ui-form><div class="ui-form-grid">
+  <form method="post" class="ui-form-stack" data-ui-form><div class="ui-form-grid ui-form-grid--inline">
 {% csrf_token %}{% include "ui/error_summary.html" %}
-    {% include "ui/field.html" with widget_template="lifecycle/widgets/case_create.html" widget_key="f0"  span="3" %}
-    {% include "ui/field.html" with widget_template="lifecycle/widgets/case_create.html" widget_key="f1"  span="3" %}
-    {% include "ui/field.html" with widget_template="lifecycle/widgets/case_create.html" widget_key="f2"  span="3" %}
-    {% include "ui/field.html" with widget_template="lifecycle/widgets/case_create.html" widget_key="f3"  span="3" %}
+    {% include "ui/field.html" with widget_template="lifecycle/widgets/case_create.html" widget_key="f0"  width="regular" %}
+    {% include "ui/field.html" with widget_template="lifecycle/widgets/case_create.html" widget_key="f1"  width="regular" %}
+    {% include "ui/field.html" with widget_template="lifecycle/widgets/case_create.html" widget_key="f2"  width="regular" %}
+    {% include "ui/field.html" with widget_template="lifecycle/widgets/case_create.html" widget_key="f3"  width="regular" %}
     <div class="ui-form-actions"><button class="ui-button ui-button--primary">Tạo checklist</button></div>
 
 </div></form>
@@ -21,9 +21,10 @@
   const date = document.getElementById('effective_date');
   function sync() {
     for (const option of template.options) {
-      if (option.value) option.hidden = option.dataset.type !== type.value;
+      if (option.value) { option.dataset.uiExcluded = String(option.dataset.type !== type.value); option.hidden = option.dataset.uiExcluded === 'true'; }
     }
     if (template.selectedOptions[0]?.dataset.type !== type.value) template.value = '';
+    template.dispatchEvent(new Event('ui:choiceschanged'));
     date.required = type.value === 'Offboarding';
   }
   type.addEventListener('change', sync); sync();

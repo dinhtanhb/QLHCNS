@@ -13,8 +13,8 @@
 <div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Lọc kỳ báo cáo">
 <div class="ui-query-fields">
-{% include "ui/field.html" with id="report-hub-from-date" name="from_date" label="Từ ngày" type="date" value=from_date|date:'Y-m-d' %}
-{% include "ui/field.html" with id="report-hub-to-date" name="to_date" label="Đến ngày" type="date" value=to_date|date:'Y-m-d' %}
+{% include "ui/field.html" with id="report-hub-from-date" name="from_date" label="Từ ngày" type="date" value=from_date|date:'Y-m-d'  width="regular" %}
+{% include "ui/field.html" with id="report-hub-to-date" name="to_date" label="Đến ngày" type="date" value=to_date|date:'Y-m-d'  width="regular" %}
 </div>
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"from_date,to_date" %}
 </form>

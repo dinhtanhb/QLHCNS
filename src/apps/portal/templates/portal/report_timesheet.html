@@ -9,8 +9,8 @@
   <div class="ui-query-card no-print">
     <form method="get" class="ui-query-bar" aria-label="Lọc kỳ chấm công">
       <div class="ui-query-fields">
-        {% include "ui/field.html" with id="report-timesheet-month" name="month" label="Tháng" options_template="ui/query_options/report_timesheet-month.html" %}
-        {% include "ui/field.html" with id="report-timesheet-year" name="year" label="Năm" options_template="ui/query_options/report_timesheet-year.html" %}
+        {% include "ui/field.html" with id="report-timesheet-month" name="month" label="Tháng" options_template="ui/query_options/report_timesheet-month.html"  width="regular" %}
+        {% include "ui/field.html" with id="report-timesheet-year" name="year" label="Năm" options_template="ui/query_options/report_timesheet-year.html"  width="regular" %}
       </div>
       {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"month,year" %}
     </form>

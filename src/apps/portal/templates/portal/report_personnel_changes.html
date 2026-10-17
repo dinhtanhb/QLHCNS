@@ -8,8 +8,8 @@
   <div class="ui-query-card no-print">
     <form method="get" class="ui-query-bar" aria-label="Lọc kỳ biến động nhân sự">
       <div class="ui-query-fields">
-        {% include "ui/field.html" with id="report-personnel-changes-from-date" name="from_date" label="Từ ngày" type="date" value=from_date %}
-        {% include "ui/field.html" with id="report-personnel-changes-to-date" name="to_date" label="Đến ngày" type="date" value=to_date %}
+        {% include "ui/field.html" with id="report-personnel-changes-from-date" name="from_date" label="Từ ngày" type="date" value=from_date  width="regular" %}
+        {% include "ui/field.html" with id="report-personnel-changes-to-date" name="to_date" label="Đến ngày" type="date" value=to_date  width="regular" %}
       </div>
       {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"from_date,to_date" %}
     </form>

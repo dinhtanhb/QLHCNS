@@ -1,3 +1,4 @@
+from apps.common.ui_choices import remember_form, recalled_form
 from django.core.exceptions import ValidationError
 from django import forms
 from django.db import transaction
@@ -40,6 +41,7 @@ def room_booking_list(request):
     ).select_related("room", "employee").order_by("start_time")
     return render(request, "portal/room_booking_list.html", {
         "upcoming": upcoming, "rooms": MeetingRoom.objects.filter(is_active=True),
+        "submitted": recalled_form(request, "room"),
     })
 
 
@@ -69,6 +71,7 @@ def room_booking_create(request):
         messages.success(request, "Đã gửi yêu cầu đặt phòng, chờ duyệt.")
     except Exception as e:
         _friendly_error(request, e, "Không thể đặt phòng.")
+        remember_form(request, "room", ('room', 'purpose', 'start_time', 'end_time'))
     return redirect("portal:room_booking_list")
 
 
@@ -136,11 +139,14 @@ def room_booking_approve(request, pk):
 
 @login_required
 def vehicle_booking_list(request):
-    upcoming = VehicleBooking.objects.filter(
+    upcoming = list(VehicleBooking.objects.filter(
         status__in=["Pending", "Approved"], end_time__gte=timezone.now(),
-    ).select_related("vehicle", "employee").order_by("start_time")
+    ).select_related("vehicle", "employee").order_by("start_time"))
+    from apps.common.ui_choices import text_choices
     return render(request, "portal/vehicle_booking_list.html", {
         "upcoming": upcoming, "vehicles": Vehicle.objects.filter(is_active=True),
+        "submitted": recalled_form(request, "vehicle"),
+        "destination_choices": text_choices(upcoming, "destination"),
     })
 
 
@@ -170,6 +176,7 @@ def vehicle_booking_create(request):
         messages.success(request, "Đã gửi yêu cầu đặt xe, chờ duyệt.")
     except Exception as e:
         _friendly_error(request, e, "Không thể đặt xe.")
+        remember_form(request, "vehicle", ('vehicle', 'destination', 'purpose', 'start_time', 'end_time'))
     return redirect("portal:vehicle_booking_list")
 
 

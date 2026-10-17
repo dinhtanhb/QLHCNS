@@ -14,15 +14,17 @@ _ASSET_HASH_CACHE = {}
 def get_asset_hash(rel_path: str) -> str:
     """Return an 8-character SHA-1 content hash of the given static asset."""
     clean_path = rel_path.strip().lstrip("/").removeprefix("static/")
-    if clean_path in _ASSET_HASH_CACHE:
-        return _ASSET_HASH_CACHE[clean_path]
-
     full_path = Path(settings.BASE_DIR) / "static" / clean_path
+    stat = full_path.stat() if full_path.is_file() else None
+    signature = (str(full_path), stat.st_mtime_ns, stat.st_size) if stat else None
+    cached = _ASSET_HASH_CACHE.get(clean_path)
+    if cached and cached[0] == signature:
+        return cached[1]
     if full_path.is_file():
         h = hashlib.sha1(full_path.read_bytes()).hexdigest()[:8]
     else:
         h = "dynamic"
-    _ASSET_HASH_CACHE[clean_path] = h
+    _ASSET_HASH_CACHE[clean_path] = (signature, h)
     return h
 
 
@@ -32,6 +34,11 @@ def get_service_worker_cache_version() -> str:
         "css/ui_tokens.css",
         "css/components.css",
         "css/app_shell.css",
+        "css/shared_components.css",
+        "css/project_layout.css",
+        "css/report_dashboard.css",
+        "css/hcns_forms.css",
+        "js/shared_components.js",
         "js/theme.js",
         "js/app_shell.js",
     ]

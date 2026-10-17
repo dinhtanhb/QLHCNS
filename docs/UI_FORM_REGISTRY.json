@@ -1,0 +1,667 @@
+{
+  "scope": "Portal/module screen templates; paper, print and Django admin excluded from form conversion, covered separately by regression",
+  "patterns": {
+    "action": 38,
+    "long": 5,
+    "filter": 13,
+    "inline": 28,
+    "grouped": 24,
+    "event": 1
+  },
+  "forms": [
+    {
+      "template": "src/templates/base.html",
+      "form": 1,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/templates/base.html",
+      "form": 2,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/activity/templates/activity/activity_form.html",
+      "form": 1,
+      "pattern": "long",
+      "fields": 13
+    },
+    {
+      "template": "src/apps/activity/templates/activity/calendar.html",
+      "form": 1,
+      "pattern": "filter",
+      "fields": 2
+    },
+    {
+      "template": "src/apps/activity/templates/activity/dashboard.html",
+      "form": 1,
+      "pattern": "filter",
+      "fields": 2
+    },
+    {
+      "template": "src/apps/activity/templates/activity/proposal_detail.html",
+      "form": 1,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/activity/templates/activity/proposal_detail.html",
+      "form": 2,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/activity/templates/activity/proposal_detail.html",
+      "form": 3,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/activity/templates/activity/proposal_email_draft.html",
+      "form": 1,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/lifecycle/templates/lifecycle/case_create.html",
+      "form": 1,
+      "pattern": "inline",
+      "fields": 4
+    },
+    {
+      "template": "src/apps/lifecycle/templates/lifecycle/case_detail.html",
+      "form": 1,
+      "pattern": "inline",
+      "fields": 1
+    },
+    {
+      "template": "src/apps/lifecycle/templates/lifecycle/case_detail.html",
+      "form": 2,
+      "pattern": "inline",
+      "fields": 2
+    },
+    {
+      "template": "src/apps/portal/templates/portal/asset_admin_list.html",
+      "form": 1,
+      "pattern": "long",
+      "fields": 12
+    },
+    {
+      "template": "src/apps/portal/templates/portal/dashboard_people.html",
+      "form": 1,
+      "pattern": "filter",
+      "fields": 1
+    },
+    {
+      "template": "src/apps/portal/templates/portal/dispatch_create.html",
+      "form": 1,
+      "pattern": "long",
+      "fields": 14
+    },
+    {
+      "template": "src/apps/portal/templates/portal/dispatch_detail.html",
+      "form": 1,
+      "pattern": "inline",
+      "fields": 3
+    },
+    {
+      "template": "src/apps/portal/templates/portal/dispatch_list.html",
+      "form": 1,
+      "pattern": "filter",
+      "fields": 3
+    },
+    {
+      "template": "src/apps/portal/templates/portal/disposal_request_detail.html",
+      "form": 1,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/disposal_request_detail.html",
+      "form": 2,
+      "pattern": "inline",
+      "fields": 3
+    },
+    {
+      "template": "src/apps/portal/templates/portal/disposal_request_detail.html",
+      "form": 3,
+      "pattern": "inline",
+      "fields": 2
+    },
+    {
+      "template": "src/apps/portal/templates/portal/disposal_request_detail.html",
+      "form": 4,
+      "pattern": "long",
+      "fields": 9
+    },
+    {
+      "template": "src/apps/portal/templates/portal/disposal_request_detail.html",
+      "form": 5,
+      "pattern": "inline",
+      "fields": 4
+    },
+    {
+      "template": "src/apps/portal/templates/portal/disposal_request_detail.html",
+      "form": 6,
+      "pattern": "grouped",
+      "fields": 5
+    },
+    {
+      "template": "src/apps/portal/templates/portal/disposal_request_form.html",
+      "form": 1,
+      "pattern": "inline",
+      "fields": 4
+    },
+    {
+      "template": "src/apps/portal/templates/portal/document_approval_list.html",
+      "form": 1,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/document_approval_list.html",
+      "form": 2,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/event_list.html",
+      "form": 1,
+      "pattern": "event",
+      "fields": 8
+    },
+    {
+      "template": "src/apps/portal/templates/portal/finance_dependent_list.html",
+      "form": 1,
+      "pattern": "grouped",
+      "fields": 4
+    },
+    {
+      "template": "src/apps/portal/templates/portal/finance_payroll_run.html",
+      "form": 1,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/finance_payroll_run.html",
+      "form": 2,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/finance_payroll_run.html",
+      "form": 3,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/finance_payroll_run.html",
+      "form": 4,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/finance_payroll_run.html",
+      "form": 5,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/finance_period_list.html",
+      "form": 1,
+      "pattern": "grouped",
+      "fields": 2
+    },
+    {
+      "template": "src/apps/portal/templates/portal/finance_tax_config.html",
+      "form": 1,
+      "pattern": "grouped",
+      "fields": 8
+    },
+    {
+      "template": "src/apps/portal/templates/portal/finance_tax_config.html",
+      "form": 2,
+      "pattern": "inline",
+      "fields": 3
+    },
+    {
+      "template": "src/apps/portal/templates/portal/finance_tax_config.html",
+      "form": 3,
+      "pattern": "grouped",
+      "fields": 5
+    },
+    {
+      "template": "src/apps/portal/templates/portal/holiday_list.html",
+      "form": 1,
+      "pattern": "inline",
+      "fields": 3
+    },
+    {
+      "template": "src/apps/portal/templates/portal/holiday_list.html",
+      "form": 2,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/hr_candidate_detail.html",
+      "form": 1,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/hr_candidate_detail.html",
+      "form": 2,
+      "pattern": "inline",
+      "fields": 2
+    },
+    {
+      "template": "src/apps/portal/templates/portal/hr_candidate_detail.html",
+      "form": 3,
+      "pattern": "inline",
+      "fields": 3
+    },
+    {
+      "template": "src/apps/portal/templates/portal/hr_candidate_detail.html",
+      "form": 4,
+      "pattern": "inline",
+      "fields": 1
+    },
+    {
+      "template": "src/apps/portal/templates/portal/hr_candidate_detail.html",
+      "form": 5,
+      "pattern": "inline",
+      "fields": 3
+    },
+    {
+      "template": "src/apps/portal/templates/portal/hr_candidate_form.html",
+      "form": 1,
+      "pattern": "grouped",
+      "fields": 6
+    },
+    {
+      "template": "src/apps/portal/templates/portal/hr_contract_form.html",
+      "form": 1,
+      "pattern": "grouped",
+      "fields": 7
+    },
+    {
+      "template": "src/apps/portal/templates/portal/hr_employee_detail.html",
+      "form": 1,
+      "pattern": "grouped",
+      "fields": 3
+    },
+    {
+      "template": "src/apps/portal/templates/portal/hr_employee_detail.html",
+      "form": 2,
+      "pattern": "grouped",
+      "fields": 3
+    },
+    {
+      "template": "src/apps/portal/templates/portal/hr_employee_detail.html",
+      "form": 3,
+      "pattern": "grouped",
+      "fields": 4
+    },
+    {
+      "template": "src/apps/portal/templates/portal/hr_employee_detail.html",
+      "form": 4,
+      "pattern": "grouped",
+      "fields": 3
+    },
+    {
+      "template": "src/apps/portal/templates/portal/hr_employee_detail.html",
+      "form": 5,
+      "pattern": "grouped",
+      "fields": 2
+    },
+    {
+      "template": "src/apps/portal/templates/portal/hr_employee_detail.html",
+      "form": 6,
+      "pattern": "grouped",
+      "fields": 1
+    },
+    {
+      "template": "src/apps/portal/templates/portal/hr_employee_detail.html",
+      "form": 7,
+      "pattern": "grouped",
+      "fields": 3
+    },
+    {
+      "template": "src/apps/portal/templates/portal/hr_employee_form.html",
+      "form": 1,
+      "pattern": "long",
+      "fields": 20
+    },
+    {
+      "template": "src/apps/portal/templates/portal/hr_employee_list.html",
+      "form": 1,
+      "pattern": "filter",
+      "fields": 1
+    },
+    {
+      "template": "src/apps/portal/templates/portal/inventory_session_detail.html",
+      "form": 1,
+      "pattern": "inline",
+      "fields": 2
+    },
+    {
+      "template": "src/apps/portal/templates/portal/inventory_session_detail.html",
+      "form": 2,
+      "pattern": "grouped",
+      "fields": 2
+    },
+    {
+      "template": "src/apps/portal/templates/portal/inventory_session_detail.html",
+      "form": 3,
+      "pattern": "inline",
+      "fields": 1
+    },
+    {
+      "template": "src/apps/portal/templates/portal/inventory_session_list.html",
+      "form": 1,
+      "pattern": "inline",
+      "fields": 3
+    },
+    {
+      "template": "src/apps/portal/templates/portal/kpi_assign_create.html",
+      "form": 1,
+      "pattern": "inline",
+      "fields": 4
+    },
+    {
+      "template": "src/apps/portal/templates/portal/kpi_score_list.html",
+      "form": 1,
+      "pattern": "filter",
+      "fields": 1
+    },
+    {
+      "template": "src/apps/portal/templates/portal/kpi_score_list.html",
+      "form": 2,
+      "pattern": "inline",
+      "fields": 1
+    },
+    {
+      "template": "src/apps/portal/templates/portal/leave_approval_list.html",
+      "form": 1,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/leave_approval_list.html",
+      "form": 2,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/leave_create.html",
+      "form": 1,
+      "pattern": "grouped",
+      "fields": 4
+    },
+    {
+      "template": "src/apps/portal/templates/portal/notification_list.html",
+      "form": 1,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/notification_list.html",
+      "form": 2,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/notification_list.html",
+      "form": 3,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/office_incoming_list.html",
+      "form": 1,
+      "pattern": "grouped",
+      "fields": 6
+    },
+    {
+      "template": "src/apps/portal/templates/portal/office_incoming_list.html",
+      "form": 2,
+      "pattern": "inline",
+      "fields": 2
+    },
+    {
+      "template": "src/apps/portal/templates/portal/office_outgoing_list.html",
+      "form": 1,
+      "pattern": "grouped",
+      "fields": 6
+    },
+    {
+      "template": "src/apps/portal/templates/portal/personnel_decision_detail.html",
+      "form": 1,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/personnel_decision_detail.html",
+      "form": 2,
+      "pattern": "inline",
+      "fields": 1
+    },
+    {
+      "template": "src/apps/portal/templates/portal/personnel_decision_detail.html",
+      "form": 3,
+      "pattern": "inline",
+      "fields": 2
+    },
+    {
+      "template": "src/apps/portal/templates/portal/personnel_decision_detail.html",
+      "form": 4,
+      "pattern": "inline",
+      "fields": 1
+    },
+    {
+      "template": "src/apps/portal/templates/portal/personnel_decision_detail.html",
+      "form": 5,
+      "pattern": "inline",
+      "fields": 1
+    },
+    {
+      "template": "src/apps/portal/templates/portal/personnel_decision_list.html",
+      "form": 1,
+      "pattern": "filter",
+      "fields": 2
+    },
+    {
+      "template": "src/apps/portal/templates/portal/procurement_request_list.html",
+      "form": 1,
+      "pattern": "inline",
+      "fields": 3
+    },
+    {
+      "template": "src/apps/portal/templates/portal/procurement_request_list.html",
+      "form": 2,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/procurement_request_list.html",
+      "form": 3,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/procurement_request_list.html",
+      "form": 4,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/profile_change_request_form.html",
+      "form": 1,
+      "pattern": "grouped",
+      "fields": 4
+    },
+    {
+      "template": "src/apps/portal/templates/portal/profile_change_request_list.html",
+      "form": 1,
+      "pattern": "inline",
+      "fields": 1
+    },
+    {
+      "template": "src/apps/portal/templates/portal/recruitment_create.html",
+      "form": 1,
+      "pattern": "grouped",
+      "fields": 6
+    },
+    {
+      "template": "src/apps/portal/templates/portal/recruitment_list.html",
+      "form": 1,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/recruitment_list.html",
+      "form": 2,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/report_budget.html",
+      "form": 1,
+      "pattern": "filter",
+      "fields": 1
+    },
+    {
+      "template": "src/apps/portal/templates/portal/report_headcount.html",
+      "form": 1,
+      "pattern": "filter",
+      "fields": 1
+    },
+    {
+      "template": "src/apps/portal/templates/portal/report_hub.html",
+      "form": 1,
+      "pattern": "filter",
+      "fields": 2
+    },
+    {
+      "template": "src/apps/portal/templates/portal/report_personnel_changes.html",
+      "form": 1,
+      "pattern": "filter",
+      "fields": 2
+    },
+    {
+      "template": "src/apps/portal/templates/portal/report_timesheet.html",
+      "form": 1,
+      "pattern": "filter",
+      "fields": 2
+    },
+    {
+      "template": "src/apps/portal/templates/portal/room_booking_list.html",
+      "form": 1,
+      "pattern": "inline",
+      "fields": 4
+    },
+    {
+      "template": "src/apps/portal/templates/portal/room_booking_list.html",
+      "form": 2,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/supply_request_approval_list.html",
+      "form": 1,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/supply_request_approval_list.html",
+      "form": 2,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/supply_request_list.html",
+      "form": 1,
+      "pattern": "grouped",
+      "fields": 6
+    },
+    {
+      "template": "src/apps/portal/templates/portal/task_create.html",
+      "form": 1,
+      "pattern": "grouped",
+      "fields": 7
+    },
+    {
+      "template": "src/apps/portal/templates/portal/task_detail.html",
+      "form": 1,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/task_detail.html",
+      "form": 2,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/task_detail.html",
+      "form": 3,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/timesheet_approval_list.html",
+      "form": 1,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/timesheet_month.html",
+      "form": 1,
+      "pattern": "inline",
+      "fields": 4
+    },
+    {
+      "template": "src/apps/portal/templates/portal/timesheet_month.html",
+      "form": 2,
+      "pattern": "filter",
+      "fields": 2
+    },
+    {
+      "template": "src/apps/portal/templates/portal/timesheet_month.html",
+      "form": 3,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/timesheet_month.html",
+      "form": 4,
+      "pattern": "grouped",
+      "fields": 5
+    },
+    {
+      "template": "src/apps/portal/templates/portal/vehicle_booking_list.html",
+      "form": 1,
+      "pattern": "grouped",
+      "fields": 5
+    },
+    {
+      "template": "src/apps/portal/templates/portal/vehicle_booking_list.html",
+      "form": 2,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/apps/portal/templates/portal/_office_booking_approvals.html",
+      "form": 1,
+      "pattern": "action",
+      "fields": 0
+    },
+    {
+      "template": "src/templates/registration/login.html",
+      "form": 1,
+      "pattern": "action",
+      "fields": 0
+    }
+  ]
+}
