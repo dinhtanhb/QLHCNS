@@ -15,7 +15,7 @@
         {% for c in candidates %}
         <tr class="">
             <td class="">{{ c.candidate_code|ui_number }}</td>
-            <td class=""><a class="ui-button ui-button--secondary" href="{% url 'portal:hr_candidate_detail' c.pk %}">{{ c.full_name|ui_number }}</a></td>
+            <td class=""><a class="ui-table-link" href="{% url 'portal:hr_candidate_detail' c.pk %}">{{ c.full_name|ui_number }}</a></td>
             <td class="">{{ c.phone_number|ui_number }}</td>
             <td class="">{{ c.source|default:"—"|ui_number }}</td>
             <td class="">{% ui_badge "recruitment.candidate:status" c.status c.get_status_display %}</td>

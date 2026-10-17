@@ -5,7 +5,7 @@
 <div class="ui-hr-stack">
   <div class="ui-card">
     <div><h1 class="ui-page-title">Checklist thủ tục nhân sự</h1><p class="ui-hr-text">Dành riêng cho Phòng HCNS để theo dõi hồ sơ, giấy tờ và thủ tục tiếp nhận/nghỉ việc; không dùng để giao việc Trung tâm hoặc hoạt động dự án.</p></div>
-    {% if can_manage_lifecycle_case %}<a href="{% url 'portal:lifecycle_case_create' %}" class="ui-button ui-button--primary">Mở checklist mới</a>{% endif %}
+    {% if can_manage_lifecycle_case %}<a href="{% url 'portal:lifecycle_case_create' %}" class="ui-button ui-button--secondary">Mở checklist mới</a>{% endif %}
   </div>
   <div class="ui-card ui-scroll" tabindex="0" role="region" aria-label="Checklist nhân sự">
     <table class="ui-table ui-hr-table"><caption>Checklist nhân sự</caption><thead class="ui-hr-text"><tr><th scope="col" class="">Nhân viên</th><th scope="col" class="">Loại</th><th scope="col" class="">Ngày hiệu lực</th><th scope="col" class="">Mẫu</th><th scope="col" class="">Trạng thái</th><th scope="col" class="">Thao tác</th></tr></thead><tbody>

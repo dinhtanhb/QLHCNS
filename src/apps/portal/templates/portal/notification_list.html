@@ -3,11 +3,11 @@
 {% block title %}Thông báo{% endblock %}
 {% block personal_content %}
 <header class="ui-page-header"><h1 class="ui-page-title">Thông báo của tôi</h1><form method="post" action="{% url 'portal:notification_mark_all_read' %}" class="ui-form-stack"><div class="ui-form-grid">
-{% csrf_token %}<div class="ui-form-actions"><button class="ui-button ui-button--secondary" type="submit">Đánh dấu tất cả đã đọc</button></div>
+{% csrf_token %}<div class="ui-form-actions"><button class="ui-button ui-button--primary" type="submit">Đánh dấu tất cả đã đọc</button></div>
 </div></form></header>
 {% for n in items %}<article class="ui-card{% if not n.is_read %} ui-personal-unread{% endif %}"><a href="{{ n.link|default:'#' }}" class="ui-personal-notification-link"><h2 class="ui-card-title">{{ n.title }}</h2><p>{{ n.message }}</p><time class="ui-field-help">{{ n.created_date|date:"d/m/Y H:i" }}</time></a>
 {% if not n.is_read %}<div class="ui-page-actions"><span class="ui-badge ui-badge--info">{% include "_shell_icon.html" with name="bell" %}Chưa đọc</span><form method="post" action="{% url 'portal:notification_mark_read' n.pk %}" class="ui-form-stack"><div class="ui-form-grid">
-{% csrf_token %}<div class="ui-form-actions"><button class="ui-button ui-button--secondary" type="submit">Đánh dấu đã đọc</button></div>
+{% csrf_token %}<div class="ui-form-actions"><button class="ui-button ui-button--primary" type="submit">Đánh dấu đã đọc</button></div>
 </div></form></div>{% endif %}
 {% for draft in n.email_drafts %}{% if draft.status == "Draft" %}<div class="ui-personal-decision ui-page-actions"><a class="ui-button ui-button--secondary" href="{{ draft.mailto_url }}">Mở thư nháp trong Outlook</a><form method="post" action="{% url 'portal:notification_outbox_mark_sent' draft.pk %}" data-ui-confirm="Anh/chị đã kiểm tra và tự gửi thư qua Outlook? Chỉ xác nhận sau khi thư đã được gửi." data-ui-confirm-title="Xác nhận đã gửi thư" data-ui-confirm-label="Đã gửi qua Outlook" data-ui-confirm-tone="primary" class="ui-form-stack"><div class="ui-form-grid">
 {% csrf_token %}<div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Đã gửi qua Outlook</button></div>

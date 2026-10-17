@@ -130,14 +130,14 @@
 /* Kích thước bổ trợ */
 .ui-button--sm {
     min-height: var(--ui-control-height);
-    padding: var(--ui-space-1) var(--ui-space-3);
+    padding: var(--ui-space-2) var(--ui-space-4);
     font-size: var(--ui-font-size-small);
 }
 
 .ui-button--lg {
-    min-height: 3rem;
-    padding: var(--ui-space-3) var(--ui-space-6);
-    font-size: var(--ui-font-size-body);
+    min-height: var(--ui-control-height);
+    padding: var(--ui-space-2) var(--ui-space-4);
+    font-size: var(--ui-font-size-small);
 }
 
 /* Vùng chứa hành động trang & biểu mẫu */
@@ -644,7 +644,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: var(--ui-space-2) var(--ui-space-3);
+    padding: var(--ui-space-2) var(--ui-space-4);
     border: var(--ui-border-width) solid var(--ui-border);
     border-radius: var(--ui-radius-control);
     text-decoration: none;
@@ -661,7 +661,7 @@
     background: var(--ui-selected-bg);
     color: var(--ui-selected-text);
     border-color: var(--ui-selected-text);
-    font-weight: var(--ui-font-weight-label);
+    font-weight: var(--ui-font-weight-medium);
 }
 
 
@@ -898,3 +898,15 @@
 
 } /* end @layer components */
 
+
+/* Shared screen action contracts override legacy module pagination padding.
+   Utilities layer keeps the component contract above per-module adapters. */
+@layer utilities {
+    @media screen {
+        .ui-action-cluster { gap: var(--ui-space-4); align-items: center; }
+        .ui-pagination .ui-pagination-controls .ui-button {
+            padding: var(--ui-space-2) var(--ui-space-4);
+            font-weight: var(--ui-font-weight-medium);
+        }
+    }
+}

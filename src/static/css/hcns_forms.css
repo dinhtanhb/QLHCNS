@@ -3,7 +3,7 @@
 .hcns-heading h1 { font-size:1.5rem; font-weight:600; color:var(--ui-text); margin:.4rem 0; }
 .hcns-heading p,.hcns-heading a { font-size:.875rem; color:var(--ui-text-muted); }
 .hcns-notice { background:var(--ui-info-bg); border:1px solid var(--ui-border); border-radius:8px; padding:.85rem 1rem; font-size:.875rem; margin:1rem 0; line-height:1.6; }
-.hcns-button { display:inline-block; border:1px solid var(--ui-border); border-radius:6px; padding:.65rem .9rem; background:var(--ui-surface); color:var(--ui-text-muted); font-weight:600; font-size:.875rem; cursor:pointer; }
+.hcns-button { display:inline-flex; align-items:center; justify-content:center; gap:var(--ui-space-2); min-height:var(--ui-control-height); padding:var(--ui-space-2) var(--ui-space-4); border:1px solid var(--ui-border); border-radius:var(--ui-radius-control); background:var(--ui-surface); color:var(--ui-text-muted); font-weight:var(--ui-font-weight-medium); font-size:var(--ui-font-size-small); cursor:pointer; }
 .hcns-button:hover { background:var(--ui-hover-bg); }
 .hcns-button.primary { background:var(--ui-brand); border-color:var(--ui-brand); color:var(--ui-on-brand); }
 .hcns-source-picker { display:flex; flex-wrap:wrap; gap:.75rem; align-items:center; padding:1rem; border:1px solid var(--ui-border); border-radius:8px; background:var(--ui-surface); }
@@ -78,7 +78,7 @@
 @media screen {
   .hcns-heading p,.hcns-heading a,.hcns-format,.hcns-card p,.hcns-editor-note,.hcns-preview-label { color:var(--ui-text-muted); }
   .hcns-notice { background:var(--ui-surface); border-color:var(--ui-border); }
-  .hcns-button { min-height:44px; border-color:var(--ui-border); color:var(--ui-link); border-radius:8px; box-shadow:var(--ui-shadow-card); }
+  .hcns-button { min-height:var(--ui-control-height); padding:var(--ui-space-2) var(--ui-space-4); border-color:var(--ui-border); color:var(--ui-link); border-radius:var(--ui-radius-control); box-shadow:none; }
   .hcns-button:hover { background:var(--ui-surface-raised); }
   .hcns-button.primary:hover { background:var(--ui-brand-hover); }
   .hcns-button.primary { color:var(--ui-on-brand); }

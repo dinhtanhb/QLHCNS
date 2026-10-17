@@ -92,7 +92,11 @@ def main():
                     if args.allow_event_mode and route['name']=='portal:event_list':
                         modes=[f for form in normalized or [] for f in form['fields'] if f['attrs'].get('name')=='attendance_mode']
                         allowed=len(modes)==1 and modes[0]['tag']=='select' and modes[0]['attrs']=={'name':'attendance_mode'} and modes[0].get('options')==[{'attrs':{'value':'Online'},'text':'Online'},{'attrs':{'value':'Offline','selected':None},'text':'Offline'}]
-                        if allowed:
+                        old_modes=[f for form in old.get('forms') or [] for f in form['fields'] if f['attrs'].get('name')=='attendance_mode']
+                        # The exception is only for a baseline created before the
+                        # approved field existed.  A matching field must remain
+                        # part of the contract when the baseline already has it.
+                        if allowed and not old_modes:
                             for form in normalized:form['fields']=[f for f in form['fields'] if f['attrs'].get('name')!='attendance_mode']
                     if normalized!=old.get('forms'):report['failures'].append(key+' form contract changed')
     (folder/('form-contract-'+args.phase+'.json')).write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')

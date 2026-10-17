@@ -1,2 +1,2 @@
 {% if can_export_employee_data and can_view_all_employees %}<a href="{% url 'portal:hcns_catalog' %}?employee_id={{ employee.pk }}" class="ui-button ui-button--secondary">Soạn / xuất biểu mẫu</a>{% endif %}
-{% if can_manage_hr %}<a href="{% url 'portal:hr_employee_edit' employee.pk %}" class="ui-button ui-button--primary">Sửa hồ sơ</a>{% endif %}
+{% if can_manage_hr %}<a href="{% url 'portal:hr_employee_edit' employee.pk %}" class="ui-button ui-button--secondary">Sửa hồ sơ</a>{% endif %}

@@ -1,5 +1,38 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-17 — Chuẩn hóa loại nút và chuẩn bị migration Hình thức sự kiện
+
+### Tóm tắt cho chủ dự án
+- Đã thống nhất hành vi nút theo bảng đã duyệt: tạo/gửi/duyệt/tiếp nhận/cập nhật/chọn là primary; điều hướng/hủy quay lại là secondary; từ chối, hủy dữ liệu và xác nhận thanh lý là danger.
+- Quét lại toàn bộ route/role ở 7 độ rộng và sáng/tối: 146 route, 6.904 ca, không còn vi phạm layout hay loại nút ngoài cấu hình.
+- SQLite và SQL Server riêng biệt đều chạy 564 test, OK; browser UAT, form contract, in/PDF và cache đều đạt trên dữ liệu giả.
+- Migration `planning.0003_event_attendance_mode` chưa áp dụng vào DB vận hành; trạng thái chỉ đọc hiện báo còn thiếu migration này.
+- Cần chủ dự án/DBA thực hiện đúng kế hoạch migration, sau backup và restore xác minh; đồng thời chốt nguyên tắc 3 hay 4 cột cho các form mới trước lượt bố cục tiếp theo.
+
+**Phạm vi và quyết định đã chốt**
+- Làm trên `main`, từ HEAD/origin `031fbdd8a5be2e5ab435ff385ced0961b3f4de4e`; giữ nguyên tệp chưa theo dõi ngoài phạm vi. Không đổi quyền, route, GET/POST, dữ liệu, công thức, văn bản in hoặc migration/model Event đã tồn tại.
+- Chủ dự án chốt: Duyệt/Tiếp nhận/Cập nhật/Chọn–áp dụng và Yêu cầu bổ sung là primary; Từ chối hoặc thao tác làm mất dữ liệu là danger; Hủy để quay lại là secondary. Lập biên bản thanh lý là primary, còn xác nhận chuyển tài sản sang Đã thanh lý là danger. Ghi nhận kỷ luật và Khóa kỳ lương giữ danger.
+- Không cập nhật skill Impeccable trong lượt này. Detector Impeccable chỉ còn cảnh báo tư vấn về fallback màu chữ tính toán, không phát hiện mã màu mới hoặc lỗi chặn.
+
+**Thay đổi**
+- Thêm hợp đồng có thể kiểm máy tại `docs/UI_BUTTON_KINDS.json` và `ops/audit_button_kinds.py`; kiểm kind, loại trừ đúng phần tử điều hướng bảng, hình học 44px/14px/radius 8px/padding/gap và trạng thái runtime.
+- Chuẩn hóa các template Dashboard, HR, tuyển dụng, công văn, tài sản, mua sắm, lương, thông báo, phê duyệt và báo cáo theo hợp đồng trên. Liên kết tên ứng viên trong bảng được đổi sang text link, tránh hiểu nhầm hành động điều hướng là nút. Nút phân trang dùng cùng hình học và trọng số chữ.
+- Chuẩn hóa `.ui-button` và `.hcns-button`: tối thiểu 44px, chữ 14px, khoảng đệm 8×16px, bo 8px, không bóng; nhóm hành động có gap chung. Không đổi lưới form. Bộ đo ngoài Git ghi 20 form ở 4 độ rộng và mô phỏng 3/4 cột; quyết định 3 hay 4 cột vẫn thuộc chủ dự án.
+- Sửa comparator `ops/run_form_contract_uat.py`: khi baseline đã có `attendance_mode`, không được xoá nó ở phía sau; nhờ đó so sánh thực sự giữ nguyên hợp đồng Event hiện hữu.
+- Bổ sung `docs/MIGRATION_PLAN_planning_0003.md`, `ops/check_migration_state.py` chỉ đọc và quy tắc migration trong `AGENTS.md`. Kế hoạch tách rõ chuẩn bị, backup/restore, áp dụng, UAT, giám sát và hoàn tác; không chạy `migrate` lên DB vận hành.
+
+**Kiểm tra và bằng chứng**
+- Probe baseline `031fbdd`: 2 route Dashboard và tập template liên quan có 38 vi phạm kind, 5 nút chưa phân loại. Audit nguồn cuối: **1.314 ca, 1.922 nút render, 0 vi phạm, 0 chưa phân loại, 0 lỗi** (`ops/audit_button_kinds.py`).
+- `ops/run_layout_alignment_audit.py`: **146 route, 6.904 ca, 0 vi phạm, 0 lỗi**, đủ 9 vai trò × 1920/1756/1440/1280/1024/768/390 × sáng/tối; không thêm waiver.
+- `ops/run_form_contract_uat.py` trên baseline và nguồn cuối: mỗi lượt **1.314 ca, 0 failures**. `ops/run_button_states_uat.py`: không failures; focus, hover và contrast đều đạt. Browser bằng Playwright dùng DB/media/tài khoản giả; contact sheet trước/sau 1756px/390px ở `C:/Users/dinht/AppData/Local/Temp/ihrms-buttons-20261017-synthetic_only/button-evidence`.
+- `ops/run_print_layout_uat.py`: **402 checks, 37 PDF, 0 failures**. `ops/run_asset_cache_uat.py`: **9 checks, PASS**. Lượt print/cache đầu bị ngắt vì server audit đã dừng; đã khởi động lại nguồn cuối và baseline, rồi chạy tuần tự thành công; chỉ kết quả chạy lại được tính.
+- `ops/run_tests.py --backend sqlite`: **564 tests, OK**. `ops/run_tests.py --backend sqlserver`: **564 tests, OK**, dùng database thử `test_ihrms_3c84f7d86f9340808669ebab67479de9` và đã hủy sau chạy. Các log ValidationError/Service Unavailable trong output là ca kiểm thử âm, mã thoát hai suite đều 0.
+- `manage.py check` và `makemigrations --check --dry-run` đạt; `git diff --check` đạt. `sqlmigrate planning 0003` trên cấu hình SQL Server cho SQL thực: `ALTER TABLE [tblEvent] ADD [AttendanceMode] nvarchar(10) NULL;`. `check_migration_state.py --app planning` đọc DB hiện tại báo còn `planning.0003_event_attendance_mode`; cùng checker trên SQLite giả báo không còn migration thiếu.
+
+**Giới hạn và bước vận hành còn mở**
+- Không có migration DB vận hành, backup, restore thử hay UAT trên Edge phiên người dùng thật trong lượt này. Trước khi áp dụng, DBA phải xác nhận server/database đích, backup có thể restore, chạy đúng lệnh ở kế hoạch, kiểm Event cũ NULL hiển thị Chưa xác định và Event mới Offline, rồi theo dõi/hoàn tác theo tài liệu.
+- Không tuyên bố đã nghiệm thu từng pixel hoặc mọi thao tác ghi của mọi route chỉ từ audit GET/contact sheet. Dữ liệu kiểm thử, ảnh và log đều ở thư mục `synthetic_only` ngoài repository; không đưa bí mật, dữ liệu thật hoặc script tạo bằng chứng tạm vào Git.
+
 ## 2026-10-17 — Chuẩn hóa form toàn dự án, lựa chọn dùng lại và Hình thức sự kiện
 
 **Phạm vi và môi trường**

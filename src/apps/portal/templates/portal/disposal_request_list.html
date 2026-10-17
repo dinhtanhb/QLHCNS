@@ -4,7 +4,7 @@
 {% block administration_content %}
 <div class="ui-admin-inline">
     {% include "ui/page_header.html" with title="Đề nghị thanh lý tài sản" description="Tra cứu và xử lý thông tin trong phạm vi được cấp quyền." %}
-    {% if can_manage_asset %}<a href="{% url 'portal:disposal_request_create' %}" class="ui-button ui-button--secondary">Tạo đề nghị mới</a>{% endif %}
+    {% if can_manage_asset %}<a href="{% url 'portal:disposal_request_create' %}" class="ui-button ui-button--primary">Tạo đề nghị mới</a>{% endif %}
 </div>
 {% if not can_manage_asset %}<p>Chế độ chỉ xem hồ sơ thanh lý/tài sản.</p>{% endif %}
 <div class="ui-card"><h2 class="ui-card-title">Danh sách</h2>

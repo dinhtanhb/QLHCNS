@@ -24,7 +24,7 @@
             {% include "ui/field.html" with id="hr-form-1-effective_date" name="effective_date" label="Ngày hiệu lực" type="date" required=True value=""  width="wide" %}
             {% include "ui/field.html" with id="hr-form-1-reason" name="reason" label="Lý do" type="text" value=""  width="full" %}
             <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Ghi nhận điều chuyển</button></div>
-            {% if can_draft_hr %}<div class="ui-form-actions"><button type="submit" name="next" value="hcns" class="ui-button ui-button--secondary">Ghi nhận và soạn quyết định →</button></div>{% endif %}
+            {% if can_draft_hr %}<div class="ui-form-actions"><button type="submit" name="next" value="hcns" class="ui-button ui-button--primary">Ghi nhận và soạn quyết định →</button></div>{% endif %}
         </div></fieldset></form>
     </div>
     <div class="ui-card" id="bonhiem">
@@ -35,7 +35,7 @@
             {% include "ui/field.html" with id="hr-form-2-effective_date" name="effective_date" label="Ngày hiệu lực" type="date" required=True value=""  width="wide" %}
             {% include "ui/field.html" with id="hr-form-2-reason" name="reason" label="Lý do" type="text" value=""  width="full" %}
             <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Ghi nhận bổ nhiệm</button></div>
-            {% if can_draft_hr %}<div class="ui-form-actions"><button type="submit" name="next" value="hcns" class="ui-button ui-button--secondary">Ghi nhận và soạn quyết định →</button></div>{% endif %}
+            {% if can_draft_hr %}<div class="ui-form-actions"><button type="submit" name="next" value="hcns" class="ui-button ui-button--primary">Ghi nhận và soạn quyết định →</button></div>{% endif %}
         </div></fieldset></form>
     </div>
     <div class="ui-card">
@@ -73,7 +73,7 @@
             {% include "ui/field.html" with id="hr-form-5-current_basic_salary" name="current_basic_salary" label="Mức lương mới" type="number" required=True value=""  width="wide" %}
             {% include "ui/field.html" with id="hr-form-5-effective_date" name="effective_date" label="Ngày hiệu lực" type="date" required=True value=""  width="wide" %}
             <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Ghi nhận nâng lương</button></div>
-            {% if can_draft_hr %}<div class="ui-form-actions"><button type="submit" name="next" value="hcns" class="ui-button ui-button--secondary">Ghi nhận và soạn quyết định →</button></div>{% endif %}
+            {% if can_draft_hr %}<div class="ui-form-actions"><button type="submit" name="next" value="hcns" class="ui-button ui-button--primary">Ghi nhận và soạn quyết định →</button></div>{% endif %}
         </div></fieldset></form>
     </div>
     <div class="ui-card" id="hopdong">
@@ -90,7 +90,7 @@
             <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Gia hạn hợp đồng</button></div>
         </div></fieldset></form>
         {% else %}
-        <a href="{% url 'portal:hr_contract_create' %}?employee_id={{ employee.pk }}" class="ui-button ui-button--secondary">+ Tạo hợp đồng mới</a>
+        <a href="{% url 'portal:hr_contract_create' %}?employee_id={{ employee.pk }}" class="ui-button ui-button--primary">+ Tạo hợp đồng mới</a>
         {% endif %}
     </div>
 </div>

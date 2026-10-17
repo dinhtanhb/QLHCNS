@@ -42,7 +42,7 @@
         <p class="ui-recruitment-text">Bước 6</p>
         <h2 class="ui-card-title">Tiếp nhận nhân viên</h2>
         <p class="ui-recruitment-text">Khi offer đã được chấp nhận, Nhân sự chuyển hồ sơ ứng viên thành hồ sơ nhân viên.</p>
-        {% if can_manage_hr %}<a href="{% url 'portal:hr_candidate_list' %}" class="ui-button ui-button--secondary">Tiếp nhận ứng viên</a>{% endif %}
+        {% if can_manage_hr %}<a href="{% url 'portal:hr_candidate_list' %}" class="ui-button ui-button--primary">Tiếp nhận ứng viên</a>{% endif %}
     </section>
 </div>
 {% endblock %}

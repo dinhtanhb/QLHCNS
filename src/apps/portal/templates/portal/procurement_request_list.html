@@ -21,7 +21,7 @@
             <div>
                 <div class="ui-admin-inline">
                     <h3 class="ui-field-label">Hạng mục cần mua</h3>
-                    <button type="button" id="add-procurement-item" class="ui-button ui-button--secondary">Thêm dòng</button>
+                    <button type="button" id="add-procurement-item" class="ui-button ui-button--primary">Thêm dòng</button>
                 </div>
                 <div id="procurement-items" class="ui-admin-stack">
                     <div class="ui-form-grid ui-form-grid--inline">
@@ -78,7 +78,7 @@
                             <div class="ui-admin-inline">
                                 <form method="post" action="{% url 'portal:procurement_request_approve' r.pk %}" data-ui-form>{% include "ui/error_summary.html" %}
                                     {% csrf_token %}<input type="hidden" name="decision" value="Approved">
-                                    <button class="ui-button ui-button--secondary" type="submit">Duyệt</button>
+                                    <button class="ui-button ui-button--primary" type="submit">Duyệt</button>
                                 </form>
                                 <form data-ui-confirm="Xác nhận xử lý yêu cầu này?" method="post" action="{% url 'portal:procurement_request_approve' r.pk %}" data-ui-form>{% include "ui/error_summary.html" %}
                                     {% csrf_token %}<input type="hidden" name="decision" value="Rejected">
@@ -87,7 +87,7 @@
                             </div>
                             {% elif r.status == "Approved" %}
                             <form method="post" action="{% url 'portal:procurement_request_mark_purchased' r.pk %}" data-ui-form>{% include "ui/error_summary.html" %}
-                                {% csrf_token %}<button class="ui-button ui-button--secondary" type="submit">Đánh dấu đã mua</button>
+                                {% csrf_token %}<button class="ui-button ui-button--primary" type="submit">Đánh dấu đã mua</button>
                             </form>
                             {% else %}—{% endif %}
                         </td>

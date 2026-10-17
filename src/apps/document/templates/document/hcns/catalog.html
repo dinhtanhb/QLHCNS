@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{% asset 'css/hcns_forms.css' %}">
 <div class="hcns-heading ui-page-header">
   <div><h1>Biểu mẫu hành chính nhân sự</h1><p>{{ available_count|ui_number }} mẫu có thể sử dụng · soạn nội dung, xem trước và xuất tệp</p></div>
-  {% if own_employee %}<a class="hcns-button ui-button ui-button--secondary" href="?employee_id={{ own_employee.pk }}">Điền từ hồ sơ của tôi</a>{% endif %}
+  {% if own_employee %}<a class="hcns-button ui-button ui-button--primary" href="?employee_id={{ own_employee.pk }}">Điền từ hồ sơ của tôi</a>{% endif %}
 </div>
 
 <section class="ui-card ui-results-card" aria-label="Danh mục biểu mẫu">

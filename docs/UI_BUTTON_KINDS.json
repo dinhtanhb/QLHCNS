@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "authority": "Yêu cầu chủ dự án 17/10/2026 trong tệp đính kèm: phân loại theo hành động, không giới hạn một nút đặc mỗi trang.",
+  "prefixes": {
+    "primary": ["Tạo", "Thêm", "Lưu", "Gửi", "Đặt", "Giao", "Áp dụng", "Ghi nhận", "Duyệt", "Tiếp nhận", "Cập nhật", "Chọn", "Vào sổ", "Trình duyệt", "Ban hành", "Cấp phát", "Phát hành", "Hoàn tất", "Gia hạn", "Chấm điểm", "Tính lương", "Đánh dấu", "Đã gửi", "Điền từ"],
+    "secondary": ["Mở", "Xem", "Quản lý", "Theo dõi", "In", "Xuất", "Tải", "Quay lại", "Hủy", "Xóa lọc", "Sửa", "Chỉnh sửa", "Soạn / xuất", "Phiếu phỏng vấn", "Tổng hợp điểm", "Thang bảng lương", "Danh sách", "Dashboard", "Trang", "Về", "Cổng", "Tiếp", "Trước", "Đóng", "Bỏ qua", "Thao tác", "Vừa màn hình", "30 ngày", "60 ngày"],
+    "danger": ["Xóa", "Thanh lý", "Hủy bản nháp", "Hủy bỏ", "Từ chối", "Khóa kỳ lương"]
+  },
+  "exact": {
+    "Đăng nhập": "primary",
+    "Soạn quyết định": "primary",
+    "Soạn thư trong Outlook": "primary",
+    "Lập biên bản thanh lý": "primary",
+    "Lập biên bản (chuyển tài sản sang 'Đã thanh lý')": "danger",
+    "Tải báo cáo lên SharePoint": "primary",
+    "Ghi nhận kỷ luật": "danger",
+    "Đề xuất & dự trù": "secondary",
+    "Xác nhận đã thực hiện": "primary",
+    "Lên lịch phỏng vấn": "primary",
+    "Yêu cầu bổ sung": "primary",
+    "Tìm": "secondary",
+    "+": "secondary",
+    "−": "secondary"
+  },
+  "exceptions": [
+    {"label": "Xác nhận", "allowed": ["primary", "danger", "danger-solid", "danger-primary"], "reason": "Nhãn dùng chung trong hộp xác nhận; loại thực phụ thuộc thao tác đang xác nhận, không suy từ nhãn đơn lẻ."},
+    {"label": "Hủy", "allowed": ["secondary", "danger"], "reason": "Hủy điều hướng dùng viền thường; hủy bản ghi dùng viền nguy hiểm. Giữ ngữ cảnh form và xác nhận hiện hữu."},
+    {"label": "Theo dõi hoạt động", "allowed": ["primary", "secondary"], "reason": "Tab phạm vi công việc dùng primary để biểu thị tab hiện hành; giữ quyết định điều hướng đã chốt."},
+    {"label": "Việc của tôi", "allowed": ["primary", "secondary"], "reason": "Tab phạm vi công việc, không phải nút gửi dữ liệu."},
+    {"label": "Việc tôi đã giao", "allowed": ["primary", "secondary"], "reason": "Tab phạm vi công việc, không phải nút gửi dữ liệu."}
+  ],
+  "dynamic_templates": [
+    {"expression": "{{ page_obj.number|ui_number }}", "kind": "secondary", "reason": "Chỉ báo trang hiện tại, dùng viền thường cùng nhóm phân trang."},
+    {"expression": "{{ create.label }}", "kind": "primary", "reason": "Partial header nhận cấu hình tạo mới từ Dashboard, kiểm nhãn thật ở runtime."},
+    {"expression": "{{ create2.label }}", "kind": "primary", "reason": "Cấu hình tạo mới thứ hai của header nhóm."},
+    {"expression": "{{ action.label }}", "kind": null, "reason": "Kiểm nhãn thật theo từng vai trò tại runtime."},
+    {"expression": "{{ action_label }}", "kind": null, "reason": "Kiểm nhãn thao tác thật tại runtime."},
+    {"expression": "{{ c.full_name|ui_number }}", "kind": "secondary", "reason": "Liên kết mở hồ sơ ứng viên."},
+    {"expression": "{{ submit_label|ui_number }}", "kind": "primary", "reason": "Submit form dùng nhãn do view cung cấp, kiểm thêm runtime."},
+    {"expression": "{{ submit_label|default:\"Áp dụng\" }}", "kind": "primary", "reason": "Nút áp dụng bộ lọc."}
+  ],
+  "geometry": {"height": 44, "fontSize": 14, "fontWeight": "500", "paddingTop": 8, "paddingRight": 16, "paddingBottom": 8, "paddingLeft": 16, "borderRadius": 8, "columnGap": 8, "iconSize": 20},
+  "owner_approval": {"date": "2026-10-17", "source": "Chủ dự án trả lời Chốt theo bảng này và Duyệt nhóm phân loại này trong phiên triển khai.", "decisions": ["Duyệt/Tiếp nhận/Cập nhật/Chọn-áp dụng: primary", "Từ chối: danger", "Yêu cầu bổ sung: primary", "Lập biên bản thanh lý mở form: primary; xác nhận chuyển tài sản Đã thanh lý: danger", "Ghi nhận kỷ luật/Khóa kỳ lương: giữ danger theo ngữ cảnh rủi ro hiện hữu"]}
+}

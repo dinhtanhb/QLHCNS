@@ -39,7 +39,7 @@
 </div></form>
 {% endif %}
 {% if can_approve_decision %}
-<details class="ui-workflow-secondary"{% if workflow_error.action == "reject" %} open{% endif %}><summary class="ui-button ui-button--secondary">Từ chối</summary>
+<details class="ui-workflow-secondary"{% if workflow_error.action == "reject" %} open{% endif %}><summary class="ui-button ui-button--danger">Từ chối</summary>
 <form class="ui-form-stack ui-workflow-form" method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'reject' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary"><div class="ui-form-grid ui-form-grid--inline">
 {% csrf_token %}{% include "ui/error_summary.html" %}
 {% if workflow_error.action == "reject" %}<p class="ui-field-error" role="alert">{{ workflow_error.message }}</p>{% endif %}{% include "ui/field.html" with widget_template="portal/widgets/personnel_decision_detail.html" widget_key="f3"  width="full" %}
@@ -47,7 +47,7 @@
 </details>
 {% endif %}
 {% if can_cancel_decision %}
-<details class="ui-workflow-secondary"{% if workflow_error.action == "cancel" %} open{% endif %}><summary class="ui-button ui-button--secondary">Hủy bản nháp</summary>
+<details class="ui-workflow-secondary"{% if workflow_error.action == "cancel" %} open{% endif %}><summary class="ui-button ui-button--danger">Hủy bản nháp</summary>
 <form class="ui-form-stack ui-workflow-form" method="post" action="{% url 'portal:personnel_decision_transition' decision.pk 'cancel' %}" data-ui-form data-ui-confirm="Xác nhận gửi thao tác xử lý này? Kiểm tra nội dung và đối tượng trước khi tiếp tục." data-ui-confirm-title="Xác nhận xử lý" data-ui-confirm-label="Gửi thao tác" data-ui-confirm-tone="primary"><div class="ui-form-grid ui-form-grid--inline">
 {% csrf_token %}{% include "ui/error_summary.html" %}
 {% if workflow_error.action == "cancel" %}<p class="ui-field-error" role="alert">{{ workflow_error.message }}</p>{% endif %}{% include "ui/field.html" with widget_template="portal/widgets/personnel_decision_detail.html" widget_key="f4"  width="full" %}

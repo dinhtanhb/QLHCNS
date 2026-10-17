@@ -22,7 +22,7 @@
 </div>  <div class="ui-page-actions" role="group" aria-label="Xuất báo cáo">
     <a class="ui-button ui-button--secondary" href="{% url 'portal:report_hub_export' 'xlsx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Xuất Excel</a>
     <a class="ui-button ui-button--secondary" href="{% url 'portal:report_hub_export' 'docx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Xuất Word</a>
-    <a class="ui-button ui-button--secondary" href="{% url 'portal:report_hub_export' 'pptx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Tạo slide</a>
+    <a class="ui-button ui-button--primary" href="{% url 'portal:report_hub_export' 'pptx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Tạo slide</a>
   </div>
   <section aria-label="Số liệu tổng quan"><p class="ui-page-description">Kỳ báo cáo {{ from_date|ui_date }} đến {{ to_date|ui_date }}</p><div class="ui-kpi-grid">
 {% include "ui/kpi.html" with label="Nhân sự đang làm việc" value=headline.active %}

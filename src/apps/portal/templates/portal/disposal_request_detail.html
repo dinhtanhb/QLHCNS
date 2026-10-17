@@ -62,7 +62,7 @@
                 {% if it.minutes %}
                 <a href="{% url 'portal:disposal_minutes_print' it.minutes.pk %}" class="ui-admin-link">Xem biên bản</a>
                 {% elif req.status == "Approved" and can_manage_asset %}
-                <details><summary class="ui-button ui-button--secondary">+ Lập biên bản thanh lý</summary>
+                <details><summary class="ui-button ui-button--primary">+ Lập biên bản thanh lý</summary>
                 <form data-ui-confirm="Xác nhận xử lý yêu cầu này?" method="post" action="{% url 'portal:disposal_minutes_create' it.pk %}" class="ui-form-stack" data-ui-form><div class="ui-form-grid ui-form-grid--long">
 {% include "ui/error_summary.html" %}
                     {% csrf_token %}
@@ -75,7 +75,7 @@
                     {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-disposal_cost-8-"|add:row_number %}{% include "ui/field.html" with id=field_id name="disposal_cost" label="Chi phí thanh lý" type="number"  width="regular" %}{% endwith %}{% endwith %}
                     {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="disposal_request_detail-recovery_value-9-"|add:row_number %}{% include "ui/field.html" with id=field_id name="recovery_value" label="Giá trị thu hồi" type="number"  width="regular" %}{% endwith %}{% endwith %}
                     {% include "ui/field.html" with widget_template="portal/widgets/disposal_request_detail.html" widget_key="f4"  width="full" %}
-                    <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Lập biên bản (chuyển tài sản sang 'Đã thanh lý')</button></div>
+                    <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--danger">Lập biên bản (chuyển tài sản sang 'Đã thanh lý')</button></div>
 
 </div></form>
                 </details>

@@ -9,7 +9,7 @@
 {% csrf_token %}<div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Tạo bảng lương cho {{ missing_employees|length|ui_number }} nhân viên còn thiếu</button></div>
 </div></form>
 <form method="post" action="{% url 'portal:finance_payroll_calculate_all' period.pk %}" data-ui-confirm="Tính lại toàn bộ bảng lương của kỳ này? Giá trị tính tự động sẽ được cập nhật lại." data-ui-confirm-title="Tính lại bảng lương" data-ui-confirm-label="Tính lại toàn bộ" class="ui-form-stack"><div class="ui-form-grid">
-{% csrf_token %}<div class="ui-form-actions"><button type="submit" class="ui-button ui-button--secondary">Tính lương toàn bộ kỳ này</button></div>
+{% csrf_token %}<div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Tính lương toàn bộ kỳ này</button></div>
 </div></form>
 <form method="post" action="{% url 'portal:finance_payroll_lock' period.pk %}" data-ui-confirm="Khóa kỳ lương này? Sau khi khóa sẽ không sửa được nữa." data-ui-confirm-title="Khóa kỳ lương" data-ui-confirm-label="Khóa kỳ lương" class="ui-form-stack"><div class="ui-form-grid">
 {% csrf_token %}<div class="ui-form-actions"><button type="submit" class="ui-button ui-button--danger">{% include "_shell_icon.html" with name="warning" %}Khóa kỳ lương</button></div>
@@ -42,7 +42,7 @@
 <td class="ui-number">{{ p.insurance_amount|ui_vnd }}</td>
 <td class="ui-number">{{ p.tax_amount|ui_vnd }}</td>
 <td class="ui-number">{{ p.net_income|ui_vnd }}</td>
-<td class="ui-actions">{% if period.status != "Locked" %}<button form="pf{{ p.pk }}" type="submit" class="ui-button ui-button--secondary" aria-label="Lưu dòng lương của {{ p.employee.full_name }}">Lưu</button>{% endif %}</td>
+<td class="ui-actions">{% if period.status != "Locked" %}<button form="pf{{ p.pk }}" type="submit" class="ui-button ui-button--primary" aria-label="Lưu dòng lương của {{ p.employee.full_name }}">Lưu</button>{% endif %}</td>
 </tr>{% empty %}<tr><td colspan="12">{% include "ui/empty_state.html" with title="Chưa có dòng bảng lương" description="Khi kỳ đang mở, dùng Tạo bảng lương ở phía trên để tạo các dòng còn thiếu." icon="finance" %}</td></tr>{% endfor %}</tbody></table></div></section>
 {% include "ui/confirm_dialog.html" %}
 {% endblock %}
