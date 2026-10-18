@@ -14,7 +14,8 @@
  .home-dashboard h2 { font-size:var(--ui-text-h2); line-height:var(--ui-leading-h2); }
  .home-dashboard h3 { font-size:var(--ui-text-label); line-height:var(--ui-leading-label); font-weight:var(--ui-weight-medium); color:var(--ui-text-muted); }
  .home-dashboard a:not(.ui-button) { color:var(--ui-link); font-weight:var(--ui-weight-medium); text-underline-offset:var(--ui-space-1); }
- .home-dashboard a:not(.ui-button):hover { text-decoration:underline; }
+ .home-dashboard a:not(.ui-button):not(.ui-card):hover { text-decoration:underline; }
+ .home-dashboard a.ui-card:is(:hover,:focus-visible) { text-decoration:none; background:var(--ui-hover-bg); }
  .home-dashboard .ui-icon { width:var(--ui-icon-medium); height:var(--ui-icon-medium); flex:none; vertical-align:middle; color:var(--ui-text-muted); }
  .home-dashboard .home-period,.home-dashboard .home-metric-note,.home-dashboard .home-footnote,.home-dashboard .home-table-secondary { color:var(--ui-text-muted); }
  .home-dashboard .home-page-header { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:var(--ui-space-1) var(--ui-space-4); margin-bottom:calc(-1 * var(--ui-space-2)); }
@@ -88,7 +89,11 @@
  .home-dashboard .home-project-heading { display:flex; align-items:baseline; flex-wrap:wrap; gap:var(--ui-space-3); }
  .home-dashboard .home-project-heading>span { color:var(--ui-text-muted); }
 .home-dashboard :is(.home-group-header h2,.home-card-title) { font-size:var(--ui-text-h2); font-weight:var(--ui-weight-semibold); line-height:var(--ui-leading-h2); letter-spacing:-.012em; }
-.home-dashboard :is(.home-group-header h2,.home-card-title)::after { content:""; display:block; width:24px; height:2px; margin-top:var(--ui-space-2); border-radius:var(--ui-radius-pill); background:var(--ui-brand); }
+.home-dashboard :is(.home-group-header,.home-my-work > .home-card-title) { padding:var(--ui-space-3) var(--ui-space-4); background:var(--ui-surface-tint); border:var(--ui-border-width) solid var(--ui-divider); border-radius:var(--ui-radius-control); }
+.home-dashboard .home-card-header { margin:calc(-1 * var(--ui-space-5)) calc(-1 * var(--ui-space-5)) 0; padding:var(--ui-space-4) var(--ui-space-5); background:var(--ui-surface-tint); border-bottom:var(--ui-border-width) solid var(--ui-divider); border-radius:var(--ui-radius-card) var(--ui-radius-card) 0 0; }
+.home-dashboard :is(.home-main-metric .home-metric-heading,.home-work-card > h3) { margin:calc(-1 * var(--ui-space-5)) calc(-1 * var(--ui-space-5)) var(--ui-space-3); padding:var(--ui-space-3) var(--ui-space-5); background:var(--ui-surface-tint); border-bottom:var(--ui-border-width) solid var(--ui-divider); border-radius:var(--ui-radius-card) var(--ui-radius-card) 0 0; font-weight:var(--ui-weight-semibold); }
+@media(max-width:767px) { .home-dashboard .home-card-header { margin:calc(-1 * var(--ui-space-4)) calc(-1 * var(--ui-space-4)) 0; padding:var(--ui-space-4); } }
+@media(max-width:767px) { .home-dashboard :is(.home-main-metric .home-metric-heading,.home-work-card > h3) { margin:calc(-1 * var(--ui-space-4)) calc(-1 * var(--ui-space-4)) var(--ui-space-3); padding:var(--ui-space-3) var(--ui-space-4); } }
  .home-dashboard .home-project-metrics,.home-dashboard .home-recruitment-metrics { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); min-width:0; }
  .home-dashboard .home-project-metrics>div,.home-dashboard .home-recruitment-metrics>div { display:grid; align-content:start; gap:var(--ui-space-2); min-width:0; padding-inline:var(--ui-space-4); border-inline-start:var(--ui-border-width) solid var(--ui-divider); }
  .home-dashboard .home-project-metrics>div:first-child,.home-dashboard .home-recruitment-metrics>div:first-child { padding-inline-start:0; border-inline-start:0; }

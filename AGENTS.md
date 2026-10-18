@@ -40,6 +40,8 @@ Model và migration phải đi trong commit riêng có kế hoạch áp dụng/h
 
 ## Kiểm thử luồng nghiệp vụ trên trình duyệt
 
+Theo quyết định chủ dự án ngày 18/10/2026, không mượn phiên, cookie, tài khoản hoặc danh tính người dùng thật để kiểm thử; không tạo phiên xác thực tạm dưới tài khoản thật, kể cả khi chỉ đọc. Dùng tài khoản QA riêng trên DB/media cô lập. Khi cần kiểm DB vận hành, chỉ chạy truy vấn/schema check đã được phép; kiểm trình duyệt bằng tài khoản QA được chủ dự án cấp riêng hoặc để người dùng tự kiểm. Không suy ra quyền mượn danh tính từ quyền backup, migration hoặc quyền kiểm thử chung.
+
 Theo yêu cầu chủ dự án ngày 13/10/2026, sau mỗi đợt sửa mã phải kiểm thử lại các luồng nghiệp vụ bị ảnh hưởng trên ứng dụng đang chạy trong trình duyệt, không chỉ kiểm tra HTTP hoặc HTML tĩnh. Thao tác tạo/sửa/gửi/duyệt cần kiểm tra thông báo, trang đích, dữ liệu đã lưu và chỉ số Dashboard liên quan theo đặc tả đã duyệt. Với sửa giao diện, kiểm tra cả sáng/tối, màn hình rộng/hẹp, tên/nội dung dài và thao tác bàn phím.
 
 Được tạo dữ liệu giả để kiểm thử; mặc định dùng database/media và tài khoản thử nghiệm tách biệt, không sửa/xóa hồ sơ thật. `ops/run_browser_uat.py` cung cấp các luồng hồi quy Dashboard Đợt 1 và hồ sơ/hợp đồng/nghỉ phép trên DB dùng một lần; bổ sung luồng tương ứng khi sửa phân hệ khác. Ghi lệnh, backend, luồng, kết quả, ảnh/bằng chứng và giới hạn vào cùng mục `docs/PROJECT_WORK_LOG.md`. Nếu kết nối trình duyệt không hoạt động, ghi lỗi cụ thể, tiếp tục phần kiểm tra độc lập an toàn và không tuyên bố đã UAT phiên trình duyệt của người dùng. Chỉ báo hoàn tất sau khi chạy lại các kiểm tra liên quan trên nguồn cuối.

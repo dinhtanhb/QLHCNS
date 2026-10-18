@@ -289,19 +289,27 @@
         overflow: visible;
     }
     .ui-card--sectioned, .ui-card--table { padding: 0; }
-    .ui-card-header { flex-wrap: wrap; background: var(--ui-surface); }
+    .ui-card-header { flex-wrap: wrap; background: var(--ui-surface-tint); }
     .ui-card-title {
         font-size: var(--ui-font-size-lg);
         line-height: var(--ui-leading-h2);
         overflow-wrap: anywhere;
     }
-    .ui-card > .ui-card-title { margin-bottom: var(--ui-space-4); }
+    .ui-card > .ui-card-title {
+        margin: calc(-1 * var(--ui-space-5)) calc(-1 * var(--ui-space-5)) var(--ui-space-5);
+        padding: var(--ui-space-4) var(--ui-space-5);
+        background: var(--ui-surface-tint);
+        border-bottom: var(--ui-border-width) solid var(--ui-divider);
+        border-radius: var(--ui-radius-card) var(--ui-radius-card) 0 0;
+    }
     .ui-card--table > .ui-card-title { margin: 0; padding: var(--ui-space-5); }
     .ui-card--table > .ui-scroll { border: 0; border-radius: 0 0 var(--ui-radius-card) var(--ui-radius-card); }
     @media (max-width: 767px) {
         .ui-card, .ui-card-body { padding: var(--ui-space-4); }
         .ui-card--sectioned, .ui-card--table { padding: 0; }
         .ui-card-header, .ui-card--table > .ui-card-title { padding: var(--ui-space-4); }
+        .ui-card > .ui-card-title { margin:calc(-1 * var(--ui-space-4)) calc(-1 * var(--ui-space-4)) var(--ui-space-4); padding:var(--ui-space-4); }
+        .ui-card--table > .ui-card-title { margin:0; }
     }
 }
 
@@ -623,6 +631,11 @@
     gap: var(--ui-space-2);
 }
 
+@media screen {
+    .ui-row-popover a { border-radius:var(--ui-radius-control); }
+    .ui-row-popover a:is(:hover,:focus-visible) { background:var(--ui-hover-bg); color:var(--ui-text); text-decoration:none; }
+}
+
 
 /* ==========================================================================
    11. Phân trang (.ui-pagination)
@@ -817,6 +830,9 @@
         grid-column: 1 / -1;
     }
 }
+@container ui-form (640px <= width < 900px) {
+    .ui-form-grid > .ui-field--task-name { grid-column:span 2; }
+}
 
 /* Named screen patterns: short rows, grouped/long forms and two-row events.
    Fields retain DOM order; only explicit full-width groups break the flow. */
@@ -824,6 +840,7 @@
     .ui-form-grid > .ui-field--regular { grid-column: span 1; }
     .ui-form-grid > .ui-field--wide { grid-column: span 2; }
     .ui-form-grid > .ui-field--full { grid-column: 1 / -1; }
+    .ui-form-grid > .ui-field--task-name { grid-column:span 3; }
     .ui-form-grid > :is(.ui-field--compact,.ui-field:has(input[type="date"],input[type="month"],input[type="datetime-local"],input[type="number"])) {
         justify-self: start;
         --ui-field-max: 12rem;
@@ -869,10 +886,11 @@
 }
 
 @container ui-form (min-width: 900px) {
-    .ui-form-grid--grouped, .ui-form-grid--long { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .ui-form-grid--grouped, .ui-form-grid--long { grid-template-columns: repeat(4, minmax(0,1fr)); }
 }
 @container ui-form (width < 640px) {
     .ui-form-grid > .ui-field--wide { grid-column: 1 / -1; }
+    .ui-form-grid > .ui-field--task-name { grid-column:1 / -1; }
 }
 @container ui-form (width < 600px) {
     .ui-form-grid--inline > .ui-field { flex: 1 1 100%; }

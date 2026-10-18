@@ -81,12 +81,36 @@ def normalize_finance_choices(forms, old_forms, route):
             field.update(previous[0])
 
 
+def normalize_task_catalog(forms, old_forms):
+    """Only the approved ActCode selector and derived read-only title may differ."""
+    from apps.activity.activity_codes import ACTIVITY_CODE_NAMES
+    for name in ('task_code', 'task_name'):
+        old = [f for form in old_forms or [] for f in form['fields'] if f['attrs'].get('name') == name]
+        new = [f for form in forms or [] for f in form['fields'] if f['attrs'].get('name') == name]
+        if len(old) != 1 or len(new) != 1:
+            continue
+        expected_old = {'tag': 'input', 'attrs': {'type': 'text', 'name': name, 'required': None}}
+        if old[0] != expected_old:
+            continue
+        if name == 'task_code':
+            expected = {'tag': 'select', 'attrs': {'name': name, 'required': None}, 'options': [
+                {'attrs': {'value': ''}, 'text': '-- Chọn mã ActCode --'},
+                *[{'attrs': {'value': code, 'data-search': title}, 'text': code} for code, title in ACTIVITY_CODE_NAMES.items()],
+            ]}
+        else:
+            expected = {'tag': 'input', 'attrs': {'type': 'text', 'name': name, 'value': '', 'readonly': None}}
+        if new[0] == expected:
+            new[0].clear()
+            new[0].update(old[0])
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--directory',type=Path,required=True);p.add_argument('--source-root',type=Path)
     p.add_argument('--phase',choices=('before','after'),required=True);p.add_argument('--only',nargs='+')
     p.add_argument('--allow-event-mode',action='store_true',help='Allow only the approved attendance_mode select addition on event_list.')
     p.add_argument('--allow-finance-choices',action='store_true',help='Allow only the requested month/year/relationship input-to-select conversions with exact values.')
+    p.add_argument('--allow-task-catalog',action='store_true',help='Allow the approved ActCode catalog selector and derived title on task_create only.')
     args=p.parse_args();root=(args.source_root or Path(__file__).resolve().parents[1]).resolve();folder=args.directory.resolve()
     if root==folder or root in folder.parents:p.error('External synthetic runtime required')
     configure(root,folder)
@@ -120,6 +144,8 @@ def main():
                     if old['status']!=case['status']:report['failures'].append(key+' HTTP status changed')
                     if case['selects']>old['selects']:report['failures'].append(key+' SELECT count increased')
                     normalized=copy.deepcopy(case.get('forms'))
+                    if args.allow_task_catalog and route['name'] == 'portal:task_create':
+                        normalize_task_catalog(normalized, old.get('forms'))
                     if args.allow_finance_choices:
                         normalize_finance_choices(normalized, old.get('forms'), route['name'])
                     if args.allow_event_mode and route['name']=='portal:event_list':

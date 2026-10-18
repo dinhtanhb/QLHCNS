@@ -549,7 +549,7 @@ class PortalSensitiveWorkflowTests(TestCase):
         self.assertIn(assignee, form.context["candidates"])
 
         response = self.client.post(create_url, {
-            "task_code": "PORTAL-DEPT-TASK-CREATED",
+            "task_code": "46.9.1.1.2.1",
             "task_name": "Công việc trưởng phòng giao",
             "assigned_to_employee": str(assignee.pk),
             "department": str(self.department.pk),
@@ -559,7 +559,7 @@ class PortalSensitiveWorkflowTests(TestCase):
         })
 
         self.assertRedirects(response, reverse("portal:task_list"))
-        task = Task.objects.get(task_code="PORTAL-DEPT-TASK-CREATED")
+        task = Task.objects.get(task_code="46.9.1.1.2.1")
         self.assertEqual(task.assigned_by_employee, manager)
         self.assertEqual(task.assigned_to_employee, assignee)
         self.assertIsNone(task.activity_id)
@@ -634,7 +634,7 @@ class PortalSensitiveWorkflowTests(TestCase):
         self.assertIn(assignee, form.context["candidates"])
 
         response = self.client.post(create_url, {
-            "task_code": "PORTAL-HR-TASK-CROSS-DEPT",
+            "task_code": "46.9.1.1.2.2",
             "task_name": "Công việc HR giao cho phòng khác",
             "assigned_to_employee": str(assignee.pk),
             "department": str(other_department.pk),
@@ -644,7 +644,7 @@ class PortalSensitiveWorkflowTests(TestCase):
         })
 
         self.assertRedirects(response, reverse("portal:task_list"))
-        task = Task.objects.get(task_code="PORTAL-HR-TASK-CROSS-DEPT")
+        task = Task.objects.get(task_code="46.9.1.1.2.2")
         self.assertEqual(task.assigned_to_employee, assignee)
         self.assertEqual(task.department, other_department)
         self.assertIsNone(task.activity_id)

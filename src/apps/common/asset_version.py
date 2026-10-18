@@ -39,6 +39,7 @@ def get_service_worker_cache_version() -> str:
         "css/report_dashboard.css",
         "css/hcns_forms.css",
         "js/shared_components.js",
+        "js/ui_choices.js",
         "js/theme.js",
         "js/app_shell.js",
     ]

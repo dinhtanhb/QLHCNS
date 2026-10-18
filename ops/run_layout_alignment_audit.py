@@ -19,6 +19,7 @@ import sys
 MEASURE = r"""() => {
  const violations=[], measurements={};
  const rect=x=>{const r=x.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom}};
+ const controlSource=x=>x.dataset.uiChoiceSource?document.getElementById(x.dataset.uiChoiceSource):x.id?.endsWith('-display')?document.getElementById(x.id.replace(/-display$/,'')):null;
  const visible=x=>x.checkVisibility()&&x.getBoundingClientRect().width>0;
  const selector=x=>x.id?'#'+x.id:x.tagName.toLowerCase()+(typeof x.className==='string'&&x.className.trim()?'.'+x.className.trim().replaceAll(' ','.'):'');
  const fail=(code,x,value)=>violations.push({code,selector:selector(x),value,rect:rect(x)});
@@ -36,7 +37,7 @@ MEASURE = r"""() => {
  }
  for(const title of main.querySelectorAll('.ui-card-title'))if(visible(title)&&screen(title)&&parseFloat(getComputedStyle(title).fontSize)<17.5)fail('CARD_TITLE',title,getComputedStyle(title).fontSize);
  for(const button of main.querySelectorAll('.ui-button'))if(visible(button)&&screen(button)&&button.matches('a,button,input')){const s=getComputedStyle(button);if(rect(button).h<43.5)fail('BUTTON_HEIGHT',button,rect(button).h);if(parseFloat(s.fontSize)<14)fail('BUTTON_FONT',button,s.fontSize);}
- const controls=[...main.querySelectorAll('input,select,textarea')].filter(x=>visible(x)&&screen(x)&&!x.matches('.ui-choice-search')&&!['hidden','checkbox','radio'].includes(x.type));
+ const controls=[...main.querySelectorAll('input,select,textarea')].filter(x=>visible(x)&&screen(x)&&!['hidden','checkbox','radio'].includes(x.type));
  for(const f of main.querySelectorAll('form')){const fields=controls.filter(x=>x.form===f);if(fields.length>12&&!f.querySelector('fieldset'))fail('FORM_GROUPS',f,fields.length);for(const c of fields){if(!c.closest('.ui-form-grid--event')&&['address','reason','description','notes'].includes(c.name)&&rect(c.closest('.ui-field')||c).w<(rect(c.closest('.ui-form-grid')||f).w-parseFloat(getComputedStyle(c.closest('.ui-form-grid')||f).columnGap||0))/2-9)fail('LONG_FIELD',c,{width:rect(c).w,form:rect(f).w});const hint=(c.closest('.ui-field')||c.parentElement).querySelector('.ui-field-help,.ui-hr-text');if(hint&&visible(hint)&&!c.getAttribute('aria-describedby')?.split(' ').includes(hint.id))fail('HINT_ASSOCIATION',c,hint.textContent);}}
  for(const c of controls){const s=getComputedStyle(c);if(rect(c).h<43.5)fail('CONTROL_HEIGHT',c,rect(c).h);if(parseFloat(s.fontSize)<14)fail('FONT',c,s.fontSize);if(![...c.labels||[]].some(visible))fail('LABEL',c,c.name);if(['date','month'].includes(c.type)&&!c.parentElement.querySelector('.ui-date-echo'))fail('DATE_ECHO',c,c.type);if(['date','month'].includes(c.type)&&!c.hasAttribute('lang'))fail('DATE_LANGUAGE',c,c.type);}
  const grids=[...main.querySelectorAll('.ui-form-grid')].filter(x=>visible(x)&&screen(x)&&controls.some(c=>c.closest('.ui-form-grid')===x));measurements.grids=[];
@@ -46,12 +47,12 @@ MEASURE = r"""() => {
  for(const g of grids){const r=rect(g),s=getComputedStyle(g),gap=parseFloat(s.columnGap)||0,count=s.gridTemplateColumns.split(' ').filter(Boolean).length,col=(r.w-(count-1)*gap)/count;
   let container=g.parentElement;while(container&&!getComputedStyle(container).containerName.split(' ').includes('ui-form'))container=container.parentElement;
   if(!container)fail('FORM_CONTAINER',g,'Missing named ancestor');
-  else if(s.display==='grid'){const cs=getComputedStyle(container),width=container.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),expected=g.matches('.ui-form-grid--event')&&width>=1080?9:width>=900?(g.matches('.ui-form-grid--grouped,.ui-form-grid--long')?3:4):width>=640?3:width>=420?2:1;if(count!==expected)fail('GRID_COLUMNS',g,{containerWidth:width,expected,count});}
+  else if(s.display==='grid'){const cs=getComputedStyle(container),width=container.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),expected=g.matches('.ui-form-grid--event')&&width>=1080?9:width>=900?4:width>=640?3:width>=420?2:1;if(count!==expected)fail('GRID_COLUMNS',g,{containerWidth:width,expected,count});}
   const fields=controls.filter(x=>x.closest('.ui-form-grid')===g),rows=[];
   for(const c of fields){const field=c.closest('.ui-field')||c.parentElement,fr=rect(field),cr=rect(c.closest('.ui-select-control')||c);let row=rows.find(x=>Math.abs(x.y-fr.y)<=1);if(!row){row={y:fr.y,fields:[]};rows.push(row);}row.fields.push({name:c.name,field:fr,control:cr});
    const tracks=s.gridTemplateColumns.split(' ').map(parseFloat).filter(Number.isFinite);
    const near=(edge,end=false)=>{let x=r.x;const lines=[x];for(const track of tracks){x+=track;lines.push(end?x:x+gap);x+=gap;}return lines.some(x=>Math.abs(x-edge)<=1);};
-   const fs=getComputedStyle(field),numericSource=c.id?.endsWith('-display')?document.getElementById(c.id.replace(/-display$/,'')):null;
+   const fs=getComputedStyle(field),numericSource=controlSource(c);
    const kind=numericSource?.type||c.type,fieldName=numericSource?.name||c.name,rem=parseFloat(getComputedStyle(document.documentElement).fontSize);
    const cap=(kind==='datetime-local'?16:['date','month','number'].includes(kind)||['payroll_month','payroll_year'].includes(fieldName)||field.classList.contains('ui-field--compact')?12:fieldName==='full_name'?36:Infinity)*rem;
    if(r.w>=600&&cr.w>cap+1)fail('FIELD_MAX_WIDTH',c,{width:cr.w,maximum:cap});
@@ -67,9 +68,9 @@ MEASURE = r"""() => {
    if(s.display==='grid'&&innerWidth>=1024&&(!near(fr.x)||(!near(fr.right,true)&&Math.abs(fr.w-cap)>1)))fail('COLUMN_LINE',field,{grid:r,field:fr,columns:s.gridTemplateColumns});
    if(Math.abs(fr.right-cr.right)>1||Math.abs(fr.x-cr.x)>1)fail('FIELD_EDGE',c,{field:fr,control:cr});
    if(s.display==='grid'&&g.matches('.ui-form-grid--grouped,.ui-form-grid--long')&&field.matches('.ui-field--regular')&&Math.abs(fr.w-Math.min(col,cap))>1)fail('REGULAR_SPAN',field,{width:fr.w,oneTrack:col});
-    const source=c.id?.endsWith('-display')?document.getElementById(c.id.replace(/-display$/,'')):null;
+    const source=controlSource(c);
     const effType=source?source.type:c.type;
-    const name=(source?source.name||source.id:c.name||c.id||'').toLowerCase(),tag=c.tagName.toLowerCase();
+    const name=(source?source.name||source.id:c.name||c.id||'').toLowerCase(),tag=(source||c).tagName.toLowerCase();
     let minW=176;
     if(effType==='date'||effType==='month'||effType==='datetime-local'||effType==='time')minW=148;
     else if(tag==='select')minW=160;

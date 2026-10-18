@@ -142,6 +142,7 @@ def task_detail(request, pk):
 
 @login_required
 def task_create(request):
+    from apps.activity.activity_codes import ACTIVITY_CODE_NAMES
     if not _can_assign_task(request):
         messages.error(request, "Anh/chị không có quyền giao việc.")
         return redirect("portal:task_list")
@@ -158,9 +159,12 @@ def task_create(request):
                 raise ValidationError(
                     "Chỉ được giao việc cho nhân viên thuộc phạm vi phòng ban của anh/chị."
                 )
+            task_code = request.POST.get("task_code", "").strip()
+            if task_code not in ACTIVITY_CODE_NAMES:
+                raise ValidationError("Chọn mã công việc trong danh mục ActCode.")
             task = Task(
-                task_code=request.POST.get("task_code"),
-                task_name=request.POST.get("task_name"),
+                task_code=task_code,
+                task_name=ACTIVITY_CODE_NAMES[task_code],
                 description=request.POST.get("description", ""),
                 assigned_by_employee=employee,
                 assigned_to_employee=assignee,
@@ -186,6 +190,8 @@ def task_create(request):
     return render(request, "portal/task_create.html", {
         "candidates": candidates,
         "today": timezone.localdate(),
+        "task_code_names": ACTIVITY_CODE_NAMES,
+        "submitted": request.POST if request.method == "POST" else {},
     })
 
 

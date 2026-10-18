@@ -3,12 +3,12 @@
 {% block content %}
 <div class="ui-page">
 <div class="ui-card">
-    <h1 class="ui-page-title">Giao việc mới</h1>
+    <header class="ui-card-title"><h1 class="ui-page-title">Giao việc mới</h1></header>
     <form method="post" class="ui-form-stack" data-ui-form><div class="ui-form-grid ui-form-grid--grouped">
 
         {% csrf_token %}
         {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f0"  width="regular" %}
-        {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f1"  width="wide" %}
+        {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f1"  width="task-name" %}
         {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f2"  width="full" %}
         {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f3"  width="regular" %}
         {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f4"  width="regular" %}
@@ -24,4 +24,15 @@
 </div></form>
 </div>
 </div>
+{{ task_code_names|json_script:"task-code-names" }}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const codes = document.getElementById('task_create-task_code');
+  const name = document.getElementById('task_create-task_name');
+  const names = JSON.parse(document.getElementById('task-code-names').textContent);
+  function fillName() { name.value = names[codes.value] || ''; }
+  codes.addEventListener('change', fillName);
+  fillName();
+});
+</script>
 {% endblock %}

@@ -11,6 +11,27 @@ from apps.hrm.models import Employee
 class UIRefinementTests(TestCase):
     user = home_fixtures.HomeDashboardTests.user
 
+    def test_task_catalog_matches_actcode_and_server_resolves_name(self):
+        from pathlib import Path
+        from django.conf import settings
+        from apps.activity.activity_codes import ACTIVITY_CODE_NAMES
+        from apps.task.models import Task
+        rows = (Path(settings.BASE_DIR).parent / "docs/ActCode.md").read_text(encoding="utf-8").splitlines()[1:]
+        self.assertEqual(ACTIVITY_CODE_NAMES, dict(row.split("\t", 1) for row in rows if row.strip()))
+        manager = self.user("HR_MANAGER", True)
+        assignee = self.user("EMPLOYEE", True)
+        self.client.force_login(manager)
+        code = next(iter(ACTIVITY_CODE_NAMES))
+        payload = {"task_code": code, "task_name": "Forged title", "assigned_to_employee": str(assignee.employee_id), "priority": "High", "description": "Retain this description"}
+        response = self.client.post(reverse("portal:task_create"), payload)
+        self.assertRedirects(response, reverse("portal:task_list"))
+        self.assertEqual(Task.objects.get(task_code=code).task_name, ACTIVITY_CODE_NAMES[code])
+        payload["task_code"] = "UNKNOWN-CODE"
+        rejected = self.client.post(reverse("portal:task_create"), payload)
+        self.assertEqual(rejected.status_code, 200)
+        self.assertContains(rejected, "Retain this description")
+        self.assertFalse(Task.objects.filter(task_code="UNKNOWN-CODE").exists())
+
     @classmethod
     def setUpTestData(cls):
         home_fixtures.HomeDashboardTests.setUpTestData.__func__(cls)

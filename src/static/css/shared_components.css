@@ -9,6 +9,13 @@
  .ui-choice-popover { position:fixed; inset:auto; margin:0; width:20rem; max-width:calc(100vw - var(--ui-space-4)); padding:var(--ui-space-4); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-card); background:var(--ui-surface); color:var(--ui-text); }
  .ui-choice-popover input { width:100%; min-height:var(--ui-control-height); }
  .ui-choice-status:empty { display:none; }
+ .ui-combobox { position:relative; }
+ .ui-combobox .ui-choice-search { width:100%; padding-inline-end:var(--ui-target-min); }
+ .ui-combobox .ui-choice-toggle { position:absolute; inset-inline-end:0; top:0; width:var(--ui-target-min); height:var(--ui-target-min); border:0; background:transparent; color:var(--ui-text); cursor:pointer; }
+ .ui-choice-popover:has(.ui-choice-list) { padding:var(--ui-space-2); overflow:auto; }
+ .ui-choice-option { padding:var(--ui-space-3); min-height:var(--ui-target-min); cursor:pointer; white-space:normal; overflow-wrap:anywhere; }
+ .ui-choice-option:is(:hover,[data-active="true"]) { background:var(--ui-hover-bg); }
+ .ui-choice-option[aria-selected="true"] { font-weight:var(--ui-weight-semibold); color:var(--ui-brand); }
  .ui-results-card { min-width:0; margin-block:var(--ui-space-4); }
  .ui-results-card > .ui-query-card { padding:0 0 var(--ui-space-4); margin:0 0 var(--ui-space-4); border-bottom:var(--ui-border-width) solid var(--ui-card-border); background:var(--ui-surface); color:var(--ui-text); }
  .ui-results-card > .ui-card-title { margin-top:0; }

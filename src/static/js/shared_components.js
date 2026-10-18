@@ -1,32 +1,6 @@
 /* Opt-in validation and confirmation. Native form names/actions/CSRF are preserved. */
 (() => {
  'use strict';
- // One progressive selector enhancement. The native select stays authoritative,
- // named, required and keyboard-accessible; search never changes its value.
- document.querySelectorAll('.ui-field select:not([multiple])').forEach((select,index)=>{
-  if(select.disabled||select.options.length<10||['month','year','payroll_month','payroll_year'].includes(select.name)||select.closest('.hcns-paper,.hcns-editor'))return;
-  const label=select.labels?.[0]?.textContent.trim()||'danh mục';
-  const search=document.createElement('input');
-  search.type='search';search.className='ui-choice-search';search.id=(select.id||'ui-select-'+index)+'-search';
-  search.setAttribute('aria-label','Tìm trong '+label);search.setAttribute('aria-controls',select.id);
-  search.placeholder='Tìm để chọn…';search.autocomplete='off';
-  const status=document.createElement('p');status.className='ui-field-help ui-choice-status';status.setAttribute('role','status');
-  const popup=document.createElement('div');popup.className='ui-choice-popover';popup.id=search.id+'-popup';popup.setAttribute('popover','auto');
-  const toggle=document.createElement('button');toggle.type='button';toggle.className='ui-button ui-button--secondary ui-choice-toggle';toggle.textContent='Tìm';toggle.setAttribute('aria-label','Tìm trong '+label);toggle.setAttribute('popovertarget',popup.id);toggle.setAttribute('aria-expanded','false');
-  const control=document.createElement('div');control.className='ui-select-control';select.before(control);control.append(select,toggle);popup.append(search,status);control.after(popup);
-  const originalHidden=new WeakMap([...select.options].map(option=>[option,option.hidden]));
-  const normalize=text=>text.toLocaleLowerCase('vi').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');
-  const update=()=>{
-   const q=normalize(search.value.trim());let matches=0;
-   for(const option of select.options){const excluded=option.dataset.uiExcluded===undefined?originalHidden.get(option):option.dataset.uiExcluded==='true';const match=!q||normalize(option.textContent).includes(q);option.hidden=excluded||(!match&&!option.selected);if(!excluded&&match&&option.value)matches++;}
-   status.textContent=q?(matches?matches+' lựa chọn phù hợp':'Không có lựa chọn phù hợp. Xóa từ tìm để xem tất cả.') : '';
-  };
-  popup.addEventListener('toggle',event=>{const open=event.newState==='open';toggle.setAttribute('aria-expanded',String(open));if(open){const r=toggle.getBoundingClientRect();popup.style.left=Math.max(8,Math.min(r.right-320,innerWidth-popup.offsetWidth-8))+'px';popup.style.top=Math.max(8,Math.min(r.bottom+8,innerHeight-popup.offsetHeight-8))+'px';search.focus();}});
-  search.addEventListener('input',update);
-  search.addEventListener('keydown',event=>{if(event.key==='ArrowDown'){event.preventDefault();popup.hidePopover();select.focus();}if(event.key==='Escape'){event.preventDefault();search.value='';update();popup.hidePopover();toggle.focus();}if(event.key==='Enter')event.preventDefault();});
-  select.addEventListener('ui:choiceschanged',update);
-  select.form?.addEventListener('reset',()=>{search.value='';update();});
- });
  document.querySelectorAll('.ui-row-dropdown button[popovertarget]').forEach(button => {
   const menu=document.getElementById(button.getAttribute('popovertarget'));
   if(!menu)return;

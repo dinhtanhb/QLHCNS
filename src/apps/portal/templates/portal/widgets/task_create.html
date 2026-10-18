@@ -1,38 +1,42 @@
 {% load ui_components l10n %}
 {% if widget_key == "f0" %}
   <label for="task_create-task_code">Mã công việc</label>
-  <input type="text" name="task_code" required id="task_create-task_code">
+  <select name="task_code" required id="task_create-task_code">
+    <option value="">-- Chọn mã ActCode --</option>
+    {% for code, name in task_code_names.items %}<option value="{{ code }}" data-search="{{ name }}"{% if submitted.task_code == code %} selected{% endif %}>{{ code }}</option>{% endfor %}
+  </select>
 
 {% elif widget_key == "f1" %}
   <label for="task_create-task_name">Tên công việc</label>
-  <input type="text" name="task_name" required id="task_create-task_name">
+  <input type="text" name="task_name" value="{{ submitted.task_name|default:'' }}" readonly id="task_create-task_name" aria-describedby="task-name-help">
+  <p class="ui-field-help" id="task-name-help">Tên tự điền theo mã công việc đã chọn.</p>
 
 {% elif widget_key == "f2" %}
   <label for="task_create-description">Mô tả</label>
-  <textarea name="description" rows="3" id="task_create-description"></textarea>
+  <textarea name="description" rows="3" id="task_create-description">{{ submitted.description|default:'' }}</textarea>
 
 {% elif widget_key == "f3" %}
   <label for="task_create-assigned_to_employee">Giao cho nhân viên</label>
   <select name="assigned_to_employee" required id="task_create-assigned_to_employee">
     {% for e in candidates %}
-      <option value="{{ e.id }}">{{ e.employee_code|ui_number }} - {{ e.full_name|ui_number }}</option>
+      <option value="{{ e.id }}"{% if submitted.assigned_to_employee == e.id|stringformat:"s" %} selected{% endif %}>{{ e.employee_code|ui_number }} - {{ e.full_name|ui_number }}</option>
     {% endfor %}
   </select>
 
 {% elif widget_key == "f4" %}
   <label for="task_create-priority">Độ ưu tiên</label>
   <select name="priority" id="task_create-priority">
-    <option value="Low">Thấp</option>
-    <option value="Normal" selected>Bình thường</option>
-    <option value="High">Cao</option>
-    <option value="Urgent">Khẩn cấp</option>
+    <option value="Low"{% if submitted.priority == 'Low' %} selected{% endif %}>Thấp</option>
+    <option value="Normal"{% if not submitted.priority or submitted.priority == 'Normal' %} selected{% endif %}>Bình thường</option>
+    <option value="High"{% if submitted.priority == 'High' %} selected{% endif %}>Cao</option>
+    <option value="Urgent"{% if submitted.priority == 'Urgent' %} selected{% endif %}>Khẩn cấp</option>
   </select>
 
 {% elif widget_key == "f5" %}
   <label for="task_create-start_date">Ngày bắt đầu</label>
-  <input type="date" name="start_date" value="{{ today|date:'Y-m-d' }}" id="task_create-start_date">
+  <input type="date" name="start_date" value="{% if submitted %}{{ submitted.start_date }}{% else %}{{ today|date:'Y-m-d' }}{% endif %}" id="task_create-start_date">
 
 {% elif widget_key == "f6" %}
   <label for="task_create-due_date">Hạn hoàn thành</label>
-  <input type="date" name="due_date" id="task_create-due_date">
+  <input type="date" name="due_date"{% if submitted.due_date %} value="{{ submitted.due_date }}"{% endif %} id="task_create-due_date">
 {% endif %}
