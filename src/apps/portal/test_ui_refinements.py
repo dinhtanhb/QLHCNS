@@ -62,6 +62,21 @@ class UIRefinementTests(TestCase):
         self.assertContains(response,'value="2026"')
         self.assertNotContains(response,'2.026')
 
+    def test_finance_short_fields_use_native_selects_without_narrowing_values(self):
+        finance = self.user("FINANCE_OFFICER")
+        self.client.force_login(finance)
+
+        period_page = self.client.get(reverse("portal:finance_period_list"))
+        self.assertContains(period_page, '<select id="period-month" name="payroll_month"')
+        self.assertContains(period_page, '<option value="12">Tháng 12</option>')
+        self.assertContains(period_page, '<option value="2000">2000</option>')
+        self.assertContains(period_page, '<option value="2100">2100</option>')
+
+        dependent_page = self.client.get(reverse("portal:finance_dependent_list"))
+        self.assertContains(dependent_page, '<select id="dependent-relationship" name="relationship"')
+        self.assertContains(dependent_page, '<option value="Con">Con</option>')
+        self.assertContains(dependent_page, '<option value="Khác">Khác</option>')
+
     def test_deleted_employee_stays_hidden_even_with_live_contract(self):
         hr=self.user("HR_MANAGER",True)
         contract=self.contract(hr.employee)

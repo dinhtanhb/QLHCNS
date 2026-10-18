@@ -4,7 +4,7 @@
  // One progressive selector enhancement. The native select stays authoritative,
  // named, required and keyboard-accessible; search never changes its value.
  document.querySelectorAll('.ui-field select:not([multiple])').forEach((select,index)=>{
-  if(select.disabled||select.options.length<10||['month','year'].includes(select.name)||select.closest('.hcns-paper,.hcns-editor'))return;
+  if(select.disabled||select.options.length<10||['month','year','payroll_month','payroll_year'].includes(select.name)||select.closest('.hcns-paper,.hcns-editor'))return;
   const label=select.labels?.[0]?.textContent.trim()||'danh mục';
   const search=document.createElement('input');
   search.type='search';search.className='ui-choice-search';search.id=(select.id||'ui-select-'+index)+'-search';

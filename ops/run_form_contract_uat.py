@@ -51,11 +51,42 @@ class FormContract(HTMLParser):
         if tag=='form':self.form=None;self.field=None
 
 
+def normalize_finance_choices(forms, old_forms, route):
+    """Accept only the three explicitly requested native choice controls.
+
+    All other fields, form attributes, defaults and query counts stay audited.
+    A baseline already containing selects is compared without normalization.
+    """
+    specifications = {
+        'portal:finance_period_list': {
+            'payroll_month': ('number', '1', '12', [''] + [str(n) for n in range(1, 13)]),
+            'payroll_year': ('number', '2000', '2100', [''] + [str(n) for n in range(2000, 2101)]),
+        },
+        'portal:finance_dependent_list': {
+            'relationship': ('text', None, None, ['', 'Con', 'Vợ', 'Chồng', 'Cha', 'Mẹ', 'Cha vợ/chồng', 'Mẹ vợ/chồng', 'Khác']),
+        },
+    }
+    for name, (kind, minimum, maximum, values) in specifications.get(route, {}).items():
+        previous = [f for form in old_forms or [] for f in form['fields'] if f['attrs'].get('name') == name]
+        current = [f for form in forms or [] for f in form['fields'] if f['attrs'].get('name') == name]
+        expected = {'name': name, 'type': kind, 'value': '', 'required': None}
+        if minimum is not None:
+            expected.update(min=minimum, max=maximum)
+        if len(previous) != 1 or len(current) != 1 or previous[0] != {'tag': 'input', 'attrs': expected}:
+            continue
+        field = current[0]
+        options = field.get('options', [])
+        if field['tag'] == 'select' and field['attrs'] == {'name': name, 'required': None} and [o['attrs'] for o in options] == [{'value': value} for value in values]:
+            field.clear()
+            field.update(previous[0])
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--directory',type=Path,required=True);p.add_argument('--source-root',type=Path)
     p.add_argument('--phase',choices=('before','after'),required=True);p.add_argument('--only',nargs='+')
     p.add_argument('--allow-event-mode',action='store_true',help='Allow only the approved attendance_mode select addition on event_list.')
+    p.add_argument('--allow-finance-choices',action='store_true',help='Allow only the requested month/year/relationship input-to-select conversions with exact values.')
     args=p.parse_args();root=(args.source_root or Path(__file__).resolve().parents[1]).resolve();folder=args.directory.resolve()
     if root==folder or root in folder.parents:p.error('External synthetic runtime required')
     configure(root,folder)
@@ -89,6 +120,8 @@ def main():
                     if old['status']!=case['status']:report['failures'].append(key+' HTTP status changed')
                     if case['selects']>old['selects']:report['failures'].append(key+' SELECT count increased')
                     normalized=copy.deepcopy(case.get('forms'))
+                    if args.allow_finance_choices:
+                        normalize_finance_choices(normalized, old.get('forms'), route['name'])
                     if args.allow_event_mode and route['name']=='portal:event_list':
                         modes=[f for form in normalized or [] for f in form['fields'] if f['attrs'].get('name')=='attendance_mode']
                         allowed=len(modes)==1 and modes[0]['tag']=='select' and modes[0]['attrs']=={'name':'attendance_mode'} and modes[0].get('options')==[{'attrs':{'value':'Online'},'text':'Online'},{'attrs':{'value':'Offline','selected':None},'text':'Offline'}]

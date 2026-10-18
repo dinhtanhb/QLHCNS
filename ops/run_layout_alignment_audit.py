@@ -37,7 +37,7 @@ MEASURE = r"""() => {
  for(const title of main.querySelectorAll('.ui-card-title'))if(visible(title)&&screen(title)&&parseFloat(getComputedStyle(title).fontSize)<17.5)fail('CARD_TITLE',title,getComputedStyle(title).fontSize);
  for(const button of main.querySelectorAll('.ui-button'))if(visible(button)&&screen(button)&&button.matches('a,button,input')){const s=getComputedStyle(button);if(rect(button).h<43.5)fail('BUTTON_HEIGHT',button,rect(button).h);if(parseFloat(s.fontSize)<14)fail('BUTTON_FONT',button,s.fontSize);}
  const controls=[...main.querySelectorAll('input,select,textarea')].filter(x=>visible(x)&&screen(x)&&!x.matches('.ui-choice-search')&&!['hidden','checkbox','radio'].includes(x.type));
- for(const f of main.querySelectorAll('form')){const fields=controls.filter(x=>x.form===f);if(fields.length>12&&!f.querySelector('fieldset'))fail('FORM_GROUPS',f,fields.length);for(const c of fields){if(!c.closest('.ui-form-grid--event')&&['full_name','address','reason','description','notes'].includes(c.name)&&rect(c.closest('.ui-field')||c).w<(rect(c.closest('.ui-form-grid')||f).w-parseFloat(getComputedStyle(c.closest('.ui-form-grid')||f).columnGap||0))/2-9)fail('LONG_FIELD',c,{width:rect(c).w,form:rect(f).w});const hint=(c.closest('.ui-field')||c.parentElement).querySelector('.ui-field-help,.ui-hr-text');if(hint&&visible(hint)&&!c.getAttribute('aria-describedby')?.split(' ').includes(hint.id))fail('HINT_ASSOCIATION',c,hint.textContent);}}
+ for(const f of main.querySelectorAll('form')){const fields=controls.filter(x=>x.form===f);if(fields.length>12&&!f.querySelector('fieldset'))fail('FORM_GROUPS',f,fields.length);for(const c of fields){if(!c.closest('.ui-form-grid--event')&&['address','reason','description','notes'].includes(c.name)&&rect(c.closest('.ui-field')||c).w<(rect(c.closest('.ui-form-grid')||f).w-parseFloat(getComputedStyle(c.closest('.ui-form-grid')||f).columnGap||0))/2-9)fail('LONG_FIELD',c,{width:rect(c).w,form:rect(f).w});const hint=(c.closest('.ui-field')||c.parentElement).querySelector('.ui-field-help,.ui-hr-text');if(hint&&visible(hint)&&!c.getAttribute('aria-describedby')?.split(' ').includes(hint.id))fail('HINT_ASSOCIATION',c,hint.textContent);}}
  for(const c of controls){const s=getComputedStyle(c);if(rect(c).h<43.5)fail('CONTROL_HEIGHT',c,rect(c).h);if(parseFloat(s.fontSize)<14)fail('FONT',c,s.fontSize);if(![...c.labels||[]].some(visible))fail('LABEL',c,c.name);if(['date','month'].includes(c.type)&&!c.parentElement.querySelector('.ui-date-echo'))fail('DATE_ECHO',c,c.type);if(['date','month'].includes(c.type)&&!c.hasAttribute('lang'))fail('DATE_LANGUAGE',c,c.type);}
  const grids=[...main.querySelectorAll('.ui-form-grid')].filter(x=>visible(x)&&screen(x)&&controls.some(c=>c.closest('.ui-form-grid')===x));measurements.grids=[];
  measurements.grid_rules=[];
@@ -51,9 +51,22 @@ MEASURE = r"""() => {
   for(const c of fields){const field=c.closest('.ui-field')||c.parentElement,fr=rect(field),cr=rect(c.closest('.ui-select-control')||c);let row=rows.find(x=>Math.abs(x.y-fr.y)<=1);if(!row){row={y:fr.y,fields:[]};rows.push(row);}row.fields.push({name:c.name,field:fr,control:cr});
    const tracks=s.gridTemplateColumns.split(' ').map(parseFloat).filter(Number.isFinite);
    const near=(edge,end=false)=>{let x=r.x;const lines=[x];for(const track of tracks){x+=track;lines.push(end?x:x+gap);x+=gap;}return lines.some(x=>Math.abs(x-edge)<=1);};
-   if(s.display==='grid'&&innerWidth>=1024&&(!near(fr.x)||!near(fr.right,true)))fail('COLUMN_LINE',field,{grid:r,field:fr,columns:s.gridTemplateColumns});
+   const fs=getComputedStyle(field),numericSource=c.id?.endsWith('-display')?document.getElementById(c.id.replace(/-display$/,'')):null;
+   const kind=numericSource?.type||c.type,fieldName=numericSource?.name||c.name,rem=parseFloat(getComputedStyle(document.documentElement).fontSize);
+   const cap=(kind==='datetime-local'?16:['date','month','number'].includes(kind)||['payroll_month','payroll_year'].includes(fieldName)||field.classList.contains('ui-field--compact')?12:fieldName==='full_name'?36:Infinity)*rem;
+   if(r.w>=600&&cr.w>cap+1)fail('FIELD_MAX_WIDTH',c,{width:cr.w,maximum:cap});
+   // A capped field still occupies its declared grid tracks. Measure holes
+   // between occupied slots, rather than the whitespace inside a compact slot.
+   if(s.display==='grid'){
+    let index=0,x=r.x;while(index<tracks.length-1&&x<fr.x-1){x+=tracks[index]+gap;index++;}
+    const start=parseInt(fs.gridColumnStart),end=parseInt(fs.gridColumnEnd);
+    const span=fs.gridColumnStart.startsWith('span ')?parseInt(fs.gridColumnStart.slice(5)):fs.gridColumnEnd.startsWith('span ')?parseInt(fs.gridColumnEnd.slice(5)):end===-1?tracks.length-index:Number.isFinite(start)&&Number.isFinite(end)&&end>start?end-start:1;
+    const slotWidth=tracks.slice(index,index+span).reduce((sum,w)=>sum+w,0)+gap*(span-1);
+    Object.assign(row.fields.at(-1),{slotRight:fr.x+slotWidth,slotWidth});
+   }
+   if(s.display==='grid'&&innerWidth>=1024&&(!near(fr.x)||(!near(fr.right,true)&&Math.abs(fr.w-cap)>1)))fail('COLUMN_LINE',field,{grid:r,field:fr,columns:s.gridTemplateColumns});
    if(Math.abs(fr.right-cr.right)>1||Math.abs(fr.x-cr.x)>1)fail('FIELD_EDGE',c,{field:fr,control:cr});
-   if(s.display==='grid'&&g.matches('.ui-form-grid--grouped,.ui-form-grid--long')&&field.matches('.ui-field--regular')&&Math.abs(fr.w-col)>1)fail('REGULAR_SPAN',field,{width:fr.w,oneTrack:col});
+   if(s.display==='grid'&&g.matches('.ui-form-grid--grouped,.ui-form-grid--long')&&field.matches('.ui-field--regular')&&Math.abs(fr.w-Math.min(col,cap))>1)fail('REGULAR_SPAN',field,{width:fr.w,oneTrack:col});
     const source=c.id?.endsWith('-display')?document.getElementById(c.id.replace(/-display$/,'')):null;
     const effType=source?source.type:c.type;
     const name=(source?source.name||source.id:c.name||c.id||'').toLowerCase(),tag=c.tagName.toLowerCase();
@@ -69,7 +82,7 @@ MEASURE = r"""() => {
   }
   for(const row of rows){const ys=row.fields.map(x=>x.control.y),hs=row.fields.map(x=>x.control.h);if(Math.max(...ys)-Math.min(...ys)>1)fail('ROW_TOP',g,row);if(Math.max(...hs)-Math.min(...hs)>1)fail('ROW_HEIGHT',g,row);}
   for(let i=0;i<rows.length-1;i++){const bottom=Math.max(...rows[i].fields.map(x=>x.field.bottom)),next=rows[i+1].y,between=[...g.children].some(x=>visible(x)&&rect(x).y>=bottom&&rect(x).bottom<=next&&!x.matches('.ui-field'));if(!between&&Math.abs(next-bottom-(parseFloat(s.rowGap)||0))>1)fail('ROW_GAP',g,{bottom,next,gap:next-bottom,expected:s.rowGap});}
-  for(let i=0;i<rows.length-1;i++){const row=rows[i],last=row.fields.at(-1),next=rows[i+1],action=[...g.querySelectorAll('.ui-form-actions')].some(x=>visible(x)&&Math.abs(rect(x).y-row.y)<44),groupBreak=[...g.children].some(x=>visible(x)&&!x.matches('.ui-field')&&rect(x).y>row.y&&rect(x).y<next.y);if(last&&!action&&!groupBreak&&r.right-last.field.right-gap>=next.fields[0].field.w-1)fail('ROW_HOLE',g,row);}
+  for(let i=0;i<rows.length-1;i++){const row=rows[i],last=row.fields.at(-1),next=rows[i+1],action=[...g.querySelectorAll('.ui-form-actions')].some(x=>visible(x)&&Math.abs(rect(x).y-row.y)<44),groupBreak=[...g.children].some(x=>visible(x)&&!x.matches('.ui-field')&&rect(x).y>row.y&&rect(x).y<next.y);if(last&&!action&&!groupBreak&&r.right-(last.slotRight??last.field.right)-gap>=(next.fields[0].slotWidth??next.fields[0].field.w)-1)fail('ROW_HOLE',g,row);}
 
   measurements.grids.push({selector:selector(g),rect:r,columns:s.gridTemplateColumns,rows});
  }
@@ -219,6 +232,10 @@ async def audit(args, routes, output):
                             await page.set_viewport_size({'width':width,'height':920})
                             for theme in ('light','dark'):
                                 await page.evaluate('(t)=>document.documentElement.dataset.theme=t',theme)
+                                # Row alignment responds to resize via requestAnimationFrame.
+                                # Measure the rendered result, after fonts and that callback,
+                                # rather than racing the resize/ResizeObserver lifecycle.
+                                await page.evaluate('async()=>{await document.fonts.ready;await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));}')
                                 result=await page.evaluate(MEASURE)
                                 item=dict(case,width=width,theme=theme,**result)
                                 image_key=(route['name'],width)

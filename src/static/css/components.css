@@ -601,7 +601,8 @@
     margin-top: var(--ui-space-6);
 }
 
-.ui-row-popover {
+.ui-row-actions.ui-row-popover {
+    display: none;
     position: fixed;
     inset: auto;
     margin: 0;
@@ -615,6 +616,11 @@
     background: var(--ui-surface);
     color: var(--ui-text);
     box-shadow: var(--ui-shadow-overlay);
+}
+
+.ui-row-actions.ui-row-popover:popover-open {
+    display: grid;
+    gap: var(--ui-space-2);
 }
 
 
@@ -818,6 +824,11 @@
     .ui-form-grid > .ui-field--regular { grid-column: span 1; }
     .ui-form-grid > .ui-field--wide { grid-column: span 2; }
     .ui-form-grid > .ui-field--full { grid-column: 1 / -1; }
+    .ui-form-grid > :is(.ui-field--compact,.ui-field:has(input[type="date"],input[type="month"],input[type="datetime-local"],input[type="number"])) {
+        justify-self: start;
+        --ui-field-max: 12rem;
+        width: min(100%, var(--ui-field-max));
+    }
     .ui-form-grid--inline {
         display: flex;
         flex-wrap: wrap;
@@ -828,8 +839,13 @@
         flex: 1 1 12rem;
         min-width: 0;
     }
-    .ui-form-grid--inline > .ui-field:has([name="purpose"]) { flex-grow: 2; }
+    .ui-form-grid--inline > .ui-field:has([name="purpose"],[name="full_name"]) { flex-grow: 2; }
     .ui-form-grid--inline > .ui-field:has(.ui-select-control) { flex-basis:16rem; }
+    .ui-form-grid > .ui-field:has(input[type="datetime-local"]) { --ui-field-max:16rem; }
+    .ui-form-grid > .ui-field:has(input[name="full_name"]) { --ui-field-max:36rem; width:min(100%,var(--ui-field-max)); justify-self:start; }
+    html[data-theme="dark"] .ui-form-grid .ui-field input:is([type="date"],[type="month"],[type="datetime-local"],[type="time"]) { color-scheme:dark; }
+    .ui-form-grid--inline > :is(.ui-field--compact,.ui-field:has(input[type="date"],input[type="month"],input[type="number"])) { flex:0 1 12rem; }
+    .ui-form-grid--inline > .ui-field:has(input[type="datetime-local"]) { flex:0 1 16rem; }
     .ui-form-stack .ui-form-grid--inline > .ui-form-actions {
         flex: 0 0 auto;
         align-self: start;
@@ -844,6 +860,7 @@
     :is(.ui-form-grid--grouped,.ui-form-grid--long) > fieldset { grid-column:1 / -1; }
     .ui-form-grid--event { display:flex; flex-wrap:wrap; align-items:flex-start; }
     .ui-form-grid--event > .ui-field { flex:1 1 14rem; }
+    .ui-form-grid--event > .ui-field:has(input[type="datetime-local"]) { flex:0 1 16rem; }
     .ui-form-grid--event > .ui-field--wide { flex:2 1 24rem; }
     .ui-form-grid--event > .ui-field--full { flex-basis:100%; }
     .ui-form-grid--event > :is(.ui-form-actions,.ui-error-summary,fieldset) { flex-basis:100%; }
@@ -859,6 +876,7 @@
 }
 @container ui-form (width < 600px) {
     .ui-form-grid--inline > .ui-field { flex: 1 1 100%; }
+    .ui-form-grid--inline > .ui-field:has(input[type="date"],input[type="month"],input[type="datetime-local"],input[type="number"]) { flex-basis:100%; }
     .ui-form-stack .ui-form-grid--inline > .ui-form-actions { flex: 1 1 100%; margin-top: 0; }
 }
 @container ui-form (min-width: 1080px) {

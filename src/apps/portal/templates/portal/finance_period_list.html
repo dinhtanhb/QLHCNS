@@ -7,9 +7,9 @@
 <h2 class="ui-card-title" id="period-create-title">Tạo kỳ lương mới</h2>
 <form method="post" action="{% url 'portal:finance_period_create' %}" data-ui-form class="ui-form-stack">
 {% csrf_token %}{% include "ui/error_summary.html" %}
-<fieldset class="ui-form-section"><legend class="ui-field-label">Tháng và năm của kỳ lương</legend><div class="ui-form-grid ui-form-grid--grouped">
-{% include "ui/field.html" with id="period-month" name="payroll_month" label="Tháng" type="number" min=1 max=12 required=True value=""  width="regular" %}
-{% include "ui/field.html" with id="period-year" name="payroll_year" label="Năm" type="number" min=2000 max=2100 required=True value=""  width="regular" %}
+<fieldset class="ui-form-section"><legend class="ui-field-label">Tháng và năm của kỳ lương</legend><div class="ui-form-grid ui-form-grid--inline">
+{% include "ui/field.html" with id="period-month" name="payroll_month" label="Tháng" options_template="portal/_finance_month_options.html" required=True compact=True width="regular" %}
+{% include "ui/field.html" with id="period-year" name="payroll_year" label="Năm" options_template="portal/_finance_year_options.html" required=True compact=True width="regular" %}
 <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Tạo kỳ lương</button></div>
 </div></fieldset></form>
 </section>

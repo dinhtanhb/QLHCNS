@@ -5,13 +5,13 @@
 {% include "ui/page_header.html" with title="Người phụ thuộc" description="Đăng ký người phụ thuộc để giảm trừ thuế thu nhập cá nhân." %}
 <section class="ui-card" aria-labelledby="dependent-create-title">
     <h2 id="dependent-create-title" class="ui-card-title">Thêm người phụ thuộc</h2>
-    <form data-ui-form method="post" class="ui-form-stack ui-finance-form"><div class="ui-form-grid ui-form-grid--grouped">
+    <form data-ui-form method="post" class="ui-form-stack ui-finance-form"><div class="ui-form-grid ui-form-grid--inline">
 {% include "ui/error_summary.html" %}
         {% csrf_token %}
         {% include "ui/field.html" with id="dependent-employee" name="employee" label="Nhân viên" required=True options_template="portal/_finance_employee_options.html"  width="regular" %}
-        {% include "ui/field.html" with id="dependent-full_name" name="full_name" label="Họ tên người phụ thuộc" type="text" required=True  width="full" %}
+        {% include "ui/field.html" with id="dependent-full_name" name="full_name" label="Họ tên người phụ thuộc" type="text" required=True  width="wide" %}
 
-        {% include "ui/field.html" with id="dependent-relationship" name="relationship" label="Quan hệ" type="text" placeholder="Ví dụ: Con, Cha, Mẹ" required=True  width="regular" %}
+        {% include "ui/field.html" with id="dependent-relationship" name="relationship" label="Quan hệ" options_template="portal/_finance_relationship_options.html" required=True  width="regular" %}
         {% include "ui/field.html" with id="dependent-registered_from" name="registered_from" label="Đăng ký từ" type="date" required=True  width="regular" %}
         <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Thêm người phụ thuộc</button></div>
 

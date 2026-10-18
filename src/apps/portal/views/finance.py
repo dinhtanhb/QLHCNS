@@ -88,7 +88,11 @@ def finance_period_list(request):
         messages.error(request, "Anh/chị không có quyền truy cập.")
         return redirect("portal:dashboard")
     periods = PayrollPeriod.objects.order_by("-payroll_year", "-payroll_month")
-    return render(request, "portal/finance_period_list.html", {"periods": periods})
+    return render(request, "portal/finance_period_list.html", {
+        "periods": periods,
+        "months": range(1, 13),
+        "years": range(2000, 2101),
+    })
 
 
 @login_required

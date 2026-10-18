@@ -6,14 +6,14 @@
 
 <div class="ui-card">
     <h2 class="ui-card-title">Đặt xe mới</h2>
-    <form method="post" action="{% url 'portal:vehicle_booking_create' %}" class="ui-form-stack" data-ui-form><div class="ui-form-grid ui-form-grid--grouped">
+    <form method="post" action="{% url 'portal:vehicle_booking_create' %}" class="ui-form-stack" data-ui-form><div class="ui-form-grid ui-form-grid--inline">
 {% include "ui/error_summary.html" %}
         {% csrf_token %}
         {% include "ui/field.html" with widget_template="portal/widgets/vehicle_booking_list.html" widget_key="f0"  width="regular" %}
         {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="vehicle_booking_list-destination-1-"|add:row_number %}{% include "ui/field.html" with id=field_id name="destination" value=submitted.destination choices=destination_choices label="Điểm đến" type="text" required=True  width="regular" %}{% endwith %}{% endwith %}
         {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="vehicle_booking_list-purpose-2-"|add:row_number %}{% include "ui/field.html" with id=field_id name="purpose" value=submitted.purpose label="Mục đích" type="text"  width="regular" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="vehicle_booking_list-start_time-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="start_time" value=submitted.start_time label="Bắt đầu" type="datetime-local" required=True  width="wide" %}{% endwith %}{% endwith %}
-        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="vehicle_booking_list-end_time-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="end_time" value=submitted.end_time label="Kết thúc" type="datetime-local" required=True  width="wide" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="vehicle_booking_list-start_time-3-"|add:row_number %}{% include "ui/field.html" with id=field_id name="start_time" value=submitted.start_time label="Bắt đầu" type="datetime-local" required=True compact=True width="regular" %}{% endwith %}{% endwith %}
+        {% with row_number=forloop.counter|default:0|stringformat:"s" %}{% with field_id="vehicle_booking_list-end_time-4-"|add:row_number %}{% include "ui/field.html" with id=field_id name="end_time" value=submitted.end_time label="Kết thúc" type="datetime-local" required=True compact=True width="regular" %}{% endwith %}{% endwith %}
         <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Đặt xe</button></div>
 
 </div></form>

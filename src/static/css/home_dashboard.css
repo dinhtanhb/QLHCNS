@@ -87,6 +87,8 @@
  .home-dashboard .home-inline-totals>div { display:flex; gap:var(--ui-space-1); }
  .home-dashboard .home-project-heading { display:flex; align-items:baseline; flex-wrap:wrap; gap:var(--ui-space-3); }
  .home-dashboard .home-project-heading>span { color:var(--ui-text-muted); }
+.home-dashboard :is(.home-group-header h2,.home-card-title) { font-size:var(--ui-text-h2); font-weight:var(--ui-weight-semibold); line-height:var(--ui-leading-h2); letter-spacing:-.012em; }
+.home-dashboard :is(.home-group-header h2,.home-card-title)::after { content:""; display:block; width:24px; height:2px; margin-top:var(--ui-space-2); border-radius:var(--ui-radius-pill); background:var(--ui-brand); }
  .home-dashboard .home-project-metrics,.home-dashboard .home-recruitment-metrics { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); min-width:0; }
  .home-dashboard .home-project-metrics>div,.home-dashboard .home-recruitment-metrics>div { display:grid; align-content:start; gap:var(--ui-space-2); min-width:0; padding-inline:var(--ui-space-4); border-inline-start:var(--ui-border-width) solid var(--ui-divider); }
  .home-dashboard .home-project-metrics>div:first-child,.home-dashboard .home-recruitment-metrics>div:first-child { padding-inline-start:0; border-inline-start:0; }

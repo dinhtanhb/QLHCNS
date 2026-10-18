@@ -4,8 +4,8 @@
     "action": 38,
     "long": 5,
     "filter": 13,
-    "inline": 28,
-    "grouped": 24,
+    "inline": 31,
+    "grouped": 21,
     "event": 1
   },
   "forms": [
@@ -174,7 +174,7 @@
     {
       "template": "src/apps/portal/templates/portal/finance_dependent_list.html",
       "form": 1,
-      "pattern": "grouped",
+      "pattern": "inline",
       "fields": 4
     },
     {
@@ -210,7 +210,7 @@
     {
       "template": "src/apps/portal/templates/portal/finance_period_list.html",
       "form": 1,
-      "pattern": "grouped",
+      "pattern": "inline",
       "fields": 2
     },
     {
@@ -642,7 +642,7 @@
     {
       "template": "src/apps/portal/templates/portal/vehicle_booking_list.html",
       "form": 1,
-      "pattern": "grouped",
+      "pattern": "inline",
       "fields": 5
     },
     {

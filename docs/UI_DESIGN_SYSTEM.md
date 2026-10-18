@@ -66,6 +66,8 @@ Kiểm tra tự động HTML/CSS không thay thế UAT thị giác hoặc đối
 
 ## Hợp đồng form màn hình — 17/10/2026
 
+Ô ngày/tháng/số có chiều rộng tối đa 12rem; ngày kèm giờ 16rem; họ tên đầy đủ 36rem. Đây là giới hạn theo nội dung, không phải chiều rộng cố định: trường thu theo vùng chứa và form ngắn có thể xếp dọc toàn hàng khi hẹp. Áp dụng cả widget riêng qua loại control, không chỉ field truyền `type` vào partial. Trong grid, trường gọn vẫn giữ vị trí track đã khai báo; kiểm khoảng trống theo track, đồng thời kiểm riêng giới hạn chiều rộng control. Tháng/năm kỳ lương dùng select đủ miền 1–12 và 2000–2100; quan hệ người phụ thuộc dùng các lựa chọn thông dụng.
+
 Chọn cấu trúc theo nghiệp vụ trong [UI_FORM_REGISTRY.json](UI_FORM_REGISTRY.json), không ép mọi form thành bốn cột. `.ui-form-grid--inline` cho form ngắn: nút liền sau control cuối, căn đáy; khoảng trống dư nằm sau nút. `.ui-form-grid--grouped` cho form vừa, `--long` cho form dài chia nhóm. `ui/field.html` dùng `width="regular|wide|full"`; span số chỉ tương thích cũ. Bộ lọc giữ `ui-query-bar` riêng; thao tác trong bảng giữ form POST độc lập.
 
 Form nhóm/dài giữ track đều theo vùng chứa (1/2/3 cột, ngưỡng 420/640px); trường thường chiếm một track kể cả cuối hàng, trường rộng chiếm hai track hoặc toàn hàng khi hẹp; ghi chú/địa chỉ dài có thể toàn hàng. Form ngắn chia phần dư theo nội dung và vẫn giữ nút liền field cuối. Nhãn luôn hiện; cùng hàng căn control theo nhãn cao nhất thực tế, không dành cố định hai dòng. Gap 16px; nhóm 24px; mobile xếp theo DOM, không bóp control. Control/nút tối thiểu 44px, chữ 14px. Nút form dài ở cuối nhóm, không sticky che focus. Form lồng trong khung hẹp wrap theo vùng chứa thực.
