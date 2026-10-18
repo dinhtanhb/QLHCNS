@@ -1,5 +1,29 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-18 — Xác minh migration Lịch công tác, backup và restore thử SQL Server
+
+**Ủy quyền, đích và trạng thái thực tế**
+- Chủ dự án xác nhận trong hội thoại: SQL Server `DESKTOP-6CS95OK\SQLEXPRESS`, DB `qlhcns`, cho phép backup mới → kiểm tra/restore thử → migration. Bắt đầu trên `main` tại `45d2029ab7b11f38ad5188460e6cbdef106969de`; fetch origin/main khớp 0/0, đọc ba mục nhật ký mới nhất, giữ nguyên các tệp chưa theo dõi đã được cho phép.
+- Kiểm tra trực tiếp thấy trạng thái đã thay đổi so với ảnh lỗi: `planning.0003_event_attendance_mode` được ghi áp dụng lúc **17/10/2026 11:00:16.570831 UTC (18:00:16 giờ Việt Nam)**, cột `tblEvent.AttendanceMode` tồn tại `nvarchar(10) NULL`, không có SQL default. Không xác định tác nhân đã áp dụng trước lượt này; không ghi nhận đó là thay đổi do lượt này thực hiện. Có 0 Event trong DB gốc.
+- `MigrationExecutor.migration_plan` cho đích planning.0003 rỗng; `migrate planning 0003` báo **No migrations to apply**. Không fake migration, không thêm migration mới, không hoàn tác hoặc áp lại schema trên DB gốc. Mục này cập nhật và đóng phần migration còn mở được ghi trong mục UI ngay dưới.
+
+**Backup và restore đã thực hiện**
+- Tạo backup **COPY_ONLY, CHECKSUM, NO_COMPRESSION** (SQL Server Express) tại `D:/IHRMS_Operations/attendance_20261018_091222/qlhcns_copy_only.bak`, **30.106.112 byte**, SHA-256 **`e4039e19bb417da41c211268a0d9b65359411913987f4b478ebb598bbf9aeaff`**; tệp `.bak.sha256` đi kèm. Đây là backup dữ liệu vận hành, tách biệt hoàn toàn với snapshot nguồn review.
+- `RESTORE VERIFYONLY ... WITH CHECKSUM` đạt; `RESTORE FILELISTONLY` rồi `RESTORE ... WITH MOVE ..., CHECKSUM, RECOVERY` vào DB mới **`qlhcns_uat_attendance_20261018_091222`**, file data/log riêng, không REPLACE. DB ONLINE; **DBCC CHECKDB đạt**. Xác minh lại SHA sau UAT vẫn khớp.
+- Lượt đầu thử đường dẫn backup mặc định không có backup hoàn tất khi chuyển sang VERIFYONLY; chưa coi đó là backup hợp lệ. Chạy lại bằng cursor ODBC, đọc hết result set của BACKUP/RESTORE, dùng thư mục ngoài repository có quyền riêng cho SQL service và tài khoản thao tác. Một lần gán timeout trên cursor không được API hỗ trợ đã dừng trước thao tác; đổi sang timeout connection. Chỉ backup/restore thành công ở thư mục nêu trên được dùng làm bằng chứng.
+- Thư mục vận hành được bỏ quyền kế thừa rộng, giữ tài khoản thực hiện/SYSTEM/Administrators và SQL service. Không đưa `.bak`, thông tin đăng nhập, dữ liệu thật, ảnh chứa dữ liệu vận hành hoặc script runtime vào Git.
+
+**Kiểm migration và browser UAT**
+- Trên DB restore riêng: rollback planning.0003 về 0002 đạt, cột được bỏ; tạo Event giả bằng historical model 0002, sau đó `sqlmigrate planning 0003` đối chiếu đúng `ALTER TABLE [tblEvent] ADD [AttendanceMode] nvarchar(10) NULL;`, không UPDATE; migrate 0003 đạt, Event giả cũ giữ NULL, Event mới mặc định Offline. SQL sinh trên SQLite cũng đã lưu/đối chiếu trong cùng lượt; không kết nối DB vận hành khi sinh SQL SQLite.
+- Cấu hình ứng dụng UAT chỉ trỏ DB restore, media ngoài repo, email locmem, M365 tắt, cache riêng; tài khoản superuser giả chỉ tạo trên bản sao. Browser Edge headless/Playwright tại `127.0.0.1:8830`: **23 kiểm tra đạt**, gồm legacy NULL → Chưa xác định, mặc định Offline, tạo/lưu/đọc lại Online và Offline, lỗi thời gian giữ hình thức/mô tả, giá trị ngoài choice bị server từ chối, admin hiển thị đúng, 1756/390px sáng/tối không tràn. Bằng chứng `browser-clone-uat.json`, `migration-uat.json` và bốn ảnh trong thư mục vận hành.
+- Ứng dụng cũ ở `127.0.0.1:8001` đã dừng khi tiếp tục phiên, lần kiểm đầu `ERR_CONNECTION_REFUSED`; đã khởi động `venv\Scripts\python.exe src\manage.py runserver 127.0.0.1:8001 --noreload` trên `main`. Browser kiểm trực tiếp DB gốc: **`/portal/events/` HTTP 200**, dropdown mặc định Offline, không còn ProgrammingError; **`/admin/planning/event/` HTTP 200**. Dùng phiên xác thực tạm của tài khoản hiện hữu, không đổi tài khoản/mật khẩu/last_login; phiên tạm đã xóa trong `finally` ở cả lần lỗi và lần đạt. Không tạo/sửa/xóa Event gốc: **0 → 0**. Bằng chứng không chứa cookie hoặc danh tính người dùng: `operational-verification.json`.
+- `ops/check_migration_state.py --app planning`: **Outstanding: none**. Chỉ thử ghi nghiệp vụ trên DB restore; không tạo sự kiện giả trong DB gốc. Không tuyên bố đây là phiên Edge đang đăng nhập của chủ dự án hoặc kiểm toàn bộ luồng nghiệp vụ khác.
+
+**Dọn và bàn giao**
+- Dừng server clone, xác minh đúng tên DB tạm rồi drop riêng `qlhcns_uat_attendance_20261018_091222`; xóa tệp credentials UAT, giữ nguyên backup đã xác minh, hash, SQL và kết quả tổng hợp ngoài repo (`cleanup.json`). Không xóa/thay thế DB gốc hoặc backup cũ.
+- Không đổi mã/schema nguồn trong lượt này; chỉ cập nhật một mục nhật ký. Các gate UI của commit `45d2029` vẫn là bằng chứng cho nguồn giao diện không đổi, không ghi là đã chạy lại toàn matrix trong lượt vận hành này. `manage.py check`, checker migration và `git diff --check` được chạy lại trước bàn giao.
+- Snapshot nguồn review riêng: `D:/IHRMS_Review_Exports/IHRMS_Review_20261018_AttendanceVerification.zip`, có manifest tree và SHA-256 từng tệp, mở lại xác minh; tuyệt đối không chứa backup dữ liệu. Commit/push nhật ký trên `main`, đối chiếu SHA remote và ahead/behind trước phản hồi bàn giao. Không còn bước migration cần chủ dự án thực hiện cho lỗi `AttendanceMode` ở DB đã xác nhận.
+
 ## 2026-10-17–18 — Sửa hồi quy menu nhân viên, Dashboard và chiều rộng form
 
 **Phạm vi và thay đổi**
