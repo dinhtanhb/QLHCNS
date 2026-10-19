@@ -1,5 +1,13 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-19 — Chuyển reviewer sang skill dùng chung, gỡ Sixth
+
+- Yêu cầu chủ dự án chuyển reviewer `.sixth/agents/code-review.md` sang thư mục skill phù hợp và xóa Sixth khỏi dự án. Đầu lượt `main` sạch tại `359ab813f2e6a644658833ce3cbce3bc2ee339d9`, fetch origin/main khớp, ahead/behind 0/0; đọc ba mục nhật ký mới nhất. Một tác nhân ghi, dùng writing-for-agents và hướng dẫn skill mechanics.
+- Chuyển thành `.agents/skills/ihrms-review/SKILL.md`, tên riêng tránh trùng skill `code-review` hiện hữu. Giữ FULL/CHANGES, REVIEW/FIX, finding có bằng chứng, các gate và bảo vệ dữ liệu; bỏ frontmatter permissions đặc thù extension, cập nhật quyền commit/push theo AGENTS.md và yêu cầu tài khoản QA riêng. Không chạy review toàn dự án trong nhiệm vụ chuyển skill này.
+- Gỡ tệp cũ và hai thư mục rỗng `.sixth/agents`, `.sixth`; cập nhật AGENTS.md, README.md, hướng dẫn review và các mẫu gọi skill. Không còn tham chiếu Sixth trong hướng dẫn đang dùng. Giữ nguyên nhật ký/báo cáo lịch sử và tài liệu nghiệp vụ có chuỗi trùng, không sửa lịch sử để làm sạch kết quả tìm kiếm; không gỡ extension cấp máy hoặc sửa IDE cá nhân.
+- Kiểm trên nguồn cuối: UTF-8 bốn tệp hướng dẫn đạt, YAML đúng name/description, **23 liên kết tương đối tồn tại**, đủ nhánh/phạm vi review và guard QA; thư mục cũ không tồn tại, skill code-review có sẵn giữ nguyên. `git diff --check` và staged check chạy trước commit. Không chạy backend/browser/layout/print vì chỉ chuyển hướng dẫn Markdown, không đổi ứng dụng/UI/schema hoặc dữ liệu.
+- Snapshot staged source `D:/IHRMS_Review_Exports/IHRMS_Review_20261019_ReviewSkill.zip`, loại dữ liệu/bí mật, giữ skill mới, có manifest/tree và mở lại xác minh SHA-256 từng tệp; hash ở `.zip.sha256`. Commit/push main theo ủy quyền; SHA/remote/ahead-behind báo sau push. Chưa xác nhận auto-discovery skill trong phiên client mới; có thể đọc trực tiếp đường dẫn mới nếu phiên hiện tại chưa nạp lại catalog.
+
 ## 2026-10-19 — Rà tệp chưa commit, làm sạch công cụ và hướng dẫn agent
 
 **Phạm vi và quyết định**

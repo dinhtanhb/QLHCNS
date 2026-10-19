@@ -2,7 +2,7 @@
 
 ## Chọn cách review
 
-Reviewer tại [`.sixth/agents/code-review.md`](../.sixth/agents/code-review.md) dành cho IHRMS, hỗ trợ hai phạm vi:
+Skill [`ihrms-review`](../.agents/skills/ihrms-review/SKILL.md) dành cho IHRMS, hỗ trợ hai phạm vi:
 
 - **FULL**: review mã hiện tại của toàn dự án, cả khi working tree sạch. Kiểm kê tất cả phân hệ; ghi rõ phần đã đọc, đã thử và còn thiếu.
 - **CHANGES**: review thay đổi chưa commit hoặc từ một commit gốc cụ thể. Phù hợp sau một tính năng/bản sửa. Trên `main`, diff `main...HEAD` có thể rỗng, không dùng nó để thay thế review FULL.
@@ -10,24 +10,22 @@ Reviewer tại [`.sixth/agents/code-review.md`](../.sixth/agents/code-review.md)
 Hai chế độ thao tác:
 
 - **REVIEW** (mặc định): chỉ đọc mã và chạy kiểm tra bằng dữ liệu/DB/media tạm; không sửa mã/tài liệu, commit hoặc push. Nếu yêu cầu không cho phép tạo báo cáo, trả kết quả trong chat.
-- **FIX**: được sửa lỗi đã xác nhận và bổ sung kiểm thử. Commit/push phải nêu riêng trong yêu cầu. Migration/triển khai vào môi trường đang dùng là nhiệm vụ riêng, cần xác nhận đích và backup.
+- **FIX**: được sửa lỗi đã xác nhận và bổ sung kiểm thử. Commit/push theo ủy quyền hiện hành tại AGENTS.md, trừ khi chủ dự án yêu cầu khác. Migration/triển khai vào môi trường đang dùng là nhiệm vụ riêng, cần xác nhận đích và backup.
 
-Các quyền `write, command, browser, mcp, skills` trong frontmatter cho phép agent sử dụng công cụ khi nhiệm vụ cần. Chúng không tự cấp phép sửa dữ liệu thật, gửi thư, push hay deploy. Quyền `command` vẫn có thể ghi tệp/DB: chế độ REVIEW phải được tuân thủ trong cả lệnh shell.
+## Sử dụng skill
 
-## Chạy trong Sixth AI
+Yêu cầu dùng skill `ihrms-review`, kèm phạm vi FULL/CHANGES và chế độ REVIEW/FIX.
+Skill nằm tại `.agents/skills/ihrms-review/SKILL.md`, tách biệt với skill
+`code-review` chỉ rà diff theo hai trục Standards/Spec.
 
-1. Mở đúng workspace `D:\QLHCNS` trong VS Code, lưu file agent và mở chat **Sixth AI**.
-2. Yêu cầu Sixth dùng agent tên `code-review`, kèm toàn bộ nhiệm vụ theo mẫu dưới. Nếu giao diện có danh sách agent khi gõ `@`, chọn **agent** `code-review`; đừng nhầm với đính kèm file Markdown cùng tên. Không giả định `/review-bugbot` là lệnh gọi agent Sixth.
-3. Lần đầu, Sixth có thể hiện hộp thoại tin cậy cho agent có quyền command/MCP: đọc file rồi chọn `Run agent` nếu đồng ý. Nếu bị từ chối, xử lý hộp thoại trong Sixth; không lặp tự động để vượt qua.
-4. Kiểm tra có run riêng của `code-review` và kết quả cuối. Nếu chỉ có câu trả lời của chat chính mà không có run, chưa xác nhận agent đã được gọi. Agent chạy nền nhận nhiệm vụ riêng, không có toàn bộ lịch sử chat: phải đưa phạm vi và quyền sửa trong chính yêu cầu lần này.
-5. Nếu không thấy agent, kiểm tra tên file, `name: code-review`, frontmatter và workspace; dùng `Developer: Reload Window` rồi thử lại. Không tạo thêm bản tên `code-reviewr` để sửa lỗi nhận diện.
-
-Cơ chế nạp `.sixth/agents`, các quyền và công cụ `launch_agent` đã được đối chiếu trong mã extension Sixth AI **0.3.7** đang cài ngày 05/10/2026. Chưa thử gọi agent qua giao diện trong đợt viết hướng dẫn; giao diện có thể đổi khi nâng phiên bản. Trang sản phẩm: [Sixth AI trên Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=Sixth.sixth-ai).
+Nếu công cụ chưa nhận skill mới trong phiên đang mở, đọc trực tiếp tệp skill
+cùng hướng dẫn này rồi thực hiện nhiệm vụ; ghi rõ công cụ thực dùng. Skill
+không khai báo quyền riêng của extension; quyền thao tác theo nhiệm vụ và AGENTS.md.
 
 ### Mẫu review tổng thể, chưa sửa
 
 ```text
-Dùng agent Sixth code-review tại D:\QLHCNS\.sixth\agents\code-review.md.
+Dùng skill ihrms-review tại D:\QLHCNS\.agents\skills\ihrms-review\SKILL.md.
 Workspace: D:\QLHCNS. Phạm vi FULL, chế độ REVIEW.
 Đọc AGENTS.md và docs/Huong_Dan_Review_Du_An.md trước.
 Rà tất cả phân hệ hiện tại, không chỉ git diff. Không sửa mã/tài liệu,
@@ -41,7 +39,7 @@ Không tuyên bố 100% hoặc Bugbot đã chạy khi chưa có bằng chứng.
 ### Mẫu review tổng thể, sửa và hoàn tất CI
 
 ```text
-Dùng agent Sixth code-review tại D:\QLHCNS\.sixth\agents\code-review.md.
+Dùng skill ihrms-review tại D:\QLHCNS\.agents\skills\ihrms-review\SKILL.md.
 Workspace: D:\QLHCNS. Phạm vi FULL, chế độ FIX; chỉ làm trên main.
 Đọc AGENTS.md và docs/Huong_Dan_Review_Du_An.md trước.
 Rà toàn dự án hiện tại; sửa lỗi xác nhận được, giữ quy tắc nghiệp vụ.
@@ -59,7 +57,7 @@ Báo tệp đã sửa, bằng chứng kiểm thử, SHA/link CI, phần chưa ki
 ### Mẫu review thay đổi
 
 ```text
-Dùng code-review cho D:\QLHCNS. Phạm vi CHANGES, chế độ REVIEW.
+Dùng skill ihrms-review cho D:\QLHCNS. Phạm vi CHANGES, chế độ REVIEW.
 Review staged + unstaged + tệp mới thuộc tính năng [mô tả/tên tệp].
 Nếu có thay đổi đã commit: commit gốc là [SHA cụ thể].
 Đọc caller, guard, test và tài liệu nghiệp vụ liên quan.
@@ -67,11 +65,11 @@ Chạy kiểm tra phù hợp trên môi trường cô lập, báo lỗi xác nh�
 không sửa mã/tài liệu, không commit/push.
 ```
 
-## Dùng với công cụ khác
+## Phân biệt công cụ review
 
-Nếu chat không cung cấp agent Sixth, đính kèm file này cùng file reviewer và yêu cầu: **“Đọc hai file hướng dẫn rồi trực tiếp thực hiện FULL/REVIEW [hoặc FULL/FIX] tại D:\QLHCNS.”** Không cần sửa tên thư mục hoặc sao chép định nghĩa sang nhiều nơi. Báo rõ đây là review trực tiếp, không giả lập việc đã chạy agent Sixth.
-
-Skill `review-bugbot` là luồng review diff bằng công cụ Bugbot riêng. File Sixth không cài hoặc thay thế công cụ đó. Nếu thiếu Bugbot, review trực tiếp theo hướng dẫn vẫn thực hiện được nhưng phải ghi đúng công cụ đã dùng. Để review FULL, nêu rõ phạm vi toàn mã hiện tại thay vì chỉ gọi một skill review diff.
+Skill `review-bugbot` dùng công cụ Bugbot riêng; `ihrms-review` không cài hoặc
+thay thế công cụ đó. Chỉ ghi Bugbot đã chạy khi có kết quả thực. Với FULL,
+nêu rõ toàn mã hiện tại thay vì dùng kết quả của một skill chỉ rà diff.
 
 ## Checklist phạm vi FULL
 
@@ -103,7 +101,7 @@ $env:PYTHONIOENCODING = 'utf-8'
 venv\Scripts\python.exe -m pip check
 ```
 
-Chỉ `git pull --ff-only origin main` khi nhánh là main, working tree sạch và không phân kỳ. Không reset/stash/đổi nhánh để làm sạch. Tệp `.sixth/` hoặc script cá nhân chưa theo dõi không tự được coi là rác.
+Chỉ `git pull --ff-only origin main` khi nhánh là main, working tree sạch và không phân kỳ. Không reset/stash/đổi nhánh để làm sạch. Tệp cá nhân chưa theo dõi chỉ được dọn khi nằm trong phạm vi đã cho phép.
 
 ### Framework và drift migration, không áp dụng migration
 
