@@ -10,10 +10,11 @@ from django.urls import reverse
 
 from apps.hrm.models import Employee
 from apps.leave.models import LeaveRequest, LeaveType
-from apps.document.models import Document, DocumentCategory
+from apps.document.models import DispatchBook, Document, DocumentCategory, OfficialDispatch
 from apps.notification.models import Notification, NotificationEmailOutbox
 from apps.notification.services import notify_with_email_draft
 from apps.organization.models import Department, Organization, Position
+from apps.portal import test_home_dashboard as fixtures
 from apps.security.models import Role, User
 from apps.payroll.models import PayrollPeriod, Payroll
 
@@ -229,4 +230,95 @@ class NotificationEmailOutboxTests(TestCase):
         self.assertEqual(parsed.scheme, "mailto")
         self.assertEqual(params["subject"], ["Tiêu đề có dấu & ký tự"])
         self.assertEqual(params["body"], ["Nội dung có dấu\nDòng thứ hai"])
+
+
+class DispatchNotificationCoverageTests(TestCase):
+    """Độ phủ luồng công văn: vào sổ có người xử lý và cập nhật tiến độ phải báo tin."""
+
+    user = fixtures.HomeDashboardTests.user
+
+    @classmethod
+    def setUpTestData(cls):
+        fixtures.HomeDashboardTests.setUpTestData.__func__(cls)
+        cls.clerk = cls.user(cls, "HR_MANAGER", True)
+        cls.officer = cls.user(cls, "EMPLOYEE", True)
+
+    def _dispatch(self, **overrides):
+        book = DispatchBook.objects.create(
+            book_code="IN-2026", book_name="Sổ đến 2026", book_type="Incoming", year=2026,
+        )
+        defaults = {
+            "dispatch_type": "Incoming", "dispatch_book": book, "dispatch_no": "501/CV",
+            "title": "CV theo dõi thông báo", "issuing_organization": "Đơn vị B",
+            "issue_date": date(2026, 9, 20), "received_or_sent_date": date(2026, 9, 21),
+            "assigned_to": self.officer.employee, "created_by": self.clerk,
+        }
+        defaults.update(overrides)
+        return OfficialDispatch.objects.create(**defaults)
+
+    def test_dispatch_create_notifies_assignee(self):
+        self.client.force_login(self.clerk)
+        response = self.client.post(reverse("portal:dispatch_create"), {
+            "dispatch_type": "Incoming", "dispatch_no": "500/CV", "original_doc_no": "",
+            "title": "Công văn kiểm thử thông báo", "issuing_organization": "Đơn vị A",
+            "issue_date": "2026-09-20", "received_or_sent_date": "2026-09-21",
+            "urgency_level": "Normal", "security_level": "Normal", "department": "",
+            "assigned_to": str(self.officer.employee_id), "signer": "", "due_date": "",
+        })
+
+        self.assertEqual(response.status_code, 302)
+        dispatch = OfficialDispatch.objects.get(dispatch_no="500/CV")
+        notice = Notification.objects.filter(
+            employee=self.officer.employee, notification_type="dispatch",
+            link=f"/portal/dispatches/{dispatch.pk}/",
+        ).first()
+        self.assertIsNotNone(notice, "Vào sổ công văn có người xử lý phải tạo thông báo.")
+        self.assertIn("500/CV", notice.message)
+
+    def test_dispatch_created_without_assignee_notifies_nobody(self):
+        self.client.force_login(self.clerk)
+        response = self.client.post(reverse("portal:dispatch_create"), {
+            "dispatch_type": "Incoming", "dispatch_no": "502/CV", "original_doc_no": "",
+            "title": "Công văn chưa phân công", "issuing_organization": "Đơn vị A",
+            "issue_date": "2026-09-20", "received_or_sent_date": "2026-09-21",
+            "urgency_level": "Normal", "security_level": "Normal", "department": "",
+            "assigned_to": "", "signer": "", "due_date": "",
+        })
+
+        self.assertEqual(response.status_code, 302)
+        # Không có người xử lý thì không có ai để báo — nhưng công văn vẫn phải vào sổ,
+        # nếu không phép "không thông báo" này chỉ là một redirect bị từ chối quyền.
+        self.assertTrue(OfficialDispatch.objects.filter(dispatch_no="502/CV").exists())
+        self.assertFalse(Notification.objects.filter(notification_type="dispatch").exists())
+
+    def test_dispatch_progress_by_assignee_notifies_creator(self):
+        dispatch = self._dispatch()
+        self.client.force_login(self.officer)
+        response = self.client.post(
+            reverse("portal:dispatch_detail", args=[dispatch.pk]),
+            {"action_type": "Đã xử lý", "comment": "Hoàn tất", "new_status": "Completed"},
+        )
+
+        self.assertEqual(response.status_code, 302)
+        notice = Notification.objects.filter(
+            employee=self.clerk.employee, notification_type="dispatch",
+            link=f"/portal/dispatches/{dispatch.pk}/",
+        ).first()
+        self.assertIsNotNone(notice, "Người xử lý cập nhật thì phải báo người vào sổ.")
+        self.assertIn(dict(OfficialDispatch.STATUS_CHOICES)["Completed"], notice.message)
+
+    def test_dispatch_progress_update_never_notifies_the_actor(self):
+        # Người vào sổ cũng là người xử lý: nhánh "báo phía bên kia" không được tự báo mình.
+        dispatch = self._dispatch(assigned_to=self.clerk.employee)
+        before = Notification.objects.filter(notification_type="dispatch").count()
+        self.client.force_login(self.clerk)
+        self.client.post(
+            reverse("portal:dispatch_detail", args=[dispatch.pk]),
+            {"action_type": "Đang xử lý", "comment": "Đang theo dõi", "new_status": "Processing"},
+        )
+
+        dispatch.refresh_from_db()
+        self.assertEqual(dispatch.status, "Processing")
+        self.assertEqual(Notification.objects.filter(notification_type="dispatch").count(), before)
+
 
