@@ -20,5 +20,11 @@ class SearchQueryLog(BaseAuditModel):
         db_table = "tblAssistantSearchLog"
         # "-id" để thứ tự ổn định khi nhiều log cùng một nhịp đồng hồ.
         ordering = ["-created_date", "-id"]
+        indexes = [
+            # Trang admin mặc định sắp theo `-created_date` và bộ lọc " hôm nay"
+            # cũng quét theo cột này. Không có index thì mỗi lượt xem là một lần
+            # quét + sort toàn bảng trên SQL Server, và bảng chỉ lớn thêm.
+            models.Index(fields=["created_date"], name="assistant_log_created_idx"),
+        ]
         verbose_name = "Nhật ký truy vấn trợ lý"
         verbose_name_plural = "Nhật ký truy vấn trợ lý"
