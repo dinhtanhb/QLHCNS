@@ -333,7 +333,7 @@ DOC_TYPE_KEYWORDS = [
 
 STOPWORDS = {
     "tìm", "kiếm", "tìm kiếm", "cho", "tôi", "mình", "em", "anh", "chị", "bạn",
-    "xin", "hãy", "về", "củа", "củа", "va", "và", "các", "những", "một", "là",
+    "xin", "hãy", "về", "của", "va", "và", "các", "những", "một", "là",
     "ở", "theo", "giúp", "với", "được", "bị", "trong", "ngoài", "từ", "đến",
     "ngày", "nào", "này", "đó", "mới", "gần", "nhất", "gần đây", "liên quan",
 }
