@@ -302,13 +302,16 @@ class GraphClient:
 
         Dấu `/` thừa ở cuối `site_path` bị cắt vì `.env` là chuỗi gõ tay: giữ nó
         lại thì prefix thành `.../sites/IHRMS/` và mọi `webUrl` thật của chính
-        site này không còn khớp, tức nguồn SharePoint im lặng trả rỗng.
+        site này không còn khớp, tức nguồn SharePoint im lặng trả rỗng. Cắt xong
+        mà không còn đường dẫn nào thì rơi lại đúng trường hợp prefix trụi nói
+        trên, nên vẫn THA.
         """
-        if not (self.site_hostname and self.site_path):
+        site_path = self.site_path.rstrip("/")
+        if not (self.site_hostname and site_path) or not site_path.startswith("/"):
             raise GraphNotConfigured(
                 "Chưa cấu hình M365_SHAREPOINT_HOSTNAME / M365_SHAREPOINT_SITE_PATH trong .env."
             )
-        return f"https://{self.site_hostname}{self.site_path.rstrip('/')}"
+        return f"https://{self.site_hostname}{site_path}"
 
     def _is_site_url(self, web_url: str, prefix: str) -> bool:
         """`web_url` có thật thuộc site này không, so theo ĐOẠN đường dẫn.

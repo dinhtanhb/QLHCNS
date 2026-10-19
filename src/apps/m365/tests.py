@@ -196,6 +196,15 @@ class GraphSearchTests(SimpleTestCase):
         results = client.search_files("nghi phep")
         self.assertEqual([r["name"] for r in results], ["CV-1.pdf"])
 
+    def test_site_path_that_is_only_a_slash_is_refused(self):
+        # Cắt dấu `/` thừa có thể để lại một prefix trụi `https://host`, tức khớp
+        # MỌI webUrl trên host đó, kể cả của site khác. Chuỗi cấu hình vô nghĩa thì
+        # THA chứ không tự nới biên lọc - cùng lý do với việc thiếu hostname.
+        client = self._client({"value": []})
+        client.site_path = "/"
+        with self.assertRaises(GraphNotConfigured):
+            client.search_files("nghi phep")
+
     def test_search_files_request_shape(self):
         client = self._client({"value": []})
         client.search_files("nghỉ phép", top=7)
