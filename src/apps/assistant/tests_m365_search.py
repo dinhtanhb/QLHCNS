@@ -332,7 +332,9 @@ class SharePointSearchTests(SimpleTestCase):
 
     def test_assistant_uses_a_short_timeout_not_the_sixty_second_default(self):
         # `_request` mặc định 60s cho nghiệp vụ upload. Trong khung chat, một
-        # người hỏi không được chiếm worker nhiều phút (xem review C62/I6).
+        # người hỏi không được chiếm worker nhiều phút, nên assistant truyền cặp
+        # (connect, read) = (3, 10): Graph chậm thì buông chứ không treo cả
+        # request.
         client = _FakeClient(search=[])
         self._run(client, "nghỉ phép")
         self.assertEqual(client.search_calls[0][2], ASSISTANT_TIMEOUT)
