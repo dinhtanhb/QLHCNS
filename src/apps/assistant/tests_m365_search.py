@@ -122,8 +122,9 @@ class SharePointSearchTests(SimpleTestCase):
         # không biết tệp đó thuộc đối tượng nào. CongVanDen/CongVanDi không chỉ
         # chứa tệp của OfficialDispatch: đính kèm của IncomingDocument/
         # OutgoingDocument cũng ghi vào đó (`apps/common/uploads.py:80-85`), và
-        # cổng chặn hai đối tượng đó bằng `manage_office`
-        # (`apps/security/data_access.py:99-100`) - quyền mà DIRECTOR không có.
+        # cổng chặn hai đối tượng đó bằng `manage_office` (nhánh
+        # `office.incomingdocument` của `can_read_file`) - quyền mà DIRECTOR không
+        # có.
         # Vì không lọc được theo từng tệp, cửa này phải là GIAO của các phạm vi:
         # chỉ vai trò thấy được cả ba loại tệp cùng lúc mới được hỏi Graph.
         allowed = ("HR_MANAGER", "HR_OFFICER")

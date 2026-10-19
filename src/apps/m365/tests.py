@@ -175,6 +175,27 @@ class GraphSearchTests(SimpleTestCase):
             "last_modified": "2026-09-01T08:00:00Z",
         })
 
+    def test_search_files_accepts_site_path_with_trailing_slash(self):
+        # `M365_SHAREPOINT_SITE_PATH` là chuỗi chủ dự án tự gõ trong `.env`, nên
+        # dạng `/sites/IHRMS/` hoàn toàn có thể xảy ra. Nếu prefix mang cả dấu
+        # `/` thừa ở cuối thì mọi `webUrl` thật đều bị loại: nguồn SharePoint im
+        # lặng trả rỗng chứ không báo lỗi - phải cắt ký tự đó trước khi so.
+        client = self._client({"value": [{"hitsContainers": [{"hits": [
+            {"resource": {
+                "name": "CV-1.pdf",
+                "webUrl": "https://congty.sharepoint.com/sites/IHRMS/CongVan/CV-1.pdf",
+                "lastModifiedDateTime": "2026-09-01T08:00:00Z",
+            }},
+            {"resource": {
+                "name": "CV-cua-site-khac.pdf",
+                "webUrl": "https://congty.sharepoint.com/sites/IHRMS-IT/CongVan/CV-2.pdf",
+                "lastModifiedDateTime": "2026-09-01T08:00:00Z",
+            }},
+        ]}]}]})
+        client.site_path = "/sites/IHRMS/"
+        results = client.search_files("nghi phep")
+        self.assertEqual([r["name"] for r in results], ["CV-1.pdf"])
+
     def test_search_files_request_shape(self):
         client = self._client({"value": []})
         client.search_files("nghỉ phép", top=7)

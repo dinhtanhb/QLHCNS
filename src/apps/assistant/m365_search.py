@@ -48,7 +48,8 @@ ASSISTANT_TIMEOUT = (3, 10)
 # nhất cho kết quả search.
 DISPATCH_FOLDER_KEYS = ("dispatches", "incoming_docs", "outgoing_docs")
 # Hai thư mục cuối không chỉ chứa OfficialDispatch: sổ văn thư cũng ghi tệp đính
-# kèm vào đó, và cổng mở chúng bằng đúng hai quyền này (`data_access.py:99-100`).
+# kèm vào đó, và cổng mở chúng bằng đúng hai quyền này (hai nhánh
+# `office.incomingdocument`/`office.outgoingdocument` của `can_read_file`).
 SHARED_LIBRARY_PERMISSIONS = ("manage_office", "access_outgoing_document")
 # Không phải sự cố và không phải "chưa bật": người hỏi đơn giản không thuộc
 # phạm vi nguồn này, nên `services.PARTIAL_NOTES` không liệt kê nó.
