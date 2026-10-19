@@ -1,0 +1,222 @@
+/* ==========================================================================
+   Trợ lý tài liệu (.assistant-*) — khung chat tìm kiếm tài liệu.
+   Chỉ dùng design token trong ui_tokens.css: không màu literal, không
+   prefers-color-scheme (theme.js đã đổi token theo html[data-theme]).
+   Kích thước ô nhập và nút dùng quy tắc toàn cục trong ui_controls.css.
+   ========================================================================== */
+
+.assistant-root {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-3);
+}
+
+.assistant-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-1);
+}
+
+.assistant-hint {
+    margin: 0;
+    color: var(--ui-text-muted);
+    font-size: var(--ui-font-size-caption);
+}
+
+.assistant-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-2);
+    align-items: flex-start;
+}
+
+.assistant-msg {
+    max-width: 100%;
+    padding: var(--ui-space-2) var(--ui-space-3);
+    border: var(--ui-border-width) solid var(--ui-border-subtle);
+    border-radius: var(--ui-radius-control);
+    overflow-wrap: anywhere;
+}
+
+.assistant-msg-user {
+    align-self: flex-end;
+    background: var(--ui-brand-soft);
+}
+
+.assistant-msg-bot {
+    align-self: flex-start;
+    background: var(--ui-surface-raised);
+}
+
+.assistant-status {
+    align-self: flex-start;
+    font-size: var(--ui-font-size-caption);
+    color: var(--ui-text-muted);
+}
+
+.assistant-warning,
+.assistant-error {
+    align-self: stretch;
+    padding: var(--ui-space-2) var(--ui-space-3);
+    border: var(--ui-border-width) solid transparent;
+    border-radius: var(--ui-radius-control);
+    font-size: var(--ui-font-size-caption);
+    overflow-wrap: anywhere;
+}
+
+.assistant-warning {
+    background: var(--ui-warning-bg);
+    border-color: var(--ui-warning-border);
+    color: var(--ui-warning-text);
+}
+
+.assistant-error {
+    background: var(--ui-error-bg);
+    border-color: var(--ui-error-border);
+    color: var(--ui-error-text);
+}
+
+/* Danh sách kết quả ----------------------------------------------------- */
+.assistant-results {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-2);
+    align-self: stretch;
+}
+
+.assistant-result {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ui-space-2);
+    padding: var(--ui-space-2) var(--ui-space-3);
+    border: var(--ui-border-width) solid var(--ui-border-subtle);
+    border-radius: var(--ui-radius-control);
+    background: var(--ui-surface);
+    color: var(--ui-text);
+    text-decoration: none;
+    transition: border-color var(--ui-motion-feedback) var(--ui-motion-easing),
+                background var(--ui-motion-feedback) var(--ui-motion-easing);
+}
+
+.assistant-result:hover {
+    border-color: var(--ui-brand);
+    background: var(--ui-hover-bg);
+}
+
+.assistant-result-icon {
+    flex: none;
+    width: var(--ui-icon-small);
+    height: var(--ui-icon-small);
+    margin-top: var(--ui-space-1);
+    color: var(--ui-text-muted);
+}
+
+.assistant-result-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-1);
+    min-width: 0;
+}
+
+.assistant-result-title {
+    font-weight: var(--ui-font-weight-medium);
+    overflow-wrap: anywhere;
+}
+
+.assistant-result-meta {
+    font-size: var(--ui-font-size-caption);
+    color: var(--ui-text-muted);
+    overflow-wrap: anywhere;
+}
+
+/* Gợi ý nhanh và biểu mẫu ----------------------------------------------- */
+.assistant-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ui-space-2);
+}
+
+.assistant-chip {
+    padding: var(--ui-space-1) var(--ui-space-3);
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: var(--ui-radius-pill);
+    background: transparent;
+    color: var(--ui-action);
+    font-size: var(--ui-font-size-caption);
+}
+
+.assistant-chip:hover {
+    background: var(--ui-action-hover);
+    color: var(--ui-on-brand);
+}
+
+.assistant-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--ui-space-2);
+}
+
+/* Nhãn, ô nhập và nút thừa hưởng .ui-field/.ui-button trong components.css. */
+.assistant-question {
+    flex: 1 1 12rem;
+    min-width: 0;
+}
+
+/* Nút nổi và bảng chat -------------------------------------------------- */
+.assistant-fab {
+    position: fixed;
+    inset-inline-end: var(--ui-space-4);
+    inset-block-end: var(--ui-space-4);
+    z-index: var(--ui-layer-toast);
+    width: var(--ui-target-min);
+    height: var(--ui-target-min);
+    min-width: 0;
+    padding: 0;
+    border: var(--ui-border-width) solid var(--ui-brand);
+    border-radius: var(--ui-radius-pill);
+    background: var(--ui-brand);
+    color: var(--ui-on-brand);
+    box-shadow: var(--ui-shadow-overlay);
+}
+
+.assistant-fab:hover {
+    background: var(--ui-brand-hover);
+    border-color: var(--ui-brand-hover);
+}
+
+.assistant-fab .ui-icon {
+    width: var(--ui-icon-medium);
+    height: var(--ui-icon-medium);
+}
+
+.assistant-dock {
+    position: fixed;
+    inset-inline-end: var(--ui-space-4);
+    inset-block-end: calc(var(--ui-space-4) + var(--ui-target-min) + var(--ui-space-2));
+    z-index: var(--ui-layer-toast);
+}
+
+.assistant-dock .assistant-root {
+    gap: var(--ui-space-2);
+    padding: var(--ui-space-3);
+    width: 22rem;
+    max-width: calc(100vw - 2 * var(--ui-space-4));
+    border-color: var(--ui-border);
+    box-shadow: var(--ui-shadow-modal);
+}
+
+.assistant-dock .assistant-panel {
+    max-height: 60vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+@media (max-width: 767px) {
+    .assistant-dock .assistant-root { width: calc(100vw - 2 * var(--ui-space-4)); }
+}
+
+@media print {
+    .assistant-fab,
+    .assistant-dock { display: none; }
+}

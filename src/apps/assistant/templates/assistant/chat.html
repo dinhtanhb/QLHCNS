@@ -16,11 +16,13 @@
     <button type="button" class="assistant-chip" data-question="Quyết định tháng này">Quyết định tháng này</button>
   </div>
   <form class="assistant-form" data-role="form" autocomplete="off">
-    <label class="ui-sr-only" for="assistantInput">Câu hỏi</label>
-    <input id="assistantInput" name="question" type="text" maxlength="500"
-           placeholder="Nhập câu hỏi tìm tài liệu…" aria-describedby="assistantHint">
-    <span id="assistantHint" class="ui-sr-only">Nhấn Enter để gửi, Esc để đóng bảng kết quả.</span>
-    <button type="submit" class="btn btn-primary">Gửi</button>
+    <div class="ui-field assistant-question">
+      <label class="ui-field-label" for="assistantInput">Câu hỏi tìm tài liệu</label>
+      <input id="assistantInput" name="question" type="text" maxlength="500"
+             placeholder="Ví dụ: công văn nghỉ phép tháng 9" aria-describedby="assistantHint">
+      <span id="assistantHint" class="assistant-hint">Nhấn Enter để gửi. Kết quả mở theo quyền của anh/chị.</span>
+    </div>
+    <button type="submit" class="ui-button ui-button--primary">Gửi</button>
   </form>
 </section>
 {% endblock %}

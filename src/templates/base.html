@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="{% asset 'css/ui_controls.css' %}">
     <link rel="stylesheet" href="{% asset 'css/shared_components.css' %}">
     <link rel="stylesheet" href="{% asset 'css/atoms_ui.css' %}">
+    <link rel="stylesheet" href="{% asset 'css/assistant.css' %}">
     <link rel="stylesheet" href="{% asset 'css/project_layout.css' %}">
     <link rel="stylesheet" href="{% asset 'css/print_forms.css' %}" media="print">
 </head>
@@ -214,10 +215,23 @@
         {% block content %}{% endblock %}
     </main>
     </div>
+    {% if user.is_authenticated %}
+    <template id="assistantIconIHRMS">{% include '_shell_icon.html' with name='document' %}</template>
+    <template id="assistantIconSharePoint">{% include '_shell_icon.html' with name='folder' %}</template>
+    {% endif %}
+    {% if user.is_authenticated and request.resolver_match.app_name != 'assistant' %}
+    <button type="button" id="assistantFab" class="assistant-fab" aria-label="Mở trợ lý tài liệu"
+            aria-controls="assistantDock" aria-expanded="false"
+            data-api="{% url 'assistant:api_search' %}" data-page-url="{% url 'assistant:assistant_page' %}">
+        {% include '_shell_icon.html' with name='search' %}
+    </button>
+    <div id="assistantDock" class="assistant-dock" role="region" aria-label="Trợ lý tài liệu" hidden></div>
+    {% endif %}
     <script src="{% asset 'js/app_shell.js' %}" defer></script>
     <script src="{% asset 'js/ui_numbers.js' %}" defer></script>
     <script src="{% asset 'js/ui_choices.js' %}" defer></script>
     <script src="{% asset 'js/shared_components.js' %}" defer></script>
+    <script src="{% asset 'js/assistant.js' %}" defer></script>
     {% if user.is_authenticated and "/portal/" in request.path %}
     <script>
         if ('serviceWorker' in navigator) {
