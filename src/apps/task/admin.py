@@ -11,9 +11,9 @@ class TaskCommentInline(admin.TabularInline):
 
 @admin.register(Task)
 class TaskAdmin(BaseAuditAdmin):
-    list_display = ("task_code", "task_name", "assigned_to_employee", "department", "priority", "due_date", "status", "activity")
-    list_filter = ("status", "priority", "department", "activity")
-    search_fields = ("task_code", "task_name", "assigned_to_employee__full_name", "activity__activity_code")
+    list_display = ("task_code", "act_code", "task_name", "assigned_to_employee", "department", "priority", "due_date", "status", "activity")
+    list_filter = ("status", "priority", "department", "activity", "act_code")
+    search_fields = ("task_code", "act_code", "task_name", "assigned_to_employee__full_name", "activity__activity_code")
     inlines = [TaskCommentInline]
 
     view_roles = (

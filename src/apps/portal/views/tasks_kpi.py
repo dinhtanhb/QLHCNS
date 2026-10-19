@@ -159,12 +159,20 @@ def task_create(request):
                 raise ValidationError(
                     "Chỉ được giao việc cho nhân viên thuộc phạm vi phòng ban của anh/chị."
                 )
-            task_code = request.POST.get("task_code", "").strip()
-            if task_code not in ACTIVITY_CODE_NAMES:
-                raise ValidationError("Chọn mã công việc trong danh mục ActCode.")
-            task = Task(
-                task_code=task_code,
-                task_name=ACTIVITY_CODE_NAMES[task_code],
+            act_code = request.POST.get("act_code", "").strip()
+            if act_code == "__OTHER__":
+                task_name = request.POST.get("task_name", "").strip()
+                if not task_name or len(task_name) > 300:
+                    raise ValidationError("Nhập tên công việc hành chính từ 1 đến 300 ký tự.")
+                act_code = None
+            elif act_code in ACTIVITY_CODE_NAMES:
+                task_name = ACTIVITY_CODE_NAMES[act_code]
+            else:
+                raise ValidationError("Chọn mã ActCode hoặc Khác (công việc hành chính).")
+            from apps.task.services import create_manual_task
+            task = create_manual_task(
+                act_code=act_code,
+                task_name=task_name,
                 description=request.POST.get("description", ""),
                 assigned_by_employee=employee,
                 assigned_to_employee=assignee,
@@ -174,15 +182,13 @@ def task_create(request):
                 due_date=request.POST.get("due_date") or None,
                 created_by=request.user,
             )
-            task.full_clean()
-            task.save()
             notify(
                 task.assigned_to_employee, "task",
                 "Bạn được giao công việc mới",
                 f"{task.task_name} — hạn {task.due_date or 'chưa xác định'}.",
                 link=f"/portal/tasks/{task.pk}/", created_by=request.user,
             )
-            messages.success(request, "Đã giao việc thành công.")
+            messages.success(request, f"Đã giao việc thành công. Mã công việc: {task.task_code}.")
             return redirect("portal:task_list")
         except Exception as e:
             _friendly_error(request, e, "Không thể tạo công việc.")

@@ -82,23 +82,28 @@ def normalize_finance_choices(forms, old_forms, route):
 
 
 def normalize_task_catalog(forms, old_forms):
-    """Only the approved ActCode selector and derived read-only title may differ."""
+    """Only task_create's exact selector/name replacement is approved."""
     from apps.activity.activity_codes import ACTIVITY_CODE_NAMES
-    for name in ('task_code', 'task_name'):
-        old = [f for form in old_forms or [] for f in form['fields'] if f['attrs'].get('name') == name]
+    for name in ('act_code', 'task_name'):
+        old_name = 'task_code' if name == 'act_code' else name
+        old = [f for form in old_forms or [] for f in form['fields'] if f['attrs'].get('name') == old_name]
         new = [f for form in forms or [] for f in form['fields'] if f['attrs'].get('name') == name]
         if len(old) != 1 or len(new) != 1:
             continue
-        expected_old = {'tag': 'input', 'attrs': {'type': 'text', 'name': name, 'required': None}}
+        expected_old = ({'tag': 'select', 'attrs': {'name': 'task_code', 'required': None}, 'options': [
+            {'attrs': {'value': ''}, 'text': '-- Chọn mã ActCode --'},
+            *[{'attrs': {'value': code, 'data-search': title}, 'text': code} for code, title in ACTIVITY_CODE_NAMES.items()],
+        ]} if name == 'act_code' else {'tag': 'input', 'attrs': {'type': 'text', 'name': name, 'value': '', 'readonly': None}})
         if old[0] != expected_old:
             continue
-        if name == 'task_code':
+        if name == 'act_code':
             expected = {'tag': 'select', 'attrs': {'name': name, 'required': None}, 'options': [
                 {'attrs': {'value': ''}, 'text': '-- Chọn mã ActCode --'},
-                *[{'attrs': {'value': code, 'data-search': title}, 'text': code} for code, title in ACTIVITY_CODE_NAMES.items()],
+                *[{'attrs': {'value': code}, 'text': code+' — '+title} for code, title in ACTIVITY_CODE_NAMES.items()],
+                {'attrs': {'value': '__OTHER__'}, 'text': 'Khác (công việc hành chính)'},
             ]}
         else:
-            expected = {'tag': 'input', 'attrs': {'type': 'text', 'name': name, 'value': '', 'readonly': None}}
+            expected = {'tag': 'input', 'attrs': {'type': 'text', 'name': name, 'value': '', 'maxlength': '300'}}
         if new[0] == expected:
             new[0].clear()
             new[0].update(old[0])

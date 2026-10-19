@@ -47,7 +47,7 @@ MEASURE = r"""() => {
  for(const g of grids){const r=rect(g),s=getComputedStyle(g),gap=parseFloat(s.columnGap)||0,count=s.gridTemplateColumns.split(' ').filter(Boolean).length,col=(r.w-(count-1)*gap)/count;
   let container=g.parentElement;while(container&&!getComputedStyle(container).containerName.split(' ').includes('ui-form'))container=container.parentElement;
   if(!container)fail('FORM_CONTAINER',g,'Missing named ancestor');
-  else if(s.display==='grid'){const cs=getComputedStyle(container),width=container.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),expected=g.matches('.ui-form-grid--event')&&width>=1080?9:width>=900?4:width>=640?3:width>=420?2:1;if(count!==expected)fail('GRID_COLUMNS',g,{containerWidth:width,expected,count});}
+  else if(s.display==='grid'){const cs=getComputedStyle(container),width=container.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);let expected=g.matches('.ui-form-grid--event')&&width>=1080?9:width>=900?4:width>=640?3:width>=420?2:1;if(g.closest('.ui-task-assignment'))expected=width>=900?(innerWidth>=1280?4:3):width>=420?2:1;if(count!==expected)fail('GRID_COLUMNS',g,{containerWidth:width,expected,count});}
   const fields=controls.filter(x=>x.closest('.ui-form-grid')===g),rows=[];
   for(const c of fields){const field=c.closest('.ui-field')||c.parentElement,fr=rect(field),cr=rect(c.closest('.ui-select-control')||c);let row=rows.find(x=>Math.abs(x.y-fr.y)<=1);if(!row){row={y:fr.y,fields:[]};rows.push(row);}row.fields.push({name:c.name,field:fr,control:cr});
    const tracks=s.gridTemplateColumns.split(' ').map(parseFloat).filter(Number.isFinite);

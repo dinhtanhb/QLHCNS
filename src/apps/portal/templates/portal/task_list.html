@@ -58,6 +58,7 @@
           <td class="text-muted">{{ t.task_code|ui_number }}</td>
           <td>
             <a href="{% url 'portal:task_detail' t.pk %}" class="ui-table-link font-medium">{{ t.task_name|ui_number }}</a>
+            {% if t.act_code %}<p class="ui-field-help">ActCode {{ t.act_code }}</p>{% endif %}
           </td>
           {% if is_project_overview %}
             <td>{{ t.assigned_to_employee.full_name|ui_number }}</td>

@@ -10,6 +10,7 @@
       <div>
         <p class="text-xs text-muted font-semibold">{{ task.task_code|ui_number }}</p>
         <h1 class="ui-page-title mt-1">{{ task.task_name|ui_number }}</h1>
+        {% if task.act_code %}<p class="ui-field-help">ActCode {{ task.act_code }}</p>{% endif %}
       </div>
       <span class="ui-badge {% if task.status == 'Done' %}ui-badge--success{% elif task.status == 'InProgress' %}ui-badge--info{% elif task.status == 'Cancelled' %}ui-badge--neutral{% else %}ui-badge--warning{% endif %}">
         {{ task.get_status_display|ui_number }}

@@ -1,15 +1,16 @@
 {% load ui_components l10n %}
 {% if widget_key == "f0" %}
-  <label for="task_create-task_code">Mã công việc</label>
-  <select name="task_code" required id="task_create-task_code">
+  <label for="task_create-act_code">Mã công việc (ActCode) <span class="ui-required" aria-hidden="true">*</span></label>
+  <select name="act_code" required id="task_create-act_code">
     <option value="">-- Chọn mã ActCode --</option>
-    {% for code, name in task_code_names.items %}<option value="{{ code }}" data-search="{{ name }}"{% if submitted.task_code == code %} selected{% endif %}>{{ code }}</option>{% endfor %}
+    {% for code, name in task_code_names.items %}<option value="{{ code }}"{% if submitted.act_code == code %} selected{% endif %}>{{ code }} — {{ name }}</option>{% endfor %}
+    <option value="__OTHER__"{% if submitted.act_code == '__OTHER__' %} selected{% endif %}>Khác (công việc hành chính)</option>
   </select>
 
 {% elif widget_key == "f1" %}
   <label for="task_create-task_name">Tên công việc</label>
-  <input type="text" name="task_name" value="{{ submitted.task_name|default:'' }}" readonly id="task_create-task_name" aria-describedby="task-name-help">
-  <p class="ui-field-help" id="task-name-help">Tên tự điền theo mã công việc đã chọn.</p>
+  <input type="text" name="task_name" value="{{ submitted.task_name|default:'' }}" maxlength="300" id="task_create-task_name" aria-describedby="task-name-help">
+  <p class="ui-field-help" id="task-name-help">Tên tự điền theo ActCode. Chọn Khác để nhập tên công việc hành chính.</p>
 
 {% elif widget_key == "f2" %}
   <label for="task_create-description">Mô tả</label>

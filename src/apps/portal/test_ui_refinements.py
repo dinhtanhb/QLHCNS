@@ -22,15 +22,15 @@ class UIRefinementTests(TestCase):
         assignee = self.user("EMPLOYEE", True)
         self.client.force_login(manager)
         code = next(iter(ACTIVITY_CODE_NAMES))
-        payload = {"task_code": code, "task_name": "Forged title", "assigned_to_employee": str(assignee.employee_id), "priority": "High", "description": "Retain this description"}
+        payload = {"act_code": code, "task_name": "Forged title", "assigned_to_employee": str(assignee.employee_id), "priority": "High", "description": "Retain this description"}
         response = self.client.post(reverse("portal:task_create"), payload)
         self.assertRedirects(response, reverse("portal:task_list"))
-        self.assertEqual(Task.objects.get(task_code=code).task_name, ACTIVITY_CODE_NAMES[code])
-        payload["task_code"] = "UNKNOWN-CODE"
+        self.assertEqual(Task.objects.get(act_code=code).task_name, ACTIVITY_CODE_NAMES[code])
+        payload["act_code"] = "UNKNOWN-CODE"
         rejected = self.client.post(reverse("portal:task_create"), payload)
         self.assertEqual(rejected.status_code, 200)
         self.assertContains(rejected, "Retain this description")
-        self.assertFalse(Task.objects.filter(task_code="UNKNOWN-CODE").exists())
+        self.assertFalse(Task.objects.filter(act_code="UNKNOWN-CODE").exists())
 
     @classmethod
     def setUpTestData(cls):
