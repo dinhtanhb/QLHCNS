@@ -65,6 +65,39 @@ class QueryParserTests(SimpleTestCase):
                 p = parse(question, today=date(2026, 10, 19))
                 self.assertEqual((p.date_from, p.date_to), (date(2026, 6, 1), date(2026, 6, 30)))
 
+    def test_impossible_date_range_does_not_crash_the_parse(self):
+        # Một ngày sai lịch là lỗi gõ phím rất thường gặp (31/02, ngày 30/2 năm
+        # không nhuận, năm 0000). `datetime.strptime` raise ValueError, và vì
+        # `services.ask` gọi parse ngoài mọi try nên người hỏi nhận HTTP 500 -
+        # kèm theo việc câu hỏi không bao giờ tới được log, tức là chính cơ chế
+        # "dùng log để rà soát parser" (spec mục 7) bị mù đúng chỗ đó.
+        for question in (
+            "từ 31/02/2026 đến 01/03/2026",
+            "từ 29/02/2025 đến 05/03/2025",
+            "từ 2026-02-30 đến 2026-03-01",
+            "từ 01/01/0000 đến 02/01/0000",
+            "quý 1 năm 0000",
+            "năm 0000",
+        ):
+            with self.subTest(question=question):
+                p = parse(question, today=date(2026, 10, 19))
+                self.assertIsNone(p.date_from)
+                self.assertIsNone(p.date_to)
+
+    def test_impossible_range_still_loses_the_date_phrase_from_keywords(self):
+        # Bỏ qua bộ lọc thời gian không có nghĩa là để nguyên "từ ... đến ..."
+        # làm từ khóa: các token đó phủ chủ đề thật và bảo đảm không ra kết quả.
+        p = parse("từ 31/02/2026 đến 01/03/2026 nghỉ phép", today=date(2026, 10, 19))
+        self.assertTrue({"nghi", "phep"} <= set(p.keywords))
+        self.assertNotIn("31/02/2026", " ".join(p.keywords))
+
+    def test_reversed_range_is_swapped_not_silently_empty(self):
+        # "từ 31/12/2026 đến 01/01/2026" là đảo ngược, không phải vô nghĩa. Để
+        # nguyên thì SQL AND hai điều kiện loại nhau và người dùng bị báo "không
+        # có tài liệu trong phạm vi quyền" - tức là đổ lỗi cho họ.
+        p = parse("từ 31/12/2026 đến 01/01/2026", today=date(2026, 10, 19))
+        self.assertEqual((p.date_from, p.date_to), (date(2026, 1, 1), date(2026, 12, 31)))
+
     def test_doc_type_variants(self):
         self.assertEqual(parse("công văn đến").doc_type, "Incoming")
         self.assertEqual(parse("công văn đi").doc_type, "Outgoing")

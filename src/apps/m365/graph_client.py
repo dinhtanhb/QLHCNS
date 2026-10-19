@@ -35,6 +35,10 @@ CHUNK_SIZE = 5 * 1024 * 1024  # phải là bội số của 320 KiB theo yêu c�
 # phân trang mà phương án này không dùng.
 FOLDER_PAGE_SIZE = 200
 
+# Mặc định cho mọi lời gọi: đủ dài cho một lượt upload tệp. Ngắn hơn chỉ nên đặt
+# ở phía caller có người chờ (trợ lý tài liệu truyền `timeout` xuống).
+REQUEST_TIMEOUT = 60
+
 
 class GraphAPIError(Exception):
     """Lỗi khi gọi Microsoft Graph API (mạng, xác thực, hoặc phản hồi lỗi)."""
@@ -122,8 +126,12 @@ class GraphClient:
 
     def _request(self, method, url, **kwargs):
         headers = kwargs.pop("headers", {}) or {}
+        # `timeout=None` từ caller có nghĩa "dùng mặc định của dự án", không phải
+        # "không chờ" - requests hiểu None là chờ vô hạn.
+        if kwargs.get("timeout") is None:
+            kwargs["timeout"] = REQUEST_TIMEOUT
         try:
-            response = requests.request(method, url, headers=self._headers(headers), timeout=60, **kwargs)
+            response = requests.request(method, url, headers=self._headers(headers), **kwargs)
         except requests.RequestException as error:
             raise GraphAPIError("Không kết nối được dịch vụ lưu trữ.", status_code=503) from error
         if response.status_code >= 400:
@@ -298,7 +306,7 @@ class GraphClient:
             )
         return f"https://{self.site_hostname}{self.site_path}"
 
-    def search_files(self, query: str, top: int = 20) -> list[dict]:
+    def search_files(self, query: str, top: int = 20, timeout=None) -> list[dict]:
         """Tìm driveItem bằng Graph /search/query, chỉ giữ kết quả thuộc site IHRMS.
 
         Graph trả cả những tệp ngoài site (search cấp tenant) nên bước lọc theo
@@ -318,7 +326,8 @@ class GraphClient:
                 "fields": ["name", "webUrl", "lastModifiedDateTime"],
             }]
         }
-        data = self._request("POST", f"{GRAPH_BASE}/search/query", json=payload).json()
+        data = self._request("POST", f"{GRAPH_BASE}/search/query", json=payload,
+                             timeout=timeout).json()
         results = []
         for block in data.get("value") or []:
             for container in block.get("hitsContainers") or []:
@@ -330,7 +339,7 @@ class GraphClient:
                             return results
         return results
 
-    def list_folder_files(self, library_name: str, folder: str = "") -> list[dict]:
+    def list_folder_files(self, library_name: str, folder: str = "", timeout=None) -> list[dict]:
         """Liệt kê tệp (không đệ quy, không gồm thư mục con) trong một thư mục.
 
         Đường lùi cho `search_files`: endpoint `/children` chỉ cần quyền Files
@@ -340,7 +349,8 @@ class GraphClient:
         folder = (folder or "").strip("/")
         base = f"{GRAPH_BASE}/drives/{drive_id}/root"
         url = f"{base}:/{folder}:/children" if folder else f"{base}/children"
-        data = self._request("GET", url, params={"$top": FOLDER_PAGE_SIZE}).json()
+        data = self._request("GET", url, params={"$top": FOLDER_PAGE_SIZE},
+                             timeout=timeout).json()
         return [
             self._file_entry(entry)
             for entry in data.get("value") or []

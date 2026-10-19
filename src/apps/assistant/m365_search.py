@@ -4,20 +4,26 @@
 (400/403), lùi về duyệt các thư mục nghiệp vụ đã cấu hình và khớp theo tên tệp -
 chậm hơn và không có full-text, nhưng chỉ cần quyền Files mà dự án đã cấp.
 
-Hai giới hạn cần biết trước khi đọc code:
-- Kết quả SharePoint chỉ gồm tên và `webUrl`; ai mở được tệp do quyền M365 của
-  chính người đó quyết định (spec mục 4). Tên tệp vì thế vẫn lộ cho mọi tài khoản
-  đăng nhập, kể cả tệp của công văn mật.
-- Không có bộ lọc RBAC theo từng tệp như `db_search`: Graph app-only nhìn thấy
-  cả thư viện, không nhìn thấy quyền của người đang hỏi.
+Ba cửa phải qua trước khi gọi mạng, vì Graph chạy app-only:
+- `M365_STORAGE_ENABLED` là công tắc duy nhất của toàn dự án cho M365 (xem
+  `apps/m365/storage.py` và `ops/run_tests.py`). Chỉ đọc credentials thì không
+  phân biệt được "chưa bật" với "bật nhưng sai", và test sẽ tùy thuộc `.env`.
+- Người hỏi phải có quyền xem sổ công văn. App-only nghĩa là token thấy cả thư
+  viện, không thấy quyền của người đang hỏi, nên không có bộ lọc RBAC theo từng
+  tệp ở tầng Graph.
+- Kết quả chỉ được giữ nếu nằm trong một thư mục công văn đã cấu hình, theo từng
+  đoạn đường dẫn. Tên hồ sơ ứng viên hay đơn nghỉ phép tự hiện ra trong khung
+  chat là lộ dữ liệu, kể cả khi liên kết không mở được.
 """
 from __future__ import annotations
 
 from datetime import datetime
+from urllib.parse import unquote
 
 from django.conf import settings
 
 from apps.m365.graph_client import GraphAPIError, GraphNotConfigured, get_graph_client
+from apps.security.permissions import has_permission
 
 from .nlp import ParsedQuery, normalize
 
@@ -26,6 +32,52 @@ MAX_RESULTS = 20
 MAX_QUERY_LENGTH = 200
 SCORE_NUMBER = 100
 SCORE_NAME_MATCH = 10
+# (connect, read) cho một lượt gọi Graph trong khung chat. Mặc định của
+# `_request` là 60s, hợp lý khi upload nhưng một câu hỏi không được chiếm
+# worker nhiều phút, nhất là khi đường lùi có thể gọi thêm vài lượt nữa.
+ASSISTANT_TIMEOUT = (3, 10)
+# Ba thư mục mà nghiệp vụ công văn thực sự ghi tệp vào; cũng là allowlist duy
+# nhất cho kết quả search.
+DISPATCH_FOLDER_KEYS = ("dispatches", "incoming_docs", "outgoing_docs")
+# Quyền của chính cổng: ai xem được sổ công văn thì mới được nghe tên tệp.
+REGISTER_PERMISSIONS = ("manage_office", "access_outgoing_document")
+# Không phải sự cố và không phải "chưa bật": người hỏi đơn giản không thuộc
+# phạm vi nguồn này, nên `services.PARTIAL_NOTES` không liệt kê nó.
+RESTRICTED_NOTE = "restricted"
+
+
+def _dispatch_folders() -> tuple[str, ...]:
+    """Tên thư mục công văn, lấy từ `M365_FOLDER_MAP` - bảng mà
+    `apps.m365.storage` dùng để ghi tệp, không phải biến môi trường trong
+    settings.py. rỗng nghĩa là chưa cấu hình, và khi đó không nên đoán."""
+    folder_map = getattr(settings, "M365_FOLDER_MAP", {}) or {}
+    seen: list[str] = []
+    for kind in DISPATCH_FOLDER_KEYS:
+        folder = (folder_map.get(kind) or "").strip("/")
+        if folder and folder.casefold() not in [name.casefold() for name in seen]:
+            seen.append(folder)
+    return tuple(seen)
+
+
+def _url_segments(url: str) -> set[str]:
+    """Tách webUrl thành các đoạn không phân biệt hoa/thường.
+
+    Giải mã `%2F`/`%20` trước: SharePoint hay trả liên kết dạng
+    `view.aspx?initialid=%2Fsites%2F...%2FCongVan%2F`, và so chuỗi con thì
+    `CongVanBíMật` sẽ khớp nhầm với `CongVan`.
+    """
+    return {segment.casefold() for segment in unquote(url or "").split("/") if segment}
+
+
+def _in_dispatch_folder(url: str, folders: tuple[str, ...]) -> bool:
+    segments = _url_segments(url)
+    return any(folder.casefold() in segments for folder in folders)
+
+
+def can_query_sharepoint(user) -> bool:
+    if getattr(user, "is_superuser", False):
+        return True
+    return any(has_permission(user, code) for code in REGISTER_PERMISSIONS)
 
 
 def _needles(parsed: ParsedQuery) -> list[str]:
@@ -68,21 +120,14 @@ def _to_result(hit: dict, parsed: ParsedQuery) -> dict:
 def _fallback_folders() -> list[tuple[str, str]]:
     """Các cặp (thư viện, thư mục) được duyệt khi Graph search bị từ chối.
 
-    Tên thư mục lấy từ `M365_FOLDER_MAP` - cùng bảng mà `apps.m365.storage` và
-    `upload_to_dispatches` dùng để ghi tệp, nên danh mục trợ lý duyệt đúng nơi
-    nghiệp vụ thực sự lưu. (`M365_FOLDER_*` chỉ là tên biến môi trường trong
-    settings.py, không phải attribute của settings.)
+    Chỉ ba thư mục công văn trong `M365_FOLDER_MAP` - cùng bảng mà
+    `apps.m365.storage` và `upload_to_dispatches` dùng để ghi tệp, nên danh mục
+    trợ lý duyệt đúng nơi nghiệp vụ thực sự lưu. KHÔNG kèm thư viện gốc: listing
+    gốc liệt kê mọi tệp của cả site, tức là lộ tên hồ sơ ứng viên và đơn nghỉ
+    phép cho một tài khoản chỉ có quyền văn thư.
     """
     library = getattr(settings, "M365_SHAREPOINT_LIBRARY", "Documents") or "Documents"
-    folder_map = getattr(settings, "M365_FOLDER_MAP", {}) or {}
-    seen, pairs = set(), []
-    for kind in ("dispatches", "incoming_docs", "outgoing_docs"):
-        folder = (folder_map.get(kind) or "").strip("/")
-        if folder and folder not in seen:
-            seen.add(folder)
-            pairs.append((library, folder))
-    pairs.append((library, ""))
-    return pairs
+    return [(library, folder) for folder in _dispatch_folders()]
 
 
 def _fallback_listing(client, parsed: ParsedQuery) -> list[dict]:
@@ -93,7 +138,7 @@ def _fallback_listing(client, parsed: ParsedQuery) -> list[dict]:
     seen_urls: set[str] = set()
     for library, folder in _fallback_folders():
         try:
-            hits = client.list_folder_files(library, folder)
+            hits = client.list_folder_files(library, folder, timeout=ASSISTANT_TIMEOUT)
         except GraphAPIError as exc:
             # Thiếu cấu hình site thì `_drive_id` gọi `site_id` và raise
             # GraphNotConfigured - phải để nó thoát lên để báo "not_configured",
@@ -125,14 +170,24 @@ def _build_query(parsed: ParsedQuery) -> str:
     return (parsed.doc_number or "")[:MAX_QUERY_LENGTH]
 
 
-def search_sharepoint(parsed: ParsedQuery) -> tuple[list[dict], str | None]:
+def search_sharepoint(parsed: ParsedQuery, user) -> tuple[list[dict], str | None]:
     """Trả `(results, error_note)`; `error_note=None` nghĩa là nguồn này OK.
 
-    - `not_configured` : thiếu M365 (credentials hoặc site) - caller không nên
-      hiển thị cảnh báo lỗi, chỉ là nguồn chưa bật.
-    - `search_fallback`: Graph search bị từ chối, đã duyệt thư mục thay.
+    - `not_configured` : thiếu M365 (cờ bật/tắt, credentials hoặc site) - caller
+      không nên hiển thị cảnh báo lỗi, chỉ là nguồn chưa bật.
+    - `restricted`     : người hỏi không có quyền xem sổ công văn - nguồn bị tắt
+      riêng cho họ, cũng không phải sự cố.
+    - `search_fallback`: Graph search bị từ chối, hoặc mọi kết quả bị loại vì
+      ngoài thư mục công văn, đã duyệt thư mục thay.
     - `unavailable`    : lỗi mạng/5xx/429 - caller trả kết quả DB kèm `partial`.
     """
+    if not getattr(settings, "M365_STORAGE_ENABLED", False):
+        return [], "not_configured"
+    folders = _dispatch_folders()
+    if not folders:
+        return [], "not_configured"
+    if not can_query_sharepoint(user):
+        return [], RESTRICTED_NOTE
     client = get_graph_client()
     if not client.is_configured():
         return [], "not_configured"
@@ -140,7 +195,7 @@ def search_sharepoint(parsed: ParsedQuery) -> tuple[list[dict], str | None]:
     if not query.strip():
         return [], None
     try:
-        hits = client.search_files(query, top=MAX_RESULTS)
+        hits = client.search_files(query, top=MAX_RESULTS, timeout=ASSISTANT_TIMEOUT)
     except GraphNotConfigured:
         return [], "not_configured"
     except GraphAPIError as exc:
@@ -150,7 +205,17 @@ def search_sharepoint(parsed: ParsedQuery) -> tuple[list[dict], str | None]:
             return _fallback_listing(client, parsed), "search_fallback"
         except GraphNotConfigured:
             return [], "not_configured"
-    results = [_to_result(hit, parsed) for hit in hits[:MAX_RESULTS]]
+    # Graph tìm cấp tenant rồi mới lọc theo site trong `search_files`, nên vẫn
+    # còn tệp ngoài phạm vi công văn. Giữ lại có nghĩa là lộ tên tệp.
+    kept = [hit for hit in hits if _in_dispatch_folder(hit.get("web_url", ""), folders)]
+    if not kept and hits:
+        # 20 kết quả liên quan nhất đều thuộc site/thư mục khác: thư mục công
+        # văn vẫn có thể có tệp khớp, nên phải thử đường lùi thay vì báo "hết".
+        try:
+            return _fallback_listing(client, parsed), "search_fallback"
+        except GraphNotConfigured:
+            return [], "not_configured"
+    results = [_to_result(hit, parsed) for hit in kept[:MAX_RESULTS]]
     # Graph xếp theo điểm liên quan của riêng nó, còn `score` ở đây so được với
     # kết quả DB trong `services.ask`, nên phải theo điểm của ta.
     results.sort(key=lambda item: -item["score"])

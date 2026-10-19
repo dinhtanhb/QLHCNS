@@ -171,6 +171,32 @@ class DbSearchTests(TestCase):
             self.assertIn(result["type"], {"official_dispatch", "document", "personnel_decision"})
 
     def test_search_is_bounded(self):
+        # Bản cũ chỉ đếm trên fixture ba công văn, nên assertion không bao giờ đỏ
+        # kể cả ai đó xóa `MAX_PER_TYPE`. Phải vượt trần thật thì chắn mới được
+        # kiểm chứng: 16 công văn khớp "nghỉ phép" nhưng chỉ 15 được trả.
+        OfficialDispatch.objects.bulk_create([
+            OfficialDispatch(
+                dispatch_type="Incoming", dispatch_book=self.incoming_book,
+                dispatch_no=f"9{i:02d}/CV-NP", title=f"Công văn nghỉ phép {i}",
+                issuing_organization="Sở Y tế", issue_date=date(2026, 9, 1),
+                received_or_sent_date=date(2026, 9, 2), security_level="Normal",
+            )
+            for i in range(16)
+        ])
         results = search_database(parse("nghỉ phép"), self.hr)
-        for type_name in ("official_dispatch", "document", "personnel_decision"):
-            self.assertLessEqual(len(self._urls(results, type_name)), 15)
+        self.assertEqual(len(self._urls(results, "official_dispatch")), 15)
+
+    def test_document_without_effective_date_is_not_lost(self):
+        # `effective_date` có null=True. Sắp DESC mà không nói rõ NULL đứng đâu thì
+        # SQLite để cuối, SQL Server để ĐẦU, và vì cắt theo SCAN_LIMIT sau ORDER BY,
+        # sản xuất và test chọn hai tập ứng viên khác nhau. `nulls_last` chốt một
+        # nghĩa trên cả hai; test này giữ cho bản không ngày vẫn nằm trong bảng.
+        Document.objects.create(
+            document_no="5555/QC-NULL", document_name="Quy trình nghỉ phép chưa hiệu lực",
+            category=self.category, status="Approved", effective_date=None,
+        )
+        results = search_database(parse("nghỉ phép"), self.hr)
+        self.assertTrue(
+            any("chưa hiệu lực" in r["title"] for r in results if r["type"] == "document"),
+            "văn bản chưa đặt ngày hiệu lực vẫn phải tìm được bằng từ khóa",
+        )

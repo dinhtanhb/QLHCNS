@@ -14,6 +14,7 @@
     rate_limited: 'Anh/chị đã gửi quá nhiều câu hỏi trong một phút. Hãy đợi chút rồi thử lại.',
     question_too_short: 'Câu hỏi cần ít nhất hai ký tự.',
     invalid_json: 'Câu hỏi không được chấp nhận. Anh/chị thử lại nhé.',
+    session_expired: 'Phiên làm việc đã hết hạn. Anh/chị đăng nhập lại rồi thử lại nhé.',
     unknown: 'Không thực hiện được truy vấn. Anh/chị thử lại sau.'
   };
 
@@ -127,6 +128,14 @@
       headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() },
       body: JSON.stringify({ question: question })
     }).then(function (response) {
+      const type = response.headers.get('Content-Type') || '';
+      if (response.ok && type.indexOf('application/json') === -1) {
+        // `login_required` trả 302 về trang đăng nhập khi phiên hết hạn và fetch
+        // tự đi theo redirect: `ok` vẫn true nhưng body là HTML, không phải JSON.
+        // Nếu nuốt thành {} thì `renderResults` in ra "không có tài liệu trong
+        // phạm vi quyền" - hết phiên bị báo nhầm thành hết quyền.
+        return { ok: false, status: response.status, data: { error: 'session_expired' } };
+      }
       return response.json()
         .catch(function () { return {}; })
         .then(function (data) { return { ok: response.ok, status: response.status, data: data }; });
@@ -214,6 +223,10 @@
   function initFab(fab) {
     const dock = document.getElementById('assistantDock');
     if (!fab || !dock) return;
+    // `initRoot` đã tự chốt bằng dataset; nút nổi cũng phải vậy vì listener
+    // Escape gắn trên document — gọi initFab hai lần là nhân đôi người nghe.
+    if (fab.dataset.assistantFabReady) return;
+    fab.dataset.assistantFabReady = '1';
 
     function setOpen(open) {
       if (open && !dock.firstElementChild) {

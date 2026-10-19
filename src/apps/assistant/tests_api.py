@@ -1,8 +1,9 @@
 import json
 
 from django.core.cache import caches
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
+from unittest.mock import patch
 
 from apps.portal import test_home_dashboard as fixtures
 
@@ -45,6 +46,40 @@ class AssistantApiTests(TestCase):
     def test_anonymous_cannot_open_page(self):
         response = self.client.get(reverse(PAGE_URL))
         self.assertEqual(response.status_code, 302)
+        self.assertIn("login", response["Location"])
+
+    @override_settings(M365_STORAGE_ENABLED=False)
+    def test_no_request_builds_a_graph_client(self):
+        # `ops/run_tests.py` đặt M365_STORAGE_ENABLED=False chính vì test không
+        # được chạm Microsoft. Nguồn phụ chỉ đọc credentials, không đọc cờ này,
+        # nên trên máy có `.env` đã cấu hình thì mỗi câu hỏi hợp lệ là một lượt
+        # gọi Graph thật - và `services` nuốt mọi exception nên cả cụm vẫn xanh.
+        # Dựng client ở đây sẽ nổ, nên muốn xanh là phải tắt đúng cửa.
+        from apps.assistant.models import SearchQueryLog
+
+        with patch(
+            "apps.assistant.m365_search.get_graph_client",
+            side_effect=AssertionError("test không được gọi Graph"),
+        ) as factory:
+            self.client.force_login(self.hr)
+            for question in ("công văn nghỉ phép", "128/CV", "quyết định"):
+                self.assertEqual(_post(self.client, question).status_code, 200)
+        factory.assert_not_called()
+        self.assertEqual(SearchQueryLog.objects.count(), 3)
+
+    @override_settings(M365_STORAGE_ENABLED=True)
+    def test_storage_flag_on_but_permission_denied_still_makes_no_call(self):
+        # Cửa quyền phải đứng trước cửa mạng: người hỏi không có quyền sổ công
+        # văn thì dù M365 đã bật, trợ lý cũng không được lộ tên tệp của cả site.
+        # Test này có bật cờ một cách giả định, nên nó chạy được trên mọi `.env`.
+        with patch(
+            "apps.assistant.m365_search.get_graph_client",
+            side_effect=AssertionError("EMPLOYEE không được gọi Graph"),
+        ) as factory:
+            self.client.force_login(self.emp)
+            payload = self._json(_post(self.client, "hồ sơ ứng viên"))
+        factory.assert_not_called()
+        self.assertFalse(payload["partial"])
 
     def test_page_renders_for_logged_in_user(self):
         self.client.force_login(self.hr)
@@ -150,6 +185,13 @@ class AssistantApiTests(TestCase):
         self.assertEqual(_post(self.client, "công văn nghỉ phép").status_code, 200)
 
     def test_long_question_is_truncated_not_rejected(self):
+        # Không chỉ "không bị từ chối": cắt ở ranh giới là điều duy nhất ngăn
+        # một câu >500 ký tự đập vào cột `nvarchar(500)` lúc ghi log. Cắt sai chỗ
+        # thì SQL Server báo DataError 500 mà test cũ vẫn xanh.
+        from apps.assistant.models import SearchQueryLog
+
         self.client.force_login(self.hr)
         response = _post(self.client, "công văn " * 200)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(self._json(response)["query"]), 500)
+        self.assertEqual(len(SearchQueryLog.objects.get().question), 500)

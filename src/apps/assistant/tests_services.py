@@ -158,6 +158,24 @@ class AskServiceTests(TestCase):
         self.assertEqual(log.sources, "db")
         self.assertEqual(log.error_note, "unavailable")
 
+    def test_sharepoint_source_is_asked_as_the_asking_user(self):
+        # Graph chạy app-only nên bản thân nó KHÔNG biết ai đang hỏi. Toàn bộ
+        # quyền của nguồn này phụ thuộc vào đúng một tham số `user` ở đây; đánh
+        # rơi nó là mọi tài khoản đọc được tên tệp của cả site.
+        with patch(
+            "apps.assistant.services.m365_search.search_sharepoint", return_value=([], None)
+        ) as sp:
+            ask("công văn nghỉ phép", self.hr)
+        self.assertEqual(sp.call_args[0][1], self.hr)
+        self.assertIs(sp.call_args[0][1], self.hr)
+
+    def test_restricted_sharepoint_note_is_not_a_degraded_answer(self):
+        # Người không có quyền sổ công văn bị chặn ở nguồn phụ là chuyện bình
+        # thường; báo "partial" sẽ làm họ tưởng hệ thống hỏng.
+        response = self._ask("công văn nghỉ phép", note="restricted")
+        self.assertFalse(response["partial"])
+        self.assertEqual(SearchQueryLog.objects.get().error_note, None)
+
     def test_database_errors_are_not_swallowed(self):
         # DB là nguồn chính và là nguồn có RBAC: lỗi ở đây là lỗi server thật,
         # phải leo lên view (T7 trả 500 + log), không được hóa "0 kết quả".

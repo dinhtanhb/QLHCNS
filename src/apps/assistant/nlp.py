@@ -108,14 +108,24 @@ def _parse_date(value: str) -> date:
     raise ValueError(value)
 
 
+def _date_span(first: str, second: str) -> tuple[date, date]:
+    """Hai mốc "từ ... đến ...", đổi chỗ nếu bị ngược, raise nếu sai lịch."""
+    start, end = _parse_date(first), _parse_date(second)
+    return (start, end) if start <= end else (end, start)
+
+
 def _extract_dates(text: str, today: date) -> tuple[str, date | None, date | None]:
     match = FROM_TO_RE.search(text)
     if match:
-        return (
-            text[: match.start()] + " " + text[match.end():],
-            _parse_date(match.group(1)),
-            _parse_date(match.group(2)),
-        )
+        rest = text[: match.start()] + " " + text[match.end():]
+        try:
+            start, end = _date_span(match.group(1), match.group(2))
+        except ValueError:
+            # "31/02" hay 29/02 của năm không nhuận: bỏ đúng bộ lọc thời gian,
+            # giữ nguyên phần còn lại của câu đã cắt cụm ngày. Ném tiếp thì cả
+            # request thành 500 và câu hỏi không bao giờ ghi được vào log.
+            return rest, None, None
+        return rest, start, end
 
     lowered = text.casefold()
     if "tuần trước" in lowered:
@@ -175,7 +185,13 @@ def parse(question: str, today: date | None = None) -> ParsedQuery:
 
     # Mốc thời gian trích trước số hiệu: DOC_NUMBER_RE cũng khớp dạng
     # "2026/06" và nếu chạy trước sẽ ăn mất nửa đầu của dải ngày.
-    text, parsed.date_from, parsed.date_to = _extract_dates(text, today)
+    try:
+        text, parsed.date_from, parsed.date_to = _extract_dates(text, today)
+    except ValueError:
+        # "quý 1 năm 0000" dựng `date()` trực tiếp từ số trong câu và cũng nổ như
+        # dải ngày sai lịch. Mất bộ lọc thời gian vẫn tốt hơn 500: `text` chưa
+        # bị gán lại nên các từ khóa phía dưới vẫn trích đúng.
+        parsed.date_from = parsed.date_to = None
 
     match = DOC_NUMBER_RE.search(text)
     if match:

@@ -91,3 +91,50 @@ class AssistantUiTests(TestCase):
         self.assertIn("X-CSRFToken", js)
         self.assertNotIn("innerHTML", js)
         self.assertNotIn("document.write", js)
+
+    def test_assistant_js_allows_only_internal_or_https_links(self):
+        # `safeUrl` là chắn duy nhất giữa một `webUrl` lấy từ Graph và
+        # `card.href`: xóa nó mà suite vẫn xanh nghĩa là một chuỗi
+        # javascript: từ dữ liệu ngoài đủ để chạy script trong phiên người dùng.
+        js = JS_PATH.read_text(encoding="utf-8")
+        self.assertIn("function safeUrl", js)
+        self.assertIn("javascript:", js)
+        self.assertIn("data:", js)
+        self.assertIn("card.href = href", js)
+        self.assertIn("noopener noreferrer", js)
+
+    def test_assistant_css_hides_the_widget_when_printing(self):
+        # AGENTS.md yêu cầu bỏ chrome không thuộc bản in. Probe in là tệp tạm
+        # ngoài Git, nên quy tắc này phải có một test trong suite.
+        css = CSS_PATH.read_text(encoding="utf-8")
+        block = re.search(r"@media print\s*\{([^}]*)\}", css)
+        self.assertIsNotNone(block, "assistant.css phải có khối @media print")
+        for selector in (".assistant-fab", ".assistant-dock"):
+            self.assertIn(selector, block.group(1))
+        self.assertIn("display: none", block.group(1))
+
+    def test_assistant_js_names_session_expiry_separately_from_no_results(self):
+        # `login_required` trả 302 về trang đăng nhập; fetch đi theo redirect nên
+        # `ok` vẫn true và JSON hỏng thành {}. Rơi vào `MESSAGES.empty` thì người
+        # dùng nghe "không có tài liệu trong phạm vi quyền" khi hệ thống chỉ hết
+        # phiên - cùng lớp lỗi mà C41 cấm.
+        js = JS_PATH.read_text(encoding="utf-8")
+        self.assertIn("session_expired", js)
+        self.assertIn("application/json", js)
+
+    def test_assistant_sources_contain_no_non_vietnamese_script(self):
+        # AGENTS.md: mã nguồn chỉ tiếng Việt + ASCII. Scan này từng phải chạy
+        # tay bằng script tạm ngoài Git; một chữ Hán lọt vào comment không làm đỏ
+        # test nào khác và review chỉ phát hiện khi đọc từng dòng.
+        # Cho phép: ASCII in được + khoảng trắng (0x20-0x7E), dấu tiếng Việt,
+        # `…`, `—`, `‘’“”` (0x2000-0x206F) và `·` (0x00B7). Cấm mọi ký tự khác,
+        # gồm Cyrillic (0x0400-0x04FF) và CJK (0x3000 trở lên).
+        allowed = set("…—‘’“”·")
+        for path in (CSS_PATH, JS_PATH):
+            text = path.read_text(encoding="utf-8")
+            outside = {c for c in text if not (0x20 <= ord(c) <= 0x7E) and c not in allowed}
+            for char in sorted(outside):
+                self.assertLess(
+                    ord(char), 0x3000,
+                    f"{path.name}: ký tự ngoài tiếng Việt {char!r} (U+{ord(char):04X})",
+                )

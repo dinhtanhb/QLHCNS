@@ -21,7 +21,8 @@ from .models import SearchQueryLog
 
 MAX_RESULTS = 20
 # Hai trạng thái này nghĩa là "câu trả lời chưa đầy đủ" và UI phải nói rõ.
-# `not_configured` thì không: nguồn chưa bật không phải sự cố.
+# `not_configured` (nguồn chưa bật) và `restricted` (người hỏi không thuộc phạm vi
+# nguồn SharePoint) thì không: đó là trạng thái bình thường, không phải sự cố.
 PARTIAL_NOTES = ("unavailable", "search_fallback")
 
 
@@ -40,9 +41,9 @@ def _parsed_dict(parsed: nlp.ParsedQuery) -> dict:
     return data
 
 
-def _search_sharepoint(parsed: nlp.ParsedQuery) -> tuple[list[dict], str]:
+def _search_sharepoint(parsed: nlp.ParsedQuery, user) -> tuple[list[dict], str]:
     try:
-        results, note = m365_search.search_sharepoint(parsed)
+        results, note = m365_search.search_sharepoint(parsed, user)
     except Exception:
         # GraphAPIError đã được m365_search xử lý; nhánh này chặn lỗi dữ liệu
         # lạ từ SharePoint để nó không kéo theo cả câu trả lời.
@@ -61,7 +62,7 @@ def ask(question: str, user) -> dict:
     parsed = nlp.parse(question)
     started = time.perf_counter()
     db_results = db_search.search_database(parsed, user)
-    sp_results, sp_note = _search_sharepoint(parsed)
+    sp_results, sp_note = _search_sharepoint(parsed, user)
     took_ms = int((time.perf_counter() - started) * 1000)
 
     merged = sorted(

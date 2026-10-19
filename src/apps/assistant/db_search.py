@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import re
 
-from django.db.models import Q
+from django.db.models import F, Q
 from django.urls import reverse
 
 from apps.document.hcns.catalog import FORMS
@@ -196,7 +196,11 @@ def _search_documents(parsed: ParsedQuery, user) -> list[dict]:
         qs = qs.filter(effective_date__gte=parsed.date_from)
     if parsed.date_to:
         qs = qs.filter(effective_date__lte=parsed.date_to)
-    qs = qs.order_by("-effective_date", "-id")
+    # `effective_date` có null=True. SQLite coi NULL là nhỏ nhất (DESC đẩy NULL
+    # xuống cuối) còn SQL Server để NULL lên ĐẦU khi DESC, và vì `[:SCAN_LIMIT]`
+    # cắt sau ORDER BY, hai backend sẽ chọn hai tập ứng viên khác nhau cho cùng
+    # một dữ liệu - test chỉ xanh trên SQLite nếu fixture luôn đặt ngày.
+    qs = qs.order_by(F("effective_date").desc(nulls_last=True), "-id")
 
     if not parsed.has_constraints():
         rows = list(qs.values_list(*DOCUMENT_FIELDS)[:RECENT_LIMIT])
