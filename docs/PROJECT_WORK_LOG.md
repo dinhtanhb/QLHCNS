@@ -1,5 +1,24 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-19 — Rà tệp chưa commit, làm sạch công cụ và hướng dẫn agent
+
+**Phạm vi và quyết định**
+- Theo yêu cầu chủ dự án kiểm tra 17 tệp chưa commit, bỏ phần thừa và push. Git thực tế ghi nhận **18 mục untracked** (hai thư mục là repo Git lồng), không có tracked/staged modification đầu lượt. `main` tại `950a1a2cd6a0b9cd8e8c9b5335b93e5d7cecaa78`; fetch origin/main khớp, ahead/behind 0/0; đọc ba mục nhật ký gần nhất. Một tác nhân ghi; không đổi mã ứng dụng, dữ liệu, DB/schema, quyền, UI hoặc bản in.
+- Giữ và sửa 10 tệp hướng dẫn GitHub: ba agent, copilot instructions, hai instruction theo đường dẫn và bốn skill. Sửa backend `mssql` thành `sqlserver`, mở phạm vi template app/CSS/JS, bỏ quy định transaction/tải quan hệ vô điều kiện, đưa DESIGN.md/AGENTS.md và DB/media QA cô lập làm nguồn quyết định. Dùng skill writing-for-agents hiện có, không cài/nâng dependency.
+- Hợp nhất Refactoring UI: giữ bảy tệp nguồn MIT tại `.agents/skills/refactoring-ui`, bỏ Git metadata lồng; `.claude/skills/refactoring-ui/SKILL.md` chỉ trỏ bản dùng chung. Ghi upstream SHA `48872143abb0a8feb6d9bf58e222afbd800210b0`, giữ LICENSE, thêm ưu tiên chuẩn IHRMS; không nạp assets vào giao diện.
+- Chuyển khỏi workspace: bản clone Claude trùng, Git metadata của bản canonical, skill `new-hrm-feature` trùng scaffold, script bootstrap base64 cũ, hook Stop chạy manage.py với DB mặc định và hai ảnh tham chiếu nội bộ lỗi thời. Không chạy script/hook này. `.mcp.json` giữ nguyên tại máy, JSON hợp lệ, thêm đúng `/.mcp.json` vào ignore, không đưa cấu hình cá nhân lên Git.
+
+**Lưu phục hồi và kiểm tra**
+- Trước thay đổi đã lưu cả 18 mục (88 tệp) ở `D:/IHRMS_Cleanup_Archive/20261019_170606/untracked-before-cleanup.zip`, có manifest và mở lại xác minh SHA-256 từng tệp. SHA archive `6a50961eaa560290634b26dd18f42130cb2af382b9041bf74e133aecca3c8ed7`, kiểm lại đạt sau chuẩn hóa. Đây là kho lưu riêng có cấu hình/ảnh nội bộ, không phải snapshot nguồn để chia sẻ. Bảy đích thừa được chuyển thêm vào `removed-from-workspace/` trong cùng thư mục để khôi phục dễ.
+- Lệnh xóa ban đầu bị bộ kiểm soát tự động chặn trước thực thi; không cố chạy lại lệnh xóa. Dùng Move-Item sang kho lưu ngoài dự án sau khi xác minh đường dẫn nguồn/đích và không có reparse point. Không xóa vĩnh viễn hoặc chạy git clean thật.
+- `validate_tooling.py` ngoài repo: **18 tệp hướng dẫn/11 YAML frontmatter/20 liên kết nội bộ đạt**; UTF-8 không BOM/ký tự thay thế, quét mẫu credential đạt; không Git metadata lồng; MCP JSON hợp lệ/ignored/không tracked; archive SHA khớp. Kết quả `%TEMP%/ihrms-cleanup-20261019/validation.json`.
+- `venv/Scripts/python.exe ops/run_tests.py --help`: exit 0, backend thực `configured/sqlite/sqlserver`; chỉ kiểm CLI, không kết nối DB. `git diff --check` và kiểm staged whitespace chạy trên nguồn cuối trước commit. Rà stage không có gitlink, `.env`, DB/media, ảnh riêng, local MCP hoặc bootstrap/hook thừa.
+- Chỉ preview `git clean -ndx` để phân loại; giữ `.env`, DB/media, môi trường ảo, node_modules, backups/log và staticfiles. Không coi chúng là rác để xóa hàng loạt. Không chạy lại regression/browser/layout/print vì đợt này chỉ đổi tài liệu/công cụ hướng dẫn và ignore; chưa xác nhận các client Copilot/Claude nạp cấu hình trong phiên thật.
+
+**Bàn giao**
+- Snapshot nguồn từ staged tree tại `D:/IHRMS_Review_Exports/IHRMS_Review_20261019_RepoCleanup.zip`, có manifest/tree và SHA-256 từng tệp được mở lại kiểm; bao gồm hướng dẫn/skill vừa chuẩn hóa, loại bí mật/DB/media/đầu ra runtime. Hash archive ở `.zip.sha256`; kiểm privacy và snapshot trước commit. Kho lưu phục hồi riêng không được đưa vào snapshot này.
+- Commit/push `origin main` theo quyền đã cấp; SHA, xác nhận remote khớp HEAD, ahead/behind và trạng thái sạch được báo sau thao tác. Nếu push không thành công phải ghi lỗi, không tuyên bố đã giao. Không deploy hoặc thay DB vận hành; chủ dự án không cần tự xóa dữ liệu hay cài lại môi trường.
+
 ## 2026-10-19 — Sửa kéo thanh cuộn danh mục và thiết kế lại slide điều hành
 
 **Tóm tắt cho chủ dự án**

@@ -44,6 +44,8 @@ Backups/
 # --- Công cụ lập trình ---
 .vscode/
 .idea/
+# Local MCP client configuration.
+/.mcp.json
 *.swp
 node_modules/
 
