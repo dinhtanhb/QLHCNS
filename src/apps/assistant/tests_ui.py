@@ -143,9 +143,9 @@ class AssistantUiTests(TestCase):
         # như `a` nhưng normalize() không fold, nên kẻ chép theo có một stopword
         # chết. Ngược lại, khoanh cả khối Latin Extended-A thì tha luôn ký tự
         # của tiếng Ba Lan và Thổ Nhĩ Kỳ mà tiếng Việt không dùng.
-        # Chữ Việt nằm ở bốn nơi: Latin-1, bốn codepoint Latin Extended-A
-        # (ă đ ĩ ũ, cả hoa lẫn thường), hai codepoint Latin Extended-B (ơ ư),
-        # và tổ hợp dấu nặng/hỏi/ngã ở Latin Extended Additional.
+        # Chữ Việt nằm ở bốn nơi: Latin-1, tám codepoint Latin Extended-A
+        # (Ă ă Đ đ Ĩ ĩ Ũ ũ), bốn codepoint Latin Extended-B (Ơ ơ Ư ư), và tổ
+        # hợp dấu nặng/hỏi/ngã ở Latin Extended Additional.
         allowed = set("…—‘’“”·→\t\n\r")
         latin_extended_a = {0x102, 0x103, 0x110, 0x111, 0x128, 0x129, 0x168, 0x169}
         latin_extended_b = {0x1A0, 0x1A1, 0x1AF, 0x1B0}
