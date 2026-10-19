@@ -1,35 +1,33 @@
 {% extends "base.html" %}
 {% load ui_components %}
 {% block title %}{{ page_title|ui_number }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/activity_form.css' %}">{% endblock %}
 {% block content %}
+<div class="ui-activity-editor">
 <div class="mb-4">
   <a href="{% url 'portal:activity_dashboard' %}" class="ui-button ui-button--secondary mb-3">← Quay lại dashboard hoạt động</a>
   {% include "ui/page_header.html" with title=page_title description="Nhập thông tin kế hoạch và phân công CBDA. Gắn công văn đi đã phát hành để tự tạo Task báo cáo." %}
 </div>
 
-<form method="post" class="ui-form-stack ui-card">
+<form method="post" class="ui-form-stack ui-card ui-activity-form">
   {% csrf_token %}
   {% if form.non_field_errors %}<div class="ui-error-summary">{{ form.non_field_errors|ui_number }}</div>{% endif %}
   <fieldset class="ui-form-section">
     <legend>Thông tin hoạt động</legend>
     <div class="ui-form-grid ui-form-grid--long">
       {% for field in form %}
-        {% if field.name == "activity_code" %}{% include "ui/field.html" with field=field  width="wide" %}
-        {% elif field.name == "activity_name" %}{% include "ui/field.html" with field=field  width="wide" %}
-        {% elif field.name == "project" %}{% include "ui/field.html" with field=field  width="wide" %}
-        {% elif field.name == "location" %}{% include "ui/field.html" with field=field  width="wide" %}
-        {% elif field.name == "participants" %}{% include "ui/field.html" with field=field  width="full" %}
-        {% elif field.name == "status" %}{% include "ui/field.html" with field=field  width="wide" %}
+        {% if field.name == "activity_code" %}{% include "ui/field.html" with field=field width="regular" %}
+        {% elif field.name == "activity_name" %}{% include "ui/field.html" with field=field width="activity-name" %}
+        {% elif field.name == "project" or field.name == "location" or field.name == "participants" or field.name == "status" %}{% include "ui/field.html" with field=field width="regular" %}
         {% endif %}
       {% endfor %}
     </div>
   </fieldset>
   <fieldset class="ui-form-section">
     <legend>Mục đích và kết quả</legend>
-    <div class="ui-form-grid ui-form-grid--long">
+    <div class="ui-form-grid ui-form-grid--long ui-activity-objectives">
       {% for field in form %}
-        {% if field.name == "purpose" %}{% include "ui/field.html" with field=field  width="full" %}
-        {% elif field.name == "expected_output" %}{% include "ui/field.html" with field=field  width="full" %}
+        {% if field.name == "purpose" or field.name == "expected_output" %}{% include "ui/field.html" with field=field width="wide" %}
         {% endif %}
       {% endfor %}
     </div>
@@ -38,21 +36,19 @@
     <legend>Lịch và người phụ trách</legend>
     <div class="ui-form-grid ui-form-grid--long">
       {% for field in form %}
-        {% if field.name == "start_date" %}{% include "ui/field.html" with field=field  width="wide" %}
-        {% elif field.name == "end_date" %}{% include "ui/field.html" with field=field  width="wide" %}
-        {% elif field.name == "lead_cbda" %}{% include "ui/field.html" with field=field  width="wide" %}
-        {% elif field.name == "coordinator" %}{% include "ui/field.html" with field=field  width="wide" %}
+        {% if field.name == "start_date" or field.name == "end_date" or field.name == "lead_cbda" or field.name == "coordinator" %}{% include "ui/field.html" with field=field width="regular" %}
         {% elif field.name == "outgoing_document" %}{% include "ui/field.html" with field=field  width="full" %}
         {% endif %}
       {% endfor %}
     </div>
-    <div class="ui-alert ui-alert--info mt-3">ĐPV/quản lý tự nhập ngày bắt đầu và ngày kết thúc theo kế hoạch thực tế. Ngày phát hành công văn chỉ kích hoạt việc giao Task, không dùng làm ngày bắt đầu. Hạn báo cáo là 10 ngày làm việc sau ngày kết thúc (không tính Thứ Bảy, Chủ Nhật và ngày nghỉ đã khai báo trong IHRMS). Nếu đổi lịch, Task được cập nhật ngày và có thông báo cho người liên quan.</div>
+    <div class="ui-alert ui-alert--info">ĐPV/quản lý tự nhập ngày bắt đầu và ngày kết thúc theo kế hoạch thực tế. Ngày phát hành công văn chỉ kích hoạt việc giao Task, không dùng làm ngày bắt đầu. Hạn báo cáo là 10 ngày làm việc sau ngày kết thúc (không tính Thứ Bảy, Chủ Nhật và ngày nghỉ đã khai báo trong IHRMS). Nếu đổi lịch, Task được cập nhật ngày và có thông báo cho người liên quan.</div>
   </fieldset>
   <div class="ui-form-actions">
     <button type="submit" class="ui-button ui-button--primary">{{ submit_label|ui_number }}</button>
     <a href="{% url 'portal:activity_dashboard' %}" class="ui-button ui-button--secondary">Hủy</a>
   </div>
 </form>
+</div>
 
 {{ activity_code_names|json_script:"activity-code-names" }}
 <script>

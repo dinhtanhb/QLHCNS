@@ -1,0 +1,26 @@
+/* Screen-only refinement shared by project activity create/edit. */
+@media screen {
+    .ui-activity-editor .ui-page-title {
+        font-size: var(--ui-text-h1);
+        line-height: var(--ui-leading-h1);
+        font-weight: var(--ui-font-weight-heading);
+    }
+    .ui-activity-form .ui-activity-objectives textarea {
+        height: auto;
+        min-height: calc(var(--ui-control-height) * 2);
+        resize: vertical;
+    }
+    .ui-activity-form .ui-field--activity-name { grid-column: 1 / -1; }
+    @container ui-form (min-width: 640px) {
+        .ui-activity-form .ui-field--activity-name { grid-column: span 2; }
+    }
+    @container ui-form (min-width: 900px) {
+        .ui-activity-form .ui-field--activity-name { grid-column: span 3; }
+    }
+    @container ui-form (width < 900px) {
+        .ui-activity-objectives > .ui-field { grid-column: 1 / -1; }
+    }
+    @container ui-form (width < 640px) {
+        .ui-activity-form .ui-field:has([name="activity_code"]) { grid-column: 1 / -1; }
+    }
+}
