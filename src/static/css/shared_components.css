@@ -12,7 +12,7 @@
  .ui-combobox { position:relative; }
  .ui-combobox .ui-choice-search { width:100%; padding-inline-end:var(--ui-target-min); }
  .ui-combobox .ui-choice-toggle { position:absolute; inset-inline-end:0; top:0; width:var(--ui-target-min); height:var(--ui-target-min); border:0; background:transparent; color:var(--ui-text); cursor:pointer; }
- .ui-choice-popover:has(.ui-choice-list) { padding:var(--ui-space-2); overflow:auto; }
+ .ui-choice-popover:has(.ui-choice-list) { padding:var(--ui-space-2); overflow:auto; scrollbar-gutter:stable; }
  .ui-choice-option { padding:var(--ui-space-3); min-height:var(--ui-target-min); cursor:pointer; white-space:normal; overflow-wrap:anywhere; }
  .ui-choice-option:is(:hover,[data-active="true"]) { background:var(--ui-hover-bg); }
  .ui-choice-option[aria-selected="true"] { font-weight:var(--ui-weight-semibold); color:var(--ui-brand); }

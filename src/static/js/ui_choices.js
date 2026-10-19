@@ -24,7 +24,7 @@
   select.before(control); control.append(input, toggle, select); popup.append(list, status); control.after(popup);
   select.hidden = true; select.required = false; select.tabIndex = -1;
   if (label) label.htmlFor = input.id;
-  let matches = [], active = -1, opened = false;
+  let matches = [], active = -1, opened = false, returningFocus = false, popupPointer = false;
   const initialHidden = new WeakMap([...select.options].map(option => [option, option.hidden]));
   const excluded = option => option.disabled || (option.dataset.uiExcluded === undefined ? initialHidden.get(option) : option.dataset.uiExcluded === 'true');
   const selectedText = () => select.selectedOptions[0]?.value ? select.selectedOptions[0].textContent.trim() : '';
@@ -40,11 +40,21 @@
   function close(restore = false) {
    if (restore) input.value = selectedText();
    if (opened) popup.hidePopover();
-   opened = false; input.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-expanded', 'false'); input.removeAttribute('aria-activedescendant'); validate();
+   opened = false; popupPointer = false; input.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-expanded', 'false'); input.removeAttribute('aria-activedescendant'); validate();
   }
   function choose(option) {
    select.value = option.value; input.value = selectedText(); close();
-   select.dispatchEvent(new Event('change', {bubbles:true})); input.focus();
+   select.dispatchEvent(new Event('change', {bubbles:true})); returnFocus();
+  }
+  function returnFocus() {
+   returningFocus = true;
+   input.focus({preventScroll:true});
+   returningFocus = false;
+  }
+  function inPopup(event) {
+   if (!opened) return false;
+   const r = popup.getBoundingClientRect();
+   return popup.contains(event.target) || (event.clientX >= r.left && event.clientX <= r.right && event.clientY >= r.top && event.clientY <= r.bottom);
   }
   function activate(index) {
    active = Math.max(0, Math.min(index, matches.length - 1));
@@ -70,9 +80,12 @@
    input.setAttribute('aria-expanded', 'true'); toggle.setAttribute('aria-expanded', 'true'); position();
   }
   input.value = selectedText(); validate();
-  input.addEventListener('focus', () => open());
+  input.addEventListener('focus', () => { if (!returningFocus && !opened) open(); });
+  input.addEventListener('click', () => { if (!opened) open(); });
   input.addEventListener('input', () => { open(input.value); validate(); });
-  input.addEventListener('blur', () => close());
+  // Native scrollbar interaction may blur the input without a relatedTarget
+  // or a DOM pointer event. Close on an actual outside pointer/focus change
+  // below, rather than treating every blur as leaving this component.
   input.addEventListener('keydown', event => {
    if (event.key === 'Escape') { event.preventDefault(); close(true); }
    else if (['ArrowDown','ArrowUp'].includes(event.key)) { event.preventDefault(); if (!opened) open(); activate(active < 0 ? (event.key === 'ArrowDown' ? 0 : matches.length - 1) : active + (event.key === 'ArrowDown' ? 1 : -1)); }
@@ -81,6 +94,24 @@
   });
   toggle.addEventListener('mousedown', event => event.preventDefault());
   toggle.addEventListener('click', () => { if (opened) close(true); else { input.focus(); open(); } });
+  document.addEventListener('pointerdown', event => {
+   popupPointer = inPopup(event);
+   if (opened && !control.contains(event.target) && !popupPointer) close();
+  }, true);
+  window.addEventListener('pointerup', event => {
+   if (!popupPointer) return;
+   popupPointer = false;
+   if (opened && event.pointerType !== 'touch') returnFocus();
+  }, true);
+  document.addEventListener('focusin', event => {
+   if (opened && !popupPointer && !control.contains(event.target) && !popup.contains(event.target)) close();
+  });
+  document.addEventListener('keydown', event => {
+   if (opened && event.key === 'Escape' && event.target !== input) {
+    event.preventDefault(); close(true); returnFocus();
+   }
+   if (opened && event.key === 'Tab' && event.target !== input) close();
+  });
   select.addEventListener('change', () => { input.value = selectedText(); validate(); });
   select.addEventListener('ui:choiceschanged', () => { input.value = selectedText(); render(); validate(); });
   select.form?.addEventListener('reset', () => requestAnimationFrame(() => { input.value = selectedText(); close(); }));
