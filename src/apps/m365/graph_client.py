@@ -31,6 +31,10 @@ GRAPH_SCOPE = ["https://graph.microsoft.com/.default"]
 SIMPLE_UPLOAD_LIMIT = 4 * 1024 * 1024  # 4 MB
 CHUNK_SIZE = 5 * 1024 * 1024  # phải là bội số của 320 KiB theo yêu cầu Graph
 
+# Graph nhận $top tối đa 200 mục cho /children; lớn hơn phải đi tiếp con trỏ
+# phân trang mà phương án này không dùng.
+FOLDER_PAGE_SIZE = 200
+
 
 class GraphAPIError(Exception):
     """Lỗi khi gọi Microsoft Graph API (mạng, xác thực, hoặc phản hồi lỗi)."""
@@ -271,6 +275,77 @@ class GraphClient:
     def get_metadata(self, library_name: str, path: str) -> dict:
         url = self._item_url(library_name, path)
         return self._request("GET", url).json()
+
+    # ------------------------------------------------------------------
+    # Truy vấn (assistant): tìm tệp toàn site và liệt kê một thư mục
+    # ------------------------------------------------------------------
+    def _file_entry(self, item: dict) -> dict:
+        return {
+            "name": item.get("name", ""),
+            "web_url": item.get("webUrl", ""),
+            "last_modified": item.get("lastModifiedDateTime", ""),
+        }
+
+    def _site_prefix(self) -> str:
+        """`https://<hostname><site_path>` - biên lọc kết quả theo site IHRMS.
+
+        Thiếu một trong hai cấu phần thì prefix rỗng sẽ khớp mọi webUrl, tức là
+        lộ tệp của site khác, nên THA mà không suy đoán.
+        """
+        if not (self.site_hostname and self.site_path):
+            raise GraphNotConfigured(
+                "Chưa cấu hình M365_SHAREPOINT_HOSTNAME / M365_SHAREPOINT_SITE_PATH trong .env."
+            )
+        return f"https://{self.site_hostname}{self.site_path}"
+
+    def search_files(self, query: str, top: int = 20) -> list[dict]:
+        """Tìm driveItem bằng Graph /search/query, chỉ giữ kết quả thuộc site IHRMS.
+
+        Graph trả cả những tệp ngoài site (search cấp tenant) nên bước lọc theo
+        `_site_prefix()` là bắt buộc, không phải tối ưu.
+
+        Cần quyền app cho phép search (Sites.Read.All / Sites.ReadWrite.All).
+        GraphAPIError 400/403 nghĩa là chưa được admin consent; caller tự fallback.
+        """
+        self._require_configured()
+        prefix = self._site_prefix()
+        payload = {
+            "requests": [{
+                "entityTypes": ["driveItem"],
+                "query": {"queryString": query[:200]},
+                "from": 0,
+                "size": top,
+                "fields": ["name", "webUrl", "lastModifiedDateTime"],
+            }]
+        }
+        data = self._request("POST", f"{GRAPH_BASE}/search/query", json=payload).json()
+        results = []
+        for block in data.get("value") or []:
+            for container in block.get("hitsContainers") or []:
+                for hit in container.get("hits") or []:
+                    resource = (hit or {}).get("resource") or {}
+                    if (resource.get("webUrl") or "").startswith(prefix):
+                        results.append(self._file_entry(resource))
+                        if len(results) >= top:
+                            return results
+        return results
+
+    def list_folder_files(self, library_name: str, folder: str = "") -> list[dict]:
+        """Liệt kê tệp (không đệ quy, không gồm thư mục con) trong một thư mục.
+
+        Đường lùi cho `search_files`: endpoint `/children` chỉ cần quyền Files
+        đã có sẵn, không cần admin consent cho Search.
+        """
+        drive_id = self._drive_id(library_name)
+        folder = (folder or "").strip("/")
+        base = f"{GRAPH_BASE}/drives/{drive_id}/root"
+        url = f"{base}:/{folder}:/children" if folder else f"{base}/children"
+        data = self._request("GET", url, params={"$top": FOLDER_PAGE_SIZE}).json()
+        return [
+            self._file_entry(entry)
+            for entry in data.get("value") or []
+            if "folder" not in entry
+        ]
 
     def get_web_url(self, library_name: str, path: str) -> str:
         """Link xem tệp trực tiếp trên SharePoint/OneDrive (mở trình duyệt)."""
