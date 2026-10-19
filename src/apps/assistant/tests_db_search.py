@@ -1,5 +1,6 @@
 from datetime import date
 
+from django.contrib.auth.models import AnonymousUser
 from django.db.models import F
 from django.test import TestCase
 from django.urls import reverse
@@ -14,8 +15,10 @@ from apps.document.models import (
     OfficialDispatch,
     PersonnelDecision,
 )
+from apps.hrm.models import Employee
+from apps.office.models import IncomingDocument, OutgoingDocument
 from apps.portal import test_home_dashboard as fixtures
-from apps.security.data_access import visible_dispatches_for
+from apps.security.data_access import can_read_file
 from apps.security.models import Role, User
 from apps.security.permissions import (
     CBDA,
@@ -245,25 +248,64 @@ class DbSearchTests(TestCase):
         )
         return User.objects.create(username=f"gate-{role_code.lower()}", role=role)
 
-    def test_sharepoint_gate_matches_the_portals_confidential_scope(self):
-        # SharePoint không biết gì về "độ mật" của từng tệp: Graph app-only trả về
-        # tên tệp và liên kết, không có bộ lọc theo `security_level` như cổng. Nên
-        # nguồn này chỉ an toàn với người hỏi vốn đã xem được công văn Mật TRONG
-        # CỔNG. Không liệt kê vai trò bằng tay ở đây - `visible_dispatches_for` là
-        # chuẩn, và `can_query_sharepoint` phải khớp từng vai trò. Ai nới cửa ở một
-        # trong hai chỗ mà quên chỗ kia thì đỏ ngay tại đây.
+    def _gate_objects(self):
+        """Một tệp cho MỖI kiểu đối tượng nằm trong ba thư mục allowlist.
+
+        Cổng che ba kiểu này bằng ba quy tắc khác nhau: `OfficialDispatch` theo
+        `security_level`, `IncomingDocument` theo `manage_office`,
+        `OutgoingDocument` theo `access_outgoing_document`. Người giữ bản là nhân
+        viên không liên kết với tài khoản nào dưới đây, để không vai trò nào được
+        cộng thêm nhờ đường "đúng người được giao".
+        """
+        keeper = Employee.objects.create(
+            employee_code="gate-keeper", first_name="Dữ", last_name="Liệu",
+            full_name="Nhân viên giả giữ hồ sơ", date_of_birth=date(1990, 1, 1),
+            gender="Other", national_id="gate0000000000000000",
+            company_email="gate-keeper@example.test", mobile_phone="0900000000",
+            join_date=date(2020, 1, 1), department=self.department,
+            position=self.position, employment_status="Active",
+        )
+        incoming = IncomingDocument.objects.create(
+            incoming_no="501/CVD-GATE", incoming_date=date(2026, 9, 1),
+            sender="Sở Nội vụ", subject="Đơn xin nghỉ phép của nhân viên",
+            received_by=keeper,
+        )
+        outgoing = OutgoingDocument.objects.create(
+            outgoing_no="502/CVĐ-GATE", outgoing_date=date(2026, 9, 2),
+            recipient="Sở Nội vụ", subject="Phản hồi đơn nghỉ phép",
+            signed_by=keeper,
+        )
+        return [self.confidential, incoming, outgoing]
+
+    def test_sharepoint_gate_matches_every_folder_it_reads(self):
+        # Graph app-only trả tên tệp + webUrl của cả ba thư mục và không cho biết
+        # tệp đó thuộc đối tượng nào, nên không thể lọc từng kết quả như
+        # `db_search` làm. Cửa vì vậy phải hẹp bằng NGƯỜI XEM ĐƯỢC CẢ BA kiểu tệp
+        # cùng lúc. Tiên đề lấy thẳng từ `can_read_file` - hàm cổng dùng để chặn
+        # tải tệp - chứ không chép danh sách vai trò ở đây: thêm một vai trò vào
+        # tập cửa mà quên quyền văn thư kèm theo thì đỏ ngay tại vai trò đó.
+        objects = self._gate_objects()
         for role_code in ALL_ROLES:
             with self.subTest(role=role_code):
                 asking = self._gate_user(role_code)
-                may_see_confidential = visible_dispatches_for(
-                    asking, OfficialDispatch.objects.all(),
-                ).filter(pk=self.confidential.pk).exists()
+                may_see_every_file = all(can_read_file(asking, obj) for obj in objects)
                 self.assertEqual(
-                    can_query_sharepoint(asking), may_see_confidential,
-                    f"vai trò {role_code}: nguồn SharePoint và cổng phải cùng một phạm vi",
+                    can_query_sharepoint(asking), may_see_every_file,
+                    f"vai trò {role_code}: nguồn SharePoint phải hẹp đúng bằng phạm vi cổng",
                 )
 
     def test_superuser_may_query_sharepoint_without_a_role_row(self):
         asking = self._gate_user("EMPLOYEE")
         asking.is_superuser = True
         self.assertTrue(can_query_sharepoint(asking))
+
+    def test_dead_session_may_not_query_sharepoint(self):
+        # `login_required` chỉ hỏi `is_authenticated`, còn `ModelBackend` không
+        # kiểm lại `is_active` sau khi đăng nhập - tài khoản bị vô hiệu hóa giữa
+        # phiên vẫn gọi được API. `visible_dispatches_for` đã trả `qs.none()` cho
+        # họ, nên nếu cửa SharePoint chỉ nhìn mã vai trò thì một nguồn im lặng
+        # trong khi nguồn kia vẫn đọc tên tệp toàn thư viện.
+        asking = self._gate_user("HR_MANAGER")
+        asking.is_active = False
+        self.assertFalse(can_query_sharepoint(asking))
+        self.assertFalse(can_query_sharepoint(AnonymousUser()))

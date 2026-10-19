@@ -8,12 +8,16 @@ Ba cửa phải qua trước khi gọi mạng, vì Graph chạy app-only:
 - `M365_STORAGE_ENABLED` là công tắc duy nhất của toàn dự án cho M365 (xem
   `apps/m365/storage.py` và `ops/run_tests.py`). Chỉ đọc credentials thì không
   phân biệt được "chưa bật" với "bật nhưng sai", và test sẽ tùy thuộc `.env`.
-- Người hỏi phải xem được TOÀN BỘ sổ công văn trong cổng, kể cả bản Mật. App-only
+- Người hỏi phải xem được CẢ BA loại tệp mà nguồn này có thể trả về. App-only
   nghĩa là token thấy cả thư viện, không thấy quyền của người đang hỏi, và Graph
-  không có khái niệm `security_level` theo tệp - nên không thể lọc từng kết quả
-  như `db_search` làm với `visible_dispatches_for`. Cửa này lấy đúng tập vai trò
-  mà cổng miễn lọc độ mật (`FULL_DISPATCH_SECURITY_ROLES`), ai còn bị cổng ẩn công
-  văn Mật thì cũng không được nghe tên tệp trên SharePoint.
+  không biết một tệp thuộc đối tượng nào - nên không thể lọc từng kết quả như
+  `db_search` làm với `visible_dispatches_for`/`can_read_file`. Ba thư mục
+  allowlist không chỉ chứa công văn: `CongVanDen`/`CongVanDi` còn nhận tệp đính
+  kèm của `IncomingDocument`/`OutgoingDocument` (`apps/common/uploads.py:80-85`),
+  và cổng chặn hai đối tượng đó bằng quyền văn thư. Cửa vì vậy là GIAO của phạm vi
+  độ mật (`FULL_DISPATCH_SECURITY_ROLES`) và hai quyền sổ văn thư
+  (`SHARED_LIBRARY_PERMISSIONS`) - vai trò nào còn bị cổng chặn một kiểu tệp thì
+  không được nghe tên tệp kiểu đó từ SharePoint.
 - Kết quả chỉ được giữ nếu nằm trong một thư mục công văn đã cấu hình, theo từng
   đoạn đường dẫn. Tên hồ sơ ứng viên hay đơn nghỉ phép tự hiện ra trong khung
   chat là lộ dữ liệu, kể cả khi liên kết không mở được.
@@ -27,7 +31,7 @@ from django.conf import settings
 
 from apps.m365.graph_client import GraphAPIError, GraphNotConfigured, get_graph_client
 from apps.security.data_access import FULL_DISPATCH_SECURITY_ROLES
-from apps.security.permissions import get_role_code
+from apps.security.permissions import get_role_code, has_permission
 
 from .nlp import ParsedQuery, normalize
 
@@ -43,8 +47,9 @@ ASSISTANT_TIMEOUT = (3, 10)
 # Ba thư mục mà nghiệp vụ công văn thực sự ghi tệp vào; cũng là allowlist duy
 # nhất cho kết quả search.
 DISPATCH_FOLDER_KEYS = ("dispatches", "incoming_docs", "outgoing_docs")
-# Quyền của chính cổng: chỉ người xem được toàn bộ sổ công văn (mọi độ mật) mới
-# được hỏi SharePoint - xem mô-đun docstring ở cửa thứ hai.
+# Hai thư mục cuối không chỉ chứa OfficialDispatch: sổ văn thư cũng ghi tệp đính
+# kèm vào đó, và cổng mở chúng bằng đúng hai quyền này (`data_access.py:99-100`).
+SHARED_LIBRARY_PERMISSIONS = ("manage_office", "access_outgoing_document")
 # Không phải sự cố và không phải "chưa bật": người hỏi đơn giản không thuộc
 # phạm vi nguồn này, nên `services.PARTIAL_NOTES` không liệt kê nó.
 RESTRICTED_NOTE = "restricted"
@@ -90,16 +95,26 @@ def _in_dispatch_folder(url: str, folders: tuple[str, ...]) -> bool:
 
 
 def can_query_sharepoint(user) -> bool:
-    """Cùng tập vai trò mà cổng miễn lọc độ mật cho công văn.
+    """Người hỏi có được xem MỌI tệp mà nguồn này có thể trả về không.
 
-    `manage_office` (văn thư) nghe tưởng đúng nhưng lại rộng hơn ở chỗ khác và
-    hẹp hơn ở chỗ này: SYS_ADMIN là văn thư hệ thống nhưng cổng vẫn ẩn công văn
-    Mật, trong khi SUPER_ADMIN/DIRECTOR không có manage_office lại xem được hết.
-    Vì Graph app-only không lọc hộ được gì, phải lấy nguyên phạm vi của cổng.
+    Hai điểm dễ tưởng sai:
+
+    - `manage_office` một mình thì rộng ở cửa độ mật (SYS_ADMIN là văn thư nhưng
+      cổng vẫn ẩn công văn Mật) và `FULL_DISPATCH_SECURITY_ROLES` một mình thì
+      rộng ở cửa sổ văn thư (DIRECTOR xem được mọi độ mật nhưng không có
+      `manage_office`, tức cổng từ chối tệp đính kèm của `IncomingDocument`).
+      Graph không lọc hộ theo từng tệp được, nên phải lấy giao của hai phạm vi.
+    - `is_active` phải kiểm trước `is_superuser`: `login_required` chỉ hỏi
+      `is_authenticated` và `ModelBackend` không kiểm lại `is_active` giữa phiên,
+      trong khi `visible_dispatches_for` đã trả `qs.none()` cho tài khoản chết.
     """
+    if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
+        return False
     if getattr(user, "is_superuser", False):
         return True
-    return get_role_code(user) in FULL_DISPATCH_SECURITY_ROLES
+    if get_role_code(user) not in FULL_DISPATCH_SECURITY_ROLES:
+        return False
+    return all(has_permission(user, code) for code in SHARED_LIBRARY_PERMISSIONS)
 
 
 def _needles(parsed: ParsedQuery) -> list[str]:

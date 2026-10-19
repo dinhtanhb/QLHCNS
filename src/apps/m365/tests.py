@@ -157,6 +157,15 @@ class GraphSearchTests(SimpleTestCase):
                 "webUrl": "https://congty.sharepoint.com/sites/Khac/Other.docx",
                 "lastModifiedDateTime": "2026-09-01T08:00:00Z",
             }},
+            # Site LÁNG GIẾNG: `site_path` = "/sites/IHRMS" là tiền tố chuỗi của
+            # "/sites/IHRMS-IT", nên một phép `startswith` trần sẽ coi cả site khác
+            # là của mình - và tệp trong `/sites/IHRMS-IT/CongVan/` còn lọt được cả
+            # bộ lọc thư mục ở `apps/assistant/m365_search.py`.
+            {"resource": {
+                "name": "CV-cua-site-khac.pdf",
+                "webUrl": "https://congty.sharepoint.com/sites/IHRMS-IT/CongVan/CV-2.pdf",
+                "lastModifiedDateTime": "2026-09-01T08:00:00Z",
+            }},
         ]}]}]})
         results = client.search_files("nghi phep")
         self.assertEqual([r["name"] for r in results], ["CV-1.pdf"])

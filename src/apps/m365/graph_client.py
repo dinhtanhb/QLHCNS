@@ -306,6 +306,18 @@ class GraphClient:
             )
         return f"https://{self.site_hostname}{self.site_path}"
 
+    def _is_site_url(self, web_url: str, prefix: str) -> bool:
+        """`web_url` có thật thuộc site này không, so theo ĐOẠN đường dẫn.
+
+        `startswith(prefix)` trần coi `/sites/IHRMS-IT/...` là của `/sites/IHRMS`
+        vì site_path là tiền tố chuỗi của site láng giềng; webUrl của site khác
+        khi đó còn lọt được cả bộ lọc thư mục phía sau.
+        """
+        if not web_url.startswith(prefix):
+            return False
+        remainder = web_url[len(prefix):]
+        return remainder in ("", "/") or remainder.startswith("/")
+
     def search_files(self, query: str, top: int = 20, timeout=None) -> list[dict]:
         """Tìm driveItem bằng Graph /search/query, chỉ giữ kết quả thuộc site IHRMS.
 
@@ -333,7 +345,7 @@ class GraphClient:
             for container in block.get("hitsContainers") or []:
                 for hit in container.get("hits") or []:
                     resource = (hit or {}).get("resource") or {}
-                    if (resource.get("webUrl") or "").startswith(prefix):
+                    if self._is_site_url(resource.get("webUrl") or "", prefix):
                         results.append(self._file_entry(resource))
                         if len(results) >= top:
                             return results

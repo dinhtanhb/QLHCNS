@@ -14,6 +14,9 @@ from apps.security.permissions import (
 # `apps/assistant/m365_search.py` phải dựng đúng cùng một phạm vi cho nguồn
 # SharePoint: Graph chạy app-only và không biết gì về `security_level` của từng
 # tệp, nên ai chưa được xem bản Mật ở cổng thì cũng không được nghe tên tệp đó.
+# Ở phía assistant, tập này còn được GIAO với hai quyền sổ văn thư - xem
+# `SHARED_LIBRARY_PERMISSIONS` - vì hai thư mục công văn cũng chứa tệp đính kèm
+# của `IncomingDocument`/`OutgoingDocument`.
 FULL_DISPATCH_SECURITY_ROLES = (SUPER_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER)
 
 

@@ -5,7 +5,7 @@ from unittest.mock import patch
 from django.test import SimpleTestCase, override_settings
 
 from apps.assistant.m365_search import (
-    ASSISTANT_TIMEOUT, can_query_sharepoint, search_sharepoint,
+    ASSISTANT_TIMEOUT, _url_segments, can_query_sharepoint, search_sharepoint,
 )
 from apps.assistant.nlp import parse
 from apps.m365.graph_client import GraphAPIError, GraphNotConfigured
@@ -33,10 +33,10 @@ ASSISTANT_SETTINGS = {
 SITE = "https://tenant.sharepoint.com/sites/IHRMS/Shared Documents"
 
 
-def _user(role_code, superuser=False):
-    """Cửa SharePoint chỉ đọc `user.role.role_code` nên mẫu này là đủ."""
+def _user(role_code, superuser=False, active=True, authenticated=True):
+    """Cửa SharePoint chỉ đọc `user.role.role_code` và cờ phiên nên mẫu này là đủ."""
     return SimpleNamespace(
-        is_authenticated=True, is_active=True, is_superuser=superuser,
+        is_authenticated=authenticated, is_active=active, is_superuser=superuser,
         is_staff=False, role=SimpleNamespace(role_code=role_code),
     )
 
@@ -117,16 +117,19 @@ class SharePointSearchTests(SimpleTestCase):
         self.assertIsNone(note)
         self.assertEqual([r["title"] for r in results], ["CV nghỉ phép.pdf"])
 
-    def test_only_roles_that_see_every_security_level_may_query_sharepoint(self):
-        # Văn thư (manage_office) là chưa đủ: SharePoint không có khái niệm "độ
-        # mật" theo tệp, nên nguồn này chỉ an toàn khi người hỏi đã xem được
-        # TOÀN BỘ sổ công văn trong cổng, kể cả bản mật. SYS_ADMIN, DEPT_MANAGER,
-        # FINANCE_OFFICER, PROJECT_MANAGER, PROJECT_COORDINATOR có quyền sổ công
-        # văn đi nhưng cổng vẫn ẩn công văn mật / giới hạn theo loại - những
-        # vai trò đó phải bị chặn ở nguồn SharePoint.
-        allowed = ("SUPER_ADMIN", "DIRECTOR", "HR_MANAGER", "HR_OFFICER")
-        blocked = ("SYS_ADMIN", "DEPT_MANAGER", "FINANCE_OFFICER",
-                   "PROJECT_MANAGER", "PROJECT_COORDINATOR", "EMPLOYEE", "CBDA")
+    def test_only_roles_that_see_every_folder_may_query_sharepoint(self):
+        # Graph app-only trả tên tệp + webUrl của CẢ ba thư mục allowlist và
+        # không biết tệp đó thuộc đối tượng nào. CongVanDen/CongVanDi không chỉ
+        # chứa tệp của OfficialDispatch: đính kèm của IncomingDocument/
+        # OutgoingDocument cũng ghi vào đó (`apps/common/uploads.py:80-85`), và
+        # cổng chặn hai đối tượng đó bằng `manage_office`
+        # (`apps/security/data_access.py:99-100`) - quyền mà DIRECTOR không có.
+        # Vì không lọc được theo từng tệp, cửa này phải là GIAO của các phạm vi:
+        # chỉ vai trò thấy được cả ba loại tệp cùng lúc mới được hỏi Graph.
+        allowed = ("HR_MANAGER", "HR_OFFICER")
+        blocked = ("SUPER_ADMIN", "DIRECTOR", "SYS_ADMIN", "DEPT_MANAGER",
+                   "FINANCE_OFFICER", "PROJECT_MANAGER", "PROJECT_COORDINATOR",
+                   "EMPLOYEE", "CBDA")
         for role in allowed:
             with self.subTest(role=role):
                 self.assertTrue(can_query_sharepoint(_user(role)))
@@ -141,9 +144,24 @@ class SharePointSearchTests(SimpleTestCase):
                 results, note = self._run(client, "cv", user=_user(role))
                 self.assertEqual((results, note), ([], "restricted"))
                 self.assertEqual(client.search_calls, [])
-        # superuser không có `role` vẫn phải qua được cửa, nếu không thì tài khoản
-        # quản trị bị khóa đúng nguồn mà mình đang đi kiểm tra hộ.
+        # superuser (cờ, không phải mã vai trò) vẫn phải qua được cửa, nếu không
+        # thì tài khoản quản trị bị khóa đúng nguồn mình đang kiểm tra hộ.
         self.assertTrue(can_query_sharepoint(_user(None, superuser=True)))
+
+    def test_dead_session_may_not_query_sharepoint(self):
+        # `login_required` chỉ hỏi `is_authenticated`; `ModelBackend` không kiểm
+        # `is_active` lại sau khi đăng nhập, nên một tài khoản bị vô hiệu hóa
+        # giữa phiên vẫn gọi được API. `visible_dispatches_for` đã trả `qs.none()`
+        # cho họ - nguồn DB im lặng mà nguồn SharePoint vẫn nói là lỗ, và lượt
+        # sửa trước đây từng chặn bằng `has_permission` (vốn kiểm cả hai cờ).
+        for label, sample in (("inactive", _user("HR_MANAGER", active=False)),
+                              ("anonymous", _user("HR_MANAGER", authenticated=False))):
+            with self.subTest(state=label):
+                self.assertFalse(can_query_sharepoint(sample))
+                client = _FakeClient(search=[_in("CongVan", "CV.pdf")])
+                results, note = self._run(client, "cv", user=sample)
+                self.assertEqual((results, note), ([], "restricted"))
+                self.assertEqual(client.search_calls, [])
 
     def test_not_configured(self):
         results, note = self._run(_FakeClient(configured=False), "công văn")
@@ -204,6 +222,10 @@ class SharePointSearchTests(SimpleTestCase):
         client = _FakeClient(search=[_hit("CV.pdf", spaced)])
         results, _ = self._run(client, "cv")
         self.assertEqual([r["url"] for r in results], [spaced])
+        # `CongVan` không cần giải mã nên phép so khớp vẫn xanh kể cả khi xóa
+        # `unquote()` - trong khi mọi tên thư mục có dấu cách hoặc có dấu thật sẽ
+        # im lặng biến mất khỏi kết quả. Kiểm thẳng hàm tách đoạn.
+        self.assertIn("shared documents", _url_segments(spaced))
 
     def test_folder_name_hidden_in_query_string_is_dropped(self):
         # Dạng liên kết xem danh sách: vị trí thật của tệp nằm ở `initialid`, còn
@@ -337,6 +359,9 @@ class SharePointSearchTests(SimpleTestCase):
         # request.
         client = _FakeClient(search=[])
         self._run(client, "nghỉ phép")
+        # So với CẶP GIÁ TRỊ, không chỉ với hằng số: nếu test chỉ lấy hằng số từ
+        # chính mô-đun nguồn ra so thì đổi (3, 10) thành (30, 300) vẫn xanh.
+        self.assertEqual(ASSISTANT_TIMEOUT, (3, 10))
         self.assertEqual(client.search_calls[0][2], ASSISTANT_TIMEOUT)
         self.assertEqual(client.list_calls, [])
 
