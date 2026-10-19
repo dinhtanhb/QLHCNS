@@ -320,5 +320,3 @@ class DispatchNotificationCoverageTests(TestCase):
         dispatch.refresh_from_db()
         self.assertEqual(dispatch.status, "Processing")
         self.assertEqual(Notification.objects.filter(notification_type="dispatch").count(), before)
-
-
