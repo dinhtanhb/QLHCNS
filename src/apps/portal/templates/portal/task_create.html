@@ -6,7 +6,7 @@
 <div class="ui-page">
 <div class="ui-card">
     <header class="ui-card-title"><h1 class="ui-page-title">Giao việc mới</h1></header>
-    <form method="post" class="ui-form-stack ui-task-assignment" data-ui-form><div class="ui-form-grid ui-form-grid--grouped">
+    <form method="post" class="ui-form-stack ui-task-assignment" data-ui-form><div class="ui-form-grid ui-form-grid--grouped ui-task-assignment-grid">
 
         {% csrf_token %}
         {% include "ui/field.html" with widget_template="portal/widgets/task_create.html" widget_key="f0"  width="regular" %}

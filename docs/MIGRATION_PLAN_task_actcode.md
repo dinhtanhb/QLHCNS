@@ -36,7 +36,7 @@ SELECT TaskCode FROM tblTask WHERE TaskCode IN (
 ) ORDER BY TaskCode;
 ```
 
-Đếm số dòng kết quả; có thể thay `SELECT TaskCode` bằng `SELECT COUNT(*) AS Total`.
+Đếm số dòng kết quả; nếu thay `SELECT TaskCode` bằng `SELECT COUNT(*) AS Total`, phải bỏ `ORDER BY TaskCode` ở cuối truy vấn đếm.
 Không tham chiếu ActCode trước khi cột tồn tại. Sau áp, chạy:
 
 ```sql

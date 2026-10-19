@@ -496,7 +496,7 @@
     z-index: var(--ui-layer-sticky);
 }
 
-.ui-table tbody td {
+.ui-table tbody :is(td, th) {
     min-height: var(--ui-control-height);
     padding: var(--ui-space-3) var(--ui-space-4);
     border-bottom: var(--ui-border-width) solid var(--ui-divider);
@@ -504,8 +504,17 @@
     overflow-wrap: break-word;
 }
 
-.ui-table tbody tr:hover {
-    background: var(--ui-hover-bg);
+@media screen {
+    .ui-table tbody th {
+        background: transparent;
+        color: inherit;
+        font-weight: var(--ui-weight-semibold);
+        text-align: left;
+        position: static;
+    }
+    .ui-table tbody tr:is(:hover, :focus-within) > :is(td, th) {
+        background: var(--ui-hover-bg);
+    }
 }
 
 .ui-table .ui-number {
