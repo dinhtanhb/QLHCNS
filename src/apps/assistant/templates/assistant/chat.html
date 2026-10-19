@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% load static ui_components %}
+{% block title %}Trợ lý tài liệu{% endblock %}
+{% block content %}
+<section class="ui-card assistant-root" data-api="{% url 'assistant:api_search' %}">
+  <header class="assistant-header">
+    <h1 class="ui-page-title">Trợ lý tài liệu</h1>
+    <p class="assistant-hint">
+      Đặt câu hỏi bằng tiếng Việt, ví dụ <em>công văn nghỉ phép tháng 9</em> hoặc
+      <em>quyết định 12/2026</em>. Kết quả chỉ gồm tài liệu trong phạm vi quyền của anh/chị.
+    </p>
+  </header>
+  <div class="assistant-panel" data-role="panel" role="status" aria-live="polite"></div>
+  <div class="assistant-chips" data-role="chips">
+    <button type="button" class="assistant-chip" data-question="Công văn gần đây">Công văn gần đây</button>
+    <button type="button" class="assistant-chip" data-question="Tài liệu gần đây">Tài liệu gần đây</button>
+    <button type="button" class="assistant-chip" data-question="Quyết định tháng này">Quyết định tháng này</button>
+  </div>
+  <form class="assistant-form" data-role="form" autocomplete="off">
+    <label class="ui-sr-only" for="assistantInput">Câu hỏi</label>
+    <input id="assistantInput" name="question" type="text" maxlength="500"
+           placeholder="Nhập câu hỏi tìm tài liệu…" aria-describedby="assistantHint">
+    <span id="assistantHint" class="ui-sr-only">Nhấn Enter để gửi, Esc để đóng bảng kết quả.</span>
+    <button type="submit" class="btn btn-primary">Gửi</button>
+  </form>
+</section>
+{% endblock %}
