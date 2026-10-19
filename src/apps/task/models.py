@@ -16,6 +16,7 @@ class Task(BaseAuditModel):
     PRIORITY_CHOICES = [("Low", "Thấp"), ("Normal", "Bình thường"), ("High", "Cao"), ("Urgent", "Khẩn cấp")]
 
     task_code = models.CharField("Mã công việc", max_length=50, unique=True, db_column="TaskCode")
+    act_code = models.CharField("Mã ActCode", max_length=50, null=True, blank=True, db_index=True, db_column="ActCode")
     task_name = models.CharField("Tên công việc", max_length=300, db_column="TaskName")
     description = models.TextField("Mô tả", null=True, blank=True, db_column="Description")
 
@@ -62,6 +63,11 @@ class Task(BaseAuditModel):
 
     def clean(self):
         super().clean()
+        from apps.activity.activity_codes import ACTIVITY_CODE_NAMES
+        if self.act_code and self.act_code not in ACTIVITY_CODE_NAMES:
+            previous = type(self)._base_manager.filter(pk=self.pk).values_list("act_code", flat=True).first() if self.pk else None
+            if previous != self.act_code:
+                raise ValidationError({"act_code": "Chọn mã ActCode trong danh mục hợp lệ."})
         # Với Task gắn 1 Hoạt động dự án: không cho đánh dấu "Hoàn thành" nếu
         # chưa có tệp báo cáo — đúng yêu cầu nghiệp vụ (kết quả Task = Hoàn
         # thành PHẢI đi kèm báo cáo đã upload).

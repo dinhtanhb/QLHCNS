@@ -1,5 +1,56 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-19 — ActCode riêng, giao việc hành chính và hover toàn hàng bảng
+
+### Tóm tắt cho chủ dự án
+- Thực hiện ba phần theo tệp yêu cầu: schema ActCode riêng; form Giao việc; hover cả ô đầu/Thao tác.
+- Schema đã kiểm áp/hoàn tác/áp lại trên SQLite và SQL Server tạm/restore thử; chỉ 1/4 hàng giả được gán ActCode.
+- Chưa áp migration hoặc triển khai mã lên vận hành; không dùng phiên/danh tính thật, không chạm DB/media vận hành.
+- Chủ dự án cần chạy truy vấn đếm chỉ đọc, sao lưu/restore thử rồi áp `task.0004/0005` theo kế hoạch trước triển khai mã; duyệt ảnh giao cuối.
+- Các gate UI/full suite/CI và commit cuối được cập nhật tiếp trong cùng mục khi hoàn tất.
+
+**Phạm vi, nguồn yêu cầu và ba commit**
+- Tệp yêu cầu đính kèm ngày 19/10/2026 xác nhận chỉ bổ sung `Task.act_code`, không đổi `task_code` unique, quyền, Dashboard, bản in hoặc hoạt động/services.py. Bắt đầu `main` tại `78eeb506a40d2a269464c05b7de45b2194691dd0`; status chỉ có tệp chưa theo dõi ngoài phạm vi đã được phép, fetch/ls-remote khớp, ahead/behind 0/0; đọc ba mục nhật ký mới nhất. Một tác nhân ghi.
+- Phần 1: model, hai migration 0004/0005, test và `docs/MIGRATION_PLAN_task_actcode.md` riêng. ActCode nullable/indexed, kiểm danh mục nhưng giữ giá trị lịch sử đã lưu; `__str__`, TaskCode và logic báo cáo giữ nguyên. Backfill đóng băng đúng 18 mã, chỉ điền NULL theo lô 100, transaction mỗi lô, RunPython reverse no-op. Không thêm trường schema khác.
+- Checker migration hiện lấy danh sách trực tiếp từ MigrationLoader nên tự nhận 0004/0005; không cần sửa công cụ hoặc giả trạng thái. Không thêm cột export/Dashboard/KPI/báo cáo. Admin sẽ cập nhật trong commit giao diện riêng.
+
+**Probe trên hành vi cũ trước thay form/allocator**
+
+| Probe mới | Bằng chứng thất bại thực | Sau sửa |
+| --- | --- | --- |
+| Field ActCode nullable/indexed, validation và lịch sử | `schema-red.log`: 3 errors, FieldDoesNotExist/constructor không nhận act_code, native exit 1 trên model 78eeb50 | 4 tests schema SQLite + SQL Server đạt |
+| Chọn cùng ActCode ba lần, Khác, hiển thị, native form và giữ lựa chọn lỗi | `ui-red.log`: 5 tests, 4 failures/1 error, native exit 1; form cũ vẫn đòi task_code, không có act_code/Khác | Chờ phần 2 |
+| Cấp số và hai người tạo đồng thời | `allocator-red.log`: 2 errors, chưa có apps.task.services, native exit 1 | Chờ phần 2 |
+
+UI/allocator probe chạy trước khi đổi hành vi của 78eeb50, sau khi bổ sung riêng field schema; không trình bày đó là full suite trên checkout baseline. Runtime và log ở `%TEMP%/ihrms-task-actcode-20261019-synthetic_only`.
+
+**Migration đã kiểm, không áp vận hành**
+- `ops/run_tests.py --backend sqlite apps.task.test_act_code`: **4 tests OK**, native exit 0; cùng nhãn `--backend sqlserver`: **4 tests OK**, native exit 0, DB `test_ihrms_2ad3f4b39a8c4a29a6c03e993ff354c4` đã hủy. Test MigrationExecutor lùi 0003, tạo CV01/ACT-5-REPORT/mã hợp lệ/mã đã bỏ, áp 0005, hoàn tác 0003, áp lại; đúng một hàng ActCode, bốn TaskCode không đổi.
+- Tạo DB SQL Server hoàn toàn giả, backup COPY_ONLY/CHECKSUM, VERIFYONLY và restore sang DB tạm riêng, không lấy backup dữ liệu vận hành. Trên restore thử: áp 0005 **1,5208s**, lùi 0003 **2,4695s**, áp lại **0,6383s**; mỗi lần backfill đúng **1 hàng**, ba mã khác giữ NULL. Hai DB `test_ihrms_actcode_0764e40149f74eeba5f2751564f1db2d` / `test_ihrms_actcode_26c6e4056b894794a78915022bb63c4b` đã drop trong finally. Backup giả ngoài repo tại `D:/IHRMS_UAT/Task_20261019_synthetic_only`, SHA-256 `9d0e0dae12be445acc8636a9ff84de2aacf11b6efc8150dabcaf8783fcebf566`; `migration-sqlserver-restore.json` lưu SQL/runtime/count. Hai probe runner trước đó lỗi cursor chưa mở và lọc không nhận tiền tố SET NOCOUNT; đã sửa runner, không thay migration để đạt.
+- `sqlmigrate task 0004` trên cấu hình SQL Server tạm, đầu ra thật:
+
+```sql
+BEGIN TRANSACTION
+-- Add field act_code to task
+ALTER TABLE [tblTask] ADD [ActCode] nvarchar(50) NULL;
+CREATE INDEX [tblTask_ActCode_e88d5e49] ON [tblTask] ([ActCode]);
+COMMIT;
+```
+
+SQLite: `ALTER TABLE "tblTask" ADD COLUMN "ActCode" varchar(50) NULL;` và `CREATE INDEX "tblTask_ActCode_e88d5e49" ON "tblTask" ("ActCode");`. `sqlmigrate task 0005` báo `Raw Python operation / THIS OPERATION CANNOT BE WRITTEN AS SQL`, không giả rằng nó sinh UPDATE. SQL UPDATE thực đã thu bằng CursorWrapper trên restore:
+
+```sql
+SET NOCOUNT OFF; UPDATE [tblTask] SET [ActCode] = [tblTask].[TaskCode]
+WHERE ([tblTask].[ActCode] IS NULL
+AND [tblTask].[TaskCode] IN (%s, %s, %s, %s, %s, %s, %s, %s, %s,
+%s, %s, %s, %s, %s, %s, %s, %s, %s) AND [tblTask].[id] IN (%s))
+```
+
+Params lần thử: 18 mã theo đúng thứ tự trong migration/kế hoạch, cuối cùng PK giả 3; rowcount **1**, cả lần áp đầu và áp lại. Không UPDATE TaskCode, không DELETE hồ sơ. Hoàn tác đến 0003 mất ActCode mới nhập, được nêu rõ trong kế hoạch.
+
+**Còn mở và giới hạn**
+- Đang làm phần 2/3 và kiểm toàn diện. Không báo đóng giai đoạn UI từ kết quả schema. Chưa kiểm screen reader, phiên trình duyệt thật của chủ dự án, máy in thật hoặc DB vận hành; tác nhân không áp migration vận hành.
+
 ## 2026-10-19 — Thu gọn bố cục form Tạo/Cập nhật hoạt động dự án
 
 **Phạm vi và thay đổi**
