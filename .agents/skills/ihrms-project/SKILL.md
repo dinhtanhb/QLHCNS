@@ -1,6 +1,6 @@
-﻿---
+---
 name: ihrms-project
-description: Develop, debug, and review the IHRMS Django codebase, including HR, attendance, leave, payroll, assets, permissions, and PDF payslips. Use when working in the QLHCNS/IHRMS repository or when the user asks to inspect or change an IHRMS feature.
+description: "Phát triển, sửa lỗi và kiểm tra tính năng trong QLHCNS/IHRMS Django: nhân sự, chấm công, nghỉ phép, lương, tài sản, phân quyền và PDF."
 ---
 
 # IHRMS project development
@@ -33,10 +33,11 @@ Run commands from `D:/QLHCNS` using the project virtualenv:
 ```powershell
 & 'D:/QLHCNS/venv/Scripts/python.exe' src/manage.py check
 & 'D:/QLHCNS/venv/Scripts/python.exe' src/manage.py makemigrations --check --dry-run
-& 'D:/QLHCNS/venv/Scripts/python.exe' src/manage.py test
+& 'D:/QLHCNS/venv/Scripts/python.exe' ops/run_tests.py --backend sqlite
+& 'D:/QLHCNS/venv/Scripts/python.exe' ops/run_tests.py --backend sqlserver
 ```
 
-Use Django's test runner so writes go to an isolated test database. Never run `migrate`, `flush`, `loaddata`, or bulk updates against production as routine verification. If the change affects SQL Server behavior, also run the relevant suite against a disposable SQL Server SIT database and state clearly if that environment is unavailable.
+Use ops/run_tests.py with an explicit backend so test DB/media and external integrations are isolated; see [review gates](../../../docs/Huong_Dan_Review_Du_An.md). Never run `migrate`, `flush`, `loaddata`, or bulk updates against production as routine verification. If the change affects SQL Server behavior, also run the relevant suite against a disposable SQL Server SIT database and state clearly if that environment is unavailable.
 
 For security/deployment settings, run `manage.py check --deploy` with production-like settings. Explain any remaining warning; do not silence checks just to make them pass.
 

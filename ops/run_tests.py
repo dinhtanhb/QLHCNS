@@ -10,7 +10,10 @@ import uuid
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--backend', choices=('configured', 'sqlite', 'sqlserver'), default='configured')
+    parser.add_argument(
+        '--backend', choices=('configured', 'sqlite', 'sqlserver'), required=True,
+        help='Choose the test backend explicitly; prefer sqlite or sqlserver.',
+    )
     parser.add_argument('labels', nargs='*')
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding='utf-8')

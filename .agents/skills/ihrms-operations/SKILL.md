@@ -1,6 +1,6 @@
-﻿---
+---
 name: ihrms-operations
-description: Prepare and operate IHRMS environments, troubleshoot user and payroll workflows, plan SQLite-to-SQL-Server cutover, and verify backup, restore, security, and release readiness. Use for IHRMS deployment, go-live, production support, database migration, or operations requests.
+description: "Vận hành IHRMS: triển khai, hỗ trợ sự cố, chuyển SQLite sang SQL Server, sao lưu, phục hồi và kiểm tra điều kiện phát hành."
 ---
 
 # IHRMS operations and release

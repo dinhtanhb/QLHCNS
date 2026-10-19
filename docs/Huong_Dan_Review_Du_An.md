@@ -1,5 +1,10 @@
 # Hướng dẫn review dự án IHRMS
 
+Quy tắc dự án và quyền thao tác có nguồn tại [AGENTS.md](../AGENTS.md).
+Tài liệu này chứa quy trình/checklist/lệnh review; skill và agent của từng
+client chỉ định tuyến tới đây. Khi xung đột, áp dụng yêu cầu hiện hành của
+chủ dự án và AGENTS.md.
+
 ## Chọn cách review
 
 Skill [`ihrms-review`](../.agents/skills/ihrms-review/SKILL.md) dành cho IHRMS, hỗ trợ hai phạm vi:
@@ -21,6 +26,18 @@ Skill nằm tại `.agents/skills/ihrms-review/SKILL.md`, tách biệt với ski
 Nếu công cụ chưa nhận skill mới trong phiên đang mở, đọc trực tiếp tệp skill
 cùng hướng dẫn này rồi thực hiện nhiệm vụ; ghi rõ công cụ thực dùng. Skill
 không khai báo quyền riêng của extension; quyền thao tác theo nhiệm vụ và AGENTS.md.
+
+Ba skill riêng `ihrms-review`, `ihrms-operations`, `ihrms-project` có bản dùng
+chung trong `.agents/skills` và con trỏ trong `.claude/skills`; Cursor dùng
+`.cursor/agents/ihrms-reviewer.md`. Không chép quy trình sang các con trỏ.
+
+Kiểm discovery bằng phiên mới tại đúng workspace trong từng client (Codex,
+Antigravity, Claude Code nếu dùng): yêu cầu “rà soát toàn dự án IHRMS, chế độ
+REVIEW” mà không nêu tên skill; kiểm catalog/log xem có chọn `ihrms-review`
+và đọc đúng nguồn. Ghi client/phiên/kết quả; tệp tồn tại hoặc đọc trực tiếp
+thành công chưa chứng minh tự nhận skill. Nếu client không đọc `.agents/skills`,
+dùng cơ chế discovery được client hỗ trợ hoặc đường dẫn trực tiếp. Chưa có
+bằng chứng thì để việc kiểm discovery còn mở.
 
 ### Mẫu review tổng thể, chưa sửa
 
@@ -82,6 +99,12 @@ Kiểm kê `src/apps` mỗi lần; danh sách dưới là điểm xuất phát, 
 - **Common/config/migrations**: bảng/migration thiếu, FK/unique/null, dữ liệu cũ, tương thích SQLite/SQL Server, cấu hình production và tích hợp M365.
 - **Template/frontend/static/ops/CI**: số theo locale, CSS build, responsive, backup/restore và đúng ba job CI hiện có.
 
+Theo URL/view qua form/service/model đến template/test; đọc caller và guard.
+Mỗi finding có path:line hiện tại, trigger, tác động, guard đã kiểm và cách tái
+hiện bằng dữ liệu giả. Phân biệt lỗi xác nhận với giả thuyết. Giữ facade
+`src/apps/portal/views/__init__.py` khi sửa cấu trúc; ưu tiên sửa tối thiểu lỗi
+xác nhận và regression test có giá trị trước khi chạy gate rộng.
+
 Đọc tài liệu tương ứng ở `docs/01_BRD_MASTER.md`, `docs/03_Database_Design.md`, `docs/04_Security_Design.md`, `docs/07_Testing_Standards.md`, `docs/10_RBAC_Permission_Matrix.md`, `docs/11_Workflow_Definition.md` và các tiêu chuẩn backend/frontend/deployment. Ghi chênh lệch mã/tài liệu; không âm thầm sửa nghiệp vụ cho khớp suy đoán.
 
 ## Lệnh kiểm tra chuẩn
@@ -123,7 +146,30 @@ try {
 }
 ```
 
-Kiểm tra drift không xác nhận migration đã áp dụng trên SQL Server. Khi cần, audit chỉ đọc và `migrate --plan` trên đích đã xác minh; không tự áp dụng migration khi review.
+Kiểm tra drift không xác nhận migration đã áp dụng trên SQL Server. Sau khi
+xác minh cấu hình/alias DB được phép kiểm chỉ đọc (hoặc bản sao cô lập), chạy:
+
+```powershell
+venv\Scripts\python.exe ops\check_migration_state.py --database default
+# Thu hẹp khi cần: thêm --app task (lặp --app cho nhiều phân hệ).
+```
+
+Lệnh này đọc DB mà settings trỏ tới, không tự tạo môi trường cô lập. Exit 1
+nghĩa là còn migration nguồn chưa áp dụng, exit 2 là không đọc được trạng thái;
+không tự chạy migrate để làm xanh kết quả.
+
+Khi FIX thay model/schema, áp dụng mục “Migration và thay đổi schema” trong
+AGENTS.md: model và migration đi **commit riêng**, có kế hoạch áp dụng/hoàn tác
+và nguồn yêu cầu nghiệp vụ truy vết trong nhật ký. Kiểm SQL thực trên cả SQLite
+và cấu hình SQL Server tạm trước bàn giao, với từng migration liên quan:
+
+```powershell
+# Thay app_label/migration_name; chạy lần lượt dưới settings SQLite và SQL Server tạm.
+venv\Scripts\python.exe src\manage.py sqlmigrate app_label migration_name
+```
+
+Không dùng settings vận hành cho ví dụ kiểm SQL; kiểm trạng thái/drift/SQL không
+thay backup, restore thử, migrate bản sao hoặc UAT. Không áp migration khi REVIEW.
 
 ### Regression cô lập
 
@@ -134,7 +180,74 @@ venv\Scripts\python.exe ops\run_tests.py --backend sqlserver
 venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.office.tests
 ```
 
-Runner tạo SQLite memory hoặc SQL Server `test_ihrms_<UUID>`, media tạm, email memory và tắt M365. SQL Server cần cấu hình backend SQL, ODBC và quyền tạo/xóa **DB test**. Nếu không đủ quyền, ghi chưa chạy SQL; không chuyển sang ghi DB thật. Không dùng `--backend configured` để tránh chọn backend ngoài dự kiến.
+Runner tạo SQLite memory hoặc SQL Server `test_ihrms_<UUID>`, media tạm, email memory và tắt M365. SQL Server cần cấu hình backend SQL, ODBC và quyền tạo/xóa **DB test**. Nếu không đủ quyền, ghi chưa chạy SQL; không chuyển sang ghi DB thật. Runner và wrapper `ops/Run-Tests.ps1 -Backend sqlite|sqlserver` bắt buộc chỉ định backend. `configured` chỉ còn là lựa chọn tương thích khi gọi rõ; không dùng trong review để tránh chọn backend ngoài dự kiến.
+
+### Gate giao diện, hợp đồng form, bản in và cache
+
+Chọn gate theo thay đổi và quy tắc bắt buộc trong mục “Kiểm thử luồng nghiệp vụ
+trên trình duyệt” của AGENTS.md. FULL phải ghi rõ mỗi gate đã chạy hoặc lý do
+không áp dụng/chưa chạy. Thay CSS dùng chung/template form/bảng/thẻ chạy layout
+và form; phạm vi in chạy print, thay asset/CSS/JS/service worker chạy cache;
+thay nút/token/màu chạy audit tương ứng. Audit tĩnh không thay browser.
+
+Mẫu sau cần runtime **giả, ngoài repo**, QA riêng, tắt M365/email thật;
+Playwright/Edge và thư viện PDF QA cài riêng ngoài dependency ứng dụng.
+Thay đường dẫn mẫu bằng đường dẫn thực đã kiểm:
+
+```powershell
+$reviewRuntime = Join-Path $env:TEMP 'ihrms-review-synthetic_only'
+$reviewPackages = Join-Path $env:TEMP 'ihrms-review-packages'
+$reviewPdfPackages = Join-Path $env:TEMP 'ihrms-review-pdf-packages'
+$reviewBaseline = Join-Path $env:TEMP 'ihrms-review-baseline'
+# Chỉ create runtime mới; không tái dùng DB/media vận hành.
+venv\Scripts\python.exe ops\dashboard_demo.py create --directory $reviewRuntime
+venv\Scripts\python.exe ops\run_browser_uat.py --backend sqlite --packages-dir $reviewPackages
+venv\Scripts\python.exe ops\run_browser_uat.py --backend sqlserver --packages-dir $reviewPackages
+
+# Baseline: snapshot nguồn trước sửa, đã loại secrets/DB/media.
+# Seed fixture layout trước, rồi đo form trên cùng DB giả ổn định.
+venv\Scripts\python.exe ops\run_layout_alignment_audit.py --directory $reviewRuntime --packages-dir $reviewPackages --source-root $reviewBaseline --phase before --seed
+venv\Scripts\python.exe ops\run_form_contract_uat.py --directory $reviewRuntime --source-root $reviewBaseline --phase before
+# Chạy after sau sửa, giữ nguyên DB giả/baseline để so sánh có ý nghĩa.
+venv\Scripts\python.exe ops\run_layout_alignment_audit.py --directory $reviewRuntime --packages-dir $reviewPackages --phase after
+venv\Scripts\python.exe ops\run_form_contract_uat.py --directory $reviewRuntime --phase after
+venv\Scripts\python.exe ops\run_print_layout_uat.py --directory $reviewRuntime --packages-dir $reviewPackages --pdf-packages-dir $reviewPdfPackages
+venv\Scripts\python.exe ops\audit_button_kinds.py --directory $reviewRuntime --packages-dir $reviewPackages --output (Join-Path $reviewRuntime 'button-kinds.json')
+venv\Scripts\python.exe ops\audit_design_tokens.py --check
+venv\Scripts\python.exe ops\check_ui_contrast.py
+```
+
+Layout mặc định quét toàn route/vai trò, bảy độ rộng và sáng/tối theo AGENTS.md;
+`--only`, `--accounts`, `--widths` chỉ phục vụ probe, không thay lượt quét đóng
+giai đoạn. Ghi số vi phạm trước/sau, backend, vai trò, độ rộng, thư mục bằng
+chứng và contact sheet trước/sau 1756/390px theo mô-đun. Đối chiếu waiver được
+duyệt trong `ops/layout_waivers.json`; không tự thêm để bỏ lỗi. Form so hợp
+đồng gửi/query với baseline cùng DB giả; cờ `--allow-*` cần nguồn yêu cầu được
+duyệt, không dùng để bỏ khác biệt chưa giải thích.
+
+Print phải so ảnh/số đo PDF với mẫu chuẩn: màu, viền, ngắt trang, khoảng ký;
+không chỉ đếm trang. Đổi `print_forms.css` phải tăng `?v=` trong `base.html`.
+Nếu sửa hồi quy, ghi vì sao kiểm cũ bỏ sót. Bản in độc lập với lưới màn hình.
+
+Cache cần **hai server QA đang chạy** trên cùng DB/media giả, mã baseline và
+mã cuối có phiên bản asset khác nhau. Mở hai terminal riêng; layout/print tự
+quản server của chúng, không chiếm cổng 8770/8771 dưới đây:
+
+```powershell
+# Terminal baseline, dùng venv dự án với script từ snapshot trước sửa:
+venv\Scripts\python.exe "$reviewBaseline\ops\dashboard_demo.py" serve --directory $reviewRuntime --port 8771
+# Terminal nguồn cuối:
+venv\Scripts\python.exe ops\dashboard_demo.py serve --directory $reviewRuntime --port 8770
+# Terminal kiểm thử; khai báo lại biến đường dẫn nếu là shell mới:
+venv\Scripts\python.exe ops\run_asset_cache_uat.py --directory $reviewRuntime --packages-dir $reviewPackages --port 8770 --baseline-port 8771
+```
+
+Cache kiểm phiên có cache cũ cập nhật mà không xóa dữ liệu. Nếu hai bản asset
+không khác nhau hoặc chưa có server/baseline, ghi gate chưa chạy/không áp dụng
+với lý do; không tạo baseline giả để lấy PASS. Runtime demo của gate
+layout/form/print/cache dùng SQLite, không chứng minh SQL Server UAT.
+Luồng ngoài phạm vi runner browser cần bổ sung ca nghiệp vụ tương ứng, kiểm
+thông báo, trang đích, dữ liệu đã lưu và Dashboard theo đặc tả đã duyệt.
 
 ### Dependency, frontend và backup mock
 

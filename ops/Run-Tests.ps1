@@ -1,6 +1,7 @@
 param(
+    [Parameter(Mandatory = $true)]
     [ValidateSet('configured', 'sqlite', 'sqlserver')]
-    [string]$Backend = 'configured',
+    [string]$Backend,
     [string[]]$Labels = @()
 )
 
