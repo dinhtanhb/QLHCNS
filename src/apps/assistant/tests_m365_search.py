@@ -4,7 +4,9 @@ from unittest.mock import patch
 
 from django.test import SimpleTestCase, override_settings
 
-from apps.assistant.m365_search import search_sharepoint
+from apps.assistant.m365_search import (
+    ASSISTANT_TIMEOUT, can_query_sharepoint, search_sharepoint,
+)
 from apps.assistant.nlp import parse
 from apps.m365.graph_client import GraphAPIError, GraphNotConfigured
 
@@ -32,15 +34,15 @@ SITE = "https://tenant.sharepoint.com/sites/IHRMS/Shared Documents"
 
 
 def _user(role_code, superuser=False):
-    """Chỉ `has_permission` cần tới `user.role.role_code` nên mới chỉ cần mẫu này."""
+    """Cửa SharePoint chỉ đọc `user.role.role_code` nên mẫu này là đủ."""
     return SimpleNamespace(
         is_authenticated=True, is_active=True, is_superuser=superuser,
         is_staff=False, role=SimpleNamespace(role_code=role_code),
     )
 
 
-HR = _user("HR_MANAGER")            # có manage_office
-CLERK = _user("EMPLOYEE")           # không có quyền sổ công văn
+HR = _user("HR_MANAGER")            # xem được mọi độ mật trong cổng
+CLERK = _user("EMPLOYEE")           # cổng vẫn ẩn công văn mật với vai trò này
 
 
 def _hit(name, url, modified=""):
@@ -115,6 +117,34 @@ class SharePointSearchTests(SimpleTestCase):
         self.assertIsNone(note)
         self.assertEqual([r["title"] for r in results], ["CV nghỉ phép.pdf"])
 
+    def test_only_roles_that_see_every_security_level_may_query_sharepoint(self):
+        # Văn thư (manage_office) là chưa đủ: SharePoint không có khái niệm "độ
+        # mật" theo tệp, nên nguồn này chỉ an toàn khi người hỏi đã xem được
+        # TOÀN BỘ sổ công văn trong cổng, kể cả bản mật. SYS_ADMIN, DEPT_MANAGER,
+        # FINANCE_OFFICER, PROJECT_MANAGER, PROJECT_COORDINATOR có quyền sổ công
+        # văn đi nhưng cổng vẫn ẩn công văn mật / giới hạn theo loại - những
+        # vai trò đó phải bị chặn ở nguồn SharePoint.
+        allowed = ("SUPER_ADMIN", "DIRECTOR", "HR_MANAGER", "HR_OFFICER")
+        blocked = ("SYS_ADMIN", "DEPT_MANAGER", "FINANCE_OFFICER",
+                   "PROJECT_MANAGER", "PROJECT_COORDINATOR", "EMPLOYEE", "CBDA")
+        for role in allowed:
+            with self.subTest(role=role):
+                self.assertTrue(can_query_sharepoint(_user(role)))
+                client = _FakeClient(search=[_in("CongVan", "CV.pdf")])
+                results, note = self._run(client, "cv", user=_user(role))
+                self.assertIsNone(note)
+                self.assertEqual(len(results), 1)
+        for role in blocked:
+            with self.subTest(role=role):
+                self.assertFalse(can_query_sharepoint(_user(role)))
+                client = _FakeClient(search=[_in("CongVan", "CV.pdf")])
+                results, note = self._run(client, "cv", user=_user(role))
+                self.assertEqual((results, note), ([], "restricted"))
+                self.assertEqual(client.search_calls, [])
+        # superuser không có `role` vẫn phải qua được cửa, nếu không thì tài khoản
+        # quản trị bị khóa đúng nguồn mà mình đang đi kiểm tra hộ.
+        self.assertTrue(can_query_sharepoint(_user(None, superuser=True)))
+
     def test_not_configured(self):
         results, note = self._run(_FakeClient(configured=False), "công văn")
         self.assertEqual((results, note), ([], "not_configured"))
@@ -159,22 +189,42 @@ class SharePointSearchTests(SimpleTestCase):
         self.assertIsNone(note)
 
     def test_folder_name_must_be_a_whole_path_segment(self):
-        # "CongVan" là tiền tố của "CongVanDen" nhưng "CongVanFoo" thì không:
-        # khớp theo đoạn, không khớp theo chuỗi con, để một thư mục lạ có cùng
-        # tiền tố không slipped through.
+        # "CongVan" là tiền tố của "CongVanDen" nhưng "CongVanBíMật" thì không:
+        # khớp theo từng đoạn của đường dẫn, không khớp theo chuỗi con, để một
+        # thư mục lạ cùng tiền tố không lọt được vào kết quả.
         client = _FakeClient(search=[_hit("x.pdf", f"{SITE}/CongVanBíMật/x.pdf")])
         results, _ = self._run(client, "cv")
         self.assertEqual(results, [])
 
-    def test_encoded_urls_are_decided_before_the_folder_check(self):
-        # webUrl của SharePoint hay ở dạng `AllItems.aspx?id=%2F...%2FCongVan%2F`
-        # hoặc chứa `%20`; từ chối vì không đọc ra dấu phân cách là làm mất tính
-        # năng thật, nên phải giải mã trước khi so đoạn.
-        encoded = ("https://tenant.sharepoint.com/sites/IHRMS/Shared%20Documents/_layouts/15/"
-                   "view.aspx?initialid=%2Fsites%2FIHRMS%2FShared%20Documents%2FCongVan%2F")
-        client = _FakeClient(search=[_hit("CV.pdf", encoded)])
+    def test_space_in_library_name_still_matches(self):
+        # Tên thư viện có dấu cách là chuyện bình thường của SharePoint. Không
+        # giải mã `%20` thì mọi liên kết thật bị loại im lặng - mất tính năng mà
+        # không có lỗi nào, nên phải dựng được đúng đường dẫn thật.
+        spaced = f"{SITE.replace(' ', '%20')}/CongVan/CV.pdf"
+        client = _FakeClient(search=[_hit("CV.pdf", spaced)])
         results, _ = self._run(client, "cv")
-        self.assertEqual([r["url"] for r in results], [encoded])
+        self.assertEqual([r["url"] for r in results], [spaced])
+
+    def test_folder_name_hidden_in_query_string_is_dropped(self):
+        # Dạng liên kết xem danh sách: vị trí thật của tệp nằm ở `initialid`, còn
+        # đường dẫn thì trỏ tới `_layouts/15/view.aspx`. Nếu giải mã cả URL rồi
+        # so đoạn thì chuỗi `%2F...%2FCongVan%2F` tạo ra một đoạn "CongVan" giả,
+        # và một tệp ở HoSoUngVien sẽ được giữ chỉ vì tham số truy vấn nhắc tới
+        # CongVan. Chỉ đường dẫn mới được tính.
+        smuggled = ("https://tenant.sharepoint.com/sites/IHRMS/Shared Documents/_layouts/15/"
+                    "view.aspx?initialid=%2Fsites%2FIHRMS%2FShared%20Documents%2FCongVan%2F")
+        client = _FakeClient(search=[_hit("CV.pdf", smuggled)])
+        results, _ = self._run(client, "cv")
+        self.assertEqual(results, [])
+
+    def test_encoded_separator_inside_path_is_dropped(self):
+        # `%2F` nằm trong chính đường dẫn là dấu hiệu một đoạn bị nhúng, không
+        # phải một thư mục thật; từ chối là an toàn vì webUrl thật của Graph
+        # không bao giờ ở dạng này.
+        tricky = f"{SITE}/CongVan%2FDonNghiPhep/CV.pdf"
+        client = _FakeClient(search=[_hit("CV.pdf", tricky)])
+        results, _ = self._run(client, "cv")
+        self.assertEqual(results, [])
 
     def test_last_modified_without_value_is_none(self):
         # Graph có thể trả DriveItem thiếu lastModifiedDateTime, hoặc "giá trị"
@@ -285,7 +335,7 @@ class SharePointSearchTests(SimpleTestCase):
         # người hỏi không được chiếm worker nhiều phút (xem review C62/I6).
         client = _FakeClient(search=[])
         self._run(client, "nghỉ phép")
-        self.assertIsNotNone(client.search_calls[0][2])
+        self.assertEqual(client.search_calls[0][2], ASSISTANT_TIMEOUT)
         self.assertEqual(client.list_calls, [])
 
     def test_assistant_timeout_applies_to_the_fallback_calls_too(self):
@@ -293,7 +343,7 @@ class SharePointSearchTests(SimpleTestCase):
         self._run(client, "nghỉ phép")
         self.assertEqual(len(client.list_calls), 3)
         for _, _, timeout in client.list_calls:
-            self.assertIsNotNone(timeout)
+            self.assertEqual(timeout, ASSISTANT_TIMEOUT)
 
     def test_doc_number_is_the_query_when_no_text(self):
         client = _FakeClient(search=[])

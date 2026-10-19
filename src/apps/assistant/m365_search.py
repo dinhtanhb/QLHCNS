@@ -8,9 +8,12 @@ Ba cửa phải qua trước khi gọi mạng, vì Graph chạy app-only:
 - `M365_STORAGE_ENABLED` là công tắc duy nhất của toàn dự án cho M365 (xem
   `apps/m365/storage.py` và `ops/run_tests.py`). Chỉ đọc credentials thì không
   phân biệt được "chưa bật" với "bật nhưng sai", và test sẽ tùy thuộc `.env`.
-- Người hỏi phải có quyền xem sổ công văn. App-only nghĩa là token thấy cả thư
-  viện, không thấy quyền của người đang hỏi, nên không có bộ lọc RBAC theo từng
-  tệp ở tầng Graph.
+- Người hỏi phải xem được TOÀN BỘ sổ công văn trong cổng, kể cả bản Mật. App-only
+  nghĩa là token thấy cả thư viện, không thấy quyền của người đang hỏi, và Graph
+  không có khái niệm `security_level` theo tệp - nên không thể lọc từng kết quả
+  như `db_search` làm với `visible_dispatches_for`. Cửa này lấy đúng tập vai trò
+  mà cổng miễn lọc độ mật (`FULL_DISPATCH_SECURITY_ROLES`), ai còn bị cổng ẩn công
+  văn Mật thì cũng không được nghe tên tệp trên SharePoint.
 - Kết quả chỉ được giữ nếu nằm trong một thư mục công văn đã cấu hình, theo từng
   đoạn đường dẫn. Tên hồ sơ ứng viên hay đơn nghỉ phép tự hiện ra trong khung
   chat là lộ dữ liệu, kể cả khi liên kết không mở được.
@@ -18,12 +21,13 @@ Ba cửa phải qua trước khi gọi mạng, vì Graph chạy app-only:
 from __future__ import annotations
 
 from datetime import datetime
-from urllib.parse import unquote
+from urllib.parse import unquote, urlsplit
 
 from django.conf import settings
 
 from apps.m365.graph_client import GraphAPIError, GraphNotConfigured, get_graph_client
-from apps.security.permissions import has_permission
+from apps.security.data_access import FULL_DISPATCH_SECURITY_ROLES
+from apps.security.permissions import get_role_code
 
 from .nlp import ParsedQuery, normalize
 
@@ -39,8 +43,8 @@ ASSISTANT_TIMEOUT = (3, 10)
 # Ba thư mục mà nghiệp vụ công văn thực sự ghi tệp vào; cũng là allowlist duy
 # nhất cho kết quả search.
 DISPATCH_FOLDER_KEYS = ("dispatches", "incoming_docs", "outgoing_docs")
-# Quyền của chính cổng: ai xem được sổ công văn thì mới được nghe tên tệp.
-REGISTER_PERMISSIONS = ("manage_office", "access_outgoing_document")
+# Quyền của chính cổng: chỉ người xem được toàn bộ sổ công văn (mọi độ mật) mới
+# được hỏi SharePoint - xem mô-đun docstring ở cửa thứ hai.
 # Không phải sự cố và không phải "chưa bật": người hỏi đơn giản không thuộc
 # phạm vi nguồn này, nên `services.PARTIAL_NOTES` không liệt kê nó.
 RESTRICTED_NOTE = "restricted"
@@ -60,13 +64,24 @@ def _dispatch_folders() -> tuple[str, ...]:
 
 
 def _url_segments(url: str) -> set[str]:
-    """Tách webUrl thành các đoạn không phân biệt hoa/thường.
+    """Các đoạn của ĐƯỜNG DẪN trong webUrl, không phân biệt hoa/thường.
 
-    Giải mã `%2F`/`%20` trước: SharePoint hay trả liên kết dạng
-    `view.aspx?initialid=%2Fsites%2F...%2FCongVan%2F`, và so chuỗi con thì
-    `CongVanBíMật` sẽ khớp nhầm với `CongVan`.
+    Chỉ `path`, không đọc query string hay fragment: tham số kiểu
+    `view.aspx?initialid=%2F...%2FCongVan%2F` mô tả một VIEW của danh sách, không
+    phải vị trí của tệp, nên giải mã cả URL sẽ biến hai chữ "CongVan" trong tham
+    số thành một đoạn đường dẫn giả và giữ lại tệp nằm ở thư mục khác.
+    `%20` vẫn được giải mã (tên thư viện có dấu cách là chuyện bình thường), còn
+    `%2F` trong đường dẫn thì không bao giờ được phép thành dấu phân cách - webUrl
+    thật của Graph không có dạng đó, nên thà bỏ sót còn hơn lộ.
     """
-    return {segment.casefold() for segment in unquote(url or "").split("/") if segment}
+    path = urlsplit(url or "").path
+    if "%2f" in path.lower():
+        return set()
+    return {
+        unquote(segment).casefold()
+        for segment in path.split("/")
+        if unquote(segment)
+    }
 
 
 def _in_dispatch_folder(url: str, folders: tuple[str, ...]) -> bool:
@@ -75,9 +90,16 @@ def _in_dispatch_folder(url: str, folders: tuple[str, ...]) -> bool:
 
 
 def can_query_sharepoint(user) -> bool:
+    """Cùng tập vai trò mà cổng miễn lọc độ mật cho công văn.
+
+    `manage_office` (văn thư) nghe tưởng đúng nhưng lại rộng hơn ở chỗ khác và
+    hẹp hơn ở chỗ này: SYS_ADMIN là văn thư hệ thống nhưng cổng vẫn ẩn công văn
+    Mật, trong khi SUPER_ADMIN/DIRECTOR không có manage_office lại xem được hết.
+    Vì Graph app-only không lọc hộ được gì, phải lấy nguyên phạm vi của cổng.
+    """
     if getattr(user, "is_superuser", False):
         return True
-    return any(has_permission(user, code) for code in REGISTER_PERMISSIONS)
+    return get_role_code(user) in FULL_DISPATCH_SECURITY_ROLES
 
 
 def _needles(parsed: ParsedQuery) -> list[str]:

@@ -10,6 +10,8 @@ from apps.portal import test_home_dashboard as fixtures
 
 CSS_PATH = Path(__file__).resolve().parents[2] / "static" / "css" / "assistant.css"
 JS_PATH = Path(__file__).resolve().parents[2] / "static" / "js" / "assistant.js"
+APP_DIR = Path(__file__).resolve().parent
+COMMANDS_DIR = APP_DIR / "management" / "commands"
 
 
 class AssistantUiTests(TestCase):
@@ -94,13 +96,21 @@ class AssistantUiTests(TestCase):
 
     def test_assistant_js_allows_only_internal_or_https_links(self):
         # `safeUrl` là chắn duy nhất giữa một `webUrl` lấy từ Graph và
-        # `card.href`: xóa nó mà suite vẫn xanh nghĩa là một chuỗi
-        # javascript: từ dữ liệu ngoài đủ để chạy script trong phiên người dùng.
+        # `card.href`. Test cũ chỉ assert chuỗi "javascript:" và "data:" có mặt
+        # trong tệp - hai chuỗi đó nằm ngay trong comment mô tả lỗ hổng, nên xóa
+        # cả hàm chắn đi thì test vẫn xanh. Ở đây khóa ba thứ: mọi liên kết từ dữ
+        # liệu phải đi qua `safeUrl`, hàm phải là allowlist (mặc định trả chuỗi
+        # rỗng, không liệt kê giao thức cấm), và không có chỗ nào gán `.href`
+        # ngoài hai chỗ đã kiểm soát.
         js = JS_PATH.read_text(encoding="utf-8")
-        self.assertIn("function safeUrl", js)
-        self.assertIn("javascript:", js)
-        self.assertIn("data:", js)
-        self.assertIn("card.href = href", js)
+        self.assertIn("const href = safeUrl(row.url);", js)
+        self.assertIn("card.href = href;", js)
+        guard = js.split("function safeUrl(url) {", 1)[1].split("\n  }", 1)[0]
+        self.assertIn("return '';", guard)
+        self.assertIn("value.indexOf('https://') === 0", guard)
+        self.assertNotIn("javascript", guard)
+        self.assertNotIn("data:", guard)
+        self.assertEqual(len(re.findall(r"\.href\s*=", js)), 2)
         self.assertIn("noopener noreferrer", js)
 
     def test_assistant_css_hides_the_widget_when_printing(self):
@@ -126,15 +136,39 @@ class AssistantUiTests(TestCase):
         # AGENTS.md: mã nguồn chỉ tiếng Việt + ASCII. Scan này từng phải chạy
         # tay bằng script tạm ngoài Git; một chữ Hán lọt vào comment không làm đỏ
         # test nào khác và review chỉ phát hiện khi đọc từng dòng.
-        # Cho phép: ASCII in được + khoảng trắng (0x20-0x7E), dấu tiếng Việt,
-        # `…`, `—`, `‘’“”` (0x2000-0x206F) và `·` (0x00B7). Cấm mọi ký tự khác,
-        # gồm Cyrillic (0x0400-0x04FF) và CJK (0x3000 trở lên).
-        allowed = set("…—‘’“”·")
-        for path in (CSS_PATH, JS_PATH):
+        # Test nay đi qua .py của app và của management command, không chỉ CSS/JS.
+        # Chặn bằng cách CHỈ cho phép, không cấm từng dải: bản cũ chỉ cấm từ
+        # U+3000 trở lên nên Cyrillic (U+0400-U+04FF) lọt qua đúng như lời nó tự
+        # nói, và chữ U+0430 trong STOPWORDS của tệp plan là ví dụ thật - trông
+        # như `a` nhưng normalize() không fold, nên kẻ chép theo có một stopword
+        # chết. Ngược lại, khoanh cả khối Latin Extended-A thì tha luôn ký tự
+        # của tiếng Ba Lan và Thổ Nhĩ Kỳ mà tiếng Việt không dùng.
+        # Chữ Việt nằm ở bốn nơi: Latin-1, bốn codepoint Latin Extended-A
+        # (ă đ ĩ ũ, cả hoa lẫn thường), hai codepoint Latin Extended-B (ơ ư),
+        # và tổ hợp dấu nặng/hỏi/ngã ở Latin Extended Additional.
+        allowed = set("…—‘’“”·→\t\n\r")
+        latin_extended_a = {0x102, 0x103, 0x110, 0x111, 0x128, 0x129, 0x168, 0x169}
+        latin_extended_b = {0x1A0, 0x1A1, 0x1AF, 0x1B0}
+
+        def is_vietnamese_letter(char: str) -> bool:
+            code = ord(char)
+            return (
+                0xC0 <= code <= 0xFF
+                or code in latin_extended_a
+                or code in latin_extended_b
+                or 0x1E00 <= code <= 0x1EFF
+            )
+
+        sources = sorted(APP_DIR.glob("*.py")) + sorted(COMMANDS_DIR.glob("*.py"))
+        sources += [CSS_PATH, JS_PATH]
+        for path in sources:
             text = path.read_text(encoding="utf-8")
-            outside = {c for c in text if not (0x20 <= ord(c) <= 0x7E) and c not in allowed}
+            outside = {
+                c for c in text
+                if not (0x20 <= ord(c) <= 0x7E) and c not in allowed
+                and not is_vietnamese_letter(c)
+            }
             for char in sorted(outside):
-                self.assertLess(
-                    ord(char), 0x3000,
-                    f"{path.name}: ký tự ngoài tiếng Việt {char!r} (U+{ord(char):04X})",
+                self.fail(
+                    f"{path.name}: ký tự ngoài tiếng Việt {char!r} (U+{ord(char):04X})"
                 )

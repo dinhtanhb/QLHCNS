@@ -1,6 +1,20 @@
 """Explicit object scopes; staff status never grants business data access."""
 from django.db.models import Q
-from apps.security.permissions import DEPT_MANAGER, get_role_code, has_permission
+from apps.security.permissions import (
+    DEPT_MANAGER,
+    DIRECTOR,
+    HR_MANAGER,
+    HR_OFFICER,
+    SUPER_ADMIN,
+    get_role_code,
+    has_permission,
+)
+
+# Vai trò xem được công văn ở MỌI độ mật trong cổng. Tách thành hằng số vì
+# `apps/assistant/m365_search.py` phải dựng đúng cùng một phạm vi cho nguồn
+# SharePoint: Graph chạy app-only và không biết gì về `security_level` của từng
+# tệp, nên ai chưa được xem bản Mật ở cổng thì cũng không được nghe tên tệp đó.
+FULL_DISPATCH_SECURITY_ROLES = (SUPER_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER)
 
 
 def managed_departments_for(user, *, global_roles=(), scoped_roles=(DEPT_MANAGER,)):
@@ -52,7 +66,7 @@ def visible_dispatches_for(user, queryset=None):
         if employee.department_id:
             scope |= Q(department_id=employee.department_id)
         qs = qs.filter(scope)
-    if role not in ('SUPER_ADMIN', 'DIRECTOR', 'HR_MANAGER', 'HR_OFFICER'):
+    if role not in FULL_DISPATCH_SECURITY_ROLES:
         private_scope = Q(created_by=user)
         if employee:
             private_scope |= Q(assigned_to=employee) | Q(signer=employee)

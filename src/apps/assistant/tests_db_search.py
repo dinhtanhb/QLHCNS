@@ -1,9 +1,11 @@
 from datetime import date
 
+from django.db.models import F
 from django.test import TestCase
 from django.urls import reverse
 
 from apps.assistant.db_search import search_database
+from apps.assistant.m365_search import can_query_sharepoint
 from apps.assistant.nlp import parse
 from apps.document.models import (
     DispatchBook,
@@ -13,6 +15,26 @@ from apps.document.models import (
     PersonnelDecision,
 )
 from apps.portal import test_home_dashboard as fixtures
+from apps.security.data_access import visible_dispatches_for
+from apps.security.models import Role, User
+from apps.security.permissions import (
+    CBDA,
+    DEPT_MANAGER,
+    DIRECTOR,
+    EMPLOYEE,
+    FINANCE_OFFICER,
+    HR_MANAGER,
+    HR_OFFICER,
+    PROJECT_COORDINATOR,
+    PROJECT_MANAGER,
+    SUPER_ADMIN,
+    SYS_ADMIN,
+)
+
+ALL_ROLES = (
+    SUPER_ADMIN, SYS_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER, DEPT_MANAGER,
+    FINANCE_OFFICER, EMPLOYEE, PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA,
+)
 
 RESULT_KEYS = {"source", "type", "title", "meta", "url", "date", "score"}
 
@@ -200,3 +222,48 @@ class DbSearchTests(TestCase):
             any("chưa hiệu lực" in r["title"] for r in results if r["type"] == "document"),
             "văn bản chưa đặt ngày hiệu lực vẫn phải tìm được bằng từ khóa",
         )
+        # Soạn SQL thật cho backend đang chạy, đừng nhìn `str(query)`: SQLite phát
+        # ra "NULLS LAST" trực tiếp, SQL Server giả lập bằng "CASE WHEN ... IS NULL
+        # THEN 1 ELSE 0 END". Kiểm một chuỗi cố định thì đỏ trên đúng cái backend
+        # cần kiểm, còn test vẫn xanh khi nulls_last bị im lặng bỏ qua.
+        sql, _ = Document.objects.order_by(
+            F("effective_date").desc(nulls_last=True), "-id",
+        ).query.sql_with_params()
+        sql = sql.upper()
+        self.assertTrue(
+            "NULLS LAST" in sql or "IS NULL THEN 1 ELSE 0 END" in sql,
+            "phải phát ra SQL đẩy NULL xuống cuối chứ không dựa vào mặc định của "
+            "từng backend (SQLite để cuối, SQL Server để ĐẦU)",
+        )
+
+    def _gate_user(self, role_code):
+        # `setUpTestData` đã tạo user HR_MANAGER/EMPLOYEE theo tên cố định, nên
+        # dùng lại helper của fixture ở đây sẽ đụng unique trên `username` và biến
+        # tám vai trò còn lại thành ERROR không liên quan gì tới quyền.
+        role, _ = Role.objects.get_or_create(
+            role_code=role_code, defaults={"role_name": role_code},
+        )
+        return User.objects.create(username=f"gate-{role_code.lower()}", role=role)
+
+    def test_sharepoint_gate_matches_the_portals_confidential_scope(self):
+        # SharePoint không biết gì về "độ mật" của từng tệp: Graph app-only trả về
+        # tên tệp và liên kết, không có bộ lọc theo `security_level` như cổng. Nên
+        # nguồn này chỉ an toàn với người hỏi vốn đã xem được công văn Mật TRONG
+        # CỔNG. Không liệt kê vai trò bằng tay ở đây - `visible_dispatches_for` là
+        # chuẩn, và `can_query_sharepoint` phải khớp từng vai trò. Ai nới cửa ở một
+        # trong hai chỗ mà quên chỗ kia thì đỏ ngay tại đây.
+        for role_code in ALL_ROLES:
+            with self.subTest(role=role_code):
+                asking = self._gate_user(role_code)
+                may_see_confidential = visible_dispatches_for(
+                    asking, OfficialDispatch.objects.all(),
+                ).filter(pk=self.confidential.pk).exists()
+                self.assertEqual(
+                    can_query_sharepoint(asking), may_see_confidential,
+                    f"vai trò {role_code}: nguồn SharePoint và cổng phải cùng một phạm vi",
+                )
+
+    def test_superuser_may_query_sharepoint_without_a_role_row(self):
+        asking = self._gate_user("EMPLOYEE")
+        asking.is_superuser = True
+        self.assertTrue(can_query_sharepoint(asking))
