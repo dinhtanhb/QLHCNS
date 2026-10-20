@@ -97,5 +97,6 @@ def ask(question: str, user) -> dict:
         "parsed": _parsed_dict(parsed),
         "took_ms": took_ms,
         "partial": sp_note in PARTIAL_NOTES,
+        "sharepoint_status": sp_note or "ok",
         "results": [_public_result(row) for row in merged],
     }

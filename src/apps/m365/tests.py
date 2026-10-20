@@ -131,6 +131,9 @@ class GraphSearchTests(SimpleTestCase):
     def _client(self, payload):
         """Client giả đã cấu hình: `_require_configured` và `_drive_id` không
         chạm tới settings mạng, `_request` phát ra đúng một phản hồi bảng."""
+        if payload.get("value") and "hitsContainers" in (payload["value"][0] or {}):
+            payload = {"value": [(hit or {}).get("resource", {}) for block in payload["value"]
+                      for container in block.get("hitsContainers", []) for hit in container.get("hits", [])]}
         client = GraphClient()
         client.site_hostname = "congty.sharepoint.com"
         client.site_path = "/sites/IHRMS"
@@ -209,12 +212,12 @@ class GraphSearchTests(SimpleTestCase):
         client = self._client({"value": []})
         client.search_files("nghỉ phép", top=7)
         method, url, kwargs = client.calls[0]
-        self.assertEqual(method, "POST")
-        self.assertTrue(url.endswith("/search/query"), url)
-        request = kwargs["json"]["requests"][0]
-        self.assertEqual(request["entityTypes"], ["driveItem"])
-        self.assertEqual(request["query"]["queryString"], "nghỉ phép")
-        self.assertEqual(request["size"], 7)
+        self.assertEqual(method, "GET")
+        self.assertIn("/drives/DRV1/root/search(q=", url)
+        self.assertNotIn("/search/query", url)
+        from urllib.parse import unquote
+        self.assertIn("nghỉ phép", unquote(url))
+        self.assertEqual(kwargs["params"]["$top"], 7)
 
     def test_search_files_survives_missing_resource(self):
         # Graph trả `hits` thiếu `resource` (kết quả bị xóa) hoặc thiếu hẳn
@@ -290,3 +293,28 @@ class GraphSearchTests(SimpleTestCase):
         # .env và gửi request outbound, nên mọi cấu phần phải rỗng.
         with self.assertRaises(GraphNotConfigured):
             GraphClient().list_folder_files("Documents")
+
+
+    def test_recursive_listing_follows_pages_and_child_folders(self):
+        client = self._client({})
+        root = "https://graph.microsoft.com/v1.0/drives/DRV1/"
+        pages = {
+            root + "root:/BaoCaoHoatDong:/children": {"value": [{"id": "folder-2026", "folder": {}}], "@odata.nextLink": root + "items/root/children?$skiptoken=next"},
+            root + "items/folder-2026/children": {"value": [{"name": "Báo cáo.pdf", "webUrl": "https://congty.sharepoint.com/sites/IHRMS/Shared%20Documents/BaoCaoHoatDong/2026/report.pdf"}]},
+            root + "items/root/children?$skiptoken=next": {"value": [{"name": "Báo cáo khác.pdf"}]},
+        }
+        seen = []
+        def request(method, url, **kwargs):
+            seen.append(url)
+            self.assertEqual(kwargs["timeout"], (3,10))
+            return _Response(pages[url])
+        client._request = request
+        result = client.list_folder_files("Documents", "BaoCaoHoatDong", timeout=(3,10), recursive=True)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(len(seen), 3)
+
+    def test_listing_rejects_foreign_pagination_before_sending_credentials(self):
+        client = self._client({"value": [], "@odata.nextLink": "https://evil.example.test/steal"})
+        with self.assertRaises(GraphAPIError):
+            client.list_folder_files("Documents", "BaoCaoHoatDong", recursive=True)
+        self.assertEqual(len(client.calls), 1)

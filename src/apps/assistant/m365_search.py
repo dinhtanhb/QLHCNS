@@ -1,26 +1,10 @@
-"""Tìm kiếm tệp trên SharePoint Document Library cho trợ lý tài liệu.
+"""Tìm tài liệu trong đúng thư viện/thư mục và theo quyền của từng nguồn.
 
-Ưu tiên Graph `POST /search/query`. Khi search chưa được admin consent
-(400/403), lùi về duyệt các thư mục nghiệp vụ đã cấu hình và khớp theo tên tệp -
-chậm hơn và không có full-text, nhưng chỉ cần quyền Files mà dự án đã cấp.
-
-Ba cửa phải qua trước khi gọi mạng, vì Graph chạy app-only:
-- `M365_STORAGE_ENABLED` là công tắc duy nhất của toàn dự án cho M365 (xem
-  `apps/m365/storage.py` và `ops/run_tests.py`). Chỉ đọc credentials thì không
-  phân biệt được "chưa bật" với "bật nhưng sai", và test sẽ tùy thuộc `.env`.
-- Người hỏi phải xem được CẢ BA loại tệp mà nguồn này có thể trả về. App-only
-  nghĩa là token thấy cả thư viện, không thấy quyền của người đang hỏi, và Graph
-  không biết một tệp thuộc đối tượng nào - nên không thể lọc từng kết quả như
-  `db_search` làm với `visible_dispatches_for`/`can_read_file`. Ba thư mục
-  allowlist không chỉ chứa công văn: `CongVanDen`/`CongVanDi` còn nhận tệp đính
-  kèm của `IncomingDocument`/`OutgoingDocument` (`apps/common/uploads.py:80-85`),
-  và cổng chặn hai đối tượng đó bằng quyền văn thư. Cửa vì vậy là GIAO của phạm vi
-  độ mật (`FULL_DISPATCH_SECURITY_ROLES`) và hai quyền sổ văn thư
-  (`SHARED_LIBRARY_PERMISSIONS`) - vai trò nào còn bị cổng chặn một kiểu tệp thì
-  không được nghe tên tệp kiểu đó từ SharePoint.
-- Kết quả chỉ được giữ nếu nằm trong một thư mục công văn đã cấu hình, theo từng
-  đoạn đường dẫn. Tên hồ sơ ứng viên hay đơn nghỉ phép tự hiện ra trong khung
-  chat là lộ dữ liệu, kể cả khi liên kết không mở được.
+Công văn dùng giao quyền độ mật/văn thư; báo cáo hoạt động yêu cầu quyền
+xem toàn bộ hoạt động dự án. Graph chạy app-only nên mỗi nguồn phải xác minh
+metadata của root và lọc origin/path, không suy quyền từ tên thư mục.
+Tìm drive có đường lùi duyệt phân trang/thư mục con khi chỉ mục chưa thấy tệp
+hoặc Search bị từ chối; lỗi mạng/giới hạn trả trạng thái chưa đầy đủ.
 """
 from __future__ import annotations
 
@@ -104,10 +88,12 @@ def _in_dispatch_folder(url: str, roots: tuple[str, ...]) -> bool:
     return False
 
 
-def _folder_roots(client) -> dict[str, str]:
+def _folder_roots(client, folders=None) -> dict[str, str]:
     """Resolve only folders of the configured library; never guess URL aliases."""
     roots = {}
     for library, folder in _fallback_folders():
+        if folders is not None and folder not in folders:
+            continue
         try:
             url = client.get_folder_web_url(library, folder, timeout=ASSISTANT_TIMEOUT)
         except GraphNotConfigured:
@@ -184,16 +170,13 @@ def _to_result(hit: dict, parsed: ParsedQuery) -> dict:
 
 
 def _fallback_folders() -> list[tuple[str, str]]:
-    """Các cặp (thư viện, thư mục) được duyệt khi Graph search bị từ chối.
-
-    Chỉ ba thư mục công văn trong `M365_FOLDER_MAP` - cùng bảng mà
-    `apps.m365.storage` và `upload_to_dispatches` dùng để ghi tệp, nên danh mục
-    trợ lý duyệt đúng nơi nghiệp vụ thực sự lưu. KHÔNG kèm thư viện gốc: listing
-    gốc liệt kê mọi tệp của cả site, tức là lộ tên hồ sơ ứng viên và đơn nghỉ
-    phép cho một tài khoản chỉ có quyền văn thư.
-    """
+    """Danh mục nguồn; caller chỉ duyệt các root đã được phép cho người hỏi."""
     library = getattr(settings, "M365_SHAREPOINT_LIBRARY", "Documents") or "Documents"
-    return [(library, folder) for folder in _dispatch_folders()]
+    folders = list(_dispatch_folders())
+    report_folder = (getattr(settings, "M365_FOLDER_MAP", {}).get("activity_reports") or "").strip("/")
+    if report_folder and report_folder not in folders:
+        folders.append(report_folder)
+    return [(library, folder) for folder in folders]
 
 
 def _fallback_listing(client, parsed: ParsedQuery, roots: dict[str, str]) -> list[dict]:
@@ -206,22 +189,23 @@ def _fallback_listing(client, parsed: ParsedQuery, roots: dict[str, str]) -> lis
         if folder not in roots:
             continue
         try:
-            hits = client.list_folder_files(library, folder, timeout=ASSISTANT_TIMEOUT)
+            hits = client.list_folder_files(library, folder, timeout=ASSISTANT_TIMEOUT, recursive=True)
         except GraphAPIError as exc:
             # Thiếu cấu hình site thì `_drive_id` gọi `site_id` và raise
             # GraphNotConfigured - phải để nó thoát lên để báo "not_configured",
             # còn thiếu thư nghiệp vụ (404) thì bỏ qua và thử thư mục kế.
             if isinstance(exc, GraphNotConfigured):
                 raise
-            continue
+            if exc.status_code == 404:
+                continue
+            raise
         for hit in hits:
             if not _in_dispatch_folder(hit.get("web_url", ""), (roots[folder],)):
                 continue
             name_fold = normalize(hit.get("name", ""))
             if not any(needle in name_fold for needle in needles):
                 continue
-            # Thư mục con và thư viện gốc cùng liệt kê một tệp: webUrl là khóa
-            # duy nhất để không trả trùng, nếu không SharePoint nhấn chìm DB.
+            # Các root cấu hình có thể chồng nhau; webUrl loại tệp trùng.
             url = hit.get("web_url", "")
             key = url or hit.get("name", "")
             if not key or key in seen_urls:
@@ -253,11 +237,15 @@ def search_sharepoint(parsed: ParsedQuery, user) -> tuple[list[dict], str | None
     """
     if not getattr(settings, "M365_STORAGE_ENABLED", False):
         return [], "not_configured"
-    folders = _dispatch_folders()
+    folders = list(_dispatch_folders()) if can_query_sharepoint(user) else []
+    # Reports have their own project permissions; HR access to dispatches is not
+    # permission to read every project report. Scoped project roles stay DB-only.
+    report_folder = (getattr(settings, "M365_FOLDER_MAP", {}).get("activity_reports") or "").strip("/")
+    if (getattr(user, "is_authenticated", False) and getattr(user, "is_active", False)
+            and has_permission(user, "view_all_project_activities") and report_folder):
+        folders.append(report_folder)
     if not folders:
-        return [], "not_configured"
-    if not can_query_sharepoint(user):
-        return [], RESTRICTED_NOTE
+        return [], RESTRICTED_NOTE if _fallback_folders() else "not_configured"
     client = get_graph_client()
     if not client.is_configured():
         return [], "not_configured"
@@ -268,7 +256,7 @@ def search_sharepoint(parsed: ParsedQuery, user) -> tuple[list[dict], str | None
     try:
         hits = client.search_files(query, top=MAX_RESULTS, timeout=ASSISTANT_TIMEOUT)
         if hits:
-            roots = _folder_roots(client)
+            roots = _folder_roots(client, folders)
     except GraphNotConfigured:
         return [], "not_configured"
     except GraphAPIError as exc:
@@ -276,21 +264,19 @@ def search_sharepoint(parsed: ParsedQuery, user) -> tuple[list[dict], str | None
             return [], "unavailable"
         try:
             if roots is None:
-                roots = _folder_roots(client)
+                roots = _folder_roots(client, folders)
             return _fallback_listing(client, parsed, roots), "search_fallback"
         except GraphNotConfigured:
             return [], "not_configured"
         except GraphAPIError:
             return [], "unavailable"
-    # Graph tìm cấp tenant rồi mới lọc theo site trong `search_files`, nên vẫn
-    # còn tệp ngoài phạm vi công văn. Giữ lại có nghĩa là lộ tên tệp.
+    # Drive search vẫn có tệp ngoài các root được phép của người hỏi.
     boundaries = tuple((roots or {}).values())
     kept = [hit for hit in hits if _in_dispatch_folder(hit.get("web_url", ""), boundaries)]
-    if not kept and hits:
-        # 20 kết quả liên quan nhất đều thuộc site/thư mục khác: thư mục công
-        # văn vẫn có thể có tệp khớp, nên phải thử đường lùi thay vì báo "hết".
+    if not kept:
+        # Chỉ mục rỗng hoặc top hit ngoài root chưa chứng minh thư mục hết tệp.
         try:
-            return _fallback_listing(client, parsed, roots or {}), "search_fallback"
+            return _fallback_listing(client, parsed, roots if roots is not None else _folder_roots(client, folders)), "search_fallback"
         except GraphNotConfigured:
             return [], "not_configured"
         except GraphAPIError:

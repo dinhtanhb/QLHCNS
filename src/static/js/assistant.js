@@ -9,6 +9,7 @@
   const MESSAGES = {
     loading: 'Đang tìm tài liệu…',
     empty: 'Không tìm thấy tài liệu phù hợp trong phạm vi quyền của anh/chị.',
+    search_fallback: 'Đang hiển thị kết quả theo tên tệp trong các thư mục SharePoint được phép.',
     partial: 'SharePoint tạm không phản hồi — kết quả dưới đây chỉ gồm tài liệu trong IHRMS.',
     network: 'Không kết nối được máy chủ. Anh/chị kiểm tra mạng rồi thử lại.',
     rate_limited: 'Anh/chị đã gửi quá nhiều câu hỏi trong một phút. Hãy đợi chút rồi thử lại.',
@@ -84,7 +85,7 @@
 
   function renderResults(panel, payload) {
     if (payload && payload.partial) {
-      panel.appendChild(el('div', 'assistant-warning', MESSAGES.partial));
+      panel.appendChild(el('div', 'assistant-warning', payload.sharepoint_status === 'search_fallback' ? MESSAGES.search_fallback : MESSAGES.partial));
     }
     const results = (payload && Array.isArray(payload.results)) ? payload.results : [];
     if (!results.length) {
@@ -177,6 +178,20 @@
       });
     });
 
+    const historyUrl = root.getAttribute('data-history');
+    if (historyUrl) {
+      setBusy(state, true);
+      fetch(historyUrl, { credentials: 'same-origin', cache: 'no-store' })
+        .then(function (response) { return response.ok ? response.json() : { turns: [] }; })
+        .then(function (data) {
+          (data.turns || []).forEach(function (turn) {
+            panel.appendChild(el('div', 'assistant-msg assistant-msg-user', turn.question));
+            renderResults(panel, turn.answer);
+          });
+        }).catch(function () {
+          panel.appendChild(el('div', 'assistant-error', 'Không tải được hội thoại trước. Anh/chị vẫn có thể gửi câu hỏi mới.'));
+        }).then(function () { setBusy(state, false); scrollPanel(panel); });
+    }
     return state;
   }
 
@@ -190,6 +205,7 @@
   function buildDockRoot(fab) {
     const root = el('div', 'ui-card assistant-root');
     root.setAttribute('data-api', fab.getAttribute('data-api'));
+    root.setAttribute('data-history', fab.getAttribute('data-history'));
 
     const panel = el('div', 'assistant-panel');
     panel.setAttribute('data-role', 'panel');

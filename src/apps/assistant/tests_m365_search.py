@@ -84,7 +84,7 @@ class _FakeClient:
             raise self._search
         return list(self._search)
 
-    def list_folder_files(self, library_name, folder="", timeout=None):
+    def list_folder_files(self, library_name, folder="", timeout=None, recursive=False):
         self.list_calls.append((library_name, folder, timeout))
         if self._listings is not None:
             value = self._listings.get(folder, [])
@@ -418,13 +418,12 @@ class SharePointSearchTests(SimpleTestCase):
         self.assertEqual(note, "search_fallback")
         self.assertEqual([r["title"] for r in results], ["CV nghỉ phép.pdf"])
 
-    def test_search_answered_with_no_hits_at_all_does_not_browse_folders(self):
-        # Không có hit nào trong site thì thư mục cũng chẳng có gì: gọi thêm ba
-        # lượt mạng là vô nghĩa và chỉ kéo dài câu trả lời.
-        client = _FakeClient(search=[])
+    def test_empty_search_checks_unindexed_files_in_allowed_folders(self):
+        client = _FakeClient(search=[], listing=[_in("CongVan", "Nghỉ phép.pdf")])
         results, note = self._run(client, "nghỉ phép")
-        self.assertEqual((results, note), ([], None))
-        self.assertEqual(client.list_calls, [])
+        self.assertEqual(note, "search_fallback")
+        self.assertEqual([r["title"] for r in results], ["Nghỉ phép.pdf"])
+        self.assertEqual(len(client.list_calls), 3)
 
     def test_assistant_uses_a_short_timeout_not_the_sixty_second_default(self):
         # `_request` mặc định 60s cho nghiệp vụ upload. Trong khung chat, một
@@ -437,7 +436,8 @@ class SharePointSearchTests(SimpleTestCase):
         # chính mô-đun nguồn ra so thì đổi (3, 10) thành (30, 300) vẫn xanh.
         self.assertEqual(ASSISTANT_TIMEOUT, (3, 10))
         self.assertEqual(client.search_calls[0][2], ASSISTANT_TIMEOUT)
-        self.assertEqual(client.list_calls, [])
+        self.assertTrue(client.list_calls)
+        self.assertTrue(all(call[2] == (3, 10) for call in client.list_calls))
 
     def test_assistant_timeout_applies_to_the_fallback_calls_too(self):
         client = _FakeClient(search=GraphAPIError("Forbidden", status_code=403))
@@ -472,3 +472,25 @@ class SharePointSearchTests(SimpleTestCase):
         results, _ = self._run(client, "cv")
         self.assertLessEqual(len(results), 20)
         self.assertEqual(client.search_calls[0][1], 20)
+
+
+@override_settings(**{**ASSISTANT_SETTINGS, "M365_FOLDER_MAP": {**ASSISTANT_SETTINGS["M365_FOLDER_MAP"], "activity_reports": "BaoCaoHoatDong"}})
+class ActivityReportSearchTests(SimpleTestCase):
+    def test_report_folder_uses_project_permissions_and_keeps_dispatches_separate(self):
+        for role, expected in (("DIRECTOR", True), ("PROJECT_MANAGER", True), ("PROJECT_COORDINATOR", True),
+                               ("HR_MANAGER", False), ("HR_OFFICER", False), ("SYS_ADMIN", False), ("CBDA", False)):
+            with self.subTest(role=role):
+                client = _FakeClient(search=[_in("BaoCaoHoatDong/2026/09", "Báo cáo.pdf"), _in("CongVan", "Mật.pdf")])
+                with patch(SEARCH_TARGET, return_value=client):
+                    results, _ = search_sharepoint(parse("báo cáo"), _user(role))
+                self.assertEqual(any("Báo cáo" in r["title"] for r in results), expected)
+                if expected:
+                    self.assertFalse(any("Mật" in r["title"] for r in results))
+
+    def test_missing_index_uses_recursive_report_folder_fallback(self):
+        client = _FakeClient(search=[], listings={"BaoCaoHoatDong": [_in("BaoCaoHoatDong/2026/09", "Báo cáo hoạt động.pdf")]})
+        with patch(SEARCH_TARGET, return_value=client):
+            results, note = search_sharepoint(parse("báo cáo hoạt động"), _user("DIRECTOR"))
+        self.assertEqual(note, "search_fallback")
+        self.assertEqual(len(results), 1)
+        self.assertEqual([call[1] for call in client.list_calls], ["BaoCaoHoatDong"])

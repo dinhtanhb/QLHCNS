@@ -16,7 +16,7 @@ from django.core.cache import caches
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.cache import never_cache
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 
 from . import services
 
@@ -79,4 +79,32 @@ def api_search(request):
         return JsonResponse({"error": "question_too_short"}, status=400)
     if not _throttle_ok(request.user):
         return JsonResponse({"error": "rate_limited"}, status=429)
-    return JsonResponse(services.ask(question, request.user))
+    if not request.user.is_active:
+        return JsonResponse({"error": "session_expired"}, status=403)
+    payload = services.ask(question, request.user)
+    turns = _history(request)
+    turns.append({"question": question, "answer": payload})
+    request.session["assistant_history"] = turns[-HISTORY_LIMIT:]
+    return JsonResponse(payload)
+
+
+HISTORY_LIMIT = 20
+
+
+def _history(request):
+    # History belongs to this login, and is discarded if account privileges change.
+    scope = [request.user.pk, request.user.is_active, request.user.is_superuser,
+             getattr(request.user, "role_id", None)]
+    if request.session.get("assistant_history_scope") != scope:
+        request.session["assistant_history_scope"] = scope
+        request.session["assistant_history"] = []
+    return request.session.get("assistant_history", [])
+
+
+@login_required
+@require_GET
+@never_cache
+def api_history(request):
+    if not request.user.is_active:
+        return JsonResponse({"error": "session_expired"}, status=403)
+    return JsonResponse({"turns": _history(request)})

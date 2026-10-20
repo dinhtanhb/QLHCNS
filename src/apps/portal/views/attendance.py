@@ -319,10 +319,13 @@ def timesheet_entry_create(request):
             employee=employee,
             work_date=work_date,
             project_id=request.POST.get("project") or None,
+            project_name=request.POST.get("project_name", "").strip(),
             task_description=request.POST.get("task_description", ""),
             hours=request.POST.get("hours") or 0,
             created_by=request.user,
         )
+        if entry.project_id and entry.project_name:
+            raise ValidationError("Chỉ chọn dự án có sẵn hoặc nhập tên dự án ngoài danh sách.")
         entry.full_clean()
         entry.save()
         messages.success(request, "Đã ghi nhận giờ làm việc.")

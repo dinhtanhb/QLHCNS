@@ -95,7 +95,7 @@ class AssistantApiTests(TestCase):
         self.client.force_login(self.hr)
         payload = self._json(_post(self.client, "công văn nghỉ phép"))
         self.assertEqual(
-            set(payload), {"query", "parsed", "took_ms", "partial", "results"}
+            set(payload), {"query", "parsed", "took_ms", "partial", "results", "sharepoint_status"}
         )
         self.assertEqual(payload["query"], "công văn nghỉ phép")
         self.assertIsInstance(payload["results"], list)
@@ -195,3 +195,36 @@ class AssistantApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(self._json(response)["query"]), 500)
         self.assertEqual(len(SearchQueryLog.objects.get().question), 500)
+
+
+    def test_conversation_survives_navigation_and_ends_at_logout(self):
+        self.client.force_login(self.hr)
+        with patch("apps.assistant.views.services.ask", return_value={"results": [], "partial": False}):
+            _post(self.client, "báo cáo hoạt động")
+        self.client.get(reverse("portal:timesheet_month"))
+        history = self.client.get(reverse("assistant:api_history"))
+        self.assertEqual(history.json()["turns"][0]["question"], "báo cáo hoạt động")
+        self.assertIn("no-store", history["Cache-Control"])
+        self.client.logout()
+        self.client.force_login(self.hr)
+        self.assertEqual(self.client.get(reverse("assistant:api_history")).json()["turns"], [])
+
+    def test_conversation_is_separate_for_each_login_and_bounded(self):
+        self.client.force_login(self.hr)
+        with patch("apps.assistant.views.services.ask", return_value={"results": [], "partial": False}):
+            for i in range(23):
+                _post(self.client, "câu hỏi " + str(i))
+        turns = self.client.get(reverse("assistant:api_history")).json()["turns"]
+        self.assertEqual(len(turns), 20)
+        self.assertEqual(turns[0]["question"], "câu hỏi 3")
+        other = Client()
+        other.force_login(self.hr)
+        self.assertEqual(other.get(reverse("assistant:api_history")).json()["turns"], [])
+
+    def test_role_change_discards_conversation(self):
+        self.client.force_login(self.hr)
+        with patch("apps.assistant.views.services.ask", return_value={"results": [], "partial": False}):
+            _post(self.client, "báo cáo hoạt động")
+        self.hr.role = self.emp.role
+        self.hr.save(update_fields=["role"])
+        self.assertEqual(self.client.get(reverse("assistant:api_history")).json()["turns"], [])

@@ -222,7 +222,7 @@
     {% if user.is_authenticated and request.resolver_match.app_name != 'assistant' %}
     <button type="button" id="assistantFab" class="assistant-fab" aria-label="Mở trợ lý tài liệu"
             aria-controls="assistantDock" aria-expanded="false"
-            data-api="{% url 'assistant:api_search' %}" data-page-url="{% url 'assistant:assistant_page' %}">
+            data-api="{% url 'assistant:api_search' %}" data-history="{% url 'assistant:api_history' %}" data-page-url="{% url 'assistant:assistant_page' %}">
         {% include '_shell_icon.html' with name='search' %}
     </button>
     <div id="assistantDock" class="assistant-dock" role="region" aria-label="Trợ lý tài liệu" hidden></div>

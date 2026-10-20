@@ -59,7 +59,7 @@ class AskServiceTests(TestCase):
 
     def test_response_contract(self):
         response = self._ask("công văn nghỉ phép")
-        self.assertEqual(set(response), {"query", "parsed", "took_ms", "partial", "results"})
+        self.assertEqual(set(response), {"query", "parsed", "took_ms", "partial", "results", "sharepoint_status"})
         self.assertEqual(response["query"], "công văn nghỉ phép")
         self.assertIsInstance(response["took_ms"], int)
         for result in response["results"]:

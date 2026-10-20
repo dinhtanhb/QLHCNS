@@ -85,3 +85,35 @@ class TimesheetPrintTests(TestCase):
         self.assertContains(response,'<span class="ui-print-only">1,5</span>',html=True)
         self.assertContains(response,'ui-screen-only ui-badge ui-badge--success')
         self.assertNotContains(response,'<span class="ui-print-only"><span class="">Đã duyệt')
+
+
+    def test_manual_project_name_is_saved_without_creating_catalog_project(self):
+        before = Project.objects.count()
+        response = self.client.post(reverse("portal:timesheet_entry_create"), {
+            "work_date": "2026-10-01", "project_name": "Dự án chưa có trong danh mục",
+            "task_description": "Công việc giả", "hours": "2.5",
+        }, follow=True)
+        entry = TimesheetEntry.objects.get(employee=self.person.employee, work_date=date(2026,10,1))
+        self.assertIsNone(entry.project_id)
+        self.assertEqual(entry.project_name, "Dự án chưa có trong danh mục")
+        self.assertEqual(Project.objects.count(), before)
+        self.assertContains(response, "[Dự án chưa có trong danh mục]")
+        self.assertEqual(response.context["total_hours"], Decimal("2.5"))
+
+    def test_project_choice_and_manual_name_are_mutually_exclusive(self):
+        before = TimesheetEntry.objects.count()
+        response = self.client.post(reverse("portal:timesheet_entry_create"), {
+            "work_date": "2026-10-01", "project": self.project.pk,
+            "project_name": "Tên khác", "hours": "2",
+        }, follow=True)
+        self.assertEqual(TimesheetEntry.objects.count(), before)
+        self.assertContains(response, "Chỉ chọn dự án có sẵn hoặc nhập tên")
+
+    def test_manual_project_name_cannot_bypass_approved_month(self):
+        from apps.attendance.models import MonthlyAttendanceSummary
+        MonthlyAttendanceSummary.objects.create(employee=self.person.employee, year=2026, month=10, status="Approved")
+        before = TimesheetEntry.objects.count()
+        self.client.post(reverse("portal:timesheet_entry_create"), {
+            "work_date": "2026-10-01", "project_name": "Tên nhập tay", "hours": "2",
+        })
+        self.assertEqual(TimesheetEntry.objects.count(), before)

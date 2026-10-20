@@ -17,6 +17,7 @@ import io
 import posixpath
 import threading
 import time
+from urllib.parse import quote
 
 import requests
 
@@ -32,7 +33,7 @@ SIMPLE_UPLOAD_LIMIT = 4 * 1024 * 1024  # 4 MB
 CHUNK_SIZE = 5 * 1024 * 1024  # phải là bội số của 320 KiB theo yêu cầu Graph
 
 # Graph nhận $top tối đa 200 mục cho /children; lớn hơn phải đi tiếp con trỏ
-# phân trang mà phương án này không dùng.
+# phân trang được kiểm tra cùng drive trước khi theo tiếp.
 FOLDER_PAGE_SIZE = 200
 
 # Mặc định cho mọi lời gọi: đủ dài cho một lượt upload tệp. Ngắn hơn chỉ nên đặt
@@ -326,55 +327,50 @@ class GraphClient:
         return remainder in ("", "/") or remainder.startswith("/")
 
     def search_files(self, query: str, top: int = 20, timeout=None) -> list[dict]:
-        """Tìm driveItem bằng Graph /search/query, chỉ giữ kết quả thuộc site IHRMS.
-
-        Graph trả cả những tệp ngoài site (search cấp tenant) nên bước lọc theo
-        `_site_prefix()` là bắt buộc, không phải tối ưu.
-
-        Cần quyền app cho phép search (Sites.Read.All / Sites.ReadWrite.All).
-        GraphAPIError 400/403 nghĩa là chưa được admin consent; caller tự fallback.
-        """
+        """Search the configured drive, avoiding tenant-search region requirements."""
         self._require_configured()
         prefix = self._site_prefix()
-        payload = {
-            "requests": [{
-                "entityTypes": ["driveItem"],
-                "query": {"queryString": query[:200]},
-                "from": 0,
-                "size": top,
-                "fields": ["name", "webUrl", "lastModifiedDateTime"],
-            }]
-        }
-        data = self._request("POST", f"{GRAPH_BASE}/search/query", json=payload,
-                             timeout=timeout).json()
-        results = []
-        for block in data.get("value") or []:
-            for container in block.get("hitsContainers") or []:
-                for hit in container.get("hits") or []:
-                    resource = (hit or {}).get("resource") or {}
-                    if self._is_site_url(resource.get("webUrl") or "", prefix):
-                        results.append(self._file_entry(resource))
-                        if len(results) >= top:
-                            return results
-        return results
+        library = getattr(settings, "M365_SHAREPOINT_LIBRARY", "Documents") or "Documents"
+        drive = self._drive_id(library)
+        escaped = quote(query[:200].replace("'", "''"), safe="")
+        url = f"{GRAPH_BASE}/drives/{drive}/root/search(q='{escaped}')"
+        data = self._request("GET", url, params={"$top": top}, timeout=timeout).json()
+        return [self._file_entry(item) for item in data.get("value", [])
+                if isinstance(item, dict) and "folder" not in item
+                and self._is_site_url(item.get("webUrl") or "", prefix)][:top]
 
-    def list_folder_files(self, library_name: str, folder: str = "", timeout=None) -> list[dict]:
-        """Liệt kê tệp (không đệ quy, không gồm thư mục con) trong một thư mục.
+    def list_folder_files(self, library_name: str, folder: str = "", timeout=None, recursive=False) -> list[dict]:
+        """List files with pagination; optionally walk subfolders of this root.
 
-        Đường lùi cho `search_files`: endpoint `/children` chỉ cần quyền Files
-        đã có sẵn, không cần admin consent cho Search.
+        Refuse remote shortcuts and next links outside this drive. Stop after
+        fifty requests rather than silently claim a truncated listing is complete.
         """
         drive_id = self._drive_id(library_name)
         folder = (folder or "").strip("/")
         base = f"{GRAPH_BASE}/drives/{drive_id}/root"
         url = f"{base}:/{folder}:/children" if folder else f"{base}/children"
-        data = self._request("GET", url, params={"$top": FOLDER_PAGE_SIZE},
-                             timeout=timeout).json()
-        return [
-            self._file_entry(entry)
-            for entry in data.get("value") or []
-            if "folder" not in entry
-        ]
+        queue, seen, results = [url], set(), []
+        boundary = f"{GRAPH_BASE}/drives/{drive_id}/"
+        while queue:
+            url = queue.pop(0)
+            if url in seen:
+                continue
+            if not url.startswith(boundary) or len(seen) >= 50:
+                raise GraphAPIError("Không thể duyệt hết thư mục tài liệu.", status_code=502)
+            seen.add(url)
+            data = self._request("GET", url, params={"$top": FOLDER_PAGE_SIZE}, timeout=timeout).json()
+            for entry in data.get("value") or []:
+                if "remoteItem" in entry:
+                    continue
+                if "folder" in entry:
+                    if recursive and entry.get("id"):
+                        item_id = quote(entry["id"], safe="")
+                        queue.append(f"{boundary}items/{item_id}/children")
+                else:
+                    results.append(self._file_entry(entry))
+            if data.get("@odata.nextLink"):
+                queue.append(data["@odata.nextLink"])
+        return results
 
     def get_folder_web_url(self, library_name: str, folder: str, timeout=None) -> str:
         """Resolve a folder through its configured drive, not its display name.

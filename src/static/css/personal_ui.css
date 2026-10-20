@@ -27,7 +27,11 @@
 .ui-personal .timesheet-leave-row { display:grid; grid-template-columns:minmax(0,1fr) calc(var(--ui-space-6) * 3); align-items:center; gap:var(--ui-space-3); margin-block:var(--ui-space-2); }
 .ui-personal .timesheet-leave-row label { font-size:var(--ui-font-size-small); color:var(--ui-text); }
 .ui-personal .timesheet-leave-row :is(.timesheet-leave-input,.ui-number-input) { width:100%; max-width:100%; height:var(--ui-control-height); min-height:var(--ui-control-height); padding:var(--ui-space-2); text-align:right; }
-.ui-personal .timesheet-summary-layout { gap:var(--ui-space-6); margin-top:var(--ui-space-6); }
+.ui-personal .timesheet-summary-layout { gap:var(--ui-space-6); margin-top:var(--ui-space-6); align-items:start; }
+.ui-personal .timesheet-summary-form > .ui-badge { justify-self:start; }
+.ui-personal .timesheet-document > .ui-scroll { max-height:none; }
+.ui-personal .timesheet-leave-grid > .ui-timesheet-balance-row { grid-column:1 / -1; }
+.ui-personal .timesheet-summary-layout .ui-timesheet-signatures { align-self:start; }
 .ui-personal .ui-personal-timesheet-table { min-width:calc(var(--ui-table-col-small) * 4); }
 .ui-personal .ui-personal-timesheet-table th:first-child { width:var(--ui-table-col-small); }
 .ui-personal .ui-personal-timesheet-table th:last-child { width:var(--ui-table-col-small); }

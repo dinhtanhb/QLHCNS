@@ -116,6 +116,7 @@ def main():
     p.add_argument('--allow-event-mode',action='store_true',help='Allow only the approved attendance_mode select addition on event_list.')
     p.add_argument('--allow-finance-choices',action='store_true',help='Allow only the requested month/year/relationship input-to-select conversions with exact values.')
     p.add_argument('--allow-task-catalog',action='store_true',help='Allow the approved ActCode catalog selector and derived title on task_create only.')
+    p.add_argument('--allow-timesheet-project-name', action='store_true', help='Allow only the approved optional manual project name input on timesheet_month.')
     args=p.parse_args();root=(args.source_root or Path(__file__).resolve().parents[1]).resolve();folder=args.directory.resolve()
     if root==folder or root in folder.parents:p.error('External synthetic runtime required')
     configure(root,folder)
@@ -149,6 +150,14 @@ def main():
                     if old['status']!=case['status']:report['failures'].append(key+' HTTP status changed')
                     if case['selects']>old['selects']:report['failures'].append(key+' SELECT count increased')
                     normalized=copy.deepcopy(case.get('forms'))
+                    if args.allow_timesheet_project_name and route['name'] == 'portal:timesheet_month':
+                        # Only this new, optional input may differ. All existing
+                        # project/CSRF/action/leave contracts remain compared.
+                        new_fields = [field for form in normalized or [] for field in form['fields'] if field['attrs'].get('name') == 'project_name']
+                        old_fields = [field for form in old.get('forms') or [] for field in form['fields'] if field['attrs'].get('name') == 'project_name']
+                        if len(new_fields) == 1 and not old_fields and new_fields[0]['tag'] == 'input' and new_fields[0]['attrs'].get('type', 'text') == 'text' and 'required' not in new_fields[0]['attrs']:
+                            for form in normalized:
+                                form['fields'] = [field for field in form['fields'] if field['attrs'].get('name') != 'project_name']
                     if args.allow_task_catalog and route['name'] == 'portal:task_create':
                         normalize_task_catalog(normalized, old.get('forms'))
                     if args.allow_finance_choices:

@@ -1,7 +1,7 @@
 {% extends "base.html" %}{% load static ui_components %}
 {% block title %}Trợ lý tài liệu{% endblock %}
 {% block content %}
-<section class="ui-card assistant-root" data-api="{% url 'assistant:api_search' %}">
+<section class="ui-card assistant-root" data-api="{% url 'assistant:api_search' %}" data-history="{% url 'assistant:api_history' %}">
   <header class="assistant-header">
     <h1 class="ui-page-title">Trợ lý tài liệu</h1>
     <p class="assistant-hint">
