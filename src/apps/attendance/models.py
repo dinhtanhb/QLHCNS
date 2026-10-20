@@ -96,6 +96,7 @@ class TimesheetEntry(BaseAuditModel):
         "project.Project", verbose_name="Dự án", null=True, blank=True,
         on_delete=models.PROTECT, db_column="ProjectID", related_name="timesheet_entries",
     )
+    project_name = models.CharField("Dự án nhập tay", max_length=255, blank=True, default="", db_column="ProjectName")
     task_description = models.CharField("Công việc", max_length=500, null=True, blank=True, db_column="TaskDescription")
     hours = models.DecimalField("Số giờ", max_digits=4, decimal_places=2, default=0, db_column="Hours",
         validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("24"))])

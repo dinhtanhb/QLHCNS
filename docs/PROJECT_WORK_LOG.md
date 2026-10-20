@@ -1,5 +1,16 @@
 # Nhật ký công việc IHRMS
 
+
+## 2026-10-20 — Sửa bảng công, dự án nhập tay và hội thoại/tìm báo cáo SharePoint
+
+- Nguồn yêu cầu: chủ dự án cung cấp ba ảnh lỗi, yêu cầu sửa trang bảng công, nhập dự án ngoài danh sách và giữ hội thoại cùng phiên đăng nhập; xác nhận URL thư mục `BaoCaoHoatDong` trong thư viện Shared Documents. Đầu lượt `main` tại `1161e2e`, fetch thành công, ahead/behind 0/0; đọc ba mục nhật ký mới nhất. Tệp ghi chú untracked đã được duyệt giữ nguyên ngoài commit từ lượt trước; không có tác nhân ghi khác.
+- Phạm vi FIX/CHANGES, dùng ihrms-project/ihrms-review và refactoring-ui theo DESIGN.md. Giữ công thức giờ/nghỉ/lương và mẫu in; không mượn danh tính thật. Clone DB có marker synthetic_only ra `%TEMP%/ihrms-timesheet-chat-20261020/synthetic_only`, baseline nguồn `1161e2e` ngoài repo. Tất cả ghi QA trên clone hoặc DB test UUID.
+- Schema đi commit riêng: thêm `TimesheetEntry.project_name`/`attendance.0009`, kế hoạch `docs/MIGRATION_PLAN_timesheet_project_name.md`; chưa migrate DB vận hành. Đối chiếu sqlmigrate hai backend và drift đạt. SQLite tái dựng riêng tblTimesheetEntry, sao chép các cột cũ/khóa/chỉ mục; SQL Server thêm cột có giá trị rỗng cho dữ liệu cũ. Script kiểm SQL lần đầu cấm mọi DROP TABLE nên từ chối SQLite rebuild chuẩn; đã đọc toàn SQL và chạy lại, không bỏ kiểm bảo toàn dữ liệu.
+- Kiểm tập trung nguồn đang hoàn thiện: 185 tests SQLite OK, DB tự hủy (`focused-second.log`). Lượt đầu 175 test có bốn lỗi: hai kỳ vọng cũ về không duyệt khi chỉ mục rỗng, hợp đồng JSON thiếu trạng thái mới và chuỗi kiểm thử bị mất dấu qua PowerShell; sửa test theo hành vi yêu cầu, dùng UTF-8 và chạy lại. Kết quả này chưa là full suite nguồn cuối.
+- Chẩn đoán Graph chỉ đọc bằng credential ứng dụng đã cấu hình: thư mục báo cáo xác minh được, drive search mới trả 3 hit; chỉ lưu count/status, không lưu tên/URL/nội dung tài liệu thật. Search tenant cũ thiếu region cho app-only; thay bằng search trong drive, đường lùi cần duyệt phân trang và thư mục con. Quyền báo cáo dựa `view_all_project_activities`, không suy từ quyền HR công văn; không mở quyền công văn DIRECTOR/SYS_ADMIN.
+- Việc đang thực hiện: sửa bố cục và xác minh Edge sáng/tối/rộng/hẹp/keyboard, form/layout/PDF/cache trên nguồn cuối; thêm hội thoại session giới hạn 20 lượt, xóa khi logout/đổi vai trò; hoàn tất hai backend, snapshot, commit/push và CI. Không báo giai đoạn hoàn tất khi gate còn chạy.
+
+
 ## 2026-10-20 — Đóng phần còn mở của reviewer/ActCode và kiểm bàn giao chatbot
 
 **Tóm tắt cho chủ dự án**
