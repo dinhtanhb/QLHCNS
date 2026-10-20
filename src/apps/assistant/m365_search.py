@@ -69,30 +69,58 @@ def _dispatch_folders() -> tuple[str, ...]:
     return tuple(seen)
 
 
-def _url_segments(url: str) -> set[str]:
-    """Các đoạn của ĐƯỜNG DẪN trong webUrl, không phân biệt hoa/thường.
+def _location(url: str):
+    """Canonical origin and ordered path; reject ambiguous path separators."""
+    try:
+        parsed = urlsplit(url or "")
+        if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
+            return None
+        segments = []
+        for raw in parsed.path.split("/"):
+            if not raw:
+                continue
+            decoded = unquote(raw)
+            # A second escape could become traversal after another decoder.
+            if decoded in (".", "..") or any(c in decoded for c in ("/", "\\", "%")):
+                return None
+            segments.append(decoded.casefold())
+        return (parsed.hostname.casefold(), parsed.port or 443), tuple(segments)
+    except ValueError:
+        return None
 
-    Chỉ `path`, không đọc query string hay fragment: tham số kiểu
-    `view.aspx?initialid=%2F...%2FCongVan%2F` mô tả một VIEW của danh sách, không
-    phải vị trí của tệp, nên giải mã cả URL sẽ biến hai chữ "CongVan" trong tham
-    số thành một đoạn đường dẫn giả và giữ lại tệp nằm ở thư mục khác.
-    `%20` vẫn được giải mã (tên thư viện có dấu cách là chuyện bình thường), còn
-    `%2F` trong đường dẫn thì không bao giờ được phép thành dấu phân cách - webUrl
-    thật của Graph không có dạng đó, nên thà bỏ sót còn hơn lộ.
-    """
-    path = urlsplit(url or "").path
-    if "%2f" in path.lower():
-        return set()
-    return {
-        unquote(segment).casefold()
-        for segment in path.split("/")
-        if unquote(segment)
-    }
+
+def _in_dispatch_folder(url: str, roots: tuple[str, ...]) -> bool:
+    location = _location(url)
+    if location is None:
+        return False
+    origin, path = location
+    for root in roots:
+        boundary = _location(root)
+        if boundary is None:
+            continue
+        root_origin, root_path = boundary
+        if origin == root_origin and len(path) > len(root_path) and path[:len(root_path)] == root_path:
+            return True
+    return False
 
 
-def _in_dispatch_folder(url: str, folders: tuple[str, ...]) -> bool:
-    segments = _url_segments(url)
-    return any(folder.casefold() in segments for folder in folders)
+def _folder_roots(client) -> dict[str, str]:
+    """Resolve only folders of the configured library; never guess URL aliases."""
+    roots = {}
+    for library, folder in _fallback_folders():
+        try:
+            url = client.get_folder_web_url(library, folder, timeout=ASSISTANT_TIMEOUT)
+        except GraphNotConfigured:
+            raise
+        except GraphAPIError as exc:
+            if exc.status_code == 404:
+                continue
+            raise
+        location = _location(url)
+        if location is None or not location[1]:
+            raise GraphAPIError("Không xác minh được biên thư mục tài liệu.", status_code=502)
+        roots[folder] = url
+    return roots
 
 
 def can_query_sharepoint(user) -> bool:
@@ -168,13 +196,15 @@ def _fallback_folders() -> list[tuple[str, str]]:
     return [(library, folder) for folder in _dispatch_folders()]
 
 
-def _fallback_listing(client, parsed: ParsedQuery) -> list[dict]:
+def _fallback_listing(client, parsed: ParsedQuery, roots: dict[str, str]) -> list[dict]:
     needles = _needles(parsed)
     if not needles:
         return []
     results: list[dict] = []
     seen_urls: set[str] = set()
     for library, folder in _fallback_folders():
+        if folder not in roots:
+            continue
         try:
             hits = client.list_folder_files(library, folder, timeout=ASSISTANT_TIMEOUT)
         except GraphAPIError as exc:
@@ -185,6 +215,8 @@ def _fallback_listing(client, parsed: ParsedQuery) -> list[dict]:
                 raise
             continue
         for hit in hits:
+            if not _in_dispatch_folder(hit.get("web_url", ""), (roots[folder],)):
+                continue
             name_fold = normalize(hit.get("name", ""))
             if not any(needle in name_fold for needle in needles):
                 continue
@@ -232,27 +264,37 @@ def search_sharepoint(parsed: ParsedQuery, user) -> tuple[list[dict], str | None
     query = _build_query(parsed)
     if not query.strip():
         return [], None
+    roots = None
     try:
         hits = client.search_files(query, top=MAX_RESULTS, timeout=ASSISTANT_TIMEOUT)
+        if hits:
+            roots = _folder_roots(client)
     except GraphNotConfigured:
         return [], "not_configured"
     except GraphAPIError as exc:
         if exc.status_code not in (400, 403):
             return [], "unavailable"
         try:
-            return _fallback_listing(client, parsed), "search_fallback"
+            if roots is None:
+                roots = _folder_roots(client)
+            return _fallback_listing(client, parsed, roots), "search_fallback"
         except GraphNotConfigured:
             return [], "not_configured"
+        except GraphAPIError:
+            return [], "unavailable"
     # Graph tìm cấp tenant rồi mới lọc theo site trong `search_files`, nên vẫn
     # còn tệp ngoài phạm vi công văn. Giữ lại có nghĩa là lộ tên tệp.
-    kept = [hit for hit in hits if _in_dispatch_folder(hit.get("web_url", ""), folders)]
+    boundaries = tuple((roots or {}).values())
+    kept = [hit for hit in hits if _in_dispatch_folder(hit.get("web_url", ""), boundaries)]
     if not kept and hits:
         # 20 kết quả liên quan nhất đều thuộc site/thư mục khác: thư mục công
         # văn vẫn có thể có tệp khớp, nên phải thử đường lùi thay vì báo "hết".
         try:
-            return _fallback_listing(client, parsed), "search_fallback"
+            return _fallback_listing(client, parsed, roots or {}), "search_fallback"
         except GraphNotConfigured:
             return [], "not_configured"
+        except GraphAPIError:
+            return [], "unavailable"
     results = [_to_result(hit, parsed) for hit in kept[:MAX_RESULTS]]
     # Graph xếp theo điểm liên quan của riêng nó, còn `score` ở đây so được với
     # kết quả DB trong `services.ask`, nên phải theo điểm của ta.

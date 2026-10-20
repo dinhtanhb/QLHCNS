@@ -264,6 +264,25 @@ class GraphSearchTests(SimpleTestCase):
         _, url, _ = client.calls[0]
         self.assertIn("/drives/DRV1/root/children", url)
 
+    def test_folder_boundary_comes_from_configured_drive_metadata(self):
+        url = "https://congty.sharepoint.com/sites/IHRMS/Shared%20Documents/HoSo/CongVan"
+        client = self._client({"folder": {}, "webUrl": url})
+        self.assertEqual(client.get_folder_web_url("Documents", "HoSo/CongVan", timeout=(3, 10)), url)
+        method, endpoint, kwargs = client.calls[0]
+        self.assertEqual(method, "GET")
+        self.assertIn("/drives/DRV1/root:/HoSo/CongVan", endpoint)
+        self.assertEqual(kwargs["timeout"], (3, 10))
+
+    def test_folder_boundary_rejects_file_or_foreign_site_metadata(self):
+        for payload in [
+            {"webUrl": "https://congty.sharepoint.com/sites/IHRMS/Documents/CongVan", "file": {}},
+            {"folder": {}, "webUrl": "https://congty.sharepoint.com/sites/Other/Documents/CongVan"},
+            {"folder": {}, "webUrl": ""},
+        ]:
+            with self.subTest(payload=payload):
+                with self.assertRaises(GraphAPIError):
+                    self._client(payload).get_folder_web_url("Documents", "CongVan")
+
     @override_settings(M365_SHAREPOINT_HOSTNAME="", M365_SHAREPOINT_SITE_PATH="")
     def test_list_folder_files_requires_site_config(self):
         # `_drive_id` đọc `site_id`, tức thiếu cấu hình SharePoint thì phải bị

@@ -204,6 +204,9 @@ venv\Scripts\python.exe ops\dashboard_demo.py create --directory $reviewRuntime
 venv\Scripts\python.exe ops\run_browser_uat.py --backend sqlite --packages-dir $reviewPackages
 venv\Scripts\python.exe ops\run_browser_uat.py --backend sqlserver --packages-dir $reviewPackages
 
+# Mở terminal riêng với cùng biến đường dẫn trước khi chạy layout/print/button:
+# venv\Scripts\python.exe ops\dashboard_demo.py serve --directory $reviewRuntime --port 8782
+# Lệnh layout mặc định dùng 8782; truyền --port 8782 cho print/button bên dưới.
 # Baseline: snapshot nguồn trước sửa, đã loại secrets/DB/media.
 # Seed fixture layout trước, rồi đo form trên cùng DB giả ổn định.
 venv\Scripts\python.exe ops\run_layout_alignment_audit.py --directory $reviewRuntime --packages-dir $reviewPackages --source-root $reviewBaseline --phase before --seed
@@ -211,8 +214,8 @@ venv\Scripts\python.exe ops\run_form_contract_uat.py --directory $reviewRuntime 
 # Chạy after sau sửa, giữ nguyên DB giả/baseline để so sánh có ý nghĩa.
 venv\Scripts\python.exe ops\run_layout_alignment_audit.py --directory $reviewRuntime --packages-dir $reviewPackages --phase after
 venv\Scripts\python.exe ops\run_form_contract_uat.py --directory $reviewRuntime --phase after
-venv\Scripts\python.exe ops\run_print_layout_uat.py --directory $reviewRuntime --packages-dir $reviewPackages --pdf-packages-dir $reviewPdfPackages
-venv\Scripts\python.exe ops\audit_button_kinds.py --directory $reviewRuntime --packages-dir $reviewPackages --output (Join-Path $reviewRuntime 'button-kinds.json')
+venv\Scripts\python.exe ops\run_print_layout_uat.py --directory $reviewRuntime --packages-dir $reviewPackages --pdf-packages-dir $reviewPdfPackages --port 8782
+venv\Scripts\python.exe ops\audit_button_kinds.py --directory $reviewRuntime --packages-dir $reviewPackages --port 8782 --output (Join-Path $reviewRuntime 'button-kinds.json')
 venv\Scripts\python.exe ops\audit_design_tokens.py --check
 venv\Scripts\python.exe ops\check_ui_contrast.py
 ```
@@ -230,8 +233,11 @@ không chỉ đếm trang. Đổi `print_forms.css` phải tăng `?v=` trong `ba
 Nếu sửa hồi quy, ghi vì sao kiểm cũ bỏ sót. Bản in độc lập với lưới màn hình.
 
 Cache cần **hai server QA đang chạy** trên cùng DB/media giả, mã baseline và
-mã cuối có phiên bản asset khác nhau. Mở hai terminal riêng; layout/print tự
-quản server của chúng, không chiếm cổng 8770/8771 dưới đây:
+mã cuối có phiên bản asset khác nhau. Layout/print/button cũng cần server QA
+chạy riêng; runner không tự khởi động server. Trước lượt baseline, chạy server
+từ snapshot baseline trên cổng mà runner dùng; dừng đúng tiến trình QA đó rồi
+khởi động nguồn cuối trước lượt after. Form contract gọi Django test client,
+không cần HTTP server. Cache dùng hai cổng riêng 8770/8771 dưới đây:
 
 ```powershell
 # Terminal baseline, dùng venv dự án với script từ snapshot trước sửa:

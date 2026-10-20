@@ -5,7 +5,7 @@ from unittest.mock import patch
 from django.test import SimpleTestCase, override_settings
 
 from apps.assistant.m365_search import (
-    ASSISTANT_TIMEOUT, _url_segments, can_query_sharepoint, search_sharepoint,
+    ASSISTANT_TIMEOUT, _location, can_query_sharepoint, search_sharepoint,
 )
 from apps.assistant.nlp import parse
 from apps.m365.graph_client import GraphAPIError, GraphNotConfigured
@@ -58,13 +58,22 @@ class _FakeClient:
     """Thế chỗ GraphClient thật: không có `_request`, nên không có đường nào
     gọi ra ngoài ngay cả khi `.env` đã cấu hình M365."""
 
-    def __init__(self, *, configured=True, search=None, listing=None, listings=None):
+    def __init__(self, *, configured=True, search=None, listing=None, listings=None, roots=None):
         self._configured = configured
         self._search = [] if search is None else search
         self._listing = [] if listing is None else listing
         self._listings = listings
         self.search_calls = []
         self.list_calls = []
+        self.roots = roots
+        self.root_calls = []
+
+    def get_folder_web_url(self, library_name, folder, timeout=None):
+        self.root_calls.append((library_name, folder, timeout))
+        value = self.roots.get(folder, f"{SITE}/{folder}") if self.roots is not None else f"{SITE}/{folder}"
+        if isinstance(value, Exception):
+            raise value
+        return value
 
     def is_configured(self):
         return self._configured
@@ -90,6 +99,70 @@ class SharePointSearchTests(SimpleTestCase):
     def _run(self, client, question, user=HR):
         with patch(SEARCH_TARGET, return_value=client):
             return search_sharepoint(parse(question), user)
+
+    def test_search_requires_the_configured_library_and_folder_ancestry(self):
+        good = _in("CongVan/2026", "CV.pdf")
+        private = _hit("secret.pdf", SITE.replace("Shared Documents", "PrivateLibrary") + "/HoSoNoiBo/CongVan/secret.pdf")
+        nested = _in("HoSoNoiBo/CongVan", "nested-secret.pdf")
+        client = _FakeClient(search=[private, nested, good])
+        results, _ = self._run(client, "cv")
+        self.assertEqual([r["url"] for r in results], [good["web_url"]])
+
+    def test_configured_nested_folder_is_not_a_name_match_anywhere(self):
+        with override_settings(M365_FOLDER_MAP={"dispatches": "HoSo/CongVan"}):
+            good = _in("HoSo/CongVan/2026", "CV.pdf")
+            client = _FakeClient(search=[_in("CongVan", "wrong-root.pdf"), good])
+            results, _ = self._run(client, "cv")
+        self.assertEqual([r["url"] for r in results], [good["web_url"]])
+
+    def test_fallback_also_checks_the_actual_folder_root(self):
+        good = _in("CongVan", "CV.pdf")
+        client = _FakeClient(search=GraphAPIError("Forbidden", status_code=403), listings={
+            "CongVan": [_in("HoSoUngVien/CongVan", "CV secret.pdf"), good],
+        })
+        results, note = self._run(client, "cv")
+        self.assertEqual(note, "search_fallback")
+        self.assertEqual([r["url"] for r in results], [good["web_url"]])
+
+    def test_metadata_failure_never_accepts_a_search_hit(self):
+        client = _FakeClient(search=[_in("CongVan", "CV.pdf")], roots={
+            "CongVan": GraphAPIError("timeout", status_code=503),
+        })
+        self.assertEqual(self._run(client, "cv"), ([], "unavailable"))
+
+    def test_missing_folder_metadata_does_not_guess_from_library_display_name(self):
+        client = _FakeClient(search=[_in("CongVan", "CV.pdf")], roots={
+            name: GraphAPIError("missing", status_code=404)
+            for name in ("CongVan", "CongVanDen", "CongVanDi")
+        })
+        self.assertEqual(self._run(client, "cv")[0], [])
+
+    def test_decoded_traversal_and_backslash_cannot_leave_the_folder(self):
+        urls = [f"{SITE}/CongVan/{suffix}" for suffix in (
+            "../HoSoUngVien/CV.pdf", "%2e%2e/HoSoUngVien/CV.pdf",
+            "..%5cHoSoUngVien/CV.pdf", "%252e%252e/HoSoUngVien/CV.pdf",
+        )]
+        client = _FakeClient(search=[_hit("CV.pdf", url) for url in urls])
+        self.assertEqual(self._run(client, "cv")[0], [])
+
+    def test_other_origin_or_folder_prefix_cannot_pass_the_boundary(self):
+        urls = [
+            f"{SITE}/CongVanSecret/CV.pdf",
+            f"{SITE}/CongVan",
+            f"{SITE}/CongVan/CV.pdf".replace("https://", "http://"),
+            f"{SITE}/CongVan/CV.pdf".replace("tenant.sharepoint.com", "tenant.sharepoint.com.evil.test"),
+            f"{SITE}/CongVan/CV.pdf".replace("tenant.sharepoint.com", "user@tenant.sharepoint.com"),
+            f"{SITE}/CongVan/CV.pdf".replace("tenant.sharepoint.com", "tenant.sharepoint.com:444"),
+        ]
+        client = _FakeClient(search=[_hit("CV.pdf", url) for url in urls])
+        self.assertEqual(self._run(client, "cv")[0], [])
+
+    def test_folder_metadata_uses_configured_library_and_short_timeout(self):
+        client = _FakeClient(search=[_in("CongVan", "CV.pdf")])
+        self._run(client, "cv")
+        self.assertEqual(client.root_calls, [
+            ("Documents", name, (3, 10)) for name in ("CongVan", "CongVanDen", "CongVanDi")
+        ])
 
     def test_storage_flag_off_makes_no_graph_call(self):
         # Hợp đồng cô lập của `ops/run_tests.py`: bật flag là CHỈ có `.env` quyết
@@ -226,7 +299,7 @@ class SharePointSearchTests(SimpleTestCase):
         # `CongVan` không cần giải mã nên phép so khớp vẫn xanh kể cả khi xóa
         # `unquote()` - trong khi mọi tên thư mục có dấu cách hoặc có dấu thật sẽ
         # im lặng biến mất khỏi kết quả. Kiểm thẳng hàm tách đoạn.
-        self.assertIn("shared documents", _url_segments(spaced))
+        self.assertIn("shared documents", _location(spaced)[1])
 
     def test_folder_name_hidden_in_query_string_is_dropped(self):
         # Dạng liên kết xem danh sách: vị trí thật của tệp nằm ở `initialid`, còn

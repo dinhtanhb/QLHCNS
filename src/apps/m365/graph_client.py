@@ -376,6 +376,20 @@ class GraphClient:
             if "folder" not in entry
         ]
 
+    def get_folder_web_url(self, library_name: str, folder: str, timeout=None) -> str:
+        """Resolve a folder through its configured drive, not its display name.
+
+        A library named Documents may use Shared Documents in webUrl. Only
+        metadata returned for this exact drive/path establishes that boundary.
+        """
+        self._require_configured()
+        prefix = self._site_prefix()
+        data = self._request("GET", self._item_url(library_name, folder), timeout=timeout).json()
+        url = data.get("webUrl") or ""
+        if "folder" not in data or not self._is_site_url(url, prefix):
+            raise GraphAPIError("Không xác minh được thư mục tài liệu đã cấu hình.", status_code=502)
+        return url
+
     def get_web_url(self, library_name: str, path: str) -> str:
         """Link xem tệp trực tiếp trên SharePoint/OneDrive (mở trình duyệt)."""
         return self.get_metadata(library_name, path).get("webUrl", "")
