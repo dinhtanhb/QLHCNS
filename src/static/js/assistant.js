@@ -87,6 +87,9 @@
     if (payload && payload.partial) {
       panel.appendChild(el('div', 'assistant-warning', payload.sharepoint_status === 'search_fallback' ? MESSAGES.search_fallback : MESSAGES.partial));
     }
+    if (payload && payload.undated_notice) {
+      panel.appendChild(el('div', 'assistant-warning', payload.undated_notice));
+    }
     const results = (payload && Array.isArray(payload.results)) ? payload.results : [];
     if (!results.length) {
       panel.appendChild(el('div', 'assistant-msg assistant-msg-bot', MESSAGES.empty));

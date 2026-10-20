@@ -40,6 +40,28 @@ SHARED_LIBRARY_PERMISSIONS = ("manage_office", "access_outgoing_document")
 # phạm vi nguồn này, nên `services.PARTIAL_NOTES` không liệt kê nó.
 RESTRICTED_NOTE = "restricted"
 
+FILENAME_DATE_RE = re.compile(
+    r"(?<!\d)(?:"
+    r"(?P<y_first>(?:19|20)\d{2})[._-](?P<m_first>\d{1,2})[._-](?P<d_first>\d{1,2})"
+    r"|"
+    r"(?P<d_second>\d{1,2})[._-](?P<m_second>\d{1,2})[._-](?P<y_second>(?:19|20)\d{2}|\d{2})"
+    r")(?!\d)"
+)
+
+
+class SharePointSearchResult(tuple):
+    """Tuple (results, error_note) kèm số lượng tệp chưa xác định được ngày."""
+    results: list[dict]
+    error_note: str | None
+    undated_count: int
+
+    def __new__(cls, results: list[dict], error_note: str | None, undated_count: int = 0):
+        obj = super().__new__(cls, (results, error_note))
+        obj.results = results
+        obj.error_note = error_note
+        obj.undated_count = undated_count
+        return obj
+
 
 def _dispatch_folders() -> tuple[str, ...]:
     """Tên thư mục công văn, lấy từ `M365_FOLDER_MAP` - bảng mà
@@ -137,9 +159,21 @@ def _as_date(value: str):
 
 def _decision_period(hit):
     """Imported decisions use a filename date, then YYYY/MM folders, never upload date."""
-    for day, month, year in re.findall(r"(?<!\d)(\d{1,2})[._-](\d{1,2})[._-]((?:19|20)\d{2})(?!\d)", hit.get("name", "")):
+    name = hit.get("name", "")
+    for m in FILENAME_DATE_RE.finditer(name):
+        if m.group("y_first"):
+            year = int(m.group("y_first"))
+            month = int(m.group("m_first"))
+            day = int(m.group("d_first"))
+        else:
+            day = int(m.group("d_second"))
+            month = int(m.group("m_second"))
+            y_str = m.group("y_second")
+            year = int(y_str)
+            if len(y_str) == 2:
+                year += 2000 if year < 50 else 1900
         try:
-            value = date(int(year), int(month), int(day))
+            value = date(year, month, day)
             return value, value, "ngày trong tên tệp"
         except ValueError:
             continue
@@ -155,6 +189,12 @@ def _decision_period(hit):
                 return date(year, month, 1), date(year, month, monthrange(year, month)[1]), "tháng từ thư mục"
             return date(year, 1, 1), date(year, 12, 31), "năm từ thư mục"
     return None
+
+
+def _is_undated(hit: dict, parsed: ParsedQuery) -> bool:
+    if parsed.doc_type == "personnel_decision":
+        return _decision_period(hit) is None
+    return _as_date(hit.get("last_modified", "")) is None
 
 
 def _to_result(hit: dict, parsed: ParsedQuery) -> dict:
@@ -187,16 +227,18 @@ def _fallback_folders() -> list[tuple[str, str]]:
     cv_folder = (getattr(settings, "M365_FOLDER_MAP", {}).get("recruitment_cv") or "").strip("/")
     if cv_folder and cv_folder not in folders:
         folders.append(cv_folder)
-    decision_folder = (getattr(settings, "M365_FOLDER_MAP", {}).get("personnel_decisions") or "").strip("/")
+    decision_folder = (getattr(settings, "M365_FOLDER_MAP", {}).get("personnel_decisions") or "QuyetDinh").strip("/")
     if decision_folder and decision_folder not in folders:
         folders.append(decision_folder)
     return [(library, folder) for folder in folders]
 
 
-def _fallback_listing(client, parsed: ParsedQuery, roots: dict[str, str]) -> list[dict]:
+def _fallback_listing(client, parsed: ParsedQuery, roots: dict[str, str]) -> tuple[list[dict], int]:
     needles = _needles(parsed)
     results: list[dict] = []
     seen_urls: set[str] = set()
+    undated_count = 0
+    date_filtered = bool(parsed.date_from or parsed.date_to)
     for library, folder in _fallback_folders():
         if folder not in roots:
             continue
@@ -217,6 +259,9 @@ def _fallback_listing(client, parsed: ParsedQuery, roots: dict[str, str]) -> lis
             name_fold = normalize(hit.get("name", ""))
             if needles and not any(needle in name_fold for needle in needles):
                 continue
+            if date_filtered and _is_undated(hit, parsed):
+                undated_count += 1
+                continue
             if not _matches_date(hit, parsed):
                 continue
             # Các root cấu hình có thể chồng nhau; webUrl loại tệp trùng.
@@ -225,10 +270,9 @@ def _fallback_listing(client, parsed: ParsedQuery, roots: dict[str, str]) -> lis
             if not key or key in seen_urls:
                 continue
             seen_urls.add(key)
-            results.append(_to_result(hit, parsed))
-            if len(results) >= MAX_RESULTS:
-                return results
-    return results
+            if len(results) < MAX_RESULTS:
+                results.append(_to_result(hit, parsed))
+    return results, undated_count
 
 
 def _build_query(parsed: ParsedQuery) -> str:
@@ -265,12 +309,14 @@ def allowed_file_folders(user):
         and all(has_permission(user, code) for code in SHARED_LIBRARY_PERMISSIONS)
     ):
         keys.append("dispatches")
-    folder_map = getattr(settings, "M365_FOLDER_MAP", {}) or {}
+    folder_map = dict(getattr(settings, "M365_FOLDER_MAP", {}) or {})
+    if "personnel_decisions" not in folder_map or not folder_map["personnel_decisions"]:
+        folder_map["personnel_decisions"] = "QuyetDinh"
     return [folder_map[key].strip("/") for key in keys if folder_map.get(key)]
 
 
-def search_sharepoint(parsed: ParsedQuery, user) -> tuple[list[dict], str | None]:
-    """Trả `(results, error_note)`; `error_note=None` nghĩa là nguồn này OK.
+def search_sharepoint(parsed: ParsedQuery, user) -> SharePointSearchResult:
+    """Trả `SharePointSearchResult(results, error_note, undated_count)`; `error_note=None` nghĩa là nguồn này OK.
 
     - `not_configured` : thiếu M365 (cờ bật/tắt, credentials hoặc site) - caller
       không nên hiển thị cảnh báo lỗi, chỉ là nguồn chưa bật.
@@ -281,10 +327,12 @@ def search_sharepoint(parsed: ParsedQuery, user) -> tuple[list[dict], str | None
     - `unavailable`    : lỗi mạng/5xx/429 - caller trả kết quả DB kèm `partial`.
     """
     if not getattr(settings, "M365_STORAGE_ENABLED", False):
-        return [], "not_configured"
+        return SharePointSearchResult([], "not_configured")
     if not can_query_sharepoint(user):
-        return [], RESTRICTED_NOTE
-    folder_map = getattr(settings, "M365_FOLDER_MAP", {}) or {}
+        return SharePointSearchResult([], RESTRICTED_NOTE)
+    folder_map = dict(getattr(settings, "M365_FOLDER_MAP", {}) or {})
+    if "personnel_decisions" not in folder_map or not folder_map["personnel_decisions"]:
+        folder_map["personnel_decisions"] = "QuyetDinh"
     kinds = {
         "Incoming": ("incoming_docs",), "Outgoing": ("outgoing_docs",),
         "dispatch": ("incoming_docs", "outgoing_docs"),
@@ -302,50 +350,62 @@ def search_sharepoint(parsed: ParsedQuery, user) -> tuple[list[dict], str | None
             and folder_map["dispatches"].strip("/") in allowed):
         folders.append(folder_map["dispatches"].strip("/"))
     if not folders:
-        return [], RESTRICTED_NOTE if _fallback_folders() else "not_configured"
+        return SharePointSearchResult([], RESTRICTED_NOTE if _fallback_folders() else "not_configured")
     client = get_graph_client()
     if not client.is_configured():
-        return [], "not_configured"
+        return SharePointSearchResult([], "not_configured")
     query = _build_query(parsed)
     if not query.strip():
         try:
-            return _fallback_listing(client, parsed, _folder_roots(client, folders)), None
+            res, undated = _fallback_listing(client, parsed, _folder_roots(client, folders))
+            return SharePointSearchResult(res, None, undated_count=undated)
         except GraphNotConfigured:
-            return [], "not_configured"
+            return SharePointSearchResult([], "not_configured")
         except GraphAPIError:
-            return [], "unavailable"
+            return SharePointSearchResult([], "unavailable")
     roots = None
     try:
         hits = client.search_files(query, top=MAX_RESULTS, timeout=ASSISTANT_TIMEOUT)
         if hits:
             roots = _folder_roots(client, folders)
     except GraphNotConfigured:
-        return [], "not_configured"
+        return SharePointSearchResult([], "not_configured")
     except GraphAPIError as exc:
         if exc.status_code not in (400, 403):
-            return [], "unavailable"
+            return SharePointSearchResult([], "unavailable")
         try:
             if roots is None:
                 roots = _folder_roots(client, folders)
-            return _fallback_listing(client, parsed, roots), "search_fallback"
+            res, undated = _fallback_listing(client, parsed, roots)
+            return SharePointSearchResult(res, "search_fallback", undated_count=undated)
         except GraphNotConfigured:
-            return [], "not_configured"
+            return SharePointSearchResult([], "not_configured")
         except GraphAPIError:
-            return [], "unavailable"
+            return SharePointSearchResult([], "unavailable")
     # Drive search vẫn có tệp ngoài các root được phép của người hỏi.
     boundaries = tuple((roots or {}).values())
-    kept = [hit for hit in hits if _in_dispatch_folder(hit.get("web_url", ""), boundaries)
-            and _matches_date(hit, parsed)]
+    kept = []
+    undated_count = 0
+    date_filtered = bool(parsed.date_from or parsed.date_to)
+    for hit in hits:
+        if not _in_dispatch_folder(hit.get("web_url", ""), boundaries):
+            continue
+        if date_filtered and _is_undated(hit, parsed):
+            undated_count += 1
+            continue
+        if _matches_date(hit, parsed):
+            kept.append(hit)
     if not kept:
         # Chỉ mục rỗng hoặc top hit ngoài root chưa chứng minh thư mục hết tệp.
         try:
-            return _fallback_listing(client, parsed, roots if roots is not None else _folder_roots(client, folders)), "search_fallback"
+            res, undated = _fallback_listing(client, parsed, roots if roots is not None else _folder_roots(client, folders))
+            return SharePointSearchResult(res, "search_fallback", undated_count=undated)
         except GraphNotConfigured:
-            return [], "not_configured"
+            return SharePointSearchResult([], "not_configured")
         except GraphAPIError:
-            return [], "unavailable"
+            return SharePointSearchResult([], "unavailable")
     results = [_to_result(hit, parsed) for hit in kept[:MAX_RESULTS]]
     # Graph xếp theo điểm liên quan của riêng nó, còn `score` ở đây so được với
     # kết quả DB trong `services.ask`, nên phải theo điểm của ta.
     results.sort(key=lambda item: -item["score"])
-    return results, None
+    return SharePointSearchResult(results, None, undated_count=undated_count)

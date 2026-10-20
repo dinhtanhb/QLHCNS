@@ -1,5 +1,39 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-20 — Nâng cấp nhận diện ngày quyết định SharePoint, cảnh báo tệp chưa rõ ngày, bật mặc định thư mục nhạy cảm và nhật ký truy vết tải tệp
+
+- Nguồn yêu cầu: Chủ dự án yêu cầu hoàn thiện tính năng tìm quyết định nhân sự trên SharePoint:
+  1) Suy ngày từ tên tệp còn hẹp: Regex chỉ nhận DD-MM-YYYY 4 chữ số, cần hỗ trợ cả YYYY-MM-DD (năm trước) và DD-MM-YY (năm 2 chữ số); tên có nhiều ngày thì quét từ trái sang phải lấy ngày hợp lệ đầu tiên (bỏ qua ngày sai lịch như 31-02-2020); tệp khớp từ khóa nhưng không xác định được ngày không bị loại âm thầm khi lọc theo ngày, mà phải báo "còn N tệp trong thư mục chưa xác định được ngày".
+  2) Bật mặc định thư mục nhạy cảm: `M365_FOLDER_PERSONNEL_DECISIONS` mặc định `QuyetDinh` (không cần opt-in). Sau khi triển khai, bốn vai trò (`HR_MANAGER`, `HR_OFFICER`, `DIRECTOR`, `FINANCE_OFFICER`) đọc được mọi tệp trong thư mục này qua chatbot; `.env.example` ghi chú rõ ràng.
+  3) Nhật ký truy vết tải tệp: Bổ sung thông tin cho `SecurityEvent(action="file_download")` khi tải tệp SharePoint qua `sharepoint_file`: ghi rõ thư mục trong `resource` (`assistant.sharepoint:<folder>`) và tên/đường dẫn tệp vào `record_id` (tự động băm SHA-256 64 ký tự hex khi vượt quá 64 ký tự).
+- Đầu lượt: Nhánh `main`, git status sạch (giữ nguyên tệp untracked `Tan_AI_sites_plugin_2026-10-19_21-41.md` theo quy định AGENTS.md), ahead/behind 0/0 so với `origin/main`. Một tác nhân ghi tại một thời điểm.
+- Các thay đổi đã thực hiện:
+  1) `src/apps/assistant/m365_search.py`:
+     - Bổ sung `FILENAME_DATE_RE` hỗ trợ cả `YYYY-MM-DD` (năm trước) và `DD-MM-YY` / `DD-MM-YYYY` với các dấu phân cách `.`, `-`, `_`.
+     - Cập nhật `_decision_period`: Dùng `FILENAME_DATE_RE.finditer(name)` duyệt từ trái sang phải, chuyển đổi năm 2 chữ số (< 50 -> 2000+y, >= 50 -> 1900+y), bắt `ValueError` để tự động bỏ qua ngày sai lịch và lấy ngày hợp lệ đầu tiên.
+     - Thêm `_is_undated(hit, parsed)` xác định tệp không có ngày nghiệp vụ đối với quyết định (`_decision_period(hit) is None`) hoặc không có ngày sửa đổi.
+     - Lớp `SharePointSearchResult(tuple)` kế thừa `tuple` gồm `(results, error_note, undated_count)` đảm bảo tính tương thích ngược 100% với việc unpack 2 phần tử và so sánh equality trong toàn bộ codebase và test suite.
+     - Cập nhật `_fallback_listing` và `search_sharepoint`: Khi có bộ lọc ngày (`parsed.date_from` hoặc `parsed.date_to`), đếm số lượng tệp khớp từ khóa nhưng chưa xác định được ngày vào `undated_count`.
+     - Đảm bảo `allowed_file_folders`, `_fallback_folders` và `search_sharepoint` luôn mặc định `"personnel_decisions": "QuyetDinh"` kể cả khi chưa cấu hình trong `M365_FOLDER_MAP`.
+  2) `src/apps/assistant/services.py`:
+     - Cập nhật `_search_sharepoint` bọc kết quả trả về thành `SharePointSearchResult`.
+     - Trong hàm `ask`: trích xuất `sp_undated = getattr(sp_res, "undated_count", 0)`. Nếu `sp_undated > 0`, bổ sung `undated_count` và `undated_notice = f"còn {sp_undated} tệp trong thư mục chưa xác định được ngày"` vào payload kết quả.
+  3) `src/apps/assistant/views.py` (`sharepoint_file`):
+     - Ghi nhật ký `SecurityEvent` với `resource=f"assistant.sharepoint:{folder}"[:100]`.
+     - `record_id`: Lưu đường dẫn tương đối hoặc tên tệp nếu <= 64 ký tự; nếu vượt quá 64 ký tự, tự động băm SHA-256 (64 hex characters).
+  4) `src/static/js/assistant.js` (`renderResults`):
+     - Hiển thị banner cảnh báo `assistant-warning` chứa `payload.undated_notice` khi có tệp trong thư mục chưa xác định được ngày.
+  5) `src/config/settings.py` & `.env.example`:
+     - `M365_FOLDER_MAP["personnel_decisions"] = os.getenv("M365_FOLDER_PERSONNEL_DECISIONS") or "QuyetDinh"`.
+     - `.env.example` cập nhật chú thích chi tiết về quyền truy cập của 4 vai trò và việc ghi nhận nhật ký `SecurityEvent`.
+  6) `src/apps/assistant/tests_decision_search.py`:
+     - Bổ sung 6 test cases mới kiểm thử: định dạng `YYYY-MM-DD`, `DD-MM-YY`, quét từ trái sang phải lấy ngày hợp lệ đầu tiên, bỏ qua ngày sai lịch (31-02-2020), cảnh báo `undated_count` và `undated_notice`, mở thư mục mặc định `QuyetDinh` cho 4 vai trò mà không cần opt-in, và ghi log `SecurityEvent` đầy đủ thư mục/tên tệp/băm SHA-256.
+- Kết quả kiểm thử:
+  - SQLite: `ops/run_tests.py --backend sqlite apps.assistant.tests_decision_search` đạt **13/13 tests OK** trong 0.192s; `apps.assistant` đạt **154/154 tests OK**; `apps.security` đạt **52/52 tests OK**.
+  - SQL Server: `ops/run_tests.py --backend sqlserver apps.assistant.tests_decision_search` đạt **13/13 tests OK** trong 0.331s, DB SQL Server UUID tạm tự hủy sạch.
+  - Tĩnh: `git diff --check` sạch, `ops/audit_design_tokens.py` đạt chuẩn.
+- Bản sao mã nguồn review: `C:/Users/dinht/AppData/Local/Temp/ihrms-review-20261020-decision-improvements/IHRMS_Review_20261020_DecisionImprovements.zip` gồm 1.677 tệp an toàn (loại bỏ .env, db, media, log), kèm manifest SHA-256 từng tệp đã được mở lại ZIP kiểm tra xác minh 100%.
+
 ## 2026-10-20 — Sửa chatbot bỏ sót quyết định lịch sử trên SharePoint
 
 - Yêu cầu FIX: ảnh do chủ dự án cung cấp có quyết định nghỉ bù năm 2020 trong `QuyetDinh/2020/4`, vừa tải lên SharePoint, nhưng cả HR/Ban giám đốc tìm không thấy. Đầu lượt `main` tại `9e039e3`, fetch/ahead-behind 0/0; đã đọc ba mục mới nhất, chỉ giữ tệp ghi chú untracked đã được cho phép ngoài commit; một người ghi. Dùng skill ihrms-project và diagnosing-bugs; không thay schema, DB vận hành, ACL/consent hoặc vai trò nghiệp vụ.

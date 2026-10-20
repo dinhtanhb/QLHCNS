@@ -151,7 +151,15 @@ def sharepoint_file(request, token):
             response["Content-Security-Policy"] = "sandbox; default-src 'none'"
             response["X-Content-Type-Options"] = "nosniff"
             from apps.security.models import SecurityEvent
-            SecurityEvent.objects.create(user=request.user, action="file_download", resource="assistant.sharepoint")
+            import hashlib
+            rel_path = "/".join(relative)
+            file_id = rel_path if len(rel_path) <= 64 else (filename if len(filename) <= 64 else hashlib.sha256(rel_path.encode("utf-8")).hexdigest())
+            SecurityEvent.objects.create(
+                user=request.user,
+                action="file_download",
+                resource=f"assistant.sharepoint:{folder}"[:100],
+                record_id=file_id,
+            )
             return response
     except GraphNotConfigured:
         raise Http404

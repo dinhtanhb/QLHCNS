@@ -43,14 +43,17 @@ def _parsed_dict(parsed: nlp.ParsedQuery) -> dict:
     return data
 
 
-def _search_sharepoint(parsed: nlp.ParsedQuery, user) -> tuple[list[dict], str]:
+def _search_sharepoint(parsed: nlp.ParsedQuery, user) -> m365_search.SharePointSearchResult:
     try:
-        results, note = m365_search.search_sharepoint(parsed, user)
+        res = m365_search.search_sharepoint(parsed, user)
     except Exception:
         # GraphAPIError đã được m365_search xử lý; nhánh này chặn lỗi dữ liệu
         # lạ từ SharePoint để nó không kéo theo cả câu trả lời.
-        return [], "unavailable"
-    return results, note
+        return m365_search.SharePointSearchResult([], "unavailable")
+    if isinstance(res, m365_search.SharePointSearchResult):
+        return res
+    results, note = res
+    return m365_search.SharePointSearchResult(results, note, undated_count=getattr(res, "undated_count", 0))
 
 
 def _public_result(row: dict) -> dict:
@@ -68,7 +71,9 @@ def ask(question: str, user) -> dict:
     parsed = nlp.parse(question)
     started = time.perf_counter()
     db_results = db_search.search_database(parsed, user)
-    sp_results, sp_note = _search_sharepoint(parsed, user)
+    sp_res = _search_sharepoint(parsed, user)
+    sp_results, sp_note = sp_res[0], sp_res[1]
+    sp_undated = getattr(sp_res, "undated_count", 0)
     took_ms = int((time.perf_counter() - started) * 1000)
 
     merged = sorted(
@@ -98,7 +103,7 @@ def ask(question: str, user) -> dict:
         created_by=user,
     )
 
-    return {
+    response = {
         "query": question,
         "parsed": _parsed_dict(parsed),
         "took_ms": took_ms,
@@ -106,3 +111,7 @@ def ask(question: str, user) -> dict:
         "sharepoint_status": sp_note or "ok",
         "results": [_public_result(row) for row in merged],
     }
+    if sp_undated > 0:
+        response["undated_count"] = sp_undated
+        response["undated_notice"] = f"còn {sp_undated} tệp trong thư mục chưa xác định được ngày"
+    return response
