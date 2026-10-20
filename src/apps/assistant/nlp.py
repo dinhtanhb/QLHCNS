@@ -23,9 +23,17 @@ QUARTER_RE = re.compile(r"quý\s+([1-4])(?:\s*năm\s*(\d{4}))?", re.IGNORECASE)
 YEAR_RE = re.compile(r"\bnăm\s+(\d{4})\b", re.IGNORECASE)
 # Ngày ghi thuận (năm trước) cũng hay xuất hiện khi sao chép từ hệ thống khác,
 # nên cả hai vế nhận 1-4 số và định dạng được phân giải ở _parse_date.
-DATE_VALUE = r"\d{1,4}[/-]\d{1,2}[/-]\d{1,4}"
+DATE_VALUE = r"\d{1,4}[/.-]\d{1,2}[/.-]\d{1,4}"
 FROM_TO_RE = re.compile(
     rf"từ\s+({DATE_VALUE})\s*(?:đến|tới)\s+({DATE_VALUE})",
+    re.IGNORECASE,
+)
+FULL_DMY_RE = re.compile(
+    r"(?<!\w)ngày\s+(\d{1,2})\s+tháng\s+(\d{1,2})(?:\s*(?:năm|/)\s*(\d{4}))?",
+    re.IGNORECASE,
+)
+SINGLE_DATE_RE = re.compile(
+    rf"(?:(?<!\w)ngày\s+)?(?<![\w/.-])({DATE_VALUE})(?![\w/.-])",
     re.IGNORECASE,
 )
 
@@ -42,6 +50,8 @@ DOC_TYPE_KEYWORDS = [
     ("chỉ đạo nội bộ", "InternalDirective"),
     ("văn bản nội bộ", "InternalDirective"),
     ("quyết định", "personnel_decision"),
+    ("qd", "personnel_decision"),
+    ("qđ", "personnel_decision"),
     ("công văn", "dispatch"),
     ("văn bản", "dispatch"),
     ("tài liệu", "document"),
@@ -51,7 +61,7 @@ STOPWORDS = {
     "tìm", "kiếm", "tìm kiếm", "cho", "tôi", "mình", "em", "anh", "chị", "bạn",
     "xin", "hãy", "về", "của", "va", "và", "các", "những", "một", "là", "ở",
     "theo", "giúp", "với", "được", "bị", "trong", "ngoài", "từ", "đến", "ngày",
-    "nào", "này", "đó", "mới", "gần", "nhất", "đây", "liên quan",
+    "nào", "này", "đó", "mới", "gần", "nhất", "đây", "liên quan", "file", "tệp",
 }
 
 MAX_KEYWORDS = 10
@@ -101,9 +111,10 @@ def _strip_phrase(text: str, phrase: str) -> str:
 
 
 def _parse_date(value: str) -> date:
-    for fmt in ("%d/%m/%Y", "%d-%m-%Y", "%Y-%m-%d", "%Y/%m/%d"):
+    cleaned = re.sub(r"[.-]", "/", value.strip())
+    for fmt in ("%d/%m/%Y", "%Y/%m/%d", "%d/%m/%y"):
         try:
-            return datetime.strptime(value, fmt).date()
+            return datetime.strptime(cleaned, fmt).date()
         except ValueError:
             continue
     raise ValueError(value)
@@ -148,6 +159,27 @@ def _extract_dates(text: str, today: date) -> tuple[str, date | None, date | Non
         start = date(year, quarter * 3 - 2, 1)
         end = _last_day_of_month(year, quarter * 3)
         return (text[: match.start()] + " " + text[match.end():], start, end)
+
+    match = FULL_DMY_RE.search(text)
+    if match:
+        day = int(match.group(1))
+        month = int(match.group(2))
+        year = int(match.group(3)) if match.group(3) else today.year
+        rest = text[: match.start()] + " " + text[match.end():]
+        try:
+            d = date(year, month, day)
+            return (rest, d, d)
+        except ValueError:
+            return (rest, None, None)
+
+    match = SINGLE_DATE_RE.search(text)
+    if match:
+        rest = text[: match.start()] + " " + text[match.end():]
+        try:
+            d = _parse_date(match.group(1))
+            return (rest, d, d)
+        except ValueError:
+            return (rest, None, None)
 
     match = MONTH_RE.search(text)
     if match:

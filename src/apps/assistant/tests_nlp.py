@@ -155,3 +155,29 @@ class QueryParserTests(SimpleTestCase):
     def test_parse_result_is_dataclass(self):
         p = parse("công văn tháng 6", today=date(2026, 10, 19))
         self.assertIsInstance(p, ParsedQuery)
+
+    def test_single_date_extraction(self):
+        p = parse("tìm file QD ngày 29.04.2020")
+        self.assertEqual(p.date_from, date(2020, 4, 29))
+        self.assertEqual(p.date_to, date(2020, 4, 29))
+        self.assertEqual(p.doc_type, "personnel_decision")
+        self.assertEqual(p.keywords, [])
+
+        p2 = parse("quyết định ngày 29/04/2020")
+        self.assertEqual((p2.date_from, p2.date_to), (date(2020, 4, 29), date(2020, 4, 29)))
+
+        p3 = parse("ngày 29 tháng 4 năm 2020")
+        self.assertEqual((p3.date_from, p3.date_to), (date(2020, 4, 29), date(2020, 4, 29)))
+
+        p4 = parse("công văn 2026-10-20")
+        self.assertEqual((p4.date_from, p4.date_to), (date(2026, 10, 20), date(2026, 10, 20)))
+        self.assertEqual(p4.doc_type, "dispatch")
+
+    def test_qd_abbreviation_and_file_stopwords(self):
+        p1 = parse("tìm file QD")
+        self.assertEqual(p1.doc_type, "personnel_decision")
+        self.assertEqual(p1.keywords, [])
+
+        p2 = parse("tìm tệp QĐ")
+        self.assertEqual(p2.doc_type, "personnel_decision")
+        self.assertEqual(p2.keywords, [])

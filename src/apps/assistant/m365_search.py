@@ -191,8 +191,19 @@ def _decision_period(hit):
     return None
 
 
-def _is_undated(hit: dict, parsed: ParsedQuery) -> bool:
+def _is_decision(hit: dict, parsed: ParsedQuery) -> bool:
     if parsed.doc_type == "personnel_decision":
+        return True
+    location = _location(hit.get("web_url", ""))
+    if location:
+        decision_folder = (getattr(settings, "M365_FOLDER_MAP", {}).get("personnel_decisions") or "QuyetDinh").strip("/").casefold()
+        if decision_folder in location[1]:
+            return True
+    return False
+
+
+def _is_undated(hit: dict, parsed: ParsedQuery) -> bool:
+    if _is_decision(hit, parsed):
         return _decision_period(hit) is None
     return _as_date(hit.get("last_modified", "")) is None
 
@@ -205,7 +216,7 @@ def _to_result(hit: dict, parsed: ParsedQuery) -> dict:
     for needle in _needles(parsed):
         if needle in name_fold:
             score += SCORE_NAME_MATCH
-    period = _decision_period(hit) if parsed.doc_type == "personnel_decision" else None
+    period = _decision_period(hit) if _is_decision(hit, parsed) else None
     return {
         "source": "sharepoint",
         "type": "file",
@@ -286,7 +297,7 @@ def _matches_date(hit, parsed):
     """Graph exposes modification date; use it only when a date was requested."""
     if not parsed.date_from and not parsed.date_to:
         return True
-    if parsed.doc_type == "personnel_decision":
+    if _is_decision(hit, parsed):
         period = _decision_period(hit)
         return bool(period and (not parsed.date_from or period[1] >= parsed.date_from)
                     and (not parsed.date_to or period[0] <= parsed.date_to))

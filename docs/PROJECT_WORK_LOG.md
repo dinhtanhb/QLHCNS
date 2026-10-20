@@ -1,5 +1,32 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-20 — Sửa lỗi tìm quyết định SharePoint: Nhận diện viết tắt QD/QĐ, trích xuất ngày cụ thể và loại bỏ stopwords file/tệp
+
+- Nguồn yêu cầu: Chủ dự án phản ánh lỗi thực tế trên giao diện Chatbot kèm ảnh minh chứng: tìm `tìm file QD ngày 29.04.2020` mong muốn tìm tệp `QD nghi bu cua CBDA lam viec cuoi tuan - 29.04.2020.pdf` trong thư mục `Documents > QuyetDinh > 2020 > 4` trên SharePoint, nhưng Chatbot chỉ trả về kết quả quyết định từ Database (năm 2026) kèm banner vàng search_fallback, SharePoint không trả về tệp nào.
+- Đầu lượt: Nhánh `main`, git status sạch (giữ nguyên tệp untracked `Tan_AI_sites_plugin_2026-10-19_21-41.md` theo quy định AGENTS.md), ahead/behind 0/0 so với `origin/main`. Một tác nhân ghi tại một thời điểm.
+- Phân tích nguyên nhân gốc:
+  1) `DOC_TYPE_KEYWORDS` trong `src/apps/assistant/nlp.py` chỉ nhận diện cụm từ đầy đủ `"quyết định"`, thiếu hai dạng viết tắt hành chính phổ biến là `"qd"` và `"qđ"`, khiến `parsed.doc_type` bị `None`.
+  2) `_extract_dates` trong `nlp.py` chỉ hỗ trợ dải ngày `từ ... đến ...`, `tháng ...`, `quý ...`, `năm ...`, hoàn toàn thiếu mẫu ngày đơn lẻ dạng `ngày 29.04.2020` hay `29.04.2020`, và `_parse_date` không hỗ trợ dấu phân cách chấm `.`. Dẫn tới `parsed.date_from` và `parsed.date_to` đều là `None`.
+  3) `STOPWORDS` thiếu từ `"file"` và `"tệp"`, khiến câu hỏi bị biến thành danh sách từ khóa bắt buộc `keywords = ['file', 'qd', '29.04.2020']`.
+  4) Vì `doc_type` là `None`, `search_sharepoint` chỉ quét các thư mục công văn (`CongVanDen`, `CongVanDi`, `CongVan`) và báo cáo, không quét thư mục `QuyetDinh`. Hơn nữa, việc bắt buộc từ khóa `'file'` khiến các tệp SharePoint không chứa chữ `'file'` bị loại. Ngược lại, DB search nhận từ khóa `'qd'` khớp ký tự `QĐ` trong số hiệu quyết định và vì không có ngày lọc nên trả về các quyết định mới nhất năm 2026.
+- Các sửa đổi đã thực hiện:
+  1) `src/apps/assistant/nlp.py`:
+     - Bổ sung `("qd", "personnel_decision")` và `("qđ", "personnel_decision")` vào `DOC_TYPE_KEYWORDS`.
+     - Bổ sung `"file"`, `"tệp"` vào `STOPWORDS`.
+     - Cải tiến `_parse_date` chuẩn hóa các dấu phân cách `.` và `-` về `/`, hỗ trợ các định dạng `%d/%m/%Y`, `%Y/%m/%d`, `%d/%m/%y`.
+     - Bổ sung `FULL_DMY_RE` (`ngày DD tháng MM [năm YYYY]`) và `SINGLE_DATE_RE` (`(?:ngày\s+)?DD.MM.YYYY / DD/MM/YYYY / YYYY-MM-DD`) vào `_extract_dates` trước khi trích xuất tháng/năm, thiết lập dải ngày chính xác `[d, d]`.
+  2) `src/apps/assistant/m365_search.py`:
+     - Bổ sung hàm `_is_decision(hit, parsed)` nhận diện tài liệu quyết định nhân sự khi `parsed.doc_type == "personnel_decision"` hoặc đường dẫn tệp nằm trong thư mục `QuyetDinh`.
+     - Đồng bộ `_to_result`, `_matches_date` và `_is_undated` sử dụng `_is_decision` để luôn dùng ngày nghiệp vụ từ tên tệp/thư mục thay vì ngày upload.
+  3) `src/apps/assistant/tests_nlp.py` & `tests_decision_search.py`:
+     - Thêm kiểm thử phân tích cú pháp câu hỏi: trích xuất ngày cụ thể (`ngày 29.04.2020`, `29/04/2020`, `ngày 29 tháng 4 năm 2020`, `2026-10-20`), nhận diện viết tắt `QD`/`QĐ`, loại bỏ stopwords `file`/`tệp`.
+     - Thêm kiểm thử tìm kiếm thực tế với đúng câu hỏi của người dùng: `tìm file QD ngày 29.04.2020` trả về đúng tệp quyết định trên SharePoint với ngày nghiệp vụ `2020-04-29` và trạng thái `ok`.
+- Kết quả kiểm thử:
+  - SQLite: `apps.assistant` đạt **163/163 tests OK** trong 5.673s (gồm toàn bộ bộ kiểm thử NLP, SharePoint search, DB search, và UI tests).
+  - SQL Server: `apps.assistant.tests_decision_search` và `apps.assistant.tests_nlp` đạt **41/41 tests OK** trong 2.489s, DB tạm tự hủy sạch.
+  - Tĩnh: `git diff --check` sạch, không có ký tự điều khiển hay lỗi định dạng.
+- Bản sao mã nguồn review: `C:/Users/dinht/AppData/Local/Temp/ihrms-review-20261020-decision-query-fix/IHRMS_Review_20261020_DecisionQueryFix.zip` kèm manifest SHA-256 từng tệp.
+
 ## 2026-10-20 — Nâng cấp nhận diện ngày quyết định SharePoint, cảnh báo tệp chưa rõ ngày, bật mặc định thư mục nhạy cảm và nhật ký truy vết tải tệp
 
 - Nguồn yêu cầu: Chủ dự án yêu cầu hoàn thiện tính năng tìm quyết định nhân sự trên SharePoint:

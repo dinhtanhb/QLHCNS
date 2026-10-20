@@ -120,6 +120,18 @@ class HistoricalDecisionSearchTests(SimpleTestCase):
         self.assertEqual(results[0]["date"], date(2020, 4, 29))
         self.assertEqual(getattr(result, "undated_count", 0), 2)
 
+    def test_exact_user_query_tim_file_qd_ngay_29_04_2020(self):
+        item = _hit(
+            "QD nghi bu cua CBDA lam viec cuoi tuan - 29.04.2020.pdf",
+            f"{SITE}/QuyetDinh/2020/4/QD-nghi-bu-CBDA-29.04.2020.pdf",
+            "2026-10-20T07:00:00Z",
+        )
+        (results, note), _ = self.run_search([item], "tìm file QD ngày 29.04.2020", "HR_MANAGER")
+        self.assertIsNone(note)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["date"], date(2020, 4, 29))
+        self.assertIn("ngày trong tên tệp", results[0]["meta"])
+
     @override_settings(
         M365_STORAGE_ENABLED=True,
         M365_SHAREPOINT_LIBRARY="Documents",
