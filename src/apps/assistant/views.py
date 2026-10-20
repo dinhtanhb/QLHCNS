@@ -122,8 +122,6 @@ def api_history(request):
 def sharepoint_file(request, token):
     """Reauthorize the signed search result before reading it with app Graph."""
     from . import m365_search as sp
-    from apps.security.permissions import has_permission, get_role_code
-    from apps.security.data_access import FULL_DISPATCH_SECURITY_ROLES
     from apps.m365.graph_client import GraphAPIError, GraphNotConfigured, get_graph_client
     if not settings.M365_STORAGE_ENABLED or not sp.can_query_sharepoint(request.user):
         raise Http404
@@ -133,14 +131,7 @@ def sharepoint_file(request, token):
         raise Http404
     if not isinstance(url, str) or sp._location(url) is None:
         raise Http404
-    folder_map = settings.M365_FOLDER_MAP
-    keys = ["incoming_docs", "outgoing_docs", "activity_reports"]
-    if has_permission(request.user, "view_candidate"):
-        keys.append("recruitment_cv")
-    if request.user.is_superuser or (get_role_code(request.user) in FULL_DISPATCH_SECURITY_ROLES
-            and all(has_permission(request.user, code) for code in sp.SHARED_LIBRARY_PERMISSIONS)):
-        keys.append("dispatches")
-    folders = [folder_map[key].strip("/") for key in keys if folder_map.get(key)]
+    folders = sp.allowed_file_folders(request.user)
     client = get_graph_client()
     try:
         roots = sp._folder_roots(client, folders)

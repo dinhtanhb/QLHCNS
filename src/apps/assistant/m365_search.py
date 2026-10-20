@@ -7,7 +7,9 @@ hoặc Search bị từ chối; lỗi mạng/giới hạn trả trạng thái ch
 """
 from __future__ import annotations
 
-from datetime import datetime
+from calendar import monthrange
+from datetime import date, datetime
+import re
 from urllib.parse import unquote, urlsplit
 
 from django.conf import settings
@@ -133,6 +135,28 @@ def _as_date(value: str):
         return None
 
 
+def _decision_period(hit):
+    """Imported decisions use a filename date, then YYYY/MM folders, never upload date."""
+    for day, month, year in re.findall(r"(?<!\d)(\d{1,2})[._-](\d{1,2})[._-]((?:19|20)\d{2})(?!\d)", hit.get("name", "")):
+        try:
+            value = date(int(year), int(month), int(day))
+            return value, value, "ngày trong tên tệp"
+        except ValueError:
+            continue
+    location = _location(hit.get("web_url", ""))
+    if location:
+        parts = location[1][:-1]
+        for index, part in enumerate(parts):
+            if not re.fullmatch(r"(?:19|20)\d{2}", part):
+                continue
+            year = int(part)
+            if index + 1 < len(parts) and re.fullmatch(r"0?[1-9]|1[0-2]", parts[index + 1]):
+                month = int(parts[index + 1])
+                return date(year, month, 1), date(year, month, monthrange(year, month)[1]), "tháng từ thư mục"
+            return date(year, 1, 1), date(year, 12, 31), "năm từ thư mục"
+    return None
+
+
 def _to_result(hit: dict, parsed: ParsedQuery) -> dict:
     name = hit.get("name", "")
     name_fold = normalize(name)
@@ -141,13 +165,14 @@ def _to_result(hit: dict, parsed: ParsedQuery) -> dict:
     for needle in _needles(parsed):
         if needle in name_fold:
             score += SCORE_NAME_MATCH
+    period = _decision_period(hit) if parsed.doc_type == "personnel_decision" else None
     return {
         "source": "sharepoint",
         "type": "file",
         "title": name,
-        "meta": "SharePoint · ngày cập nhật",
+        "meta": "SharePoint · " + period[2] if period else "SharePoint · ngày cập nhật",
         "url": hit.get("web_url", ""),
-        "date": _as_date(hit.get("last_modified", "")),
+        "date": (period[0] if period[0] == period[1] else None) if period else _as_date(hit.get("last_modified", "")),
         "score": score,
     }
 
@@ -162,6 +187,9 @@ def _fallback_folders() -> list[tuple[str, str]]:
     cv_folder = (getattr(settings, "M365_FOLDER_MAP", {}).get("recruitment_cv") or "").strip("/")
     if cv_folder and cv_folder not in folders:
         folders.append(cv_folder)
+    decision_folder = (getattr(settings, "M365_FOLDER_MAP", {}).get("personnel_decisions") or "").strip("/")
+    if decision_folder and decision_folder not in folders:
+        folders.append(decision_folder)
     return [(library, folder) for folder in folders]
 
 
@@ -214,9 +242,31 @@ def _matches_date(hit, parsed):
     """Graph exposes modification date; use it only when a date was requested."""
     if not parsed.date_from and not parsed.date_to:
         return True
+    if parsed.doc_type == "personnel_decision":
+        period = _decision_period(hit)
+        return bool(period and (not parsed.date_from or period[1] >= parsed.date_from)
+                    and (not parsed.date_to or period[0] <= parsed.date_to))
     value = _as_date(hit.get("last_modified", ""))
     return bool(value and (not parsed.date_from or value >= parsed.date_from)
                 and (not parsed.date_to or value <= parsed.date_to))
+
+
+def allowed_file_folders(user):
+    """Shared boundary for search and every signed file GET."""
+    if not can_query_sharepoint(user):
+        return []
+    keys = ["incoming_docs", "outgoing_docs", "activity_reports"]
+    if has_permission(user, "view_candidate"):
+        keys.append("recruitment_cv")
+    if has_permission(user, "view_all_personnel_decisions"):
+        keys.append("personnel_decisions")
+    if getattr(user, "is_superuser", False) or (
+        get_role_code(user) in FULL_DISPATCH_SECURITY_ROLES
+        and all(has_permission(user, code) for code in SHARED_LIBRARY_PERMISSIONS)
+    ):
+        keys.append("dispatches")
+    folder_map = getattr(settings, "M365_FOLDER_MAP", {}) or {}
+    return [folder_map[key].strip("/") for key in keys if folder_map.get(key)]
 
 
 def search_sharepoint(parsed: ParsedQuery, user) -> tuple[list[dict], str | None]:
@@ -239,20 +289,17 @@ def search_sharepoint(parsed: ParsedQuery, user) -> tuple[list[dict], str | None
         "Incoming": ("incoming_docs",), "Outgoing": ("outgoing_docs",),
         "dispatch": ("incoming_docs", "outgoing_docs"),
         "activity_report": ("activity_reports",), "candidate": ("recruitment_cv",),
-        "leave": (), "asset": (), "personnel_decision": (),
+        "leave": (), "asset": (), "personnel_decision": ("personnel_decisions",),
         "InternalDirective": (), "document": (),
     }
     selected = kinds.get(parsed.doc_type, ("incoming_docs", "outgoing_docs", "activity_reports"))
+    allowed = allowed_file_folders(user)
     folders = [folder_map[key].strip("/") for key in selected if folder_map.get(key)
-               and (key != "recruitment_cv" or has_permission(user, "view_candidate"))]
+               and folder_map[key].strip("/") in allowed]
     # CongVan also contains internal directives. Keep its previous narrow gate;
     # raw Graph results cannot distinguish legacy incoming files from directives.
-    if parsed.doc_type in (None, "dispatch") and (
-        getattr(user, "is_superuser", False) or (
-            get_role_code(user) in FULL_DISPATCH_SECURITY_ROLES
-            and all(has_permission(user, code) for code in SHARED_LIBRARY_PERMISSIONS)
-        )
-    ) and folder_map.get("dispatches"):
+    if (parsed.doc_type in (None, "dispatch") and folder_map.get("dispatches")
+            and folder_map["dispatches"].strip("/") in allowed):
         folders.append(folder_map["dispatches"].strip("/"))
     if not folders:
         return [], RESTRICTED_NOTE if _fallback_folders() else "not_configured"

@@ -316,6 +316,7 @@ M365_FOLDER_MAP = {
     "activity_reports": os.getenv(
         "M365_FOLDER_ACTIVITY_REPORTS", os.getenv("M365_LIBRARY_ACTIVITY_REPORTS", "BaoCaoHoatDong")
     ),
+    "personnel_decisions": os.getenv("M365_FOLDER_PERSONNEL_DECISIONS", "QuyetDinh"),
     "activity_proposals": os.getenv("M365_FOLDER_ACTIVITY_PROPOSALS", "DeXuatHoatDong"),
 }
 M365_UPLOAD_PREFIX_MAP = {
