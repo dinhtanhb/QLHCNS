@@ -70,6 +70,45 @@ class EffectiveEmployeeChangeTests(TestCase):
         self.assertEqual(self.employee.department, self.departments[2])
 
 
+    def test_direct_profile_correction_survives_repeated_scheduling(self):
+        event = EmployeeTransfer.objects.create(
+            employee=self.employee, from_department=self.departments[0], to_department=self.departments[1],
+            effective_date=date(2020,1,1),
+        )
+        self.employee.refresh_from_db()
+        self.employee.department=self.departments[2]; self.employee.save()
+        event.reason="Clarification"; event.save(update_fields=["reason"])
+        self.assertEqual(apply_due_employee_changes(), 0)
+        self.employee.refresh_from_db(); self.assertEqual(self.employee.department,self.departments[2])
+        event.refresh_from_db(); self.assertIsNotNone(event.processed_at)
+
+    def test_old_backdated_decision_cannot_replace_newer_processed_one(self):
+        EmployeeTransfer.objects.create(employee=self.employee,from_department=self.departments[0],to_department=self.departments[2],effective_date=date(2021,1,1))
+        older=EmployeeTransfer.objects.create(employee=self.employee,from_department=self.departments[0],to_department=self.departments[1],effective_date=date(2020,1,1))
+        self.employee.refresh_from_db(); self.assertEqual(self.employee.department,self.departments[2])
+        older.refresh_from_db(); self.assertIsNotNone(older.processed_at)
+
+    def test_material_correction_of_latest_decision_is_applied(self):
+        event=EmployeePromotion.objects.create(employee=self.employee,old_position=self.positions[0],new_position=self.positions[1],effective_date=date(2020,1,1))
+        event.new_position=self.positions[2]; event.save()
+        self.employee.refresh_from_db(); self.assertEqual(self.employee.position,self.positions[2])
+
+    def test_migration_acknowledges_history_without_overwriting_current_profile(self):
+        import importlib
+        from django.apps import apps
+        from django.db import connection
+        from types import SimpleNamespace
+        past=EmployeeTransfer.objects.create(employee=self.employee,from_department=self.departments[0],to_department=self.departments[1],effective_date=date(2020,1,1))
+        future=EmployeePromotion.objects.create(employee=self.employee,old_position=self.positions[0],new_position=self.positions[1],effective_date=date(2099,1,1))
+        EmployeeTransfer.all_objects.filter(pk=past.pk).update(processed_at=None,is_deleted=True)
+        self.employee.department=self.departments[2]; self.employee.save()
+        migration=importlib.import_module("apps.hrm.migrations.0007_effective_change_processed_at")
+        migration.acknowledge_existing_history(apps,SimpleNamespace(connection=connection))
+        past.refresh_from_db(); future.refresh_from_db(); self.employee.refresh_from_db()
+        self.assertIsNotNone(past.processed_at); self.assertIsNone(future.processed_at)
+        self.assertEqual(self.employee.department,self.departments[2])
+
+
 class EmployeeProfileChangeRequestTests(TestCase):
     @classmethod
     def setUpTestData(cls):

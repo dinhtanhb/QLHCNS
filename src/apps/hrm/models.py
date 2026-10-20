@@ -123,6 +123,7 @@ class EmployeeProfileChangeRequest(BaseAuditModel):
         return f"{self.employee} — {self.field_name} ({self.status})"
 
 class EmployeeTransfer(BaseAuditModel):
+    processed_at = models.DateTimeField(null=True, blank=True, editable=False, db_column="ProcessedAt")
     employee = models.ForeignKey(
         Employee, verbose_name="Nhân viên", on_delete=models.CASCADE, db_column="EmployeeID", related_name="transfers"
     )
@@ -144,17 +145,15 @@ class EmployeeTransfer(BaseAuditModel):
         ordering = ["-effective_date"]
 
     def save(self, *args, **kwargs):
-        from django.db import transaction
-        with transaction.atomic():
-            super().save(*args, **kwargs)
-            from apps.hrm.services import apply_due_employee_changes
-            apply_due_employee_changes()
+        from apps.hrm.services import save_effective_change
+        return save_effective_change(self, super().save, args, kwargs, "to_department_id")
 
     def __str__(self):
         return f"{self.employee}: {self.from_department} → {self.to_department}"
 
 
 class EmployeePromotion(BaseAuditModel):
+    processed_at = models.DateTimeField(null=True, blank=True, editable=False, db_column="ProcessedAt")
     employee = models.ForeignKey(
         Employee, verbose_name="Nhân viên", on_delete=models.CASCADE, db_column="EmployeeID", related_name="promotions"
     )
@@ -176,11 +175,8 @@ class EmployeePromotion(BaseAuditModel):
         ordering = ["-effective_date"]
 
     def save(self, *args, **kwargs):
-        from django.db import transaction
-        with transaction.atomic():
-            super().save(*args, **kwargs)
-            from apps.hrm.services import apply_due_employee_changes
-            apply_due_employee_changes()
+        from apps.hrm.services import save_effective_change
+        return save_effective_change(self, super().save, args, kwargs, "new_position_id")
 
     def __str__(self):
         return f"{self.employee}: {self.old_position} → {self.new_position}"
