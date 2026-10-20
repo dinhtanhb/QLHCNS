@@ -55,19 +55,17 @@ def employee_and_subordinate_ids(user):
     """Employee IDs visible through the reporting line, including all depths."""
     if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
         return set()
-    if getattr(user, "is_superuser", False):
-        from apps.hrm.models import Employee
-        return set(Employee.objects.filter(is_deleted=False).values_list("pk", flat=True))
     employee = getattr(user, "employee", None)
     if not employee or employee.is_deleted:
         return set()
     from apps.hrm.models import Employee
+    children_by_manager = {}
+    for pk, manager_id in Employee.objects.filter(is_deleted=False).values_list("pk", "manager_id"):
+        children_by_manager.setdefault(manager_id, set()).add(pk)
     visible = {employee.pk}
     frontier = {employee.pk}
     while frontier:
-        children = set(Employee.objects.filter(
-            manager_id__in=frontier, is_deleted=False,
-        ).values_list("pk", flat=True)) - visible
+        children = set().union(*(children_by_manager.get(pk, set()) for pk in frontier)) - visible
         visible.update(children)
         frontier = children
     return visible
@@ -78,25 +76,16 @@ def visible_leave_requests_for(user, queryset=None):
     qs = queryset if queryset is not None else LeaveRequest.objects.all()
     if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
         return qs.none()
-    if getattr(user, "is_superuser", False) or has_permission(user, "manage_hr") or has_permission(user, "approve_leave_all_departments"):
-        return qs
-    employee = getattr(user, "employee", None)
-    if not employee or employee.is_deleted:
-        return qs.none()
-    dept_ids = employee.managed_departments.values_list("pk", flat=True)
-    subordinate_ids = employee_and_subordinate_ids(user)
-    scope = Q(employee_id__in=subordinate_ids)
-    if dept_ids.exists():
-        scope |= Q(employee__department_id__in=dept_ids)
-    return qs.filter(scope)
+    return qs.filter(employee_id__in=employee_and_subordinate_ids(user))
 
 
 def visible_personnel_decisions_for(user, queryset=None):
     from apps.document.models import PersonnelDecision
     qs = queryset if queryset is not None else PersonnelDecision.objects.all()
-    if getattr(user, "is_superuser", False) or get_role_code(user) in (
-        HR_MANAGER, HR_OFFICER, DIRECTOR, "FINANCE_OFFICER",
-    ):
+    if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
+        return qs.none()
+    qs = qs.filter(employee__is_deleted=False)
+    if has_permission(user, "view_all_personnel_decisions"):
         return qs
     return qs.filter(employee_id__in=employee_and_subordinate_ids(user))
 
@@ -110,11 +99,13 @@ def visible_dispatches_for(user, queryset=None):
         return qs
     employee = getattr(user, 'employee', None)
     role = get_role_code(user)
+    shared = qs.filter(dispatch_type__in=("Incoming", "Outgoing"))
+    qs = qs.exclude(dispatch_type__in=("Incoming", "Outgoing"))
     if role in ('PROJECT_MANAGER', 'PROJECT_COORDINATOR'):
-        qs = qs.filter(dispatch_type='Outgoing')
+        return shared
     elif not has_permission(user, 'access_outgoing_document'):
         if not employee:
-            return qs.none()
+            return shared
         scope = Q(assigned_to=employee)
         if employee.department_id:
             scope |= Q(department_id=employee.department_id)
@@ -124,7 +115,7 @@ def visible_dispatches_for(user, queryset=None):
         if employee:
             private_scope |= Q(assigned_to=employee) | Q(signer=employee)
         qs = qs.filter(Q(security_level='Normal') | private_scope)
-    return qs
+    return shared | qs
 
 
 def can_read_file(user, obj):
@@ -133,26 +124,20 @@ def can_read_file(user, obj):
     employee = getattr(user, 'employee', None)
     if employee and employee.is_deleted:
         return False
-    if user.is_superuser:
+    if user.is_superuser and obj._meta.label_lower != 'leave.leaverequest':
         return True
     role = get_role_code(user)
     label = obj._meta.label_lower
     if label == 'document.personneldecision':
-        employee_recipient = bool(employee and obj.status == 'Issued' and obj.employee_id == employee.pk)
-        return has_permission(user, 'manage_hr') or (
-            employee_recipient or (
-                has_permission(user, 'approve_personnel_decision')
-                and (obj.status == 'PendingApproval' or obj.history.filter(created_by=user).exists())
-            )
-        )
+        return visible_personnel_decisions_for(user).filter(pk=obj.pk).exists()
     if label == 'document.document':
         return obj.status == 'Approved' or obj.created_by_id == user.pk or has_permission(user, 'approve_document') or has_permission(user, 'manage_hr')
     if label == 'document.officialdispatch':
         return visible_dispatches_for(user).filter(pk=obj.pk).exists()
     if label == 'office.incomingdocument':
-        return has_permission(user, 'manage_office') or bool(employee and employee.pk in (obj.handler_id, obj.received_by_id))
+        return True
     if label == 'office.outgoingdocument':
-        return has_permission(user, 'access_outgoing_document')
+        return True
     if label == 'recruitment.candidate':
         return has_permission(user, 'manage_hr') or has_permission(user, 'view_candidate')
     if label in ('leave.leaverequest', 'hrm.employeeprofilechangerequest'):
@@ -162,8 +147,6 @@ def can_read_file(user, obj):
             return True
         if label == 'hrm.employeeprofilechangerequest':
             return has_permission(user, 'approve_profile_change_request')
-        if has_permission(user, 'manage_hr') or has_permission(user, 'approve_leave_all_departments'):
-            return True
         return visible_leave_requests_for(user).filter(pk=obj.pk).exists()
     if label == 'm365.companymedia':
         return True  # Published internal company media, after authentication.

@@ -10,10 +10,15 @@ Không có `@csrf_exempt`: `assistant.js` gửi kèm `X-CSRFToken` lấy từ co
 from __future__ import annotations
 
 import json
+import io
+import mimetypes
+from urllib.parse import unquote, urlsplit
 
 from django.contrib.auth.decorators import login_required
 from django.core.cache import caches
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse, Http404, HttpResponse
+from django.core import signing
+from django.conf import settings
 from django.shortcuts import render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST, require_GET
@@ -93,8 +98,9 @@ HISTORY_LIMIT = 20
 
 def _history(request):
     # History belongs to this login, and is discarded if account privileges change.
-    scope = [request.user.pk, request.user.is_active, request.user.is_superuser,
-             getattr(request.user, "role_id", None)]
+    from apps.security.data_access import employee_and_subordinate_ids
+    scope = ["document-policy-20261020", request.user.pk, request.user.is_active, request.user.is_superuser,
+             getattr(request.user, "role_id", None), sorted(employee_and_subordinate_ids(request.user))]
     if request.session.get("assistant_history_scope") != scope:
         request.session["assistant_history_scope"] = scope
         request.session["assistant_history"] = []
@@ -108,3 +114,58 @@ def api_history(request):
     if not request.user.is_active:
         return JsonResponse({"error": "session_expired"}, status=403)
     return JsonResponse({"turns": _history(request)})
+
+
+@login_required
+@require_GET
+@never_cache
+def sharepoint_file(request, token):
+    """Reauthorize the signed search result before reading it with app Graph."""
+    from . import m365_search as sp
+    from apps.security.permissions import has_permission, get_role_code
+    from apps.security.data_access import FULL_DISPATCH_SECURITY_ROLES
+    from apps.m365.graph_client import GraphAPIError, GraphNotConfigured, get_graph_client
+    if not settings.M365_STORAGE_ENABLED or not sp.can_query_sharepoint(request.user):
+        raise Http404
+    try:
+        url = signing.loads(token, salt="assistant-file", max_age=settings.SESSION_COOKIE_AGE)
+    except signing.BadSignature:
+        raise Http404
+    if not isinstance(url, str) or sp._location(url) is None:
+        raise Http404
+    folder_map = settings.M365_FOLDER_MAP
+    keys = ["incoming_docs", "outgoing_docs", "activity_reports"]
+    if has_permission(request.user, "view_candidate"):
+        keys.append("recruitment_cv")
+    if request.user.is_superuser or (get_role_code(request.user) in FULL_DISPATCH_SECURITY_ROLES
+            and all(has_permission(request.user, code) for code in sp.SHARED_LIBRARY_PERMISSIONS)):
+        keys.append("dispatches")
+    folders = [folder_map[key].strip("/") for key in keys if folder_map.get(key)]
+    client = get_graph_client()
+    try:
+        roots = sp._folder_roots(client, folders)
+        for folder, root in roots.items():
+            if not sp._in_dispatch_folder(url, (root,)):
+                continue
+            root_parts = [unquote(x) for x in urlsplit(root).path.split("/") if x]
+            file_parts = [unquote(x) for x in urlsplit(url).path.split("/") if x]
+            relative = file_parts[len(root_parts):]
+            content = client.download_file(settings.M365_SHAREPOINT_LIBRARY, folder + "/" + "/".join(relative))
+            filename = relative[-1]
+            kind = mimetypes.guess_type(filename)[0]
+            inline = kind in ("application/pdf", "image/png", "image/jpeg") and request.GET.get("download") != "1"
+            response = FileResponse(io.BytesIO(content), filename=filename, as_attachment=not inline,
+                                    content_type=kind if inline else "application/octet-stream")
+            response["Cache-Control"] = "private, no-store"
+            response["Content-Security-Policy"] = "sandbox; default-src 'none'"
+            response["X-Content-Type-Options"] = "nosniff"
+            from apps.security.models import SecurityEvent
+            SecurityEvent.objects.create(user=request.user, action="file_download", resource="assistant.sharepoint")
+            return response
+    except GraphNotConfigured:
+        raise Http404
+    except GraphAPIError as error:
+        if error.status_code == 404:
+            raise Http404
+        return HttpResponse("Dịch vụ tệp tạm không khả dụng.", status=503)
+    raise Http404

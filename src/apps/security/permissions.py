@@ -53,7 +53,12 @@ PERMISSION_MATRIX = {
     # Tuyển dụng
     "request_recruitment": (DEPT_MANAGER, HR_MANAGER),
     "approve_recruitment": (HR_MANAGER,),
-    "view_candidate": (HR_MANAGER, HR_OFFICER, PROJECT_COORDINATOR),
+    "view_candidate": (HR_MANAGER, HR_OFFICER, DIRECTOR, PROJECT_COORDINATOR, PROJECT_MANAGER),
+    "view_all_personnel_decisions": (HR_MANAGER, HR_OFFICER, DIRECTOR, FINANCE_OFFICER),
+    "view_personnel_decisions": (
+        SUPER_ADMIN, SYS_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER, FINANCE_OFFICER,
+        DEPT_MANAGER, EMPLOYEE, PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA,
+    ),
     # Lịch làm việc, ngày lễ
     "manage_calendar": (HR_MANAGER, SYS_ADMIN),
     # Sự kiện
@@ -93,10 +98,9 @@ PERMISSION_MATRIX = {
     "approve_procurement": (FINANCE_OFFICER, DIRECTOR),
     # Tài sản, kiểm kê, thanh lý
     "view_asset": (
-        SUPER_ADMIN, SYS_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER,
-        FINANCE_OFFICER, PROJECT_COORDINATOR,
+        SUPER_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER, FINANCE_OFFICER,
     ),
-    "manage_asset": (SUPER_ADMIN, HR_MANAGER, HR_OFFICER, SYS_ADMIN),
+    "manage_asset": (SUPER_ADMIN, HR_MANAGER, HR_OFFICER),
     # Trung tâm Báo cáo (/reports/) — chỉ Ban giám đốc, Nhân sự, Kế toán và Quản trị
     "view_report_center": (SUPER_ADMIN, SYS_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER, FINANCE_OFFICER),
     # Hiện menu quản trị

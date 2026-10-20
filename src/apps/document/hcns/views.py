@@ -20,6 +20,7 @@ from apps.hrm.models import Employee
 from apps.notification.services import notify, notify_many
 from apps.security.models import SecurityEvent, User
 from apps.security.permissions import PERMISSION_MATRIX, has_permission
+from apps.security.data_access import visible_personnel_decisions_for
 
 from .catalog import FORMS, GROUPS, tables_for
 from .exports import export_docx, export_xlsx
@@ -44,14 +45,7 @@ def _json_safe(value):
 
 
 def _visible_personnel_decision(user, decision):
-    if has_permission(user, "manage_hr"):
-        return True
-    employee = getattr(user, "employee", None)
-    if decision.status == "Issued" and employee and decision.employee_id == employee.pk:
-        return True
-    return has_permission(user, "approve_personnel_decision") and (
-        decision.status == "PendingApproval" or decision.history.filter(created_by=user).exists()
-    )
+    return visible_personnel_decisions_for(user).filter(pk=decision.pk).exists()
 
 
 def _decision_rendered(decision):
@@ -366,12 +360,10 @@ def draft(request, slug):
 def personnel_decision_list(request):
     can_manage = has_permission(request.user, "manage_hr")
     can_approve = has_permission(request.user, "approve_personnel_decision")
-    if not (can_manage or can_approve):
+    if not has_permission(request.user, "view_personnel_decisions"):
         return HttpResponseForbidden("Anh/chị không có quyền xem quyết định nhân sự.")
 
-    decisions = PersonnelDecision.objects.select_related("employee", "created_by")
-    if not can_manage:
-        decisions = decisions.filter(Q(status="PendingApproval") | Q(history__created_by=request.user)).distinct()
+    decisions = visible_personnel_decisions_for(request.user).select_related("employee", "created_by")
     query = request.GET.get("q", "").strip()
     if query:
         decisions = decisions.filter(
@@ -381,7 +373,7 @@ def personnel_decision_list(request):
         )
     status = request.GET.get("status", "")
     valid_statuses = {choice[0] for choice in PersonnelDecision.STATUS_CHOICES}
-    if status in valid_statuses and (can_manage or status == "PendingApproval"):
+    if status in valid_statuses:
         decisions = decisions.filter(status=status)
     page_obj = Paginator(decisions.order_by("-created_date", "-pk"), 25).get_page(request.GET.get("page"))
     for decision in page_obj.object_list:
@@ -413,10 +405,7 @@ def personnel_decision_detail(request, pk):
     last_submission = history.filter(action="Submitted").order_by("-pk").first()
     can_manage = has_permission(request.user, "manage_hr")
     can_approve = has_permission(request.user, "approve_personnel_decision")
-    is_employee_recipient = bool(
-        not can_manage and not can_approve and decision.status == "Issued"
-        and request.user.employee_id == decision.employee_id
-    )
+    is_employee_recipient = False  # Read scope includes the complete permitted decision.
     workflow_error = request.session.get("decision_workflow_error", {})
     if workflow_error.get("decision_id") == decision.pk:
         request.session.pop("decision_workflow_error", None)
@@ -443,10 +432,7 @@ def personnel_decision_detail(request, pk):
 @require_http_methods(["GET"])
 def personnel_decision_word(request, pk):
     decision = get_object_or_404(PersonnelDecision.objects.select_related("employee"), pk=pk)
-    if not _visible_personnel_decision(request.user, decision) or not (
-        has_permission(request.user, "manage_hr")
-        or has_permission(request.user, "approve_personnel_decision")
-    ):
+    if not _visible_personnel_decision(request.user, decision):
         return HttpResponseForbidden("Anh/chị không có quyền tải quyết định này.")
     context = _decision_rendered(decision)
     if not context:

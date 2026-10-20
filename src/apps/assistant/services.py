@@ -15,6 +15,8 @@ from __future__ import annotations
 
 import time
 from dataclasses import asdict
+from django.core import signing
+from django.urls import reverse
 
 from . import db_search, m365_search, nlp
 from .models import SearchQueryLog
@@ -54,6 +56,10 @@ def _search_sharepoint(parsed: nlp.ParsedQuery, user) -> tuple[list[dict], str]:
 def _public_result(row: dict) -> dict:
     result = {key: value for key, value in row.items() if key != "score"}
     result["date"] = _iso_date(row.get("date"))
+    if row.get("source") == "sharepoint" and row.get("url"):
+        token = signing.dumps(row["url"], salt="assistant-file", compress=True)
+        result["url"] = reverse("assistant:sharepoint_file", args=[token])
+        result["download_url"] = result["url"] + "?download=1"
     return result
 
 

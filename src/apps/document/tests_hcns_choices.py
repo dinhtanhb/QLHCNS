@@ -122,7 +122,7 @@ class HCNSChoiceTests(TestCase):
     def test_asset_source_committee_is_readable_without_hr_directory_access(self):
         from django.utils import timezone
         from apps.asset.models import InventorySession, InventoryMember
-        viewer = self.user('choice-asset-viewer', 'PROJECT_COORDINATOR', None)
+        viewer = self.user('choice-asset-viewer', 'FINANCE_OFFICER', None)
         session = InventorySession.objects.create(session_name='Synthetic session', office_name='Synthetic office', inventory_datetime=timezone.now())
         InventoryMember.objects.create(session=session, employee=self.employees[1], role='Member')
         self.client.force_login(viewer)

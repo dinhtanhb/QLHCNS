@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from apps.common.admin import BaseAuditAdmin
+from apps.security.permissions import PERMISSION_MATRIX
 from .models import RecruitmentRequest, JobPosting, Candidate, Interview, Offer
 
 HR_ROLES = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER")
@@ -52,12 +53,21 @@ class CandidateAdmin(BaseAuditAdmin):
     list_filter = ("status", "source")
     search_fields = ("candidate_code", "full_name", "email")
     inlines = [InterviewInline, OfferInline]
-    view_roles = HR_ROLES
+    view_roles = HR_ROLES + PERMISSION_MATRIX["view_candidate"]
     edit_roles = HR_ROLES
     actions = ["create_employee_from_candidate"]
 
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if not self.has_change_permission(request):
+            actions.pop("create_employee_from_candidate", None)
+        return actions
+
     @admin.action(description="🎉 Tạo hồ sơ nhân viên (điền sẵn thông tin ứng viên)")
     def create_employee_from_candidate(self, request, queryset):
+        if not self.has_change_permission(request):
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied
         if queryset.count() != 1:
             self.message_user(request, "Chỉ chọn đúng 1 ứng viên mỗi lần để tạo hồ sơ.", level="ERROR")
             return

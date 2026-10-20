@@ -106,6 +106,8 @@ class HCNSFormTests(TestCase):
         self.assertContains(self.client.get(self.url("annual-leave"), {"leave_id": obj.pk}), "Lý do giả")
         self.assertEqual(self.client.get(self.url("unpaid-leave"), {"leave_id": obj.pk}).status_code, 404)
         self.client.force_login(self.hr)
+        self.employees[1].manager = self.hr.employee
+        self.employees[1].save(update_fields=["manager"])
         self.assertEqual(self.client.get(self.url("maternity-decision"), {"leave_id": obj.pk}).status_code, 404)
         maternity, _ = LeaveType.objects.get_or_create(leave_type_code="ML", defaults={"leave_type_name": "Thai sản", "is_paid": True})
         obj.leave_type = maternity

@@ -174,15 +174,14 @@ class SharePointSearchTests(SimpleTestCase):
         self.assertEqual(client.search_calls, [])
         self.assertEqual(client.list_calls, [])
 
-    def test_user_without_dispatch_access_makes_no_graph_call(self):
+    def test_every_active_employee_can_search_shared_incoming_documents(self):
         # Graph chạy app-only: token thấy cả thư viện, không thấy quyền của
         # người hỏi. Lọc theo thư mục chỉ an toàn khi người hỏi đã được xem sổ
         # công văn, nên cửa thứ hai chặn ngay từ trước khi gọi.
-        client = _FakeClient(search=[_in("CongVan", "CV.pdf")])
-        results, note = self._run(client, "công văn", user=CLERK)
-        self.assertEqual((results, note), ([], "restricted"))
-        self.assertEqual(client.search_calls, [])
-        self.assertEqual(client.list_calls, [])
+        client = _FakeClient(search=[_in("CongVanDen", "CV.pdf")])
+        results, note = self._run(client, "cv", user=CLERK)
+        self.assertIsNone(note)
+        self.assertEqual(len(results), 1)
 
     def test_superuser_may_query_sharepoint(self):
         client = _FakeClient(search=[_in("CongVan", "CV nghỉ phép.pdf")])
@@ -200,14 +199,14 @@ class SharePointSearchTests(SimpleTestCase):
         # có.
         # Vì không lọc được theo từng tệp, cửa này phải là GIAO của các phạm vi:
         # chỉ vai trò thấy được cả ba loại tệp cùng lúc mới được hỏi Graph.
-        allowed = ("HR_MANAGER", "HR_OFFICER")
-        blocked = ("SUPER_ADMIN", "DIRECTOR", "SYS_ADMIN", "DEPT_MANAGER",
+        allowed = ("HR_MANAGER", "HR_OFFICER", "SUPER_ADMIN", "DIRECTOR", "SYS_ADMIN", "DEPT_MANAGER",
                    "FINANCE_OFFICER", "PROJECT_MANAGER", "PROJECT_COORDINATOR",
                    "EMPLOYEE", "CBDA")
+        blocked = ()
         for role in allowed:
             with self.subTest(role=role):
                 self.assertTrue(can_query_sharepoint(_user(role)))
-                client = _FakeClient(search=[_in("CongVan", "CV.pdf")])
+                client = _FakeClient(search=[_in("CongVanDen", "CV.pdf")])
                 results, note = self._run(client, "cv", user=_user(role))
                 self.assertIsNone(note)
                 self.assertEqual(len(results), 1)
@@ -261,7 +260,7 @@ class SharePointSearchTests(SimpleTestCase):
         self.assertIsNone(note)
         self.assertEqual(results[0], {
             "source": "sharepoint", "type": "file", "title": "CV nghỉ phép.pdf",
-            "meta": "SharePoint", "url": hit["web_url"],
+            "meta": "SharePoint · ngày cập nhật", "url": hit["web_url"],
             "date": date(2026, 9, 10), "score": results[0]["score"],
         })
         self.assertGreaterEqual(results[0]["score"], 10)
@@ -476,13 +475,14 @@ class SharePointSearchTests(SimpleTestCase):
 
 @override_settings(**{**ASSISTANT_SETTINGS, "M365_FOLDER_MAP": {**ASSISTANT_SETTINGS["M365_FOLDER_MAP"], "activity_reports": "BaoCaoHoatDong"}})
 class ActivityReportSearchTests(SimpleTestCase):
-    def test_report_folder_uses_project_permissions_and_keeps_dispatches_separate(self):
+    def test_report_folder_is_shared_and_type_filter_keeps_dispatches_separate(self):
         for role, expected in (("DIRECTOR", True), ("PROJECT_MANAGER", True), ("PROJECT_COORDINATOR", True),
-                               ("HR_MANAGER", False), ("HR_OFFICER", False), ("SYS_ADMIN", False), ("CBDA", False)):
+                               ("HR_MANAGER", True), ("HR_OFFICER", True), ("SYS_ADMIN", True), ("CBDA", True)):
             with self.subTest(role=role):
-                client = _FakeClient(search=[_in("BaoCaoHoatDong/2026/09", "Báo cáo.pdf"), _in("CongVan", "Mật.pdf")])
+                client = _FakeClient(search=[_in("BaoCaoHoatDong/2026/09", "Báo cáo.pdf"), _in("CongVan", "Mật.pdf")],
+                    listings={"BaoCaoHoatDong": [_in("BaoCaoHoatDong/2026/09", "Báo cáo.pdf")]})
                 with patch(SEARCH_TARGET, return_value=client):
-                    results, _ = search_sharepoint(parse("báo cáo"), _user(role))
+                    results, _ = search_sharepoint(parse("báo cáo hoạt động"), _user(role))
                 self.assertEqual(any("Báo cáo" in r["title"] for r in results), expected)
                 if expected:
                     self.assertFalse(any("Mật" in r["title"] for r in results))
@@ -491,6 +491,6 @@ class ActivityReportSearchTests(SimpleTestCase):
         client = _FakeClient(search=[], listings={"BaoCaoHoatDong": [_in("BaoCaoHoatDong/2026/09", "Báo cáo hoạt động.pdf")]})
         with patch(SEARCH_TARGET, return_value=client):
             results, note = search_sharepoint(parse("báo cáo hoạt động"), _user("DIRECTOR"))
-        self.assertEqual(note, "search_fallback")
+        self.assertIsNone(note)
         self.assertEqual(len(results), 1)
         self.assertEqual([call[1] for call in client.list_calls], ["BaoCaoHoatDong"])

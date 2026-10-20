@@ -952,7 +952,7 @@ class PortalSensitiveWorkflowTests(TestCase):
             location_name="Văn phòng kiểm thử", requested_by=requester,
         )
 
-        for role_code in ("DIRECTOR", "FINANCE_OFFICER", "PROJECT_COORDINATOR"):
+        for role_code in ("DIRECTOR", "FINANCE_OFFICER"):
             employee = self.make_employee(f"PORTAL-ASSET-VIEW-{role_code}")
             user = self.make_user(role_code, employee, f"portal-asset-view-{role_code.lower()}")
             self.client.force_login(user)

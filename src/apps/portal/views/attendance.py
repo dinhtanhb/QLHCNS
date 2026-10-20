@@ -35,10 +35,16 @@ def _can_approve(request):
 
 def _leave_approvers_for(employee):
     """Những nhân viên có quyền duyệt đơn nghỉ phép của `employee` (HR/Director toàn Trung tâm + Trưởng phòng của họ)."""
-    q = models.Q(user_account__role__role_code__in=["HR_MANAGER", "DIRECTOR"])
-    if employee.department_id:
-        q |= models.Q(managed_departments=employee.department_id)
-    return Employee.objects.filter(q).distinct()
+    ancestors, seen = [], {employee.pk}
+    current = employee.manager
+    while current and not current.is_deleted and current.pk not in seen:
+        ancestors.append(current.pk)
+        seen.add(current.pk)
+        current = current.manager
+    return Employee.objects.filter(pk__in=ancestors).filter(
+        models.Q(user_account__role__role_code__in=["HR_MANAGER", "DEPT_MANAGER", "DIRECTOR"])
+        | models.Q(user_account__is_superuser=True)
+    ).distinct()
 
 
 def _approvable_leave_requests(request):

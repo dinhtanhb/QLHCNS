@@ -59,6 +59,7 @@ class PermissionMatrixTests(TestCase):
         for permission in PERMISSION_MATRIX:
             expected_self_service = permission in {
                 "submit_profile_change_request",
+                "view_personnel_decisions",
             }
             self.assertEqual(
                 has_permission(user, permission), expected_self_service,
@@ -105,20 +106,19 @@ class PermissionMatrixTests(TestCase):
     def test_tai_san_chi_hien_cho_nhom_duoc_phep_va_quyen_quan_ly_rieng(self):
         viewers = (
             DIRECTOR, HR_MANAGER, HR_OFFICER, FINANCE_OFFICER,
-            PROJECT_COORDINATOR, SYS_ADMIN,
         )
         for code in viewers:
             self.assertTrue(has_permission(self.users[code], "view_asset"), code)
 
-        managers = (HR_MANAGER, HR_OFFICER, SYS_ADMIN)
+        managers = (HR_MANAGER, HR_OFFICER)
         for code in managers:
             self.assertTrue(has_permission(self.users[code], "manage_asset"), code)
 
-        view_only = (DIRECTOR, FINANCE_OFFICER, PROJECT_COORDINATOR)
+        view_only = (DIRECTOR, FINANCE_OFFICER)
         for code in view_only:
             self.assertFalse(has_permission(self.users[code], "manage_asset"), code)
 
-        denied = (EMPLOYEE, CBDA, DEPT_MANAGER, PROJECT_MANAGER)
+        denied = (EMPLOYEE, CBDA, DEPT_MANAGER, PROJECT_MANAGER, PROJECT_COORDINATOR, SYS_ADMIN)
         for code in denied:
             self.assertFalse(has_permission(self.users[code], "view_asset"), code)
             self.assertFalse(has_permission(self.users[code], "manage_asset"), code)
@@ -149,7 +149,7 @@ class PermissionMatrixTests(TestCase):
         flags = permission_flags(self.users[EMPLOYEE])
         self.assertEqual(set(flags), {f"can_{name}" for name in PERMISSION_MATRIX})
         enabled = {name for name, allowed in flags.items() if allowed}
-        self.assertEqual(enabled, {"can_submit_profile_change_request"})
+        self.assertEqual(enabled, {"can_submit_profile_change_request", "can_view_personnel_decisions"})
 
 
 # ==================================================================
@@ -226,11 +226,11 @@ class AccessControlViewTests(TestCase):
         url = reverse("portal:dispatch_detail", args=[self.dispatch_it.pk])
         self.assertEqual(self.client.get(url).status_code, 200)
 
-    def test_khong_xem_duoc_cong_van_cua_phong_khac(self):
-        """Đổi số trên URL phải ra 404, không được lộ nội dung."""
+    def test_xem_duoc_cong_van_den_di_cua_phong_khac(self):
+        """Incoming/outgoing dispatch read access is company-wide."""
         self.login_employee()
         url = reverse("portal:dispatch_detail", args=[self.dispatch_khac.pk])
-        self.assertEqual(self.client.get(url).status_code, 404)
+        self.assertEqual(self.client.get(url).status_code, 200)
 
     def test_nhan_su_xem_duoc_moi_cong_van(self):
         self.login_hr()

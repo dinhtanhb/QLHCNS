@@ -21,7 +21,7 @@ from django.urls import reverse
 
 from apps.document.hcns.catalog import FORMS
 from apps.document.models import Document, OfficialDispatch, PersonnelDecision
-from apps.security.data_access import visible_dispatches_for
+from apps.security.data_access import visible_dispatches_for, visible_personnel_decisions_for, visible_leave_requests_for
 from apps.security.permissions import has_permission
 
 from .nlp import ParsedQuery, normalize
@@ -137,7 +137,7 @@ def _dispatch_candidate(row):
 
 
 def _search_dispatches(parsed: ParsedQuery, user) -> list[dict]:
-    if parsed.doc_type in ("document", "personnel_decision"):
+    if parsed.doc_type not in (None, "dispatch", *DISPATCH_SUBTYPES):
         return []
     qs = visible_dispatches_for(user, OfficialDispatch.objects.all())
     if parsed.doc_type in DISPATCH_SUBTYPES:
@@ -239,12 +239,7 @@ def _decision_candidate(row):
 def _search_decisions(parsed: ParsedQuery, user) -> list[dict]:
     if parsed.doc_type not in (None, "personnel_decision"):
         return []
-    can_manage = has_permission(user, "manage_hr")
-    if not (can_manage or has_permission(user, "approve_personnel_decision")):
-        return []
-    qs = PersonnelDecision.objects.all()
-    if not can_manage:
-        qs = qs.filter(Q(status="PendingApproval") | Q(history__created_by=user)).distinct()
+    qs = visible_personnel_decisions_for(user)
     digits = _number_digits(parsed)
     if digits:
         qs = qs.filter(decision_no__icontains=digits)
@@ -276,4 +271,44 @@ def search_database(parsed: ParsedQuery, user) -> list[dict]:
         _search_dispatches(parsed, user)
         + _search_documents(parsed, user)
         + _search_decisions(parsed, user)
+        + _search_business_records(parsed, user)
     )
+
+
+def _search_business_records(parsed, user):
+    """Object-scoped records stay DB-backed; never list raw private folders."""
+    if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
+        return []
+    kind = parsed.doc_type
+    if kind == "leave":
+        qs = visible_leave_requests_for(user).select_related("employee", "leave_type")
+        date_field = "from_date"
+        def record(obj):
+            return (f"{obj.employee.full_name} — {obj.leave_type}", obj.from_date,
+                    reverse("portal:leave_list"), obj.reason or "")
+    elif kind == "candidate" and has_permission(user, "view_candidate"):
+        from apps.recruitment.models import Candidate
+        qs = Candidate.objects.all()
+        date_field = "created_date__date"
+        def record(obj):
+            return (f"{obj.candidate_code} — {obj.full_name}", obj.created_date.date(),
+                    reverse("portal:hr_candidate_detail", args=[obj.pk]), obj.source or "")
+    elif kind == "asset" and has_permission(user, "view_asset"):
+        from apps.asset.models import Asset
+        qs = Asset.objects.all()
+        date_field = "purchase_date"
+        def record(obj):
+            return (f"{obj.asset_code} — {obj.asset_name}", obj.purchase_date,
+                    reverse("portal:asset_admin_list"), obj.location or "")
+    else:
+        return []
+    if parsed.date_from:
+        qs = qs.filter(**{date_field + "__gte": parsed.date_from})
+    if parsed.date_to:
+        qs = qs.filter(**{date_field + "__lte": parsed.date_to})
+    candidates = []
+    for obj in qs.order_by("-pk")[:SCAN_LIMIT]:
+        title, day, url, extra = record(obj)
+        row = _result(type_name=kind, title=title, meta=kind, url=url, date=day, score=0)
+        candidates.append((row, normalize(title), normalize(title), (normalize(extra),), day))
+    return [{**row, "score": score} for row, score in _rank(candidates, parsed)]

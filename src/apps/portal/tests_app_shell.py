@@ -59,7 +59,7 @@ class AppShellTests(TestCase):
         permission = lambda name: has_permission(user, name)
         if permission("manage_hr"):
             expected += [url(name) for name in ("hr_employee_list", "hr_contract_list", "lifecycle_case_list", "hcns_catalog", "profile_change_request_list")]
-        if permission("manage_hr") or permission("approve_personnel_decision"):
+        if permission("view_personnel_decisions"):
             expected.append(url("personnel_decision_list"))
         for perm, name in (
             ("approve_leave", "leave_approval_list"), ("approve_timesheet", "timesheet_approval_list"),

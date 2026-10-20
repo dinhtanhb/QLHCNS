@@ -53,6 +53,10 @@ class DashboardPhase2Tests(TestCase):
         hr = self.user('HR_MANAGER', True)
         director = self.user('DIRECTOR', True)
         employee = self.user('EMPLOYEE', True)
+        employee.employee.manager = hr.employee
+        employee.employee.save(update_fields=['manager'])
+        hr.employee.manager = director.employee
+        hr.employee.save(update_fields=['manager'])
         today = timezone.localdate()
         kind = LeaveType.objects.create(leave_type_code='SENSITIVE', leave_type_name='Thai sản')
         expected = []
@@ -147,7 +151,7 @@ class DashboardPhase2Tests(TestCase):
                 event = PersonnelDecisionHistory.objects.create(decision=decision, action='Approved',
                     status_to=status, comment='SECRET_COMMENT', created_by=director if status=='Issued' else hr)
                 self.stamp(event, today+timedelta(days=offset)); rows.append(event)
-        for user, expected in ((hr,6), (director,4)):
+        for user, expected in ((hr,6), (director,6)):
             snapshot = data.dashboard_snapshot(user,user.employee)
             events = snapshot['sections']['history']['rows']
             self.assertEqual(len(events), expected)
@@ -196,7 +200,9 @@ class DashboardPhase2Tests(TestCase):
                     with CaptureQueriesContext(connection) as captured: response=self.client.get(url)
                     times.append(time.perf_counter()-start)
                 selects=sum(q['sql'].lstrip().upper().startswith('SELECT') for q in captured)
-                self.assertLessEqual(selects,24,(role,linked))
+                # Two independent read scopes now authorize leave history and
+                # the approval queue by reporting line; their cost is bounded.
+                self.assertLessEqual(selects,26,(role,linked))
                 matrix[f'{role}-{linked}']={'selects':selects,'cold_seconds':round(cold,4),
                     'p95_seconds':round(sorted(times)[math.ceil(len(times)*.95)-1],4)}
         print('PHASE2_QUERY_MATRIX='+json.dumps(matrix))
@@ -278,6 +284,8 @@ class DashboardPhase2Tests(TestCase):
     def test_combined_leaves_independently_limit_own_and_global(self):
         hr=self.user('HR_MANAGER',True)
         other=self.user('EMPLOYEE',True)
+        other.employee.manager = hr.employee
+        other.employee.save(update_fields=['manager'])
         today=timezone.localdate()
         kind=LeaveType.objects.create(leave_type_code='RANK',leave_type_name='Fake')
         own=[self.leave(hr.employee,today-timedelta(days=10),kind).pk for _ in range(8)]
@@ -287,7 +295,7 @@ class DashboardPhase2Tests(TestCase):
             pair=recent_leave_pair(hr,hr.employee,today)
         self.assertEqual([r['pk'] for r in pair['own']['rows']],list(reversed(own[-6:])))
         self.assertEqual([r['pk'] for r in pair['global_leave']['rows']],list(reversed(global_ids[-6:])))
-        self.assertEqual(sum(q['sql'].lstrip().upper().startswith('SELECT') for q in captured),1)
+        self.assertEqual(sum(q['sql'].lstrip().upper().startswith('SELECT') for q in captured),2)
         self.assertTrue(all('employee__full_name' not in row for row in pair['own']['rows']))
 
     def test_history_list_scope_with_deleted_actor_event_has_no_dead_detail_link(self):
@@ -298,10 +306,10 @@ class DashboardPhase2Tests(TestCase):
         own.delete()
         event=PersonnelDecisionHistory.objects.create(decision=decision,action='Issued',status_to='Issued',created_by=hr)
         self.client.force_login(director)
-        self.assertEqual(self.client.get(reverse('portal:personnel_decision_detail',args=[decision.pk])).status_code,403)
+        self.assertEqual(self.client.get(reverse('portal:personnel_decision_detail',args=[decision.pk])).status_code,200)
         rows=data.dashboard_snapshot(director,director.employee)['sections']['history']['rows']
         self.assertEqual([r['pk'] for r in rows],[event.pk])
-        self.assertIsNone(rows[0]['href'])
+        self.assertEqual(rows[0]['href'], reverse('portal:personnel_decision_detail', args=[decision.pk]))
 
     def user_role(self, code):
         from apps.security.models import Role

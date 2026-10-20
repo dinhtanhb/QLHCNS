@@ -116,13 +116,14 @@ class DbSearchTests(TestCase):
         )
         self.assertEqual(self._urls(results, "official_dispatch"), [])
 
-    def test_employee_without_scope_finds_no_dispatch(self):
+    def test_employee_finds_shared_dispatches(self):
         results = search_database(parse("nghỉ phép"), self.emp)
-        self.assertEqual(self._urls(results, "official_dispatch"), [])
+        self.assertEqual(set(self._urls(results, "official_dispatch")),
+                         {self._dispatch_url(self.dispatch), self._dispatch_url(self.outgoing)})
 
-    def test_confidential_hidden_from_employee_by_number(self):
+    def test_incoming_dispatch_is_shared_regardless_of_security_level(self):
         results = search_database(parse("99/TM"), self.emp)
-        self.assertEqual(results, [])
+        self.assertEqual(self._urls(results, "official_dispatch"), [self._dispatch_url(self.confidential)])
 
     def test_hr_sees_confidential(self):
         results = search_database(parse("99/TM"), self.hr)
@@ -170,9 +171,10 @@ class DbSearchTests(TestCase):
         self.assertEqual(results[0]["url"], reverse("portal:document_list"))
         self.assertEqual(results[0]["date"], self.approved_doc.effective_date)
 
-    def test_decisions_hidden_from_role_without_hr_permission(self):
+    def test_own_decision_is_visible_without_hr_permission(self):
         self.assertEqual(
-            self._urls(search_database(parse("45/QĐ-BN"), self.emp), "personnel_decision"), []
+            self._urls(search_database(parse("45/QĐ-BN"), self.emp), "personnel_decision"),
+            [reverse("portal:personnel_decision_detail", args=[self.decision.pk])]
         )
 
     def test_decision_found_by_number_for_hr(self):

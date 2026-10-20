@@ -93,7 +93,15 @@
       return;
     }
     const list = el('div', 'assistant-results');
-    results.forEach(function (row) { list.appendChild(renderResult(row)); });
+    results.forEach(function (row) {
+      list.appendChild(renderResult(row));
+      const download = safeUrl(row.download_url);
+      if (download) {
+        const link = el('a', 'ui-button ui-button--secondary', 'Tải tài liệu');
+        link.href = download;
+        list.appendChild(link);
+      }
+    });
     panel.appendChild(list);
   }
 

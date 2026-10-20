@@ -30,6 +30,12 @@ FROM_TO_RE = re.compile(
 )
 
 DOC_TYPE_KEYWORDS = [
+    ("báo cáo hoạt động", "activity_report"),
+    ("hồ sơ ứng viên", "candidate"),
+    ("ứng viên", "candidate"),
+    ("đơn xin nghỉ", "leave"),
+    ("đơn nghỉ phép", "leave"),
+    ("tài sản", "asset"),
     ("công văn đến", "Incoming"),
     ("công văn đi", "Outgoing"),
     ("văn bản chỉ đạo nội bộ", "InternalDirective"),
@@ -82,11 +88,6 @@ def normalize(text: str) -> str:
 # normalize() chạy cho từng token của mọi câu hỏi, nên hai tập loại trừ được
 # chuẩn hóa một lần tại import thay vì dựng lại trong vòng lặp.
 _STOPWORDS_NORMALIZED = frozenset(normalize(word) for word in STOPWORDS)
-_TYPE_TOKENS_NORMALIZED = frozenset(
-    normalize(token)
-    for label, _code in DOC_TYPE_KEYWORDS
-    for token in label.split()
-)
 
 
 def _last_day_of_month(year: int, month: int) -> date:
@@ -202,7 +203,13 @@ def parse(question: str, today: date | None = None) -> ParsedQuery:
     for label, code in DOC_TYPE_KEYWORDS:
         if f" {normalize(label)} " in padded:
             parsed.doc_type = code
-            text = _strip_phrase(text, label)
+            tokens = text.split()
+            label_tokens = normalize(label).split()
+            for index in range(len(tokens) - len(label_tokens) + 1):
+                if [normalize(token) for token in tokens[index:index + len(label_tokens)]] == label_tokens:
+                    del tokens[index:index + len(label_tokens)]
+                    break
+            text = " ".join(tokens)
             break
 
     keywords: list[str] = []
@@ -211,7 +218,6 @@ def parse(question: str, today: date | None = None) -> ParsedQuery:
         if (
             len(norm) < 2
             or norm in _STOPWORDS_NORMALIZED
-            or norm in _TYPE_TOKENS_NORMALIZED
         ):
             continue
         keywords.append(norm)

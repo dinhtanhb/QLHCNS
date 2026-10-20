@@ -2,6 +2,7 @@
 {% load ui_components %}
 {% block title %}{{ candidate.full_name|ui_number }}{% endblock %}
 {% block recruitment_content %}
+{% if candidate.cv_file %}<a href="{{ candidate.cv_file.url }}" class="ui-button ui-button--secondary">Tải hồ sơ CV</a>{% endif %}
 <header class="ui-page-header"><div><h1 class="ui-page-title">{{ candidate.full_name|ui_number }} <span class="ui-recruitment-text">({{ candidate.candidate_code|ui_number }})</span></h1>
 <p class="ui-recruitment-text">{{ candidate.phone_number|ui_number }} · {{ candidate.email|ui_number }} · Trạng thái: {% ui_badge "recruitment.candidate:status" candidate.status candidate.get_status_display %}</p></div>{% if can_manage_hr %}<div class="ui-page-actions"><a href="{% url 'portal:hcns_draft' 'candidate-interview' %}?candidate_id={{ candidate.pk }}" class="ui-button ui-button--secondary">Phiếu phỏng vấn / Word</a><a href="{% url 'portal:hcns_draft' 'candidate-score-summary' %}?candidate_id={{ candidate.pk }}" class="ui-button ui-button--secondary">Tổng hợp điểm / Excel</a></div>{% endif %}</header>
 

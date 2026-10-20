@@ -159,12 +159,12 @@ class RecruitmentAccountingNavigationTests(TestCase):
                     r'<a\b[^>]*href="' + re.escape(reverse("portal:personnel_decision_list")) + r'"[^>]*>',
                     html,
                 )
-                self.assertEqual(len(decision_links), int(role_code != "DEPT_MANAGER"))
+                self.assertEqual(len(decision_links), 1)
                 if role_code in ("DIRECTOR", "DEPT_MANAGER"):
                     self.assertNotIn("Nhân viên &amp; hồ sơ", menu.group(0))
                 self.client.logout()
 
         self.client.force_login(self.make_user("EMPLOYEE", "HRNAV5"))
         response = self.client.get(reverse("portal:dashboard"))
-        self.assertNotContains(response, 'aria-controls="menu-nhansu"')
+        self.assertContains(response, 'aria-controls="menu-nhansu"')
         self.assertNotContains(response, 'aria-controls="menu-duyet"')

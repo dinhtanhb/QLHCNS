@@ -1,6 +1,19 @@
 # ROLE BASED ACCESS CONTROL (RBAC)
 # PERMISSION MATRIX DOCUMENT
 
+## Chính sách đọc tài liệu được chủ dự án duyệt ngày 20/10/2026
+
+Chính sách này ưu tiên hơn các bảng lịch sử bên dưới cho **tìm, xem và tải**; không tự cấp quyền tạo/sửa/duyệt:
+
+- Công văn đến/đi và báo cáo hoạt động SharePoint: mọi tài khoản đăng nhập đang hoạt động.
+- Đơn xin nghỉ: chỉ bản thân và nhân viên cấp dưới trong cây `Employee.manager` (trực tiếp/gián tiếp), áp dụng cả HR/Giám đốc. Không mở rộng chỉ vì cùng phòng hoặc có quyền duyệt toàn công ty.
+- Hồ sơ ứng viên/CV: HR_MANAGER, HR_OFFICER, DIRECTOR, PROJECT_COORDINATOR, PROJECT_MANAGER.
+- Tài sản/kiểm kê/thanh lý: FINANCE_OFFICER, HR_MANAGER, HR_OFFICER, DIRECTOR; quyền ghi hiện hữu chỉ HR/quản trị cấp cao. SYS_ADMIN và PROJECT_COORDINATOR không có quyền đọc tài sản theo vai trò riêng.
+- Quyết định nhân sự: FINANCE_OFFICER, HR_MANAGER, HR_OFFICER, DIRECTOR xem toàn bộ; các vai trò khác chỉ bản thân/cấp dưới theo cây quản lý. Trang, kết quả tìm, Word và PDF đã ký dùng cùng phạm vi.
+- Superuser giữ quyền quản trị hiện hữu cho các loại tài liệu, riêng đơn nghỉ vẫn theo phạm vi bản thân/cấp dưới. Công văn chỉ đạo nội bộ không thuộc yêu cầu mở công văn đến/đi; giữ phạm vi hiện hữu. Không cho phép suy quyền đọc tệp cá nhân từ tên thư mục SharePoint.
+
+Nguồn yêu cầu và bằng chứng triển khai: [PROJECT_WORK_LOG.md](PROJECT_WORK_LOG.md), mục “Áp dụng ma trận quyền tài liệu”.
+
 ## Project
 
 Internal Administration & Human Resource Management System (IHRMS)

@@ -203,7 +203,7 @@ class SensitiveDataTests(TestCase):
             received_or_sent_date=date(2026,10,1), security_level='Confidential', department=self.department)
         self.other_user.is_staff = True
         self.other_user.save()
-        self.assertFalse(visible_dispatches_for(self.other_user).filter(pk=dispatch.pk).exists())
+        self.assertTrue(visible_dispatches_for(self.other_user).filter(pk=dispatch.pk).exists())
         dispatch.assigned_to = self.other
         dispatch.save(update_fields=['assigned_to'])
         self.assertTrue(visible_dispatches_for(self.other_user).filter(pk=dispatch.pk).exists())
@@ -248,10 +248,10 @@ class SensitiveDataTests(TestCase):
         self.assertEqual(self.client.get(reverse('portal:hr_candidate_list')).status_code, 200)
         self.assertEqual(self.client.get(reverse('portal:hr_candidate_detail', args=(candidate.pk,))).status_code, 200)
         self.assertTrue(has_permission(coordinator, 'view_candidate'))
-        self.assertTrue(has_permission(coordinator, 'view_asset'))
+        self.assertFalse(has_permission(coordinator, 'view_asset'))
         finance = self.make_user('FINANCE_OFFICER', self.make_employee('SEC-ASSET-FIN'), 'sec-asset-fin')
         self.assertTrue(has_permission(finance, 'view_asset'))
-        self.assertTrue(has_permission(self.sys_user, 'view_asset'))
+        self.assertFalse(has_permission(self.sys_user, 'view_asset'))
 
     def test_sharepoint_url_is_private_without_graph_request(self):
         from unittest.mock import patch

@@ -91,6 +91,8 @@ class BusinessWorkflowScenarioTests(TestCase):
         print('CASE 2 PASS: timesheet save, monthly summary edit, owner POST soft delete, cross-user/GET deletion blocked.')
 
     def test_03_leave_submission_overlap_and_approval(self):
+        self.staff.manager = self.hr
+        self.staff.save(update_fields=['manager'])
         leave_type, _ = LeaveType.objects.get_or_create(leave_type_code='AL', defaults={'leave_type_name':'Phép năm kiểm thử', 'is_paid':True})
         LeaveBalance.objects.create(employee=self.staff, year=2026, allocated_days=12)
         self.login_form(self.staff_user, 'portal:leave_create')

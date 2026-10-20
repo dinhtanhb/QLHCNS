@@ -15,15 +15,18 @@ admin.site.register(LeaveType, LeaveTypeAdmin)
 
 
 class LeaveScopeMixin:
+    def get_queryset(self, request):
+        # BaseAuditAdmin normally bypasses scope for superusers; leave privacy
+        # is explicitly limited to the employee's reporting line for everyone.
+        from apps.security.data_access import visible_leave_requests_for
+        qs = super().get_queryset(request)
+        if self.model is LeaveApproval:
+            return qs.filter(leave_request__in=visible_leave_requests_for(request.user))
+        return visible_leave_requests_for(request.user, qs)
+
     def scope_queryset(self, request, qs):
-        role_code = self._role_code(request)
-        if role_code == "DEPT_MANAGER":
-            employee = getattr(request.user, "employee", None)
-            if not employee:
-                return qs.none()
-            dept_ids = employee.managed_departments.values_list("pk", flat=True)
-            return qs.filter(employee__department_id__in=dept_ids)
-        return qs
+        from apps.security.data_access import visible_leave_requests_for
+        return visible_leave_requests_for(request.user, qs)
 
 
 @admin.register(LeaveRequest)
@@ -87,14 +90,8 @@ class LeaveApprovalAdmin(LeaveScopeMixin, BaseAuditAdmin):
     edit_roles = ()  # không ai được sửa tay lịch sử duyệt — chỉ sinh ra qua action ở trên
 
     def scope_queryset(self, request, qs):
-        role_code = self._role_code(request)
-        if role_code == "DEPT_MANAGER":
-            employee = getattr(request.user, "employee", None)
-            if not employee:
-                return qs.none()
-            dept_ids = employee.managed_departments.values_list("pk", flat=True)
-            return qs.filter(leave_request__employee__department_id__in=dept_ids)
-        return qs
+        from apps.security.data_access import visible_leave_requests_for
+        return qs.filter(leave_request__in=visible_leave_requests_for(request.user))
 
 
 @admin.register(LeaveBalance)

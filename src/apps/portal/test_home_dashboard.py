@@ -270,7 +270,7 @@ class PhaseOneSmokeTests(TestCase):
         # A deleted parent is a pre-existing selector gap: suppress only new queue.
         other.employee.delete()
         LeaveRequest.objects.create(employee=other.employee,leave_type=lt,from_date=today,to_date=today,status="Pending")
-        self.assertEqual(dashboard_snapshot(user,user.employee)["sections"]["queue"]["state"],"partial")
+        self.assertEqual(dashboard_snapshot(user,user.employee)["sections"]["queue"]["state"],"ready")
 
     def test_service_has_no_writes_fixed_date_and_query_growth(self):
         user=self.user("HR_MANAGER",True)

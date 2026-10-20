@@ -78,6 +78,8 @@ class FilenameViewTests(TestCase):
         manager = self.admin
         manager.role, _ = Role.objects.get_or_create(role_code="DEPT_MANAGER", defaults={"role_name": "Test manager"})
         manager.save(update_fields=["role"])
+        self.employees[0].manager = manager.employee
+        self.employees[0].save(update_fields=["manager"])
         self.department.manager = self.employees[2]
         self.department.save(update_fields=["manager"])
         kind = LeaveType.objects.create(leave_type_code="AL", leave_type_name="Test")

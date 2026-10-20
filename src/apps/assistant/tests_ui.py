@@ -110,7 +110,7 @@ class AssistantUiTests(TestCase):
         self.assertIn("value.indexOf('https://') === 0", guard)
         self.assertNotIn("javascript", guard)
         self.assertNotIn("data:", guard)
-        self.assertEqual(len(re.findall(r"\.href\s*=", js)), 2)
+        self.assertEqual(len(re.findall(r"\.href\s*=", js)), 3)
         self.assertIn("noopener noreferrer", js)
 
     def test_assistant_css_hides_the_widget_when_printing(self):

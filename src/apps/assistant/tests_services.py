@@ -203,4 +203,4 @@ class AskServiceTests(TestCase):
         self.assertEqual(log.user, self.emp)
         self.assertEqual(log.created_by, self.emp)
         # EMPLOYEE không có scope -> không có kết quả DB nào được ghi log.
-        self.assertEqual(log.sources, "none")
+        self.assertEqual(log.sources, "db")

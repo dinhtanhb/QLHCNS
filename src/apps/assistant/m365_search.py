@@ -1,8 +1,7 @@
-"""Tìm tài liệu trong đúng thư viện/thư mục và theo quyền của từng nguồn.
+"""Tìm tài liệu trong đúng thư viện/thư mục và theo chính sách chủ dự án.
 
-Công văn dùng giao quyền độ mật/văn thư; báo cáo hoạt động yêu cầu quyền
-xem toàn bộ hoạt động dự án. Graph chạy app-only nên mỗi nguồn phải xác minh
-metadata của root và lọc origin/path, không suy quyền từ tên thư mục.
+Công văn đến/đi và báo cáo hoạt động dùng chung; CV theo quyền ứng viên.
+Graph chạy app-only nên mỗi nguồn phải xác minh metadata root và lọc origin/path.
 Tìm drive có đường lùi duyệt phân trang/thư mục con khi chỉ mục chưa thấy tệp
 hoặc Search bị từ chối; lỗi mạng/giới hạn trả trạng thái chưa đầy đủ.
 """
@@ -110,26 +109,10 @@ def _folder_roots(client, folders=None) -> dict[str, str]:
 
 
 def can_query_sharepoint(user) -> bool:
-    """Người hỏi có được xem MỌI tệp mà nguồn này có thể trả về không.
-
-    Hai điểm dễ tưởng sai:
-
-    - `manage_office` một mình thì rộng ở cửa độ mật (SYS_ADMIN là văn thư nhưng
-      cổng vẫn ẩn công văn Mật) và `FULL_DISPATCH_SECURITY_ROLES` một mình thì
-      rộng ở cửa sổ văn thư (DIRECTOR xem được mọi độ mật nhưng không có
-      `manage_office`, tức cổng từ chối tệp đính kèm của `IncomingDocument`).
-      Graph không lọc hộ theo từng tệp được, nên phải lấy giao của hai phạm vi.
-    - `is_active` phải kiểm trước `is_superuser`: `login_required` chỉ hỏi
-      `is_authenticated` và `ModelBackend` không kiểm lại `is_active` giữa phiên,
-      trong khi `visible_dispatches_for` đã trả `qs.none()` cho tài khoản chết.
-    """
+    """Shared sources require an authenticated, active account; roots add scope."""
     if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
         return False
-    if getattr(user, "is_superuser", False):
-        return True
-    if get_role_code(user) not in FULL_DISPATCH_SECURITY_ROLES:
-        return False
-    return all(has_permission(user, code) for code in SHARED_LIBRARY_PERMISSIONS)
+    return True
 
 
 def _needles(parsed: ParsedQuery) -> list[str]:
@@ -162,7 +145,7 @@ def _to_result(hit: dict, parsed: ParsedQuery) -> dict:
         "source": "sharepoint",
         "type": "file",
         "title": name,
-        "meta": "SharePoint",
+        "meta": "SharePoint · ngày cập nhật",
         "url": hit.get("web_url", ""),
         "date": _as_date(hit.get("last_modified", "")),
         "score": score,
@@ -176,13 +159,14 @@ def _fallback_folders() -> list[tuple[str, str]]:
     report_folder = (getattr(settings, "M365_FOLDER_MAP", {}).get("activity_reports") or "").strip("/")
     if report_folder and report_folder not in folders:
         folders.append(report_folder)
+    cv_folder = (getattr(settings, "M365_FOLDER_MAP", {}).get("recruitment_cv") or "").strip("/")
+    if cv_folder and cv_folder not in folders:
+        folders.append(cv_folder)
     return [(library, folder) for folder in folders]
 
 
 def _fallback_listing(client, parsed: ParsedQuery, roots: dict[str, str]) -> list[dict]:
     needles = _needles(parsed)
-    if not needles:
-        return []
     results: list[dict] = []
     seen_urls: set[str] = set()
     for library, folder in _fallback_folders():
@@ -203,7 +187,9 @@ def _fallback_listing(client, parsed: ParsedQuery, roots: dict[str, str]) -> lis
             if not _in_dispatch_folder(hit.get("web_url", ""), (roots[folder],)):
                 continue
             name_fold = normalize(hit.get("name", ""))
-            if not any(needle in name_fold for needle in needles):
+            if needles and not any(needle in name_fold for needle in needles):
+                continue
+            if not _matches_date(hit, parsed):
                 continue
             # Các root cấu hình có thể chồng nhau; webUrl loại tệp trùng.
             url = hit.get("web_url", "")
@@ -224,6 +210,15 @@ def _build_query(parsed: ParsedQuery) -> str:
     return (parsed.doc_number or "")[:MAX_QUERY_LENGTH]
 
 
+def _matches_date(hit, parsed):
+    """Graph exposes modification date; use it only when a date was requested."""
+    if not parsed.date_from and not parsed.date_to:
+        return True
+    value = _as_date(hit.get("last_modified", ""))
+    return bool(value and (not parsed.date_from or value >= parsed.date_from)
+                and (not parsed.date_to or value <= parsed.date_to))
+
+
 def search_sharepoint(parsed: ParsedQuery, user) -> tuple[list[dict], str | None]:
     """Trả `(results, error_note)`; `error_note=None` nghĩa là nguồn này OK.
 
@@ -237,13 +232,28 @@ def search_sharepoint(parsed: ParsedQuery, user) -> tuple[list[dict], str | None
     """
     if not getattr(settings, "M365_STORAGE_ENABLED", False):
         return [], "not_configured"
-    folders = list(_dispatch_folders()) if can_query_sharepoint(user) else []
-    # Reports have their own project permissions; HR access to dispatches is not
-    # permission to read every project report. Scoped project roles stay DB-only.
-    report_folder = (getattr(settings, "M365_FOLDER_MAP", {}).get("activity_reports") or "").strip("/")
-    if (getattr(user, "is_authenticated", False) and getattr(user, "is_active", False)
-            and has_permission(user, "view_all_project_activities") and report_folder):
-        folders.append(report_folder)
+    if not can_query_sharepoint(user):
+        return [], RESTRICTED_NOTE
+    folder_map = getattr(settings, "M365_FOLDER_MAP", {}) or {}
+    kinds = {
+        "Incoming": ("incoming_docs",), "Outgoing": ("outgoing_docs",),
+        "dispatch": ("incoming_docs", "outgoing_docs"),
+        "activity_report": ("activity_reports",), "candidate": ("recruitment_cv",),
+        "leave": (), "asset": (), "personnel_decision": (),
+        "InternalDirective": (), "document": (),
+    }
+    selected = kinds.get(parsed.doc_type, ("incoming_docs", "outgoing_docs", "activity_reports"))
+    folders = [folder_map[key].strip("/") for key in selected if folder_map.get(key)
+               and (key != "recruitment_cv" or has_permission(user, "view_candidate"))]
+    # CongVan also contains internal directives. Keep its previous narrow gate;
+    # raw Graph results cannot distinguish legacy incoming files from directives.
+    if parsed.doc_type in (None, "dispatch") and (
+        getattr(user, "is_superuser", False) or (
+            get_role_code(user) in FULL_DISPATCH_SECURITY_ROLES
+            and all(has_permission(user, code) for code in SHARED_LIBRARY_PERMISSIONS)
+        )
+    ) and folder_map.get("dispatches"):
+        folders.append(folder_map["dispatches"].strip("/"))
     if not folders:
         return [], RESTRICTED_NOTE if _fallback_folders() else "not_configured"
     client = get_graph_client()
@@ -251,7 +261,12 @@ def search_sharepoint(parsed: ParsedQuery, user) -> tuple[list[dict], str | None
         return [], "not_configured"
     query = _build_query(parsed)
     if not query.strip():
-        return [], None
+        try:
+            return _fallback_listing(client, parsed, _folder_roots(client, folders)), None
+        except GraphNotConfigured:
+            return [], "not_configured"
+        except GraphAPIError:
+            return [], "unavailable"
     roots = None
     try:
         hits = client.search_files(query, top=MAX_RESULTS, timeout=ASSISTANT_TIMEOUT)
@@ -272,7 +287,8 @@ def search_sharepoint(parsed: ParsedQuery, user) -> tuple[list[dict], str | None
             return [], "unavailable"
     # Drive search vẫn có tệp ngoài các root được phép của người hỏi.
     boundaries = tuple((roots or {}).values())
-    kept = [hit for hit in hits if _in_dispatch_folder(hit.get("web_url", ""), boundaries)]
+    kept = [hit for hit in hits if _in_dispatch_folder(hit.get("web_url", ""), boundaries)
+            and _matches_date(hit, parsed)]
     if not kept:
         # Chỉ mục rỗng hoặc top hit ngoài root chưa chứng minh thư mục hết tệp.
         try:

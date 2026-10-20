@@ -86,7 +86,7 @@
             </div>
 
             <!-- NHÂN SỰ -->
-            {% if can_manage_hr or can_approve or can_approve_timesheet or can_approve_document or can_approve_personnel_decision %}
+            {% if can_manage_hr or can_approve or can_approve_timesheet or can_approve_document or can_view_personnel_decisions %}
             <div class="ui-nav-group">
                 <button type="button" data-menu-trigger aria-controls="menu-nhansu" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='people' %}<span class="ui-nav-label">Nhân sự</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
                 <div id="menu-nhansu" class="ui-nav-panel" hidden>
@@ -97,7 +97,7 @@
                     <a href="{% url 'portal:lifecycle_case_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'lifecycle_case_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Checklist tiếp nhận/nghỉ việc</span></a>
                     <a href="{% url 'portal:hcns_catalog' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hcns_catalog' and not request.GET.group %}aria-current="page"{% endif %}><span class="ui-nav-label">Biểu mẫu HCNS</span></a>
                     {% endif %}
-                    {% if can_manage_hr or can_approve_personnel_decision %}
+                    {% if can_view_personnel_decisions %}
                     <a href="{% url 'portal:personnel_decision_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'personnel_decision_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Quyết định nhân sự</span></a>
                     {% endif %}
                     {% if can_approve or can_approve_timesheet or can_approve_document or can_manage_hr %}

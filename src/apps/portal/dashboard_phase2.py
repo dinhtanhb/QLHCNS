@@ -9,7 +9,7 @@ from django.utils import timezone
 from apps.document.models import PersonnelDecision, PersonnelDecisionHistory
 from apps.leave.models import LeaveRequest
 from apps.recruitment.models import Candidate, JobPosting, RecruitmentRequest
-from apps.security.data_access import managed_departments_for
+from apps.security.data_access import managed_departments_for, visible_leave_requests_for, visible_personnel_decisions_for
 from apps.security.permissions import HR_MANAGER, get_role_code, has_permission
 
 
@@ -23,6 +23,7 @@ def recent_leave(user, today, employee=None):
     start, end = created_window(today)
     qs = LeaveRequest.objects.filter(employee__is_deleted=False, leave_type__is_deleted=False,
         employee__department__is_deleted=False, created_date__gte=start, created_date__lt=end)
+    qs = visible_leave_requests_for(user, qs)
     if employee is not None:
         qs = qs.filter(employee_id=employee.pk)
     fields = ['pk', 'from_date', 'to_date', 'total_days', 'status']
@@ -50,8 +51,8 @@ def recent_leave_pair(user, employee, today):
     """
     start, end = created_window(today)
     order = [F('created_date').desc(), F('pk').desc()]
-    qs = LeaveRequest.objects.filter(employee__is_deleted=False, leave_type__is_deleted=False,
-        employee__department__is_deleted=False, created_date__gte=start, created_date__lt=end).annotate(
+    qs = visible_leave_requests_for(user, LeaveRequest.objects.filter(employee__is_deleted=False, leave_type__is_deleted=False,
+        employee__department__is_deleted=False, created_date__gte=start, created_date__lt=end)).annotate(
             global_rank=Window(RowNumber(), order_by=order),
             own_rank=Window(RowNumber(), partition_by=[F('employee_id')], order_by=order))
     qs = qs.filter(Q(global_rank__lte=6) | Q(employee_id=employee.pk, own_rank__lte=6))
@@ -103,31 +104,15 @@ def requests(user):
 
 
 def history(user, today):
-    decisions = PersonnelDecision.objects.filter(employee__is_deleted=False, employee__department__is_deleted=False)
-    can_manage = has_permission(user, 'manage_hr')
-    if not can_manage:
-        # The destination uses the reverse relation, including legacy soft-deleted
-        # actor events. Mirror that exact visibility rule without loading actors.
-        own_history = PersonnelDecisionHistory.all_objects.filter(decision_id=OuterRef('pk'), created_by_id=user.pk)
-        decisions = decisions.alias(own_history=Exists(own_history)).filter(Q(status='PendingApproval') | Q(own_history=True))
+    decisions = visible_personnel_decisions_for(user).filter(employee__department__is_deleted=False)
     start, end = created_window(today)
     qs = PersonnelDecisionHistory.objects.filter(decision__in=decisions, created_date__gte=start, created_date__lt=end)
     fields = ['pk', 'decision_id', 'decision__decision_no', 'created_date', 'action', 'status_to']
-    if not can_manage:
-        # List visibility joins all actor history; detail uses live related
-        # history. Evaluate the stricter detail guard inside this same SELECT.
-        own_live = PersonnelDecisionHistory.objects.filter(decision_id=OuterRef('decision_id'), created_by_id=user.pk)
-        qs = qs.alias(own_live=Exists(own_live)).annotate(can_open_detail=Case(When(
-            Q(decision__status='PendingApproval') | Q(own_live=True) |
-            Q(decision__status='Issued', decision__employee_id=user.employee_id), then=Value(True)),
-            default=Value(False), output_field=BooleanField()))
-        fields.append('can_open_detail')
     rows = list(qs.order_by('-created_date', '-pk').values(*fields)[:8])
     labels = dict(PersonnelDecisionHistory.ACTION_CHOICES)
     for row in rows:
         row['action_label'] = labels.get(row['action'], row['action'])
-        can_open = row.pop('can_open_detail', can_manage)
-        row['href'] = reverse('portal:personnel_decision_detail', args=[row['decision_id']]) if can_open else None
+        row['href'] = reverse('portal:personnel_decision_detail', args=[row['decision_id']])
     return dict(state='ready', rows=rows)
 
 

@@ -187,6 +187,8 @@ class NotificationEmailOutboxTests(TestCase):
     def test_leave_approval_creates_outbox_for_requester(self):
         requester = self.make_employee("NOTIF-LEAVE-EMP")
         manager = self.make_employee("NOTIF-LEAVE-MGR")
+        requester.manager = manager
+        requester.save(update_fields=["manager"])
         self.department.manager = manager
         self.department.save(update_fields=("manager",))
         manager_user = self.make_user("DEPT_MANAGER", manager, "notif-leave-manager")
