@@ -23,6 +23,10 @@ class ActivityAdmin(BaseAuditAdmin):
     autocomplete_fields = ("project", "outgoing_document")
     actions = ["action_create_tracking_task"]
 
+    def scope_queryset(self, request, qs):
+        from apps.activity.permissions import visible_activities_for
+        return visible_activities_for(request.user, qs)
+
     def save_model(self, request, obj, form, change):
         conflicts = []
         if obj.status != "Cancelled" and obj.lead_cbda_id and obj.start_date and obj.end_date:

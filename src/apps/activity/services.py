@@ -93,6 +93,9 @@ def create_task_for_activity(activity):
     if not activity.outgoing_document_id:
         raise ValueError("Cần gắn công văn đi đã phát hành trước khi tạo Task báo cáo.")
     if activity.status == "Cancelled":
+        Task.objects.filter(activity=activity).exclude(status__in=("Done", "Cancelled")).update(
+            status="Cancelled"
+        )
         return None, False
 
     dispatch = activity.outgoing_document
@@ -108,16 +111,31 @@ def create_task_for_activity(activity):
         schedule_changed = (
             existing.start_date != activity.start_date or existing.due_date != due_date
         )
-        if not schedule_changed:
+        assignee_changed = bool(
+            activity.lead_cbda_id and existing.assigned_to_employee_id != activity.lead_cbda_id
+        )
+        coordinator_changed = bool(
+            activity.coordinator_id and existing.assigned_by_employee_id != activity.coordinator_id
+        )
+        if not schedule_changed and not assignee_changed and not coordinator_changed:
             return existing, False
 
         update_fields = []
-        if existing.start_date != activity.start_date:
-            existing.start_date = activity.start_date
-            update_fields.append("start_date")
-        if existing.due_date != due_date:
-            existing.due_date = due_date
-            update_fields.append("due_date")
+        if schedule_changed:
+            if existing.start_date != activity.start_date:
+                existing.start_date = activity.start_date
+                update_fields.append("start_date")
+            if existing.due_date != due_date:
+                existing.due_date = due_date
+                update_fields.append("due_date")
+
+        if assignee_changed:
+            existing.assigned_to_employee = activity.lead_cbda
+            update_fields.append("assigned_to_employee")
+
+        if coordinator_changed:
+            existing.assigned_by_employee = activity.coordinator
+            update_fields.append("assigned_by_employee")
 
         reopened = (
             existing.status == "Done"
@@ -134,7 +152,17 @@ def create_task_for_activity(activity):
 
         update_fields.append("modified_date")
         existing.save(update_fields=update_fields)
-        _notify_task_schedule_changed(existing, activity, due_date, reopened=reopened)
+        if schedule_changed:
+            _notify_task_schedule_changed(existing, activity, due_date, reopened=reopened)
+        if assignee_changed and activity.lead_cbda:
+            notify(
+                activity.lead_cbda,
+                "task",
+                "Được giao công việc báo cáo hoạt động",
+                f"Anh/chị được giao phụ trách báo cáo cho hoạt động '{activity.activity_name}' ({activity.activity_code}). Hạn: {existing.due_date.strftime('%d/%m/%Y')}.",
+                link=f"/portal/tasks/{existing.pk}/",
+                created_by=activity.modified_by or activity.created_by,
+            )
         return existing, False
 
     start_date = activity.start_date

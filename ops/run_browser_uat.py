@@ -130,6 +130,19 @@ def main():
                     person.managed_departments.add(dept)
                 accounts[label] = User.objects.create_user(username=label, password=password, role=role, employee=person)
         accounts['superuser'] = User.objects.create_user(username='uat-superuser', password=password, is_superuser=True, is_staff=True)
+        emp_linked = accounts['EMPLOYEE-linked'].employee
+        dept_mgr_linked = accounts['DEPT_MANAGER-linked'].employee
+        hr_mgr_linked = accounts['HR_MANAGER-linked'].employee
+        dir_linked = accounts['DIRECTOR-linked'].employee
+        if emp_linked and dept_mgr_linked:
+            emp_linked.manager = dept_mgr_linked
+            emp_linked.save(update_fields=['manager'])
+        if dept_mgr_linked and hr_mgr_linked:
+            dept_mgr_linked.manager = hr_mgr_linked
+            dept_mgr_linked.save(update_fields=['manager'])
+        if hr_mgr_linked and dir_linked:
+            hr_mgr_linked.manager = dir_linked
+            hr_mgr_linked.save(update_fields=['manager'])
         kind = ContractType.objects.create(contract_type_code='UAT-FIXED', contract_type_name='Hợp đồng thử nghiệm có thời hạn')
         kind2 = ContractType.objects.create(contract_type_code='UAT-OPEN', contract_type_name='Hợp đồng không xác định thời hạn thử nghiệm')
         leave_type = LeaveType.objects.create(leave_type_code='UAT', leave_type_name='Phép năm giả UAT')
@@ -347,6 +360,9 @@ def main():
                 context.close()
             check(not report['errors'], 'No uncaught browser JavaScript errors')
             browser.close()
+    except Exception as exc:
+        report['errors'].append(f"{type(exc).__name__}: {exc}")
+        raise
     finally:
         if live:
             live.terminate()

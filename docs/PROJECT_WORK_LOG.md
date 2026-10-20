@@ -1,5 +1,53 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-20 — Điều phối khắc phục toàn bộ 10 lỗi P1 và P2 (Tài sản, Task Admin, Công văn, Waitress SIT, Tuyển dụng, Hoạt động dự án và Fixture UAT)
+
+- **Yêu cầu/phạm vi:** Chủ dự án cấp quyền toàn bộ điều phối rà soát và sửa triệt để 10 lỗi thuộc 2 nhóm ưu tiên P1 và P2 đã phát hiện qua đợt review. Nhánh `main`, git status sạch, ahead/behind 0/0 so với `origin/main`. Một tác nhân ghi tại một thời điểm; giữ nguyên tệp untracked `Tan_AI_sites_plugin_2026-10-19_21-41.md` theo quy định AGENTS.md.
+- **Nội dung sửa đổi chi tiết theo từng hạng mục:**
+  1) **P1 — Thanh lý tài sản trước phê duyệt (`src/apps/portal/views/assets.py`):**
+     - Bọc `disposal_minutes_create` trong `with transaction.atomic():` và khóa hàng bằng `select_for_update()`.
+     - Kiểm tra bắt buộc `item.request.status == "Approved"` trước khi cho phép tạo `AssetDisposalMinutes`; chặn việc HR_OFFICER gửi POST trực tiếp làm tài sản đổi trạng thái `Disposed` khi đơn đề nghị còn `Pending`.
+     - Kiểm tra trùng lặp `hasattr(item, "minutes")` trước khi tạo biên bản.
+  2) **P1 — Quyền duyệt thanh lý dựa vào tên chức danh (`src/apps/security/permissions.py`, `portal/views/assets.py`, `portal/views/common.py`):**
+     - Bổ sung quyền tập trung `"approve_asset_disposal": (DIRECTOR,)` vào `PERMISSION_MATRIX`.
+     - Sửa `_can_approve_disposal(request)` chuyển sang dùng `has_permission(request.user, "approve_asset_disposal")`, tách rời hoàn toàn khỏi chức danh chuỗi ký tự "Giám đốc". HR_MANAGER mang chức danh "Phó Giám đốc dự án" không còn tự duyệt được; tài khoản có vai trò `DIRECTOR` với chức danh bất kỳ đều duyệt thành công.
+     - Cập nhật `_director_employees()` trong `views/common.py` bao gồm cả nhân viên mang vai trò `DIRECTOR` để hiển thị đúng danh sách ký duyệt.
+  3) **P1 — Admin vượt phạm vi công việc (`src/apps/task/permissions.py`, `task/admin.py`, `common/admin.py`):**
+     - Tạo mới `src/apps/task/permissions.py` với selector `visible_tasks_for(user)`: Superuser, SUPER_ADMIN, DIRECTOR, HR_MANAGER xem toàn bộ; DEPT_MANAGER xem công việc phòng ban quản lý, hoạt động dự án thuộc phòng hoặc do mình giao/nhận; PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA chỉ xem công việc gắn với Hoạt động dự án trong phạm vi (`visible_activities_for`) hoặc do mình giao/nhận, loại trừ toàn bộ công việc hành chính/HR riêng (`activity=None`).
+     - Áp dụng `scope_queryset` trong `TaskAdmin` gọi `visible_tasks_for`.
+     - Củng cố `RoleBasedAdminMixin.has_view_permission` trong `apps.common.admin` kiểm tra `self._object_in_scope(request, obj)` khi `obj` được cung cấp, chặn xem và sửa chi tiết form admin đối với bản ghi ngoài phạm vi.
+  4) **P1 — Lộ lịch sử công văn nội bộ mật (`src/apps/document/admin.py`):**
+     - Bổ sung `scope_queryset` cho `DispatchTrackingAdmin`: `qs.filter(dispatch__in=visible_dispatches_for(request.user))`. Trưởng phòng ban (DEPT_MANAGER) không còn thấy danh sách theo dõi hay ghi chú xử lý của các công văn mật mà portal đã từ chối.
+  5) **P1 — Hướng dẫn Waitress gây vòng redirect HTTPS (`docs/Server_Trial_Readiness_2026-09-27.md`):**
+     - Bổ sung các tham số tin cậy proxy cho lệnh chạy Waitress: `--trusted-proxy=127.0.0.1 --trusted-proxy-headers="x-forwarded-proto,x-forwarded-for,x-forwarded-host,x-forwarded-port" --clear-untrusted-proxy-headers`.
+     - Ghi chú giải thích rõ cơ chế Waitress 3.x mặc định xóa header proxy không tin cậy khiến Django `SecurityMiddleware` phát sinh vòng lặp chuyển hướng 301 (ERR_TOO_MANY_REDIRECTS).
+     - Cập nhật lệnh chạy kiểm thử PowerShell sang `.\ops\Run-Tests.ps1 -Backend sqlserver` và nhắc nhở thiết lập `APP_ENV=uat`.
+  6) **P2 — CBDA có staff xem hoạt động ngoài phạm vi qua Admin (`src/apps/activity/admin.py`):**
+     - Bổ sung `scope_queryset` cho `ActivityAdmin` gọi `visible_activities_for(request.user, qs)`. CBDA có cờ staff chỉ xem được hoạt động do mình phụ trách (lead_cbda) hoặc điều phối (coordinator).
+  7) **P2 — Trưởng phòng xem metadata tài liệu nháp của người khác qua Admin (`src/apps/document/admin.py`):**
+     - Bổ sung `scope_queryset` cho `DocumentAdmin`: đối với các vai trò không quản lý tài liệu (ngoài SUPER_ADMIN, HR_MANAGER, HR_OFFICER), loại trừ tài liệu `Draft` trừ khi do chính `request.user` tạo (`qs.filter(~Q(status="Draft") | Q(created_by=request.user))`).
+  8) **P2 — Đổi CBDA không đổi người nhận Task; hủy hoạt động vẫn để Task mở (`src/apps/activity/services.py`, `signals.py`):**
+     - Trong `create_task_for_activity`: phát hiện thay đổi `lead_cbda` hoặc `coordinator`, tự động cập nhật `assigned_to_employee` cho CBDA mới và gửi thông báo giao việc.
+     - Khi `activity.status == "Cancelled"` (cả trong signal `post_save` và hàm service), tự động cập nhật toàn bộ Task đang mở (`status not in ("Done", "Cancelled")`) thành `Cancelled`, lập tức loại khỏi danh sách truy vấn nhắc hạn quá hạn.
+  9) **P2 — Offer và phỏng vấn lưu trạng thái ngoài danh sách hợp lệ (`src/apps/portal/views/recruitment.py`):**
+     - Trong `hr_offer_update_status`: kiểm tra `status in dict(Offer.STATUS_CHOICES)`; từ chối và báo lỗi người dùng nếu giá trị không hợp lệ, giữ nguyên trạng thái trong CSDL.
+     - Trong `hr_interview_result`: kiểm tra `result in dict(Interview.RESULT_CHOICES)`; từ chối và báo lỗi người dùng nếu giá trị không hợp lệ, giữ nguyên kết quả trong CSDL.
+  10) **P2 — Fixture browser UAT chưa gắn tuyến quản lý (`ops/run_browser_uat.py`):**
+     - Thiết lập tuyến báo cáo nhân sự trong fixture UAT: `EMPLOYEE-linked.manager = DEPT_MANAGER-linked`, `DEPT_MANAGER-linked.manager = HR_MANAGER-linked`, `HR_MANAGER-linked.manager = DIRECTOR-linked`. Tuyến quản lý đa cấp giúp HR_MANAGER và DEPT_MANAGER nhìn thấy đơn nghỉ phép của cấp dưới theo đúng chính sách `visible_leave_requests_for`.
+     - Bổ sung khối `try ... except Exception as exc:` bắt lỗi và ghi nhận vào `report['errors']` trước khi khối `finally:` xuất tệp kết quả JSON.
+- **Kiểm tra và kết quả:**
+  - **Kiểm thử đơn vị và hồi quy nghiệp vụ:**
+    - `apps.task.tests`: Đạt đầy đủ test kiểm tra quyền xem/sửa admin của PROJECT_MANAGER đối với Task HR bảo mật.
+    - `apps.document.tests`: Đạt test phạm vi `DispatchTrackingAdmin` loại trừ công văn mật và `DocumentAdmin` loại trừ bản nháp người khác.
+    - `apps.activity.tests`: Đạt test đổi CBDA chuyển task, hủy hoạt động tự hủy task, và phạm vi `ActivityAdmin` cho CBDA staff.
+    - `apps.recruitment.tests`: Đạt test từ chối trạng thái Offer và kết quả Interview không hợp lệ.
+    - `apps.portal.tests`: Đạt test HR có chức danh Giám đốc bị chặn duyệt thanh lý; Giám đốc có chức danh khác duyệt thành công; biên bản thanh lý không tạo được khi đề nghị đang Pending.
+  - **Full test suite SQLite:** `venv/Scripts/python.exe ops/run_tests.py --backend sqlite` đạt **783/783 tests OK (skipped=7)** trong 427s.
+  - **Targeted SQL Server tests:** `venv/Scripts/python.exe ops/run_tests.py --backend sqlserver apps.task.tests apps.document.tests apps.activity.tests apps.recruitment.tests apps.portal.tests` đạt **88/88 tests OK** trong 53s, DB dùng một lần `test_ihrms_2b2cf09563c5488f95c7ac905672ca45` tự hủy sạch.
+  - **Browser UAT SQLite:** `ops/run_browser_uat.py --backend sqlite` đạt **402/402 checks, 32 screenshots, exit 0**.
+  - **Browser UAT SQL Server:** `ops/run_browser_uat.py --backend sqlserver` đạt **402/402 checks, 32 screenshots, exit 0**, DB test tự hủy (`db_destroyed: true`). Luồng duyệt đơn nghỉ qua Dashboard hoàn thành trọn vẹn không còn dừng.
+  - **Định dạng & tĩnh:** `git diff --check` sạch, không có lỗi định dạng hay khoảng trắng thừa.
+
 ## 2026-10-20 — Chuyển bản xuất hội thoại vào docs và review FULL khả năng chạy thử máy chủ
 
 - **Yêu cầu/phạm vi:** chủ dự án yêu cầu đưa `Tan_AI_sites_plugin_2026-10-19_21-41.md` vào `docs`, rồi review tổng thể để dự án sạch, bảo mật và có thể chạy thử trên máy chủ trung tâm. Đầu lượt `main` tại `ede4012`, fetch `origin main` thành công, ahead/behind `0/0`; đã đọc ba mục nhật ký mới nhất. Tệp untracked duy nhất chính là tệp được cho phép chuyển; không ghi đè thay đổi của tác nhân khác. Chỉ thay tài liệu trong lượt này, mã ứng dụng giữ ở chế độ REVIEW, không sửa nghiệp vụ/schema hoặc dữ liệu vận hành.

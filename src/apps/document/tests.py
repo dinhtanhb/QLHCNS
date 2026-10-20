@@ -31,10 +31,17 @@ class DocumentTestBase(TestCase):
         )
 
     @classmethod
-    def make_user(cls, role_code, username):
+    def make_user(cls, role_code, username, employee=None):
         role, _ = Role.objects.get_or_create(role_code=role_code, defaults={"role_name": role_code})
+        if employee is None:
+            employee = Employee.objects.create(
+                employee_code=f"EMP-{username.upper()[:12]}", first_name="User", last_name=username, full_name=username,
+                date_of_birth=date(1990, 1, 1), gender="Other", national_id=f"ID-{username.upper()[:12]}",
+                company_email=f"{username.lower()}@example.test", mobile_phone="0900000000",
+                join_date=date(2020, 1, 1), department=cls.department, position=cls.position,
+            )
         return User.objects.create_user(
-            username=username, password="test-password", employee=cls.employee, role=role
+            username=username, password="test-password", employee=employee, role=role
         )
 
 
@@ -79,3 +86,79 @@ class DocumentViewPermissionTests(DocumentTestBase):
         self.assertRedirects(response, reverse("portal:dashboard"))
         self.assertEqual(document.status, "PendingApproval")
         self.assertFalse(document.approvals.exists())
+
+
+from apps.document.admin import DispatchTrackingAdmin, DocumentAdmin
+from apps.document.models import DispatchTracking
+from django.contrib.admin.sites import AdminSite
+
+
+class MockRequest:
+    def __init__(self, user):
+        self.user = user
+        self.GET = {}
+
+
+class DocumentAdminScopeTests(DocumentTestBase):
+    def test_dispatch_tracking_admin_scope_excludes_confidential_dispatch(self):
+        dept_manager = self.make_user("DEPT_MANAGER", "doc-dept-mgr")
+        hr_manager = self.make_user("HR_MANAGER", "doc-hr-mgr")
+
+        book = DispatchBook.objects.create(
+            book_code="DOC-BOOK-INTERNAL", book_name="Sổ nội bộ",
+            book_type="Incoming", year=2026,
+        )
+        confidential_dispatch = OfficialDispatch.objects.create(
+            dispatch_type="Internal",
+            dispatch_book=book,
+            dispatch_no="CV-INTERNAL-CONFIDENTIAL",
+            title="Công văn mật",
+            security_level="Confidential",
+            issue_date=date(2026, 9, 25),
+            received_or_sent_date=date(2026, 9, 25),
+            created_by=hr_manager,
+        )
+        tracking = DispatchTracking.objects.create(
+            dispatch=confidential_dispatch,
+            actor=self.employee,
+            action_type="Created",
+            comment="Ghi chú xử lý mật",
+        )
+
+        admin = DispatchTrackingAdmin(DispatchTracking, AdminSite())
+        request = MockRequest(dept_manager)
+        qs = admin.get_queryset(request)
+        self.assertNotIn(tracking, qs)
+
+    def test_document_admin_scope_excludes_other_users_drafts_for_dept_manager(self):
+        dept_manager = self.make_user("DEPT_MANAGER", "doc-dept-mgr-2")
+        hr_user = self.make_user("HR_MANAGER", "doc-hr-user-2")
+
+        draft_doc = Document.objects.create(
+            document_no="DOC-DRAFT-OTHER",
+            document_name="Tài liệu nháp của HR",
+            category=self.category,
+            status="Draft",
+            created_by=hr_user,
+        )
+        my_draft = Document.objects.create(
+            document_no="DOC-DRAFT-MINE",
+            document_name="Tài liệu nháp của tôi",
+            category=self.category,
+            status="Draft",
+            created_by=dept_manager,
+        )
+        approved_doc = Document.objects.create(
+            document_no="DOC-APPROVED-ALL",
+            document_name="Tài liệu đã ban hành",
+            category=self.category,
+            status="Approved",
+            created_by=hr_user,
+        )
+
+        admin = DocumentAdmin(Document, AdminSite())
+        request = MockRequest(dept_manager)
+        qs = admin.get_queryset(request)
+        self.assertIn(approved_doc, qs)
+        self.assertIn(my_draft, qs)
+        self.assertNotIn(draft_doc, qs)

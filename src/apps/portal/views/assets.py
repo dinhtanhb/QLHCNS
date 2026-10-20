@@ -332,10 +332,8 @@ def disposal_request_create(request):
 
 
 def _can_approve_disposal(request):
-    """C3 (đã sửa): quyền duyệt thanh lý CHỈ dành cho Giám đốc/superuser — tách hẳn khỏi
-    `_can_manage_asset` (HR_OFFICER trở lên, chỉ nên được thêm thành viên/tài sản vào biên bản,
-    không được tự duyệt). Dùng chung logic với biến `can_approve` đã hiển thị ở template."""
-    return _director_employees().filter(user_account=request.user).exists() or request.user.is_superuser
+    """Quyền duyệt thanh lý CHỈ dành cho Giám đốc/superuser theo quyền tập trung approve_asset_disposal."""
+    return has_permission(request.user, "approve_asset_disposal")
 
 
 @login_required
@@ -417,26 +415,36 @@ def disposal_minutes_create(request, item_pk):
     if not _can_manage_asset(request):
         messages.error(request, "Anh/chị không có quyền.")
         return redirect("portal:dashboard")
-    item = get_object_or_404(AssetDisposalItem, pk=item_pk)
-    try:
-        AssetDisposalMinutes.objects.create(
-            item=item,
-            decision_date=request.POST.get("decision_date"),
-            origin_country=request.POST.get("origin_country", ""),
-            manufacture_year=request.POST.get("manufacture_year") or None,
-            put_into_use_year=request.POST.get("put_into_use_year") or None,
-            original_value=request.POST.get("original_value") or 0,
-            depreciated_value=request.POST.get("depreciated_value") or 0,
-            conclusion=request.POST.get("conclusion"),
-            disposal_cost=request.POST.get("disposal_cost") or 0,
-            recovery_value=request.POST.get("recovery_value") or 0,
-            director_signer_id=request.POST.get("director_signer") or None,
-            accountant_signer_id=request.POST.get("accountant_signer") or None,
-            created_by=request.user,
+    with transaction.atomic():
+        item = get_object_or_404(
+            AssetDisposalItem.objects.select_for_update().select_related("request", "asset"),
+            pk=item_pk,
         )
-        messages.success(request, "Đã lập biên bản thanh lý. Tài sản đã chuyển trạng thái 'Đã thanh lý'.")
-    except Exception as e:
-        _friendly_error(request, e, "Không thể lưu.")
+        if item.request.status != "Approved":
+            messages.error(request, "Không thể lập biên bản thanh lý khi đề nghị chưa được duyệt.")
+            return redirect("portal:disposal_request_detail", pk=item.request_id)
+        if hasattr(item, "minutes"):
+            messages.error(request, "Tài sản này đã có biên bản thanh lý.")
+            return redirect("portal:disposal_request_detail", pk=item.request_id)
+        try:
+            AssetDisposalMinutes.objects.create(
+                item=item,
+                decision_date=request.POST.get("decision_date"),
+                origin_country=request.POST.get("origin_country", ""),
+                manufacture_year=request.POST.get("manufacture_year") or None,
+                put_into_use_year=request.POST.get("put_into_use_year") or None,
+                original_value=request.POST.get("original_value") or 0,
+                depreciated_value=request.POST.get("depreciated_value") or 0,
+                conclusion=request.POST.get("conclusion"),
+                disposal_cost=request.POST.get("disposal_cost") or 0,
+                recovery_value=request.POST.get("recovery_value") or 0,
+                director_signer_id=request.POST.get("director_signer") or None,
+                accountant_signer_id=request.POST.get("accountant_signer") or None,
+                created_by=request.user,
+            )
+            messages.success(request, "Đã lập biên bản thanh lý. Tài sản đã chuyển trạng thái 'Đã thanh lý'.")
+        except Exception as e:
+            _friendly_error(request, e, "Không thể lưu.")
     return redirect("portal:disposal_request_detail", pk=item.request_id)
 
 

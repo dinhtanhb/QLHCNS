@@ -1,4 +1,5 @@
 from datetime import date
+from django.utils import timezone
 
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -8,7 +9,7 @@ from django.urls import reverse
 
 from apps.hrm.models import Employee
 from apps.organization.models import Department, Organization, Position
-from apps.recruitment.models import Candidate, RecruitmentRequest
+from apps.recruitment.models import Candidate, RecruitmentRequest, Interview, Offer
 from apps.security.models import Role, User
 
 
@@ -83,3 +84,41 @@ class RecruitmentViewPermissionTests(RecruitmentTestBase):
         request.refresh_from_db()
         self.assertRedirects(response, reverse("portal:recruitment_list"))
         self.assertEqual(request.status, "Pending")
+
+    def test_hr_offer_update_status_rejects_invalid_choice(self):
+        hr_user = self.make_user("HR_MANAGER", "rec-hr-mgr-offer")
+        candidate = Candidate.objects.create(
+            candidate_code="CAN-OFFER-1",
+            full_name="Ứng viên Test", email="candidate@test.com", phone_number="0912345678",
+        )
+        offer = Offer.objects.create(
+            candidate=candidate, offer_date=date(2026, 10, 1), expected_join_date=date(2026, 10, 15),
+            salary_offer=10000000, status="Sent",
+        )
+        self.client.force_login(hr_user)
+        response = self.client.post(
+            reverse("portal:hr_offer_update_status", args=(offer.pk,)),
+            {"status": "NOT_A_VALID_STATUS"},
+        )
+        self.assertRedirects(response, reverse("portal:hr_candidate_detail", args=(candidate.pk,)))
+        offer.refresh_from_db()
+        self.assertEqual(offer.status, "Sent")
+
+    def test_hr_interview_result_rejects_invalid_choice(self):
+        hr_user = self.make_user("HR_MANAGER", "rec-hr-mgr-interview")
+        candidate = Candidate.objects.create(
+            candidate_code="CAN-INTERVIEW-1",
+            full_name="Ứng viên Phỏng vấn", email="cand-interview@test.com", phone_number="0912345679",
+        )
+        interview = Interview.objects.create(
+            candidate=candidate, interview_date=timezone.now(), interview_type="Online",
+            interviewer=self.employee, result="Pending",
+        )
+        self.client.force_login(hr_user)
+        response = self.client.post(
+            reverse("portal:hr_interview_result", args=(interview.pk,)),
+            {"result": "INVALID_RESULT", "comments": "Không hợp lệ"},
+        )
+        self.assertRedirects(response, reverse("portal:hr_candidate_detail", args=(candidate.pk,)))
+        interview.refresh_from_db()
+        self.assertEqual(interview.result, "Pending")

@@ -21,6 +21,13 @@ class DocumentAdmin(BaseAuditAdmin):
     view_roles = VIEW_ROLES
     edit_roles = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER")
 
+    def scope_queryset(self, request, qs):
+        role_code = self._role_code(request)
+        if role_code not in ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER"):
+            from django.db.models import Q
+            return qs.filter(~Q(status="Draft") | Q(created_by=request.user))
+        return qs
+
 
 @admin.register(DocumentApproval)
 class DocumentApprovalAdmin(BaseAuditAdmin):
@@ -70,3 +77,7 @@ class DispatchTrackingAdmin(BaseAuditAdmin):
     search_fields = ("dispatch__dispatch_no", "dispatch__title", "actor__full_name")
     view_roles = VIEW_ROLES
     edit_roles = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER")
+
+    def scope_queryset(self, request, qs):
+        from apps.security.data_access import visible_dispatches_for
+        return qs.filter(dispatch__in=visible_dispatches_for(request.user))

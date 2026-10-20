@@ -8,7 +8,7 @@ from django.urls import reverse
 
 from apps.activity.models import Activity
 from apps.asset.models import (
-    Asset, AssetDisposalRequest, AssetType, InventoryLine, InventoryMember, InventorySession,
+    Asset, AssetDisposalItem, AssetDisposalMinutes, AssetDisposalRequest, AssetType, InventoryLine, InventoryMember, InventorySession,
 )
 from apps.hrm.models import Employee
 from apps.leave.models import LeaveApproval, LeaveRequest, LeaveType
@@ -154,6 +154,78 @@ class PortalSensitiveWorkflowTests(TestCase):
         disposal.refresh_from_db()
         self.assertRedirects(response, reverse("portal:disposal_request_detail", args=(disposal.pk,)))
         self.assertEqual(disposal.status, "Pending")
+
+    def test_hr_manager_with_director_title_cannot_approve_asset_disposal(self):
+        pho_giam_doc_pos = Position.objects.create(
+            position_code="PORTAL-PGD", position_name="Phó Giám đốc dự án"
+        )
+        employee = self.make_employee("PORTAL-HR-PGD", position=pho_giam_doc_pos)
+        hr_user = self.make_user("HR_MANAGER", employee, "portal-hr-pgd")
+        disposal = AssetDisposalRequest.objects.create(
+            request_no="PORTAL-DISPOSAL-PGD-TEST",
+            request_date=date(2026, 9, 25),
+            location_name="Văn phòng kiểm thử",
+            requested_by=employee,
+        )
+        self.client.force_login(hr_user)
+        response = self.client.post(
+            reverse("portal:disposal_request_detail", args=(disposal.pk,)),
+            {"action": "approve"},
+        )
+        disposal.refresh_from_db()
+        self.assertEqual(disposal.status, "Pending")
+
+    def test_director_with_different_title_can_approve_asset_disposal(self):
+        exec_pos = Position.objects.create(
+            position_code="PORTAL-EXEC", position_name="Executive Leader"
+        )
+        employee = self.make_employee("PORTAL-EXEC-DIR", position=exec_pos)
+        dir_user = self.make_user("DIRECTOR", employee, "portal-exec-dir")
+        disposal = AssetDisposalRequest.objects.create(
+            request_no="PORTAL-DISPOSAL-EXEC-TEST",
+            request_date=date(2026, 9, 25),
+            location_name="Văn phòng kiểm thử",
+            requested_by=employee,
+        )
+        self.client.force_login(dir_user)
+        response = self.client.post(
+            reverse("portal:disposal_request_detail", args=(disposal.pk,)),
+            {"action": "approve"},
+        )
+        disposal.refresh_from_db()
+        self.assertEqual(disposal.status, "Approved")
+
+    def test_disposal_minutes_cannot_be_created_when_request_is_pending(self):
+        asset_type = AssetType.objects.create(
+            asset_type_code="PORTAL-DISP-TYPE", asset_type_name="Loại TS thanh lý"
+        )
+        asset = Asset.objects.create(
+            asset_code="PORTAL-ASSET-DISP-1", asset_name="Máy tính cũ",
+            asset_type=asset_type, status="InUse",
+        )
+        employee = self.make_employee("PORTAL-HR-MIN-TEST")
+        hr_user = self.make_user("HR_OFFICER", employee, "portal-hr-min-test")
+        disposal = AssetDisposalRequest.objects.create(
+            request_no="PORTAL-DISPOSAL-PENDING-MIN",
+            request_date=date(2026, 9, 25),
+            location_name="Văn phòng kiểm thử",
+            requested_by=employee,
+            status="Pending",
+        )
+        item = AssetDisposalItem.objects.create(
+            request=disposal, asset=asset, damage_description="Hỏng nguồn"
+        )
+        self.client.force_login(hr_user)
+        response = self.client.post(
+            reverse("portal:disposal_minutes_create", args=(item.pk,)),
+            {"decision_date": "2026-09-27", "conclusion": "Thanh lý hủy"},
+        )
+        self.assertRedirects(response, reverse("portal:disposal_request_detail", args=(disposal.pk,)))
+        disposal.refresh_from_db()
+        asset.refresh_from_db()
+        self.assertEqual(disposal.status, "Pending")
+        self.assertEqual(asset.status, "InUse")
+        self.assertFalse(AssetDisposalMinutes.objects.filter(item=item).exists())
 
     def test_employee_sees_only_issued_payslips_from_locked_periods(self):
         employee = self.make_employee("PORTAL-PAYSLIP-EMP")

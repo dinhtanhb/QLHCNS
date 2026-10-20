@@ -203,10 +203,14 @@ def hr_interview_result(request, pk):
         messages.error(request, "Anh/chị không có quyền.")
         return redirect("portal:hr_candidate_list")
     interview = get_object_or_404(Interview, pk=pk)
-    interview.result = request.POST.get("result")
+    result = request.POST.get("result")
+    if result not in dict(Interview.RESULT_CHOICES):
+        messages.error(request, f"Kết quả phỏng vấn '{result}' không hợp lệ.")
+        return redirect("portal:hr_candidate_detail", pk=interview.candidate_id)
+    interview.result = result
     interview.comments = request.POST.get("comments", "")
     interview.modified_by = request.user
-    interview.save()
+    interview.save(update_fields=["result", "comments", "modified_by", "modified_date"])
     messages.success(request, "Đã cập nhật kết quả phỏng vấn.")
     return redirect("portal:hr_candidate_detail", pk=interview.candidate_id)
 
@@ -240,9 +244,13 @@ def hr_offer_update_status(request, pk):
         messages.error(request, "Anh/chị không có quyền.")
         return redirect("portal:hr_candidate_list")
     offer = get_object_or_404(Offer, pk=pk)
-    offer.status = request.POST.get("status")
+    status = request.POST.get("status")
+    if status not in dict(Offer.STATUS_CHOICES):
+        messages.error(request, f"Trạng thái '{status}' không hợp lệ.")
+        return redirect("portal:hr_candidate_detail", pk=offer.candidate_id)
+    offer.status = status
     offer.modified_by = request.user
-    offer.save()
+    offer.save(update_fields=["status", "modified_by", "modified_date"])
     messages.success(request, "Đã cập nhật trạng thái Offer.")
     return redirect("portal:hr_candidate_detail", pk=offer.candidate_id)
 

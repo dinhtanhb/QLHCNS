@@ -245,6 +245,54 @@ class ActivityWorkflowTests(ActivityTestDataMixin, TestCase):
             1,
         )
 
+    def test_activity_cbda_change_reassigns_task_to_new_cbda(self):
+        activity = self.make_activity(dispatch=self.dispatch)
+        task = Task.objects.get(activity=activity)
+        self.assertEqual(task.assigned_to_employee, self.cbda)
+
+        new_cbda = self.make_employee("NEW-CBDA")
+        activity.lead_cbda = new_cbda
+        activity.save()
+
+        from apps.activity.services import create_task_for_activity
+        create_task_for_activity(activity)
+
+        task.refresh_from_db()
+        self.assertEqual(task.assigned_to_employee, new_cbda)
+
+    def test_activity_cancel_cancels_open_tasks(self):
+        activity = self.make_activity(dispatch=self.dispatch)
+        task = Task.objects.get(activity=activity)
+        self.assertEqual(task.status, "Todo")
+
+        activity.status = "Cancelled"
+        activity.save()
+
+        task.refresh_from_db()
+        self.assertEqual(task.status, "Cancelled")
+
+    def test_activity_admin_scope_for_cbda_staff(self):
+        from apps.activity.admin import ActivityAdmin
+        from django.contrib.admin.sites import AdminSite
+
+        cbda_role, _ = Role.objects.get_or_create(role_code="CBDA", defaults={"role_name": "CBDA"})
+        cbda_user = User.objects.create_user(
+            username="cbda-staff-user", password="password", employee=self.cbda, role=cbda_role, is_staff=True,
+        )
+        other_cbda = self.make_employee("OTHER-CBDA")
+        my_act = self.make_activity(code="ACT-MY", dispatch=self.dispatch, lead=self.cbda)
+        other_act = self.make_activity(code="ACT-OTHER", dispatch=self.dispatch, lead=other_cbda)
+
+        admin = ActivityAdmin(Activity, AdminSite())
+        class MockReq:
+            def __init__(self, user):
+                self.user = user
+                self.GET = {}
+        request = MockReq(cbda_user)
+        qs = admin.get_queryset(request)
+        self.assertIn(my_act, qs)
+        self.assertNotIn(other_act, qs)
+
 
 
 

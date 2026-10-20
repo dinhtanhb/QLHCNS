@@ -69,3 +69,74 @@ class TaskModelValidationTests(TaskModelTestBase):
         with self.assertRaises(IntegrityError):
             with transaction.atomic():
                 self.make_task(status="Todo").save()
+
+
+from apps.security.models import Role, User
+from apps.task.admin import TaskAdmin
+from apps.task.permissions import visible_tasks_for
+from django.contrib.admin.sites import AdminSite
+
+
+class MockRequest:
+    def __init__(self, user):
+        self.user = user
+        self.GET = {}
+
+
+class TaskAdminScopeTests(TaskModelTestBase):
+    def test_project_manager_staff_cannot_view_or_edit_unrelated_hr_task(self):
+        hr_role, _ = Role.objects.get_or_create(role_code="HR_MANAGER", defaults={"role_name": "HR"})
+        pm_role, _ = Role.objects.get_or_create(role_code="PROJECT_MANAGER", defaults={"role_name": "PM"})
+
+        hr_employee = Employee.objects.create(
+            employee_code="TSK-HR-EMP", first_name="HR", last_name="Specialist", full_name="TSK-HR-EMP",
+            date_of_birth=date(1990, 1, 1), gender="Other", national_id="TSK-HR-EMP",
+            company_email="tsk-hr@example.test", mobile_phone="0900000001",
+            join_date=date(2020, 1, 1), department=self.department, position=self.position,
+        )
+        pm_employee = Employee.objects.create(
+            employee_code="TSK-PM-EMP", first_name="PM", last_name="Leader", full_name="TSK-PM-EMP",
+            date_of_birth=date(1990, 1, 1), gender="Other", national_id="TSK-PM-EMP",
+            company_email="tsk-pm@example.test", mobile_phone="0900000002",
+            join_date=date(2020, 1, 1), department=self.department, position=self.position,
+        )
+
+        pm_user = User.objects.create_user(
+            username="pm-staff-user", password="password", employee=pm_employee, role=pm_role,
+            is_staff=True,
+        )
+
+        hr_task = Task.objects.create(
+            task_code="TSK-HR-CONFIDENTIAL",
+            task_name="Đánh giá kỷ luật phòng HR",
+            description="Thông tin bảo mật nội bộ HR",
+            assigned_by_employee=hr_employee,
+            assigned_to_employee=hr_employee,
+            department=self.department,
+            status="Todo",
+            activity=None,
+        )
+
+        act_task = Task.objects.create(
+            task_code="TSK-ACT-VISIBLE",
+            task_name="Báo cáo tiến độ hoạt động",
+            assigned_by_employee=pm_employee,
+            assigned_to_employee=self.employee,
+            department=self.department,
+            status="Todo",
+            activity=self.activity,
+        )
+
+        visible = visible_tasks_for(pm_user)
+        self.assertIn(act_task, visible)
+        self.assertNotIn(hr_task, visible)
+
+        admin = TaskAdmin(Task, AdminSite())
+        request = MockRequest(pm_user)
+        qs = admin.get_queryset(request)
+        self.assertIn(act_task, qs)
+        self.assertNotIn(hr_task, qs)
+
+        self.assertTrue(admin.has_view_permission(request, act_task))
+        self.assertFalse(admin.has_view_permission(request, hr_task))
+        self.assertFalse(admin.has_change_permission(request, hr_task))

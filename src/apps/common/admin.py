@@ -32,7 +32,7 @@ class RoleBasedAdminMixin:
         return self._role_code(request) in self.view_roles
 
     def has_view_permission(self, request, obj=None):
-        return self.has_module_permission(request)
+        return self.has_module_permission(request) and self._object_in_scope(request, obj)
 
     def has_add_permission(self, request):
         if not request.user.is_active or not request.user.is_staff:

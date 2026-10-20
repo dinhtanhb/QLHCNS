@@ -1,6 +1,7 @@
 from django.contrib import admin
 from apps.common.admin import BaseAuditAdmin
 from .models import Task, TaskComment
+from .permissions import visible_tasks_for
 
 
 class TaskCommentInline(admin.TabularInline):
@@ -26,11 +27,4 @@ class TaskAdmin(BaseAuditAdmin):
     )
 
     def scope_queryset(self, request, qs):
-        role_code = self._role_code(request)
-        if role_code == "DEPT_MANAGER":
-            employee = getattr(request.user, "employee", None)
-            if not employee:
-                return qs.none()
-            dept_ids = employee.managed_departments.values_list("pk", flat=True)
-            return qs.filter(department_id__in=dept_ids)
-        return qs
+        return visible_tasks_for(request.user, qs)

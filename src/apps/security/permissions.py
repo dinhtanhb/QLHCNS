@@ -101,6 +101,7 @@ PERMISSION_MATRIX = {
         SUPER_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER, FINANCE_OFFICER,
     ),
     "manage_asset": (SUPER_ADMIN, HR_MANAGER, HR_OFFICER),
+    "approve_asset_disposal": (DIRECTOR,),
     # Trung tâm Báo cáo (/reports/) — chỉ Ban giám đốc, Nhân sự, Kế toán và Quản trị
     "view_report_center": (SUPER_ADMIN, SYS_ADMIN, DIRECTOR, HR_MANAGER, HR_OFFICER, FINANCE_OFFICER),
     # Hiện menu quản trị

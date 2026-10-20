@@ -1,3 +1,4 @@
+from django.db import models
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
 from apps.security.permissions import get_role_code
@@ -44,7 +45,11 @@ def _friendly_error(request, exc, user_message, log_context=""):
 
 
 def _director_employees():
-    return Employee.objects.filter(position__position_name__icontains="Giám đốc", employment_status="Active")
+    return Employee.objects.filter(
+        models.Q(user_account__role__role_code="DIRECTOR")
+        | models.Q(position__position_name__icontains="Giám đốc"),
+        employment_status="Active",
+    ).distinct()
 
 
 def _get_employee(request):

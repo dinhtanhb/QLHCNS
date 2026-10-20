@@ -79,13 +79,13 @@ Note: collectstatic copied 219 files locally and reported two duplicate admin Ja
 IIS/reverse proxy phục vụ /static/ từ src/staticfiles/. Chạy Waitress ở cửa sổ PowerShell riêng, tại thư mục gốc:
 
     Set-Location .\src
-    ..\venv\Scripts\waitress-serve.exe --listen=127.0.0.1:8001 config.wsgi:application
+    ..\venv\Scripts\waitress-serve.exe --listen=127.0.0.1:8001 --trusted-proxy=127.0.0.1 --trusted-proxy-headers="x-forwarded-proto,x-forwarded-for,x-forwarded-host,x-forwarded-port" --clear-untrusted-proxy-headers config.wsgi:application
 
 Ở cửa sổ khác:
 
     Invoke-WebRequest http://127.0.0.1:8001/portal/ -MaximumRedirection 5
 
-Sau đó mở URL HTTPS SIT qua reverse proxy để kiểm tra đăng nhập, CSS, static files và cookie. Proxy kết thúc TLS, kiểm tra Host, xóa/ghi đè X-Forwarded-Proto=https và chặn truy cập trực tiếp tới cổng 8001. Chỉ tin header proxy khi client không thể đi thẳng vào Waitress. Không mở Waitress trực tiếp ra Internet/LAN rộng.
+Sau đó mở URL HTTPS SIT qua reverse proxy để kiểm tra đăng nhập, CSS, static files và cookie. Proxy kết thúc TLS, kiểm tra Host, xóa/ghi đè X-Forwarded-Proto=https và chặn truy cập trực tiếp tới cổng 8001. Chỉ tin header proxy khi client không thể đi thẳng vào Waitress. Không mở Waitress trực tiếp ra Internet/LAN rộng. Lưu ý quan trọng: Waitress 3.x mặc định xóa các header proxy không tin cậy. Nếu thiếu `--trusted-proxy=127.0.0.1 --trusted-proxy-headers=...`, Waitress sẽ xóa header `X-Forwarded-Proto: https` từ reverse proxy (IIS), khiến Django `SecurityMiddleware` hiểu nhầm là HTTP và phát sinh vòng lặp chuyển hướng 301 vô tận (ERR_TOO_MANY_REDIRECTS). Khai báo rõ IP proxy cục bộ và các header tin cậy đảm bảo Django nhận biết đúng kết nối HTTPS an toàn.
 
 Waitress hỗ trợ CPython trên Windows. Django yêu cầu WSGI/ASGI server thay runserver khi triển khai. Tham khảo [Django deployment checklist](https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/), [Django static files](https://docs.djangoproject.com/en/5.2/howto/static-files/deployment/) và [Waitress](https://docs.pylonsproject.org/projects/waitress/en/stable/).
 
@@ -93,7 +93,8 @@ Waitress hỗ trợ CPython trên Windows. Django yêu cầu WSGI/ASGI server th
 
 Chỉ chạy trên SIT được phép tạo/xóa database test. Django test runner sẽ tạo rồi xóa test database; không chạy với production hay database dùng chung:
 
-    powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1
+    # Đảm bảo thiết lập APP_ENV=uat trong .env trước khi chạy kiểm thử
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1 -Backend sqlserver
 
 Script tự vào `src`, chạy toàn bộ test tự phát hiện bao gồm `apps.portal.tests_mobile`, in tổng số và báo lỗi nếu số test bằng 0. `python src\manage.py test` gọi trực tiếp từ thư mục gốc có thể tìm 0 test. Kết quả ngày 27/09 là 177 test đạt trên SQL Server test database tạm, chỉ là lịch sử; lưu số test/backend/log của lần chạy mới trên máy chủ và xử lý mọi lỗi.
 
