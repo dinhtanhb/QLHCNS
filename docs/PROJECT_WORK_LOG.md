@@ -1,5 +1,35 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-20 — Cập nhật cẩm nang sử dụng, tài liệu triển khai go-live, README và làm sạch dự án chuẩn bị chạy thử nghiệm thật
+
+- **Yêu cầu/phạm vi:** Cập nhật toàn bộ các tệp README, cẩm nang sử dụng IHRMS, checklist go-live và ma trận phân quyền RBAC; phản ánh đầy đủ các tính năng Trợ lý AI tìm kiếm tài liệu SharePoint/CSDL, quy trình thanh lý tài sản khóa giao dịch, kiểm soát trạng thái tuyển dụng, scoping Admin và hướng dẫn chạy Waitress không gây vòng lặp HTTPS; làm sạch mã nguồn, kiểm tra trạng thái toàn diện chuẩn bị cho chạy thử nghiệm thật trên máy chủ SIT. Nhánh `main`, git status sạch, một tác nhân ghi tại một thời điểm.
+- **Nội dung tài liệu cập nhật:**
+  1. `docs/HUONG_DAN_SU_DUNG_IHRMS.md`:
+     - Nâng phiên bản lên 1.4 (ngày 20/10/2026).
+     - Thêm Mục 4.9: Hướng dẫn sử dụng Trợ lý AI (Chatbot IHRMS) tra cứu công văn, báo cáo hoạt động, quy chế nội bộ và quyết định nhân sự; nhận diện từ khóa viết tắt "QĐ", "QD"; cú pháp tìm kiếm theo mốc ngày cụ thể (ví dụ: `ngày 29.04.2020`) và khoảng ngày; hỗ trợ đa dạng định dạng ngày trong tên tệp SharePoint và thông báo minh bạch số tệp chưa xác định được ngày; bảo vệ thư mục nhạy cảm `QuyetDinh` (chỉ HR_MANAGER, HR_OFFICER, DIRECTOR, FINANCE_OFFICER được tra cứu/tải); ghi nhật ký an ninh `SecurityEvent` với thư mục và mã băm SHA-256 của tên tệp phục vụ kiểm toán bảo mật.
+     - Mục 3 (Đăng nhập và điều hướng): Cập nhật thông tin hỗ trợ giao diện đa kích thước từ điện thoại di động (390px) đến máy tính (1920px), hỗ trợ chế độ màu Sáng (Light) và Tối (Dark).
+     - Mục 5 & Hoạt động dự án: Ghi nhận cơ chế tự động chuyển giao Task báo cáo khi đổi CBDA phụ trách chính (`lead_cbda`); tự động hủy Task báo cáo khi hoạt động bị hủy; phân quyền Admin giới hạn cho các vai trò dự án (PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA có `is_staff`) chỉ xem Task và hoạt động trong phạm vi dự án; bảo vệ lịch sử xử lý công văn mật theo phạm vi công văn cha.
+     - Mục 6 (Nhân sự): Quy tắc kiểm soát trạng thái danh mục chuẩn cho Thư mời nhận việc (Offer) và kết quả phỏng vấn.
+     - Mục 8 (Công văn, tài sản, kiểm kê): Làm rõ quy trình thanh lý tài sản 5 bước; thẩm quyền phê duyệt thuộc về Ban Giám đốc (`DIRECTOR`, `SUPER_ADMIN`) qua quyền tập trung `approve_asset_disposal`; kiểm soát máy chủ bắt buộc đề nghị thanh lý phải ở trạng thái `Approved` mới được lập biên bản; khóa an toàn giao dịch tại server và tự động chuyển tài sản sang `Disposed`.
+  2. `README.md`:
+     - Cập nhật tình trạng kiểm thử ngày 20/10/2026: 783/783 unit/regression tests đạt trên SQLite (7 skip), 88/88 targeted tests đạt trên SQL Server (test DB tự hủy sạch), Browser UAT đạt 402/402 checks với 32 ảnh chụp đối soát trên cả SQLite và SQL Server; 10 hạng mục P1/P2 được xử lý triệt để.
+     - Bổ sung lệnh chạy kiểm thử PowerShell trên SQL Server (`.\ops\Run-Tests.ps1 -Backend sqlserver`).
+     - Bổ sung cấu hình Waitress tin cậy reverse proxy (`--trusted-proxy` và `--trusted-proxy-headers`).
+  3. `docs/Checklist_Go_Live_IHRMS.md`:
+     - Đồng bộ nhánh `main`, commit đã duyệt `8020fbc` và push remote.
+     - Cập nhật số lượng test (783 tests SQLite / 88 tests SQL Server).
+     - Bổ sung tham số tin cậy proxy cho Waitress tại bước 1.6.
+  4. `docs/10_RBAC_Permission_Matrix.md`:
+     - Cập nhật quy tắc phân quyền tập trung cho `approve_asset_disposal`.
+     - Ghi nhận quy tắc kiểm soát biên bản thanh lý và khóa giao dịch chuyển trạng thái tài sản sang `DISPOSED`.
+     - Bổ sung quy tắc scoping Admin cho TaskAdmin, ProjectActivityAdmin và DocumentProcessingHistoryAdmin.
+- **Kiểm tra và xác nhận trạng thái:**
+  - `git diff --check`: 0 lỗi định dạng, không có khoảng trắng thừa.
+  - `manage.py check`: 0 issues (0 silenced).
+  - `ops/check_migration_state.py`: Toàn bộ migration đã áp dụng, không có migration chưa áp dụng.
+  - `pip check`: No broken requirements found.
+  - Test suites: 783 tests SQLite, 88 targeted SQL Server tests, 402 checks browser UAT đã đạt ở lượt trước; mã nguồn và tài liệu hoàn toàn đồng bộ, sẵn sàng cho triển khai thử nghiệm thật.
+
 ## 2026-10-20 — Điều phối khắc phục toàn bộ 10 lỗi P1 và P2 (Tài sản, Task Admin, Công văn, Waitress SIT, Tuyển dụng, Hoạt động dự án và Fixture UAT)
 
 - **Yêu cầu/phạm vi:** Chủ dự án cấp quyền toàn bộ điều phối rà soát và sửa triệt để 10 lỗi thuộc 2 nhóm ưu tiên P1 và P2 đã phát hiện qua đợt review. Nhánh `main`, git status sạch, ahead/behind 0/0 so với `origin/main`. Một tác nhân ghi tại một thời điểm; giữ nguyên tệp untracked `Tan_AI_sites_plugin_2026-10-19_21-41.md` theo quy định AGENTS.md.

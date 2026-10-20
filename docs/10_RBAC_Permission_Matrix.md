@@ -8,7 +8,8 @@ Chính sách này ưu tiên hơn các bảng lịch sử bên dưới cho **tìm
 - Công văn đến/đi và báo cáo hoạt động SharePoint: mọi tài khoản đăng nhập đang hoạt động.
 - Đơn xin nghỉ: chỉ bản thân và nhân viên cấp dưới trong cây `Employee.manager` (trực tiếp/gián tiếp), áp dụng cả HR/Giám đốc. Không mở rộng chỉ vì cùng phòng hoặc có quyền duyệt toàn công ty.
 - Hồ sơ ứng viên/CV: HR_MANAGER, HR_OFFICER, DIRECTOR, PROJECT_COORDINATOR, PROJECT_MANAGER.
-- Tài sản/kiểm kê/thanh lý: FINANCE_OFFICER, HR_MANAGER, HR_OFFICER, DIRECTOR; quyền ghi hiện hữu chỉ HR/quản trị cấp cao. SYS_ADMIN và PROJECT_COORDINATOR không có quyền đọc tài sản theo vai trò riêng.
+- Tài sản/kiểm kê/thanh lý: FINANCE_OFFICER, HR_MANAGER, HR_OFFICER, DIRECTOR; quyền ghi hiện hữu chỉ HR/quản trị cấp cao. SYS_ADMIN và PROJECT_COORDINATOR không có quyền đọc tài sản theo vai trò riêng. Quyền duyệt đề nghị thanh lý tài sản (`approve_asset_disposal`) thuộc về DIRECTOR và SUPER_ADMIN qua phân quyền tập trung. Biên bản thanh lý chỉ được lập khi đề nghị đã được duyệt (APPROVED), thực hiện khóa giao dịch tại server và chuyển tài sản sang DISPOSED.
+- Phạm vi quản trị (Admin scoping): Tài khoản dự án (PROJECT_MANAGER, PROJECT_COORDINATOR, CBDA có `is_staff`) chỉ xem Task và Hoạt động trong phạm vi dự án hoặc được giao/giao bởi họ, không xem công việc nội bộ HCNS. Lịch sử xử lý công văn (DocumentProcessingHistory) áp dụng bộ lọc bảo mật của công văn cha, ngăn lộ dữ liệu công văn mật cho DEPT_MANAGER/người dùng ngoài phạm vi.
 - Quyết định nhân sự: FINANCE_OFFICER, HR_MANAGER, HR_OFFICER, DIRECTOR xem toàn bộ; các vai trò khác chỉ bản thân/cấp dưới theo cây quản lý. Trang, kết quả tìm, Word và PDF đã ký dùng cùng phạm vi.
 - Superuser giữ quyền quản trị hiện hữu cho các loại tài liệu, riêng đơn nghỉ vẫn theo phạm vi bản thân/cấp dưới. Công văn chỉ đạo nội bộ không thuộc yêu cầu mở công văn đến/đi; giữ phạm vi hiện hữu. Không cho phép suy quyền đọc tệp cá nhân từ tên thư mục SharePoint.
 

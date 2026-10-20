@@ -2,7 +2,7 @@
 
 **Đối tượng:** nhân viên, quản lý, Nhân sự, Tài chính, quản trị hệ thống
 
-**Phiên bản:** 1.3 — 26/09/2026
+**Phiên bản:** 1.4 — 20/10/2026
 
 **Phạm vi:** thao tác theo giao diện hiện có. Quy định nội bộ về hạn xử lý, người thay thế và phê duyệt cần công ty ban hành riêng.
 
@@ -27,7 +27,7 @@ Menu thay đổi theo quyền tài khoản. Cờ “Staff status” không thay 
 
 1. Mở địa chỉ IHRMS do công ty cung cấp; kiểm tra đúng tên miền và HTTPS.
 2. Đăng nhập bằng tài khoản cá nhân. Nếu quên mật khẩu, liên hệ đầu mối được công ty chỉ định; không gửi mật khẩu qua chat/email.
-3. Trang chính là **Bảng điều khiển**. Menu thay đổi theo vai trò. **Hoạt động dự án** là menu riêng ở cuối thanh điều hướng, gồm **Theo dõi hoạt động** và **Lịch hoạt động**; chỉ tài khoản được cấp quyền mới thấy. Menu **Duyệt & Xử lý** dành cho các hàng chờ phê duyệt được cấp.
+3. Trang chính là **Bảng điều khiển**. Menu thay đổi theo vai trò. Giao diện hỗ trợ tối ưu trên mọi kích thước màn hình từ điện thoại thông minh (390px), máy tính bảng đến máy tính để bàn (1920px), hỗ trợ chế độ màu Sáng (Light) và Tối (Dark). **Hoạt động dự án** là menu riêng ở cuối thanh điều hướng, gồm **Theo dõi hoạt động** và **Lịch hoạt động**; chỉ tài khoản được cấp quyền mới thấy. Menu **Duyệt & Xử lý** dành cho các hàng chờ phê duyệt được cấp.
 4. Chuông thông báo hiển thị thông tin được gửi tới bạn. Chọn tên tài khoản để xem lựa chọn tài khoản.
 5. Chọn **Đăng xuất** khi xong, nhất là trên máy dùng chung.
 
@@ -88,6 +88,17 @@ Mở chuông hoặc **Thông báo** để xem cập nhật IHRMS. Với một s�
 
 Thông báo về yêu cầu cập nhật hồ sơ và nhắc checklist hiện nằm trong IHRMS; không mặc định sẽ có email cho các thông báo đó.
 
+### 4.9 Trợ lý AI và Tìm kiếm tài liệu / SharePoint
+
+Trợ lý AI (Chatbot IHRMS) hỗ trợ người dùng tra cứu tài liệu nhanh chóng trên SharePoint và trong cơ sở dữ liệu hệ thống:
+
+1. **Phạm vi tra cứu:** Công văn đến, công văn đi, báo cáo hoạt động dự án, quy chế nội bộ và các quyết định nhân sự.
+2. **Hỗ trợ từ khóa và viết tắt:** Hệ thống tự động nhận diện các từ viết tắt phổ biến như "QĐ", "QD" tương đương với "Quyết định" khi tìm kiếm.
+3. **Tìm kiếm theo thời gian:** Hỗ trợ tìm kiếm theo mốc ngày cụ thể (ví dụ: `ngày 29.04.2020`, `29/04/2020`, `2020-04-29`) hoặc theo khoảng thời gian (từ ngày ... đến ngày ...).
+4. **Nhận diện ngày từ tên tệp SharePoint:** Hệ thống hỗ trợ đa dạng định dạng ngày tháng trong tên tệp (năm-tháng-ngày, ngày-tháng-năm). Khi người dùng lọc theo thời gian, nếu có tệp trong thư mục chưa xác định được ngày phát hành từ tên tệp, Trợ lý sẽ thông báo minh bạch: *"còn N tệp trong thư mục chưa xác định được ngày"* để người dùng không bỏ sót tài liệu cần tra cứu.
+5. **Bảo mật thư mục nhạy cảm (`QuyetDinh`):** Thư mục Quyết định nhân sự (bổ nhiệm, kỷ luật, chế độ lương, khen thưởng) được bảo vệ mặc định. Chỉ 4 vai trò có thẩm quyền mới được phép tìm kiếm và tải tệp qua Trợ lý: `HR_MANAGER`, `HR_OFFICER`, `DIRECTOR`, và `FINANCE_OFFICER`. Các vai trò khác không thể tiếp cận tệp thuộc thư mục này.
+6. **Nhật ký truy vết an ninh:** Mọi thao tác tải tệp qua Trợ lý AI đều được ghi nhật ký an ninh (`SecurityEvent`) với thông tin thư mục và mã băm SHA-256 của tên tệp để phục vụ kiểm toán mà không làm lộ tên tệp nhạy cảm trong hệ thống log mở.
+
 ## 5. Người duyệt
 
 ### Duyệt nghỉ phép
@@ -133,9 +144,11 @@ Khi yêu cầu chỉnh sửa, người gửi, người tạo hồ sơ, CBDA ph�
 
 Dashboard **Theo dõi hoạt động** cho biết người phụ trách, thời gian, trạng thái Task, hạn báo cáo, tệp báo cáo và trạng thái hồ sơ đề xuất. Dùng bộ lọc tháng/CBDA; dùng **Lịch hoạt động** để xem ngày triển khai và hạn báo cáo.
 
-Khi Điều phối viên/Quản lý dự án tạo hoặc cập nhật hoạt động, tự nhập ngày bắt đầu và ngày kết thúc theo kế hoạch thực tế, chọn CBDA phụ trách chính rồi liên kết công văn đi đã lập trong hệ thống. Ngày phát hành công văn chỉ kích hoạt giao Task, không dùng làm ngày bắt đầu hoạt động. Sau khi lưu, IHRMS giao Task báo cáo cho CBDA đó; người giao được ghi nhận là Điều phối viên, hoặc người ký công văn nếu hồ sơ không có Điều phối viên. Hạn là 10 ngày làm việc sau ngày kết thúc hoạt động, không tính Thứ Bảy, Chủ Nhật và ngày nghỉ đã khai báo trong IHRMS. Nếu đổi lịch hoạt động, Task được đồng bộ ngày, thông báo cho người liên quan và được mở lại nếu đã hoàn thành trước khi hoạt động mới kết thúc. Không cần bấm “Giao việc mới” cho Task báo cáo hoạt động. Nếu chưa thấy Task, kiểm tra hoạt động đã được liên kết công văn đi và đã chọn đúng CBDA chưa.
+Khi Điều phối viên/Quản lý dự án tạo hoặc cập nhật hoạt động, tự nhập ngày bắt đầu và ngày kết thúc theo kế hoạch thực tế, chọn CBDA phụ trách chính rồi liên kết công văn đi đã lập trong hệ thống. Ngày phát hành công văn chỉ kích hoạt giao Task, không dùng làm ngày bắt đầu hoạt động. Sau khi lưu, IHRMS giao Task báo cáo cho CBDA đó; người giao được ghi nhận là Điều phối viên, hoặc người ký công văn nếu hồ sơ không có Điều phối viên. Hạn là 10 ngày làm việc sau ngày kết thúc hoạt động, không tính Thứ Bảy, Chủ Nhật và ngày nghỉ đã khai báo trong IHRMS. Nếu đổi lịch hoạt động, Task được đồng bộ ngày, thông báo cho người liên quan và được mở lại nếu đã hoàn thành trước khi hoạt động mới kết thúc. Nếu thay đổi CBDA phụ trách chính, hệ thống tự động chuyển giao Task báo cáo tương ứng cho CBDA mới và gửi thông báo tiếp nhận. Khi một hoạt động bị hủy, toàn bộ Task báo cáo đang mở của hoạt động đó tự động được hủy và loại khỏi truy vấn nhắc hạn, tránh tình trạng việc quá hạn ảo. Không cần bấm “Giao việc mới” cho Task báo cáo hoạt động. Nếu chưa thấy Task, kiểm tra hoạt động đã được liên kết công văn đi và đã chọn đúng CBDA chưa.
 
 Mở **Hoạt động dự án → Giao việc & hoàn tất** để xem danh sách. Với tài khoản có quyền giám sát hoạt động, tab mặc định **Theo dõi hoạt động** liệt kê Task trong phạm vi dự án được phép xem; tab **Việc của tôi** chỉ liệt kê Task giao cho chính người đang đăng nhập; tab **Việc tôi đã giao** chỉ liệt kê Task do chính tài khoản đó giao. Như vậy Task giao cho CBDA không bị hiểu nhầm là việc của Giám đốc/Điều phối viên khi họ theo dõi tiến độ. Nút **Giao việc mới** vẫn tuân theo quyền giao Task riêng. CBDA mở Task, cập nhật tiến độ; tải báo cáo hoạt động lên SharePoint rồi mới chọn **Hoàn thành**. Dashboard **Theo dõi hoạt động** cũng thể hiện trạng thái Task và tệp báo cáo. Nhắc hạn cần Windows Task Scheduler được IT cấu hình; không mặc định rằng lịch nhắc đã chạy tự động nếu chưa được kiểm tra.
+
+Trong giao diện Quản trị (Django Admin), các tài khoản dự án (Quản lý dự án, Điều phối viên, CBDA) nếu được cấp cờ `is_staff` chỉ được xem công việc và hoạt động trong phạm vi dự án hoặc được giao cho chính họ; không được phép xem các công việc và hoạt động nội bộ thuộc phòng Nhân sự hay các dự án ngoài phạm vi.
 
 ## 6. Nhân sự
 
@@ -147,7 +160,7 @@ Mở **Hoạt động dự án → Giao việc & hoàn tất** để xem danh s�
 5. Phối hợp quản trị tạo tài khoản và cấp đúng vai trò theo quy trình.
 
 ### Thay đổi nhân sự, tuyển dụng, lịch
-Ghi ngày hiệu lực chính xác cho điều chuyển/thay đổi; không áp dụng thay đổi tương lai sớm và không sửa lịch sử tùy tiện. Theo dõi ứng viên, trạng thái và hồ sơ; đề xuất tuyển dụng phải được duyệt mới xem là nhu cầu được chấp thuận. Khi cập nhật ngày lễ/lịch, rà ảnh hưởng tới phép và công.
+Ghi ngày hiệu lực chính xác cho điều chuyển/thay đổi; không áp dụng thay đổi tương lai sớm và không sửa lịch sử tùy tiện. Theo dõi ứng viên, trạng thái và hồ sơ; đề xuất tuyển dụng phải được duyệt mới xem là nhu cầu được chấp thuận. Khi cập nhật trạng thái thư mời nhận việc (Offer) và kết quả phỏng vấn, hệ thống kiểm soát chặt chẽ danh mục trạng thái chuẩn (DRAFT, PENDING, APPROVED, ACCEPTED, REJECTED, EXPIRED, CANCELLED với Offer; PASSED, FAILED, PENDING_REVIEW với phỏng vấn), ngăn chặn việc lưu dữ liệu ngoài danh mục. Khi cập nhật ngày lễ/lịch, rà ảnh hưởng tới phép và công.
 
 ### Mở và theo dõi checklist tiếp nhận/nghỉ việc
 
@@ -184,10 +197,15 @@ Không đổi cấu hình có hiệu lực quá khứ để sửa nhanh kỳ đ�
 ## 8. Công văn, tài sản, kiểm kê
 
 ### Công văn
-Nhập loại, số/ký hiệu, trích yếu, cơ quan, ngày ban hành/nhận/gửi, khẩn/mật, đơn vị xử lý, người phụ trách, người ký, hạn và bản scan. Soát phân loại mật/người nhận trước khi lưu; cập nhật tiến độ tại chi tiết.
+Nhập loại, số/ký hiệu, trích yếu, cơ quan, ngày ban hành/nhận/gửi, khẩn/mật, đơn vị xử lý, người phụ trách, người ký, hạn và bản scan. Soát phân loại mật/người nhận trước khi lưu; cập nhật tiến độ tại chi tiết. Đối với công văn nội bộ mật, lịch sử xử lý và ghi chú xử lý tuân thủ nghiêm ngặt phạm vi truy cập của công văn cha; người không có quyền truy cập công văn sẽ không thể xem trộm tiêu đề hoặc ghi chú xử lý qua giao diện quản trị Admin.
 
 ### Kiểm kê và thanh lý
-Phiên kiểm kê liệt kê tài sản; kiểm đếm từng dòng, ghi tình trạng/vị trí và xử lý chênh lệch. Không hoàn tất nếu còn dòng chưa kiểm; phiên hoàn tất sẽ đóng chỉnh sửa. Thanh lý theo chuỗi đề nghị → phê duyệt → biên bản → quyết định → xác nhận thực hiện. Chỉ xác nhận sau khi thanh lý thực tế; bước cuối có thể đổi trạng thái tài sản.
+Phiên kiểm kê liệt kê tài sản; kiểm đếm từng dòng, ghi tình trạng/vị trí và xử lý chênh lệch. Không hoàn tất nếu còn dòng chưa kiểm; phiên hoàn tất sẽ đóng chỉnh sửa.
+
+Quy trình thanh lý tài sản tuân thủ chuỗi: Đề nghị thanh lý → Phê duyệt → Lập biên bản → Quyết định → Xác nhận thực hiện.
+- **Thẩm quyền phê duyệt:** Đề nghị thanh lý tài sản phải được Ban Giám đốc (`DIRECTOR` hoặc `SUPER_ADMIN`) phê duyệt thông qua quyền tập trung `approve_asset_disposal` của hệ thống (không căn cứ vào tên chức danh hiển thị).
+- **Kiểm soát tạo biên bản:** Biên bản thanh lý chỉ được tạo khi Đề nghị thanh lý đã ở trạng thái Được duyệt (`APPROVED`). Hệ thống chặn hoàn toàn mọi yêu cầu lập biên bản khi đề nghị đang ở trạng thái Chờ duyệt (`PENDING`) hoặc Bị từ chối (`REJECTED`).
+- **Khóa giao dịch tại máy chủ:** Thao tác lập biên bản thanh lý được khóa an toàn (database transaction lock) tại server và tự động chuyển trạng thái tài sản thành Đã thanh lý (`DISPOSED`), bảo đảm tính toàn vẹn dữ liệu tài sản.
 
 ## 9. Báo cáo và bảo mật
 
