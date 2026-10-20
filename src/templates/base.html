@@ -112,16 +112,20 @@
             {% endif %}
 
             <!-- TUYỂN DỤNG -->
-            {% if can_manage_hr or can_request_recruitment or can_approve_recruitment %}
+            {% if can_manage_hr or can_request_recruitment or can_approve_recruitment or can_view_candidate %}
             <div class="ui-nav-group">
                 <button type="button" data-menu-trigger aria-controls="menu-tuyendung" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='briefcase' %}<span class="ui-nav-label">Tuyển dụng</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
                 <div id="menu-tuyendung" class="ui-nav-panel" hidden>
+                    {% if can_manage_hr or can_request_recruitment or can_approve_recruitment %}
                     <a href="{% url 'portal:recruitment_hub' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'recruitment_hub' %}aria-current="page"{% endif %}><span class="ui-nav-label">Quy trình tuyển dụng</span></a>
+                    {% endif %}
                     {% if can_request_recruitment or can_approve_recruitment %}
                     <a href="{% url 'portal:recruitment_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'recruitment_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Đề xuất tuyển dụng</span></a>
                     {% endif %}
-                    {% if can_manage_hr %}
+                    {% if can_manage_hr or can_view_candidate %}
                     <a href="{% url 'portal:hr_candidate_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hr_candidate_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Ứng viên</span></a>
+                    {% endif %}
+                    {% if can_manage_hr %}
                     <a href="{% url 'portal:hcns_catalog' %}?group=recruitment" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'hcns_catalog' and request.GET.group == 'recruitment' %}aria-current="page"{% endif %}><span class="ui-nav-label">Biểu mẫu tuyển dụng</span></a>
                     {% endif %}
                 </div>

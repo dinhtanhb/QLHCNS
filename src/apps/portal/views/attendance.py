@@ -23,6 +23,7 @@ from apps.attendance.models import ProjectTimeAllocation
 from apps.common.params import parse_int
 from django.utils import timezone
 from apps.hrm.models import Employee
+from apps.security.data_access import visible_leave_requests_for
 from .common import _friendly_error, _get_employee, _role_code, _paginated_context
 
 
@@ -71,11 +72,13 @@ def _leave_balance(employee, year=None):
 @login_required
 def leave_list(request):
     employee = _get_employee(request)
-    requests_qs = LeaveRequest.objects.filter(employee=employee).select_related("leave_type").order_by("-from_date") if employee else []
+    requests_qs = visible_leave_requests_for(request.user).select_related("employee", "leave_type").order_by("-from_date")
+    show_employee = bool(requests_qs.exclude(employee=employee).exists() if employee else requests_qs.exists())
     return render(request, "portal/leave_list.html", {
         "requests": requests_qs,
         "balance": _leave_balance(employee),
         "current_year": timezone.localdate().year,
+        "show_employee": show_employee,
     })
 
 

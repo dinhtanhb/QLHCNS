@@ -1,5 +1,35 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-20 — Rà soát code dang dở của Codex: Phân quyền xem ứng viên, nghỉ phép theo tuyến báo cáo và khôi phục an toàn dữ liệu công văn / SharePoint
+
+- Nguồn yêu cầu: Chủ dự án yêu cầu rà soát code Codex đang làm dở và tiếp tục (`/code-review`). Đầu lượt `main` tại `41baad9`, fetch origin/main thành công, ahead/behind 0/0; giữ nguyên tệp untracked `Tan_AI_sites_plugin_2026-10-19_21-41.md` theo quy định. Không có tác nhân ghi khác.
+- Đánh giá hiện trạng ban đầu (Code Review theo 2 trục Standards & Spec):
+  + Codex để lại 27 failures và 1 error trong bộ test SQLite (`ops/run_tests.py --backend sqlite`).
+  + Trục Standards: Vi phạm nghiêm trọng nguyên tắc an toàn dữ liệu tại `apps/security/data_access.py` khi mở toàn bộ công văn đến/đi cho mọi tài khoản active (`public_scope = Q(dispatch_type__in=("Incoming", "Outgoing"))`), phá vỡ kiểm tra cấp độ bảo mật (Confidential vs Normal) và phạm vi phòng ban; vi phạm quyền hạn khi xóa tùy tiện `view_asset` của `SYS_ADMIN` và `PROJECT_COORDINATOR` trong `permissions.py`; vi phạm ranh giới bảo mật Graph trong `apps/assistant/m365_search.py` khi định mở tìm kiếm tài liệu SharePoint cho toàn bộ người dùng active.
+  + Trục Spec: Đổi sai logic xem đơn nghỉ phép và quyết định nhân sự theo tuyến báo cáo (`employee_and_subordinate_ids`) làm gãy quyền duyệt đơn nghỉ phép của Trưởng bộ phận (`managed_departments`) và Ban Giám đốc/HR (`approve_leave_all_departments`), khóa nhầm người dùng không liên kết hồ sơ nhân sự (như superuser); thiếu quyền `view_candidate` trên menu `base.html` và hiển thị cột người nộp đơn trong `leave_list.html` lệch `colspan`.
+- Các bước khắc phục và hoàn thiện:
+  1. Khôi phục an toàn tuyệt đối cho module SharePoint search (`apps/assistant/m365_search.py` và `tests_m365_search.py`) và luồng quyết định nhân sự HCNS (`apps/document/hcns/views.py`) về bản chuẩn đã được duyệt. Toàn bộ 147 test của `apps.assistant` và 25 test của `apps.document` đạt.
+  2. Phân quyền ứng viên & tài sản (`apps/security/permissions.py`): Thêm quyền `view_candidate` cho `(HR_MANAGER, HR_OFFICER, PROJECT_COORDINATOR)`; giữ nguyên quyền `view_asset` cho `SYS_ADMIN`, `PROJECT_COORDINATOR`, và `FINANCE_OFFICER`.
+  3. Phạm vi dữ liệu đơn nghỉ phép & quyết định nhân sự (`apps/security/data_access.py`):
+     - `visible_leave_requests_for`: Kết hợp quyền toàn công ty (`manage_hr`, `approve_leave_all_departments`), phòng ban quản lý (`managed_departments`) và cây nhân viên cấp dưới trực tiếp/gián tiếp (`employee_and_subordinate_ids`). Nhân viên thông thường chỉ thấy đơn của bản thân và cấp dưới.
+     - `visible_personnel_decisions_for`: Cấp quản lý/nhân viên thấy quyết định của mình và cấp dưới; HR/Giám đốc/Tài chính thấy toàn bộ.
+     - `can_read_file`: Hỗ trợ đọc tệp hồ sơ ứng viên `recruitment.candidate` cho tài khoản có `view_candidate`. Giữ nguyên kiểm tra độ mật và phạm vi công văn `OfficialDispatch`.
+  4. Cập nhật giao diện và hợp đồng hiển thị:
+     - `src/apps/portal/selectors.py`: `approvable_leave_requests` sử dụng `visible_leave_requests_for` để Trưởng bộ phận và người có quyền duyệt đơn trong tuyến báo cáo duyệt đúng phạm vi.
+     - `src/apps/portal/views/attendance.py` & `leave_list.html`: Điều chỉnh tiêu đề và `colspan` động hiển thị cột Nhân viên khi danh sách có đơn của cấp dưới (`colspan="{% if show_employee %}7{% else %}6{% endif %}"`).
+     - `src/apps/portal/views/recruitment.py` & `recruitment_hub.html`: Phân biệt trang đầu mối tuyển dụng `recruitment_hub` (chỉ dành cho HR và Trưởng phòng đề xuất tuyển dụng) với trang danh sách/chi tiết ứng viên `hr_candidate_list`/`hr_candidate_detail` (cho phép `view_candidate`).
+     - `src/templates/base.html` & `tests_app_shell.py`: Hiển thị mục Tuyển dụng / Ứng viên cho vai trò có `view_candidate` (bao gồm `PROJECT_COORDINATOR`), đồng bộ kiểm thử `AppShellTests` bảo toàn tập liên kết cho 11 vai trò × 2 trạng thái liên kết.
+- Kết quả kiểm thử:
+  + SQLite: **Ran 751 tests in 770.494s: OK (skipped=7), 0 FAILURES, 0 ERRORS**.
+  + SQL Server: **Ran 56 tests in 192.614s: OK**, DB tạm UUID tự hủy, kiểm thử đầy đủ các phân hệ bảo vệ dữ liệu, quyền hạn và app shell.
+  + Kiểm thử tĩnh: `audit_design_tokens.py` đạt (hex literal 0, font-size lệch thang 0, `!important` 9 ≤ 10); `git diff --check` sạch, không lỗi whitespace hay mã hóa.
+  + Migration: `ops/check_migration_state.py` xác nhận không có migration tồn đọng (`Outstanding: none`), không thay đổi model schema.
+  + Browser UAT: Môi trường venv thiếu gói `playwright` (`ModuleNotFoundError: No module named 'playwright'`), không mượn danh tính thật theo AGENTS.md; kiểm thử độc lập qua suite unit/integration/view đạt 100%.
+- Bàn giao:
+  + Snapshot mã nguồn review tại `%TEMP%/ihrms-review-20261020/IHRMS_Review_20261020_Permissions_Candidate.zip` (SHA-256: `15eb77d5943fe962d75b1f5e4cb29d8906e6906e54c1cf36b9c5a9da095a4a79`), 1.675 tệp được xác minh SHA-256.
+  + Không thay đổi database vận hành, không có migration mới cần áp dụng.
+
+
 
 ## 2026-10-20 — Sửa bảng công, dự án nhập tay và hội thoại/tìm báo cáo SharePoint
 

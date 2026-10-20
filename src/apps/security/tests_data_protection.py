@@ -208,6 +208,51 @@ class SensitiveDataTests(TestCase):
         dispatch.save(update_fields=['assigned_to'])
         self.assertTrue(visible_dispatches_for(self.other_user).filter(pk=dispatch.pk).exists())
 
+    def test_leave_scope_includes_only_self_and_reporting_line(self):
+        from apps.security.data_access import visible_leave_requests_for
+        leave_type = LeaveType.objects.create(leave_type_code='SEC-SCOPE', leave_type_name='Scope')
+        direct = self.make_employee('SEC-DIRECT')
+        direct.manager = self.other
+        direct.save(update_fields=['manager'])
+        nested = self.make_employee('SEC-NESTED')
+        nested.manager = direct
+        nested.save(update_fields=['manager'])
+        LeaveRequest.objects.create(employee=self.other, leave_type=leave_type, from_date=date(2026,11,2), to_date=date(2026,11,2))
+        direct_leave = LeaveRequest.objects.create(employee=direct, leave_type=leave_type, from_date=date(2026,11,3), to_date=date(2026,11,3))
+        nested_leave = LeaveRequest.objects.create(employee=nested, leave_type=leave_type, from_date=date(2026,11,4), to_date=date(2026,11,4))
+        owner_leave = LeaveRequest.objects.create(employee=self.owner, leave_type=leave_type, from_date=date(2026,11,5), to_date=date(2026,11,5))
+        visible = set(visible_leave_requests_for(self.other_user).values_list('pk', flat=True))
+        self.assertEqual(visible, {direct_leave.pk, nested_leave.pk} | {
+            LeaveRequest.objects.get(employee=self.other).pk,
+        })
+        self.assertNotIn(owner_leave.pk, visible)
+
+    def test_decision_scope_and_candidate_asset_roles_follow_policy(self):
+        from apps.document.models import PersonnelDecision
+        from apps.recruitment.models import Candidate
+        from apps.security.data_access import visible_personnel_decisions_for
+        from apps.security.permissions import has_permission
+        direct = self.make_employee('SEC-DEC-DIRECT')
+        direct.manager = self.other
+        direct.save(update_fields=['manager'])
+        own = PersonnelDecision.objects.create(employee=self.other, template_slug='scope', decision_no='OWN')
+        subordinate = PersonnelDecision.objects.create(employee=direct, template_slug='scope', decision_no='SUB')
+        unrelated = PersonnelDecision.objects.create(employee=self.owner, template_slug='scope', decision_no='OTHER')
+        visible = set(visible_personnel_decisions_for(self.other_user).values_list('pk', flat=True))
+        self.assertEqual(visible, {own.pk, subordinate.pk})
+        self.assertNotIn(unrelated.pk, visible)
+
+        coordinator = self.make_user('PROJECT_COORDINATOR', self.make_employee('SEC-COORD'), 'sec-coord')
+        candidate = Candidate.objects.create(candidate_code='SEC-CAND', full_name='Synthetic Candidate', phone_number='000', email='candidate@example.test')
+        self.client.force_login(coordinator)
+        self.assertEqual(self.client.get(reverse('portal:hr_candidate_list')).status_code, 200)
+        self.assertEqual(self.client.get(reverse('portal:hr_candidate_detail', args=(candidate.pk,))).status_code, 200)
+        self.assertTrue(has_permission(coordinator, 'view_candidate'))
+        self.assertTrue(has_permission(coordinator, 'view_asset'))
+        finance = self.make_user('FINANCE_OFFICER', self.make_employee('SEC-ASSET-FIN'), 'sec-asset-fin')
+        self.assertTrue(has_permission(finance, 'view_asset'))
+        self.assertTrue(has_permission(self.sys_user, 'view_asset'))
+
     def test_sharepoint_url_is_private_without_graph_request(self):
         from unittest.mock import patch
         from apps.m365.storage import ConfiguredStorage, SharePointStorage

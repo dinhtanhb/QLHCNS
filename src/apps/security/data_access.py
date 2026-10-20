@@ -51,6 +51,56 @@ def employees_for_department_scope(user, *, global_roles=(), scoped_roles=(DEPT_
     return qs.filter(department__in=departments)
 
 
+def employee_and_subordinate_ids(user):
+    """Employee IDs visible through the reporting line, including all depths."""
+    if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
+        return set()
+    if getattr(user, "is_superuser", False):
+        from apps.hrm.models import Employee
+        return set(Employee.objects.filter(is_deleted=False).values_list("pk", flat=True))
+    employee = getattr(user, "employee", None)
+    if not employee or employee.is_deleted:
+        return set()
+    from apps.hrm.models import Employee
+    visible = {employee.pk}
+    frontier = {employee.pk}
+    while frontier:
+        children = set(Employee.objects.filter(
+            manager_id__in=frontier, is_deleted=False,
+        ).values_list("pk", flat=True)) - visible
+        visible.update(children)
+        frontier = children
+    return visible
+
+
+def visible_leave_requests_for(user, queryset=None):
+    from apps.leave.models import LeaveRequest
+    qs = queryset if queryset is not None else LeaveRequest.objects.all()
+    if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
+        return qs.none()
+    if getattr(user, "is_superuser", False) or has_permission(user, "manage_hr") or has_permission(user, "approve_leave_all_departments"):
+        return qs
+    employee = getattr(user, "employee", None)
+    if not employee or employee.is_deleted:
+        return qs.none()
+    dept_ids = employee.managed_departments.values_list("pk", flat=True)
+    subordinate_ids = employee_and_subordinate_ids(user)
+    scope = Q(employee_id__in=subordinate_ids)
+    if dept_ids.exists():
+        scope |= Q(employee__department_id__in=dept_ids)
+    return qs.filter(scope)
+
+
+def visible_personnel_decisions_for(user, queryset=None):
+    from apps.document.models import PersonnelDecision
+    qs = queryset if queryset is not None else PersonnelDecision.objects.all()
+    if getattr(user, "is_superuser", False) or get_role_code(user) in (
+        HR_MANAGER, HR_OFFICER, DIRECTOR, "FINANCE_OFFICER",
+    ):
+        return qs
+    return qs.filter(employee_id__in=employee_and_subordinate_ids(user))
+
+
 def visible_dispatches_for(user, queryset=None):
     from apps.document.models import OfficialDispatch
     qs = queryset if queryset is not None else OfficialDispatch.objects.all()
@@ -104,7 +154,7 @@ def can_read_file(user, obj):
     if label == 'office.outgoingdocument':
         return has_permission(user, 'access_outgoing_document')
     if label == 'recruitment.candidate':
-        return has_permission(user, 'manage_hr')
+        return has_permission(user, 'manage_hr') or has_permission(user, 'view_candidate')
     if label in ('leave.leaverequest', 'hrm.employeeprofilechangerequest'):
         if obj.employee.is_deleted:
             return False
@@ -114,7 +164,7 @@ def can_read_file(user, obj):
             return has_permission(user, 'approve_profile_change_request')
         if has_permission(user, 'manage_hr') or has_permission(user, 'approve_leave_all_departments'):
             return True
-        return bool(employee and role == 'DEPT_MANAGER' and employee.managed_departments.filter(pk=obj.employee.department_id).exists())
+        return visible_leave_requests_for(user).filter(pk=obj.pk).exists()
     if label == 'm365.companymedia':
         return True  # Published internal company media, after authentication.
     if label in ('activity.activityproposal', 'task.task'):

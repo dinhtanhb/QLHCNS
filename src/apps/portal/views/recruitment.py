@@ -26,6 +26,10 @@ def _can_approve_recruitment(request):
     return has_permission(request.user, "approve_recruitment")
 
 
+def _can_view_candidate(request):
+    return has_permission(request.user, "view_candidate")
+
+
 @login_required
 def recruitment_hub(request):
     if not (
@@ -117,7 +121,7 @@ def recruitment_approve(request, pk):
 
 @login_required
 def hr_candidate_list(request):
-    if not _can_manage_hr(request):
+    if not _can_view_candidate(request):
         return HttpResponseForbidden("Bạn không có quyền xem hồ sơ ứng viên.")
     candidates = Candidate.objects.all().order_by("-created_date")
     return render(request, "portal/hr_candidate_list.html", {
@@ -153,7 +157,7 @@ def hr_candidate_create(request):
 
 @login_required
 def hr_candidate_detail(request, pk):
-    if not _can_manage_hr(request):
+    if not _can_view_candidate(request):
         return HttpResponseForbidden("Bạn không có quyền xem hồ sơ ứng viên.")
     candidate = get_object_or_404(Candidate, pk=pk)
     return render(request, "portal/hr_candidate_detail.html", {

@@ -71,8 +71,10 @@ class AppShellTests(TestCase):
             expected.append(url("recruitment_hub"))
         if permission("request_recruitment") or permission("approve_recruitment"):
             expected.append(url("recruitment_list"))
+        if permission("view_candidate") or permission("manage_hr"):
+            expected.append(url("hr_candidate_list"))
         if permission("manage_hr"):
-            expected += [url("hr_candidate_list"), url("hcns_catalog") + "?group=recruitment"]
+            expected.append(url("hcns_catalog") + "?group=recruitment")
         if permission("manage_finance"):
             expected += [url(name) for name in ("finance_period_list", "finance_salary_list", "finance_dependent_list", "finance_tax_config")]
         if permission("use_salary_scale_form"):

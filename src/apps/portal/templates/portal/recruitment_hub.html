@@ -24,7 +24,7 @@
         <p class="ui-recruitment-text">Bước 3</p>
         <h2 class="ui-card-title">Tiếp nhận ứng viên</h2>
         <p class="ui-recruitment-text">Nhân sự tạo hồ sơ ứng viên và cập nhật trạng thái trong quá trình tuyển chọn.</p>
-        {% if can_manage_hr %}<a href="{% url 'portal:hr_candidate_list' %}" class="ui-button ui-button--secondary">Quản lý ứng viên</a>{% endif %}
+        {% if can_manage_hr or can_view_candidate %}<a href="{% url 'portal:hr_candidate_list' %}" class="ui-button ui-button--secondary">Quản lý ứng viên</a>{% endif %}
     </section>
     <section class="ui-card ui-recruitment-step">
         <p class="ui-recruitment-text">Bước 4</p>
@@ -36,7 +36,7 @@
         <p class="ui-recruitment-text">Bước 5</p>
         <h2 class="ui-card-title">Gửi và theo dõi offer</h2>
         <p class="ui-recruitment-text">Lập đề nghị công việc, ghi nhận trạng thái ứng viên chấp nhận hoặc từ chối.</p>
-        {% if can_manage_hr %}<a href="{% url 'portal:hr_candidate_list' %}" class="ui-button ui-button--secondary">Theo dõi offer</a>{% endif %}
+        {% if can_manage_hr or can_view_candidate %}<a href="{% url 'portal:hr_candidate_list' %}" class="ui-button ui-button--secondary">Theo dõi offer</a>{% endif %}
     </section>
     <section class="ui-card ui-recruitment-step">
         <p class="ui-recruitment-text">Bước 6</p>

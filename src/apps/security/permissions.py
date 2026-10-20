@@ -53,6 +53,7 @@ PERMISSION_MATRIX = {
     # Tuyển dụng
     "request_recruitment": (DEPT_MANAGER, HR_MANAGER),
     "approve_recruitment": (HR_MANAGER,),
+    "view_candidate": (HR_MANAGER, HR_OFFICER, PROJECT_COORDINATOR),
     # Lịch làm việc, ngày lễ
     "manage_calendar": (HR_MANAGER, SYS_ADMIN),
     # Sự kiện
