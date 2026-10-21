@@ -1,0 +1,93 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: en-US
+branch: main
+nodes_managed: true
+exported_at: "2026-10-21T02:47:35Z"
+modules:
+    "":
+        dir_name: IHRMS Enterprise HR System Monorepo
+        title: IHRMS Enterprise HR System Monorepo
+        scope:
+            - README.md
+            - DESIGN.md
+            - AGENTS.md
+            - CLAUDE.md
+            - .gitignore
+            - package.json
+            - package-lock.json
+            - requirements.txt
+            - skills-lock.json
+            - .env.example
+        source_files: []
+        children:
+            - agent_skills
+            - build_artifacts
+            - django_backend
+            - documentation
+            - github_actions
+            - ops_tooling
+        depends_on: []
+        related_to: []
+    agent_skills:
+        dir_name: Agent Skills Library (IHRMS)
+        title: Agent Skills Library (IHRMS)
+        scope:
+            - .agents/
+            - .claude/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    build_artifacts:
+        dir_name: Graphify Analysis Artifacts & Dashboard Outputs
+        title: Graphify Analysis Artifacts & Dashboard Outputs
+        scope:
+            - graphify-out/
+            - outputs/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    django_backend:
+        dir_name: IHRMS Django Enterprise Backend
+        title: IHRMS Django Enterprise Backend
+        scope:
+            - src/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: github_actions
+            - path: ops_tooling
+    documentation:
+        dir_name: IHRMS Project Documentation & Design Artifacts
+        title: IHRMS Project Documentation & Design Artifacts
+        scope:
+            - docs/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    github_actions:
+        dir_name: GitHub CI, Copilot Agents & Skills
+        title: GitHub CI, Copilot Agents & Skills
+        scope:
+            - .github/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: django_backend
+            - path: ops_tooling
+    ops_tooling:
+        dir_name: IHRMS Operations, UAT & UI Audit Tooling
+        title: IHRMS Operations, UAT & UI Audit Tooling
+        scope:
+            - ops/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: django_backend
+            - path: github_actions

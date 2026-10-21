@@ -1,0 +1,1 @@
+Python dependencies are installed from the repo-root `requirements.txt` (`pip install -r requirements.txt`); Tailwind CSS is built/watched from the root via `npm run build:css` / `npm run watch:css`. Browser UAT and layout audits are launched through `ops/run_browser_uat.py`, `ops/run_layout_alignment_audit.py`, and `ops/run_print_layout_uat.py` against an isolated QA database.

@@ -1,0 +1,1 @@
+Repository of the IHRMS project's design documents, standards, templates, screenshots, and planning artifacts that define the system's architecture, UI specs, and operational procedures.

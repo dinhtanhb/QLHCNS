@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đề xuất dải màu mới — IHRMS 21/10/2026</title>
+<style>
+:root{
+  --d-bg:#f5f8f6; --d-panel:#ffffff; --d-panel2:#eef3f0; --d-text:#0c233b; --d-muted:#52646f;
+  --d-border:#dbe4df; --d-accent:#0b7461; --d-accent-soft:#e6f2ec; --d-line:#e8eeea;
+  --d-warn:#8a5300; --d-warn-bg:#fdf6e3; --d-danger:#9b1c1c; --d-ok:#166534; --d-ok-bg:#eefaf1;
+}
+html[data-theme="dark"]{
+  --d-bg:#080e15; --d-panel:#111a23; --d-panel2:#16212c; --d-text:#e9f1f5; --d-muted:#9db0bd;
+  --d-border:#22303c; --d-accent:#63dbc2; --d-accent-soft:#12332e; --d-line:#1b2833;
+  --d-warn:#fde68a; --d-warn-bg:#2b2006; --d-danger:#fca5a5; --d-ok:#86efac; --d-ok-bg:#08210f;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--d-bg);color:var(--d-text);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.doc-bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:18px;padding:0 26px;height:56px;background:color-mix(in srgb,var(--d-panel) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--d-border)}
+.db-brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px}
+.db-mark{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:7px;background:var(--d-accent);color:var(--d-panel);font-size:11px;font-weight:700}
+.doc-bar nav{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
+.doc-bar nav a{font-size:13px;color:var(--d-muted);text-decoration:none;padding:6px 10px;border-radius:6px}
+.doc-bar nav a:hover{background:var(--d-panel2);color:var(--d-text)}
+.tbtn{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 12px;border:1px solid var(--d-border);background:var(--d-panel);color:var(--d-text);border-radius:7px;font:inherit;font-size:13px;cursor:pointer}
+.tbtn:hover{background:var(--d-panel2)}
+.doc{max-width:1180px;margin:0 auto;padding:46px 32px 110px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--d-accent);margin:0 0 10px}
+h1{font-size:38px;line-height:1.16;letter-spacing:-.02em;margin:0 0 16px;font-weight:700}
+h2{font-size:26px;line-height:1.25;margin:0 0 6px;font-weight:650;letter-spacing:-.01em}
+h3{font-size:18px;line-height:1.4;margin:0 0 8px;font-weight:600}
+h4{font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 8px;font-weight:600;color:var(--d-muted)}
+p{margin:0 0 14px}
+.lead{font-size:18px;line-height:1.65;color:var(--d-muted);max-width:74ch}
+.muted{color:var(--d-muted)}
+.small{font-size:13.5px}
+section{margin-top:66px;scroll-margin-top:80px}
+.sec-head{padding-bottom:16px;border-bottom:1px solid var(--d-border);margin-bottom:26px}
+.sec-num{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--d-accent);margin-bottom:8px}
+.panel{background:var(--d-panel);border:1px solid var(--d-border);border-radius:12px;padding:22px 24px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+.chip{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;font-size:11.5px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+.chip.ok{background:var(--d-ok-bg);color:var(--d-ok);border-color:color-mix(in srgb,var(--d-ok) 30%,transparent)}
+.chip.warn{background:var(--d-warn-bg);color:var(--d-warn);border-color:color-mix(in srgb,var(--d-warn) 30%,transparent)}
+.chip.neu{background:var(--d-panel2);color:var(--d-muted);border-color:var(--d-border)}
+table.t{width:100%;border-collapse:collapse;font-size:13.5px}
+table.t th{text-align:left;font-weight:600;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--d-muted);padding:9px 12px;border-bottom:1px solid var(--d-border);background:var(--d-panel2)}
+table.t td{padding:9px 12px;border-bottom:1px solid var(--d-line);vertical-align:middle}
+table.t tr:last-child td{border-bottom:0}
+table.t td.num{text-align:right;font-variant-numeric:tabular-nums}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;background:var(--d-panel2);border:1px solid var(--d-line);border-radius:4px;padding:1px 5px}
+.sw{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
+.sw div{flex:1 1 96px;min-width:96px;border:1px solid var(--d-border);border-radius:8px;overflow:hidden;background:var(--d-panel)}
+.sw i{display:block;height:46px}
+.sw span{display:block;padding:6px 8px;font-size:10.5px;line-height:1.35;color:var(--d-muted)}
+.sw b{display:block;font-size:11px;color:var(--d-text);font-weight:600;font-family:ui-monospace,Menlo,Consolas,monospace}
+.callout{border-left:3px solid var(--d-accent);background:var(--d-accent-soft);padding:13px 18px;border-radius:0 8px 8px 0;margin:16px 0}
+.callout.warn{border-left-color:var(--d-warn);background:var(--d-warn-bg)}
+.callout p:last-child{margin:0}
+ul.tight{margin:0 0 12px;padding-left:20px}
+ul.tight li{margin-bottom:6px}
+ol.tight{margin:0;padding-left:20px}
+ol.tight li{margin-bottom:8px}
+
+/* segmented control */
+.seg{display:inline-flex;padding:3px;gap:2px;background:var(--d-panel2);border:1px solid var(--d-border);border-radius:8px}
+.seg button{border:0;background:transparent;color:var(--d-muted);font:inherit;font-size:12.5px;font-weight:600;height:28px;padding:0 12px;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.seg button[aria-pressed="true"]{background:var(--d-panel);color:var(--d-text);box-shadow:0 1px 2px rgb(0 0 0 / .12)}
+.seg button i{width:10px;height:10px;border-radius:3px;display:block}
+.fig-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 10px}
+
+/* frame */
+.frame{position:relative;width:100%;overflow:hidden;border-radius:10px;border:1px solid var(--d-border);background:var(--d-panel2)}
+.frame-inner{position:absolute;top:0;left:0;transform-origin:top left}
+
+/* ============ MOCK ============ */
+.mock{position:relative;width:100%;height:100%;display:block;background:var(--m-canvas);color:var(--m-text);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;font-size:16px;line-height:1.5;overflow:hidden}
+.mock *{box-sizing:border-box}
+.mock svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* teal — hiện tại */
+.mock[data-pal="teal"][data-mode="light"]{--m-canvas:#f4f7f5;--m-surface:#ffffff;--m-raised:#f0f5f2;--m-text:#0c233b;--m-muted:#4b6171;--m-border:#627d78;--m-card:#d9e3df;--m-divider:#e3ebe7;--m-brand:#0b7461;--m-bh:#085e50;--m-onbrand:#ffffff;--m-sel:#dff0e8;--m-seltext:#085e50;--m-side:#f0f5f2;--m-sidetext:#0c233b;--m-sidemuted:#4b6171;--m-active:#dff0e8;--m-activetext:#085e50;--m-soft:#edf7f2}
+.mock[data-pal="teal"][data-mode="dark"]{--m-canvas:#0e1827;--m-surface:#162536;--m-raised:#223648;--m-text:#eef6f8;--m-muted:#b9cad5;--m-border:#8aaba6;--m-card:#314955;--m-divider:#26374a;--m-brand:#63dbc2;--m-bh:#8ee7d4;--m-onbrand:#092b26;--m-sel:#174b43;--m-seltext:#a6f2df;--m-side:#0c233b;--m-sidetext:#d6e5ee;--m-sidemuted:#a9bdc9;--m-active:#174b43;--m-activetext:#ffffff;--m-soft:#123c35}
+
+/* chàm đông */
+.mock[data-pal="indigo"][data-mode="light"]{--m-canvas:#e7ecf4;--m-surface:#ffffff;--m-raised:#f4f6fb;--m-text:#101828;--m-muted:#475467;--m-border:#667085;--m-card:#dfe4ee;--m-divider:#e8ecf3;--m-brand:#3a4fd0;--m-bh:#2f42b5;--m-onbrand:#ffffff;--m-sel:#e6eafc;--m-seltext:#2f42b5;--m-side:#ffffff;--m-sidetext:#1d2939;--m-sidemuted:#5b6675;--m-active:#e6eafc;--m-activetext:#2f42b5;--m-soft:#eef1fd}
+.mock[data-pal="indigo"][data-mode="dark"]{--m-canvas:#080c18;--m-surface:#131a2e;--m-raised:#1b2440;--m-text:#eef2ff;--m-muted:#a5b0c9;--m-border:#7d8ab0;--m-card:#2a3552;--m-divider:#1e2740;--m-brand:#93a7ff;--m-bh:#b3c2ff;--m-onbrand:#0b1020;--m-sel:#1d2a52;--m-seltext:#c7d2fe;--m-side:#0d1322;--m-sidetext:#cdd5ea;--m-sidemuted:#93a0bb;--m-active:#1d2a52;--m-activetext:#c7d2fe;--m-soft:#18203a}
+
+/* than ấm */
+.mock[data-pal="graphite"][data-mode="light"]{--m-canvas:#efebe3;--m-surface:#ffffff;--m-raised:#f8f5f0;--m-text:#1c1917;--m-muted:#57534e;--m-border:#78716c;--m-card:#e5dfd6;--m-divider:#efeae3;--m-brand:#9a4a1a;--m-bh:#7f3c13;--m-onbrand:#ffffff;--m-sel:#f6ece3;--m-seltext:#7f3c13;--m-side:#ffffff;--m-sidetext:#292524;--m-sidemuted:#6b625c;--m-active:#f6ece3;--m-activetext:#7f3c13;--m-soft:#faf1e8}
+.mock[data-pal="graphite"][data-mode="dark"]{--m-canvas:#0e0c0a;--m-surface:#1c1917;--m-raised:#262220;--m-text:#f5f1ec;--m-muted:#b5aca2;--m-border:#8c837a;--m-card:#332e2a;--m-divider:#292420;--m-brand:#e9a97f;--m-bh:#f2c4a3;--m-onbrand:#1c1917;--m-sel:#3a2a1f;--m-seltext:#f2c4a3;--m-side:#171412;--m-sidetext:#e7e0d8;--m-sidemuted:#a49a90;--m-active:#3a2a1f;--m-activetext:#f2c4a3;--m-soft:#2a211b}
+
+/* semantic tones per palette */
+.mock[data-pal="teal"]{--t-ok:#166534;--t-ok-bg:#eefaf1;--t-ok-bd:#cbe8d4;--t-warn:#8a5300;--t-warn-bg:#fdf6e3;--t-warn-bd:#e9d9a4;--t-dan:#9b1c1c;--t-dan-bg:#fdf1f1;--t-dan-bd:#f0cfcf;--t-info:#075985;--t-info-bg:#eff8fd;--t-info-bd:#c9e5f5;--t-neu:#44586a;--t-neu-bg:#f1f4f3;--t-neu-bd:#dbe4e0}
+.mock[data-pal="indigo"]{--t-ok:#067647;--t-ok-bg:#ecfdf3;--t-ok-bd:#abefc6;--t-warn:#b54708;--t-warn-bg:#fffaeb;--t-warn-bd:#fedf89;--t-dan:#b42318;--t-dan-bg:#fef3f2;--t-dan-bd:#fecdca;--t-info:#175cd3;--t-info-bg:#eff8ff;--t-info-bd:#b2ddff;--t-neu:#475467;--t-neu-bg:#f2f4f7;--t-neu-bd:#d0d5dd}
+.mock[data-pal="graphite"]{--t-ok:#4d7c0f;--t-ok-bg:#f7fee7;--t-ok-bd:#d9f99d;--t-warn:#a16207;--t-warn-bg:#fefce8;--t-warn-bd:#fde68a;--t-dan:#b42318;--t-dan-bg:#fef2f2;--t-dan-bd:#fecaca;--t-info:#1e5a8a;--t-info-bg:#eff6fb;--t-info-bd:#c3dff2;--t-neu:#57534e;--t-neu-bg:#f5f5f4;--t-neu-bd:#e0dbd5}
+.mock[data-pal][data-mode="dark"]{--t-ok:#86efac;--t-ok-bg:#0d2a18;--t-ok-bd:#2c6b45;--t-warn:#fde68a;--t-warn-bg:#2b2006;--t-warn-bd:#6b5518;--t-dan:#fca5a5;--t-dan-bg:#2b1010;--t-dan-bd:#6e2a2a;--t-info:#93c5fd;--t-info-bg:#0b1e33;--t-info-bd:#2a5b74;--t-neu:#b6c7d2;--t-neu-bg:#1a2530;--t-neu-bd:#33424f}
+
+.m-top{position:absolute;top:0;left:0;right:0;height:64px;display:flex;align-items:center;gap:18px;padding:0 24px;background:var(--m-surface);border-bottom:1px solid var(--m-card);z-index:3}
+.m-mark{width:28px;height:28px;border-radius:7px;background:var(--m-brand);color:var(--m-onbrand);display:grid;place-items:center;font-size:11px;font-weight:700}
+.m-brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:650;color:var(--m-text);white-space:nowrap}
+.m-brand small{font-size:12.5px;color:var(--m-muted);font-weight:400;padding-left:12px;border-left:1px solid var(--m-card)}
+.m-search{margin-left:auto;display:flex;align-items:center;gap:9px;width:330px;height:40px;padding:0 12px;border:1px solid var(--m-border);border-radius:8px;background:var(--m-surface);color:var(--m-muted);font-size:13px}
+.m-search svg{width:16px;height:16px}
+.m-actions{display:flex;align-items:center;gap:6px}
+.m-icon-btn{width:38px;height:38px;border-radius:8px;display:grid;place-items:center;color:var(--m-muted)}
+.m-icon-btn svg{width:19px;height:19px}
+.m-user{display:flex;align-items:center;gap:9px;padding:3px 6px 3px 3px;border-radius:8px}
+.m-user b{font-size:13px;font-weight:600;display:block;line-height:1.25}
+.m-user small{font-size:11.5px;color:var(--m-muted);line-height:1.25}
+.m-avatar{width:30px;height:30px;border-radius:50%;background:var(--m-soft);color:var(--m-brand);display:grid;place-items:center;font-size:11.5px;font-weight:700;flex:none}
+.m-side{position:absolute;top:64px;left:0;bottom:0;width:256px;background:var(--m-side);border-right:1px solid var(--m-card);padding:10px 12px;overflow:hidden}
+.m-side-label{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--m-sidemuted);padding:16px 10px 6px}
+.m-nav{display:flex;align-items:center;gap:11px;height:44px;padding:0 10px;border-radius:8px;font-size:13.5px;color:var(--m-sidetext);position:relative}
+.m-nav svg{width:19px;height:19px;color:var(--m-sidemuted)}
+.m-nav .chev{margin-left:auto;color:var(--m-sidemuted)}
+.m-nav.active{background:var(--m-active);color:var(--m-activetext);font-weight:600}
+.m-nav.active svg{color:var(--m-activetext)}
+.m-nav.active::before{content:"";position:absolute;left:-12px;top:9px;bottom:9px;width:3px;border-radius:0 3px 3px 0;background:var(--m-brand)}
+.m-main{position:absolute;top:64px;left:256px;right:0;bottom:0;padding:22px 32px 0;overflow:hidden}
+.m-crumb{font-size:12.5px;color:var(--m-muted);margin-bottom:8px}
+.m-head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:22px}
+.m-h1{font-size:28px;line-height:36px;font-weight:650;margin:0;letter-spacing:-.012em;color:var(--m-text)}
+.m-sub{font-size:13px;color:var(--m-muted);margin:5px 0 0}
+.m-head-actions{display:flex;align-items:center;gap:14px;padding-top:4px}
+.m-link{font-size:12.5px;font-weight:600;color:var(--m-brand);white-space:nowrap}
+.m-card{background:var(--m-surface);border:1px solid var(--m-card);border-radius:8px}
+.m-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:26px}
+.m-kpi{padding:15px 18px;position:relative}
+.m-kpi .lab{font-size:12.5px;font-weight:600;color:var(--m-muted);padding-right:26px;line-height:1.3}
+.m-kpi .val{font-size:32px;line-height:40px;font-weight:650;font-variant-numeric:tabular-nums;margin-top:4px;letter-spacing:-.01em}
+.m-kpi .meta{font-size:12px;color:var(--m-muted);margin-top:1px}
+.m-kpi .ico{position:absolute;top:15px;right:16px;color:var(--m-muted);opacity:.7}
+.m-kpi .ico svg{width:17px;height:17px}
+.m-sec{margin-bottom:26px}
+.m-sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.m-sec-head h2{font-size:18px;line-height:26px;font-weight:600;margin:0}
+.m-split{display:grid;grid-template-columns:1.5fr 1fr;gap:16px}
+.m-work{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px}
+.m-work .lab{font-size:12.5px;font-weight:600;color:var(--m-muted)}
+.m-work .big{font-size:28px;line-height:34px;font-weight:650;font-variant-numeric:tabular-nums;margin-top:2px}
+.m-work .meta{font-size:12px;color:var(--m-muted)}
+.m-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.m-strip>div{padding:14px 18px;border-right:1px solid var(--m-divider)}
+.m-strip>div:last-child{border-right:0}
+.m-strip .sv{font-size:24px;line-height:32px;font-weight:650;font-variant-numeric:tabular-nums}
+.m-strip .sl{font-size:12px;color:var(--m-muted);line-height:1.35;margin-top:2px}
+.m-bar{display:flex;align-items:center;gap:10px;font-size:12.5px;margin-bottom:9px}
+.m-bar span{width:88px;color:var(--m-muted);flex:none}
+.m-bar i{flex:1;height:7px;border-radius:4px;background:var(--m-soft);position:relative;overflow:hidden}
+.m-bar i::after{content:"";position:absolute;inset:0 auto 0 0;width:var(--w,50%);background:var(--m-brand);border-radius:4px}
+.m-bar b{width:52px;text-align:right;font-variant-numeric:tabular-nums;font-weight:600;font-size:12.5px}
+.m-row{display:flex;align-items:center;gap:9px;font-size:12.5px;padding:5px 0;border-bottom:1px solid var(--m-divider)}
+.m-row:last-child{border-bottom:0}
+.m-row .nm{flex:1}
+.m-row .dt{color:var(--m-muted);font-variant-numeric:tabular-nums;font-size:12px}
+
+/* list mock */
+.m-card-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 20px;border-bottom:1px solid var(--m-divider)}
+.m-card-title{font-size:16px;line-height:24px;font-weight:600}
+.m-count{font-size:12.5px;color:var(--m-muted)}
+.m-filter{display:flex;align-items:flex-end;gap:16px;padding:14px 20px;background:var(--m-raised);border-bottom:1px solid var(--m-divider)}
+.m-field{display:flex;flex-direction:column;gap:6px}
+.m-field label{font-size:12px;font-weight:600;color:var(--m-muted)}
+.m-input{height:44px;border:1px solid var(--m-border);border-radius:8px;background:var(--m-surface);display:flex;align-items:center;gap:8px;padding:0 12px;font-size:13px;color:var(--m-muted)}
+.m-input svg{width:16px;height:16px}
+.m-input.sel::after{content:"";margin-left:auto;width:7px;height:7px;border-right:1.6px solid var(--m-muted);border-bottom:1.6px solid var(--m-muted);transform:rotate(45deg)}
+.m-btn-sm{height:44px;padding:0 16px;border-radius:8px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px}
+.m-btn-sm.primary{background:var(--m-brand);color:var(--m-onbrand)}
+.m-btn-sm svg{width:15px;height:15px}
+.m-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.m-tbl th{text-align:left;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--m-muted);font-weight:600;padding:10px 20px;background:var(--m-raised);border-bottom:1px solid var(--m-divider);white-space:nowrap}
+.m-tbl td{padding:0 20px;height:56px;border-bottom:1px solid var(--m-divider);vertical-align:middle}
+.m-tbl tr:last-child td{border-bottom:0}
+.m-tbl td.num,.m-tbl th.num{text-align:right;font-variant-numeric:tabular-nums}
+.m-cell{display:flex;align-items:center;gap:10px}
+.m-cell b{font-weight:600;font-size:13px;display:block;line-height:1.3}
+.m-cell small{display:block;font-size:11.5px;color:var(--m-muted);line-height:1.3}
+.m-foot{display:flex;align-items:center;justify-content:space-between;padding:11px 20px;border-top:1px solid var(--m-divider);font-size:12.5px;color:var(--m-muted)}
+.m-pager{display:flex;gap:6px}
+.m-pager span{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;border:1px solid var(--m-card);font-size:12px;color:var(--m-text)}
+.m-pager span.on{background:var(--m-active);color:var(--m-activetext);border-color:transparent;font-weight:600}
+.m-badge{font-size:11.5px;font-weight:600;height:24px;padding:0 9px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;border:1px solid;white-space:nowrap}
+.m-badge i{width:6px;height:6px;border-radius:50%;background:currentColor;display:block;flex:none}
+.m-badge.ok{color:var(--t-ok);background:var(--t-ok-bg);border-color:var(--t-ok-bd)}
+.m-badge.warn{color:var(--t-warn);background:var(--t-warn-bg);border-color:var(--t-warn-bd)}
+.m-badge.dan{color:var(--t-dan);background:var(--t-dan-bg);border-color:var(--t-dan-bd)}
+.m-badge.info{color:var(--t-info);background:var(--t-info-bg);border-color:var(--t-info-bd)}
+.m-badge.neu{color:var(--t-neu);background:var(--t-neu-bg);border-color:var(--t-neu-bd)}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6.5 7-6.5s7 2.9 7 6.5"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.5a3.2 3.2 0 0 1 0 5"/><path d="M18 14.2c2 .8 3 2.9 3 5.8"/></symbol>
+  <symbol id="i-brief" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16.5" cy="14.5" r="1"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V4"/><path d="M4 20h16"/><rect x="8" y="12" width="3" height="5"/><rect x="13" y="8" width="3" height="9"/><rect x="18" y="14" width="3" height="3"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 13 6 9Z"/><path d="M10 18.5a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8.2 8.2 0 1 0 20 14.5Z"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.6v.2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12.5 5 5L20 6.5"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></symbol>
+</svg>
+
+<div class="doc-bar">
+  <div class="db-brand"><span class="db-mark">IH</span> Dải màu đề xuất</div>
+  <nav>
+    <a href="#kientruc">Kiến trúc</a>
+    <a href="#lab">Theme Lab</a>
+    <a href="#indigo">Chàm Đông</a>
+    <a href="#graphite">Than Ấm</a>
+    <a href="#sosanh">So sánh</a>
+    <a href="#trienkhai">Triển khai</a>
+  </nav>
+  <button class="tbtn" id="themeBtn" type="button"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-moon"/></svg><span id="themeLabel">Nền tối</span></button>
+</div>
+
+<main class="doc">
+
+<header>
+  <p class="eyebrow">Dải màu · 21/10/2026</p>
+  <h1>Hai dải màu mới, cùng một hệ token</h1>
+  <p class="lead">Cả hai pack đều dùng lại đúng cấu trúc <code>--ui-*</code> hiện có: không thêm component, không đổi kích thước, không đổi bố cục. Chỉ thay giá trị màu và bốn màu ngữ nghĩa đi kèm. Mọi cặp chữ/nền đã được đo trước khi đưa vào tài liệu — bảng số nằm ngay dưới mỗi pack.</p>
+  <div class="grid3" style="margin-top:26px">
+    <div class="panel"><h4>Teal hiện tại</h4><p class="small muted" style="margin:0">Đã duyệt 12/10/2026. Giữ làm mặc định nếu không có quyết định khác.</p></div>
+    <div class="panel"><h4>Chàm Đông</h4><p class="small muted" style="margin:0">Indigo trên nền xanh lạnh. Tin cậy, số hoá, dark mode rất chắc.</p></div>
+    <div class="panel"><h4>Than Ấm</h4><p class="small muted" style="margin:0">Xám ấm + đồng. Trầm, biên tập, hợp văn bản và báo cáo in.</p></div>
+  </div>
+</header>
+
+<!-- ================= 1. KIẾN TRÚC ================= -->
+<section id="kientruc">
+  <div class="sec-head">
+    <p class="sec-num">01 — KIẾN TRÚC</p>
+    <h2>Palette × mode: 3 pack, 2 chế độ, một bộ token</h2>
+    <p class="muted" style="margin:8px 0 0;max-width:76ch">Không nhân bản CSS theo theme. Mỗi pack chỉ là một khối gán giá trị cho cùng danh sách token; component đọc token nên không cần sửa.</p>
+  </div>
+
+  <div class="grid2" style="align-items:start">
+    <div class="panel">
+      <h4>Cách gắn</h4>
+      <pre style="margin:10px 0 0;font-size:12.5px;line-height:1.7;overflow:auto;background:var(--d-panel2);border:1px solid var(--d-line);border-radius:8px;padding:14px"><code>&lt;html data-palette="teal" data-theme="light"&gt;
+
+/* ui_tokens.css */
+[data-palette="indigo"][data-theme="light"] { --ui-bg:#e7ecf4; … }
+[data-palette="indigo"][data-theme="dark"]  { --ui-bg:#080c18; … }
+[data-palette="graphite"][data-theme="light"] { --ui-bg:#efebe3; … }
+[data-palette="graphite"][data-theme="dark"]  { --ui-bg:#0e0c0a; … }</code></pre>
+      <p class="small muted" style="margin:12px 0 0">6 tổ hợp, mỗi tổ hợp ~26 dòng token. Component, partial, JS và bản in không đổi.</p>
+    </div>
+    <div class="panel">
+      <h4>Ba quyết định kèm theo</h4>
+      <ol class="tight small">
+        <li><strong>Ai được đổi palette?</strong> Khuyến nghị: chỉ quản trị hệ thống chọn trong cấu hình, không cho từng người dùng — tránh ảnh hưởng tài liệu, ảnh chụp và hỗ trợ.</li>
+        <li><strong>Giấy in không đổi.</strong> <code>print_forms.css</code> và biểu mẫu HCNS giữ trắng/đen; không áp token màu mới lên giấy.</li>
+        <li><strong>Màu ngữ nghĩa đi theo pack.</strong> Success/warning/danger/info được tinh chỉnh cho hợp nền mới nhưng vẫn giữ đúng vai trò, không đổi nghĩa.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <p class="small" style="margin:0"><strong>Điều kiện bắt buộc:</strong> đổi palette là đổi nhận diện toàn hệ thống. Phải cập nhật <code>DESIGN.md</code> + <code>design-system/MASTER.md</code> (giá trị nguồn), chụp lại toàn bộ baseline ảnh 7 độ rộng × 2 theme, và chạy lại cổng kiểm thử. Nếu chỉ muốn “thử”, dùng Theme Lab bên dưới trước.</p>
+  </div>
+</section>
+
+<!-- ================= 2. THEME LAB ================= -->
+<section id="lab">
+  <div class="sec-head">
+    <p class="sec-num">02 — THEME LAB</p>
+    <h2>Bảng điều khiển thật, đổi palette tại chỗ</h2>
+    <p class="muted" style="margin:8px 0 0">Cùng một DOM, cùng số liệu; chỉ đổi <code>data-palette</code> và <code>data-mode</code>. Đây là cách triển khai thật sẽ hoạt động.</p>
+  </div>
+
+  <div class="fig-tools">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <span class="small muted">Dải màu</span>
+      <div class="seg" id="palSeg">
+        <button type="button" data-pal-set="teal" aria-pressed="true"><i style="background:#0b7461"></i>Teal</button>
+        <button type="button" data-pal-set="indigo" aria-pressed="false"><i style="background:#3a4fd0"></i>Chàm Đông</button>
+        <button type="button" data-pal-set="graphite" aria-pressed="false"><i style="background:#9a4a1a"></i>Than Ấm</button>
+      </div>
+      <span class="small muted" style="margin-left:6px">Chế độ</span>
+      <div class="seg" id="modeSeg">
+        <button type="button" data-mode-set="light" aria-pressed="false">Sáng</button>
+        <button type="button" data-mode-set="dark" aria-pressed="true">Tối</button>
+      </div>
+    </div>
+    <span class="small muted">1440 × 900</span>
+  </div>
+
+  <div class="frame" data-w="1440" data-h="900">
+    <div class="frame-inner">
+      <div class="mock" id="labMock" data-pal="teal" data-mode="dark">
+        <header class="m-top">
+          <div class="m-brand"><span class="m-mark">IH</span>IHRMS<small>Cổng thông tin nhân viên</small></div>
+          <div class="m-search"><svg><use href="#i-search"/></svg>Tên, mã NV, email hoặc chức năng…</div>
+          <div class="m-actions">
+            <span class="m-icon-btn"><svg><use href="#i-moon"/></svg></span>
+            <span class="m-icon-btn"><svg><use href="#i-bell"/></svg></span>
+            <span class="m-user"><span class="m-avatar">NA</span><span><b>Nguyễn Anh</b><small>Quản lý nhân sự</small></span><svg style="width:14px;height:14px;color:var(--m-muted)"><use href="#i-chev"/></svg></span>
+          </div>
+        </header>
+        <aside class="m-side">
+          <div class="m-side-label">Tổng quan</div>
+          <div class="m-nav active"><svg><use href="#i-home"/></svg>Trang chủ</div>
+          <div class="m-nav"><svg><use href="#i-user"/></svg>Cá nhân<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          <div class="m-nav"><svg><use href="#i-users"/></svg>Nhân sự<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          <div class="m-nav"><svg><use href="#i-brief"/></svg>Tuyển dụng<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          <div class="m-nav"><svg><use href="#i-wallet"/></svg>Kế toán<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          <div class="m-nav"><svg><use href="#i-building"/></svg>Hành chính<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          <div class="m-nav"><svg><use href="#i-cal"/></svg>Kế hoạch<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          <div class="m-side-label">Phân tích</div>
+          <div class="m-nav"><svg><use href="#i-chart"/></svg>Báo cáo</div>
+          <div class="m-nav"><svg><use href="#i-folder"/></svg>Dự án<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+        </aside>
+        <div class="m-main">
+          <div class="m-crumb">Trang chủ</div>
+          <div class="m-head">
+            <div><h1 class="m-h1">Bảng điều khiển</h1><p class="m-sub">Ngày vận hành 21/10/2026 · Trung tâm · Cập nhật 08:12</p></div>
+            <div class="m-head-actions"><a class="m-link">Mở báo cáo điều hành →</a><span class="m-icon-btn" style="width:32px;height:32px"><svg style="width:18px;height:18px"><use href="#i-info"/></svg></span></div>
+          </div>
+          <div class="m-kpis">
+            <div class="m-card m-kpi"><div class="ico"><svg style="width:18px;height:18px"><use href="#i-users"/></svg></div><div class="lab">Nhân sự đang quản lý</div><div class="val">128</div><div class="meta">Thử việc 6 · Nghỉ dài hạn 2</div></div>
+            <div class="m-card m-kpi"><div class="ico"><svg style="width:18px;height:18px"><use href="#i-cal"/></svg></div><div class="lab">Nghỉ phép chờ duyệt</div><div class="val">3</div><div class="meta">Cần xử lý trong hôm nay</div></div>
+            <div class="m-card m-kpi"><div class="ico"><svg style="width:18px;height:18px"><use href="#i-doc"/></svg></div><div class="lab">Hợp đồng sắp hết hạn</div><div class="val">5</div><div class="meta">Trong 30 ngày tới</div></div>
+            <div class="m-card m-kpi"><div class="ico"><svg style="width:18px;height:18px"><use href="#i-check"/></svg></div><div class="lab">Cần duyệt và xử lý</div><div class="val">7</div><div class="meta">4 nghỉ phép · 2 chấm công · 1 hồ sơ</div></div>
+          </div>
+          <div class="m-sec">
+            <div class="m-sec-head"><h2>Công việc của tôi</h2><a class="m-link">Mở trung tâm công việc →</a></div>
+            <div class="m-split">
+              <div class="m-card m-work"><div><div class="lab">Đơn nghỉ của tôi đang chờ duyệt</div><div class="big">2</div><div class="meta">Gửi trong 7 ngày gần nhất</div></div><a class="m-link">Mở đơn nghỉ →</a></div>
+              <div class="m-card m-work"><div><div class="lab">Công việc chưa hoàn thành</div><div class="big">4</div><div class="meta">1 quá hạn · 3 còn hạn</div></div><a class="m-link">Mở công việc →</a></div>
+            </div>
+          </div>
+          <div class="m-sec">
+            <div class="m-sec-head"><h2>Dự án</h2><a class="m-link">Tháng 10/2026 →</a></div>
+            <div class="m-card m-strip">
+              <div><div class="sv">12</div><div class="sl">Hoạt động trong tháng</div></div>
+              <div><div class="sv">28</div><div class="sl">Task báo cáo hoàn thành</div></div>
+              <div><div class="sv">4</div><div class="sl">Task quá hạn</div></div>
+              <div><div class="sv">3</div><div class="sl">Task thiếu báo cáo</div></div>
+              <div><div class="sv">6</div><div class="sl">Hoạt động chưa có Task</div></div>
+            </div>
+          </div>
+          <div class="m-sec">
+            <div class="m-sec-head"><h2>Nhân sự</h2><a class="m-link">Xem tất cả →</a></div>
+            <div class="m-split">
+              <div class="m-card" style="padding:16px 18px">
+                <div class="lab" style="font-size:12.5px;font-weight:600;color:var(--m-muted);margin-bottom:12px">Định biên theo phòng ban</div>
+                <div class="m-bar"><span>Kinh doanh</span><i style="--w:82%"></i><b>24/26</b></div>
+                <div class="m-bar"><span>Kỹ thuật</span><i style="--w:70%"></i><b>18/20</b></div>
+                <div class="m-bar"><span>Nhân sự</span><i style="--w:48%"></i><b>9/10</b></div>
+                <div class="m-bar"><span>Kế toán</span><i style="--w:36%"></i><b>7/8</b></div>
+              </div>
+              <div class="m-card" style="padding:16px 18px">
+                <div class="lab" style="font-size:12.5px;font-weight:600;color:var(--m-muted);margin-bottom:10px">Hợp đồng sắp hết hạn</div>
+                <div class="m-row"><span class="m-avatar" style="width:26px;height:26px;font-size:10px">TH</span><span class="nm">Trần Hà</span><span class="dt">30/10</span></div>
+                <div class="m-row"><span class="m-avatar" style="width:26px;height:26px;font-size:10px">LM</span><span class="nm">Lê Minh</span><span class="dt">05/11</span></div>
+                <div class="m-row"><span class="m-avatar" style="width:26px;height:26px;font-size:10px">PV</span><span class="nm">Phạm Vân</span><span class="dt">12/11</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ================= 3. CHÀM ĐÔNG ================= -->
+<section id="indigo">
+  <div class="sec-head">
+    <p class="sec-num">03 — DẢI MÀU 1</p>
+    <h2>Chàm Đông — indigo trên nền xanh lạnh</h2>
+    <p class="muted" style="margin:8px 0 0;max-width:76ch">Chuyển trục thương hiệu từ teal (y tế, mềm) sang indigo (số hoá, quyết đoán). Vẫn giữ navy trong hệ để không lệch bản sắc cũ.</p>
+  </div>
+
+  <div class="grid2" style="align-items:start;margin-bottom:22px">
+    <div class="panel">
+      <h4>Vì sao phù hợp</h4>
+      <ul class="tight small" style="margin-bottom:0">
+        <li><strong>Đọc số tốt:</strong> indigo đậm trên trắng cho 6,54:1 — link, số KPI và nút chính đều rõ mà không cần tăng độ đậm.</li>
+        <li><strong>Dark mode rất chắc:</strong> nền <code>#080c18</code> gần đen xanh, chữ 17,45:1, brand periwinkle 7,58:1.</li>
+        <li><strong>Không đụng teal y tế:</strong> tách hẳn khỏi ngôn ngữ màu của bệnh viện, hợp cổng nhân sự nội bộ.</li>
+        <li><strong>Trung tính rõ:</strong> nền lạnh <code>#e7ecf4</code> tách khỏi card trắng 1,19:1 — sửa đúng điểm yếu “một mặt phẳng” hiện tại.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h4>Điểm cần lưu ý</h4>
+      <ul class="tight small" style="margin-bottom:0">
+        <li>Indigo khá phổ biến ở sản phẩm SaaS — ít “dấu vết” riêng hơn teal.</li>
+        <li>Phải đổi cả 4 màu ngữ nghĩa để không chỏi với brand; warning <code>#b54708</code> ngả nâu cam, cần kiểm khi in.</li>
+        <li>Ảnh chụp, tài liệu và biểu mẫu quảng bá cũ dùng teal sẽ lệch trong giai đoạn chuyển.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:22px">
+    <h4>Bảng màu</h4>
+    <div class="sw">
+      <div><i style="background:#e7ecf4"></i><span><b>#e7ecf4</b>Nền trang</span></div>
+      <div><i style="background:#ffffff"></i><span><b>#ffffff</b>Bề mặt card</span></div>
+      <div><i style="background:#f4f6fb"></i><span><b>#f4f6fb</b>Bề mặt nâng</span></div>
+      <div><i style="background:#3a4fd0"></i><span><b>#3a4fd0</b>Thương hiệu</span></div>
+      <div><i style="background:#2f42b5"></i><span><b>#2f42b5</b>Hover</span></div>
+      <div><i style="background:#e6eafc"></i><span><b>#e6eafc</b>Đã chọn</span></div>
+      <div><i style="background:#101828"></i><span><b>#101828</b>Chữ chính</span></div>
+      <div><i style="background:#475467"></i><span><b>#475467</b>Chữ phụ</span></div>
+      <div><i style="background:#667085"></i><span><b>#667085</b>Viền control</span></div>
+      <div><i style="background:#dfe4ee"></i><span><b>#dfe4ee</b>Viền card</span></div>
+    </div>
+    <div class="sw" style="margin-top:10px">
+      <div><i style="background:#067647"></i><span><b>#067647</b>Success</span></div>
+      <div><i style="background:#b54708"></i><span><b>#b54708</b>Warning</span></div>
+      <div><i style="background:#b42318"></i><span><b>#b42318</b>Danger</span></div>
+      <div><i style="background:#175cd3"></i><span><b>#175cd3</b>Info</span></div>
+      <div><i style="background:#080c18"></i><span><b>#080c18</b>Nền tối</span></div>
+      <div><i style="background:#131a2e"></i><span><b>#131a2e</b>Card tối</span></div>
+      <div><i style="background:#93a7ff"></i><span><b>#93a7ff</b>Brand tối</span></div>
+      <div><i style="background:#1d2a52"></i><span><b>#1d2a52</b>Chọn tối</span></div>
+    </div>
+  </div>
+
+  <div class="grid2" style="align-items:start">
+    <div>
+      <h3 style="margin-bottom:10px">Token thay đổi</h3>
+      <table class="t">
+        <thead><tr><th>Token</th><th>Sáng</th><th>Tối</th></tr></thead>
+        <tbody>
+          <tr><td><code>--ui-bg</code></td><td class="num">#e7ecf4</td><td class="num">#080c18</td></tr>
+          <tr><td><code>--ui-surface</code></td><td class="num">#ffffff</td><td class="num">#131a2e</td></tr>
+          <tr><td><code>--ui-surface-raised</code></td><td class="num">#f4f6fb</td><td class="num">#1b2440</td></tr>
+          <tr><td><code>--ui-text</code></td><td class="num">#101828</td><td class="num">#eef2ff</td></tr>
+          <tr><td><code>--ui-text-muted</code></td><td class="num">#475467</td><td class="num">#a5b0c9</td></tr>
+          <tr><td><code>--ui-border</code></td><td class="num">#667085</td><td class="num">#7d8ab0</td></tr>
+          <tr><td><code>--ui-card-border</code></td><td class="num">#dfe4ee</td><td class="num">#2a3552</td></tr>
+          <tr><td><code>--ui-divider</code></td><td class="num">#e8ecf3</td><td class="num">#1e2740</td></tr>
+          <tr><td><code>--ui-brand</code></td><td class="num">#3a4fd0</td><td class="num">#93a7ff</td></tr>
+          <tr><td><code>--ui-brand-hover</code></td><td class="num">#2f42b5</td><td class="num">#b3c2ff</td></tr>
+          <tr><td><code>--ui-on-brand</code></td><td class="num">#ffffff</td><td class="num">#0b1020</td></tr>
+          <tr><td><code>--ui-selected-*</code></td><td class="num">#e6eafc / #2f42b5</td><td class="num">#1d2a52 / #c7d2fe</td></tr>
+          <tr><td><code>--ui-sidebar-bg</code></td><td class="num">#ffffff</td><td class="num">#0d1322</td></tr>
+          <tr><td><code>--ui-sidebar-active-*</code></td><td class="num">#e6eafc / #2f42b5</td><td class="num">#1d2a52 / #c7d2fe</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3 style="margin-bottom:10px">Đo tương phản (WCAG 2.1)</h3>
+      <table class="t">
+        <thead><tr><th>Cặp</th><th class="num">Sáng</th><th class="num">Tối</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>Chữ chính / bề mặt</td><td class="num">17,75</td><td class="num">15,46</td><td><span class="chip ok">AA</span></td></tr>
+          <tr><td>Chữ chính / nền trang</td><td class="num">14,96</td><td class="num">17,45</td><td><span class="chip ok">AA</span></td></tr>
+          <tr><td>Chữ phụ / bề mặt</td><td class="num">7,69</td><td class="num">7,95</td><td><span class="chip ok">AA</span></td></tr>
+          <tr><td>Brand / bề mặt (link)</td><td class="num">6,54</td><td class="num">7,58</td><td><span class="chip ok">AA</span></td></tr>
+          <tr><td>Chữ trên nút chính</td><td class="num">6,54</td><td class="num">8,31</td><td><span class="chip ok">AA</span></td></tr>
+          <tr><td>Viền control / bề mặt</td><td class="num">4,97</td><td class="num">5,05</td><td><span class="chip ok">3:1</span></td></tr>
+          <tr><td>Mục đang chọn (chữ/nền)</td><td class="num">6,83</td><td class="num">9,35</td><td><span class="chip ok">AA</span></td></tr>
+          <tr><td>Sidebar (chữ/nền)</td><td class="num">14,70</td><td class="num">12,62</td><td><span class="chip ok">AA</span></td></tr>
+          <tr><td>Bề mặt / nền trang</td><td class="num">1,19</td><td class="num">1,13</td><td><span class="chip neu">trang trí</span></td></tr>
+          <tr><td>Viền card / bề mặt</td><td class="num">1,28</td><td class="num">1,42</td><td><span class="chip neu">trang trí</span></td></tr>
+          <tr><td>4 màu ngữ nghĩa (thấp nhất)</td><td class="num">5,20</td><td class="num">9,33</td><td><span class="chip ok">AA</span></td></tr>
+        </tbody>
+      </table>
+      <p class="small muted" style="margin:12px 0 0">Ngưỡng: chữ ≥ 4,5:1 · thành phần UI và focus ≥ 3:1. Không cặp nào dưới ngưỡng.</p>
+    </div>
+  </div>
+
+  <div class="fig-tools" style="margin-top:26px">
+    <h3 style="margin:0">Danh sách nhân viên — Chàm Đông</h3>
+    <div class="seg"><button type="button" data-mock="#mockIndigo" data-mode-set="light" aria-pressed="true">Sáng</button><button type="button" data-mock="#mockIndigo" data-mode-set="dark" aria-pressed="false">Tối</button></div>
+  </div>
+  <div class="frame" data-w="1440" data-h="900">
+    <div class="frame-inner">
+      <div class="mock" id="mockIndigo" data-pal="indigo" data-mode="light">
+        <header class="m-top">
+          <div class="m-brand"><span class="m-mark">IH</span>IHRMS<small>Cổng thông tin nhân viên</small></div>
+          <div class="m-search"><svg><use href="#i-search"/></svg>Tên, mã NV, email hoặc chức năng…</div>
+          <div class="m-actions"><span class="m-icon-btn"><svg><use href="#i-moon"/></svg></span><span class="m-icon-btn"><svg><use href="#i-bell"/></svg></span><span class="m-user"><span class="m-avatar">NA</span><span><b>Nguyễn Anh</b><small>Quản lý nhân sự</small></span></span></div>
+        </header>
+        <aside class="m-side">
+          <div class="m-side-label">Tổng quan</div>
+          <div class="m-nav"><svg><use href="#i-home"/></svg>Trang chủ</div>
+          <div class="m-nav"><svg><use href="#i-user"/></svg>Cá nhân<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          <div class="m-nav active"><svg><use href="#i-users"/></svg>Nhân sự<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          <div class="m-side-label" style="padding-top:6px">Hồ sơ &amp; quá trình</div>
+          <div class="m-nav" style="height:38px;padding-left:20px;font-size:13px">Nhân viên &amp; hồ sơ</div>
+          <div class="m-nav" style="height:38px;padding-left:20px;font-size:13px">Hợp đồng</div>
+          <div class="m-nav" style="height:38px;padding-left:20px;font-size:13px">Quyết định nhân sự</div>
+          <div class="m-nav"><svg><use href="#i-brief"/></svg>Tuyển dụng<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          <div class="m-nav"><svg><use href="#i-wallet"/></svg>Kế toán<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          <div class="m-nav"><svg><use href="#i-building"/></svg>Hành chính<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          <div class="m-nav"><svg><use href="#i-cal"/></svg>Kế hoạch<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+        </aside>
+        <div class="m-main">
+          <div class="m-crumb">Trang chủ / Nhân sự / Nhân viên &amp; hồ sơ</div>
+          <div class="m-head" style="margin-bottom:20px">
+            <div><h1 class="m-h1">Nhân viên &amp; hồ sơ</h1><p class="m-sub">Tra cứu nhân viên trong phạm vi tài khoản được phép xem.</p></div>
+            <div class="m-head-actions"><span class="m-btn-sm primary"><svg><use href="#i-plus"/></svg>Thêm nhân viên</span></div>
+          </div>
+          <div class="m-card">
+            <div class="m-card-head"><span class="m-card-title">Danh sách nhân viên</span><span class="m-count">128 nhân viên · 6 đang thử việc</span></div>
+            <div class="m-filter">
+              <div class="m-field" style="width:320px"><label>Tìm kiếm</label><div class="m-input"><svg><use href="#i-search"/></svg>Tên, mã nhân viên, email…</div></div>
+              <div class="m-field" style="width:210px"><label>Phòng ban</label><div class="m-input sel">Tất cả phòng ban</div></div>
+              <div class="m-field" style="width:190px"><label>Trạng thái</label><div class="m-input sel">Đang làm việc</div></div>
+              <span class="m-btn-sm primary">Áp dụng</span>
+              <span class="m-btn-sm" style="color:var(--m-muted)">Xóa lọc</span>
+            </div>
+            <table class="m-tbl">
+              <thead><tr><th style="width:24%">Nhân viên</th><th style="width:13%">Phòng ban</th><th style="width:20%">Chức danh</th><th style="width:18%">Loại hợp đồng</th><th class="num" style="width:11%">Ngày vào</th><th style="width:10%">Trạng thái</th><th style="width:4%"></th></tr></thead>
+              <tbody>
+                <tr><td><div class="m-cell"><span class="m-avatar">TH</span><span><b>Nguyễn Thu Hà</b><small>NV-0142</small></span></div></td><td>Nhân sự</td><td>Chuyên viên tuyển dụng</td><td>Không xác định thời hạn</td><td class="num">12/03/2021</td><td><span class="m-badge ok"><i></i>Đang làm</span></td><td><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">QB</span><span><b>Trần Quốc Bảo</b><small>NV-0231</small></span></div></td><td>Kỹ thuật</td><td>Kỹ sư phần mềm</td><td>12 tháng</td><td class="num">05/09/2024</td><td><span class="m-badge warn"><i></i>Sắp hết hạn</span></td><td><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">MA</span><span><b>Lê Minh Anh</b><small>NV-0308</small></span></div></td><td>Kinh doanh</td><td>Chuyên viên kinh doanh</td><td>12 tháng</td><td class="num">18/01/2025</td><td><span class="m-badge ok"><i></i>Đang làm</span></td><td><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">VD</span><span><b>Phạm Văn Dũng</b><small>NV-0417</small></span></div></td><td>Kế toán</td><td>Kế toán tổng hợp</td><td>Thử việc 2 tháng</td><td class="num">01/09/2026</td><td><span class="m-badge info"><i></i>Thử việc</span></td><td><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">HM</span><span><b>Hoàng Thị Mai</b><small>NV-0128</small></span></div></td><td>Hành chính</td><td>Hành chính – VPP</td><td>Không xác định thời hạn</td><td class="num">22/07/2019</td><td><span class="m-badge ok"><i></i>Đang làm</span></td><td><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">DL</span><span><b>Vũ Đức Long</b><small>NV-0355</small></span></div></td><td>Kỹ thuật</td><td>Kỹ sư QA</td><td>24 tháng</td><td class="num">14/11/2023</td><td><span class="m-badge neu"><i></i>Nghỉ thai sản</span></td><td><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+              </tbody>
+            </table>
+            <div class="m-foot"><span>Hiển thị 1–6 trong 128 nhân viên</span><div class="m-pager"><span>‹</span><span class="on">1</span><span>2</span><span>3</span><span>›</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4. THAN ẤM ================= -->
+<section id="graphite">
+  <div class="sec-head">
+    <p class="sec-num">04 — DẢI MÀU 2</p>
+    <h2>Than Ấm — xám ấm và đồng</h2>
+    <p class="muted" style="margin:8px 0 0;max-width:76ch">Bỏ hẳn sắc xanh khỏi giao diện; nền như giấy ấm, nhấn bằng đồng cháy. Cảm giác biên tập, trầm, phù hợp nơi hồ sơ và văn bản là trung tâm.</p>
+  </div>
+
+  <div class="grid2" style="align-items:start;margin-bottom:22px">
+    <div class="panel">
+      <h4>Vì sao phù hợp</h4>
+      <ul class="tight small" style="margin-bottom:0">
+        <li><strong>Khác biệt rõ:</strong> không còn cạnh tranh với teal hay indigo; nhận diện riêng ngay từ ảnh chụp đầu tiên.</li>
+        <li><strong>Hợp giấy và báo cáo:</strong> nền ấm gần giấy, ít mỏi mắt khi đọc văn bản dài; chụp/in tài liệu nhìn tự nhiên.</li>
+        <li><strong>Điểm nhấn tiết chế:</strong> đồng <code>#9a4a1a</code> chỉ dùng cho hành động và dữ liệu chính, 6,23:1 trên trắng.</li>
+        <li><strong>Dark mode ấm:</strong> nền <code>#0e0c0a</code>, brand <code>#e9a97f</code> cho 8,70:1 — khác hẳn dark xanh hiện tại.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h4>Điểm cần lưu ý</h4>
+      <ul class="tight small" style="margin-bottom:0">
+        <li><strong>Đồng gần với warning:</strong> phải giữ warning ở vàng <code>#a16207</code> và luôn kèm icon/chữ, không dựa vào màu.</li>
+        <li><strong>Không hợp mọi phân hệ:</strong> Kế toán/Tài chính có thể cần sắc lạnh hơn; nếu chọn, nên dùng một pack duy nhất cho toàn hệ.</li>
+        <li><strong>Ít “công nghệ” hơn:</strong> phù hợp nếu định vị IHRMS là công cụ nghiệp vụ, không phải sản phẩm số hoá để trình diễn.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:22px">
+    <h4>Bảng màu</h4>
+    <div class="sw">
+      <div><i style="background:#efebe3"></i><span><b>#efebe3</b>Nền trang</span></div>
+      <div><i style="background:#ffffff"></i><span><b>#ffffff</b>Bề mặt card</span></div>
+      <div><i style="background:#f8f5f0"></i><span><b>#f8f5f0</b>Bề mặt nâng</span></div>
+      <div><i style="background:#9a4a1a"></i><span><b>#9a4a1a</b>Thương hiệu</span></div>
+      <div><i style="background:#7f3c13"></i><span><b>#7f3c13</b>Hover</span></div>
+      <div><i style="background:#f6ece3"></i><span><b>#f6ece3</b>Đã chọn</span></div>
+      <div><i style="background:#1c1917"></i><span><b>#1c1917</b>Chữ chính</span></div>
+      <div><i style="background:#57534e"></i><span><b>#57534e</b>Chữ phụ</span></div>
+      <div><i style="background:#78716c"></i><span><b>#78716c</b>Viền control</span></div>
+      <div><i style="background:#e5dfd6"></i><span><b>#e5dfd6</b>Viền card</span></div>
+    </div>
+    <div class="sw" style="margin-top:10px">
+      <div><i style="background:#4d7c0f"></i><span><b>#4d7c0f</b>Success</span></div>
+      <div><i style="background:#a16207"></i><span><b>#a16207</b>Warning</span></div>
+      <div><i style="background:#b42318"></i><span><b>#b42318</b>Danger</span></div>
+      <div><i style="background:#1e5a8a"></i><span><b>#1e5a8a</b>Info</span></div>
+      <div><i style="background:#0e0c0a"></i><span><b>#0e0c0a</b>Nền tối</span></div>
+      <div><i style="background:#1c1917"></i><span><b>#1c1917</b>Card tối</span></div>
+      <div><i style="background:#e9a97f"></i><span><b>#e9a97f</b>Brand tối</span></div>
+      <div><i style="background:#3a2a1f"></i><span><b>#3a2a1f</b>Chọn tối</span></div>
+    </div>
+  </div>
+
+  <div class="grid2" style="align-items:start">
+    <div>
+      <h3 style="margin-bottom:10px">Token thay đổi</h3>
+      <table class="t">
+        <thead><tr><th>Token</th><th>Sáng</th><th>Tối</th></tr></thead>
+        <tbody>
+          <tr><td><code>--ui-bg</code></td><td class="num">#efebe3</td><td class="num">#0e0c0a</td></tr>
+          <tr><td><code>--ui-surface</code></td><td class="num">#ffffff</td><td class="num">#1c1917</td></tr>
+          <tr><td><code>--ui-surface-raised</code></td><td class="num">#f8f5f0</td><td class="num">#262220</td></tr>
+          <tr><td><code>--ui-text</code></td><td class="num">#1c1917</td><td class="num">#f5f1ec</td></tr>
+          <tr><td><code>--ui-text-muted</code></td><td class="num">#57534e</td><td class="num">#b5aca2</td></tr>
+          <tr><td><code>--ui-border</code></td><td class="num">#78716c</td><td class="num">#8c837a</td></tr>
+          <tr><td><code>--ui-card-border</code></td><td class="num">#e5dfd6</td><td class="num">#332e2a</td></tr>
+          <tr><td><code>--ui-divider</code></td><td class="num">#efeae3</td><td class="num">#292420</td></tr>
+          <tr><td><code>--ui-brand</code></td><td class="num">#9a4a1a</td><td class="num">#e9a97f</td></tr>
+          <tr><td><code>--ui-brand-hover</code></td><td class="num">#7f3c13</td><td class="num">#f2c4a3</td></tr>
+          <tr><td><code>--ui-on-brand</code></td><td class="num">#ffffff</td><td class="num">#1c1917</td></tr>
+          <tr><td><code>--ui-selected-*</code></td><td class="num">#f6ece3 / #7f3c13</td><td class="num">#3a2a1f / #f2c4a3</td></tr>
+          <tr><td><code>--ui-sidebar-bg</code></td><td class="num">#ffffff</td><td class="num">#171412</td></tr>
+          <tr><td><code>--ui-sidebar-active-*</code></td><td class="num">#f6ece3 / #7f3c13</td><td class="num">#3a2a1f / #f2c4a3</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3 style="margin-bottom:10px">Đo tương phản (WCAG 2.1)</h3>
+      <table class="t">
+        <thead><tr><th>Cặp</th><th class="num">Sáng</th><th class="num">Tối</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>Chữ chính / bề mặt</td><td class="num">17,49</td><td class="num">15,55</td><td><span class="chip ok">AA</span></td></tr>
+          <tr><td>Chữ chính / nền trang</td><td class="num">14,71</td><td class="num">17,36</td><td><span class="chip ok">AA</span></td></tr>
+          <tr><td>Chữ phụ / bề mặt</td><td class="num">7,63</td><td class="num">7,82</td><td><span class="chip ok">AA</span></td></tr>
+          <tr><td>Brand / bề mặt (link)</td><td class="num">6,23</td><td class="num">8,70</td><td><span class="chip ok">AA</span></td></tr>
+          <tr><td>Chữ trên nút chính</td><td class="num">6,23</td><td class="num">8,70</td><td><span class="chip ok">AA</span></td></tr>
+          <tr><td>Viền control / bề mặt</td><td class="num">4,80</td><td class="num">4,70</td><td><span class="chip ok">3:1</span></td></tr>
+          <tr><td>Mục đang chọn (chữ/nền)</td><td class="num">7,05</td><td class="num">8,62</td><td><span class="chip ok">AA</span></td></tr>
+          <tr><td>Sidebar (chữ/nền)</td><td class="num">15,17</td><td class="num">14,02</td><td><span class="chip ok">AA</span></td></tr>
+          <tr><td>Bề mặt / nền trang</td><td class="num">1,19</td><td class="num">1,12</td><td><span class="chip neu">trang trí</span></td></tr>
+          <tr><td>Viền card / bề mặt</td><td class="num">1,32</td><td class="num">1,30</td><td><span class="chip neu">trang trí</span></td></tr>
+          <tr><td>4 màu ngữ nghĩa (thấp nhất)</td><td class="num">4,76</td><td class="num">9,33</td><td><span class="chip ok">AA</span></td></tr>
+        </tbody>
+      </table>
+      <p class="small muted" style="margin:12px 0 0">Warning <code>#a16207</code> trên nền <code>#fefce8</code> chỉ 4,76:1 — sát ngưỡng, nên luôn kèm icon và nhãn chữ.</p>
+    </div>
+  </div>
+
+  <div class="fig-tools" style="margin-top:26px">
+    <h3 style="margin:0">Danh sách nhân viên — Than Ấm</h3>
+    <div class="seg"><button type="button" data-mock="#mockGraphite" data-mode-set="light" aria-pressed="true">Sáng</button><button type="button" data-mock="#mockGraphite" data-mode-set="dark" aria-pressed="false">Tối</button></div>
+  </div>
+  <div class="frame" data-w="1440" data-h="900">
+    <div class="frame-inner">
+      <div class="mock" id="mockGraphite" data-pal="graphite" data-mode="light">
+        <header class="m-top">
+          <div class="m-brand"><span class="m-mark">IH</span>IHRMS<small>Cổng thông tin nhân viên</small></div>
+          <div class="m-search"><svg><use href="#i-search"/></svg>Tên, mã NV, email hoặc chức năng…</div>
+          <div class="m-actions"><span class="m-icon-btn"><svg><use href="#i-moon"/></svg></span><span class="m-icon-btn"><svg><use href="#i-bell"/></svg></span><span class="m-user"><span class="m-avatar">NA</span><span><b>Nguyễn Anh</b><small>Quản lý nhân sự</small></span></span></div>
+        </header>
+        <aside class="m-side">
+          <div class="m-side-label">Tổng quan</div>
+          <div class="m-nav"><svg><use href="#i-home"/></svg>Trang chủ</div>
+          <div class="m-nav"><svg><use href="#i-user"/></svg>Cá nhân<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          <div class="m-nav active"><svg><use href="#i-users"/></svg>Nhân sự<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          <div class="m-side-label" style="padding-top:6px">Hồ sơ &amp; quá trình</div>
+          <div class="m-nav" style="height:38px;padding-left:20px;font-size:13px">Nhân viên &amp; hồ sơ</div>
+          <div class="m-nav" style="height:38px;padding-left:20px;font-size:13px">Hợp đồng</div>
+          <div class="m-nav" style="height:38px;padding-left:20px;font-size:13px">Quyết định nhân sự</div>
+          <div class="m-nav"><svg><use href="#i-brief"/></svg>Tuyển dụng<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          <div class="m-nav"><svg><use href="#i-wallet"/></svg>Kế toán<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          <div class="m-nav"><svg><use href="#i-building"/></svg>Hành chính<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          <div class="m-nav"><svg><use href="#i-cal"/></svg>Kế hoạch<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+        </aside>
+        <div class="m-main">
+          <div class="m-crumb">Trang chủ / Nhân sự / Nhân viên &amp; hồ sơ</div>
+          <div class="m-head" style="margin-bottom:20px">
+            <div><h1 class="m-h1">Nhân viên &amp; hồ sơ</h1><p class="m-sub">Tra cứu nhân viên trong phạm vi tài khoản được phép xem.</p></div>
+            <div class="m-head-actions"><span class="m-btn-sm primary"><svg><use href="#i-plus"/></svg>Thêm nhân viên</span></div>
+          </div>
+          <div class="m-card">
+            <div class="m-card-head"><span class="m-card-title">Danh sách nhân viên</span><span class="m-count">128 nhân viên · 6 đang thử việc</span></div>
+            <div class="m-filter">
+              <div class="m-field" style="width:320px"><label>Tìm kiếm</label><div class="m-input"><svg><use href="#i-search"/></svg>Tên, mã nhân viên, email…</div></div>
+              <div class="m-field" style="width:210px"><label>Phòng ban</label><div class="m-input sel">Tất cả phòng ban</div></div>
+              <div class="m-field" style="width:190px"><label>Trạng thái</label><div class="m-input sel">Đang làm việc</div></div>
+              <span class="m-btn-sm primary">Áp dụng</span>
+              <span class="m-btn-sm" style="color:var(--m-muted)">Xóa lọc</span>
+            </div>
+            <table class="m-tbl">
+              <thead><tr><th style="width:24%">Nhân viên</th><th style="width:13%">Phòng ban</th><th style="width:20%">Chức danh</th><th style="width:18%">Loại hợp đồng</th><th class="num" style="width:11%">Ngày vào</th><th style="width:10%">Trạng thái</th><th style="width:4%"></th></tr></thead>
+              <tbody>
+                <tr><td><div class="m-cell"><span class="m-avatar">TH</span><span><b>Nguyễn Thu Hà</b><small>NV-0142</small></span></div></td><td>Nhân sự</td><td>Chuyên viên tuyển dụng</td><td>Không xác định thời hạn</td><td class="num">12/03/2021</td><td><span class="m-badge ok"><i></i>Đang làm</span></td><td><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">QB</span><span><b>Trần Quốc Bảo</b><small>NV-0231</small></span></div></td><td>Kỹ thuật</td><td>Kỹ sư phần mềm</td><td>12 tháng</td><td class="num">05/09/2024</td><td><span class="m-badge warn"><i></i>Sắp hết hạn</span></td><td><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">MA</span><span><b>Lê Minh Anh</b><small>NV-0308</small></span></div></td><td>Kinh doanh</td><td>Chuyên viên kinh doanh</td><td>12 tháng</td><td class="num">18/01/2025</td><td><span class="m-badge ok"><i></i>Đang làm</span></td><td><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">VD</span><span><b>Phạm Văn Dũng</b><small>NV-0417</small></span></div></td><td>Kế toán</td><td>Kế toán tổng hợp</td><td>Thử việc 2 tháng</td><td class="num">01/09/2026</td><td><span class="m-badge info"><i></i>Thử việc</span></td><td><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">HM</span><span><b>Hoàng Thị Mai</b><small>NV-0128</small></span></div></td><td>Hành chính</td><td>Hành chính – VPP</td><td>Không xác định thời hạn</td><td class="num">22/07/2019</td><td><span class="m-badge ok"><i></i>Đang làm</span></td><td><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">DL</span><span><b>Vũ Đức Long</b><small>NV-0355</small></span></div></td><td>Kỹ thuật</td><td>Kỹ sư QA</td><td>24 tháng</td><td class="num">14/11/2023</td><td><span class="m-badge neu"><i></i>Nghỉ thai sản</span></td><td><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+              </tbody>
+            </table>
+            <div class="m-foot"><span>Hiển thị 1–6 trong 128 nhân viên</span><div class="m-pager"><span>‹</span><span class="on">1</span><span>2</span><span>3</span><span>›</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5. SO SÁNH ================= -->
+<section id="sosanh">
+  <div class="sec-head">
+    <p class="sec-num">05 — SO SÁNH</p>
+    <h2>Ba dải màu, ba tính cách</h2>
+  </div>
+
+  <table class="t">
+    <thead><tr><th style="width:20%">Tiêu chí</th><th style="width:27%">Teal (hiện tại)</th><th style="width:27%">Chàm Đông</th><th>Than Ấm</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Cảm giác</strong></td><td>Dịu, y tế, thân thiện</td><td>Quyết đoán, số hoá, hiện đại</td><td>Trầm, biên tập, chỉn chu</td></tr>
+      <tr><td><strong>Hợp nhất với</strong></td><td>Cổng phúc lợi, y tế, dịch vụ công</td><td>Dashboard điều hành, dữ liệu dày</td><td>Hồ sơ, văn bản, báo cáo in</td></tr>
+      <tr><td><strong>Điểm mạnh riêng</strong></td><td>Đã được duyệt, 0 rủi ro chuyển đổi</td><td>Dark mode tốt nhất, brand đọc rõ nhất (6,54:1)</td><td>Khác biệt nhất, nền ấm dễ đọc văn bản dài</td></tr>
+      <tr><td><strong>Điểm yếu</strong></td><td>Nền và card gần nhau (1,02–1,08:1)</td><td>Dễ trùng sản phẩm SaaS khác</td><td>Đồng gần warning; ít chất “công nghệ”</td></tr>
+      <tr><td><strong>Tương phản chữ thấp nhất</strong></td><td class="num">6,00</td><td class="num">6,48</td><td class="num">6,42</td></tr>
+      <tr><td><strong>Tương phản UI thấp nhất</strong></td><td class="num">4,45</td><td class="num">4,80</td><td class="num">4,70</td></tr>
+      <tr><td><strong>Mức thay đổi so với hiện tại</strong></td><td>—</td><td>Đổi 14 giá trị màu</td><td>Đổi 14 giá trị màu + 4 ngữ nghĩa</td></tr>
+      <tr><td><strong>Rủi ro triển khai</strong></td><td><span class="chip ok">Không</span></td><td><span class="chip warn">Trung bình</span></td><td><span class="chip warn">Trung bình</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="grid2" style="margin-top:20px">
+    <div class="panel">
+      <h4>Khuyến nghị</h4>
+      <p class="small" style="margin:0">Giữ <strong>teal</strong> làm mặc định (đã duyệt, ổn định), thêm <strong>Chàm Đông</strong> như pack thay thế chính thức nếu muốn định vị lại sản phẩm theo hướng số hoá. <strong>Than Ấm</strong> để dành cho bản in ấn / tài liệu thương hiệu, hoặc nếu chủ dự án muốn một nhận diện khác hẳn.</p>
+    </div>
+    <div class="panel">
+      <h4>Không nên</h4>
+      <p class="small" style="margin:0">Không cho người dùng tự chọn palette (làm loãng nhận diện, khó hỗ trợ, ảnh chụp không đồng nhất). Không trộn brand teal với nền ấm hoặc brand indigo với nền xanh lá — sẽ lệch tông ngay ở ảnh chụp đầu tiên.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 6. TRIỂN KHAI ================= -->
+<section id="trienkhai">
+  <div class="sec-head">
+    <p class="sec-num">06 — TRIỂN KHAI</p>
+    <h2>Một đợt cho token, một đợt cho kiểm thử</h2>
+  </div>
+
+  <div class="grid2" style="align-items:start">
+    <div class="panel">
+      <h4>File phải sửa</h4>
+      <table class="t">
+        <thead><tr><th>Tệp</th><th>Thay đổi</th></tr></thead>
+        <tbody>
+          <tr><td><code>ui_tokens.css</code></td><td>Thêm 2 khối <code>[data-palette][data-theme]</code> (~26 dòng/khối)</td></tr>
+          <tr><td><code>base.html</code></td><td>Gắn <code>data-palette</code> + <code>meta name="theme-color"</code> theo palette</td></tr>
+          <tr><td><code>theme.js</code></td><td>Đọc palette từ cấu hình server, không cho client tự đổi</td></tr>
+          <tr><td><code>manifest.json</code></td><td><code>theme_color</code> / <code>background_color</code></td></tr>
+          <tr><td>Service worker</td><td>Tăng phiên bản cache cùng đợt (CSS đổi)</td></tr>
+          <tr><td><code>DESIGN.md</code> + <code>MASTER.md</code></td><td>Cập nhật bảng giá trị nguồn + lịch sử quyết định</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="panel">
+      <h4>Cổng kiểm thử</h4>
+      <ul class="tight small" style="margin-bottom:12px">
+        <li><code>ops/check_ui_contrast.py</code> — mở rộng cho 6 tổ hợp, phải pass 100%.</li>
+        <li><code>ops/run_layout_alignment_audit.py</code> — 7 độ rộng × vai trò × 6 tổ hợp.</li>
+        <li><code>ops/run_print_layout_uat.py</code> — xác nhận giấy HCNS không đổi màu.</li>
+        <li><code>ops/run_browser_uat.py</code> — luồng nghiệp vụ trên DB dùng một lần.</li>
+        <li>Chụp lại contact sheet trước/sau ở 1756px và 390px cho cả 2 chế độ.</li>
+      </ul>
+      <p class="small muted" style="margin:0">Ước lượng: 1 đợt token + 1 đợt kiểm thử/ảnh. Không đụng route, field, quyền hay bản in.</p>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:18px">
+    <h4>Cần chủ dự án chốt</h4>
+    <ol class="tight small" style="margin:0">
+      <li>Chọn <strong>Chàm Đông</strong> hay <strong>Than Ấm</strong> (hoặc giữ teal và chỉ lưu 2 pack làm phương án dự phòng)?</li>
+      <li>Palette do quản trị hệ thống chọn, hay cố định một pack cho toàn bộ triển khai?</li>
+      <li>Có chấp nhận chụp lại toàn bộ baseline ảnh và cập nhật tài liệu thiết kế trong cùng đợt không?</li>
+    </ol>
+  </div>
+</section>
+
+<footer style="margin-top:50px;padding-top:18px;border-top:1px solid var(--d-border);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap" class="small muted">
+  <span>Đề xuất dải màu · IHRMS · 21/10/2026 · nhánh <code>main</code> @ 13accfa</span>
+  <span>Trạng thái: đề xuất — chưa sửa token nào trong <code>src/</code></span>
+</footer>
+</main>
+<script>
+(function(){
+  var root=document.documentElement;
+  var tb=document.getElementById('themeBtn'), tl=document.getElementById('themeLabel');
+  function applyDoc(t){root.setAttribute('data-theme',t);tl.textContent=t==='dark'?'Nền tối':'Nền sáng';}
+  tb.addEventListener('click',function(){applyDoc(root.getAttribute('data-theme')==='dark'?'light':'dark');});
+  applyDoc('dark');
+
+  var mock=document.getElementById('labMock');
+  document.querySelectorAll('[data-pal-set]').forEach(function(b){
+    b.addEventListener('click',function(){
+      mock.setAttribute('data-pal',b.dataset.palSet);
+      document.querySelectorAll('[data-pal-set]').forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});
+    });
+  });
+  document.querySelectorAll('[data-mode-set]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var target = b.dataset.mock ? document.querySelector(b.dataset.mock) : mock;
+      if(!target) return;
+      target.setAttribute('data-mode',b.dataset.modeSet);
+      var seg=b.parentElement;
+      seg.querySelectorAll('[data-mode-set]').forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});
+    });
+  });
+  function scaleFrames(){
+    document.querySelectorAll('.frame[data-w]').forEach(function(f){
+      var w=parseFloat(f.dataset.w), h=parseFloat(f.dataset.h||'900');
+      var s=f.clientWidth/w;
+      f.style.height=(h*s)+'px';
+      var inner=f.querySelector('.frame-inner');
+      if(inner){inner.style.width=w+'px';inner.style.height=h+'px';inner.style.transform='scale('+s+')';}
+    });
+  }
+  window.addEventListener('resize',scaleFrames);
+  window.addEventListener('load',scaleFrames);
+  scaleFrames();
+})();
+</script>
+</body>
+</html>

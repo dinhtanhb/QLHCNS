@@ -1,0 +1,1 @@
+Python 3 + Django (settings loaded via `DJANGO_SETTINGS_MODULE=config.settings`), Playwright sync/async APIs for Chromium/Edge, Node 22+ standard library (no npm deps) for the menu-link probe, PowerShell 7 + `sqlcmd` for SQL Server Express backups, and Windows Task Scheduler as the job orchestrator.

@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Review thiết kế &amp; bố cục IHRMS — 21/10/2026</title>
+<style>
+/* ===================== DOCUMENT LAYER ===================== */
+:root{
+  --d-bg:#f5f8f6; --d-panel:#ffffff; --d-panel2:#eef3f0; --d-text:#0c233b; --d-muted:#52646f;
+  --d-border:#dbe4df; --d-accent:#0b7461; --d-accent-soft:#e6f2ec; --d-line:#e8eeea;
+  --d-warn:#8a5300; --d-warn-bg:#fdf6e3; --d-danger:#9b1c1c; --d-danger-bg:#fdf1f1;
+  --d-ok:#166534; --d-ok-bg:#eefaf1; --d-info:#075985; --d-info-bg:#eff8fd;
+  --d-shadow:0 1px 2px rgb(12 35 59 / .05);
+}
+html[data-theme="dark"]{
+  --d-bg:#080e15; --d-panel:#111a23; --d-panel2:#16212c; --d-text:#e9f1f5; --d-muted:#9db0bd;
+  --d-border:#22303c; --d-accent:#63dbc2; --d-accent-soft:#12332e; --d-line:#1b2833;
+  --d-warn:#fde68a; --d-warn-bg:#2b2006; --d-danger:#fca5a5; --d-danger-bg:#2b1010;
+  --d-ok:#86efac; --d-ok-bg:#08210f; --d-info:#7dd3fc; --d-info-bg:#08202f;
+  --d-shadow:none;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--d-bg);color:var(--d-text);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.doc-bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:20px;padding:0 28px;height:56px;background:color-mix(in srgb,var(--d-panel) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--d-border)}
+.doc-bar .db-brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px;letter-spacing:.01em}
+.db-mark{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:7px;background:var(--d-accent);color:var(--d-panel);font-size:11px;font-weight:700}
+.doc-bar nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+.doc-bar nav a{font-size:13px;color:var(--d-muted);text-decoration:none;padding:6px 10px;border-radius:6px}
+.doc-bar nav a:hover{background:var(--d-panel2);color:var(--d-text)}
+.tbtn{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 12px;border:1px solid var(--d-border);background:var(--d-panel);color:var(--d-text);border-radius:7px;font:inherit;font-size:13px;cursor:pointer}
+.tbtn:hover{background:var(--d-panel2)}
+.tbtn:focus-visible{outline:3px solid var(--d-accent);outline-offset:2px}
+.doc{max-width:1180px;margin:0 auto;padding:48px 32px 120px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--d-accent);margin:0 0 10px}
+h1{font-size:40px;line-height:1.14;letter-spacing:-.02em;margin:0 0 16px;font-weight:700}
+h2{font-size:27px;line-height:1.25;letter-spacing:-.01em;margin:0 0 6px;font-weight:650}
+h3{font-size:19px;line-height:1.35;margin:0 0 8px;font-weight:600}
+h4{font-size:14px;letter-spacing:.05em;text-transform:uppercase;margin:0 0 8px;font-weight:600;color:var(--d-muted)}
+p{margin:0 0 14px}
+.lead{font-size:18px;line-height:1.65;color:var(--d-muted);max-width:74ch}
+.muted{color:var(--d-muted)}
+.small{font-size:13.5px}
+section{margin-top:72px;scroll-margin-top:80px}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding-bottom:16px;border-bottom:1px solid var(--d-border);margin-bottom:28px;flex-wrap:wrap}
+.sec-num{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--d-accent);margin-bottom:8px}
+.panel{background:var(--d-panel);border:1px solid var(--d-border);border-radius:12px;padding:24px;box-shadow:var(--d-shadow)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:900px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+.chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+.chip.sev-high{background:var(--d-danger-bg);color:var(--d-danger);border-color:color-mix(in srgb,var(--d-danger) 30%,transparent)}
+.chip.sev-mid{background:var(--d-warn-bg);color:var(--d-warn);border-color:color-mix(in srgb,var(--d-warn) 30%,transparent)}
+.chip.sev-low{background:var(--d-info-bg);color:var(--d-info);border-color:color-mix(in srgb,var(--d-info) 30%,transparent)}
+.chip.good{background:var(--d-ok-bg);color:var(--d-ok);border-color:color-mix(in srgb,var(--d-ok) 30%,transparent)}
+.chip.neutral{background:var(--d-panel2);color:var(--d-muted);border-color:var(--d-border)}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th{text-align:left;font-weight:600;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--d-muted);padding:10px 12px;border-bottom:1px solid var(--d-border);background:var(--d-panel2)}
+table.t td{padding:11px 12px;border-bottom:1px solid var(--d-line);vertical-align:top}
+table.t tr:last-child td{border-bottom:0}
+table.t td.num{text-align:right;font-variant-numeric:tabular-nums}
+code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;background:var(--d-panel2);border:1px solid var(--d-line);border-radius:4px;padding:1px 5px}
+.callout{border-left:3px solid var(--d-accent);background:var(--d-accent-soft);padding:14px 18px;border-radius:0 8px 8px 0;margin:18px 0}
+.callout.warn{border-left-color:var(--d-warn);background:var(--d-warn-bg)}
+.callout p:last-child{margin:0}
+ul.tight{margin:0 0 14px;padding-left:20px}
+ul.tight li{margin-bottom:7px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:14px}
+.kv dt{color:var(--d-muted)}
+.kv dd{margin:0;font-weight:500}
+.score{display:flex;align-items:center;gap:10px;font-size:14px}
+.bar{flex:1;height:6px;border-radius:3px;background:var(--d-panel2);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:3px;background:var(--d-accent)}
+.bar.low i{background:var(--d-danger)}
+.bar.mid i{background:var(--d-warn)}
+figure{margin:0}
+figure img{width:100%;display:block;border-radius:8px;border:1px solid var(--d-border)}
+figcaption{font-size:12.5px;color:var(--d-muted);margin-top:8px}
+.shot{position:relative;overflow:hidden;border-radius:8px;border:1px solid var(--d-border);background:var(--d-panel2)}
+.shot img{display:block;width:100%}
+
+/* ===================== MOCKUP FRAME ===================== */
+.frame{position:relative;width:100%;overflow:hidden;border-radius:10px;border:1px solid var(--d-border);background:var(--d-panel2)}
+.frame-inner{position:absolute;top:0;left:0;transform-origin:top left}
+.frame-bar{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--d-border);background:var(--d-panel2)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--d-border)}
+.frame-bar span{font-size:12px;color:var(--d-muted);margin-left:8px}
+
+/* ===================== MOCK SHARED ===================== */
+.mock{width:100%;height:100%;display:grid;background:var(--m-canvas);color:var(--m-text);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;font-size:16px;line-height:1.5;overflow:hidden}
+.mock *{box-sizing:border-box}
+.mock svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.mock-a{
+  --m-canvas:#ecf1ee;--m-surface:#ffffff;--m-raised:#f6f9f7;--m-text:#0c233b;--m-muted:#4b6171;
+  --m-border:#627d78;--m-card:#dfe7e3;--m-divider:#e6eeea;--m-brand:#0b7461;--m-brand-strong:#085e50;
+  --m-on-brand:#ffffff;--m-side:#ffffff;--m-side-text:#1c3145;--m-side-muted:#5b6f7d;
+  --m-active:#e4f1ea;--m-active-text:#085e50;--m-hover:#f2f7f4;--m-marker:#0b7461;--m-soft:#edf7f2;
+}
+html[data-theme="dark"] .mock-a{
+  --m-canvas:#0a1420;--m-surface:#16202e;--m-raised:#1e2b3b;--m-text:#eaf2f6;--m-muted:#a8bccb;
+  --m-border:#7f9a96;--m-card:#2e3f50;--m-divider:#243444;--m-brand:#63dbc2;--m-brand-strong:#8ee7d4;
+  --m-on-brand:#092b26;--m-side:#0f1a26;--m-side-text:#cfdde7;--m-side-muted:#8fa4b3;
+  --m-active:#14332e;--m-active-text:#8ee7d4;--m-hover:#16232f;--m-marker:#63dbc2;--m-soft:#12332e;
+}
+.mock-b{
+  --m-canvas:#f1f4f3;--m-surface:#ffffff;--m-raised:#f7f9f8;--m-text:#0c233b;--m-muted:#4b6171;
+  --m-border:#5f7a75;--m-card:#dae4df;--m-divider:#e8eeeb;--m-brand:#0b7461;--m-brand-strong:#085e50;
+  --m-on-brand:#ffffff;--m-side:#ffffff;--m-side-text:#22384f;--m-side-muted:#5b6f7d;
+  --m-active:#e4f1ea;--m-active-text:#085e50;--m-hover:#f0f5f3;--m-marker:#0b7461;--m-soft:#edf7f2;
+}
+html[data-theme="dark"] .mock-b{
+  --m-canvas:#070d14;--m-surface:#121a24;--m-raised:#1a2532;--m-text:#edf4f7;--m-muted:#a3b7c4;
+  --m-border:#7c9691;--m-card:#2b3b4b;--m-divider:#1f2c38;--m-brand:#63dbc2;--m-brand-strong:#8ee7d4;
+  --m-on-brand:#092b26;--m-side:#0d151e;--m-side-text:#cbdae4;--m-side-muted:#8ba0ae;
+  --m-active:#12332e;--m-active-text:#8ee7d4;--m-hover:#131e29;--m-marker:#63dbc2;--m-soft:#12332e;
+}
+
+
+.timg{display:contents}
+.timg img.dk{display:none}
+html[data-theme="dark"] .timg img.lt{display:none}
+html[data-theme="dark"] .timg img.dk{display:block}
+
+/* ---- mock atoms ---- */
+.mock{position:relative}
+.m-top{position:absolute;top:0;left:0;right:0;height:64px;display:flex;align-items:center;gap:18px;padding:0 24px;background:var(--m-surface);border-bottom:1px solid var(--m-card);z-index:3}
+.m-mark{width:28px;height:28px;border-radius:7px;background:var(--m-brand);color:var(--m-on-brand);display:grid;place-items:center;font-size:11px;font-weight:700;letter-spacing:.02em}
+.m-brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:650;color:var(--m-text);white-space:nowrap}
+.m-brand small{font-size:12.5px;color:var(--m-muted);font-weight:400;padding-left:12px;margin-left:2px;border-left:1px solid var(--m-card)}
+.m-search{margin-left:auto;display:flex;align-items:center;gap:9px;width:330px;height:40px;padding:0 12px;border:1px solid var(--m-border);border-radius:8px;background:var(--m-surface);color:var(--m-muted);font-size:13px}
+.m-search svg{width:16px;height:16px}
+.m-actions{display:flex;align-items:center;gap:6px}
+.m-icon-btn{width:38px;height:38px;border-radius:8px;display:grid;place-items:center;color:var(--m-muted)}
+.m-icon-btn svg{width:19px;height:19px}
+.m-user{display:flex;align-items:center;gap:9px;padding:3px 6px 3px 3px;border-radius:8px}
+.m-user b{font-size:13px;font-weight:600;display:block;line-height:1.25}
+.m-user small{font-size:11.5px;color:var(--m-muted);line-height:1.25}
+.m-avatar{width:30px;height:30px;border-radius:50%;background:var(--m-soft);color:var(--m-brand-strong);display:grid;place-items:center;font-size:11.5px;font-weight:700;flex:none}
+.m-side{position:absolute;top:64px;left:0;bottom:0;width:256px;background:var(--m-side);border-right:1px solid var(--m-card);padding:10px 12px;overflow:hidden}
+.m-side-label{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--m-side-muted);padding:16px 10px 6px}
+.m-nav{display:flex;align-items:center;gap:11px;height:44px;padding:0 10px;border-radius:8px;font-size:13.5px;color:var(--m-side-text);position:relative}
+.m-nav svg{width:19px;height:19px;color:var(--m-side-muted)}
+.m-nav .chev{margin-left:auto;color:var(--m-side-muted)}
+.m-nav.active{background:var(--m-active);color:var(--m-active-text);font-weight:600}
+.m-nav.active svg{color:var(--m-active-text)}
+.m-nav.active::before{content:"";position:absolute;left:-12px;top:9px;bottom:9px;width:3px;border-radius:0 3px 3px 0;background:var(--m-marker)}
+.m-main{position:absolute;top:64px;left:256px;right:0;bottom:0;padding:22px 32px 0;overflow:hidden}
+.m-crumb{font-size:12.5px;color:var(--m-muted);margin-bottom:8px}
+.m-head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:22px}
+.m-h1{font-size:28px;line-height:36px;font-weight:650;margin:0;letter-spacing:-.012em;color:var(--m-text)}
+.m-sub{font-size:13px;color:var(--m-muted);margin:5px 0 0}
+.m-head-actions{display:flex;align-items:center;gap:14px;padding-top:4px}
+.m-link{font-size:12.5px;font-weight:600;color:var(--m-brand);white-space:nowrap}
+.m-card{background:var(--m-surface);border:1px solid var(--m-card);border-radius:8px}
+.m-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:26px}
+.m-kpi{padding:15px 18px;position:relative}
+.m-kpi .lab{font-size:12.5px;font-weight:600;color:var(--m-muted);padding-right:26px;line-height:1.3}
+.m-kpi .val{font-size:32px;line-height:40px;font-weight:650;font-variant-numeric:tabular-nums;margin-top:4px;letter-spacing:-.01em}
+.m-kpi .meta{font-size:12px;color:var(--m-muted);margin-top:1px}
+.m-kpi .ico{position:absolute;top:15px;right:16px;color:var(--m-muted);opacity:.7}
+.m-kpi .ico svg{width:17px;height:17px}
+.m-sec{margin-bottom:26px}
+.m-sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.m-sec-head h2{font-size:18px;line-height:26px;font-weight:600;margin:0;letter-spacing:-.005em}
+.m-split{display:grid;grid-template-columns:1.5fr 1fr;gap:16px}
+.m-work{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px}
+.m-work .lab{font-size:12.5px;font-weight:600;color:var(--m-muted)}
+.m-work .big{font-size:28px;line-height:34px;font-weight:650;font-variant-numeric:tabular-nums;margin-top:2px}
+.m-work .meta{font-size:12px;color:var(--m-muted)}
+.m-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.m-strip>div{padding:14px 18px;border-right:1px solid var(--m-divider)}
+.m-strip>div:last-child{border-right:0}
+.m-strip .sv{font-size:24px;line-height:32px;font-weight:650;font-variant-numeric:tabular-nums}
+.m-strip .sl{font-size:12px;color:var(--m-muted);line-height:1.35;margin-top:2px}
+.m-bar{display:flex;align-items:center;gap:10px;font-size:12.5px;margin-bottom:9px}
+.m-bar span{width:88px;color:var(--m-muted);flex:none}
+.m-bar i{flex:1;height:7px;border-radius:4px;background:var(--m-soft);position:relative;overflow:hidden}
+.m-bar i::after{content:"";position:absolute;inset:0 auto 0 0;width:var(--w,50%);background:var(--m-brand);border-radius:4px}
+.m-bar b{width:52px;text-align:right;font-variant-numeric:tabular-nums;font-weight:600;font-size:12.5px}
+.m-row{display:flex;align-items:center;gap:9px;font-size:12.5px;padding:5px 0;border-bottom:1px solid var(--m-divider)}
+.m-row:last-child{border-bottom:0}
+.m-row .nm{flex:1;color:var(--m-text)}
+.m-row .dt{color:var(--m-muted);font-variant-numeric:tabular-nums;font-size:12px}
+
+/* ---- list patterns ---- */
+.m-card-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 20px;border-bottom:1px solid var(--m-divider)}
+.m-card-title{font-size:16px;line-height:24px;font-weight:600}
+.m-count{font-size:12.5px;color:var(--m-muted)}
+.m-filter{display:flex;align-items:flex-end;gap:16px;padding:14px 20px;background:var(--m-raised);border-bottom:1px solid var(--m-divider)}
+.m-field{display:flex;flex-direction:column;gap:6px}
+.m-field label{font-size:12px;font-weight:600;color:var(--m-muted)}
+.m-input{height:44px;border:1px solid var(--m-border);border-radius:8px;background:var(--m-surface);display:flex;align-items:center;gap:8px;padding:0 12px;font-size:13px;color:var(--m-muted)}
+.m-input svg{width:16px;height:16px}
+.m-input.sel::after{content:"";margin-left:auto;width:7px;height:7px;border-right:1.6px solid var(--m-muted);border-bottom:1.6px solid var(--m-muted);transform:rotate(45deg)}
+.m-btn-sm{height:44px;padding:0 16px;border-radius:8px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px}
+.m-btn-sm.primary{background:var(--m-brand);color:var(--m-on-brand)}
+.m-btn-sm.ghost{border:1px solid var(--m-border);color:var(--m-text)}
+.m-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.m-tbl th{text-align:left;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--m-muted);font-weight:600;padding:10px 20px;background:var(--m-raised);border-bottom:1px solid var(--m-divider);white-space:nowrap}
+.m-tbl td{padding:0 20px;height:56px;border-bottom:1px solid var(--m-divider);vertical-align:middle}
+.m-tbl tr:last-child td{border-bottom:0}
+.m-tbl td.num,.m-tbl th.num{text-align:right;font-variant-numeric:tabular-nums}
+.m-cell{display:flex;align-items:center;gap:10px}
+.m-cell b{font-weight:600;font-size:13px;display:block;line-height:1.3}
+.m-cell small{display:block;font-size:11.5px;color:var(--m-muted);line-height:1.3}
+.m-foot{display:flex;align-items:center;justify-content:space-between;padding:11px 20px;border-top:1px solid var(--m-divider);font-size:12.5px;color:var(--m-muted)}
+.m-pager{display:flex;gap:6px}
+.m-pager span{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;border:1px solid var(--m-card);font-size:12px;color:var(--m-text)}
+.m-pager span.on{background:var(--m-active);color:var(--m-active-text);border-color:transparent;font-weight:600}
+
+/* ---- status tones ---- */
+.mock{--t-ok:#166534;--t-ok-bg:#eefaf1;--t-ok-bd:#cbe8d4;--t-warn:#8a5300;--t-warn-bg:#fdf6e3;--t-warn-bd:#e9d9a4;--t-dan:#9b1c1c;--t-dan-bg:#fdf1f1;--t-dan-bd:#f0cfcf;--t-info:#075985;--t-info-bg:#eff8fd;--t-info-bd:#c9e5f5;--t-neu:#44586a;--t-neu-bg:#f1f4f3;--t-neu-bd:#dbe4e0}
+html[data-theme="dark"] .mock{--t-ok:#86efac;--t-ok-bg:#0d2a18;--t-ok-bd:#2c6b45;--t-warn:#fde68a;--t-warn-bg:#2b2006;--t-warn-bd:#6b5518;--t-dan:#fca5a5;--t-dan-bg:#2b1010;--t-dan-bd:#6e2a2a;--t-info:#7dd3fc;--t-info-bg:#08202f;--t-info-bd:#2a5b74;--t-neu:#b6c7d2;--t-neu-bg:#1a2530;--t-neu-bd:#33424f}
+.m-badge{font-size:11.5px;font-weight:600;height:24px;padding:0 9px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;border:1px solid;white-space:nowrap}
+.m-badge i{width:6px;height:6px;border-radius:50%;background:currentColor;display:block;flex:none}
+.m-badge.ok{color:var(--t-ok);background:var(--t-ok-bg);border-color:var(--t-ok-bd)}
+.m-badge.warn{color:var(--t-warn);background:var(--t-warn-bg);border-color:var(--t-warn-bd)}
+.m-badge.dan{color:var(--t-dan);background:var(--t-dan-bg);border-color:var(--t-dan-bd)}
+.m-badge.info{color:var(--t-info);background:var(--t-info-bg);border-color:var(--t-info-bd)}
+.m-badge.neu{color:var(--t-neu);background:var(--t-neu-bg);border-color:var(--t-neu-bd)}
+
+/* ---- option B shell ---- */
+.m-top-b{position:absolute;top:0;left:0;right:0;height:56px;display:flex;align-items:center;gap:14px;padding:0 18px 0 12px;background:var(--m-surface);border-bottom:1px solid var(--m-card);z-index:3}
+.m-rail{position:absolute;top:56px;left:0;bottom:0;width:72px;background:var(--m-side);border-right:1px solid var(--m-card);padding:10px 0;display:flex;flex-direction:column;align-items:center;gap:4px}
+.m-rail-item{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;color:var(--m-side-muted);position:relative}
+.m-rail-item svg{width:20px;height:20px}
+.m-rail-item.active{background:var(--m-active);color:var(--m-active-text)}
+.m-rail-item.active::before{content:"";position:absolute;left:-14px;top:10px;bottom:10px;width:3px;background:var(--m-marker);border-radius:0 3px 3px 0}
+.m-rail-sep{width:26px;height:1px;background:var(--m-divider);margin:8px 0}
+.m-cmd{display:flex;align-items:center;gap:10px;width:420px;height:36px;padding:0 10px;border:1px solid var(--m-border);border-radius:8px;color:var(--m-muted);font-size:13px}
+.m-cmd svg{width:16px;height:16px}
+.m-kbd{margin-left:auto;font-size:10.5px;border:1px solid var(--m-card);border-radius:4px;padding:1px 5px;color:var(--m-muted)}
+.m-main-b{position:absolute;top:56px;left:72px;right:0;bottom:0;padding:18px 28px 0;overflow:hidden}
+.m-eye{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--m-muted);margin-bottom:6px}
+.m-btn{height:36px;padding:0 14px;border-radius:8px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px}
+.m-btn svg{width:15px;height:15px}
+.m-btn.primary{background:var(--m-brand);color:var(--m-on-brand)}
+.m-btn.ghost{border:1px solid var(--m-border);color:var(--m-text)}
+.m-hero{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.m-hero>div{padding:15px 20px;border-right:1px solid var(--m-divider)}
+.m-hero>div:last-child{border-right:0}
+.m-hero .hl{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--m-muted)}
+.m-hero .hv{font-size:30px;line-height:38px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.015em;margin-top:3px;display:flex;align-items:baseline;gap:8px}
+.m-hero .hd{font-size:11.5px;font-weight:600}
+.m-hero .hd.up{color:var(--t-ok)}
+.m-hero .hd.dn{color:var(--t-dan)}
+.m-hero .hm{font-size:11.5px;color:var(--m-muted);margin-top:1px}
+.m-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;margin-top:16px}
+.m-task{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid var(--m-divider)}
+.m-task:last-child{border-bottom:0}
+.m-task .tt{font-size:13px;font-weight:600;line-height:1.3}
+.m-task .tm{font-size:11.5px;color:var(--m-muted);line-height:1.3}
+.m-task .rt{margin-left:auto;display:flex;align-items:center;gap:10px}
+.m-mini{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--m-divider);font-size:12.5px}
+.m-mini:last-child{border-bottom:0}
+.m-mini .t{flex:1;min-width:0}
+.m-mini .t b{font-weight:600;display:block;font-size:12.5px}
+.m-mini .t small{color:var(--m-muted);font-size:11px}
+.m-toolbar{display:flex;align-items:center;gap:14px;padding:0 0 0}
+.m-tabs{display:flex;gap:2px;border-bottom:1px solid var(--m-card);margin:0 -28px;padding:0 28px}
+.m-tab{height:40px;padding:0 12px;display:flex;align-items:center;gap:7px;font-size:13px;color:var(--m-muted);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
+.m-tab b{font-size:11.5px;font-weight:600;background:var(--m-raised);border:1px solid var(--m-card);border-radius:999px;padding:1px 6px;color:var(--m-text)}
+.m-tab.on{color:var(--m-text);font-weight:600;border-bottom-color:var(--m-brand)}
+.m-tab.on b{background:var(--m-active);border-color:transparent;color:var(--m-active-text)}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.5a3.2 3.2 0 0 1 0 5"/><path d="M18 14.2c2 .8 3 2.9 3 5.8"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6.5 7-6.5s7 2.9 7 6.5"/></symbol>
+  <symbol id="i-brief" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16.5" cy="14.5" r="1"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V4"/><path d="M4 20h16"/><rect x="8" y="12" width="3" height="5"/><rect x="13" y="8" width="3" height="9"/><rect x="18" y="14" width="3" height="3"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 13 6 9Z"/><path d="M10 18.5a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8.2 8.2 0 1 0 20 14.5Z"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15"/><path d="m13 6 6 6-6 6"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.6v.2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12.5 5 5L20 6.5"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.5l3.5 2"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5 22 20H2Z"/><path d="M12 9.5v4.5M12 17v.2"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8Z"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 3v10"/><path d="M8 7h8"/><path d="M6 21h12"/><path d="M9 13h6l-1 4H10Z"/></symbol>
+</svg>
+
+<div class="doc-bar">
+  <div class="db-brand"><span class="db-mark">IH</span> Review thiết kế IHRMS</div>
+  <nav>
+    <a href="#hientrang">Hiện trạng</a>
+    <a href="#pa-a">Phương án A</a>
+    <a href="#pa-b">Phương án B</a>
+    <a href="#sosanh">So sánh &amp; lộ trình</a>
+    <a href="themes.html" style="color:var(--d-accent);font-weight:600">Dải màu mới →</a>
+  </nav>
+  <button class="tbtn" id="themeBtn" type="button"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-moon"/></svg><span id="themeLabel">Nền tối</span></button>
+</div>
+
+<main class="doc">
+
+<header>
+  <p class="eyebrow">Đánh giá thiết kế · 21/10/2026</p>
+  <h1>IHRMS: tầng bậc thị giác và bố cục<br>đang kìm hãm một nền tảng kỹ thuật tốt</h1>
+  <p class="lead">Hệ thống token, tương phản, focus ring và vùng chạm của dự án đã đạt chuẩn cao hơn mặt bằng chung. Vấn đề còn lại không nằm ở màu sắc hay thành phần, mà ở <strong>cách tổ chức không gian</strong>: bề mặt phẳng lì, nội dung bị chặn ở 1024px, nhịp dọc và thứ bậc kiểu chữ chưa đủ để mắt quét nhanh trên dữ liệu dày. Tài liệu này đưa ra 2 phương án nâng cấp, đều giữ nguyên nghiệp vụ, route, quyền và palette đã duyệt.</p>
+  <div class="grid4" style="margin-top:28px">
+    <div class="panel"><h4>Phạm vi</h4><p class="small" style="margin:0">162 template · 25 file CSS · 2 theme<br>6 ảnh mẫu 1440/1756/390px</p></div>
+    <div class="panel"><h4>Phương pháp</h4><p class="small" style="margin:0">Đọc token, shell, partial + đo tương phản + đối chiếu ảnh chụp thật</p></div>
+    <div class="panel"><h4>Ràng buộc giữ nguyên</h4><p class="small" style="margin:0">Palette navy–teal, WCAG AA, control 44px, giấy in HCNS</p></div>
+    <div class="panel"><h4>Trạng thái</h4><p class="small" style="margin:0">REVIEW — không sửa mã nguồn<br><span class="chip neutral">0 file trong src/ bị đổi</span></p></div>
+  </div>
+</header>
+
+<!-- ==================== 1. HIỆN TRẠNG ==================== -->
+<section id="hientrang">
+  <div class="sec-head">
+    <div>
+      <p class="sec-num">01 — HIỆN TRẠNG</p>
+      <h2>Điểm mạnh đã có, và 12 điểm nghẽn cần xử lý</h2>
+      <p class="muted" style="margin:8px 0 0;max-width:70ch">Chấm theo 8 tiêu chí, dựa trên mã nguồn và ảnh chụp thật của 6 trang mẫu. Thang 10.</p>
+    </div>
+  </div>
+
+  <div class="grid2" style="align-items:start">
+    <div class="panel">
+      <h3 style="margin-bottom:16px">Bảng điểm hiện trạng</h3>
+      <div style="display:grid;gap:12px">
+        <div class="score"><span style="width:150px">Nhất quán token</span><div class="bar"><i style="width:80%"></i></div><b>8</b></div>
+        <div class="score"><span style="width:150px">Trợ năng</span><div class="bar"><i style="width:80%"></i></div><b>8</b></div>
+        <div class="score"><span style="width:150px">Kiểu chữ</span><div class="bar mid"><i style="width:60%"></i></div><b>6</b></div>
+        <div class="score"><span style="width:150px">Mật độ dữ liệu</span><div class="bar mid"><i style="width:60%"></i></div><b>6</b></div>
+        <div class="score"><span style="width:150px">Điều hướng</span><div class="bar mid"><i style="width:60%"></i></div><b>6</b></div>
+        <div class="score"><span style="width:150px">Thứ bậc thị giác</span><div class="bar low"><i style="width:50%"></i></div><b>5</b></div>
+        <div class="score"><span style="width:150px">Trạng thái / rỗng</span><div class="bar low"><i style="width:50%"></i></div><b>5</b></div>
+        <div class="score"><span style="width:150px">Tầng bậc bề mặt</span><div class="bar low"><i style="width:40%"></i></div><b>4</b></div>
+      </div>
+      <p class="small muted" style="margin:16px 0 0">Hai điểm thấp nhất đều là vấn đề <em>bố cục</em>, không phải màu — nên có thể sửa bằng token và CSS shell mà không phải thiết kế lại thành phần.</p>
+    </div>
+    <div class="panel">
+      <h3 style="margin-bottom:16px">Những gì đang làm rất tốt</h3>
+      <ul class="tight small">
+        <li><strong>Tương phán chữ đạt và vượt AA:</strong> chữ chính 14,76:1 (light) và 14,18:1 (dark); chữ phụ 6,0:1 và 9,22:1.</li>
+        <li><strong>Focus ring 3px, offset 3px</strong> có khoảng nền tương phản — hiếm dự án nội bộ làm đúng việc này.</li>
+        <li><strong>Control và dòng bảng 44px</strong>, chữ không xuống dưới 14px: vùng chạm đạt 2.5.8.</li>
+        <li><strong>Token hoá thật:</strong> <code>--ui-*</code> + cascade layers, không rải mã hex trong template.</li>
+        <li><strong>Kỷ luật thị giác:</strong> không gradient, không glow, một primary mỗi vùng (phần lớn trang).</li>
+        <li><strong>Hai theme cùng ngữ nghĩa</strong>, có <code>prefers-reduced-motion</code> và bản in HCNS tách riêng.</li>
+      </ul>
+      <div class="callout"><p class="small" style="margin:0"><strong>Kết luận nền tảng:</strong> không cần đổi palette hay viết lại component. Cần đổi <em>không gian</em> — bề mặt, bề rộng, nhịp và thứ bậc chữ.</p></div>
+    </div>
+  </div>
+
+  <h3 style="margin:40px 0 6px">Danh sách phát hiện</h3>
+  <p class="muted small" style="margin-bottom:20px">Xếp theo mức tác động. Mỗi mục ghi rõ bằng chứng để có thể kiểm lại độc lập.</p>
+
+  <div style="display:grid;gap:14px">
+
+    <article class="panel" style="padding:20px 24px">
+      <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px">
+        <span class="chip sev-high">Cao · 01</span><h3 style="margin:0">Nội dung bị chặn ở 1024px trong khi token cho phép 1440px</h3>
+      </div>
+      <p class="small" style="margin-bottom:10px"><code>src/templates/base.html:211</code> đặt mặc định <code>max-w-5xl</code> (1024px) cho <code>&lt;main&gt;</code>, đè lên <code>--ui-content-max-width: 90rem</code> của <code>app_shell.css</code>. Không template nào override block này.</p>
+      <div style="display:grid;gap:14px;margin-top:12px">
+        <div class="shot"><span class="timg"><img class="lt" src="evidence/hr_employee_list_1756px_light.png" alt="Danh sách nhân viên ở 1756px, nội dung dừng ở 1042px"><img class="dk" src="evidence/hr_employee_list_1756px_dark.png" alt="Danh sách nhân viên ở 1756px, nội dung dừng ở 1042px"></span><div style="padding:8px 10px;font-size:12px;color:var(--d-muted);background:var(--d-panel)">1756px: cột nội dung dừng ở x≈1042, còn ~700px trống bên phải</div></div>
+        <div>
+          <p class="small"><strong>Tác động:</strong> trên màn hình 1756px (máy trạm phổ biến của khối văn phòng) gần <strong>40% chiều ngang bị bỏ trống</strong>, trong khi bảng 7–9 cột vẫn phải cuộn ngang. Cảm giác "trang web" thay vì "ứng dụng điều hành".</p>
+          <p class="small" style="margin:0"><strong>Hướng sửa:</strong> bỏ <code>max-w-5xl</code>; cho trang danh sách/báo cáo dùng hết <code>--ui-content-max-width</code>, form giữ trần riêng ~1120px để dòng không quá dài.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel" style="padding:20px 24px">
+      <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px">
+        <span class="chip sev-high">Cao · 02</span><h3 style="margin:0">Không có tầng bậc bề mặt: sidebar, nền trang và card gần như cùng một màu</h3>
+      </div>
+      <p class="small">Đo bằng công thức WCAG trên token hiện hành:</p>
+      <table class="t" style="margin-bottom:12px">
+        <thead><tr><th>Cặp màu</th><th>Light</th><th>Dark</th><th>Đọc ra</th></tr></thead>
+        <tbody>
+          <tr><td>Sidebar vs nền trang</td><td class="num">1,02:1</td><td class="num">1,12:1</td><td>Không phân biệt được</td></tr>
+          <tr><td>Card vs nền trang</td><td class="num">1,08:1</td><td class="num">1,10:1</td><td>Chỉ còn nhờ viền 1px</td></tr>
+          <tr><td>Viền card vs card (dark)</td><td class="num">1,31:1</td><td class="num">1,64:1</td><td>Viền gần như tan</td></tr>
+          <tr><td>Viền control vs card</td><td class="num">4,45:1</td><td class="num">6,25:1</td><td>Đạt — giữ nguyên</td></tr>
+        </tbody>
+      </table>
+      <p class="small" style="margin:0"><strong>Hệ quả:</strong> mắt không có "khung" để bám; ở dark mode toàn bộ màn hình thành một khối xanh đậm, card và nền hoà vào nhau. Đây là lý do giao diện đọc đúng nhưng vẫn "bí". <strong>Hướng sửa:</strong> nền trang tối hơn bề mặt, sidebar thành một bề mặt riêng, viền card rõ hơn một bậc — vẫn không dùng bóng.</p>
+    </article>
+
+    <article class="panel" style="padding:20px 24px">
+      <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px">
+        <span class="chip sev-high">Cao · 03</span><h3 style="margin:0">Breadcrumb lệch cột nội dung ở mọi trang</h3>
+      </div>
+      <p class="small" style="margin-bottom:12px">Breadcrumb nằm trong <code>.ui-topbar</code> với <code>padding-inline: 24px</code>, trong khi nội dung bắt đầu sau sidebar 256px + 32px đệm. Kết quả: đường dóng trái bị phá — breadcrumb ở x≈24, nội dung ở x≈196.</p>
+      <div class="shot"><span class="timg"><img class="lt" src="evidence/hr_employee_form_1440x900_light.png" alt="Breadcrumb lệch trái so với nội dung"><img class="dk" src="evidence/hr_employee_form_1440x900_dark.png" alt="Breadcrumb lệch trái so với nội dung"></span><div style="padding:8px 10px;font-size:12px;color:var(--d-muted);background:var(--d-panel)">"Trang chủ / Thêm nhân viên" dóng vào lề màn hình, không dóng vào cột nội dung</div></div>
+      <p class="small" style="margin:12px 0 0"><strong>Hướng sửa:</strong> đưa breadcrumb vào trong <code>.ui-main</code> (cùng lề với h1) hoặc thêm padding bằng đúng bề rộng sidebar. Bản A chọn cách thứ nhất.</p>
+    </article>
+
+    <article class="panel" style="padding:20px 24px">
+      <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px">
+        <span class="chip sev-high">Cao · 04</span><h3 style="margin:0">Thứ bậc kiểu chữ dẹt: tiêu đề nhóm chỉ hơn thân 2px</h3>
+      </div>
+      <div class="grid2" style="gap:16px">
+        <div>
+          <p class="small">Đang dùng lẫn lộn 7 cỡ: 12 · 14 · 16 · 18 · 20 · 24 · 36px. Trong ảnh dashboard, "Công việc của tôi", "Dự án", "Nhân sự" cao 16px/600 — gần như trùng trọng lượng với nhãn KPI và nội dung. Không có bậc nào cho <em>nhãn nhóm nhỏ</em>, cũng không có bậc <em>tiêu đề trang lớn</em> cho màn hình rộng.</p>
+          <p class="small" style="margin:0"><strong>Hướng sửa:</strong> rút về 6 bậc có vai trò rõ (xem bảng bên cạnh) + thêm bậc "eyebrow" 13px/600 cho nhãn nhóm.</p>
+        </div>
+        <table class="t">
+          <thead><tr><th>Vai trò</th><th>Hiện tại</th><th>Đề xuất</th></tr></thead>
+          <tbody>
+            <tr><td>Tiêu đề trang</td><td>24/32 · 700</td><td><strong>28/36 · 650</strong></td></tr>
+            <tr><td>Tiêu đề nhóm</td><td>16–18</td><td><strong>13 uppercase + 18/26</strong></td></tr>
+            <tr><td>Tiêu đề card</td><td>16–18</td><td><strong>16/24 · 600</strong></td></tr>
+            <tr><td>Nhãn KPI</td><td>14/500</td><td><strong>13/600 muted</strong></td></tr>
+            <tr><td>Số KPI</td><td>36/44</td><td><strong>32/40 tabular</strong></td></tr>
+            <tr><td>Thân / nhãn form</td><td>14–16</td><td><strong>16 / 14·600</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+    <article class="panel" style="padding:20px 24px">
+      <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px">
+        <span class="chip sev-mid">Trung bình · 05</span><h3 style="margin:0">Dải lọc và bảng dính vào nhau, thiếu "vùng"</h3>
+      </div>
+      <div class="grid2" style="gap:16px">
+        <div class="shot"><span class="timg"><img class="lt" src="evidence/report_headcount_1440x900_light.png" alt="Bộ lọc và bảng trong cùng một card, không có vùng phân cách"><img class="dk" src="evidence/report_headcount_1440x900_dark.png" alt="Bộ lọc và bảng trong cùng một card, không có vùng phân cách"></span><div style="padding:8px 10px;font-size:12px;color:var(--d-muted);background:var(--d-panel)">Nhãn "Năm" → control → nút → số kết quả → bảng: 5 tầng thông tin xếp dọc không có nhịp</div></div>
+        <div>
+          <p class="small">Nhãn lọc 14px/600, số kết quả 12–13px nằm sát đường kẻ bảng. Cụm lọc không có nền riêng nên mắt đọc nó như một dòng dữ liệu. Ở trang danh sách, dải lọc chiếm trọn chiều ngang nhưng chỉ dùng 1/3 bên trái.</p>
+          <p class="small" style="margin:0"><strong>Hướng sửa:</strong> tách dải lọc thành một dải có nền <code>raised</code> + đường kẻ dưới; đưa số kết quả lên cùng hàng với tiêu đề card, canh phải.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel" style="padding:20px 24px">
+      <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px">
+        <span class="chip sev-mid">Trung bình · 06</span><h3 style="margin:0">Nút primary xuất hiện giữa hàng KPI, không dóng cột</h3>
+      </div>
+      <p class="small" style="margin-bottom:12px">Trong "Công việc của tôi", khối teal đặc "Mở đơn nghỉ" nằm giữa card, cao hơn dòng số, không thẳng với nhãn hay số nào. Nó vừa phá quy tắc "một primary mỗi vùng" (vì đã có primary ở header), vừa tạo một điểm neo thị giác sai chỗ.</p>
+      <div class="shot"><span class="timg"><img class="lt" src="evidence/crop_work_band.png" alt="Nút primary nằm giữa card Công việc của tôi"><img class="dk" src="evidence/crop_work_band_dark.png" alt="Nút primary nằm giữa card Công việc của tôi"></span><div style="padding:8px 10px;font-size:12px;color:var(--d-muted);background:var(--d-panel)">Khối teal đặc "Mở đơn nghỉ" nằm giữa vùng dữ liệu, cạnh link tertiary cùng chức năng ở card bên phải</div></div>
+    </article>
+
+    <article class="panel" style="padding:20px 24px">
+      <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px">
+        <span class="chip sev-mid">Trung bình · 07</span><h3 style="margin:0">Điều hướng hai tầng, 8 nhóm đóng mặc định, nhãn trùng nhau</h3>
+      </div>
+      <div class="grid2" style="gap:16px">
+        <div>
+          <p class="small">Mỗi đích sâu cần 2 lần bấm. Nhóm "Báo cáo" mở ra đúng một mục cũng tên "Báo cáo" — một tầng không mang thông tin. Nhóm "Nhân sự" chứa 9 mục con chia 2 nhãn phụ, khi mở sẽ đẩy 6 nhóm còn lại xuống dưới màn hình.</p>
+          <p class="small" style="margin:0"><strong>Hướng sửa:</strong> bỏ nhóm một-mục, gộp "Báo cáo" thành link phẳng; thêm badge số cho mục chờ duyệt (dữ liệu đã có sẵn trong context).</p>
+        </div>
+        <div class="shot"><span class="timg"><img class="lt" src="evidence/crop_nav_nesting.png" alt="Nhóm Báo cáo chứa một mục cùng tên" style="width:auto;max-width:100%"><img class="dk" src="evidence/crop_nav_nesting_dark.png" alt="Nhóm Báo cáo chứa một mục cùng tên" style="width:auto;max-width:100%"></span><div style="padding:8px 10px;font-size:12px;color:var(--d-muted);background:var(--d-panel)">"Báo cáo" (nhóm) → "Báo cáo" (mục): một tầng không mang thông tin</div></div>
+      </div>
+    </article>
+
+    <article class="panel" style="padding:20px 24px">
+      <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px">
+        <span class="chip sev-mid">Trung bình · 08</span><h3 style="margin:0">Trạng thái rỗng yếu, chiếm diện tích lớn</h3>
+      </div>
+      <p class="small" style="margin:0">Icon 20px, tiêu đề 14px, mô tả 14px muted, không có hành động. Trong một card cao 160px, khối rỗng chỉ chiếm ~60px giữa khoảng trắng, không nêu bước tiếp theo cụ thể. Đề xuất: icon 44px trong vòng <code>brand-soft</code>, tiêu đề 16/600, mô tả ≤46ch, một CTA hợp quyền.</p>
+    </article>
+
+    <article class="panel" style="padding:20px 24px">
+      <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px">
+        <span class="chip sev-mid">Trung bình · 09</span><h3 style="margin:0">Ô ngày hiển thị mm/dd/yyyy trong giao diện tiếng Việt</h3>
+      </div>
+      <p class="small" style="margin:0">Input <code>type="date"</code> đang theo locale en-US của trình duyệt. Dù JS đã có <code>.ui-date-echo</code> đọc "thứ … dd/mm/yyyy", bản thân ô nhập vẫn hướng dẫn sai định dạng ngay tại điểm nhập. Cần ép <code>lang="vi"</code> + hint định dạng, hoặc dùng control hiển thị dd/mm/yyyy với input ẩn (đã có tiền lệ ở <code>ui-number-source</code>).</p>
+    </article>
+
+    <article class="panel" style="padding:20px 24px">
+      <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px">
+        <span class="chip sev-low">Thấp · 10</span><h3 style="margin:0">Header dồn 5 điều khiển cùng trọng số</h3>
+      </div>
+      <p class="small" style="margin:0">Ô tìm kiếm, nút tìm, đổi theme, chuông, tài khoản — tất cả cùng 44px, cùng viền 1px, cùng nền. Nút đổi theme là control lớn thứ hai trên header nhưng chỉ dùng vài lần/năm. Đề xuất: hạ theme + chuông về icon 36px không viền, giữ search và account là control có khung.</p>
+    </article>
+
+    <article class="panel" style="padding:20px 24px">
+      <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px">
+        <span class="chip sev-low">Thấp · 11</span><h3 style="margin:0">Bảng: tiêu đề canh giữa, cột số chưa canh phải nhất quán</h3>
+      </div>
+      <p class="small" style="margin:0">Ở báo cáo định biên, tiêu đề "Phòng ban / Định biên kế hoạch / Thực tế / Chênh lệch" canh giữa trong khi dữ liệu canh trái. Cột số cần canh phải + <code>tabular-nums</code> ở cả <code>th</code> và <code>td</code>; thêm hover hàng và cột thao tác dính phải cho bảng rộng.</p>
+    </article>
+
+    <article class="panel" style="padding:20px 24px">
+      <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px">
+        <span class="chip sev-low">Thấp · 12</span><h3 style="margin:0">Badge trạng thái chỉ dựa vào nền màu nhạt</h3>
+      </div>
+      <p class="small" style="margin:0">Nền badge rất nhạt (ví dụ <code>#f0fdf4</code> trên <code>#ffffff</code> ≈ 1,05:1), chữ thì đạt. Khi in đen trắng hoặc nhìn ở màn hình sai màu, các trạng thái gần như giống nhau. Thêm chấm 6px đặc + nhãn chữ (đã có chữ) để tăng khả năng phân biệt không phụ thuộc màu nền.</p>
+    </article>
+
+  </div>
+</section>
+<!-- ==================== 2. PHƯƠNG ÁN A ==================== -->
+<section id="pa-a">
+  <div class="sec-head">
+    <div>
+      <p class="sec-num">02 — PHƯƠNG ÁN A</p>
+      <h2>“Nền tảng tinh chỉnh” — sửa tầng bậc, giữ nguyên cấu trúc</h2>
+      <p class="muted" style="margin:8px 0 0;max-width:74ch">Không thêm thành phần mới, không đổi điều hướng. Chỉ chỉnh token bề mặt, bề rộng nội dung, nhịp dọc và thang chữ — tức là đúng những điểm nghẽn ở mục 01.</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="chip good">Rủi ro thấp</span><span class="chip neutral">3 đợt</span><span class="chip neutral">CSS + 4 partial</span></div>
+  </div>
+
+  <div class="grid3" style="margin-bottom:24px">
+    <div class="panel"><h4>1. Ba tầng bề mặt</h4><p class="small" style="margin:0">Nền trang tối hơn, card sáng nhất, sidebar là bề mặt riêng có viền phải. Khoảng cách tông tăng từ 1,02:1 lên ~1,15:1, viền card từ 1,31 lên ~1,45 — vẫn không dùng bóng.</p></div>
+    <div class="panel"><h4>2. Nội dung rộng theo dữ liệu</h4><p class="small" style="margin:0">Bỏ trần 1024px. Danh sách/báo cáo chạy tới 1440px; form giữ trần 1120px để dòng không quá dài. Bảng 7 cột hết cuộn ngang ở 1440px.</p></div>
+    <div class="panel"><h4>3. Nhịp và thứ bậc</h4><p class="small" style="margin:0">Nhịp 32px giữa nhóm, 24px trong card, 16px giữa field. Thêm bậc “eyebrow” 13px cho nhãn nhóm; tiêu đề trang 28/36; số KPI 32/40.</p></div>
+  </div>
+
+  <h3 style="margin:32px 0 6px">Bảng số token thay đổi</h3>
+  <p class="muted small" style="margin-bottom:14px">Chỉ những token dưới đây đổi; brand teal, bốn màu ngữ nghĩa, focus, kích thước control và bán kính giữ nguyên.</p>
+  <table class="t">
+    <thead><tr><th style="width:24%">Token</th><th style="width:19%">Hiện tại</th><th style="width:19%">Đề xuất</th><th>Lý do</th></tr></thead>
+    <tbody>
+      <tr><td><code>--ui-bg</code></td><td>#f4f7f5 / #0e1827</td><td><strong>#ecf1ee / #0a1420</strong></td><td>Tách nền khỏi card; dark sâu hơn để card nổi</td></tr>
+      <tr><td><code>--ui-surface</code></td><td>#ffffff / #162536</td><td><strong>#ffffff / #16202e</strong></td><td>Giữ trắng ở light; dark ấm hơn một bậc</td></tr>
+      <tr><td><code>--ui-surface-raised</code></td><td>#f0f5f2 / #223648</td><td><strong>#f6f9f7 / #1e2b3b</strong></td><td>Nền dải lọc và header bảng, tách khỏi card</td></tr>
+      <tr><td><code>--ui-card-border</code></td><td>#d9e3df / #314955</td><td><strong>#dfe7e3 / #2e3f50</strong></td><td>Viền card đọc được trên cả hai theme</td></tr>
+      <tr><td><code>--ui-sidebar-bg</code></td><td>#f0f5f2 / #0c233b</td><td><strong>#ffffff / #0f1a26</strong></td><td>Sidebar thành bề mặt riêng, không chìm vào nền</td></tr>
+      <tr><td><code>--ui-sidebar-active-bg</code></td><td>#dff0e8 / #174b43</td><td><strong>#e4f1ea / #14332e</strong></td><td>Active đậm hơn nhưng không thành khối teal lớn</td></tr>
+      <tr><td><code>--ui-divider</code></td><td>#d9e3df / #314955</td><td><strong>#e6eeea / #243444</strong></td><td>Kẻ ngang nhẹ hơn viền card (đúng vai trò)</td></tr>
+      <tr><td><code>--ui-text-h1</code></td><td>1.5rem</td><td><strong>1.75rem @ ≥1280px</strong></td><td>Tiêu đề trang đủ tầm trên màn hình rộng</td></tr>
+      <tr><td><code>--ui-text-label</code></td><td>0.875rem</td><td><strong>0.8125rem + tracking .06em</strong></td><td>Bậc “eyebrow” cho nhãn nhóm</td></tr>
+      <tr><td><code>max-w-5xl</code> (base.html)</td><td>1024px cố định</td><td><strong>Bỏ; dùng --ui-content-max-width</strong></td><td>Trả lại 400px chiều ngang cho bảng</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout" style="margin-top:18px"><p class="small" style="margin:0"><strong>Kiểm tương phản dự kiến:</strong> chữ phụ trên nền mới 5,66:1 (light) và 8,48:1 (dark); chữ thương hiệu trên nền 4,99:1 và 9,85:1; active sidebar 6,63:1 và 9,42:1. Tất cả vẫn ≥ AA. Cần chạy lại <code>ops/check_ui_contrast.py</code> sau khi đổi.</p></div>
+
+  <h3 style="margin:36px 0 6px">Bảng điều khiển — trước / sau</h3>
+  <p class="muted small" style="margin-bottom:14px">Bên trái là ảnh chụp thật (1440×900, light). Bên dưới là bản dựng bằng token đề xuất ở cùng kích thước — bật nền tối ở thanh trên để xem theme còn lại.</p>
+
+  <figure style="margin-bottom:22px">
+    <div class="shot"><span class="timg"><img class="lt" src="evidence/dashboard_1440x900_light.png" alt="Dashboard hiện tại 1440px"><img class="dk" src="evidence/dashboard_1440x900_dark.png" alt="Dashboard hiện tại 1440px"></span></div>
+    <figcaption>Hiện tại — 4 card KPI rời, primary nằm giữa vùng dữ liệu, tiêu đề nhóm 16px, nội dung dùng 1024/1120px.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="frame" data-w="1440" data-h="900">
+      <div class="frame-inner">
+        <div class="mock mock-a">
+          <header class="m-top">
+            <div class="m-brand"><span class="m-mark">IH</span>IHRMS<small>Cổng thông tin nhân viên</small></div>
+            <div class="m-search"><svg><use href="#i-search"/></svg>Tên, mã NV, email hoặc chức năng…</div>
+            <div class="m-actions">
+              <span class="m-icon-btn"><svg><use href="#i-moon"/></svg></span>
+              <span class="m-icon-btn"><svg><use href="#i-bell"/></svg></span>
+              <span class="m-user"><span class="m-avatar">NA</span><span><b>Nguyễn Anh</b><small>Quản lý nhân sự</small></span><svg style="width:14px;height:14px;color:var(--m-muted)"><use href="#i-chev"/></svg></span>
+            </div>
+          </header>
+          <aside class="m-side">
+            <div class="m-side-label">Tổng quan</div>
+            <div class="m-nav active"><svg><use href="#i-home"/></svg>Trang chủ</div>
+            <div class="m-nav"><svg><use href="#i-user"/></svg>Cá nhân<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+            <div class="m-nav"><svg><use href="#i-users"/></svg>Nhân sự<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+            <div class="m-nav"><svg><use href="#i-brief"/></svg>Tuyển dụng<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+            <div class="m-nav"><svg><use href="#i-wallet"/></svg>Kế toán<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+            <div class="m-nav"><svg><use href="#i-building"/></svg>Hành chính<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+            <div class="m-nav"><svg><use href="#i-cal"/></svg>Kế hoạch<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+            <div class="m-side-label">Phân tích</div>
+            <div class="m-nav"><svg><use href="#i-chart"/></svg>Báo cáo</div>
+            <div class="m-nav"><svg><use href="#i-folder"/></svg>Dự án<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          </aside>
+          <div class="m-main">
+            <div class="m-crumb">Trang chủ</div>
+            <div class="m-head">
+              <div>
+                <h1 class="m-h1">Bảng điều khiển</h1>
+                <p class="m-sub">Ngày vận hành 21/10/2026 · Trung tâm · Cập nhật 08:12</p>
+              </div>
+              <div class="m-head-actions"><a class="m-link">Mở báo cáo điều hành →</a><span class="m-icon-btn" style="width:32px;height:32px"><svg style="width:18px;height:18px"><use href="#i-info"/></svg></span></div>
+            </div>
+
+            <div class="m-kpis">
+              <div class="m-card m-kpi"><div class="ico"><svg style="width:18px;height:18px"><use href="#i-users"/></svg></div><div class="lab">Nhân sự đang quản lý</div><div class="val">128</div><div class="meta">Thử việc 6 · Nghỉ dài hạn 2</div></div>
+              <div class="m-card m-kpi"><div class="ico"><svg style="width:18px;height:18px"><use href="#i-cal"/></svg></div><div class="lab">Nghỉ phép chờ duyệt</div><div class="val">3</div><div class="meta">Cần xử lý trong hôm nay</div></div>
+              <div class="m-card m-kpi"><div class="ico"><svg style="width:18px;height:18px"><use href="#i-doc"/></svg></div><div class="lab">Hợp đồng sắp hết hạn</div><div class="val">5</div><div class="meta">Trong 30 ngày tới</div></div>
+              <div class="m-card m-kpi"><div class="ico"><svg style="width:18px;height:18px"><use href="#i-check"/></svg></div><div class="lab">Cần duyệt và xử lý</div><div class="val">7</div><div class="meta">4 nghỉ phép · 2 chấm công · 1 hồ sơ</div></div>
+            </div>
+
+            <div class="m-sec">
+              <div class="m-sec-head"><h2>Công việc của tôi</h2><a class="m-link">Mở trung tâm công việc →</a></div>
+              <div class="m-split">
+                <div class="m-card m-work">
+                  <div><div class="lab">Đơn nghỉ của tôi đang chờ duyệt</div><div class="big">2</div><div class="meta">Gửi trong 7 ngày gần nhất</div></div>
+                  <a class="m-link">Mở đơn nghỉ →</a>
+                </div>
+                <div class="m-card m-work">
+                  <div><div class="lab">Công việc chưa hoàn thành</div><div class="big">4</div><div class="meta">1 quá hạn · 3 còn hạn</div></div>
+                  <a class="m-link">Mở công việc →</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="m-sec">
+              <div class="m-sec-head"><h2>Dự án</h2><a class="m-link">Tháng 10/2026 →</a></div>
+              <div class="m-card m-strip">
+                <div><div class="sv">12</div><div class="sl">Hoạt động trong tháng</div></div>
+                <div><div class="sv">28</div><div class="sl">Task báo cáo hoàn thành</div></div>
+                <div><div class="sv">4</div><div class="sl">Task quá hạn</div></div>
+                <div><div class="sv">3</div><div class="sl">Task thiếu báo cáo</div></div>
+                <div><div class="sv">6</div><div class="sl">Hoạt động chưa có Task</div></div>
+              </div>
+            </div>
+
+            <div class="m-sec">
+              <div class="m-sec-head"><h2>Nhân sự</h2><a class="m-link">Xem tất cả →</a></div>
+              <div class="m-split">
+                <div class="m-card" style="padding:16px 18px">
+                  <div class="lab" style="margin-bottom:12px">Định biên theo phòng ban</div>
+                  <div class="m-bar"><span>Kinh doanh</span><i style="--w:82%"></i><b>24/26</b></div>
+                  <div class="m-bar"><span>Kỹ thuật</span><i style="--w:70%"></i><b>18/20</b></div>
+                  <div class="m-bar"><span>Nhân sự</span><i style="--w:48%"></i><b>9/10</b></div>
+                  <div class="m-bar"><span>Kế toán</span><i style="--w:36%"></i><b>7/8</b></div>
+                </div>
+                <div class="m-card" style="padding:16px 18px">
+                  <div class="lab" style="margin-bottom:10px">Hợp đồng sắp hết hạn</div>
+                  <div class="m-row"><span class="m-avatar" style="width:26px;height:26px;font-size:10px">TH</span><span class="nm">Trần Hà</span><span class="dt">30/10</span></div>
+                  <div class="m-row"><span class="m-avatar" style="width:26px;height:26px;font-size:10px">LM</span><span class="nm">Lê Minh</span><span class="dt">05/11</span></div>
+                  <div class="m-row"><span class="m-avatar" style="width:26px;height:26px;font-size:10px">PV</span><span class="nm">Phạm Vân</span><span class="dt">12/11</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="m-sec">
+              <div class="m-sec-head"><h2>Tuyển dụng</h2><a class="m-link">Quy trình tuyển dụng →</a></div>
+              <div class="m-card m-strip">
+                <div><div class="sv">4</div><div class="sl">Đề xuất chờ duyệt</div></div>
+                <div><div class="sv">12</div><div class="sl">Ứng viên đang xử lý</div></div>
+                <div><div class="sv">3</div><div class="sl">Phỏng vấn tuần này</div></div>
+                <div><div class="sv">2</div><div class="sl">Vị trí đã đóng</div></div>
+                <div><div class="sv">1</div><div class="sl">Vào làm trong tháng</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <figcaption><strong>Phương án A</strong> — nền tách khỏi card, sidebar là bề mặt riêng, tiêu đề trang 28px, nhãn nhóm có bậc eyebrow, primary chỉ còn ở header; link hành động nằm cuối hàng, dóng phải.</figcaption>
+  </figure>
+
+  <h3 style="margin:38px 0 6px">Danh sách nhân viên ở 1756px — nơi bề rộng tạo khác biệt</h3>
+  <p class="muted small" style="margin-bottom:14px">Cùng nội dung với ảnh chụp 1756px ở mục 01: bảng 7 cột dùng hết chiều ngang, không còn cuộn ngang, không còn 700px trống.</p>
+
+  <figure>
+    <div class="frame" data-w="1756" data-h="900">
+      <div class="frame-inner">
+        <div class="mock mock-a">
+          <header class="m-top">
+            <div class="m-brand"><span class="m-mark">IH</span>IHRMS<small>Cổng thông tin nhân viên</small></div>
+            <div class="m-search"><svg><use href="#i-search"/></svg>Tên, mã NV, email hoặc chức năng…</div>
+            <div class="m-actions">
+              <span class="m-icon-btn"><svg><use href="#i-moon"/></svg></span>
+              <span class="m-icon-btn"><svg><use href="#i-bell"/></svg></span>
+              <span class="m-user"><span class="m-avatar">NA</span><span><b>Nguyễn Anh</b><small>Quản lý nhân sự</small></span><svg style="width:14px;height:14px;color:var(--m-muted)"><use href="#i-chev"/></svg></span>
+            </div>
+          </header>
+          <aside class="m-side">
+            <div class="m-side-label">Tổng quan</div>
+            <div class="m-nav"><svg><use href="#i-home"/></svg>Trang chủ</div>
+            <div class="m-nav"><svg><use href="#i-user"/></svg>Cá nhân<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+            <div class="m-nav active"><svg><use href="#i-users"/></svg>Nhân sự<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+            <div class="m-side-label" style="padding-top:6px">Hồ sơ &amp; quá trình</div>
+            <div class="m-nav" style="height:38px;padding-left:20px;font-size:13px">Nhân viên &amp; hồ sơ</div>
+            <div class="m-nav" style="height:38px;padding-left:20px;font-size:13px">Hợp đồng</div>
+            <div class="m-nav" style="height:38px;padding-left:20px;font-size:13px">Quyết định nhân sự</div>
+            <div class="m-nav"><svg><use href="#i-brief"/></svg>Tuyển dụng<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+            <div class="m-nav"><svg><use href="#i-wallet"/></svg>Kế toán<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+            <div class="m-nav"><svg><use href="#i-building"/></svg>Hành chính<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+            <div class="m-nav"><svg><use href="#i-cal"/></svg>Kế hoạch<svg class="chev" style="width:16px;height:16px"><use href="#i-chev"/></svg></div>
+          </aside>
+          <div class="m-main">
+            <div class="m-crumb">Trang chủ / Nhân sự / Nhân viên &amp; hồ sơ</div>
+            <div class="m-head" style="margin-bottom:20px">
+              <div><h1 class="m-h1">Nhân viên &amp; hồ sơ</h1><p class="m-sub">Tra cứu nhân viên trong phạm vi tài khoản được phép xem.</p></div>
+              <div class="m-head-actions"><span class="m-btn-sm primary"><svg style="width:15px;height:15px"><use href="#i-plus"/></svg>Thêm nhân viên</span></div>
+            </div>
+            <div class="m-card">
+              <div class="m-card-head"><span class="m-card-title">Danh sách nhân viên</span><span class="m-count">128 nhân viên · 6 đang thử việc</span></div>
+              <div class="m-filter">
+                <div class="m-field" style="width:340px"><label>Tìm kiếm</label><div class="m-input"><svg><use href="#i-search"/></svg>Tên, mã nhân viên, email…</div></div>
+                <div class="m-field" style="width:230px"><label>Phòng ban</label><div class="m-input sel">Tất cả phòng ban</div></div>
+                <div class="m-field" style="width:210px"><label>Trạng thái</label><div class="m-input sel">Đang làm việc</div></div>
+                <span class="m-btn-sm primary">Áp dụng</span>
+                <span class="m-btn-sm" style="border:0;color:var(--m-muted)">Xóa lọc</span>
+              </div>
+              <table class="m-tbl">
+                <thead><tr><th style="width:22%">Nhân viên</th><th style="width:12%">Phòng ban</th><th style="width:20%">Chức danh</th><th style="width:20%">Loại hợp đồng</th><th class="num" style="width:11%">Ngày vào</th><th style="width:11%">Trạng thái</th><th style="width:4%;text-align:right">Thao tác</th></tr></thead>
+                <tbody>
+                  <tr><td><div class="m-cell"><span class="m-avatar">TH</span><span><b>Nguyễn Thu Hà</b><small>NV-0142</small></span></div></td><td>Nhân sự</td><td>Chuyên viên tuyển dụng</td><td>Không xác định thời hạn</td><td class="num">12/03/2021</td><td><span class="m-badge ok"><i></i>Đang làm việc</span></td><td style="text-align:right"><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                  <tr><td><div class="m-cell"><span class="m-avatar">QB</span><span><b>Trần Quốc Bảo</b><small>NV-0231</small></span></div></td><td>Kỹ thuật</td><td>Kỹ sư phần mềm</td><td>12 tháng</td><td class="num">05/09/2024</td><td><span class="m-badge warn"><i></i>Sắp hết hạn</span></td><td style="text-align:right"><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                  <tr><td><div class="m-cell"><span class="m-avatar">MA</span><span><b>Lê Minh Anh</b><small>NV-0308</small></span></div></td><td>Kinh doanh</td><td>Chuyên viên kinh doanh</td><td>12 tháng</td><td class="num">18/01/2025</td><td><span class="m-badge ok"><i></i>Đang làm việc</span></td><td style="text-align:right"><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                  <tr><td><div class="m-cell"><span class="m-avatar">VD</span><span><b>Phạm Văn Dũng</b><small>NV-0417</small></span></div></td><td>Kế toán</td><td>Kế toán tổng hợp</td><td>Thử việc 2 tháng</td><td class="num">01/09/2026</td><td><span class="m-badge info"><i></i>Thử việc</span></td><td style="text-align:right"><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                  <tr><td><div class="m-cell"><span class="m-avatar">HM</span><span><b>Hoàng Thị Mai</b><small>NV-0128</small></span></div></td><td>Hành chính</td><td>Hành chính – VPP</td><td>Không xác định thời hạn</td><td class="num">22/07/2019</td><td><span class="m-badge ok"><i></i>Đang làm việc</span></td><td style="text-align:right"><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                  <tr><td><div class="m-cell"><span class="m-avatar">DL</span><span><b>Vũ Đức Long</b><small>NV-0355</small></span></div></td><td>Kỹ thuật</td><td>Kỹ sư QA</td><td>24 tháng</td><td class="num">14/11/2023</td><td><span class="m-badge neu"><i></i>Nghỉ thai sản</span></td><td style="text-align:right"><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                </tbody>
+              </table>
+              <div class="m-foot"><span>Hiển thị 1–6 trong 128 nhân viên</span><div class="m-pager"><span>‹</span><span class="on">1</span><span>2</span><span>3</span><span>›</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <figcaption><strong>Phương án A</strong> — tiêu đề card + số lượng cùng hàng, dải lọc có nền <code>raised</code> và đường kẻ, badge có chấm + chữ, cột thao tác dóng phải, phân trang trong card.</figcaption>
+  </figure>
+
+  <div class="grid2" style="margin-top:26px">
+    <div class="panel">
+      <h4>Phạm vi triển khai</h4>
+      <ul class="tight small" style="margin-bottom:0">
+        <li><code>ui_tokens.css</code>: ~14 giá trị màu + 2 bậc chữ.</li>
+        <li><code>base.html</code>: bỏ <code>max-w-5xl</code>, đưa breadcrumb vào <code>.ui-main</code>.</li>
+        <li><code>app_shell.css</code>: nhịp dọc shell, bề rộng sidebar, trạng thái active.</li>
+        <li><code>components.css</code>: card header có divider, KPI, badge, empty state.</li>
+        <li><code>shared_components.css</code>: dải lọc có nền, số kết quả cùng hàng tiêu đề.</li>
+        <li><code>ui/empty_state.html</code>, <code>ui/page_header.html</code>: cấu trúc nhẹ.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h4>Kiểm thử bắt buộc trước khi báo xong</h4>
+      <ul class="tight small" style="margin-bottom:0">
+        <li><code>ops/check_ui_contrast.py</code> — toàn bộ cặp token, 2 theme.</li>
+        <li><code>ops/run_layout_alignment_audit.py</code> — 7 độ rộng × vai trò, 0 vi phạm ngoài waiver.</li>
+        <li><code>ops/run_print_layout_uat.py</code> — bản in HCNS không đổi (token mới không áp lên giấy).</li>
+        <li><code>ops/run_browser_uat.py</code> — luồng nghiệp vụ trên DB dùng một lần.</li>
+        <li>Tăng <code>?v=</code> cho CSS đã sửa; không đổi route, field, CSRF, guard.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 3. PHƯƠNG ÁN B ==================== -->
+<section id="pa-b">
+  <div class="sec-head">
+    <div>
+      <p class="sec-num">03 — PHƯƠNG ÁN B</p>
+      <h2>“Không gian điều hành” — đổi cấu trúc để tăng mật độ</h2>
+      <p class="muted" style="margin:8px 0 0;max-width:74ch">Đi xa hơn A: sidebar thu về rail 72px, header gộp thành một dòng có command bar, KPI gộp thành một dải, danh sách dùng thanh công cụ dính và tab trạng thái. Mục tiêu là cảm giác “ứng dụng điều hành” thay vì “cổng thông tin”.</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="chip sev-mid">Rủi ro trung bình</span><span class="chip neutral">4–5 đợt</span><span class="chip neutral">Cần duyệt 2 ngoại lệ</span></div>
+  </div>
+
+  <table class="t" style="margin-bottom:20px">
+    <thead><tr><th style="width:22%">Thay đổi</th><th style="width:40%">Nội dung</th><th>Đánh đổi</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Rail 72px</strong></td><td>Sidebar mặc định thu gọn, icon 20px + tooltip; ghim để mở 264px. Nhóm chuyển thành flyout.</td><td>Tiết kiệm 184px; giảm khả năng “thấy ngay” nhãn mục — cần tooltip và trạng thái active rõ.</td></tr>
+      <tr><td><strong>Command bar</strong></td><td>Header 56px một dòng: brand, breadcrumb, ô tìm kiếm mở bảng lệnh (Ctrl/⌘+K), actions.</td><td>Bỏ dòng breadcrumb riêng (đồng thời sửa lỗi lệch cột). Cần JS bàn phím + danh sách route tĩnh.</td></tr>
+      <tr><td><strong>KPI strip</strong></td><td>4 chỉ số trong một card, ngăn bằng đường kẻ dọc; mỗi ô có nhãn uppercase 11px, số 30px, phụ chú.</td><td>Giảm 4 khung thành 1; mất khả năng đặt link riêng từng card — phải giữ link ở tiêu đề nhóm.</td></tr>
+      <tr><td><strong>Lưới 12 cột</strong></td><td>Dashboard 8/4: việc cần xử lý bên trái, lịch + chờ duyệt bên phải. Danh sách dùng toolbar dính + tab trạng thái.</td><td>Cần dữ liệu lịch đã có (event_list) — không thêm view mới.</td></tr>
+      <tr><td><strong>Form hai cột</strong></td><td>Cột chính 8/12 + rail ngữ cảnh 4/12 (trợ giúp, trường bắt buộc, nút lưu dính).</td><td><span class="chip sev-mid">Cần duyệt</span> lệch mẫu form hiện hành trong <code>UI_FORM_REGISTRY.json</code>.</td></tr>
+      <tr><td><strong>Bộ lọc dạng panel</strong></td><td>Panel lọc 280px bên trái cho trang nhiều trường.</td><td><span class="chip sev-mid">Cần duyệt</span> lệch quy chuẩn “dải lọc với thao tác liền kề” đã chốt 13/10.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <p class="small" style="margin:0"><strong>Điều kiện để chọn B:</strong> hai mục cuối (form hai cột, panel lọc) phải được chủ dự án duyệt riêng vì đụng quy chuẩn đã ký. Ba mục đầu (rail, command bar, KPI strip) nằm trong phạm vi MASTER đã duyệt — sidebar 72px thu gọn đã có trong đặc tả.</p>
+  </div>
+
+  <h3 style="margin:34px 0 6px">Bảng điều khiển — bản dựng phương án B</h3>
+  <p class="muted small" style="margin-bottom:14px">Cùng dữ liệu với A, khác cách tổ chức không gian. Bật nền sáng/tối ở thanh trên để so cả hai theme.</p>
+
+  <figure>
+    <div class="frame" data-w="1440" data-h="900">
+      <div class="frame-inner">
+        <div class="mock mock-b">
+          <header class="m-top-b">
+            <span class="m-mark" style="width:32px;height:32px;border-radius:8px">IH</span><span style="font-size:14px;font-weight:650;margin-right:6px">IHRMS</span>
+            <div class="m-cmd"><svg><use href="#i-search"/></svg>Tìm kiếm hoặc nhảy tới chức năng…<span class="m-kbd">Ctrl K</span></div>
+            <div class="m-actions" style="margin-left:auto">
+              <span class="m-icon-btn"><svg><use href="#i-moon"/></svg></span>
+              <span class="m-icon-btn"><svg><use href="#i-bell"/></svg></span>
+              <span class="m-avatar">NA</span>
+            </div>
+          </header>
+          <div class="m-rail">
+            <div class="m-rail-item active"><svg><use href="#i-home"/></svg></div>
+            <div class="m-rail-item"><svg><use href="#i-user"/></svg></div>
+            <div class="m-rail-item"><svg><use href="#i-users"/></svg></div>
+            <div class="m-rail-item"><svg><use href="#i-brief"/></svg></div>
+            <div class="m-rail-item"><svg><use href="#i-wallet"/></svg></div>
+            <div class="m-rail-item"><svg><use href="#i-building"/></svg></div>
+            <div class="m-rail-item"><svg><use href="#i-cal"/></svg></div>
+            <div class="m-rail-sep"></div>
+            <div class="m-rail-item"><svg><use href="#i-chart"/></svg></div>
+            <div class="m-rail-item"><svg><use href="#i-folder"/></svg></div>
+            <div class="m-rail-item" style="margin-top:auto"><svg><use href="#i-pin"/></svg></div>
+          </div>
+          <div class="m-main-b">
+            <div class="m-eye">Trung tâm · Ngày vận hành 21/10/2026 · Cập nhật 08:12</div>
+            <div class="m-head" style="margin-bottom:16px">
+              <div><h1 class="m-h1" style="font-size:28px">Bảng điều khiển</h1></div>
+              <div class="m-head-actions" style="padding-top:2px"><span class="m-btn ghost">Xuất báo cáo</span><span class="m-btn primary"><svg><use href="#i-plus"/></svg>Giao việc</span></div>
+            </div>
+            <div class="m-card m-hero">
+              <div><div class="hl">Nhân sự đang quản lý</div><div class="hv">128</div><div class="hm">Thử việc 6 · Nghỉ dài hạn 2 · <span class="hd up">+2 tháng này</span></div></div>
+              <div><div class="hl">Cần duyệt và xử lý</div><div class="hv">7</div><div class="hm">Nghỉ phép 4 · Chấm công 2 · Hồ sơ 1 · <span class="hd dn">4 quá hạn</span></div></div>
+              <div><div class="hl">Hợp đồng sắp hết hạn</div><div class="hv">5</div><div class="hm">Trong 30 ngày tới</div></div>
+              <div><div class="hl">Ứng viên đang xử lý</div><div class="hv">12</div><div class="hm">3 phỏng vấn trong tuần</div></div>
+            </div>
+            <div class="m-grid">
+              <div class="m-card">
+                <div class="m-card-head"><span class="m-card-title">Cần xử lý hôm nay</span><a class="m-link">Xem tất cả →</a></div>
+                <div class="m-task">
+                  <span class="m-avatar" style="width:32px;height:32px">TH</span>
+                  <div><div class="tt">Đơn nghỉ phép 2 ngày của Nguyễn Thu Hà</div><div class="tm">Gửi 20/10 · Phòng Nhân sự</div></div>
+                  <div class="rt"><span class="m-badge warn"><i></i>Chờ duyệt</span><svg style="width:16px;height:16px;color:var(--m-muted)"><use href="#i-chev"/></svg></div>
+                </div>
+                <div class="m-task">
+                  <span class="m-avatar" style="width:32px;height:32px">QB</span>
+                  <div><div class="tt">Bảng công tháng 09/2026 – Phòng Kỹ thuật</div><div class="tm">Hạn duyệt 23/10 · 18 nhân viên</div></div>
+                  <div class="rt"><span class="m-badge dan"><i></i>Quá hạn 2 ngày</span><svg style="width:16px;height:16px;color:var(--m-muted)"><use href="#i-chev"/></svg></div>
+                </div>
+                <div class="m-task">
+                  <span class="m-avatar" style="width:32px;height:32px">MA</span>
+                  <div><div class="tt">Yêu cầu cập nhật hồ sơ – Lê Minh Anh</div><div class="tm">Đổi số điện thoại · Gửi 19/10</div></div>
+                  <div class="rt"><span class="m-badge info"><i></i>Chờ xử lý</span><svg style="width:16px;height:16px;color:var(--m-muted)"><use href="#i-chev"/></svg></div>
+                </div>
+                <div class="m-task">
+                  <span class="m-avatar" style="width:32px;height:32px">VD</span>
+                  <div><div class="tt">Hợp đồng thử việc sắp hết hạn – Phạm Văn Dũng</div><div class="tm">Hết hạn 31/10 · Cần quyết định</div></div>
+                  <div class="rt"><span class="m-badge neu"><i></i>Theo dõi</span><svg style="width:16px;height:16px;color:var(--m-muted)"><use href="#i-chev"/></svg></div>
+                </div>
+                <div class="m-task">
+                  <span class="m-avatar" style="width:32px;height:32px">HM</span>
+                  <div><div class="tt">Đề nghị thanh lý 3 tài sản đã hỏng</div><div class="tm">Gửi 17/10 · Phòng Hành chính</div></div>
+                  <div class="rt"><span class="m-badge info"><i></i>Chờ xử lý</span><svg style="width:16px;height:16px;color:var(--m-muted)"><use href="#i-chev"/></svg></div>
+                </div>
+                <div class="m-task">
+                  <span class="m-avatar" style="width:32px;height:32px">NL</span>
+                  <div><div class="tt">Đề xuất tuyển dụng 2 vị trí Kỹ sư QA</div><div class="tm">Gửi 18/10 · Phòng Kỹ thuật</div></div>
+                  <div class="rt"><span class="m-badge warn"><i></i>Chờ duyệt</span><svg style="width:16px;height:16px;color:var(--m-muted)"><use href="#i-chev"/></svg></div>
+                </div>
+              </div>
+              <div style="display:grid;gap:16px;align-content:start">
+                <div class="m-card">
+                  <div class="m-card-head" style="padding:13px 16px"><span class="m-card-title" style="font-size:14px">Lịch hôm nay</span><span class="m-count">21/10</span></div>
+                  <div class="m-mini"><span class="m-badge ok" style="height:22px">09:00</span><div class="t"><b>Họp giao ban khối</b><small>Phòng họp A · 60 phút</small></div></div>
+                  <div class="m-mini"><span class="m-badge info" style="height:22px">14:00</span><div class="t"><b>Phỏng vấn ứng viên Kỹ sư QA</b><small>3 ứng viên · Phòng Nhân sự</small></div></div>
+                  <div class="m-mini"><span class="m-badge neu" style="height:22px">16:30</span><div class="t"><b>Duyệt bảng công tháng 09</b><small>Hạn cuối hôm nay</small></div></div>
+                </div>
+                <div class="m-card">
+                  <div class="m-card-head" style="padding:13px 16px"><span class="m-card-title" style="font-size:14px">Dự án đang chạy</span><a class="m-link">Mở →</a></div>
+                  <div class="m-mini"><div class="t"><b>12 hoạt động trong tháng</b><small>28 task hoàn thành · 4 quá hạn</small></div><span class="m-badge warn"><i></i>4</span></div>
+                  <div class="m-mini"><div class="t"><b>3 task thiếu báo cáo</b><small>Cần bổ sung trước 25/10</small></div><span class="m-badge info"><i></i>3</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="m-card m-strip" style="margin-top:16px">
+              <div><div class="sv">4</div><div class="sl">Đề xuất tuyển dụng chờ duyệt</div></div>
+              <div><div class="sv">12</div><div class="sl">Ứng viên đang xử lý</div></div>
+              <div><div class="sv">3</div><div class="sl">Phỏng vấn trong tuần</div></div>
+              <div><div class="sv">28</div><div class="sl">Task hoàn thành tháng 10</div></div>
+              <div><div class="sv">2</div><div class="sl">Vị trí đã đóng</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <figcaption><strong>Phương án B</strong> — rail 72px, command bar một dòng, KPI gộp một dải, lưới 8/4 với hàng công việc có badge trạng thái (chấm + chữ). Nội dung rộng 1312px thay vì 1024px.</figcaption>
+  </figure>
+
+  <h3 style="margin:38px 0 6px">Danh sách ở 1756px — thanh công cụ dính và tab trạng thái</h3>
+  <figure>
+    <div class="frame" data-w="1756" data-h="900">
+      <div class="frame-inner">
+        <div class="mock mock-b">
+          <header class="m-top-b">
+            <span class="m-mark" style="width:32px;height:32px;border-radius:8px">IH</span>
+            <div class="m-cmd" style="width:360px"><svg><use href="#i-search"/></svg>Tìm kiếm hoặc nhảy tới chức năng…<span class="m-kbd">Ctrl K</span></div>
+            <div class="m-actions" style="margin-left:auto"><span class="m-icon-btn"><svg><use href="#i-moon"/></svg></span><span class="m-icon-btn"><svg><use href="#i-bell"/></svg></span><span class="m-avatar">NA</span></div>
+          </header>
+          <div class="m-rail">
+            <div class="m-rail-item"><svg><use href="#i-home"/></svg></div>
+            <div class="m-rail-item"><svg><use href="#i-user"/></svg></div>
+            <div class="m-rail-item active"><svg><use href="#i-users"/></svg></div>
+            <div class="m-rail-item"><svg><use href="#i-brief"/></svg></div>
+            <div class="m-rail-item"><svg><use href="#i-wallet"/></svg></div>
+            <div class="m-rail-item"><svg><use href="#i-building"/></svg></div>
+            <div class="m-rail-item"><svg><use href="#i-cal"/></svg></div>
+            <div class="m-rail-sep"></div>
+            <div class="m-rail-item"><svg><use href="#i-chart"/></svg></div>
+            <div class="m-rail-item"><svg><use href="#i-folder"/></svg></div>
+            <div class="m-rail-item" style="margin-top:auto"><svg><use href="#i-pin"/></svg></div>
+          </div>
+          <div class="m-main-b">
+            <div class="m-eye">Nhân sự / Nhân viên &amp; hồ sơ</div>
+            <div class="m-head" style="margin-bottom:14px">
+              <div style="display:flex;align-items:baseline;gap:12px"><h1 class="m-h1" style="font-size:24px">Nhân viên &amp; hồ sơ</h1><span class="m-count">128 nhân viên</span></div>
+              <div class="m-head-actions" style="padding-top:0;gap:8px">
+                <div class="m-input" style="width:240px;height:36px"><svg><use href="#i-search"/></svg>Tìm nhân viên…</div>
+                <span class="m-btn ghost"><svg><use href="#i-filter"/></svg>Bộ lọc</span>
+                <span class="m-btn primary"><svg><use href="#i-plus"/></svg>Thêm nhân viên</span>
+              </div>
+            </div>
+            <div class="m-card" style="margin-top:14px">
+            <div class="m-tabs" style="margin:0;padding:0 20px">
+              <div class="m-tab on">Tất cả <b>128</b></div>
+              <div class="m-tab">Đang làm việc <b>120</b></div>
+              <div class="m-tab">Thử việc <b>6</b></div>
+              <div class="m-tab">Sắp hết hạn HĐ <b>5</b></div>
+              <div class="m-tab">Đã nghỉ <b>2</b></div>
+            </div>
+            <table class="m-tbl" style="margin-top:0">
+              <thead><tr><th style="width:24%">Nhân viên</th><th>Phòng ban</th><th>Chức danh</th><th>Quản lý trực tiếp</th><th>Loại hợp đồng</th><th class="num">Ngày vào</th><th>Trạng thái</th><th style="text-align:right"></th></tr></thead>
+              <tbody>
+                <tr><td><div class="m-cell"><span class="m-avatar">TH</span><span><b>Nguyễn Thu Hà</b><small>NV-0142 · nv.hа@viethealth.vn</small></span></div></td><td>Nhân sự</td><td>Chuyên viên tuyển dụng</td><td>Trần Quốc Bảo</td><td>Không xác định thời hạn</td><td class="num">12/03/2021</td><td><span class="m-badge ok"><i></i>Đang làm việc</span></td><td style="text-align:right"><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">QB</span><span><b>Trần Quốc Bảo</b><small>NV-0231 · qb@viethealth.vn</small></span></div></td><td>Kỹ thuật</td><td>Kỹ sư phần mềm</td><td>Nguyễn Thu Hà</td><td>12 tháng</td><td class="num">05/09/2024</td><td><span class="m-badge warn"><i></i>Sắp hết hạn</span></td><td style="text-align:right"><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">MA</span><span><b>Lê Minh Anh</b><small>NV-0308 · ma@viethealth.vn</small></span></div></td><td>Kinh doanh</td><td>Chuyên viên kinh doanh</td><td>Vũ Đức Long</td><td>12 tháng</td><td class="num">18/01/2025</td><td><span class="m-badge ok"><i></i>Đang làm việc</span></td><td style="text-align:right"><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">VD</span><span><b>Phạm Văn Dũng</b><small>NV-0417 · vd@viethealth.vn</small></span></div></td><td>Kế toán</td><td>Kế toán tổng hợp</td><td>Hoàng Thị Mai</td><td>Thử việc 2 tháng</td><td class="num">01/09/2026</td><td><span class="m-badge info"><i></i>Thử việc</span></td><td style="text-align:right"><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">HM</span><span><b>Hoàng Thị Mai</b><small>NV-0128 · hm@viethealth.vn</small></span></div></td><td>Hành chính</td><td>Hành chính – VPP</td><td>Nguyễn Thu Hà</td><td>Không xác định thời hạn</td><td class="num">22/07/2019</td><td><span class="m-badge ok"><i></i>Đang làm việc</span></td><td style="text-align:right"><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">DL</span><span><b>Vũ Đức Long</b><small>NV-0355 · dl@viethealth.vn</small></span></div></td><td>Kỹ thuật</td><td>Kỹ sư QA</td><td>Trần Quốc Bảo</td><td>24 tháng</td><td class="num">14/11/2023</td><td><span class="m-badge neu"><i></i>Nghỉ thai sản</span></td><td style="text-align:right"><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">TT</span><span><b>Bùi Thanh Tùng</b><small>NV-0402 · tt@viethealth.vn</small></span></div></td><td>Kinh doanh</td><td>Nhân viên kinh doanh</td><td>Lê Minh Anh</td><td>Thử việc 2 tháng</td><td class="num">15/09/2026</td><td><span class="m-badge info"><i></i>Thử việc</span></td><td style="text-align:right"><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">NL</span><span><b>Ngô Thị Lan</b><small>NV-0199 · nl@viethealth.vn</small></span></div></td><td>Hành chính</td><td>Chuyên viên hành chính</td><td>Hoàng Thị Mai</td><td>Không xác định thời hạn</td><td class="num">08/04/2020</td><td><span class="m-badge ok"><i></i>Đang làm việc</span></td><td style="text-align:right"><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+                <tr><td><div class="m-cell"><span class="m-avatar">AN</span><span><b>Đỗ Thị Ngọc</b><small>NV-0289 · an@viethealth.vn</small></span></div></td><td>Kinh doanh</td><td>Trưởng nhóm kinh doanh</td><td>Lê Minh Anh</td><td>Không xác định thời hạn</td><td class="num">03/06/2022</td><td><span class="m-badge ok"><i></i>Đang làm việc</span></td><td style="text-align:right"><svg style="width:18px;height:18px;color:var(--m-muted)"><use href="#i-more"/></svg></td></tr>
+              </tbody>
+            </table>
+            <div class="m-foot"><span>Hiển thị 1–9 trong 128 nhân viên · Cập nhật 08:12</span><div class="m-pager"><span>‹</span><span class="on">1</span><span>2</span><span>3</span><span>›</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <figcaption><strong>Phương án B</strong> — tab trạng thái thay một phần bộ lọc, toolbar dính trên cùng, 8 cột không cuộn ngang ở 1756px, mật độ 56px/hàng.</figcaption>
+  </figure>
+</section>
+<!-- ==================== 4. SO SÁNH & LỘ TRÌNH ==================== -->
+<section id="sosanh">
+  <div class="sec-head">
+    <div>
+      <p class="sec-num">04 — SO SÁNH &amp; LỘ TRÌNH</p>
+      <h2>Chọn A trước, mượn dần ba mục của B</h2>
+      <p class="muted" style="margin:8px 0 0;max-width:74ch">A xử lý đúng 12 phát hiện ở mục 01 với rủi ro thấp nhất và không cần duyệt ngoại lệ nào. B đẹp hơn ở cảm giác “ứng dụng” nhưng đụng hai quy chuẩn đã ký, nên tách thành giai đoạn sau.</p>
+    </div>
+  </div>
+
+  <table class="t">
+    <thead><tr><th style="width:26%">Tiêu chí</th><th style="width:37%">Phương án A — Nền tảng tinh chỉnh</th><th>Phương án B — Không gian điều hành</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Mức thay đổi</strong></td><td>Token + CSS shell + 4 partial</td><td>Cấu trúc shell + component + JS command bar</td></tr>
+      <tr><td><strong>Ước lượng</strong></td><td>3 đợt · ~8–10 file</td><td>4–5 đợt · ~25–30 file</td></tr>
+      <tr><td><strong>Rủi ro hồi quy</strong></td><td><span class="chip good">Thấp</span> — không đổi DOM ngoài breadcrumb</td><td><span class="chip sev-mid">Trung bình</span> — đổi shell, ảnh hưởng mọi template</td></tr>
+      <tr><td><strong>Ngoại lệ cần duyệt</strong></td><td>Không</td><td>2 — form hai cột, bộ lọc dạng panel</td></tr>
+      <tr><td><strong>Bề rộng nội dung</strong></td><td>1440px (bỏ trần 1024px)</td><td>1440px + rail tiết kiệm thêm 184px</td></tr>
+      <tr><td><strong>Tầng bậc bề mặt</strong></td><td>3 tầng: nền / card / raised, viền rõ hơn</td><td>3 tầng + KPI gộp một dải, bớt khung</td></tr>
+      <tr><td><strong>Mật độ</strong></td><td>Hàng bảng 48–56px, nhịp 32/24/16</td><td>Hàng 52–56px, tab trạng thái, toolbar dính</td></tr>
+      <tr><td><strong>Điều hướng</strong></td><td>Giữ sidebar 256px; bỏ nhóm một-mục; thêm badge chờ duyệt</td><td>Rail 72px + command bar Ctrl/⌘+K</td></tr>
+      <tr><td><strong>Ảnh hưởng bản in HCNS</strong></td><td>Không (token màn hình, giấy tách riêng)</td><td>Không, với điều kiện toolbar/tab có <code>no-print</code></td></tr>
+      <tr><td><strong>Quay lui</strong></td><td>1 commit revert là đủ</td><td>Chuỗi commit, cần feature flag nếu muốn an toàn</td></tr>
+    </tbody>
+  </table>
+
+  <div class="grid2" style="margin-top:24px;align-items:start">
+    <div class="panel">
+      <h3>Lộ trình đề xuất</h3>
+      <div style="display:grid;gap:16px;margin-top:14px">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px"><span class="chip neutral">Đợt 1</span><strong style="font-size:14px">Bề mặt &amp; bề rộng</strong></div>
+          <p class="small muted" style="margin:0">Đổi 14 token màu + 2 bậc chữ; bỏ <code>max-w-5xl</code>; breadcrumb vào <code>.ui-main</code>. Đo lại tương phản, chụp 7 độ rộng.</p>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px"><span class="chip neutral">Đợt 2</span><strong style="font-size:14px">Thành phần</strong></div>
+          <p class="small muted" style="margin:0">Card header có divider; KPI; dải lọc có nền; badge có chấm; empty state; bảng canh số + hover; legend form.</p>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px"><span class="chip neutral">Đợt 3</span><strong style="font-size:14px">Kiểm thử &amp; bàn giao</strong></div>
+          <p class="small muted" style="margin:0">Contrast, layout audit 7 độ rộng × vai trò, PDF HCNS, browser UAT, contact sheet trước/sau; ghi <code>PROJECT_WORK_LOG.md</code>.</p>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px"><span class="chip neutral">Sau đó</span><strong style="font-size:14px">A+ (tuỳ chọn)</strong></div>
+          <p class="small muted" style="margin:0">Lấy rail 72px + command bar + KPI strip từ B. Ba mục này nằm trong MASTER đã duyệt nên không cần ngoại lệ mới.</p>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Điều cần chủ dự án quyết</h3>
+      <ol class="small" style="margin:14px 0 0;padding-left:20px;line-height:1.9">
+        <li>Chọn <strong>A</strong>, <strong>B</strong>, hay <strong>A rồi A+</strong>?</li>
+        <li>Có duyệt sidebar navy ở cả hai theme (ngoại lệ so với quyết định 13/10) hay giữ sáng/tối theo theme?</li>
+        <li>Có duyệt mẫu form hai cột + rail ngữ cảnh cho form dài không?</li>
+        <li>Bề rộng form: giữ trần 1120px hay cho chạy hết 1440px như danh sách?</li>
+        <li>Có chấp nhận tăng chiều cao hàng bảng từ 44 lên 48–52px (giảm ~10% số dòng/màn hình, đổi lại dễ đọc hơn)?</li>
+      </ol>
+      <div class="callout" style="margin-bottom:0"><p class="small" style="margin:0"><strong>Không đề xuất:</strong> glassmorphism, gradient, glow, font tải ngoài, animation trang trí, đổi màu thương hiệu teal, hoặc chuyển sang sidebar tối ở theme sáng khi chưa có quyết định mới.</p></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:24px">
+    <h4>Cách kiểm chứng tài liệu này</h4>
+    <p class="small" style="margin:0">Bốn khối mockup trong tài liệu là HTML dựng 1:1 ở đúng kích thước 1440×900 và 1756×900 bằng token đề xuất, không phải ảnh chỉnh sửa — có thể bật F12 để đọc mã. Ảnh “hiện tại” là ảnh chụp thật trong <code>docs/screenshots/stage1_samples/</code>, sao chép nguyên bản vào <code>evidence/</code>. Không file nào trong <code>src/</code> bị sửa trong đợt này.</p>
+  </div>
+</section>
+
+<div class="callout" style="margin-top:24px"><p class="small" style="margin:0"><strong>Tiếp theo:</strong> hai dải màu thay thế (Chàm Đông, Than Ấm) đã được dựng kèm số đo tương phản tại <a href="themes.html" style="color:var(--d-accent);font-weight:600">themes.html</a>.</p></div>
+
+<footer style="margin-top:56px;padding-top:20px;border-top:1px solid var(--d-border);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap" class="small muted">
+  <span>Review thiết kế &amp; bố cục IHRMS · 21/10/2026 · nhánh <code>main</code> @ 13accfa</span>
+  <span>Phạm vi: 162 template, 25 file CSS, 2 theme · Trạng thái: REVIEW (không sửa mã)</span>
+</footer>
+</main>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themeBtn'), label=document.getElementById('themeLabel');
+  function apply(t){root.setAttribute('data-theme',t);label.textContent = t==='dark'?'Nền tối':'Nền sáng';}
+  btn.addEventListener('click',function(){apply(root.getAttribute('data-theme')==='dark'?'light':'dark');});
+  apply('dark');
+  function scaleFrames(){
+    document.querySelectorAll('.frame[data-w]').forEach(function(f){
+      var w=parseFloat(f.dataset.w), h=parseFloat(f.dataset.h||'900');
+      var s=f.clientWidth/w;
+      f.style.height=(h*s)+'px';
+      var inner=f.querySelector('.frame-inner');
+      if(inner){inner.style.width=w+'px';inner.style.height=h+'px';inner.style.transform='scale('+s+')';}
+    });
+  }
+  window.addEventListener('resize',scaleFrames);
+  window.addEventListener('load',scaleFrames);
+  scaleFrames();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+Stale build artifacts from the Graphify code-analysis tool (AST/semantic caches, dependency graph) plus generated IHRMS dashboard exports and HTML assets.

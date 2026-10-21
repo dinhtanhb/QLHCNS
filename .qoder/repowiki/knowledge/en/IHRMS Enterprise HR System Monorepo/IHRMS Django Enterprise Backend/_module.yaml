@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: django_backend
+title: IHRMS Django Enterprise Backend
+scope:
+    - src/
+source_files: []
+depends_on: []
+related_to:
+    - path: github_actions
+    - path: ops_tooling

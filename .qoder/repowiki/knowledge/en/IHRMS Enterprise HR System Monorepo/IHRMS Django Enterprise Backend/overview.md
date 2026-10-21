@@ -1,0 +1,1 @@
+Django-based enterprise HR & administration system (IHRMS) providing role-based portal, payroll, attendance, recruitment, document workflow, and Microsoft 365 integration.

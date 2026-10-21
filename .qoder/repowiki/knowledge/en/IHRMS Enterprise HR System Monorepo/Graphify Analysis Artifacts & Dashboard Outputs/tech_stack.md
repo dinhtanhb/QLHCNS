@@ -1,0 +1,1 @@
+Graphify v0.9.91-s16-g0fcafffe3c00 (Python-based static analysis producing SHA256-named AST/semantic cache blobs and a community-detection report); outputs include OpenPyXL-generated XLSX workbooks and PNG screenshots.

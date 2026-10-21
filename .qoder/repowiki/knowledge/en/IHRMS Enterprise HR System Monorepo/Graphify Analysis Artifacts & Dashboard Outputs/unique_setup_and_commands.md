@@ -1,0 +1,1 @@
+These directories are not built by the project's own build system — they are side-effects of running the external `graphify` tool against the repository. To refresh, re-run the same graphify invocation that produced them; do not hand-edit `manifest.json`, `cache/`, or `.graphify_analysis.json`.

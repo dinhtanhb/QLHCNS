@@ -1,0 +1,1 @@
+Top-level monorepo wiring the Django IHRMS backend, Tailwind frontend build, GitHub CI, Claude/Agent skills, ops/UAT tooling, design docs, and Graphify analysis artifacts into a single project.
