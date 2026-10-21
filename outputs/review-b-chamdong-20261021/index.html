@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Review sau Qoder — Phương án B và dải màu Chàm Đông | IHRMS 21/10/2026</title>
+<style>
+:root, html[data-theme="light"]{
+  --bg:#e7ecf4; --surface:#fff; --raised:#f4f6fb; --text:#101828; --muted:#475467;
+  --border:#667085; --divider:#e8ecf3; --brand:#3a4fd0; --brand-hover:#2f42b5; --on-brand:#fff;
+  --soft:#eef1fd; --sel:#e6eafc; --ok:#067647; --ok-bg:#ecfdf3; --warn:#b54708; --warn-bg:#fffaeb;
+  --danger:#b42318; --danger-bg:#fef3f2; --info:#175cd3; --info-bg:#eff8ff;
+  --shadow:0 1px 2px rgb(16 24 40 / .06);
+}
+html[data-theme="dark"]{
+  --bg:#080c18; --surface:#131a2e; --raised:#1a2340; --text:#e8ecf8; --muted:#a9b4cc;
+  --border:#8b97b3; --divider:#232d4a; --brand:#93a7ff; --brand-hover:#b0beff; --on-brand:#0a1020;
+  --soft:#1c2544; --sel:#22305a; --ok:#86efac; --ok-bg:#0f2417; --warn:#fde68a; --warn-bg:#2a1f08;
+  --danger:#fca5a5; --danger-bg:#2a1010; --info:#93c5fd; --info-bg:#0d1f38;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 24px 96px}
+header.top{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.mark{width:36px;height:36px;border-radius:10px;background:var(--brand);color:var(--on-brand);display:grid;place-items:center;font-weight:700;font-size:13px}
+.brandline{font-weight:650;letter-spacing:.01em}
+.brandline small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.tbtn{margin-left:auto;min-height:40px;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font:inherit;font-size:14px;cursor:pointer}
+.tbtn:hover{background:var(--soft)}
+h1{font-size:32px;line-height:1.25;margin:0 0 10px;letter-spacing:-.01em}
+.lede{color:var(--muted);margin:0 0 26px;max-width:76ch}
+h2{font-size:20px;margin:40px 0 6px;letter-spacing:-.005em}
+h3{font-size:16px;margin:24px 0 8px}
+p{margin:8px 0}
+.sec-num{display:inline-block;font-size:12px;font-weight:700;color:var(--brand);letter-spacing:.12em;margin-bottom:2px}
+.card{background:var(--surface);border:1px solid var(--divider);border-radius:12px;padding:20px;box-shadow:var(--shadow)}
+.verdict{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:22px 0 8px}
+@media(max-width:760px){.verdict{grid-template-columns:1fr}}
+.verdict .card h3{margin:0 0 8px;font-size:15px}
+.big{font-size:30px;font-weight:700;line-height:1.1;margin:2px 0 6px}
+.big small{font-size:14px;font-weight:500;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:650;border:1px solid transparent}
+.pill--ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)}
+.pill--no{background:var(--danger-bg);color:var(--danger);border-color:var(--danger)}
+.pill--part{background:var(--warn-bg);color:var(--warn);border-color:var(--warn)}
+.pill--info{background:var(--info-bg);color:var(--info);border-color:var(--info)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--divider)}
+th{font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border)}
+tbody tr:hover{background:var(--raised)}
+code{font:13px/1.5 ui-monospace,Consolas,monospace;background:var(--soft);padding:1px 5px;border-radius:4px}
+.tw{overflow-x:auto}
+ul.tight{margin:10px 0;padding-left:22px}
+ul.tight li{margin:5px 0}
+figure{margin:18px 0 0}
+figure img{width:100%;display:block;border:1px solid var(--divider);border-radius:10px;background:var(--raised)}
+figcaption{color:var(--muted);font-size:13px;margin-top:8px}
+.callout{border-left:3px solid var(--brand);background:var(--soft);border-radius:8px;padding:14px 16px;margin:16px 0}
+.callout--warn{border-left-color:var(--warn);background:var(--warn-bg)}
+.callout--danger{border-left-color:var(--danger);background:var(--danger-bg)}
+.callout p{margin:4px 0}
+.muted{color:var(--muted)}
+.small{font-size:13.5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px;margin:8px 0}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-weight:600}
+footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--divider);color:var(--muted);font-size:13px}
+.nw{white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <span class="mark">IH</span>
+  <span class="brandline">IHRMS — Review sau khi Qoder sửa<small>Đối chiếu Phương án B và dải màu Chàm Đông · 21/10/2026</small></span>
+  <button class="tbtn" id="themeBtn" type="button">Nền tối</button>
+</header>
+
+<h1>Đã đổi đúng màu, nhưng <em>Phương án B thì chưa được làm</em></h1>
+<p class="lede">Bạn nhận xét đúng một nửa. Palette Chàm Đông đã vào CSS đúng cách (một nguồn token, đo tương phản đạt), nhưng <strong>không có hạng mục cấu trúc nào của Phương án B được hiện thực</strong>: vẫn sidebar 256px, không có command bar, KPI vẫn bốn thẻ rời, hàng bảng 69px. Ngoài ra còn ba bề mặt lệch màu mà Qoder bỏ sót — hai trong số đó tôi đã sửa trong lượt này.</p>
+
+<div class="verdict">
+  <div class="card">
+    <h3>Palette Chàm Đông</h3>
+    <p class="big">2/5 <small>bề mặt còn lệch</small></p>
+    <p class="small muted" style="margin:0">Token CSS, manifest PWA: đạt. Bản xuất PowerPoint và Excel: <strong>đang là teal/xanh cũ</strong> — tôi đã sửa. Logo và icon ứng dụng: là tài sản thương hiệu, cần bạn quyết.</p>
+  </div>
+  <div class="card">
+    <h3>Phương án B — Không gian điều hành</h3>
+    <p class="big">1/7 <small>hạng mục đạt</small></p>
+    <p class="small muted" style="margin:0">Chỉ bề rộng nội dung 1440px là đã đạt — và đạt từ trước, không phải nhờ đợt sửa này. Rail, command bar, KPI strip, tab trạng thái, toolbar dính, mật độ hàng, cỡ tiêu đề: chưa có.</p>
+  </div>
+</div>
+
+<div class="callout callout--danger">
+  <p><b>Một lỗi tôi gây ra ở đợt trước, nay đã sửa:</b> <code>mobile_shell.css</code> khai lại <code>grid-template-columns</code> cho <code>.ui-form-grid</code>, tạo nguồn thứ hai và làm đỏ <code>FormGridComponentTests</code> trên <code>main</code> — CI của commit <code>61a9380</code> fail vì đúng ca này. Đã bỏ khối đó (components.css đã có sẵn nền 1 cột và reset span dưới 640px), 21 test xanh trở lại.</p>
+</div>
+
+<!-- ===================== 01 ===================== -->
+<section>
+  <div class="sec-num">01</div>
+  <h2>Qoder đã làm gì</h2>
+  <p>Một commit duy nhất <code>847997b</code> (7 tệp) cộng một commit nhật ký <code>674376c</code>. Toàn bộ nội dung là <strong>đổi giá trị màu</strong>, không đụng cấu trúc:</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th style="width:34%">Tệp</th><th>Thay đổi</th></tr></thead>
+    <tbody>
+      <tr><td><code>src/static/css/ui_tokens.css</code></td><td>Thay teal bằng indigo trong cả ba khối <code>:root</code>, <code>[data-theme="dark"]</code>, <code>prefers-color-scheme</code></td></tr>
+      <tr><td><code>src/static/manifest.json</code></td><td><code>theme_color #3a4fd0</code>, <code>background_color #e7ecf4</code></td></tr>
+      <tr><td><code>DESIGN.md</code>, <code>design-system/MASTER.md</code>, <code>docs/UI_DESIGN_SYSTEM.md</code>, <code>docs/UI_DESIGN_SYSTEM_PHASE1.md</code></td><td>Cập nhật mô tả palette, bảng tương phản sinh lại</td></tr>
+      <tr><td><code>docs/PROJECT_WORK_LOG.md</code></td><td>Nhật ký đợt palette + ghi nhận ca test đỏ có sẵn</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="small muted">Điều Qoder làm đúng: không tạo trục <code>[data-palette]</code>, không đổi cơ chế theme, không sửa <code>base.html</code>. Cách đổi này giữ đúng nguyên tắc một nguồn token.</p>
+</section>
+
+<!-- ===================== 02 ===================== -->
+<section>
+  <div class="sec-num">02</div>
+  <h2>Phương án B yêu cầu gì</h2>
+  <p class="small muted">Trích đúng đặc tả trong <code>outputs/design-review-20261021/index.html</code> — “Phương án B — Không gian điều hành”.</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th style="width:24%">Hạng mục</th><th style="width:38%">Đặc tả B</th><th>Đo trên ứng dụng thật (1756×1000)</th><th class="nw">Kết luận</th></tr></thead>
+    <tbody>
+      <tr><td><b>Điều hướng</b></td><td>Rail 72px thay sidebar 256px</td><td>Sidebar <b>256px</b>. Có trạng thái thu gọn <code>4.5rem</code> = 72px nhưng là nút bấm tay, không phải mặc định</td><td><span class="pill pill--no">Chưa</span></td></tr>
+      <tr><td><b>Command bar</b></td><td>Một dòng, gõ để nhảy chức năng, <code>Ctrl/⌘+K</code></td><td>Ô tìm kiếm nằm trong topbar; <b>không có handler bàn phím nào</b> trong <code>src/static/js/</code></td><td><span class="pill pill--no">Chưa</span></td></tr>
+      <tr><td><b>KPI</b></td><td>Gộp một dải, bớt khung</td><td>4 thẻ <code>.ui-card</code> rời, mỗi thẻ một viền + một số. Component <code>.ui-kpi-grid</code> đã có nhưng dashboard không dùng</td><td><span class="pill pill--no">Chưa</span></td></tr>
+      <tr><td><b>Bề rộng nội dung</b></td><td>1312px (B) / 1440px (A)</td><td><b>1440px</b> — <code>--ui-content-max-width: 90rem</code>. Lớp <code>max-w-5xl</code> còn trong <code>base.html</code> nhưng bị ghi đè, tức class chết</td><td><span class="pill pill--ok">Đạt</span></td></tr>
+      <tr><td><b>Bảng danh sách</b></td><td>8 cột không cuộn ngang ở 1756px, hàng 52–56px</td><td>Trang nhân viên có 6 cột và còn thừa bề rộng; hàng <b>69px</b> — cao hơn mốc B 13–17px</td><td><span class="pill pill--no">Chưa</span></td></tr>
+      <tr><td><b>Toolbar / tab trạng thái</b></td><td>Toolbar dính trên cùng, tab trạng thái thay một phần bộ lọc</td><td>Thanh lọc 73px, <code>position: static</code>; không có tab trạng thái</td><td><span class="pill pill--no">Chưa</span></td></tr>
+      <tr><td><b>Tiêu đề trang</b></td><td>28px</td><td>24px</td><td><span class="pill pill--part">Lệch nhẹ</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="small">Đo bằng Playwright trên DB giả dùng một lần, tài khoản <code>demo-hr</code>. Lệnh tái hiện ở cuối tài liệu.</p>
+</section>
+
+<!-- ===================== 03 ===================== -->
+<section>
+  <div class="sec-num">03</div>
+  <h2>Hiện trạng nhìn thấy được</h2>
+  <p>Không phải ảnh mockup — ảnh chụp thật ở 1756×1000, đúng trạng thái <code>main</code> hiện tại.</p>
+  <figure>
+    <img src="evidence/dashboard-1756-light.png" alt="Bảng điều khiển hiện tại, nền sáng">
+    <figcaption><b>Bảng điều khiển, nền sáng.</b> Màu đã đúng Chàm Đông. Nhưng: sidebar 256px vẫn chiếm chỗ, bốn KPI vẫn là bốn thẻ rời có viền, không có dải KPI, không có command bar.</figcaption>
+  </figure>
+  <figure>
+    <img src="evidence/hr_employee_list-1756-dark.png" alt="Danh sách nhân viên, nền tối">
+    <figcaption><b>Danh sách nhân viên, nền tối.</b> Palette tối đúng. Nhưng hàng cao 69px (B yêu cầu 52–56px), 6 cột (B yêu cầu 8 cột không cuộn ở 1756px), thanh lọc nằm trong thẻ và không dính khi cuộn.</figcaption>
+  </figure>
+</section>
+
+<!-- ===================== 04 ===================== -->
+<section>
+  <div class="sec-num">04</div>
+  <h2>Ba bề mặt lệch màu mà đợt sửa bỏ sót</h2>
+  <div class="tw">
+  <table>
+    <thead><tr><th style="width:26%">Bề mặt</th><th style="width:34%">Màu còn lại</th><th>Xử lý</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>Bản xuất PowerPoint</b><br><code>reporting_slides.py</code></td>
+        <td><code>TEAL 0B7461</code>, <code>MINT DDF3EB</code>, <code>PAPER F4F7F5</code>, <code>NAVY 0C233B</code>, <code>MUTED 4B6171</code>, <code>LINE D5E1DD</code>, đỏ/hổ phách/xanh cũ</td>
+        <td><span class="pill pill--ok">Đã sửa</span> sang đúng mã trong khối light của <code>ui_tokens.css</code></td>
+      </tr>
+      <tr>
+        <td><b>Bản xuất Excel</b><br><code>reporting_dashboard.py</code></td>
+        <td><code>BLUE 1D4ED8</code>, <code>LIGHT EFF6FF</code>, <code>DARK 0F172A</code>, <code>MUTED 64748B</code></td>
+        <td><span class="pill pill--ok">Đã sửa</span> sang <code>3A4FD0 / EEF1FD / 101828 / 475467</code></td>
+      </tr>
+      <tr>
+        <td><b>Logo và icon ứng dụng</b><br><code>logo.png</code>, <code>ihrms-pwa-192/512.png</code></td>
+        <td>Mark xanh lá <code>#279048</code> trên nền <code>#EFF6FF</code></td>
+        <td><span class="pill pill--part">Chờ bạn quyết</span> — đây là <b>tài sản thương hiệu</b> của tổ chức, không phải token giao diện. Tôi không tự đổi.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <figure>
+    <img src="evidence/login-1756-light.png" alt="Trang đăng nhập hiện tại">
+    <figcaption><b>Trang đăng nhập.</b> Giao diện indigo nhưng logo góc trên vẫn xanh lá — hai hệ màu cạnh nhau ở đúng màn hình đầu tiên người dùng thấy. Cần quyết: giữ logo tổ chức (đúng bản sắc) hay tạo biến thể đơn sắc indigo cho ứng dụng.</figcaption>
+  </figure>
+</section>
+
+<!-- ===================== 05 ===================== -->
+<section>
+  <div class="sec-num">05</div>
+  <h2>Tôi đã sửa trong lượt này</h2>
+  <div class="tw">
+  <table>
+    <thead><tr><th style="width:30%">Tệp</th><th>Việc đã làm</th><th style="width:24%">Bằng chứng</th></tr></thead>
+    <tbody>
+      <tr><td><code>src/static/css/mobile_shell.css</code></td><td>Bỏ khối khai lại <code>grid-template-columns</code> cho <code>.ui-form-grid</code> — trả về đúng một nguồn là <code>components.css</code></td><td><b>21 test OK</b>; layout audit chạy lại đủ ma trận: <b>150 route / 6.881 ca / 0 vi phạm / 0 lỗi</b></td></tr>
+      <tr><td><code>src/apps/portal/reporting_slides.py</code></td><td>9 hằng màu PowerPoint → Chàm Đông</td><td rowspan="2"><code>test_report_palette</code> + hai module báo cáo: <b>12 test OK</b></td></tr>
+      <tr><td><code>src/apps/portal/reporting_dashboard.py</code></td><td>4 hằng màu Excel → Chàm Đông</td></tr>
+      <tr><td><code>src/apps/portal/test_report_palette.py</code> <span class="pill pill--info">mới</span></td><td>Khoá hai module báo cáo phải khớp token trong <code>ui_tokens.css</code>; cấm mã teal/xanh cũ quay lại</td><td>Đổi token mà quên báo cáo là đỏ ngay</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="small muted">Chưa commit. Palette và P0 đang ở <code>main</code>; bốn tệp trên để riêng một commit “sửa lỗi palette + CI” sau khi bạn xem.</p>
+  <p class="small"><b>Đã chạy lại sau khi sửa:</b> <code>run_layout_alignment_audit.py</code> 150 route / 6.881 ca / <b>0 vi phạm, 0 lỗi</b> (9 tài khoản × 7 độ rộng × sáng/tối) — việc bỏ override lưới không làm lệch bố cục ở bất kỳ độ rộng nào.</p>
+</section>
+
+<!-- ===================== 06 ===================== -->
+<section>
+  <div class="sec-num">06</div>
+  <h2>Để làm đúng Phương án B — chia ba đợt</h2>
+  <p>Ba mục đầu nằm trong phạm vi <code>MASTER</code> đã duyệt nên làm được ngay. Hai mục cuối đụng quy chuẩn đã ký ngày 13/10, cần bạn duyệt riêng.</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th style="width:12%">Đợt</th><th style="width:40%">Nội dung</th><th style="width:30%">Tệp chính</th><th>Điều kiện</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>B1</b><br><small class="muted nw">2–3 ngày</small></td>
+        <td>Rail 72px mặc định (giữ nút mở rộng), command bar một dòng + <code>Ctrl/⌘+K</code>, bỏ class chết <code>max-w-5xl</code></td>
+        <td><code>app_shell.css</code>, <code>base.html</code>, <code>app_shell.js</code>, <code>ui_tokens.css</code></td>
+        <td><span class="pill pill--ok">Trong MASTER</span></td>
+      </tr>
+      <tr>
+        <td><b>B2</b><br><small class="muted nw">3–4 ngày</small></td>
+        <td>KPI gộp một dải; hàng bảng 52–56px; badge có chấm; tiêu đề trang 28px</td>
+        <td><code>components.css</code>, partial <code>dashboard/_metrics.html</code>, 6 template danh sách</td>
+        <td><span class="pill pill--ok">Trong MASTER</span></td>
+      </tr>
+      <tr>
+        <td><b>B3</b><br><small class="muted nw">3–4 ngày</small></td>
+        <td>Toolbar dính + tab trạng thái thay một phần bộ lọc; 8 cột không cuộn ở 1756px</td>
+        <td><code>components.css</code>, <code>ui/query_bar.html</code>, 6 template danh sách</td>
+        <td><span class="pill pill--part">Cần duyệt: lệch quy chuẩn dải lọc 13/10</span></td>
+      </tr>
+      <tr>
+        <td><b>B4</b><br><small class="muted nw">2 ngày</small></td>
+        <td>Form hai cột + rail ngữ cảnh cho form dài</td>
+        <td><code>ui/field.html</code>, <code>components.css</code>, 43 template form</td>
+        <td><span class="pill pill--part">Cần duyệt riêng</span></td>
+      </tr>
+      <tr>
+        <td><b>Kiểm thử</b><br><small class="muted nw">mỗi đợt</small></td>
+        <td>Layout audit 7 độ rộng × 2 theme, contrast, browser UAT, contact sheet trước/sau</td>
+        <td><code>ops/*</code></td>
+        <td>Bắt buộc theo AGENTS.md</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout callout--warn">
+    <p><b>Rủi ro phải nói trước:</b> B1 đổi cấu trúc shell — tệp mà 196 template kế thừa. Nếu làm gộp một lượt với B2–B4 sẽ không quy được lỗi về đợt nào. Mỗi đợt một commit, chạy đủ cổng rồi mới sang đợt sau, đúng cách đã làm với P0.</p>
+  </div>
+</section>
+
+<!-- ===================== 07 ===================== -->
+<section>
+  <div class="sec-num">07</div>
+  <h2>Cần bạn chốt</h2>
+  <ol class="tight">
+    <li><b>Có làm B không, và theo thứ tự B1 → B4 như trên?</b> Nếu chỉ muốn phần “cảm giác ứng dụng”, B1 + B2 là đủ 80% hiệu quả.</li>
+    <li><b>Duyệt tab trạng thái thay một phần bộ lọc (B3)?</b> Đây là chỗ lệch quy chuẩn 13/10 — cần một câu đồng ý rõ ràng.</li>
+    <li><b>Duyệt form hai cột (B4)?</b> Hiện form đang một cột dưới 640px và 3–4 cột ở desktop; B4 chỉ đổi cách nhóm.</li>
+    <li><b>Logo và icon ứng dụng:</b> giữ mark xanh lá của tổ chức, hay tôi dựng biến thể đơn sắc indigo cho <code>ihrms-pwa-*.png</code> và logo trên trang đăng nhập?</li>
+    <li><b>Mật độ bảng:</b> tăng hàng từ 69px xuống 54px nghĩa là mỗi màn hình thấy thêm ~2 dòng nhưng chữ thoáng hơn — đồng ý không?</li>
+  </ol>
+</section>
+
+<footer>
+  <p><b>Cách kiểm chứng tài liệu này.</b> Mọi con số đo trên DB giả dùng một lần, không dùng dữ liệu vận hành:</p>
+  <p><code>venv\Scripts\python.exe ops\dashboard_demo.py serve --directory &lt;runtime giả&gt; --port 8794</code><br>
+  <code>venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.portal.test_layout_audit_tools apps.portal.tests_mobile apps.portal.test_report_palette</code></p>
+  <p>Ảnh chụp: Playwright + Edge, viewport 1756×1000, <code>locale vi-VN</code>, <code>service_workers=block</code>. Không sửa ảnh. Palette trong tài liệu này dùng đúng mã của <code>ui_tokens.css</code>.</p>
+  <p>Trạng thái Git khi review: <code>main</code> tại <code>674376c</code>, ahead/behind <code>0/0</code>; bốn tệp sửa trong lượt này chưa commit.</p>
+</footer>
+
+</div>
+<script>
+document.getElementById('themeBtn').addEventListener('click', function () {
+    var root = document.documentElement;
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    this.textContent = root.dataset.theme === 'dark' ? 'Nền sáng' : 'Nền tối';
+});
+</script>
+</body>
+</html>

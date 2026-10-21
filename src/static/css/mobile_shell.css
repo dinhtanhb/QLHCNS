@@ -197,21 +197,14 @@
     .ui-mtable thead th:first-child { background: var(--ui-surface-raised); }
 
     /* ----------------------------------------------------------------------
-       5. Biểu mẫu: điện thoại một cột; máy tính bảng giữ lưới container query
-       Hợp đồng lưới của dự án là 4/3/2/1 cột theo bề rộng container
-       (900/640/420px). Ép một cột tới 1023px sẽ phá hợp đồng ở 768px — đo
-       bằng run_layout_alignment_audit.py ra 204 vi phạm GRID_COLUMNS. Nên chỉ
-       ép dưới 640px, đúng ngưỡng "1 cột" của hợp đồng, kể cả khi trang thiếu
-       container có tên.
+       5. Biểu mẫu: KHÔNG khai lại grid-template-columns ở đây.
+       Hợp đồng lưới 4/3/2/1 cột theo @container ui-form chỉ có MỘT nguồn là
+       components.css (test FormGridComponentTests khoá điều này). Bản nháp P0
+       từng ép một cột tới 1023px: vừa phá hợp đồng ở 768px (204 vi phạm
+       GRID_COLUMNS), vừa tạo nguồn thứ hai làm CI đỏ. components.css đã có
+       sẵn nền 1 cột ngoài container query và reset span dưới 640px, nên mobile
+       chỉ cần tăng kích thước chạm cho ô nhập.
        ---------------------------------------------------------------------- */
-    @media screen and (max-width: 639px) {
-        .ui-form-grid { grid-template-columns: minmax(0, 1fr) !important; }
-
-        .ui-form-grid > :is(.ui-field, .ui-field--2, .ui-field--3, .ui-field--4,
-                            .ui-field--5, .ui-field--6, .ui-field--8, .ui-field--wide) {
-            grid-column: 1 / -1;
-        }
-    }
 
     /* 16px để iOS không tự phóng to khi chạm vào ô nhập */
     .ui-main :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]) {

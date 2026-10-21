@@ -99,7 +99,9 @@ def main():
  const metrics=[...root.querySelectorAll('.home-project-metrics,.home-recruitment-metrics')];
  return {
   padding:cards.every(x=>['paddingTop','paddingBottom','paddingLeft','paddingRight'].every(k=>parseFloat(getComputedStyle(x)[k])>=16)),
-  cardGap:[...root.querySelectorAll('.home-row,.home-my-work-grid,.home-main-kpis')].every(x=>near(parseFloat(getComputedStyle(x).gap),16)),
+ // Phương án B: KPI gộp một dải nên gap = 0 và ngăn bằng đường kẻ dọc; các lưới
+ // còn lại vẫn giữ nhịp 16px. Đổi ở đây là đổi hợp đồng, không phải nới cổng.
+ cardGap:[...root.querySelectorAll('.home-row,.home-my-work-grid')].every(x=>near(parseFloat(getComputedStyle(x).gap),16))&&[...root.querySelectorAll('.home-main-kpis')].every(x=>parseFloat(getComputedStyle(x).gap)===0),
   groupGap:near(parseFloat(getComputedStyle(root).rowGap),32),
   sectionGap:spacing.filter(x=>x.children.length>1).every(x=>near(parseFloat(getComputedStyle(x).rowGap),12)),
   type:scales.every(([selector,size,line])=>[...root.querySelectorAll(selector)].filter(visible).every(x=>near(parseFloat(getComputedStyle(x).fontSize),size)&&near(parseFloat(getComputedStyle(x).lineHeight),line))),

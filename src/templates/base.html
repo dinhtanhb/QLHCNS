@@ -35,7 +35,9 @@
             {% if user.is_authenticated %}
             <form class="ui-global-search" role="search" method="get" action="{% url 'portal:global_search' %}">
                 <label class="ui-sr-only" for="global-search-input">Tìm kiếm toàn ứng dụng</label>
-                <input id="global-search-input" name="q" type="search" maxlength="100" minlength="2" value="{{ search_query }}" placeholder="Tên, mã NV, email hoặc chức năng…">
+                {% include '_shell_icon.html' with name='search' %}
+                <input id="global-search-input" name="q" type="search" maxlength="100" minlength="2" value="{{ search_query }}" placeholder="Tìm kiếm hoặc nhảy tới chức năng…">
+                <kbd class="ui-cmd-hint" aria-hidden="true">Ctrl K</kbd>
                 <button type="submit" class="ui-control" aria-label="Tìm kiếm">{% include '_shell_icon.html' with name='search' %}</button>
             </form>
             {% endif %}

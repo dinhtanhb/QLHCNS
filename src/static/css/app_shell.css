@@ -3,8 +3,15 @@
 @media screen {
  .portal-app .ui-topbar :is(.ui-breadcrumb,.ui-user-summary small,.ui-unread-badge,.ui-role-badge), .portal-app .ui-sidebar .ui-nav-section-label { font-size:var(--ui-font-size-small); }
  .ui-demo-banner { text-align:center; padding:4px 12px; background:var(--ui-warning-bg); color:var(--ui-warning-text); font-size:var(--ui-font-size-small); }
- .portal-app .ui-global-search { display:flex; align-items:center; gap:8px; margin-left:auto; width:clamp(220px,28vw,420px); min-width:0; }
- .portal-app .ui-global-search input { min-width:0; width:100%; height:44px; background:var(--ui-surface); color:var(--ui-text); border:1px solid var(--ui-border); border-radius:var(--ui-radius-control); padding:8px 12px; }
+ .portal-app .ui-global-search { position:relative; display:flex; align-items:center; gap:8px; margin-left:auto; width:clamp(240px,30vw,480px); min-width:0; }
+ .portal-app .ui-global-search input { min-width:0; width:100%; height:44px; background:var(--ui-surface-raised); color:var(--ui-text); border:1px solid var(--ui-card-border); border-radius:var(--ui-radius-control); padding:8px 78px 8px 38px; transition:background-color var(--ui-motion-feedback),border-color var(--ui-motion-feedback); }
+ .portal-app .ui-global-search input:focus { background:var(--ui-surface); border-color:var(--ui-brand); }
+ /* Command bar (Phương án B): icon dẫn, gợi ý phím tắt, nút gửi nằm trong cùng ô. */
+ .portal-app .ui-global-search > svg { position:absolute; inset-inline-start:12px; inline-size:18px; block-size:18px; color:var(--ui-text-muted); pointer-events:none; }
+ .portal-app .ui-cmd-hint { position:absolute; inset-inline-end:46px; padding:1px 6px; border:1px solid var(--ui-card-border); border-radius:4px; background:var(--ui-surface); color:var(--ui-text-muted); font:600 11px/1.6 "Segoe UI",system-ui,sans-serif; letter-spacing:.02em; pointer-events:none; }
+ .portal-app .ui-global-search button.ui-control { position:absolute; inset-inline-end:3px; inline-size:38px; block-size:38px; min-height:0; border:0; background:transparent; color:var(--ui-text-muted); }
+ .portal-app .ui-global-search button.ui-control:hover { background:var(--ui-hover-bg); color:var(--ui-brand); }
+ @media(max-width:1100px) { .portal-app .ui-cmd-hint { display:none; } .portal-app .ui-global-search input { padding-inline-end:46px; } }
  .ui-search-results { list-style:none; padding:0; margin:0; }
  .ui-search-results li { padding:12px 0; border-bottom:1px solid var(--ui-divider); overflow-wrap:anywhere; }
  .ui-search-results a { display:inline-flex; align-items:center; min-height:44px; color:var(--ui-link); }

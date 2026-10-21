@@ -19,7 +19,9 @@
     let priorInert = [];
     let tooltipOwner = null;
     let collapsed = false;
-    try { collapsed = localStorage.getItem('ihrms-sidebar-collapsed') === 'true'; } catch (_) { /* Optional storage. */ }
+    // Phương án B: rail 72px là mặc định trên desktop; người dùng bấm mở rộng thì
+    // ghi nhớ lựa chọn đó. Chỉ giá trị 'false' mới mở rộng, còn trống = rail.
+    try { collapsed = localStorage.getItem('ihrms-sidebar-collapsed') !== 'false'; } catch (_) { /* Optional storage. */ }
     function visibleFocusables(container) {
         return Array.from(container.querySelectorAll('a[href],button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),[tabindex="0"]'))
             .filter(el => el.getClientRects().length && !el.closest('[hidden],[inert]'));
@@ -187,6 +189,17 @@
     if (breadcrumb && title && title !== 'Cổng thông tin nhân viên' && title !== 'Trang chủ') {
         breadcrumb.querySelector('[data-breadcrumb-title]').textContent = title;
         breadcrumb.hidden = false;
+    }
+    // Command bar (Phương án B): Ctrl/⌘+K đưa tiêu điểm vào ô tìm kiếm toàn ứng dụng.
+    const commandInput = document.getElementById('global-search-input');
+    if (commandInput) {
+        document.addEventListener('keydown', (event) => {
+            if ((event.ctrlKey || event.metaKey) && !event.altKey && event.key.toLowerCase() === 'k') {
+                event.preventDefault();
+                commandInput.focus();
+                commandInput.select();
+            }
+        });
     }
     const moreTab = document.querySelector('[data-mobile-more]');
     if (moreTab) {

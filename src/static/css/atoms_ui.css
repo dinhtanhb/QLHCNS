@@ -17,9 +17,12 @@
  .home-dashboard .home-queue a { gap:var(--ui-space-3); }
  
  .ui-person { display:flex; align-items:center; gap:var(--ui-space-3); min-width:0; }
- .ui-person-avatar { display:inline-flex; flex:none; align-items:center; justify-content:center; width:var(--ui-target-min); height:var(--ui-target-min); border-radius:var(--ui-radius-pill); background:var(--ui-brand-soft); color:var(--ui-brand); font-size:var(--ui-font-size-body); font-weight:var(--ui-font-weight-heading); }
+ .ui-person-avatar { display:inline-flex; flex:none; align-items:center; justify-content:center; width:2rem; height:2rem; border-radius:var(--ui-radius-pill); background:var(--ui-brand-soft); color:var(--ui-brand); font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-heading); }
  .ui-person-name { color:var(--ui-text); font-weight:var(--ui-font-weight-label); }
  .ui-person-name:hover { color:var(--ui-link); text-decoration:underline; }
+ /* Phương án B: mã nhân viên nằm dưới tên, gộp một cột thay vì cột "Mã NV" riêng. */
+ .ui-person-body { display:grid; min-width:0; line-height:1.3; }
+ .ui-person-code { color:var(--ui-text-muted); font-size:var(--ui-font-size-caption); font-variant-numeric:var(--ui-numeric-variant); }
  .ui-profile-heading { display:flex; gap:var(--ui-space-4); align-items:center; min-width:0; }
  .ui-profile-heading .ui-person-avatar { width:var(--ui-header-min-height); height:var(--ui-header-min-height); font-size:var(--ui-font-size-title); }
  .ui-detail-item { padding-block:var(--ui-space-3); border-bottom:var(--ui-border-width) solid var(--ui-card-border); }

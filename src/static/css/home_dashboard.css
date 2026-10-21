@@ -181,5 +181,26 @@
   .home-dashboard .home-queue-list a { grid-column:1/-1; }
  }
  @media(prefers-reduced-motion:reduce) { .home-dashboard a.ui-card { transition:none; } .home-dashboard * { scroll-behavior:auto; } }
+
+ /* ------------------------------------------------------------------------
+    Phương án B — KPI gộp MỘT dải thay vì bốn thẻ rời.
+    Một thẻ bao ngoài, bốn ô bên trong ngăn bằng đường kẻ dọc, không viền riêng.
+    Giữ nguyên hook .home-main-kpis / .home-main-metric để các cổng đo hiện có
+    (run_dashboard_layout_uat, run_browser_uat, run_asset_cache_uat) còn dùng được.
+    ------------------------------------------------------------------------ */
+ .home-dashboard .home-main-kpis { gap:0; background:var(--ui-surface); border:var(--ui-border-width) solid var(--ui-card-border); border-radius:var(--ui-radius-card); overflow:hidden; }
+ .home-dashboard .home-main-kpis .home-main-metric { padding:var(--ui-space-5); background:transparent; border:0; border-radius:0; box-shadow:none; }
+ .home-dashboard .home-main-kpis .home-main-metric + .home-main-metric { border-inline-start:var(--ui-border-width) solid var(--ui-divider); }
+ .home-dashboard .home-main-kpis a.home-main-metric { transition:background-color var(--ui-motion-feedback); }
+ .home-dashboard .home-main-kpis a.home-main-metric:hover { background:var(--ui-hover-bg); }
+ .home-dashboard .home-main-kpis .home-main-metric .home-metric-heading { margin:0; padding:0; background:none; border:0; border-radius:0; font-size:var(--ui-font-size-small); font-weight:var(--ui-weight-label); letter-spacing:.04em; text-transform:uppercase; color:var(--ui-text-muted); }
+ .home-dashboard .home-main-kpis .home-metric-heading svg { inline-size:16px; block-size:16px; color:var(--ui-text-muted); }
+ .home-dashboard .home-main-kpis .ui-kpi-value { margin-top:var(--ui-space-1); }
+ .home-dashboard .home-main-kpis .home-metric-note { margin-top:var(--ui-space-1); font-size:var(--ui-font-size-small); color:var(--ui-text-muted); }
+ @media(max-width:767px) {
+  .home-dashboard .home-main-kpis { grid-template-columns:minmax(0,1fr); }
+  .home-dashboard .home-main-kpis .home-main-metric { padding:var(--ui-space-4); }
+  .home-dashboard .home-main-kpis .home-main-metric + .home-main-metric { border-inline-start:0; border-block-start:var(--ui-border-width) solid var(--ui-divider); }
+ }
 }
 }

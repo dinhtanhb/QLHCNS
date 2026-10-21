@@ -498,10 +498,16 @@
 
 .ui-table tbody :is(td, th) {
     min-height: var(--ui-control-height);
-    padding: var(--ui-space-3) var(--ui-space-4);
+    /* Phương án B: mật độ 52–56px/hàng (trước là 69px). Nút thao tác 44px vẫn giữ
+       nguyên chuẩn chạm, nên chiều cao hàng do nút quyết định và đệm dọc chỉ 4px. */
+    padding: var(--ui-space-1) var(--ui-space-4);
     border-bottom: var(--ui-border-width) solid var(--ui-divider);
     vertical-align: middle;
     overflow-wrap: break-word;
+}
+
+.ui-table tbody tr {
+    block-size: 3.25rem;
 }
 
 @media screen {

@@ -16,16 +16,18 @@ from pptx.oxml.xmlchemy import OxmlElement
 from pptx.util import Inches, Pt
 
 
-NAVY = "0C233B"
-TEAL = "0B7461"
-MINT = "DDF3EB"
-PAPER = "F4F7F5"
+# Palette Chàm Đông (indigo), đồng bộ với khối light của ui_tokens.css.
+# Đổi màu ở ui_tokens.css thì sửa cả đây; test_report_palette.py giữ hai nơi khớp nhau.
+NAVY = "101828"
+TEAL = "3A4FD0"
+MINT = "EEF1FD"
+PAPER = "E7ECF4"
 WHITE = "FFFFFF"
-MUTED = "4B6171"
-LINE = "D5E1DD"
-RED = "B53335"
-AMBER = "995D16"
-BLUE = "236B95"
+MUTED = "475467"
+LINE = "DFE4EE"
+RED = "B42318"
+AMBER = "B54708"
+BLUE = "175CD3"
 FONT = "Arial"
 
 

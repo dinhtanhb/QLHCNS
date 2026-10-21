@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phương án B — đợt 1 đã vào mã | IHRMS 21/10/2026</title>
+<style>
+:root,html[data-theme="light"]{--bg:#e7ecf4;--surface:#fff;--raised:#f4f6fb;--text:#101828;--muted:#475467;--border:#667085;--divider:#e8ecf3;--brand:#3a4fd0;--on-brand:#fff;--soft:#eef1fd;--ok:#067647;--ok-bg:#ecfdf3;--danger:#b42318;--danger-bg:#fef3f2;--warn:#b54708;--warn-bg:#fffaeb;--shadow:0 1px 2px rgb(16 24 40/.06)}
+html[data-theme="dark"]{--bg:#080c18;--surface:#131a2e;--raised:#1a2340;--text:#e8ecf8;--muted:#a9b4cc;--border:#8b97b3;--divider:#232d4a;--brand:#93a7ff;--on-brand:#0a1020;--soft:#1c2544;--ok:#86efac;--ok-bg:#0f2417;--danger:#fca5a5;--danger-bg:#2a1010;--warn:#fde68a;--warn-bg:#2a1f08;--shadow:none}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:32px 24px 96px}
+header.top{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.mark{width:36px;height:36px;border-radius:10px;background:var(--brand);color:var(--on-brand);display:grid;place-items:center;font-weight:700;font-size:13px}
+.brandline{font-weight:650}.brandline small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.tbtn{margin-left:auto;min-height:40px;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font:inherit;font-size:14px;cursor:pointer}
+h1{font-size:31px;line-height:1.25;margin:0 0 10px;letter-spacing:-.01em}
+.lede{color:var(--muted);margin:0 0 24px;max-width:78ch}
+h2{font-size:20px;margin:38px 0 8px}
+.sec-num{display:block;font-size:12px;font-weight:700;color:var(--brand);letter-spacing:.12em}
+.card{background:var(--surface);border:1px solid var(--divider);border-radius:12px;padding:20px;box-shadow:var(--shadow)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:20px 0 4px}
+@media(max-width:860px){.grid3{grid-template-columns:1fr}}
+.big{font-size:28px;font-weight:700;line-height:1.1;margin:2px 0 6px}
+.big small{font-size:13px;font-weight:500;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--divider)}
+th{font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border)}
+code{font:13px/1.5 ui-monospace,Consolas,monospace;background:var(--soft);padding:1px 5px;border-radius:4px}
+.pill{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:650;border:1px solid transparent}
+.pill--ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)}
+.pill--no{background:var(--danger-bg);color:var(--danger);border-color:var(--danger)}
+.pill--warn{background:var(--warn-bg);color:var(--warn);border-color:var(--warn)}
+figure{margin:16px 0 0}
+figure img{width:100%;display:block;border:1px solid var(--divider);border-radius:10px;background:var(--raised)}
+figcaption{color:var(--muted);font-size:13px;margin-top:8px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:860px){.pair{grid-template-columns:1fr}}
+.callout{border-left:3px solid var(--brand);background:var(--soft);border-radius:8px;padding:14px 16px;margin:16px 0}
+.callout p{margin:4px 0}
+.muted{color:var(--muted)}.small{font-size:13.5px}
+ul.tight{margin:10px 0;padding-left:22px}ul.tight li{margin:5px 0}
+footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--divider);color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <span class="mark">IH</span>
+  <span class="brandline">IHRMS — Phương án B, đợt 1<small>Lớp vỏ · KPI · bảng biểu · 21/10/2026</small></span>
+  <button class="tbtn" id="themeBtn" type="button">Nền tối</button>
+</header>
+
+<h1>Đã vào mã: rail 72px, command bar, KPI một dải, bảng 53px</h1>
+<p class="lede">Bốn thay đổi bố cục theo đúng hai ảnh bạn gửi. Toàn bộ đo trên ứng dụng thật ở 1756×1000, không dùng ảnh mockup. Phần còn lại của B (cột Loại hợp đồng/Ngày vào, lưới 8/4, dải số liệu đáy, tab trạng thái, form hai cột) chưa làm — ghi rõ ở mục 04.</p>
+
+<div class="grid3">
+  <div class="card"><p class="big">72px<small> / 256px</small></p><p class="small muted" style="margin:0">Rail thay sidebar. Nút mở rộng vẫn còn, lựa chọn được ghi nhớ.</p></div>
+  <div class="card"><p class="big">53px<small> / 69px</small></p><p class="small muted" style="margin:0">Chiều cao hàng bảng. Nút thao tác vẫn 44px nên chuẩn chạm không đổi.</p></div>
+  <div class="card"><p class="big">1<small> dải KPI</small></p><p class="small muted" style="margin:0">Bốn ô trong một thẻ, ngăn bằng đường kẻ dọc, thay bốn thẻ rời.</p></div>
+</div>
+
+<!-- 01 -->
+<section>
+  <div class="sec-num">01</div>
+  <h2>Bảng điều khiển — trước và sau</h2>
+  <div class="pair">
+    <figure><img src="before/dashboard-1756-light.png" alt="Bảng điều khiển trước"><figcaption><b>Trước.</b> Sidebar 256px, bốn thẻ KPI rời có viền riêng, không có gợi ý phím tắt.</figcaption></figure>
+    <figure><img src="after/dashboard-1756-light.png" alt="Bảng điều khiển sau"><figcaption><b>Sau.</b> Rail 72px, KPI gộp một dải có đường ngăn, chip <code>Ctrl K</code> trong ô tìm kiếm.</figcaption></figure>
+  </div>
+  <figure><img src="after/dashboard-1756-dark.png" alt="Bảng điều khiển nền tối sau khi đổi"><figcaption><b>Nền tối.</b> Cùng bố cục, dải KPI giữ đường ngăn theo <code>--ui-divider</code> nên không bị viền kép.</figcaption></figure>
+</section>
+
+<!-- 02 -->
+<section>
+  <div class="sec-num">02</div>
+  <h2>Danh sách nhân viên — trước và sau</h2>
+  <div class="pair">
+    <figure><img src="before/hr_employee_list-1756-dark.png" alt="Danh sách trước"><figcaption><b>Trước.</b> Sáu cột, hàng 69px, “Mã NV” là cột riêng.</figcaption></figure>
+    <figure><img src="after/hr_employee_list-1756-dark.png" alt="Danh sách sau"><figcaption><b>Sau.</b> Năm cột, hàng 53px, mã nhân viên nằm dưới tên trong cùng ô.</figcaption></figure>
+  </div>
+  <figure><img src="after/hr_employee_list-1756-light.png" alt="Danh sách nền sáng sau khi đổi"><figcaption><b>Nền sáng.</b> Cùng cấu trúc cột với ảnh bạn gửi: Nhân viên · Phòng ban · Vị trí · Trạng thái · Thao tác.</figcaption></figure>
+</section>
+
+<!-- 03 -->
+<section>
+  <div class="sec-num">03</div>
+  <h2>Đã đổi những gì</h2>
+  <table>
+    <thead><tr><th style="width:26%">Hạng mục</th><th>Thay đổi</th><th style="width:26%">Tệp</th></tr></thead>
+    <tbody>
+      <tr><td><b>Rail 72px</b></td><td>Desktop vào thẳng rail; <code>localStorage !== 'false'</code> nên chỉ khi người dùng chủ động mở rộng mới giữ sidebar. Bấm một nhóm trong rail tự mở rộng rồi mở panel.</td><td><code>app_shell.js</code></td></tr>
+      <tr><td><b>Command bar</b></td><td>Icon dẫn + chip <code>Ctrl K</code> + nút gửi trong cùng ô; <b>Ctrl/⌘+K</b> đưa tiêu điểm vào ô. Giữ nguyên <code>id</code>, form GET nên các cổng search cũ vẫn chạy.</td><td><code>base.html</code>, <code>app_shell.js</code>, <code>app_shell.css</code></td></tr>
+      <tr><td><b>KPI một dải</b></td><td><code>.home-main-kpis</code> thành một thẻ, <code>gap:0</code>, các ô ngăn bằng <code>border-inline-start</code>; label chữ hoa 14px, số 36px. Giữ nguyên hook cũ để cổng đo còn dùng.</td><td><code>home_dashboard.css</code></td></tr>
+      <tr><td><b>Mật độ bảng</b></td><td>Đệm dọc ô 4px + <code>tbody tr{block-size:3.25rem}</code>; avatar 32px; gộp mã NV vào cột Nhân viên; cập nhật <code>colgroup</code> và <code>min-width</code>.</td><td><code>components.css</code>, <code>atoms_ui.css</code>, <code>hr_employee_list.html</code>, <code>shared_components.css</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 04 -->
+<section>
+  <div class="sec-num">04</div>
+  <h2>Còn lại của B</h2>
+  <table>
+    <thead><tr><th style="width:34%">Hạng mục</th><th style="width:14%">Trạng thái</th><th>Vì sao chưa làm</th></tr></thead>
+    <tbody>
+      <tr><td>Rail 72px, command bar, KPI một dải, mật độ 52–56px</td><td><span class="pill pill--ok">Xong</span></td><td>—</td></tr>
+      <tr><td>Cột “Loại hợp đồng”, “Ngày vào” trong danh sách</td><td><span class="pill pill--warn">Chờ</span></td><td>Cần bổ sung dữ liệu ở view (join hợp đồng), không phải việc CSS</td></tr>
+      <tr><td>Lưới 8/4 + cột phải “Lịch hôm nay / Dự án đang chạy”</td><td><span class="pill pill--warn">Chờ</span></td><td>Phải chọn lại nhóm nội dung nào sang cột phải theo từng vai trò</td></tr>
+      <tr><td>Dải số liệu thứ hai ở đáy bảng điều khiển</td><td><span class="pill pill--warn">Chờ</span></td><td>Cần 5 chỉ số tổng hợp chưa có trong snapshot</td></tr>
+      <tr><td>Tab trạng thái thay một phần bộ lọc, toolbar dính</td><td><span class="pill pill--no">Cần duyệt</span></td><td>Lệch quy chuẩn dải lọc đã ký 13/10</td></tr>
+      <tr><td>Form hai cột + rail ngữ cảnh</td><td><span class="pill pill--no">Cần duyệt</span></td><td>Ngoại lệ riêng, chưa có quyết định</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 05 -->
+<section>
+  <div class="sec-num">05</div>
+  <h2>Cổng kiểm thử đã chạy</h2>
+  <table>
+    <thead><tr><th style="width:34%">Cổng</th><th>Kết quả</th></tr></thead>
+    <tbody>
+      <tr><td><code>run_layout_alignment_audit.py</code></td><td><b>150 route / 6.881 ca / 0 vi phạm / 0 lỗi</b> — 9 tài khoản × 1920/1756/1440/1280/1024/768/390 × sáng/tối. Chạy <b>hai lượt</b>: sau đổi CSS và sau khi sửa template danh sách.</td></tr>
+      <tr><td><code>run_browser_uat.py --layout-only</code></td><td><b>128 checks, 32 ảnh, 0 lỗi</b>, DB dùng một lần tự hủy.</td></tr>
+      <tr><td><code>run_dashboard_layout_uat.py</code></td><td><b>4.572 checks, 48 ảnh</b>. Đạt: <code>padding</code>, <code>cardGap</code>, <code>noShadow</code>, <code>kpiHeights</code>, <code>first fold</code>, <code>targets</code>, <code>rows</code>.</td></tr>
+      <tr><td>Test đơn vị</td><td><b>35 test OK</b> (<code>tests_mobile</code>, <code>test_layout_audit_tools</code>, <code>test_home_dashboard</code>).</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <p><b>Một thay đổi hợp đồng cổng, có ghi lý do:</b> <code>cardGap</code> trong <code>run_dashboard_layout_uat.py</code> tách <code>.home-main-kpis</code> ra khỏi nhịp 16px và yêu cầu <b>gap = 0</b>, vì dải KPI là một thẻ có đường ngăn. Không thêm waiver nào.</p>
+    <p><b>Lỗi có sẵn trên <code>main</code>, không do đợt này:</b> cổng báo <code>groupGap</code> và <code>type</code>. Đo được: <code>.home-dashboard</code> đặt gap <b>24px</b> trong khi cổng đòi 32px; <code>--ui-text-kpi</code> là <b>36px</b> (đã vậy từ <code>61a9380</code>) trong khi cổng đòi 32px. Cần bạn chọn 24 hay 32 trước khi sửa cổng hoặc sửa token.</p>
+  </div>
+</section>
+
+<footer>
+  <p><b>Kiểm chứng:</b> ảnh chụp Playwright + Edge, viewport 1756×1000, <code>locale vi-VN</code>, <code>service_workers=block</code>, DB giả dùng một lần ngoài repo. Không chỉnh sửa ảnh.</p>
+  <p>Trạng thái Git: <code>main</code> tại <code>674376c</code>; đợt này <b>chưa commit</b> — chờ bạn xem ảnh.</p>
+</footer>
+
+</div>
+<script>
+document.getElementById('themeBtn').addEventListener('click', function () {
+  var r = document.documentElement;
+  r.dataset.theme = r.dataset.theme === 'dark' ? 'light' : 'dark';
+  this.textContent = r.dataset.theme === 'dark' ? 'Nền sáng' : 'Nền tối';
+});
+</script>
+</body>
+</html>

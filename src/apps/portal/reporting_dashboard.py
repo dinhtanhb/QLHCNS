@@ -29,10 +29,11 @@ from apps.recruitment.models import Candidate, Interview, JobPosting, Offer, Rec
 from apps.task.models import Task
 
 
-BLUE = "1D4ED8"
-DARK = "0F172A"
-LIGHT = "EFF6FF"
-MUTED = "64748B"
+# Palette Chàm Đông (indigo) cho bản Excel, đồng bộ với khối light của ui_tokens.css.
+BLUE = "3A4FD0"
+DARK = "101828"
+LIGHT = "EEF1FD"
+MUTED = "475467"
 
 
 def _month_starts(from_date, to_date):
