@@ -24,6 +24,8 @@ db.sqlite3
 db.sqlite3-journal
 *.db
 *.bak
+# Artifact SQLite khi chạy test với tên DB 'qlhcns' (tên DB SQL Server thật) — sinh nhầm file rỗng trong src/.
+/src/qlhcns*
 
 # --- File người dùng tải lên ---
 src/media/
@@ -44,6 +46,8 @@ Backups/
 # --- Công cụ lập trình ---
 .vscode/
 .idea/
+# Đầu ra phân tích Graphify (cache AST, graph, manifest) — tiện ích ngoài repo, không phải tài liệu dự án.
+graphify-out/
 # Subagent-driven-development scratch workspace (ledger, briefs, reports).
 .superpowers/
 # Local MCP client configuration.

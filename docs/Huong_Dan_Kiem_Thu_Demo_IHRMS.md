@@ -48,4 +48,4 @@ Tài liệu này dùng cho môi trường demo hoặc SIT có **dữ liệu gi�
 
 Ghi mã bản ghi demo, vai trò đã dùng, thao tác, kết quả mong đợi/thực tế, thời điểm, ảnh chụp nếu có lỗi và tên tệp đã xuất. Không ghi mật khẩu, token, số CCCD, số tài khoản, tệp hồ sơ thật hoặc ảnh có dữ liệu cá nhân vào biên bản lỗi.
 
-Các giới hạn tích hợp như Word/Excel desktop, Outlook/Microsoft 365, máy in PDF, SQL Server/IIS và quyền lưu trữ doanh nghiệp cần được người phụ trách xác nhận trên môi trường tương ứng. Kết quả chạy cô lập của dự án được ghi tại [Báo cáo kiểm thử demo](Bao_Cao_Kiem_Thu_Demo_2026-10-06.md).
+Các giới hạn tích hợp như Word/Excel desktop, Outlook/Microsoft 365, máy in PDF, SQL Server/IIS và quyền lưu trữ doanh nghiệp cần được người phụ trách xác nhận trên môi trường tương ứng. Kết quả chạy cô lập của dự án được ghi tại [Báo cáo kiểm thử demo](archive/reviews/Bao_Cao_Kiem_Thu_Demo_2026-10-06.md).

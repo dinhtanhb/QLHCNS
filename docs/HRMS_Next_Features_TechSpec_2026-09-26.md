@@ -1,7 +1,7 @@
 # IHRMS — Đặc tả kỹ thuật chi tiết cho 4 hạng mục tiếp theo
 
 Ngày lập: 2026-09-26
-Bổ sung cho: `docs/HRMS_Next_Features_Plan.md` (kế hoạch cấp chiến lược đã có trong repo — tài liệu này KHÔNG thay thế mà đi sâu xuống mức model/migration/view/test theo đúng quy ước code hiện tại: `BaseAuditModel`, `db_column` PascalCase, `db_table` tiền tố `tbl`, phân quyền tập trung trong `apps/security/permissions.py`, view function-based trong package `apps/portal/views/` +
+Bổ sung cho: `docs/archive/HRMS_Next_Features_Plan.md` (kế hoạch cấp chiến lược đã có trong repo — tài liệu này KHÔNG thay thế mà đi sâu xuống mức model/migration/view/test theo đúng quy ước code hiện tại: `BaseAuditModel`, `db_column` PascalCase, `db_table` tiền tố `tbl`, phân quyền tập trung trong `apps/security/permissions.py`, view function-based trong package `apps/portal/views/` +
 `apps/<app>/views.py` cho app tự trị (theo mẫu `activity`).
 
 Thứ tự triển khai giữ nguyên như tài liệu chiến lược: **1 → 4 → 2 → 3**. Mỗi hạng mục là một
