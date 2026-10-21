@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IHRMS — Bản thử ứng dụng di động</title>
+<style>
+:root{
+  --bg:#070a14; --panel:#0f1626; --line:#232e46; --text:#e9eeff; --muted:#93a0bb;
+  --accent:#93a7ff; --accent-soft:#1b2440;
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(1200px 600px at 50% -10%,#141d33 0%,var(--bg) 60%);
+  color:var(--text);font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  display:flex;flex-direction:column;align-items:center;padding:22px 16px 40px}
+header{width:100%;max-width:820px;text-align:center;margin-bottom:18px}
+h1{margin:0 0 6px;font-size:18px;font-weight:650;letter-spacing:-.01em}
+p{margin:0;font-size:13px;color:var(--muted)}
+p b{color:var(--text);font-weight:600}
+.bar{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:14px 0 20px;max-width:820px}
+.bar button{font:inherit;font-size:12.5px;font-weight:600;color:var(--muted);background:var(--panel);
+  border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer;transition:border-color .15s,color .15s}
+.bar button:hover{color:var(--text);border-color:#3a4a6e}
+.bar button[aria-pressed="true"]{color:#0b1020;background:var(--accent);border-color:var(--accent)}
+.bar .sep{width:1px;background:var(--line);margin:2px 5px}
+.stage{position:relative;padding:10px;border-radius:44px;background:linear-gradient(180deg,#1a2338,#0d1322);
+  box-shadow:0 30px 80px rgb(0 0 0 / .55),inset 0 0 0 1px #2a3550}
+.stage::after{content:"";position:absolute;left:50%;transform:translateX(-50%);top:16px;width:82px;height:5px;
+  border-radius:999px;background:#2b3653;z-index:2;pointer-events:none}
+iframe{display:block;width:390px;height:844px;border:0;border-radius:34px;background:#fff}
+.foot{margin-top:16px;font-size:12px;color:var(--muted);text-align:center;max-width:520px;line-height:1.5}
+.foot a{color:var(--accent);text-decoration:none}
+@media(max-width:460px){
+  body{padding:12px 6px 30px}
+  .stage{padding:6px;border-radius:36px}
+  iframe{width:min(390px,calc(100vw - 36px));height:min(844px,calc((100vw - 36px) * 2.164));border-radius:28px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>IHRMS — bản thử ứng dụng di động</h1>
+  <p>Chạy <b>mobile_shell.css</b> thật + <b>ui_tokens.css</b> của dự án, trong viewport <b>390×844</b>.</p>
+</header>
+
+<div class="bar" role="group" aria-label="Chọn màn hình">
+  <button type="button" data-screen="home" aria-pressed="true">Trang chủ</button>
+  <button type="button" data-screen="work" aria-pressed="false">Cần duyệt</button>
+  <button type="button" data-screen="detail" aria-pressed="false">Chi tiết</button>
+  <button type="button" data-screen="people" aria-pressed="false">Nhân sự</button>
+  <button type="button" data-screen="form" aria-pressed="false">Biểu mẫu</button>
+  <button type="button" data-screen="more" aria-pressed="false">Thêm</button>
+  <span class="sep" aria-hidden="true"></span>
+  <button type="button" data-sheet="1" aria-pressed="false">Tấm lọc</button>
+  <button type="button" id="themeBtn" aria-pressed="false">Nền tối</button>
+</div>
+
+<div class="stage">
+  <iframe id="frame" src="prototype_app.html?s=home&theme=light" title="Bản thử ứng dụng IHRMS ở 390x844"></iframe>
+</div>
+
+<p class="foot">Bấm tab dưới đáy để chuyển màn, chạm một dòng để mở chi tiết, bấm “Duyệt đơn” để xem trạng thái đổi tại chỗ. Xem kế hoạch đầy đủ tại <a href="index.html">tài liệu thiết kế</a>.</p>
+
+<script>
+(function () {
+    var frame = document.getElementById('frame');
+    var theme = 'light';
+    var current = 'home';
+
+    function render() {
+        var q = '?s=' + current + '&theme=' + theme;
+        if (current === 'sheet') { q = '?s=work&theme=' + theme + '&sheet=1'; }
+        frame.src = 'prototype_app.html' + q;
+    }
+
+    document.querySelectorAll('[data-screen]').forEach(function (b) {
+        b.addEventListener('click', function () {
+            current = b.dataset.screen;
+            document.querySelectorAll('[data-screen]').forEach(function (x) {
+                x.setAttribute('aria-pressed', String(x === b));
+            });
+            document.querySelector('[data-sheet]').setAttribute('aria-pressed', 'false');
+            render();
+        });
+    });
+
+    document.querySelector('[data-sheet]').addEventListener('click', function () {
+        current = 'sheet';
+        document.querySelectorAll('[data-screen]').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+        this.setAttribute('aria-pressed', 'true');
+        render();
+    });
+
+    document.getElementById('themeBtn').addEventListener('click', function () {
+        theme = theme === 'light' ? 'dark' : 'light';
+        this.setAttribute('aria-pressed', String(theme === 'dark'));
+        this.textContent = theme === 'dark' ? 'Nền sáng' : 'Nền tối';
+        render();
+    });
+})();
+</script>
+</body>
+</html>

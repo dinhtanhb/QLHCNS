@@ -1,0 +1,55 @@
+{% comment %}
+Thanh điều hướng đáy — 5 đích, hiển thị dưới 1024px.
+Quyết định 21/10/2026: 5 tab có "Tôi". Tab 2 và 3 đổi theo quyền:
+  - Quản lý duyệt nghỉ phép : Cần duyệt → (Nhân sự | Chấm công)
+  - Quản lý duyệt chấm công: Cần duyệt → Chấm công
+  - Nhân viên               : Chấm công → Đơn của tôi
+Tab 4 "Thêm" mở drawer điều hướng sẵn có (đủ 12+ phân hệ theo quyền),
+không tạo route mới. P1 sẽ thay bằng lưới mô-đun riêng.
+{% endcomment %}
+{% with u=request.resolver_match.url_name %}
+<nav class="ui-tabbar" aria-label="Điều hướng chính">
+    <a class="ui-tabbar__item" href="{% url 'portal:dashboard' %}"
+       {% if u == 'dashboard' %}aria-current="page"{% endif %}>
+        {% include '_shell_icon.html' with name='home' %}<span>Trang chủ</span>
+    </a>
+
+    {% if can_approve %}
+    <a class="ui-tabbar__item" href="{% url 'portal:leave_approval_list' %}"
+       {% if u == 'leave_approval_list' or u == 'leave_approval_detail' %}aria-current="page"{% endif %}>
+        {% include '_shell_icon.html' with name='checklist' %}<span>Cần duyệt</span>
+    </a>
+    {% else %}
+    <a class="ui-tabbar__item" href="{% url 'portal:timesheet_month' %}"
+       {% if u == 'timesheet_month' %}aria-current="page"{% endif %}>
+        {% include '_shell_icon.html' with name='calendar' %}<span>Chấm công</span>
+    </a>
+    {% endif %}
+
+    {% if can_manage_hr %}
+    <a class="ui-tabbar__item" href="{% url 'portal:hr_employee_list' %}"
+       {% if u == 'hr_employee_list' or u == 'hr_employee_detail' or u == 'hr_employee_create' or u == 'hr_employee_update' %}aria-current="page"{% endif %}>
+        {% include '_shell_icon.html' with name='people' %}<span>Nhân sự</span>
+    </a>
+    {% elif can_approve_timesheet %}
+    <a class="ui-tabbar__item" href="{% url 'portal:timesheet_approval_list' %}"
+       {% if u == 'timesheet_approval_list' %}aria-current="page"{% endif %}>
+        {% include '_shell_icon.html' with name='calendar' %}<span>Chấm công</span>
+    </a>
+    {% else %}
+    <a class="ui-tabbar__item" href="{% url 'portal:leave_list' %}"
+       {% if u == 'leave_list' or u == 'leave_create' %}aria-current="page"{% endif %}>
+        {% include '_shell_icon.html' with name='document' %}<span>Đơn của tôi</span>
+    </a>
+    {% endif %}
+
+    <button type="button" class="ui-tabbar__item" data-mobile-more aria-controls="portalSidebar" aria-expanded="false">
+        {% include '_shell_icon.html' with name='grid' %}<span>Thêm</span>
+    </button>
+
+    <a class="ui-tabbar__item" href="{% url 'portal:profile' %}"
+       {% if u == 'profile' %}aria-current="page"{% endif %}>
+        {% include '_shell_icon.html' with name='person' %}<span>Tôi</span>
+    </a>
+</nav>
+{% endwith %}

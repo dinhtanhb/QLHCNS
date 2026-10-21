@@ -1,0 +1,238 @@
+/* ==========================================================================
+   IHRMS — Lớp vỏ ứng dụng di động (P0)
+   Phạm vi: CHỈ dưới 1024px. Desktop và bản in không đổi.
+   Phụ thuộc: ui_tokens.css (biến --ui-*). Không định nghĩa lại màu thương hiệu.
+   Thứ tự nạp: sau app_shell.css / atoms_ui.css, trước print_forms.css.
+
+   Vì sao KHÔNG bọc @layer: dự án trộn rule không layer (Tailwind, theme.css)
+   với layer (base/components/layouts/pages). Rule không layer luôn thắng rule
+   có layer ở khai báo thường, nên bọc layer sẽ khiến .w-full, .p-4 của
+   Tailwind đè lên lớp vỏ này. Để không layer, tệp này nạp sau cùng nên thắng
+   khi cùng độ đặc hiệu — đúng ý đồ của một lớp ghi đè dành riêng cho mobile.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   0. Token riêng cho mobile — kích thước ngón tay, không phải kích thước chuột
+   -------------------------------------------------------------------------- */
+:root {
+    --ui-tap: 48px;
+    --ui-appbar-h: 52px;
+    --ui-tabbar-h: 56px;
+    --ui-actionbar-h: 68px;
+    --ui-m-radius: 16px;
+    --ui-m-radius-sm: 12px;
+    --ui-m-gutter: 16px;
+    --ui-safe-top: env(safe-area-inset-top, 0px);
+    --ui-safe-bottom: env(safe-area-inset-bottom, 0px);
+
+    --ui-m-title: 1.375rem;
+    --ui-m-heading: 1.0625rem;
+    --ui-m-body: 0.9375rem;
+    --ui-m-meta: 0.8125rem;
+    --ui-m-label: 0.6875rem;
+}
+
+/* Chỉ hiện trên mobile — ẩn hoàn toàn ở desktop */
+.ui-mobile-only { display: none; }
+
+@media screen and (max-width: 1023px) {
+
+    /* 0.1 Border-box cho mọi thành phần của lớp vỏ: không phụ thuộc reset trang,
+       tránh ô nhập rộng 100% + padding tràn khỏi thẻ. */
+    .ui-main,
+    .ui-main *,
+    .ui-tabbar,
+    .ui-tabbar *,
+    .ui-topbar,
+    .ui-topbar * {
+        box-sizing: border-box;
+    }
+
+    /* ----------------------------------------------------------------------
+       1. Topbar gọn một hàng — bỏ hàng ô tìm kiếm chiếm 44px vô ích
+       ---------------------------------------------------------------------- */
+    .portal-app .ui-topbar-row {
+        flex-wrap: nowrap;
+        min-height: var(--ui-appbar-h);
+        padding: var(--ui-space-1) var(--ui-space-2);
+        gap: var(--ui-space-1);
+    }
+
+    /* Ô tìm kiếm toàn cục nhường chỗ cho icon tìm kiếm trên thanh */
+    .portal-app .ui-global-search {
+        display: none;
+    }
+
+    .portal-app .ui-topbar-actions {
+        margin-left: auto;
+        gap: 2px;
+    }
+
+    .portal-app .ui-brand {
+        font-size: var(--ui-m-heading);
+        font-weight: 650;
+    }
+
+    /* Breadcrumb: ẩn trên mobile. Tiêu đề h1 ngay dưới đã trả lời "đang ở đâu";
+       giữ cả hai sẽ lặp tiêu đề hai lần và tốn thêm 40px. */
+    .portal-app .ui-breadcrumb {
+        display: none;
+    }
+
+    /* Nút tìm kiếm chỉ hiện trên mobile */
+    .ui-mobile-only {
+        display: inline-flex;
+    }
+
+    /* Trợ lý tài liệu: FAB đè lên nội dung và thanh hành động — chuyển vào tab Thêm */
+    .assistant-fab {
+        display: none !important;
+    }
+
+    /* ----------------------------------------------------------------------
+       2. Nội dung: chừa chỗ cho tab bar cố định
+       ---------------------------------------------------------------------- */
+    .ui-main {
+        padding: var(--ui-space-3) var(--ui-m-gutter)
+                 calc(var(--ui-tabbar-h) + var(--ui-safe-bottom) + var(--ui-space-4));
+        max-width: none;
+    }
+
+    /* ----------------------------------------------------------------------
+       3. Tab bar 5 đích
+       ---------------------------------------------------------------------- */
+    .ui-tabbar {
+        position: fixed;
+        inset-inline: 0;
+        bottom: 0;
+        z-index: calc(var(--ui-layer-navigation) + 1);
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        min-height: calc(var(--ui-tabbar-h) + var(--ui-safe-bottom));
+        padding-bottom: var(--ui-safe-bottom);
+        background: color-mix(in srgb, var(--ui-surface) 92%, transparent);
+        backdrop-filter: saturate(180%) blur(16px);
+        border-top: 1px solid var(--ui-border);
+    }
+
+    .ui-tabbar__item {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        min-block-size: var(--ui-tabbar-h);
+        padding: 6px 2px 4px;
+        border: 0;
+        background: none;
+        color: var(--ui-text-muted);
+        text-decoration: none;
+        font-family: inherit;
+        font-size: var(--ui-m-label);
+        font-weight: 550;
+        line-height: 1.1;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .ui-tabbar__item svg {
+        inline-size: 22px;
+        block-size: 22px;
+    }
+
+    .ui-tabbar__item:active {
+        background: var(--ui-surface-raised);
+    }
+
+    .ui-tabbar__item[aria-current="page"] {
+        color: var(--ui-brand);
+        font-weight: 650;
+    }
+
+    .ui-tabbar__item:focus-visible {
+        outline: 3px solid var(--ui-focus);
+        outline-offset: -3px;
+        border-radius: var(--ui-m-radius-sm);
+    }
+
+    /* Badge số việc chờ duyệt */
+    .ui-tabbar__badge {
+        position: absolute;
+        inset-block-start: 6px;
+        inset-inline-start: calc(50% + 6px);
+        min-inline-size: 17px;
+        block-size: 17px;
+        padding-inline: 4px;
+        border-radius: 999px;
+        background: var(--ui-danger-text);
+        color: var(--ui-danger-bg);
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 17px;
+        text-align: center;
+    }
+
+    /* ----------------------------------------------------------------------
+       4. Bảng: không ép 7 cột vào 390px, cuộn ngang có cột đầu dính
+       ---------------------------------------------------------------------- */
+    .ui-mtable {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: var(--ui-m-radius);
+        border: 1px solid var(--ui-border);
+        background: var(--ui-surface);
+    }
+
+    .ui-mtable table { min-inline-size: 640px; }
+
+    .ui-mtable :is(th, td):first-child {
+        position: sticky;
+        inset-inline-start: 0;
+        z-index: 1;
+        background: var(--ui-surface);
+    }
+
+    .ui-mtable thead th:first-child { background: var(--ui-surface-raised); }
+
+    /* ----------------------------------------------------------------------
+       5. Biểu mẫu: điện thoại một cột; máy tính bảng giữ lưới container query
+       Hợp đồng lưới của dự án là 4/3/2/1 cột theo bề rộng container
+       (900/640/420px). Ép một cột tới 1023px sẽ phá hợp đồng ở 768px — đo
+       bằng run_layout_alignment_audit.py ra 204 vi phạm GRID_COLUMNS. Nên chỉ
+       ép dưới 640px, đúng ngưỡng "1 cột" của hợp đồng, kể cả khi trang thiếu
+       container có tên.
+       ---------------------------------------------------------------------- */
+    @media screen and (max-width: 639px) {
+        .ui-form-grid { grid-template-columns: minmax(0, 1fr) !important; }
+
+        .ui-form-grid > :is(.ui-field, .ui-field--2, .ui-field--3, .ui-field--4,
+                            .ui-field--5, .ui-field--6, .ui-field--8, .ui-field--wide) {
+            grid-column: 1 / -1;
+        }
+    }
+
+    /* 16px để iOS không tự phóng to khi chạm vào ô nhập */
+    .ui-main :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]) {
+        font-size: 1rem;
+        min-block-size: var(--ui-tap);
+    }
+
+    /* Nút primary trong thân trang không chiếm cả hàng */
+    .ui-main > .ui-button { align-self: flex-start; }
+}
+
+/* --------------------------------------------------------------------------
+   6. Màn hình rất hẹp (<=360px)
+   -------------------------------------------------------------------------- */
+@media screen and (max-width: 360px) {
+    :root { --ui-m-gutter: 12px; }
+}
+
+/* --------------------------------------------------------------------------
+   7. Tôn trọng giảm chuyển động
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    .ui-tabbar__item { transition-duration: 1ms; }
+}

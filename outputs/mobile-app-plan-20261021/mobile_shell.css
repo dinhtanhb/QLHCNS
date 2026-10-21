@@ -1,0 +1,632 @@
+/* ==========================================================================
+   IHRMS — Lớp vỏ ứng dụng di động (mobile app shell)
+   Phạm vi: chỉ áp dụng dưới 1024px, không đụng bố cục desktop và bản in.
+   Phụ thuộc: ui_tokens.css (biến --ui-*). Không định nghĩa lại màu thương hiệu.
+   Thứ tự nạp: sau components.css, trước print_forms.css.
+
+   Vì sao KHÔNG bọc trong @layer: dự án đang trộn rule không layer (Tailwind,
+   theme.css) với layer (base/components/layouts/pages). Rule không layer luôn
+   thắng rule có layer ở khai báo thường, nên nếu bọc layer thì các utility
+   Tailwind như .w-full, .p-4 sẽ đè lên lớp vỏ này. Để không layer, tệp này
+   nạp sau Tailwind nên thắng khi cùng độ đặc hiệu — đúng ý đồ của một lớp
+   ghi đè dành riêng cho mobile.
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   1. Token riêng cho mobile — kích thước ngón tay, không phải kích thước chuột
+   -------------------------------------------------------------------------- */
+:root {
+    --ui-tap: 48px;                      /* vùng chạm tối thiểu */
+    --ui-appbar-h: 52px;
+    --ui-tabbar-h: 56px;
+    --ui-actionbar-h: 68px;
+    --ui-m-radius: 16px;                 /* bo thẻ trên mobile */
+    --ui-m-radius-sm: 12px;
+    --ui-m-gutter: 16px;
+    --ui-safe-top: env(safe-area-inset-top, 0px);
+    --ui-safe-bottom: env(safe-area-inset-bottom, 0px);
+
+    --ui-m-title: 1.375rem;              /* 22px — tiêu đề màn hình */
+    --ui-m-heading: 1.0625rem;           /* 17px — tiêu đề khối */
+    --ui-m-body: 0.9375rem;              /* 15px — nội dung */
+    --ui-m-meta: 0.8125rem;              /* 13px — phụ chú */
+    --ui-m-label: 0.6875rem;             /* 11px — nhãn tab, eyebrow */
+}
+
+@media screen and (max-width: 1023px) {
+
+    /* 1.1 Toàn bộ thành phần của lớp vỏ dùng border-box: không phụ thuộc reset
+       của trang, tránh ô nhập rộng 100% + padding tràn khỏi thẻ. */
+    .ui-mapp,
+    .ui-mapp *,
+    .ui-tabbar,
+    .ui-tabbar *,
+    .ui-sheet,
+    .ui-sheet *,
+    .ui-actionbar,
+    .ui-actionbar * {
+        box-sizing: border-box;
+    }
+
+    /* ----------------------------------------------------------------------
+       2. Khung ứng dụng: app bar dính trên, tab bar cố định dưới
+       ---------------------------------------------------------------------- */
+    .ui-mapp {
+        min-height: 100dvh;
+        padding-bottom: calc(var(--ui-tabbar-h) + var(--ui-safe-bottom) + var(--ui-space-4));
+        background: var(--ui-bg);
+        overscroll-behavior-y: contain;
+    }
+
+    /* 2.1 App bar -------------------------------------------------------- */
+    .ui-appbar {
+        position: sticky;
+        top: 0;
+        z-index: var(--ui-layer-sticky, 20);
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: var(--ui-space-2);
+        min-height: calc(var(--ui-appbar-h) + var(--ui-safe-top));
+        padding: var(--ui-safe-top) var(--ui-m-gutter) 0;
+        background: color-mix(in srgb, var(--ui-surface) 88%, transparent);
+        backdrop-filter: saturate(180%) blur(12px);
+        border-bottom: 1px solid var(--ui-border);
+    }
+
+    /* Màn không có nút dẫn: tiêu đề dóng thẳng lề thẻ, không thụt 48px */
+    .ui-appbar--plain { grid-template-columns: minmax(0, 1fr) auto; }
+
+    .ui-appbar__title {
+        min-width: 0;
+        margin: 0;
+        font-size: var(--ui-m-heading);
+        font-weight: 650;
+        letter-spacing: -0.01em;
+        color: var(--ui-text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .ui-appbar__sub {
+        display: block;
+        font-size: var(--ui-m-label);
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--ui-text-muted);
+    }
+
+    .ui-appbar__actions {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+    }
+
+    .ui-appbar__btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        inline-size: var(--ui-tap);
+        block-size: var(--ui-tap);
+        border: 0;
+        border-radius: var(--ui-m-radius-sm);
+        background: transparent;
+        color: var(--ui-text);
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .ui-appbar__btn:active { background: var(--ui-surface-raised); }
+
+    .ui-appbar__btn[aria-current="page"],
+    .ui-appbar__btn.is-on { color: var(--ui-brand); }
+
+    /* 2.2 Tab bar -------------------------------------------------------- */
+    .ui-tabbar {
+        position: fixed;
+        inset-inline: 0;
+        bottom: 0;
+        z-index: calc(var(--ui-layer-sticky, 20) + 1);
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        min-height: calc(var(--ui-tabbar-h) + var(--ui-safe-bottom));
+        padding-bottom: var(--ui-safe-bottom);
+        background: color-mix(in srgb, var(--ui-surface) 92%, transparent);
+        backdrop-filter: saturate(180%) blur(16px);
+        border-top: 1px solid var(--ui-border);
+    }
+
+    .ui-tabbar__item {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        min-block-size: var(--ui-tabbar-h);
+        padding: 6px 2px 4px;
+        color: var(--ui-text-muted);
+        text-decoration: none;
+        font-size: var(--ui-m-label);
+        font-weight: 550;
+        line-height: 1.1;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .ui-tabbar__item svg { inline-size: 22px; block-size: 22px; }
+
+    .ui-tabbar__item:active { background: var(--ui-surface-raised); }
+
+    .ui-tabbar__item[aria-current="page"] {
+        color: var(--ui-brand);
+        font-weight: 650;
+    }
+
+    /* Badge số việc chờ duyệt trên tab */
+    .ui-tabbar__badge {
+        position: absolute;
+        inset-block-start: 6px;
+        inset-inline-start: calc(50% + 6px);
+        min-inline-size: 17px;
+        block-size: 17px;
+        padding-inline: 4px;
+        border-radius: 999px;
+        background: var(--ui-danger-text);
+        color: var(--ui-danger-bg);
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 17px;
+        text-align: center;
+    }
+
+    /* ----------------------------------------------------------------------
+       3. Nội dung: thay bảng bằng danh sách thẻ
+       ---------------------------------------------------------------------- */
+    .ui-mbody {
+        padding: var(--ui-space-4) var(--ui-m-gutter) 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--ui-space-4);
+    }
+
+    .ui-mcard {
+        background: var(--ui-surface);
+        border: 1px solid var(--ui-border);
+        border-radius: var(--ui-m-radius);
+        padding: var(--ui-space-4);
+    }
+
+    .ui-mcard--flush { padding: 0; overflow: hidden; }
+
+    /* 3.1 Hàng danh sách — thay cho <tr> --------------------------------- */
+    .ui-list {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .ui-listrow {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: var(--ui-space-3);
+        min-block-size: 68px;
+        padding: 10px var(--ui-space-4);
+        text-decoration: none;
+        color: inherit;
+        background: var(--ui-surface);
+        border-block-end: 1px solid var(--ui-divider);
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .ui-listrow:last-child { border-block-end: 0; }
+    .ui-listrow:active { background: var(--ui-surface-raised); }
+
+    .ui-listrow__title {
+        display: block;
+        font-size: var(--ui-m-body);
+        font-weight: 600;
+        color: var(--ui-text);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .ui-listrow__meta {
+        display: block;
+        margin-top: 2px;
+        font-size: var(--ui-m-meta);
+        color: var(--ui-text-muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .ui-listrow__trail {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--ui-text-muted);
+    }
+
+    /* Avatar chữ cái — không tải ảnh, không phụ thuộc media */
+    .ui-mavatar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        inline-size: 40px;
+        block-size: 40px;
+        border-radius: 999px;
+        background: var(--ui-brand-soft);
+        color: var(--ui-brand-active);
+        font-size: var(--ui-m-meta);
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        flex: none;
+    }
+
+    /* 3.2 Chỉ số gọn — thay lưới KPI cao 176px --------------------------- */
+    .ui-chips {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--ui-space-2);
+    }
+
+    .ui-chip {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding: 10px 12px;
+        background: var(--ui-surface);
+        border: 1px solid var(--ui-border);
+        border-radius: var(--ui-m-radius-sm);
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .ui-chip__label {
+        font-size: var(--ui-m-label);
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--ui-text-muted);
+    }
+
+    .ui-chip__value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1.15;
+        font-variant-numeric: tabular-nums;
+        color: var(--ui-text);
+    }
+
+    .ui-chip--alert .ui-chip__value { color: var(--ui-danger-text); }
+
+    /* ----------------------------------------------------------------------
+       4. Biểu mẫu: một cột, nhãn trên, ô 48px, chữ 16px (chống zoom iOS)
+       ---------------------------------------------------------------------- */
+    .ui-mfield {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 0;
+    }
+
+    .ui-mfield > label,
+    .ui-mfield__label {
+        font-size: var(--ui-m-meta);
+        font-weight: 600;
+        color: var(--ui-text);
+    }
+
+    .ui-mfield :is(input, select, textarea) {
+        inline-size: 100%;
+        min-block-size: var(--ui-tap);
+        padding: 10px 12px;
+        font-size: 1rem;                 /* 16px: iOS không tự phóng to */
+        font-family: inherit;
+        color: var(--ui-text);
+        background: var(--ui-surface);
+        border: 1px solid var(--ui-border-control);
+        border-radius: var(--ui-m-radius-sm);
+    }
+
+    .ui-mfield :is(input, select, textarea):focus-visible {
+        outline: 3px solid var(--ui-focus);
+        outline-offset: 1px;
+    }
+
+    .ui-mfield__hint {
+        font-size: var(--ui-m-meta);
+        color: var(--ui-text-muted);
+    }
+
+    /* Nhóm biểu mẫu có bậc: số thứ tự + tiêu đề, thay <fieldset> trơn */
+    .ui-mstep {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: var(--ui-space-3);
+    }
+
+    .ui-mstep__n {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        inline-size: 22px;
+        block-size: 22px;
+        border-radius: 999px;
+        background: var(--ui-brand-soft);
+        color: var(--ui-brand-active);
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .ui-mstep__t {
+        font-size: var(--ui-m-heading);
+        font-weight: 650;
+        color: var(--ui-text);
+    }
+
+    /* ----------------------------------------------------------------------
+       5. Thanh hành động dính đáy
+       ---------------------------------------------------------------------- */
+    .ui-actionbar {
+        position: fixed;
+        inset-inline: 0;
+        bottom: calc(var(--ui-tabbar-h) + var(--ui-safe-bottom));
+        z-index: calc(var(--ui-layer-sticky, 20) + 2);
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+        gap: var(--ui-space-2);
+        padding: 10px var(--ui-m-gutter);
+        background: color-mix(in srgb, var(--ui-surface) 94%, transparent);
+        backdrop-filter: saturate(180%) blur(16px);
+        border-top: 1px solid var(--ui-border);
+    }
+
+    /* Khi màn hình không có tab bar (màn chi tiết toàn phần) */
+    .ui-actionbar--bottom {
+        bottom: 0;
+        padding-bottom: calc(10px + var(--ui-safe-bottom));
+    }
+
+    /* ----------------------------------------------------------------------
+       6. Bottom sheet — bộ lọc, chọn nhanh
+       ---------------------------------------------------------------------- */
+    .ui-sheet-scrim {
+        position: fixed;
+        inset: 0;
+        z-index: calc(var(--ui-layer-sticky, 20) + 10);
+        background: color-mix(in srgb, #000 42%, transparent);
+        opacity: 0;
+        transition: opacity 180ms ease;
+    }
+
+    .ui-sheet-scrim[hidden] { display: none; }
+    .ui-sheet-scrim.is-open { opacity: 1; }
+
+    .ui-sheet {
+        position: fixed;
+        inset-inline: 0;
+        bottom: 0;
+        z-index: calc(var(--ui-layer-sticky, 20) + 11);
+        max-block-size: 86dvh;
+        display: flex;
+        flex-direction: column;
+        padding: 8px var(--ui-m-gutter) calc(var(--ui-space-4) + var(--ui-safe-bottom));
+        background: var(--ui-surface);
+        border-radius: 20px 20px 0 0;
+        border-top: 1px solid var(--ui-border);
+        box-shadow: 0 -12px 32px color-mix(in srgb, #000 18%, transparent);
+        transform: translateY(102%);
+        transition: transform 240ms cubic-bezier(.32, .72, 0, 1);
+    }
+
+    .ui-sheet.is-open { transform: translateY(0); }
+
+    .ui-sheet__handle {
+        inline-size: 36px;
+        block-size: 4px;
+        margin: 4px auto 12px;
+        border-radius: 999px;
+        background: var(--ui-border);
+        flex: none;
+    }
+
+    .ui-sheet__title {
+        margin: 0 0 var(--ui-space-3);
+        font-size: var(--ui-m-heading);
+        font-weight: 650;
+    }
+
+    .ui-sheet__body { overflow-y: auto; min-height: 0; }
+
+    /* ----------------------------------------------------------------------
+       7. Segmented control — thay hàng tab tràn ngang
+       ---------------------------------------------------------------------- */
+    .ui-segmented {
+        display: flex;
+        gap: 2px;
+        padding: 3px;
+        background: var(--ui-surface-raised);
+        border: 1px solid var(--ui-border);
+        border-radius: 999px;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .ui-segmented::-webkit-scrollbar { display: none; }
+
+    .ui-segmented > * {
+        flex: 1 0 auto;
+        padding: 7px 9px;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ui-text-muted);
+        font: inherit;
+        font-size: var(--ui-m-meta);
+        font-weight: 600;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+
+    .ui-segmented > [aria-selected="true"],
+    .ui-segmented > .is-on {
+        background: var(--ui-surface);
+        color: var(--ui-text);
+        box-shadow: 0 1px 2px color-mix(in srgb, #000 10%, transparent);
+    }
+
+    /* ----------------------------------------------------------------------
+       8. Lưới mô-đun cho tab "Thêm"
+       ---------------------------------------------------------------------- */
+    .ui-modgrid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px 4px;
+    }
+
+    .ui-modgrid__item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 2px;
+        border-radius: var(--ui-m-radius-sm);
+        text-decoration: none;
+        color: var(--ui-text);
+        font-size: var(--ui-m-label);
+        font-weight: 550;
+        text-align: center;
+        line-height: 1.2;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .ui-modgrid__item:active { background: var(--ui-surface-raised); }
+
+    .ui-modgrid__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        inline-size: 46px;
+        block-size: 46px;
+        border-radius: 14px;
+        background: var(--ui-brand-soft);
+        color: var(--ui-brand);
+    }
+
+    /* ----------------------------------------------------------------------
+       9. Thông báo nhanh + trạng thái rỗng/ngoại tuyến
+       ---------------------------------------------------------------------- */
+    .ui-toast {
+        position: fixed;
+        inset-inline: var(--ui-m-gutter);
+        bottom: calc(var(--ui-tabbar-h) + var(--ui-safe-bottom) + var(--ui-space-4));
+        z-index: calc(var(--ui-layer-sticky, 20) + 20);
+        padding: 12px 14px;
+        border-radius: var(--ui-m-radius-sm);
+        background: var(--ui-text);
+        color: var(--ui-surface);
+        font-size: var(--ui-m-meta);
+        font-weight: 600;
+        box-shadow: 0 8px 24px color-mix(in srgb, #000 24%, transparent);
+        transform: translateY(8px);
+        opacity: 0;
+        transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .ui-toast.is-open { opacity: 1; transform: translateY(0); }
+
+    .ui-mempty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 32px 20px;
+        text-align: center;
+        color: var(--ui-text-muted);
+    }
+
+    .ui-mempty__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        inline-size: 48px;
+        block-size: 48px;
+        border-radius: 999px;
+        background: var(--ui-surface-raised);
+        color: var(--ui-text-muted);
+    }
+
+    .ui-mempty__t {
+        font-size: var(--ui-m-body);
+        font-weight: 650;
+        color: var(--ui-text);
+    }
+
+    /* ----------------------------------------------------------------------
+       10. Sửa các điểm mobile đang sai ở lớp desktop
+       ---------------------------------------------------------------------- */
+
+    /* 10.1 Bảng: không ép 7 cột vào 390px, cho cuộn trong khung có bóng mép */
+    .ui-mtable {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: var(--ui-m-radius);
+        border: 1px solid var(--ui-border);
+        background: var(--ui-surface);
+    }
+
+    .ui-mtable table { min-inline-size: 640px; }
+
+    /* Cột đầu dính để không mất danh tính khi cuộn ngang */
+    .ui-mtable :is(th, td):first-child {
+        position: sticky;
+        inset-inline-start: 0;
+        z-index: 1;
+        background: var(--ui-surface);
+    }
+
+    .ui-mtable thead :is(th):first-child { background: var(--ui-surface-raised); }
+
+    /* 10.2 Lưới biểu mẫu: dưới 640px luôn một cột, kể cả khi thiếu container */
+    .ui-form-grid { grid-template-columns: minmax(0, 1fr) !important; }
+
+    .ui-form-grid > :is(.ui-field, .ui-field--2, .ui-field--3, .ui-field--4,
+                        .ui-field--5, .ui-field--6, .ui-field--8, .ui-field--wide) {
+        grid-column: 1 / -1;
+    }
+
+    /* 10.3 Nút primary không được chiếm cả hàng trong thân trang */
+    .ui-mbody > .ui-button { align-self: flex-start; }
+
+    /* 10.4 Bỏ breadcrumb trên mobile: tiêu đề app bar đã trả lời "đang ở đâu" */
+    .ui-breadcrumb { display: none; }
+
+    /* 10.5 Vùng an toàn cho màn hình có tai thỏ */
+    .ui-mbody { padding-bottom: var(--ui-space-4); }
+}
+
+/* --------------------------------------------------------------------------
+   11. Màn hình rất hẹp (<=360px): giảm nhẹ nhịp, giữ nguyên vùng chạm
+   -------------------------------------------------------------------------- */
+@media screen and (max-width: 360px) {
+    :root { --ui-m-gutter: 12px; }
+    .ui-chip__value { font-size: 1.375rem; }
+    .ui-modgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* --------------------------------------------------------------------------
+   12. Tôn trọng giảm chuyển động
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    .ui-sheet, .ui-sheet-scrim, .ui-toast { transition-duration: 1ms; }
+}

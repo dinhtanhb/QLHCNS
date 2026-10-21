@@ -5,9 +5,10 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 from django.conf import settings
-from django.test import RequestFactory, SimpleTestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.urls import resolve, reverse
 
+from apps.portal import test_home_dashboard as home_fixtures
 from apps.portal.views import service_worker
 
 
@@ -178,4 +179,95 @@ class MobileTableTests(SimpleTestCase):
         self.assertEqual(len(h), 8)
         # Verify hex characters
         self.assertTrue(all(c in "0123456789abcdef" for c in h))
+
+
+class MobileShellStylesheetTests(SimpleTestCase):
+    """The P0 shell must stay a mobile-only overlay: no desktop, no print change."""
+
+    def setUp(self):
+        self.css = (Path(settings.BASE_DIR) / "static" / "css" / "mobile_shell.css").read_text(encoding="utf-8")
+        self.base = (Path(settings.BASE_DIR) / "templates" / "base.html").read_text(encoding="utf-8")
+
+    def test_base_loads_shell_after_shared_sheets_and_before_print(self):
+        self.assertIn("css/mobile_shell.css", self.base)
+        self.assertLess(self.base.index("css/project_layout.css"), self.base.index("css/mobile_shell.css"))
+        self.assertLess(self.base.index("css/mobile_shell.css"), self.base.index("css/print_forms.css"))
+
+    def test_shell_is_scoped_to_mobile_and_never_layered(self):
+        self.assertIn("@media screen and (max-width: 1023px)", self.css)
+        # Unlayered on purpose: the project mixes layered and unlayered rules, and
+        # an @layer wrapper would lose to Tailwind utilities at normal priority.
+        # Comments may mention @layer; only a real at-rule would change the cascade.
+        self.assertIsNone(re.search(r"^\s*@layer\b", self.css, re.MULTILINE))
+        self.assertIn(".ui-mobile-only { display: none; }", self.css)
+
+    def test_shell_leaves_print_alone(self):
+        # Print was deferred on 21/10/2026; a stray print block would silently
+        # change paper output that nobody has reviewed.
+        self.assertNotIn("@media print", self.css)
+
+
+class TabbarParser(HTMLParser):
+    def __init__(self, html):
+        super().__init__()
+        self.items = []
+        self.feed(html)
+
+    def handle_starttag(self, tag, attrs):
+        values = dict(attrs)
+        if "ui-tabbar__item" in (values.get("class") or "").split():
+            self.items.append({"tag": tag, **values})
+
+
+class MobileTabbarTests(TestCase):
+    """Five bottom targets, fixed by the project owner on 21/10/2026.
+
+    Tab 4 is a button that opens the existing drawer, not a route: the drawer
+    already carries every module the role can reach.
+    """
+    user = home_fixtures.HomeDashboardTests.user
+
+    @classmethod
+    def setUpTestData(cls):
+        home_fixtures.HomeDashboardTests.setUpTestData.__func__(cls)
+
+    def tabbar(self, role_code):
+        self.client.force_login(self.user(role_code, True))
+        html = self.client.get(reverse("portal:dashboard")).content.decode()
+        return TabbarParser(html).items
+
+    def test_every_role_gets_five_targets_ending_with_self(self):
+        for role_code in ("EMPLOYEE", "HR_OFFICER", "DEPT_MANAGER", "HR_MANAGER"):
+            with self.subTest(role=role_code):
+                items = self.tabbar(role_code)
+                self.assertEqual(len(items), 5)
+                self.assertEqual(items[0]["href"], reverse("portal:dashboard"))
+                self.assertEqual(items[-1]["href"], reverse("portal:profile"))
+                self.assertEqual([item["tag"] for item in items].count("button"), 1)
+                self.assertEqual(items[3]["tag"], "button")
+                self.assertEqual(items[3]["aria-controls"], "portalSidebar")
+
+    def test_tabs_two_and_three_follow_permission(self):
+        expected = {
+            "EMPLOYEE": ("portal:timesheet_month", "portal:leave_list"),
+            "HR_OFFICER": ("portal:timesheet_month", "portal:hr_employee_list"),
+            "DEPT_MANAGER": ("portal:leave_approval_list", "portal:timesheet_approval_list"),
+            "HR_MANAGER": ("portal:leave_approval_list", "portal:hr_employee_list"),
+        }
+        for role_code, (second, third) in expected.items():
+            with self.subTest(role=role_code):
+                items = self.tabbar(role_code)
+                self.assertEqual(items[1]["href"], reverse(second))
+                self.assertEqual(items[2]["href"], reverse(third))
+
+    def test_active_tab_marks_current_page_only(self):
+        self.client.force_login(self.user("EMPLOYEE", True))
+        home = TabbarParser(self.client.get(reverse("portal:dashboard")).content.decode()).items
+        profile = TabbarParser(self.client.get(reverse("portal:profile")).content.decode()).items
+        self.assertEqual([item["href"] for item in home if item.get("aria-current")], [reverse("portal:dashboard")])
+        self.assertEqual([item["href"] for item in profile if item.get("aria-current")], [reverse("portal:profile")])
+
+    def test_login_page_has_no_tabbar(self):
+        response = self.client.get(reverse("portal:login"))
+        self.assertEqual(TabbarParser(response.content.decode()).items, [])
 

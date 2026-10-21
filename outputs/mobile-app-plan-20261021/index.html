@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IHRMS — Kế hoạch ứng dụng di động (Chàm Đông)</title>
+<style>
+:root{
+  --d-bg:#080c18; --d-panel:#131a2e; --d-raised:#1b2440; --d-text:#eef2ff; --d-muted:#a5b0c9;
+  --d-border:#2a3552; --d-accent:#93a7ff; --d-accent-soft:#1d2a52; --d-ok:#86efac; --d-warn:#fde68a; --d-danger:#fca5a5;
+  --d-mono:"Cascadia Mono",ui-monospace,SFMono-Regular,Consolas,monospace;
+  --d-sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --d-shadow:0 1px 2px rgb(0 0 0 / .3),0 12px 32px rgb(0 0 0 / .25);
+}
+html[data-theme="light"]{
+  --d-bg:#eef2f8; --d-panel:#ffffff; --d-raised:#f4f6fb; --d-text:#101828; --d-muted:#475467;
+  --d-border:#dfe4ee; --d-accent:#3a4fd0; --d-accent-soft:#eef1fd; --d-ok:#067647; --d-warn:#b54708; --d-danger:#b42318;
+  --d-shadow:0 1px 2px rgb(16 24 40 / .06),0 12px 32px rgb(16 24 40 / .08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{margin:0;background:var(--d-bg);color:var(--d-text);font-family:var(--d-sans);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+.doc{max-width:1120px;margin:0 auto;padding:0 32px 96px}
+
+/* Thanh công cụ */
+.doc-bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:14px;margin:0 -32px 0;padding:10px 32px;
+  background:color-mix(in srgb,var(--d-bg) 88%,transparent);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--d-border)}
+.doc-bar__t{font-size:13px;font-weight:650;letter-spacing:.02em;color:var(--d-text)}
+.doc-bar__t span{color:var(--d-muted);font-weight:500}
+.doc-bar__sp{flex:1}
+.doc-bar a,.doc-bar button{font:inherit;font-size:13px;font-weight:600;color:var(--d-muted);text-decoration:none;background:none;border:1px solid var(--d-border);border-radius:9px;padding:6px 11px;cursor:pointer}
+.doc-bar a:hover,.doc-bar button:hover{color:var(--d-text);border-color:var(--d-accent)}
+.doc-bar a.is-key{color:var(--d-accent);border-color:color-mix(in srgb,var(--d-accent) 45%,transparent)}
+
+/* Hero */
+header.hero{padding:56px 0 32px;border-bottom:1px solid var(--d-border)}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--d-accent);margin:0 0 14px}
+h1{margin:0 0 16px;font-size:clamp(30px,4vw,44px);line-height:1.12;letter-spacing:-.025em;font-weight:700}
+.lede{margin:0 0 24px;font-size:17px;line-height:1.6;color:var(--d-muted);max-width:70ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:13px;color:var(--d-muted)}
+.meta b{color:var(--d-text);font-weight:600}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+nav.toc a{font-size:13px;font-weight:600;color:var(--d-text);text-decoration:none;padding:6px 12px;border-radius:999px;background:var(--d-raised);border:1px solid var(--d-border)}
+nav.toc a:hover{border-color:var(--d-accent);color:var(--d-accent)}
+
+/* Hộp 5 quyết định — đặt ngay màn hình đầu để không phải cuộn 9.000px */
+.decisions{margin-top:24px;border:1px solid var(--d-border);border-left:3px solid var(--d-accent);
+  border-radius:0 14px 14px 0;background:var(--d-panel);padding:14px 20px 16px}
+.decisions__head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.decisions__t{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--d-accent)}
+.decisions__a{margin-left:auto;font-size:13px;font-weight:650;text-decoration:none;white-space:nowrap}
+.decisions__list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 20px;
+  margin:0;padding:0;list-style:none;counter-reset:d}
+.decisions__list li{counter-increment:d;display:flex;gap:9px;align-items:baseline;min-width:0}
+.decisions__list li::before{content:counter(d,decimal-leading-zero);font-family:var(--d-mono);
+  font-size:11px;font-weight:700;color:var(--d-muted);flex:none}
+.decisions__list a{font-size:13.5px;line-height:1.4;color:var(--d-text);text-decoration:none;border-bottom:1px solid transparent}
+.decisions__list a:hover{color:var(--d-accent);border-bottom-color:var(--d-accent)}
+.decisions__list b{font-weight:650}
+
+/* Section */
+section{padding:48px 0 8px;border-bottom:1px solid var(--d-border);scroll-margin-top:64px}
+section:last-of-type{border-bottom:0}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:8px}
+.sec-num{font-family:var(--d-mono);font-size:12px;font-weight:700;color:var(--d-accent);letter-spacing:.08em}
+h2{margin:0;font-size:clamp(21px,2.4vw,27px);line-height:1.25;letter-spacing:-.015em;font-weight:700}
+h3{margin:34px 0 12px;font-size:17px;font-weight:650;letter-spacing:-.005em}
+p{margin:0 0 14px;max-width:78ch}
+p.muted,small.muted{color:var(--d-muted)}
+a{color:var(--d-accent)}
+
+/* Findings */
+.findings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:22px 0 8px}
+.find{background:var(--d-panel);border:1px solid var(--d-border);border-radius:14px;padding:16px 18px}
+.find__top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.find__id{font-family:var(--d-mono);font-size:11px;font-weight:700;color:var(--d-muted)}
+.find__t{margin:0;font-size:15px;font-weight:650;line-height:1.35}
+.find p{margin:0;font-size:14px;color:var(--d-muted);line-height:1.55}
+.find code{font-family:var(--d-mono);font-size:12.5px;background:var(--d-raised);padding:1px 5px;border-radius:5px;color:var(--d-text)}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.02em;white-space:nowrap;margin-left:auto}
+.pill--high{background:color-mix(in srgb,var(--d-danger) 18%,transparent);color:var(--d-danger);border:1px solid color-mix(in srgb,var(--d-danger) 40%,transparent)}
+.pill--mid{background:color-mix(in srgb,var(--d-warn) 16%,transparent);color:var(--d-warn);border:1px solid color-mix(in srgb,var(--d-warn) 38%,transparent)}
+.pill--low{background:var(--d-raised);color:var(--d-muted);border:1px solid var(--d-border)}
+
+/* Điện thoại */
+.phones{display:grid;gap:22px;margin:20px 0 10px}
+.phones--3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.phones--2{grid-template-columns:repeat(2,minmax(0,1fr));max-width:760px}
+.phones--4{grid-template-columns:repeat(4,minmax(0,1fr))}
+figure.phone{margin:0}
+.phone__frame{border:1px solid var(--d-border);border-radius:24px;overflow:hidden;background:var(--d-panel);box-shadow:var(--d-shadow)}
+.phone__frame img{display:block;width:100%;height:auto}
+figcaption{margin-top:9px;font-size:12.5px;line-height:1.45;color:var(--d-muted)}
+figcaption b{color:var(--d-text);font-weight:650}
+.timg{display:contents}
+.timg img.dk{display:none}
+html[data-theme="dark"] .timg img.lt{display:none}
+html[data-theme="dark"] .timg img.dk{display:block}
+
+/* Bảng */
+.tw{overflow-x:auto;margin:16px 0 8px;border:1px solid var(--d-border);border-radius:12px}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--d-border);vertical-align:top}
+table.t th{background:var(--d-raised);font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--d-muted);white-space:nowrap}
+table.t tr:last-child td{border-bottom:0}
+table.t td.num{font-family:var(--d-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.t--phases :is(th,td):first-child{width:74px}
+.t--phases td:first-child b{display:block}
+.nw{white-space:nowrap}
+table.t code{font-family:var(--d-mono);font-size:12.5px;color:var(--d-accent)}
+
+/* Callout */
+.callout{border-left:3px solid var(--d-accent);background:var(--d-panel);border-radius:0 12px 12px 0;padding:16px 20px;margin:20px 0}
+.callout p{margin:0;font-size:14.5px}
+.callout--warn{border-left-color:var(--d-warn)}
+.callout--ok{border-left-color:var(--d-ok)}
+
+ul.tight{margin:10px 0 16px;padding-left:20px;font-size:14.5px;color:var(--d-muted)}
+ul.tight li{margin:6px 0}
+ul.tight strong{color:var(--d-text)}
+
+.kv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+.kv div{background:var(--d-panel);border:1px solid var(--d-border);border-radius:12px;padding:14px 16px}
+.kv dt{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--d-muted);margin-bottom:4px}
+.kv dd{margin:0;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kv dd small{display:block;font-size:12px;font-weight:500;color:var(--d-muted);letter-spacing:0;margin-top:2px}
+
+.q{background:var(--d-panel);border:1px solid var(--d-border);border-radius:12px;padding:14px 16px;margin:10px 0;display:flex;gap:12px}
+.q__n{font-family:var(--d-mono);font-size:12px;font-weight:700;color:var(--d-accent);padding-top:2px}
+.q p{margin:0;font-size:14.5px}
+.q p b{display:block;margin-bottom:2px}
+
+footer{margin-top:44px;padding-top:22px;border-top:1px solid var(--d-border);font-size:13px;color:var(--d-muted)}
+@media(max-width:820px){
+  .doc{padding:0 18px 64px}
+  .doc-bar{margin:0 -18px;padding:10px 18px}
+  .findings,.kv{grid-template-columns:1fr}
+  .phones--3,.phones--4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .decisions__list{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:520px){
+  .phones--3,.phones--2,.phones--4{grid-template-columns:1fr}
+  .decisions__list{grid-template-columns:1fr}
+  .decisions__head{flex-wrap:wrap}
+  .decisions__a{margin-left:0}
+}
+@media print{.doc-bar,nav.toc{display:none}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<div class="doc">
+
+<div class="doc-bar">
+  <div class="doc-bar__t">IHRMS <span>· Kế hoạch ứng dụng di động</span></div>
+  <div class="doc-bar__sp"></div>
+  <a href="prototype.html" class="is-key">Bản thử tương tác →</a>
+  <button type="button" id="themeBtn">Sáng / Tối</button>
+</div>
+
+<header class="hero">
+  <p class="eyebrow">Kế hoạch thiết kế &amp; triển khai · 21/10/2026</p>
+  <h1>Ứng dụng di động IHRMS<br>trên nền PWA, palette Chàm Đông</h1>
+  <p class="lede">Bảy màn hình mẫu đã dựng chạy được ở 390×844, kèm lớp CSS thả vào là dùng. Tài liệu này chốt kiến trúc, mô hình điều hướng, đặc tả thành phần và lộ trình 5 đợt — dựa trên số đo từ chính ứng dụng đang chạy, không phải phỏng đoán.</p>
+  <div class="meta">
+    <span><b>Phạm vi:</b> lớp vỏ mobile + 6 route ưu tiên</span>
+    <span><b>Không đụng:</b> bản in HCNS, bố cục desktop</span>
+    <span><b>Trạng thái:</b> P0 đã cài, chờ kiểm thử đợt 1</span>
+  </div>
+  <nav class="toc">
+    <a href="#hientrang">01 Hiện trạng</a>
+    <a href="#kientruc">02 Kiến trúc</a>
+    <a href="#dieuhuong">03 Điều hướng</a>
+    <a href="#banthu">04 Bản thử</a>
+    <a href="#lotrinh">05 Lộ trình</a>
+    <a href="#ruiro">06 Rủi ro &amp; kiểm thử</a>
+    <a href="#chot">07 Cần chốt</a>
+  </nav>
+
+  <div class="decisions">
+    <div class="decisions__head">
+      <span class="decisions__t">Đã chốt 21/10 · 5 điểm</span>
+      <a class="decisions__a" href="#chot">Chi tiết mục 07 →</a>
+    </div>
+    <ol class="decisions__list">
+      <li><span><b>PWA</b> là app di động chính thức</span></li>
+      <li><span><b>5 tab</b>, có “Tôi”</span></li>
+      <li><span><b>Đợt 1</b> xong trọn rồi mới kiểm thử</span></li>
+      <li><span><b>Chấm công GPS</b> chỉ ghi nhận có mặt</span></li>
+      <li><span><b>Bản in</b> tạm hoãn, chưa áp Than Ấm</span></li>
+    </ol>
+  </div>
+</header>
+
+<!-- ============================ 01 ============================ -->
+<section id="hientrang">
+  <div class="sec-head"><span class="sec-num">01</span><h2>Hiện trạng trên di động — đo được, không suy đoán</h2></div>
+  <p>Tôi chụp lại 6 trang mẫu ở <b>390×844</b> ngay hôm nay, trên DB SQLite dùng một lần, sau khi palette Chàm Đông đã áp xong. Ảnh dưới là trạng thái thật, không phải bản mô phỏng.</p>
+
+  <div class="kv">
+    <div><dt>Chrome chiếm</dt><dd>≈170px<small>20% màn hình 844px</small></dd></div>
+    <div><dt>Dòng dữ liệu thấy được</dt><dd>0<small>trang danh sách nhân viên</small></dd></div>
+    <div><dt>Thẻ KPI chiếm</dt><dd>≈450px<small>4 thẻ cho 4 con số</small></dd></div>
+  </div>
+
+  <div class="findings">
+    <div class="find">
+      <div class="find__top"><span class="find__id">F1</span><h3 class="find__t" style="margin:0">Chrome chiếm 1/5 màn hình</h3><span class="pill pill--high">Cao</span></div>
+      <p>Topbar hai hàng (44px + 44px) + breadcrumb 34px + viền ≈ 170px trước nội dung đầu tiên. Ô tìm kiếm luôn mở chiếm trọn một hàng, trong khi tìm kiếm chỉ là thao tác thứ yếu trên điện thoại.</p>
+    </div>
+    <div class="find">
+      <div class="find__top"><span class="find__id">F2</span><h3 class="find__t" style="margin:0">Nút tìm kiếm nổi đè lên nội dung</h3><span class="pill pill--high">Cao</span></div>
+      <p>Nút tròn 44px ở góc dưới phải che ô "Giới tính" trong biểu mẫu và che chữ trong trạng thái rỗng. Nó cũng trùng chức năng với ô tìm kiếm trên topbar — hai lối vào cho một việc.</p>
+    </div>
+    <div class="find">
+      <div class="find__top"><span class="find__id">F3</span><h3 class="find__t" style="margin:0">Danh sách không hiện dòng nào</h3><span class="pill pill--high">Cao</span></div>
+      <p>Nút primary "Thêm nhân viên" + thẻ lọc (ô trống + nút "Áp dụng" rộng hết hàng) chiếm ~300px trước dữ liệu. Trạng thái rỗng còn lặp hai lần: "Có 0 nhân viên phù hợp" rồi "Chưa có nhân viên trong phạm vi".</p>
+    </div>
+    <div class="find">
+      <div class="find__top"><span class="find__id">F4</span><h3 class="find__t" style="margin:0">Bảng báo cáo bị cắt cột</h3><span class="pill pill--high">Cao</span></div>
+      <p>Ở 390px chỉ thấy cột "Phòng ban" và một phần cột số. Ghi chú "Bảng có thể cuộn ngang" có trong trang nhưng không có chỉ báo cuộn, không có cột dính — người dùng không biết còn dữ liệu bên phải.</p>
+    </div>
+    <div class="find">
+      <div class="find__top"><span class="find__id">F5</span><h3 class="find__t" style="margin:0">Bốn thẻ KPI cho bốn con số</h3><span class="pill pill--mid">Trung bình</span></div>
+      <p>Mỗi thẻ cao ~215px để hiển thị "1", "0", "0", "0". Tổng ~450px, đẩy "Công việc của tôi" xuống y≈750 — gần như dưới đáy màn hình. Việc cần làm thật nằm ngoài tầm nhìn đầu tiên.</p>
+    </div>
+    <div class="find">
+      <div class="find__top"><span class="find__id">F6</span><h3 class="find__t" style="margin:0">Không có điều hướng đáy</h3><span class="pill pill--mid">Trung bình</span></div>
+      <p>Mọi chuyển màn hình đều qua nút hamburger ở góc trên trái — vùng khó với tới nhất khi cầm một tay. 12+ phân hệ nằm sau một drawer, không có lối tắt nào cho 3 việc dùng nhiều nhất.</p>
+    </div>
+    <div class="find">
+      <div class="find__top"><span class="find__id">F7</span><h3 class="find__t" style="margin:0">Ô ngày vẫn là mm/dd/yyyy</h3><span class="pill pill--mid">Trung bình</span></div>
+      <p>Biểu mẫu đã về một cột (đúng), nhưng ô ngày hiển thị theo locale en-US và chỉ rộng ~150px. Thiếu <code>inputmode</code>/<code>autocomplete</code> nên bàn phím không tối ưu cho số CCCD, điện thoại.</p>
+    </div>
+    <div class="find">
+      <div class="find__top"><span class="find__id">F8</span><h3 class="find__t" style="margin:0">PWA có vỏ nhưng không có "app"</h3><span class="pill pill--low">Thấp</span></div>
+      <p><code>manifest.json</code> và <code>service-worker.js</code> đã có, cài được lên màn hình chính. Nhưng không có app bar riêng, không có tab bar, không có trạng thái ngoại tuyến — mở ra vẫn là trang web thu nhỏ.</p>
+    </div>
+  </div>
+
+  <h3>Ba trang hiện tại ở 390×844</h3>
+  <div class="phones phones--3">
+    <figure class="phone">
+      <div class="phone__frame"><span class="timg"><img class="lt" src="current/dashboard_390px_light.png" alt="Bảng điều khiển hiện tại ở 390px"><img class="dk" src="current/dashboard_390px_dark.png" alt=""></span></div>
+      <figcaption><b>Bảng điều khiển</b> — 4 thẻ KPI cao 215px, nội dung thật dưới đáy.</figcaption>
+    </figure>
+    <figure class="phone">
+      <div class="phone__frame"><span class="timg"><img class="lt" src="current/hr_employee_list_390px_light.png" alt="Danh sách nhân viên hiện tại ở 390px"><img class="dk" src="current/hr_employee_list_390px_dark.png" alt=""></span></div>
+      <figcaption><b>Hồ sơ nhân viên</b> — 0 dòng dữ liệu, trạng thái rỗng lặp hai lần.</figcaption>
+    </figure>
+    <figure class="phone">
+      <div class="phone__frame"><span class="timg"><img class="lt" src="current/report_headcount_390px_light.png" alt="Báo cáo định biên hiện tại ở 390px"><img class="dk" src="current/report_headcount_390px_dark.png" alt=""></span></div>
+      <figcaption><b>Báo cáo định biên</b> — bảng bị cắt, không có chỉ báo cuộn ngang.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============================ 02 ============================ -->
+<section id="kientruc">
+  <div class="sec-head"><span class="sec-num">02</span><h2>Kiến trúc: PWA mobile-first, không phải app native</h2></div>
+  <p>Backend hiện tại là Django 5.2 thuần template, <b>không có DRF hay tầng API nào</b>. Đây là dữ kiện quyết định: một app native phải dựng thêm API cho ~15 phân hệ, nhân bản toàn bộ ma trận phân quyền, rồi bảo trì hai nguồn sự thật. PWA thì dùng lại đúng những gì đã có.</p>
+
+  <div class="tw">
+    <table class="t">
+      <thead><tr><th>Tiêu chí</th><th>PWA mobile-first <span style="color:var(--d-accent)">(đề xuất)</span></th><th>Native (React Native / Flutter)</th></tr></thead>
+      <tbody>
+        <tr><td>Backend</td><td>Dùng lại Django, không cần API mới</td><td>Phải dựng DRF + token auth cho ~15 domain</td></tr>
+        <tr><td>Phân quyền</td><td>Dùng lại <code>can_*</code> trong context processor</td><td>Nhân bản toàn bộ ma trận quyền, dễ lệch</td></tr>
+        <tr><td>Bản in HCNS</td><td>Không ảnh hưởng (CSS mobile nằm trong <code>@media screen</code>)</td><td>Không liên quan</td></tr>
+        <tr><td>Ngoại tuyến</td><td>Service worker + hàng đợi thao tác; đủ cho nghỉ phép/chấm công</td><td>Tốt hơn, nhưng phải tự viết đồng bộ xung đột</td></tr>
+        <tr><td>Push</td><td>Web Push; iOS chỉ hỗ trợ khi đã cài lên màn hình chính</td><td>Push đầy đủ</td></tr>
+        <tr><td>Phân phối</td><td>Mở link, cài trong 2 bước; cập nhật tức thì</td><td>App Store / Play Store, chờ duyệt từng bản</td></tr>
+        <tr><td>Chi phí</td><td>5 đợt, một nguồn mã</td><td>4–6 tháng, hai nền tảng, hai bộ kiểm thử</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout--ok">
+    <p><b>Khuyến nghị:</b> chốt PWA là "app di động chính thức" trong 6 tháng tới. Chỉ mở tầng API khi có yêu cầu cụ thể mà web không làm được — chấm công GPS nền, push iOS ổn định, hoặc chế độ ngoại tuyến nhiều ngày. Khi đó API được thêm <em>sau</em> lớp vỏ này, không phải viết lại giao diện.</p>
+  </div>
+
+  <h3>Ranh giới kỹ thuật</h3>
+  <ul class="tight">
+    <li><strong>Không đụng desktop:</strong> toàn bộ CSS mới nằm trong <code>@media screen and (max-width:1023px)</code> và một layer riêng <code>ihrms.mobile</code>.</li>
+    <li><strong>Không đụng bản in:</strong> <code>mobile_shell.css</code> không có khối <code>@media print</code>, không ghi đè <code>print_forms.css</code>.</li>
+    <li><strong>Không nhân bản component:</strong> tab bar và app bar là thêm mới, còn thẻ/danh sách/biểu mẫu dùng lại token <code>--ui-*</code> sẵn có.</li>
+    <li><strong>Tắt được bằng một cờ:</strong> tab bar render qua biến <code>settings.MOBILE_SHELL</code>, mặc định bật, tắt là về giao diện cũ ngay.</li>
+  </ul>
+</section>
+
+<!-- ============================ 03 ============================ -->
+<section id="dieuhuong">
+  <div class="sec-head"><span class="sec-num">03</span><h2>Điều hướng: 4 tab cố định + "Thêm"</h2></div>
+  <p>Theo quyết định 21/10, thanh đáy có <b>5 tab gồm "Tôi"</b>. 12+ phân hệ vẫn không nhét hết vào tab bar được, nên tab 4 là cửa <b>"Thêm"</b> mở danh sách mô-đun theo quyền. Tab 2 và tab 3 <b>đổi theo vai trò</b>: người duyệt thấy "Cần duyệt" và "Nhân sự", nhân viên thấy "Chấm công" và "Đơn của tôi".</p>
+
+  <div class="tw">
+    <table class="t">
+      <thead><tr><th>Tab</th><th>Nhân viên</th><th>Quản lý / Trưởng phòng</th><th>HR &amp; Quản trị</th></tr></thead>
+      <tbody>
+        <tr><td><b>1. Trang chủ</b></td><td>Việc của tôi hôm nay</td><td>Việc chờ duyệt + KPI nhóm</td><td>Toàn cảnh + cảnh báo hồ sơ</td></tr>
+        <tr><td><b>2. Cần duyệt</b><br><small class="muted">nhân viên: Chấm công</small></td><td>Chấm công tháng</td><td>Hàng đợi duyệt nghỉ phép, ưu tiên quá hạn</td><td>Hàng đợi gộp 4 loại</td></tr>
+        <tr><td><b>3. Nhân sự</b><br><small class="muted">nhân viên: Đơn của tôi</small></td><td>Đơn nghỉ phép của tôi</td><td>Duyệt chấm công</td><td>Hồ sơ, hợp đồng, tuyển dụng</td></tr>
+        <tr><td><b>4. Thêm</b></td><td colspan="3">Mở drawer điều hướng sẵn có — đủ 12+ phân hệ theo <code>can_*</code>, không thêm quyền mới</td></tr>
+        <tr><td><b>5. Tôi</b></td><td colspan="3">Hồ sơ, phiếu lương, bảng công, thông báo, đổi mật khẩu, đăng xuất</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Vì sao tab 2–3 đổi theo quyền</h3>
+  <ul class="tight">
+    <li>5 tab là giới hạn trên của vùng ngón tay cái; mỗi tab còn ~78px nên nhãn phải ngắn, một dòng.</li>
+    <li>Một nhân viên không duyệt gì thì tab "Cần duyệt" là tab chết — đổi thành "Chấm công" mới có ích.</li>
+    <li>Ngược lại, trưởng phòng cần "Nhân sự" hơn "Đơn của tôi"; tab 3 đổi theo <code>can_manage_hr</code> / <code>can_approve_timesheet</code>.</li>
+    <li>Tab 4 "Thêm" mở đúng drawer đang có, nên <b>không mất quyền truy cập mô-đun nào</b> và không phải viết route mới ở P0.</li>
+  </ul>
+
+  <h3>Quy ước kích thước</h3>
+  <div class="tw">
+    <table class="t">
+      <thead><tr><th>Thành phần</th><th>Kích thước</th><th>Ghi chú</th></tr></thead>
+      <tbody>
+        <tr><td>App bar</td><td class="num">52px</td><td>Dính trên, nền mờ, có safe-area</td></tr>
+        <tr><td>Tab bar</td><td class="num">56px + safe-area</td><td>Icon 22px, nhãn 11px, badge số</td></tr>
+        <tr><td>Vùng chạm</td><td class="num">≥ 48px</td><td>Mọi nút, hàng danh sách, ô nhập</td></tr>
+        <tr><td>Hàng danh sách</td><td class="num">68px</td><td>Avatar 40px + 2 dòng chữ</td></tr>
+        <tr><td>Cỡ chữ</td><td class="num">22 / 17 / 15 / 13 / 11</td><td>5 bậc, không dùng bậc thứ 6</td></tr>
+        <tr><td>Ô nhập</td><td class="num">48px, chữ 16px</td><td>16px để iOS không tự phóng to</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================ 04 ============================ -->
+<section id="banthu">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Bản thử: 7 màn hình chạy được</h2></div>
+  <p>Đây không phải ảnh mô phỏng. Các màn hình dưới chạy bằng <code>mobile_shell.css</code> thật, nạp trực tiếp <code>ui_tokens.css</code> của dự án, trong viewport 390×844. Bấm vào <a href="prototype.html">bản thử tương tác</a> để chuyển tab, mở tấm lọc, duyệt đơn và đổi sáng/tối.</p>
+
+  <div class="phones phones--3">
+    <figure class="phone">
+      <div class="phone__frame"><span class="timg"><img class="lt" src="shots/home.png" alt="Trang chủ"><img class="dk" src="shots/home_dark.png" alt=""></span></div>
+      <figcaption><b>Trang chủ</b> — một thẻ "cần xử lý" thay 4 thẻ KPI; 4 chỉ số gộp thành chip 2×2.</figcaption>
+    </figure>
+    <figure class="phone">
+      <div class="phone__frame"><span class="timg"><img class="lt" src="shots/work.png" alt="Cần duyệt"><img class="dk" src="shots/work_dark.png" alt=""></span></div>
+      <figcaption><b>Cần duyệt</b> — hàng đợi ưu tiên quá hạn, segmented lọc loại, badge trên tab.</figcaption>
+    </figure>
+    <figure class="phone">
+      <div class="phone__frame"><span class="timg"><img class="lt" src="shots/detail.png" alt="Chi tiết đơn"><img class="dk" src="shots/detail_dark.png" alt=""></span></div>
+      <figcaption><b>Chi tiết đơn</b> — thanh hành động dính đáy, duyệt xong đổi trạng thái tại chỗ.</figcaption>
+    </figure>
+  </div>
+
+  <div class="phones phones--4" style="margin-top:26px">
+    <figure class="phone">
+      <div class="phone__frame"><span class="timg"><img class="lt" src="shots/people.png" alt="Nhân sự"><img class="dk" src="shots/people_dark.png" alt=""></span></div>
+      <figcaption><b>Nhân sự</b> — bảng 7 cột thành danh sách 68px; 6 dòng hiện ngay.</figcaption>
+    </figure>
+    <figure class="phone">
+      <div class="phone__frame"><span class="timg"><img class="lt" src="shots/form.png" alt="Thêm nhân viên"><img class="dk" src="shots/form_dark.png" alt=""></span></div>
+      <figcaption><b>Biểu mẫu</b> — một cột, nhóm có số thứ tự, ô 48px, lưu dính đáy.</figcaption>
+    </figure>
+    <figure class="phone">
+      <div class="phone__frame"><span class="timg"><img class="lt" src="shots/more.png" alt="Thêm"><img class="dk" src="shots/more_dark.png" alt=""></span></div>
+      <figcaption><b>Thêm</b> — toàn bộ mô-đun theo nhóm quyền, thay drawer 12 mục.</figcaption>
+    </figure>
+    <figure class="phone">
+      <div class="phone__frame"><span class="timg"><img class="lt" src="shots/me.png" alt="Tôi"><img class="dk" src="shots/me_dark.png" alt=""></span></div>
+      <figcaption><b>Tôi</b> — tab thứ 5 theo quyết định 21/10: hồ sơ, lương, bảng công, đăng xuất.</figcaption>
+    </figure>
+  </div>
+
+  <h3>Tấm lọc thay bộ lọc chiếm chỗ</h3>
+  <div class="phones phones--2">
+    <figure class="phone">
+      <div class="phone__frame"><span class="timg"><img class="lt" src="shots/sheet.png" alt="Tấm lọc"><img class="dk" src="shots/sheet_dark.png" alt=""></span></div>
+      <figcaption><b>Bottom sheet</b> — bộ lọc chỉ chiếm chỗ khi cần; nền tối 42%, kéo xuống để đóng.</figcaption>
+    </figure>
+    <figure class="phone">
+      <div class="phone__frame"><span class="timg"><img class="lt" src="current/hr_employee_form_390px_light.png" alt="Biểu mẫu hiện tại"><img class="dk" src="current/hr_employee_form_390px_dark.png" alt=""></span></div>
+      <figcaption><b>Đối chiếu</b> — biểu mẫu hiện tại: đã một cột nhưng ô ngày vẫn <code>mm/dd/yyyy</code>, nút tìm kiếm nổi che ô "Giới tính".</figcaption>
+    </figure>
+  </div>
+
+  <h3>Thành phần mới, ánh xạ 1–1 với CSS</h3>
+  <div class="tw">
+    <table class="t">
+      <thead><tr><th>Lớp</th><th>Thay thế</th><th>Đặc tả</th></tr></thead>
+      <tbody>
+        <tr><td><code>.ui-appbar</code></td><td>Topbar 2 hàng + breadcrumb</td><td>52px, dính, nền mờ, tiêu đề 17px; biến thể <code>--plain</code> khi không có nút dẫn</td></tr>
+        <tr><td><code>.ui-tabbar</code></td><td>Drawer hamburger</td><td>5 đích, icon 22px, nhãn 11px, badge số, safe-area</td></tr>
+        <tr><td><code>.ui-listrow</code></td><td><code>&lt;table&gt;</code> 7 cột</td><td>68px, avatar 40px, tiêu đề 15/600, phụ 13px, badge phải</td></tr>
+        <tr><td><code>.ui-chip</code></td><td>Thẻ KPI 215px</td><td>Nhãn 11px hoa + số 24px; 2×2, mỗi chip ~72px</td></tr>
+        <tr><td><code>.ui-actionbar</code></td><td>Nút primary giữa trang</td><td>Dính đáy, 2 nút, nền mờ, trên tab bar</td></tr>
+        <tr><td><code>.ui-sheet</code></td><td>Thẻ lọc chiếm 300px</td><td>Bo 20px trên, tay nắm, trượt 240ms, scrim 42%</td></tr>
+        <tr><td><code>.ui-segmented</code></td><td>Hàng tab tràn ngang</td><td>Pill, cuộn ngang, <code>aria-selected</code></td></tr>
+        <tr><td><code>.ui-mtable</code></td><td>Bảng cuộn không chỉ báo</td><td>Cuộn ngang + cột đầu dính + bóng mép</td></tr>
+        <tr><td><code>.ui-modgrid</code></td><td>Drawer nhóm</td><td>4 cột, icon 46px bo 14px</td></tr>
+        <tr><td><code>.ui-mfield</code></td><td>Ô nhập desktop</td><td>48px, chữ 16px, nhãn 13/600, gợi ý 13px</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Trước và sau P0 — cùng một trang, cùng 390×844</h3>
+  <div class="phones phones--2">
+    <figure class="phone">
+      <div class="phone__frame"><span class="timg"><img class="lt" src="current/hr_employee_list_390px_light.png" alt="Trước P0"><img class="dk" src="current/hr_employee_list_390px_dark.png" alt=""></span></div>
+      <figcaption><b>Trước</b> — chrome 170px, không có điều hướng đáy, FAB đè nội dung.</figcaption>
+    </figure>
+    <figure class="phone">
+      <div class="phone__frame"><span class="timg"><img class="lt" src="after/hr_employee_list_390px_light.png" alt="Sau P0"><img class="dk" src="after/hr_employee_list_390px_dark.png" alt=""></span></div>
+      <figcaption><b>Sau P0</b> — chrome còn ~52px, 5 tab dưới đáy, tiêu đề không lặp, FAB đã ẩn.</figcaption>
+    </figure>
+  </div>
+
+  <div class="callout">
+    <p><b>Đã kiểm bằng máy:</b> 12 tổ hợp màn × theme ở 390×844, <code>scrollWidth = 390</code> ở tất cả — không có tràn ngang. Toàn bộ màu lấy từ token Chàm Đông đã đo AA ở bước trước, không phát sinh màu mới.</p>
+  </div>
+</section>
+
+<!-- ============================ 05 ============================ -->
+<section id="lotrinh">
+  <div class="sec-head"><span class="sec-num">05</span><h2>Lộ trình 5 đợt</h2></div>
+  <p>Mỗi đợt kết thúc bằng một mốc kiểm được, không phải bằng "đã viết xong CSS". Đợt 1 là đợt duy nhất chạm <code>base.html</code> nên rủi ro cao nhất — làm trước, kiểm kỹ, rồi mới mở rộng.</p>
+
+  <div class="tw">
+    <table class="t t--phases">
+      <thead><tr><th>Đợt</th><th>Nội dung</th><th>Tệp chính</th><th>Mốc hoàn thành</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>P0</b><br><small class="muted nw">xong 21/10</small></td>
+          <td><b>Đã cài:</b> lớp vỏ, tab bar 5 đích theo quyền, topbar gọn một hàng, ẩn breadcrumb trùng tiêu đề, ẩn FAB trợ lý đè nội dung, bảng cuộn ngang có cột dính, biểu mẫu một cột dưới 640px (máy tính bảng giữ lưới 3 cột của hợp đồng)</td>
+          <td><code>mobile_shell.css</code>, <code>ui/mobile_tabbar.html</code>, <code>base.html</code>, <code>_shell_icon.html</code>, <code>app_shell.js</code></td>
+          <td>390/768 không tràn; chrome từ 170px xuống còn ~52px; desktop không đổi</td>
+        </tr>
+        <tr>
+          <td><b>P1</b><br><small class="muted nw">1,5 tuần</small></td>
+          <td>Bảng → danh sách thẻ cho 6 route ưu tiên: nhân viên, hợp đồng, nghỉ phép, chấm công, ứng viên, tài sản</td>
+          <td>6 template danh sách + partial <code>ui/mobile_list_row.html</code></td>
+          <td>Mỗi danh sách hiện ≥5 dòng trong màn đầu; không còn <code>&lt;table&gt;</code> ở 6 route này dưới 768px</td>
+        </tr>
+        <tr>
+          <td><b>P2</b><br><small class="muted nw">1 tuần</small></td>
+          <td>Biểu mẫu &amp; lọc: bộ lọc vào bottom sheet, <code>inputmode</code>/<code>autocomplete</code>, ô ngày <code>lang="vi"</code>, lưu dính đáy (ép một cột dưới 640px đã làm ở P0)</td>
+          <td><code>ui_controls.css</code>, 43 template <code>ui-form-grid</code>, partial <code>ui/mobile_filter_sheet.html</code></td>
+          <td>Không ô nhập nào < 48px; không cuộn ngang; nhập số CCCD mở bàn phím số</td>
+        </tr>
+        <tr>
+          <td><b>P2.5</b><br><small class="muted nw">1,5 tuần</small></td>
+          <td>Chấm công GPS — <b>chỉ ghi nhận có mặt</b>: một bản ghi/ngày, geofence theo văn phòng, cờ “ngoài vùng”, không tính giờ, không theo dõi nền</td>
+          <td>Model + migration riêng, view chấm công, template mobile, quyền <code>can_check_in</code></td>
+          <td>Chấm công trong ≤2 thao tác; ngoài vùng vẫn ghi được; không lưu vị trí ngoài thời điểm bấm</td>
+        </tr>
+        <tr>
+          <td><b>P3</b><br><small class="muted nw">1 tuần</small></td>
+          <td>Chi tiết &amp; duyệt: thanh hành động dính đáy, duyệt/từ chối tại chỗ, vuốt để duyệt nhanh, cập nhật lạc quan có hoàn tác</td>
+          <td>4 template duyệt + <code>mobile_shell.js</code></td>
+          <td>Duyệt một đơn trong ≤3 thao tác, có thông báo và hoàn tác</td>
+        </tr>
+        <tr>
+          <td><b>P4</b><br><small class="muted nw">3 ngày</small></td>
+          <td>PWA hoàn thiện: shortcut trong manifest, trang ngoại tuyến, nhắc cập nhật bản mới, hàng đợi thao tác</td>
+          <td><code>manifest.json</code>, <code>service-worker.js</code>, <code>offline.html</code></td>
+          <td>Cài lên màn hình chính, mở khi mất mạng vẫn thấy dữ liệu đã tải</td>
+        </tr>
+        <tr>
+          <td><b>P5</b><br><small class="muted nw">3 ngày</small></td>
+          <td>Đo &amp; chốt: audit 7 độ rộng, print UAT, browser UAT, chụp baseline mới thay bộ 16/10</td>
+          <td><code>ops/*</code>, <code>docs/screenshots/</code></td>
+          <td>0 vi phạm ngoài waiver; baseline mới đúng palette Chàm Đông</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout--warn">
+    <p><b>Đã làm đúng điều kiện này:</b> P0 sửa <code>base.html</code> — tệp mà cả 196 template kế thừa — nên nó được commit riêng, không gộp với bất kỳ thay đổi nghiệp vụ nào, và chạy đủ các cổng còn áp dụng trước khi commit (print tạm hoãn theo quyết định 05).</p>
+    <p style="margin:8px 0 0"><b>Số đo thật:</b> <code>run_layout_alignment_audit.py</code> <b>150 route / 6.881 ca / 0 vi phạm / 0 lỗi</b> trên 9 tài khoản QA × 7 độ rộng × 2 theme; <code>run_browser_uat.py --layout-only</code> <b>128 checks, 32 ảnh, 0 lỗi</b>; <code>check_ui_contrast.py</code> <b>220 cặp, 0 lỗi</b>; <code>apps.portal.tests_mobile</code> <b>15 test OK</b> (thêm 7 test khoá hợp đồng 5 tab và việc CSS không chạm bản in).</p>
+    <p style="margin:8px 0 0"><b>Cổng bắt được lỗi thật:</b> lượt đầu ra <b>204 vi phạm <code>GRID_COLUMNS</code> ở 768px</b>, vì bản nháp ép biểu mẫu một cột tới 1023px và phá hợp đồng lưới 4/3/2/1 cột. Đã thu hẹp về 639px rồi chạy lại đủ ma trận: 0 vi phạm.</p>
+  </div>
+</section>
+
+<!-- ============================ 06 ============================ -->
+<section id="ruiro">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Rủi ro và cổng kiểm thử</h2></div>
+
+  <div class="tw">
+    <table class="t">
+      <thead><tr><th>Rủi ro</th><th>Mức</th><th>Xử lý</th></tr></thead>
+      <tbody>
+        <tr><td>12 báo cáo nhiều cột không thể card hoá</td><td><span class="pill pill--mid" style="margin:0">Trung bình</span></td><td>Giữ <code>.ui-mtable</code>: cuộn ngang + cột đầu dính + bóng mép; không cố ép thành thẻ</td></tr>
+        <tr><td>Sửa <code>base.html</code> ảnh hưởng toàn hệ thống</td><td><span class="pill pill--high" style="margin:0">Cao</span></td><td>Tab bar chỉ render khi đã đăng nhập và CSS nằm trọn trong <code>@media screen and (max-width:1023px)</code>; P0 commit riêng, audit đủ 7 độ rộng</td></tr>
+        <tr><td>Bản in HCNS bị lệch</td><td><span class="pill pill--high" style="margin:0">Cao</span></td><td>CSS mới chỉ trong <code>@media screen</code>; test khoá không có khối <code>@media print</code>. Cổng <code>run_print_layout_uat.py</code> tạm hoãn theo quyết định 05, mở lại khi chạm template in</td></tr>
+        <tr><td>iOS: <code>100dvh</code>, safe-area, ô ngày</td><td><span class="pill pill--mid" style="margin:0">Trung bình</span></td><td>Dùng <code>env(safe-area-inset-*)</code>, <code>viewport-fit=cover</code>, <code>type="date"</code> + <code>lang="vi"</code></td></tr>
+        <tr><td>Push iOS chưa ổn định</td><td><span class="pill pill--low" style="margin:0">Thấp</span></td><td>Không hứa push trong 6 tháng; thông báo trong app là kênh chính</td></tr>
+        <tr><td>Hai nguồn sự thật nếu sau này làm native</td><td><span class="pill pill--low" style="margin:0">Thấp</span></td><td>Chỉ thêm API khi có yêu cầu cụ thể; lớp vỏ này không chặn API sau</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Cổng kiểm thử bắt buộc mỗi đợt</h3>
+  <ul class="tight">
+    <li><code>check_ui_contrast.py</code> — chữ ≥ 4,5:1, UI ≥ 3:1, cả hai theme.</li>
+    <li><code>run_layout_alignment_audit.py</code> — 1920/1756/1440/1280/1024/768/390, sáng và tối, 0 vi phạm ngoài waiver.</li>
+    <li><code>run_print_layout_uat.py</code> — <b>tạm hoãn theo quyết định 05</b>. P0 không thêm khối <code>@media print</code> nào (có test khoá điều này), nên bản in không đổi. Mở lại cổng này ngay khi P1/P2 chạm template in hoặc <code>print_forms.css</code>.</li>
+    <li><code>run_browser_uat.py</code> — luồng nghiệp vụ trên DB dùng một lần, tài khoản QA riêng.</li>
+    <li>Kiểm thủ công: một tay, 390px, chữ phóng 200%, bàn phím ảo mở, mất mạng.</li>
+  </ul>
+</section>
+
+<!-- ============================ 07 ============================ -->
+<section id="chot">
+  <div class="sec-head"><span class="sec-num">07</span><h2>Năm quyết định đã chốt — 21/10/2026</h2></div>
+  <p>Ghi lại nguyên văn để lần sau không phải hỏi lại, kèm hệ quả kỹ thuật của từng quyết định.</p>
+
+  <div class="q"><span class="q__n">01</span><p><b>PWA là app di động chính thức — ĐÚNG</b>Không dựng API, không làm native trong 6 tháng. Toàn bộ lực lượng dồn vào lớp vỏ và 6 route ưu tiên. Chỉ mở API khi có yêu cầu cụ thể mà web không làm được.</p></div>
+
+  <div class="q"><span class="q__n">02</span><p><b>5 tab, có “Tôi”</b>Tab 2 và 3 đổi theo quyền; tab 4 “Thêm” mở drawer điều hướng sẵn có nên không mất mô-đun nào. Đã cài trong P0.</p></div>
+
+  <div class="q"><span class="q__n">03</span><p><b>Đợt 1 làm xong trọn rồi mới kiểm thử</b>Không bàn giao từng mẩu. P0 + P1 hoàn tất, chạy đủ 4 cổng kiểm thử một lần, rồi mới mở P2. Đổi lại: mỗi lần kiểm thử là một lần chạy đầy đủ 7 độ rộng × 2 theme, không kiểm nửa vời.</p></div>
+
+  <div class="q"><span class="q__n">04</span><p><b>Chấm công GPS: chỉ ghi nhận có mặt, chưa tính giờ</b>Đây là quyết định thu hẹp phạm vi quan trọng — nó bỏ hẳn phần khó nhất (tính công, ca kíp, làm thêm) và chỉ giữ một câu hỏi: “hôm nay người này có mặt ở văn phòng không?”.</p></div>
+
+  <ul class="tight" style="margin-left:42px">
+    <li><strong>Một bản ghi mỗi ngày</strong> cho mỗi nhân viên: ngày, giờ vào, toạ độ, độ chính xác, thiết bị. Không có giờ ra, không cộng trừ.</li>
+    <li><strong>Bán kính geofence theo từng văn phòng</strong> — cần bạn cấp toạ độ và bán kính (đề xuất 100–150m) cho mỗi địa điểm.</li>
+    <li><strong>Không chặn khi ngoài vùng:</strong> vẫn ghi nhận kèm cờ “ngoài vùng” để HR xem lại, tránh tranh cãi khi GPS sai.</li>
+    <li><strong>Quyền riêng tư:</strong> chỉ lấy vị trí đúng lúc bấm chấm công, không theo dõi nền, không lưu lịch sử di chuyển. Cần câu này trong thông báo nội bộ trước khi phát hành.</li>
+    <li><strong>Vẫn cho chấm công bù</strong> khi mất mạng: xếp hàng đợi ở P4, gửi lại khi có mạng kèm dấu thời gian gốc.</li>
+    <li><strong>Đây là hạng mục riêng (P2.5)</strong>, không gộp vào P0/P1 — cần model, migration và một vòng UAT riêng.</li>
+  </ul>
+
+  <div class="q"><span class="q__n">05</span><p><b>Bản in tạm hoãn — chưa áp Than Ấm</b>Không đụng <code>print_forms.css</code> trong 6 tháng tới. Hệ quả tốt: mọi thay đổi mobile không cần chạy lại UAT bản in, rút ngắn mỗi đợt khoảng nửa ngày. Palette Than Ấm vẫn nằm trong tài liệu <code>themes.html</code> để dùng khi cần.</p></div>
+
+  <footer>
+    <p style="margin:0 0 6px"><b>Tệp trong gói này:</b> <code>index.html</code> (tài liệu này) · <code>prototype.html</code> + <code>prototype_app.html</code> (bản thử tương tác) · <code>mobile_shell.css</code> (CSS thả vào được) · <code>shots/</code> (16 ảnh bản thử: 7 màn × 2 theme + 2 tấm lọc) · <code>current/</code> (36 ảnh trước P0) · <code>after/</code> (36 ảnh sau P0) · <code>_capture.py</code> (script sinh ảnh, có kiểm tràn ngang).</p>
+    <p style="margin:0 0 6px"><b>Lưu ý Git:</b> <code>src/static/css/ui_tokens.css</code> và <code>src/static/manifest.json</code> đang có thay đổi palette Chàm Đông <b>chưa commit</b> trong working tree. Tôi đọc và chụp ảnh trên trạng thái đó nhưng không sửa, không ghi đè, không commit hai tệp này.</p>
+    <p style="margin:0 0 10px"><b>P0 đã sửa trong <code>src/</code>:</b> <code>mobile_shell.css</code> (mới), <code>ui/mobile_tabbar.html</code> (mới), <code>base.html</code>, <code>_shell_icon.html</code>, <code>app_shell.js</code>. Desktop và bản in không đổi.</p>
+    <p style="margin:0"><a href="#" style="font-weight:650;text-decoration:none">↑ Về đầu trang</a> · <a href="prototype.html" style="font-weight:650;text-decoration:none">Bản thử tương tác</a></p>
+  </footer>
+</section>
+
+</div>
+<script>
+(function () {
+    var root = document.documentElement;
+    var btn = document.getElementById('themeBtn');
+    btn.addEventListener('click', function () {
+        root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    });
+})();
+</script>
+</body>
+</html>

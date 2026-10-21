@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="{% asset 'css/atoms_ui.css' %}">
     <link rel="stylesheet" href="{% asset 'css/assistant.css' %}">
     <link rel="stylesheet" href="{% asset 'css/project_layout.css' %}">
+    <link rel="stylesheet" href="{% asset 'css/mobile_shell.css' %}">
     <link rel="stylesheet" href="{% asset 'css/print_forms.css' %}" media="print">
 </head>
 <body class="portal-app min-h-screen">
@@ -39,6 +40,7 @@
             </form>
             {% endif %}
             <div class="ui-topbar-actions">
+                {% if user.is_authenticated %}<a class="ui-control ui-mobile-only" href="{% url 'portal:global_search' %}" aria-label="Tìm kiếm toàn ứng dụng">{% include '_shell_icon.html' with name='search' %}</a>{% endif %}
                 <button type="button" class="ui-control ihrms-theme-toggle" data-theme-toggle aria-label="Chuyển sang chế độ tối" aria-pressed="false"></button>
                 {% if user.is_authenticated %}
                 <a class="ui-control" href="{% url 'portal:notification_list' %}" aria-label="Thông báo, {{ unread_notification_count|default:0 }} thông báo chưa đọc">{% include '_shell_icon.html' with name='bell' %}{% if unread_notification_count > 0 %}<span class="ui-unread-badge" aria-hidden="true">{{ unread_notification_count|ui_number }}</span>{% endif %}</a>
@@ -219,6 +221,7 @@
         {% block content %}{% endblock %}
     </main>
     </div>
+    {% if user.is_authenticated %}{% include "ui/mobile_tabbar.html" %}{% endif %}
     {% if user.is_authenticated %}
     <template id="assistantIconIHRMS">{% include '_shell_icon.html' with name='document' %}</template>
     <template id="assistantIconSharePoint">{% include '_shell_icon.html' with name='folder' %}</template>

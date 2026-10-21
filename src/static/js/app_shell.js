@@ -41,6 +41,9 @@
         if (!toggle) return;
         toggle.setAttribute('aria-expanded', String(desktop.matches ? !collapsed : drawerOpen));
         toggle.setAttribute('aria-label', desktop.matches ? (collapsed ? 'Mở rộng thanh điều hướng' : 'Thu gọn thanh điều hướng') : (drawerOpen ? 'Đóng điều hướng' : 'Mở điều hướng'));
+        // Tab "Thêm" dưới đáy mở cùng drawer; giữ aria-expanded đồng bộ với nút hamburger.
+        const moreTab = document.querySelector('[data-mobile-more]');
+        if (moreTab) moreTab.setAttribute('aria-expanded', String(!desktop.matches && drawerOpen));
     }
     function drawer(open, restore = true) {
         if (!sidebar || !toggle || (open && desktop.matches)) return;
@@ -52,7 +55,10 @@
         hideTooltip();
         if (open) {
             userOpen(false);
-            previousFocus = toggle;
+            // Tab "Thêm" cũng mở drawer: trả tiêu điểm về đúng nút đã bấm, không
+            // phải nút hamburger ở đầu trang. body không nhận tiêu điểm nên bỏ qua.
+            const opener = document.activeElement;
+            previousFocus = opener && opener !== document.body ? opener : toggle;
             priorInert = [header, main, skipLink].map(el => [el, el.inert]);
             priorInert.forEach(([el]) => { el.inert = true; });
             sidebar.setAttribute('role', 'dialog');
@@ -181,6 +187,10 @@
     if (breadcrumb && title && title !== 'Cổng thông tin nhân viên' && title !== 'Trang chủ') {
         breadcrumb.querySelector('[data-breadcrumb-title]').textContent = title;
         breadcrumb.hidden = false;
+    }
+    const moreTab = document.querySelector('[data-mobile-more]');
+    if (moreTab) {
+        moreTab.addEventListener('click', () => { drawer(true); });
     }
     state();
 }());
