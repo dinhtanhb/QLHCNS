@@ -63,6 +63,8 @@ class Task(BaseAuditModel):
 
     def clean(self):
         super().clean()
+        if self.activity_id and self.activity.status == "Cancelled":
+            self._validate_cancelled_activity_status()
         from apps.activity.activity_codes import ACTIVITY_CODE_NAMES
         if self.act_code and self.act_code not in ACTIVITY_CODE_NAMES:
             previous = type(self)._base_manager.filter(pk=self.pk).values_list("act_code", flat=True).first() if self.pk else None
@@ -84,6 +86,21 @@ class Task(BaseAuditModel):
             raise ValidationError({
                 "status": "Chỉ có thể hoàn thành Task báo cáo sau khi hoạt động kết thúc.",
             })
+
+    def save(self, *args, **kwargs):
+        from django.db import transaction
+        from apps.activity.models import Activity
+        with transaction.atomic():
+            if self.activity_id and self.status != "Cancelled":
+                status = Activity.objects.select_for_update().values_list("status", flat=True).get(pk=self.activity_id)
+                if status == "Cancelled":
+                    self._validate_cancelled_activity_status()
+            return super().save(*args, **kwargs)
+
+    def _validate_cancelled_activity_status(self):
+        previous = type(self).objects.filter(pk=self.pk).values_list("status", flat=True).first() if self.pk else None
+        if self.status != "Cancelled" and not (self.status == "Done" and previous == "Done"):
+            raise ValidationError({"status": "Không thể mở lại công việc của hoạt động đã hủy."})
 
 
 class TaskComment(BaseAuditModel):

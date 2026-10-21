@@ -18,7 +18,7 @@ Nếu còn thay đổi cục bộ hoặc Git báo không thể fast-forward, gi�
 
 ## Trạng thái chuẩn bị máy chủ SIT
 
-Rà soát ngày 20/10/2026: 783/783 unit/regression tests đạt trên SQLite (7 skip), 88/88 targeted tests đạt trên SQL Server test database (tự động dọn dẹp sau kiểm thử); suite kiểm thử tự động trình duyệt (Browser UAT) đạt toàn bộ 402/402 checks với 32 ảnh chụp đối soát trên cả SQLite và SQL Server. Toàn bộ 10 hạng mục lỗi P1/P2 về phân quyền, thanh lý tài sản, scoping Admin và Waitress HTTPS redirect đã được xử lý và kiểm chứng. Kiểm tra mã nguồn `manage.py check`, migration state và `pip check` đều đạt 0 lỗi.
+Đợt sửa sau review FULL ngày 21/10/2026 bổ sung bảo vệ quyền ghi/duyệt qua Admin, hoàn tất luồng thanh lý, sửa lương cho nhân viên vào giữa kỳ và tránh phát lại lịch sử điều chuyển. Có migration mới `hrm.0007_effective_change_processed_at`; cần backup, xác nhận DB SIT và kiểm kế hoạch trước khi áp dụng. Kết quả kiểm thử, bản nguồn review và các giới hạn được ghi trong [nhật ký dự án](docs/PROJECT_WORK_LOG.md). Server nội bộ chưa được kết nối; kết quả local/CI không thay cho UAT và restore drill trên server.
 
 Hướng dẫn dựng SIT, danh sách việc IT cần chuẩn bị và checklist kiểm thử: [docs/Server_Trial_Readiness_2026-09-27.md](docs/Server_Trial_Readiness_2026-09-27.md). Không trỏ SIT vào database production, không chép secrets từ .env của máy khác và không đưa .env, backup SQL, dữ liệu nhân sự/lương hay tệp tải lên vào Git.
 
@@ -74,7 +74,7 @@ Từ thư mục gốc dự án, dùng một lệnh chuẩn:
 
 ```powershell
 # Chạy kiểm thử mặc định (SQLite):
-powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1 -Backend sqlite
 
 # Chạy kiểm thử trên SQL Server test database:
 powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1 -Backend sqlserver

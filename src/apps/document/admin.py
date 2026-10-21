@@ -1,5 +1,6 @@
 from django.contrib import admin
 from apps.common.admin import BaseAuditAdmin
+from apps.common.workflow_admin import LockedWorkflowAdmin
 from .models import DocumentCategory, Document, DocumentApproval, DispatchBook, OfficialDispatch, DispatchTracking
 
 VIEW_ROLES = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER", "DIRECTOR", "DEPT_MANAGER")
@@ -14,12 +15,27 @@ admin.site.register(DocumentCategory, DocumentCategoryAdmin)
 
 
 @admin.register(Document)
-class DocumentAdmin(BaseAuditAdmin):
+class DocumentAdmin(LockedWorkflowAdmin):
+    editable_statuses = ("Draft", "PendingApproval")
     list_display = ("document_no", "document_name", "category", "version_no", "status")
     list_filter = ("status", "category")
     search_fields = ("document_no", "document_name")
     view_roles = VIEW_ROLES
     edit_roles = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER")
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if "status" in form.base_fields:
+            # Approval/rejection must go through Portal, which records the actor
+            # and approval history under the centralized permission.
+            allowed = {"Draft", "PendingApproval"}
+            if obj:
+                allowed.add(obj.status)
+            form.base_fields["status"].choices = [choice for choice in Document.STATUS_CHOICES if choice[0] in allowed]
+        return form
+
+    def has_change_permission(self, request, obj=None):
+        return super().has_change_permission(request, obj) and (obj is None or obj.status not in ("Approved", "Rejected"))
 
     def scope_queryset(self, request, qs):
         role_code = self._role_code(request)
@@ -63,7 +79,7 @@ class OfficialDispatchAdmin(BaseAuditAdmin):
     date_hierarchy = "received_or_sent_date"
     inlines = [DispatchTrackingInline]
     view_roles = VIEW_ROLES
-    edit_roles = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER", "DEPT_MANAGER")
+    edit_roles = ("SUPER_ADMIN", "HR_MANAGER", "HR_OFFICER")
 
     def scope_queryset(self, request, qs):
         from apps.security.data_access import visible_dispatches_for

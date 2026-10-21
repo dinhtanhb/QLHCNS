@@ -344,57 +344,25 @@ def disposal_request_detail(request, pk):
     disposal_request = get_object_or_404(AssetDisposalRequest, pk=pk)
 
     if request.method == "POST":
-        action = request.POST.get("action")
-        if action != "approve" and not _can_manage_asset(request):
-            messages.error(request, "Anh/chị chỉ có quyền xem thông tin tài sản.")
-            return redirect("portal:disposal_request_detail", pk=pk)
-        if action == "add_member":
-            try:
-                member = AssetDisposalRequestMember(
-                    request=disposal_request, employee_id=request.POST.get("employee"),
-                    participation=request.POST.get("participation", "Direct"),
-                    role=request.POST.get("role", "Member"), created_by=request.user,
-                )
-                member.full_clean()
-                member.save()
-                messages.success(request, "Đã thêm thành viên.")
-            except Exception as e:
-                _friendly_error(request, e, "Không thể thêm thành viên.")
-        elif action == "add_item":
-            try:
-                item = AssetDisposalItem(
-                    request=disposal_request, asset_id=request.POST.get("asset"),
-                    damage_description=request.POST.get("damage_description"), created_by=request.user,
-                )
-                item.full_clean()
-                item.save()
-                messages.success(request, "Đã thêm tài sản vào đề nghị thanh lý.")
-            except Exception as e:
-                _friendly_error(request, e, "Không thể thêm tài sản.")
-        elif action == "approve":
-            # C3 (đã sửa): trước đây chỉ check `_can_manage_asset` (HR_OFFICER trở lên) rồi set
-            # thẳng status="Approved" — biến `can_approve` (Director-only) chỉ dùng ẩn/hiện nút ở
-            # template, ai POST tay với `action=approve` đều tự duyệt được. Giờ kiểm tra lại
-            # `_can_approve_disposal` ngay server-side, và chỉ duyệt đơn đang "Pending".
-            if not _can_approve_disposal(request):
-                messages.error(request, "Chỉ Giám đốc mới có quyền duyệt đề nghị thanh lý.")
-                return redirect("portal:disposal_request_detail", pk=pk)
-            # transaction.atomic() + select_for_update(): tránh 2 người cùng duyệt 1 đề
-            # nghị thanh lý cùng lúc (mục 3.C).
-            with transaction.atomic():
-                disposal_request = get_object_or_404(
-                    AssetDisposalRequest.objects.select_for_update(), pk=pk, status="Pending",
-                )
-                disposal_request.status = "Approved"
-                disposal_request.modified_by = request.user
-                disposal_request.save()
-            submitter = disposal_request.created_by.employee if hasattr(disposal_request.created_by, "employee") else None
-            notify(
-                submitter, "asset", "Đề nghị thanh lý tài sản đã được duyệt",
-                f"Đề nghị {disposal_request.request_no} đã được duyệt.",
-                link=f"/portal/disposal/{disposal_request.pk}/", created_by=request.user,
+        from django.core.exceptions import PermissionDenied
+        from apps.asset.services import update_disposal_request
+        try:
+            disposal_request, message = update_disposal_request(
+                pk, request.POST.get("action"), request.POST, request.user,
+                eligible_signers=_director_employees(),
             )
-            messages.success(request, "Đã duyệt đề nghị thanh lý.")
+            if request.POST.get("action") == "approve":
+                submitter = getattr(disposal_request.created_by, "employee", None)
+                notify(
+                    submitter, "asset", "Đề nghị thanh lý tài sản đã được duyệt",
+                    f"Đề nghị {disposal_request.request_no} đã được duyệt.",
+                    link=f"/portal/disposal/{pk}/", created_by=request.user,
+                )
+            messages.success(request, message)
+        except PermissionDenied:
+            messages.error(request, "Anh/chị không có quyền thực hiện thao tác này.")
+        except Exception as exc:
+            _friendly_error(request, exc, "Không thể cập nhật đề nghị thanh lý.")
         return redirect("portal:disposal_request_detail", pk=pk)
 
     can_manage_asset = _can_manage_asset(request)
@@ -416,11 +384,13 @@ def disposal_minutes_create(request, item_pk):
         messages.error(request, "Anh/chị không có quyền.")
         return redirect("portal:dashboard")
     with transaction.atomic():
+        parent_id = get_object_or_404(AssetDisposalItem, pk=item_pk).request_id
+        parent = get_object_or_404(AssetDisposalRequest.objects.select_for_update(), pk=parent_id)
         item = get_object_or_404(
-            AssetDisposalItem.objects.select_for_update().select_related("request", "asset"),
+            AssetDisposalItem.objects.select_for_update().select_related("asset"),
             pk=item_pk,
         )
-        if item.request.status != "Approved":
+        if parent.status != "Approved":
             messages.error(request, "Không thể lập biên bản thanh lý khi đề nghị chưa được duyệt.")
             return redirect("portal:disposal_request_detail", pk=item.request_id)
         if hasattr(item, "minutes"):

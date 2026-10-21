@@ -65,8 +65,11 @@ def report_hub_export(request, export_format):
         return HttpResponse("Anh/chị không có quyền xuất báo cáo.", status=403)
     today = timezone.localdate()
     default_from = today.replace(month=1, day=1)
-    from_date = parse_date(request.GET.get("from_date", default_from.isoformat()))
-    to_date = parse_date(request.GET.get("to_date", today.isoformat()))
+    try:
+        from_date = parse_date(request.GET.get("from_date", default_from.isoformat()))
+        to_date = parse_date(request.GET.get("to_date", today.isoformat()))
+    except ValueError:
+        return HttpResponse("Khoảng ngày báo cáo không hợp lệ.", status=400)
     if not from_date or not to_date or to_date < from_date or (to_date - from_date).days > 1095:
         return HttpResponse("Khoảng ngày báo cáo không hợp lệ.", status=400)
     exporters = {

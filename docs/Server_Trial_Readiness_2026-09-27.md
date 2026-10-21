@@ -41,6 +41,7 @@ Tạo .env ở thư mục gốc, cùng cấp requirements.txt:
 
 Sinh secret mới ngay trên SIT, đưa vào kho secrets rồi cấu hình .env. Không ghi giá trị bí mật vào log/email. Ví dụ bên dưới là tên biến cần thay bằng thông tin SIT:
 
+    APP_ENV=uat
     DEBUG=False
     ALLOWED_HOSTS=ihrms-sit.ten-mien-noi-bo
     CSRF_TRUSTED_ORIGINS=https://ihrms-sit.ten-mien-noi-bo
@@ -79,7 +80,7 @@ Note: collectstatic copied 219 files locally and reported two duplicate admin Ja
 IIS/reverse proxy phục vụ /static/ từ src/staticfiles/. Chạy Waitress ở cửa sổ PowerShell riêng, tại thư mục gốc:
 
     Set-Location .\src
-    ..\venv\Scripts\waitress-serve.exe --listen=127.0.0.1:8001 --trusted-proxy=127.0.0.1 --trusted-proxy-headers="x-forwarded-proto,x-forwarded-for,x-forwarded-host,x-forwarded-port" --clear-untrusted-proxy-headers config.wsgi:application
+    ..\venv\Scripts\waitress-serve.exe --listen=127.0.0.1:8001 --trusted-proxy=127.0.0.1 --trusted-proxy-headers="x-forwarded-proto x-forwarded-for x-forwarded-host x-forwarded-port" --clear-untrusted-proxy-headers config.wsgi:application
 
 Ở cửa sổ khác:
 

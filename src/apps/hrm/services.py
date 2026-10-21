@@ -38,6 +38,8 @@ def apply_due_employee_changes(as_of=None, *, employee_ids=None):
         if employee_ids is not None:
             pending = pending.filter(employee_id__in=employee_ids)
         candidates.update(pending.values_list('employee_id', flat=True))
+    if not candidates:
+        return 0
     locked_ids = list(Employee.objects.select_for_update().filter(pk__in=candidates).order_by('pk').values_list('pk', flat=True))
     applied = 0
     now = timezone.now()

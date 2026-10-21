@@ -160,7 +160,7 @@ Trong giao diện Quản trị (Django Admin), các tài khoản dự án (Quả
 5. Phối hợp quản trị tạo tài khoản và cấp đúng vai trò theo quy trình.
 
 ### Thay đổi nhân sự, tuyển dụng, lịch
-Ghi ngày hiệu lực chính xác cho điều chuyển/thay đổi; không áp dụng thay đổi tương lai sớm và không sửa lịch sử tùy tiện. Theo dõi ứng viên, trạng thái và hồ sơ; đề xuất tuyển dụng phải được duyệt mới xem là nhu cầu được chấp thuận. Khi cập nhật trạng thái thư mời nhận việc (Offer) và kết quả phỏng vấn, hệ thống kiểm soát chặt chẽ danh mục trạng thái chuẩn (DRAFT, PENDING, APPROVED, ACCEPTED, REJECTED, EXPIRED, CANCELLED với Offer; PASSED, FAILED, PENDING_REVIEW với phỏng vấn), ngăn chặn việc lưu dữ liệu ngoài danh mục. Khi cập nhật ngày lễ/lịch, rà ảnh hưởng tới phép và công.
+Ghi ngày hiệu lực chính xác cho điều chuyển/thay đổi; không áp dụng thay đổi tương lai sớm và không sửa lịch sử tùy tiện. Theo dõi ứng viên, trạng thái và hồ sơ; đề xuất tuyển dụng phải được duyệt mới xem là nhu cầu được chấp thuận. Khi cập nhật trạng thái thư mời nhận việc (Offer) và kết quả phỏng vấn, hệ thống kiểm soát danh mục trạng thái: Sent (Đã gửi), Accepted (Đã chấp nhận), Declined (Đã từ chối) với Offer; Pass (Đạt), Fail (Không đạt), Pending (Chưa có kết quả) với phỏng vấn. Giá trị ngoài danh mục sẽ bị từ chối. Khi cập nhật ngày lễ/lịch, rà ảnh hưởng tới phép và công.
 
 ### Mở và theo dõi checklist tiếp nhận/nghỉ việc
 

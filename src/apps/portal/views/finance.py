@@ -130,18 +130,21 @@ def _employees_payable_for_period(period):
 
 
 def _effective_salary_map(employees, period):
-    """Map each employee to the latest salary effective at the period start."""
+    """Use period-start salary, or joining-date salary for a new mid-period hire."""
     employee_ids = [employee.pk for employee in employees]
+    effective_dates = {employee.pk: max(period.start_date, employee.join_date) for employee in employees}
     salary_map = {}
     for salary in (
         EmployeeSalary.objects.filter(
             employee_id__in=employee_ids,
-            effective_date__lte=period.start_date,
+            effective_date__lte=period.end_date,
         )
         .filter(models.Q(end_date__isnull=True) | models.Q(end_date__gte=period.start_date))
         .order_by("effective_date", "pk")
     ):
-        salary_map[salary.employee_id] = salary.current_basic_salary
+        effective_date = effective_dates[salary.employee_id]
+        if salary.effective_date <= effective_date and (salary.end_date is None or salary.end_date >= effective_date):
+            salary_map[salary.employee_id] = salary.current_basic_salary
     return salary_map
 
 

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from apps.common.admin import BaseAuditAdmin
+from apps.common.workflow_admin import LockedWorkflowAdmin
 from .models import (
     AssetType, Asset, AssetAllocation, AssetMaintenance,
     InventorySession, InventoryMember, InventoryLine,
@@ -59,7 +60,18 @@ class InventorySessionAdmin(BaseAuditAdmin):
 
 
 @admin.register(AssetDisposalRequest)
-class AssetDisposalRequestAdmin(BaseAuditAdmin):
+class AssetDisposalRequestAdmin(LockedWorkflowAdmin):
+    editable_statuses = ("Pending",)
     list_display = ("request_no", "request_date", "location_name", "status")
     view_roles = VIEW_ROLES + ("DIRECTOR",)
     edit_roles = EDIT_ROLES
+    readonly_fields = (
+        "status", "decision_no", "decision_date", "committee_decision_no", "decided_by",
+        "execution_datetime", "execution_end_time", "disposal_reason", "destroy_form", "handling_method",
+    )
+
+    def has_change_permission(self, request, obj=None):
+        return super().has_change_permission(request, obj) and (obj is None or obj.status == "Pending")
+
+    def has_delete_permission(self, request, obj=None):
+        return super().has_delete_permission(request, obj) and (obj is None or obj.status == "Pending")

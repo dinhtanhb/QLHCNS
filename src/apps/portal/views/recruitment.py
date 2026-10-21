@@ -272,9 +272,9 @@ def hr_candidate_onboard(request, pk):
     candidate.status = "Hired"
     candidate.save(update_fields=["status"])
 
-    name_parts = candidate.full_name.strip().split(" ")
-    last_name = name_parts[-1] if name_parts else ""
-    first_name = " ".join(name_parts[:-1]) if len(name_parts) > 1 else candidate.full_name
+    name_parts = candidate.full_name.split()
+    first_name = name_parts[-1] if name_parts else ""
+    last_name = " ".join(name_parts[:-1])
 
     params = {
         "first_name": first_name, "last_name": last_name, "full_name": candidate.full_name,

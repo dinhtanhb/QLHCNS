@@ -1,6 +1,6 @@
 # Checklist go-live IHRMS
 
-Bản mã nguồn đã rà soát: commit `8020fbc`, nhánh `main`, ngày 20/10/2026.
+Bản mã nguồn bàn giao: nhánh `main`; xem SHA cuối và bằng chứng trong [nhật ký dự án](PROJECT_WORK_LOG.md), mục khắc phục review FULL ngày 21/10/2026.
 **Nguyên tắc:** chỉ go-live khi mọi mục **[BẮT BUỘC]** đã tick và có bằng chứng (log, ảnh chụp, biên bản).
 Mục **[NÊN]** có thể làm sau go-live nếu có người nhận việc và hạn rõ ràng.
 
@@ -17,7 +17,7 @@ Người phụ trách viết tắt: **IT** (quản trị máy chủ), **HR**, **
 | 1.2 | **[BẮT BUỘC]** Máy chủ SIT tách riêng production: Windows Server, SQL Server database riêng, tài khoản dịch vụ quyền tối thiểu | IT | Kết nối được, `.env` đặt ngoài Git, không dùng `sa` | ☐ |
 | 1.3 | **[BẮT BUỘC]** Cài code + venv + `pip install -r requirements.txt`; `npm ci && npm run build:css` nếu cần build lại CSS | IT | `manage.py check` không lỗi | ☐ |
 | 1.4 | **[BẮT BUỘC]** Chạy `manage.py migrate` trên SQL Server SIT | IT | Không lỗi; `makemigrations --check` báo "No changes" | ☐ |
-| 1.5 | **[BẮT BUỘC]** Chạy test: `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1` (SQLite 783 tests đạt) và `-Backend sqlserver` (88 tests đạt) | IT | 0 fail. Lưu log | ☐ |
+| 1.5 | **[BẮT BUỘC]** Chạy test: `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1 -Backend sqlite` và `-Backend sqlserver` trên DB dùng một lần; đối chiếu kết quả nguồn cuối trong nhật ký | IT | 0 fail. Lưu log | ☐ |
 | 1.6 | **[BẮT BUỘC]** `collectstatic`, chạy Waitress (với cấu hình `--trusted-proxy` và `--trusted-proxy-headers` phía sau reverse proxy)/IIS thử | IT | `/portal/` trả HTTP 200, CSS và icon hiển thị đúng | ☐ |
 
 ## Giai đoạn 2 — Bảo mật và cấu hình

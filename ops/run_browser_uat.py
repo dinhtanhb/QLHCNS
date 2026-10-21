@@ -25,6 +25,7 @@ def main():
     parser.add_argument('--headed', action='store_true')
     parser.add_argument('--reproduce-only', action='store_true')
     parser.add_argument('--layout-only', action='store_true', help='Run affected HR flows, KPI clicks and responsive checks; omit the already covered approval/role loop.')
+    parser.add_argument('--readiness-only', action='store_true', help='Run only the server-readiness business regressions on a fresh disposable DB.')
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     sys.stdout.reconfigure(encoding='utf-8')
@@ -176,6 +177,13 @@ def main():
                     page.locator('main form button[type=submit]').click()
                 check(page.url == base + reverse('portal:dashboard'), 'Real browser login: ' + account.username)
                 return context, page
+
+            if args.readiness_only:
+                from server_readiness_browser import run as run_server_readiness
+                run_server_readiness(login, go, check, capture, accounts, today)
+                check(not report['errors'], 'No uncaught browser JavaScript errors')
+                browser.close()
+                return 0
 
             context, page = login(accounts['HR_MANAGER-linked'])
             check(page.locator('#dashboard-contract-types').count() == 0, 'Empty contract distribution is hidden without a zero card')
@@ -358,6 +366,8 @@ def main():
                     response = page.goto(base + href, wait_until='networkidle')
                     check(response.status == 200 and not page.url.endswith(reverse('portal:login')), label+' dashboard destination '+href)
                 context.close()
+            from server_readiness_browser import run as run_server_readiness
+            run_server_readiness(login, go, check, capture, accounts, today)
             check(not report['errors'], 'No uncaught browser JavaScript errors')
             browser.close()
     except Exception as exc:

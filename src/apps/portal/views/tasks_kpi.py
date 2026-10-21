@@ -93,6 +93,9 @@ def task_detail(request, pk):
         action = request.POST.get("action")
         if action == "update_status" and is_owner:
             new_status = request.POST.get("status")
+            if task.activity_id and task.activity.status == "Cancelled" and new_status != "Cancelled" and not (new_status == "Done" and task.status == "Done"):
+                messages.error(request, "Hoạt động đã hủy; không thể mở lại công việc báo cáo.")
+                return redirect("portal:task_detail", pk=pk)
             if new_status in dict(Task.STATUS_CHOICES):
                 task.status = new_status
                 task.completed_date = timezone.localdate() if new_status == "Done" else None
