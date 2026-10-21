@@ -4,23 +4,25 @@ description: "Quy tắc thiết kế giao diện cổng nhân sự nội bộ IH
 
 colors:
   # Giá trị nguồn; triển khai dùng token --ui-* trong ui_tokens.css, không rải mã hex trong template.
-  brandLight:     "#0b7461"
-  brandDark:      "#63dbc2"
-  bgLight:        "#f4f7f5"
+  # Palette Chàm Đông (indigo) — chủ dự án chốt 21/10/2026, thay hẳn teal toàn hệ thống (nguồn: outputs/design-review-20261021/themes.html).
+  brandLight:     "#3a4fd0"
+  brandDark:      "#93a7ff"
+  bgLight:        "#e7ecf4"
   surfaceLight:   "#ffffff"
-  textLight:      "#0c233b"
-  textMutedLight: "#4b6171"
-  borderLight:    "#627d78"
-  bgDark:         "#0e1827"
-  surfaceDark:    "#162536"
-  textDark:       "#eef6f8"
-  textMutedDark:  "#b9cad5"
-  borderDark:     "#8aaba6"
-  # 4 màu ngữ nghĩa (mỗi màu có text/bg/border cho cả light và dark trong tokens)
-  success: "xanh lá"
-  warning: "hổ phách"
-  danger:  "đỏ"
-  info:    "xanh dương"
+  textLight:      "#101828"
+  textMutedLight: "#475467"
+  borderLight:    "#667085"
+  bgDark:         "#080c18"
+  surfaceDark:    "#131a2e"
+  textDark:       "#eef2ff"
+  textMutedDark:  "#a5b0c9"
+  borderDark:     "#7d8ab0"
+  # 4 màu ngữ nghĩa đi theo palette (mỗi màu có text/bg/border cho cả light và dark trong tokens)
+  success: "xanh lá"          # light #067647
+  warning: "hổ phách"         # light #b54708
+  danger:  "đỏ"               # light #b42318
+  info:    "xanh dương"       # light #175cd3
+  # Palette Than Ấm (graphite, brand #9a4a1a) không dùng cho màn hình ứng dụng; chỉ dành tài liệu thương hiệu/bản in quảng bá, giá trị tại outputs/design-review-20261021/themes.html.
 
 typography:
   family:   "\"Segoe UI\", system-ui, -apple-system, Roboto, Arial, sans-serif"
@@ -40,7 +42,7 @@ motion:  { feedback: 120ms, panel: 180ms }
 
 # Quy tắc thiết kế IHRMS
 
-Điều chỉnh Atoms ngày12/10/2026 theo yêu cầu chủ dự án: navy–teal, card viền nhẹ và bố cục rõ thứ bậc. Giữ nguyên nghiệp vụ, quyền, control44px, typography, responsive và giấy HCNS. `--ui-card-border` là viền trang trí; `--ui-border` vẫn là viền control đủ3:1. Sidebar dùng focus riêng `--ui-sidebar-focus`.
+Điều chỉnh Atoms ngày12/10/2026 theo yêu cầu chủ dự án: navy–teal, card viền nhẹ và bố cục rõ thứ bậc. Ngày 21/10/2026 chủ dự án chốt palette **Chàm Đông (indigo)** thay hẳn teal cho toàn hệ thống; Than Ấm (graphite) dành riêng tài liệu thương hiệu/bản in. Giữ nguyên nghiệp vụ, quyền, control44px, typography, responsive và giấy HCNS. `--ui-card-border` là viền trang trí; `--ui-border` vẫn là viền control đủ3:1. Sidebar dùng focus riêng `--ui-sidebar-focus`.
 
 ## Mục đích và thứ bậc tài liệu
 Đây là nguồn quy tắc thiết kế cho mọi thay đổi giao diện của IHRMS. Thứ bậc khi có mâu thuẫn:
@@ -73,7 +75,7 @@ Nếu phát hiện mâu thuẫn, ghi vào `docs/PROJECT_WORK_LOG.md` và chọn 
 5. Kiểm tra desktop, tablet, mobile trước khi báo xong.
 
 ## Hướng thiết kế
-- **Màu:** một màu thương hiệu teal trên nền trung tính xanh nhẹ, sidebar sáng theo light và navy theo dark; bốn màu ngữ nghĩa success/warning/danger/info. Không gradient, không glow, không teal đơn sắc toàn trang.
+- **Màu:** một màu thương hiệu indigo (Chàm Đông) trên nền trung tính xanh lạnh, sidebar trắng theo light và navy đậm theo dark; bốn màu ngữ nghĩa success/warning/danger/info đi theo palette. Không gradient, không glow, không indigo đơn sắc toàn trang.
 - **Chữ:** font hệ thống, đủ dấu tiếng Việt, không tải font từ CDN.
 - **Phong cách:** doanh nghiệp, dữ liệu dày, đáng tin cậy. Card phẳng, viền 1px, không bóng. Bảng, form dài và tài liệu luôn dùng bề mặt phẳng dễ đọc.
 - **Điều hướng:** desktop (từ 1024px) sidebar nhóm theo phân hệ, thu gọn được; dưới 1024px dùng drawer. Không dùng thanh menu ngang nhiều dropdown, không làm bottom bar.
@@ -171,7 +173,7 @@ Rõ ràng, ngắn gọn, ít thuật ngữ, tiếng Việt tự nhiên.
 
 Sidebar được phép dùng nền thương hiệu nhạt `--ui-sidebar-hover-bg`, chữ `--ui-sidebar-hover-text`, vạch trái 3px `--ui-sidebar-marker`, viền thương hiệu mờ 1px `--ui-sidebar-hover-border` và bóng nhẹ `--ui-shadow-card` khi hover hoặc focus-visible. Viền mờ là trang trí; vạch và chữ cung cấp tín hiệu tương phản. Dùng `--ui-motion-feedback` 120ms, về 0ms khi reduced-motion; không gradient, blur hay glow. Pointer không hiện vòng focus; bàn phím giữ vòng focus-visible rõ. Mục con chỉ có chữ thụt vào, đường nối dọc mảnh, active đậm và `aria-current="page"`; nhóm chỉ giữ chevron bên phải.
 
-Nền trang/card/control và track biểu đồ dùng neutral xanh theo palette Atoms; KPI mặc định `--ui-text`, cảnh báo chỉ khi giá trị > 0 và có nhãn. Biểu đồ bốn chuỗi dùng `--ui-chart-hire/departure/transfer/promotion`, chú giải chữ và bảng số liệu; giá trị 0 không vẽ thanh. Teal chỉ dùng cho hành động chính, link, selected/active, focus và dữ liệu chính; ngoại lệ hover sidebar nêu trên. Biểu mẫu HCNS giữ palette giấy/in đã có. Kết quả đo và giới hạn xác minh: [nhật ký dự án](docs/PROJECT_WORK_LOG.md).
+Nền trang/card/control và track biểu đồ dùng neutral xanh lạnh theo palette Chàm Đông; KPI mặc định `--ui-text`, cảnh báo chỉ khi giá trị > 0 và có nhãn. Biểu đồ bốn chuỗi dùng `--ui-chart-hire/departure/transfer/promotion`, chú giải chữ và bảng số liệu; giá trị 0 không vẽ thanh. Indigo thương hiệu chỉ dùng cho hành động chính, link, selected/active, focus và dữ liệu chính; ngoại lệ hover sidebar nêu trên. Biểu mẫu HCNS giữ palette giấy/in đã có. Kết quả đo và giới hạn xác minh: [nhật ký dự án](docs/PROJECT_WORK_LOG.md).
 
 ## Mẫu bố cục trang chuẩn — triển khai ở Giai đoạn 4
 

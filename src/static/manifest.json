@@ -6,8 +6,8 @@
   "start_url": "/portal/",
   "scope": "/portal/",
   "display": "standalone",
-  "background_color": "#eff6ff",
-  "theme_color": "#1d4ed8",
+  "background_color": "#e7ecf4",
+  "theme_color": "#3a4fd0",
   "icons": [
     {
       "src": "/static/img/ihrms-pwa-192.png",
