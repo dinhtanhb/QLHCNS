@@ -1,5 +1,14 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-23 — Phương án B đợt 4b: siết dòng hai thẻ "Định biên" và "Cơ cấu loại hợp đồng"
+
+- **Nguồn yêu cầu/phạm vi:** ảnh chủ dự án gửi kèm chú thích "2 khối này các dòng vẫn quá rộng, nhìn chưa hài hòa, tinh tế". Chỉ đụng hai thẻ trong hàng đầu tiên của trang chủ; không đổi route, nghiệp vụ, quyền dữ liệu, bản in.
+- **Định biên (`home-capacity`):** tại bề rộng 1024–1279px bản trước đẩy `.home-department-name` xuống `grid-column:1/-1`, buộc mỗi dòng thành hai hàng, chiều cao **64px** (đo ở 1024px). Đợt này giữ một dòng bằng `grid-template-columns:minmax(0,1fr) minmax(48px,.7fr) 72px auto`; tên phòng co lại, thanh và số giữ nguyên. Kết quả: dòng **44px**, thẻ "Định biên" thấp hơn đáng kể. Layout hai dòng chỉ giữ lại cho mobile ≤767px (`@media(max-width:767px)`).
+- **Cơ cấu loại hợp đồng (donut + chú giải):** giảm `--ui-dash-donut-size` từ **144px → 120px** và gap `.dashboard-distribution` từ **16px → 12px**. Donut nhỏ hơn giải phóng không gian ngang cho chú giải, đồng thờì giảm trọng lượng thị giác của biểu đồ so với chữ. Khoảng trống dưới cùng của thẻ giảm từ **81px → 53px** ở 1280px+ và từ **25px → ~8px** ở 1024px.
+- **Ảnh thử nghiệm:** `outputs/plan-b4b-20261023/` gồm ảnh hai thẻ ở 1024/1280/1440px cùng ảnh so sánh hai phương án layout định biên (một dòng vs hai dòng) trước khi chọn.
+- **Kiểm tra:** `ops/run_tests.py --backend sqlite` **826 test OK (7 skip)**; `ops/run_layout_alignment_audit.py` **141 route / 2.185 ca / 0 vi phạm / 0 lỗi**; `ops/check_ui_contrast.py` **220 cặp / 0 lỗi**; `ops/run_browser_uat.py --layout-only` **128 kiểm tra / 32 ảnh / 0 lỗi**; `ops/run_dashboard_layout_uat.py` (hr + director, 1024/1280/1440) **752 checks / 8 ảnh / 0 lỗi**.
+- **Commit:** `d9e8a3c` (đợt 4b) lên `origin/main`, CI xanh.
+
 ## 2026-10-23 — Phương án B đợt 4: siết nhịp dọc trang điều khiển, dải 5 chỉ số phụ thành hàng 2 của thẻ KPI
 
 - **Nguồn yêu cầu/phạm vi:** hai ảnh chủ dự án gửi kèm hai câu — "sửa lại khoảng cách các dòng trang điều khiển cho hợp lý, ko dãn cách quá lớn như hiện tại" và "bỏ 5 ô KPI dưới cùng chuyển lên hàng thứ 2 dưới 4". Chỉ đụng trang chủ; không đổi route, nghiệp vụ, quyền dữ liệu, bản in. Runtime QA là DB giả ngoài repo (`/tmp/ihrms-mobile-audit-20261021`).
