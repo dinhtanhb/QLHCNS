@@ -1,0 +1,749 @@
+{
+  "hr 1756": {
+    "rootGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "bodyGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "streamGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "railGap": {
+      "row": "16px",
+      "col": "16px"
+    },
+    "rowGap": {
+      "row": "16px",
+      "col": "16px"
+    },
+    "myWorkGap": {
+      "row": "16px",
+      "col": "16px"
+    },
+    "kpiBlock": {
+      "y": 270,
+      "h": 219,
+      "bottom": 489,
+      "w": 1376
+    },
+    "kpiStrip": {
+      "y": 271,
+      "h": 136,
+      "bottom": 407,
+      "w": 1374
+    },
+    "secondary": {
+      "y": 407,
+      "h": 81,
+      "bottom": 488,
+      "w": 1374
+    },
+    "blocks": {
+      "dashboard-status": {
+        "y": 271,
+        "h": 136,
+        "bottom": 407,
+        "w": 1374
+      },
+      "dashboard-secondary": {
+        "y": 407,
+        "h": 81,
+        "bottom": 488,
+        "w": 1374
+      },
+      "dashboard-my-work": {
+        "y": 513,
+        "h": 209,
+        "bottom": 722,
+        "w": 901.3
+      },
+      "group-hr": {
+        "y": 746,
+        "h": 1042,
+        "bottom": 1788,
+        "w": 901.3
+      },
+      "dashboard-headcount": {
+        "y": 828,
+        "h": 439,
+        "bottom": 1267,
+        "w": 531.2
+      },
+      "dashboard-contract-types": {
+        "y": 828,
+        "h": 439,
+        "bottom": 1267,
+        "w": 354.1
+      },
+      "dashboard-contracts": {
+        "y": 1279,
+        "h": 509,
+        "bottom": 1788,
+        "w": 531.2
+      },
+      "phase2-history": {
+        "y": 1279,
+        "h": 509,
+        "bottom": 1788,
+        "w": 354.1
+      },
+      "group-admin": {
+        "y": 1812,
+        "h": 322,
+        "bottom": 2134,
+        "w": 901.3
+      },
+      "phase2-global_leave": {
+        "y": 1894,
+        "h": 240,
+        "bottom": 2134,
+        "w": 531.2
+      },
+      "dashboard-queue": {
+        "y": 1894,
+        "h": 240,
+        "bottom": 2134,
+        "w": 354.1
+      },
+      "group-recruitment": {
+        "y": 2158,
+        "h": 268,
+        "bottom": 2426,
+        "w": 901.3
+      },
+      "dashboard-agenda": {
+        "y": 513,
+        "h": 289,
+        "bottom": 802,
+        "w": 450.7
+      }
+    },
+    "docHeight": 2654,
+    "listRows": [
+      {
+        "h": 71,
+        "text": "Nhân viên giả lập 17DEMO-HĐ-01728/10/202"
+      },
+      {
+        "h": 71,
+        "text": "Nhân viên giả lập 22DEMO-HĐ-02228/10/202"
+      },
+      {
+        "h": 71,
+        "text": "Nhân viên giả lập 13DEMO-HĐ-01320/11/202"
+      },
+      {
+        "h": 71,
+        "text": "Nhân viên giả lập 18DEMO-HĐ-01820/11/202"
+      },
+      {
+        "h": 70,
+        "text": "Nhân viên giả lập 14DEMO-HĐ-01420/12/202"
+      },
+      {
+        "h": 81,
+        "text": "DEMO-QD-00321/10 16:41 Bản nháp"
+      },
+      {
+        "h": 81,
+        "text": "DEMO-QD-00221/10 16:41 Đã ban hành"
+      },
+      {
+        "h": 80,
+        "text": "DEMO-QD-00121/10 16:41 Chờ duyệt"
+      },
+      {
+        "h": 61,
+        "text": "Đơn nghỉ đang chờ trong phạm vi duyệt1Xử"
+      },
+      {
+        "h": 60,
+        "text": "Đề xuất tuyển dụng chờ duyệt1Xử lý →"
+      },
+      {
+        "h": 57,
+        "text": "Họp giao ban Trung tâmPhòng họp tầng 3 0"
+      },
+      {
+        "h": 57,
+        "text": "Đào tạo quy trình ISO nội bộHội trường A"
+      },
+      {
+        "h": 56,
+        "text": "Họp chuyên môn phòng Nhân sựPhòng 402 16"
+      }
+    ],
+    "rowHeights": [
+      71,
+      71,
+      71,
+      71,
+      70,
+      81,
+      81,
+      80,
+      61,
+      60,
+      57,
+      57,
+      56
+    ]
+  },
+  "hr 1440": {
+    "rootGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "bodyGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "streamGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "railGap": {
+      "row": "16px",
+      "col": "16px"
+    },
+    "rowGap": {
+      "row": "16px",
+      "col": "16px"
+    },
+    "myWorkGap": {
+      "row": "16px",
+      "col": "16px"
+    },
+    "kpiBlock": {
+      "y": 270,
+      "h": 219,
+      "bottom": 489,
+      "w": 1304
+    },
+    "kpiStrip": {
+      "y": 271,
+      "h": 136,
+      "bottom": 407,
+      "w": 1302
+    },
+    "secondary": {
+      "y": 407,
+      "h": 81,
+      "bottom": 488,
+      "w": 1302
+    },
+    "blocks": {
+      "dashboard-status": {
+        "y": 271,
+        "h": 136,
+        "bottom": 407,
+        "w": 1302
+      },
+      "dashboard-secondary": {
+        "y": 407,
+        "h": 81,
+        "bottom": 488,
+        "w": 1302
+      },
+      "dashboard-my-work": {
+        "y": 513,
+        "h": 209,
+        "bottom": 722,
+        "w": 853.3
+      },
+      "group-hr": {
+        "y": 746,
+        "h": 1042,
+        "bottom": 1788,
+        "w": 853.3
+      },
+      "dashboard-headcount": {
+        "y": 828,
+        "h": 439,
+        "bottom": 1267,
+        "w": 502.4
+      },
+      "dashboard-contract-types": {
+        "y": 828,
+        "h": 439,
+        "bottom": 1267,
+        "w": 334.9
+      },
+      "dashboard-contracts": {
+        "y": 1279,
+        "h": 509,
+        "bottom": 1788,
+        "w": 502.4
+      },
+      "phase2-history": {
+        "y": 1279,
+        "h": 509,
+        "bottom": 1788,
+        "w": 334.9
+      },
+      "group-admin": {
+        "y": 1812,
+        "h": 322,
+        "bottom": 2134,
+        "w": 853.3
+      },
+      "phase2-global_leave": {
+        "y": 1894,
+        "h": 240,
+        "bottom": 2134,
+        "w": 502.4
+      },
+      "dashboard-queue": {
+        "y": 1894,
+        "h": 240,
+        "bottom": 2134,
+        "w": 334.9
+      },
+      "group-recruitment": {
+        "y": 2158,
+        "h": 268,
+        "bottom": 2426,
+        "w": 853.3
+      },
+      "dashboard-agenda": {
+        "y": 513,
+        "h": 289,
+        "bottom": 802,
+        "w": 426.7
+      }
+    },
+    "docHeight": 2654,
+    "listRows": [
+      {
+        "h": 71,
+        "text": "Nhân viên giả lập 17DEMO-HĐ-01728/10/202"
+      },
+      {
+        "h": 71,
+        "text": "Nhân viên giả lập 22DEMO-HĐ-02228/10/202"
+      },
+      {
+        "h": 71,
+        "text": "Nhân viên giả lập 13DEMO-HĐ-01320/11/202"
+      },
+      {
+        "h": 71,
+        "text": "Nhân viên giả lập 18DEMO-HĐ-01820/11/202"
+      },
+      {
+        "h": 70,
+        "text": "Nhân viên giả lập 14DEMO-HĐ-01420/12/202"
+      },
+      {
+        "h": 81,
+        "text": "DEMO-QD-00321/10 16:41 Bản nháp"
+      },
+      {
+        "h": 81,
+        "text": "DEMO-QD-00221/10 16:41 Đã ban hành"
+      },
+      {
+        "h": 80,
+        "text": "DEMO-QD-00121/10 16:41 Chờ duyệt"
+      },
+      {
+        "h": 61,
+        "text": "Đơn nghỉ đang chờ trong phạm vi duyệt1Xử"
+      },
+      {
+        "h": 60,
+        "text": "Đề xuất tuyển dụng chờ duyệt1Xử lý →"
+      },
+      {
+        "h": 57,
+        "text": "Họp giao ban Trung tâmPhòng họp tầng 3 0"
+      },
+      {
+        "h": 57,
+        "text": "Đào tạo quy trình ISO nội bộHội trường A"
+      },
+      {
+        "h": 56,
+        "text": "Họp chuyên môn phòng Nhân sựPhòng 402 16"
+      }
+    ],
+    "rowHeights": [
+      71,
+      71,
+      71,
+      71,
+      70,
+      81,
+      81,
+      80,
+      61,
+      60,
+      57,
+      57,
+      56
+    ]
+  },
+  "hr 390": {
+    "rootGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "bodyGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "streamGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "railGap": {
+      "row": "16px",
+      "col": "16px"
+    },
+    "rowGap": {
+      "row": "16px",
+      "col": "16px"
+    },
+    "myWorkGap": {
+      "row": "16px",
+      "col": "16px"
+    },
+    "kpiBlock": {
+      "y": 282,
+      "h": 748,
+      "bottom": 1030,
+      "w": 358
+    },
+    "kpiStrip": {
+      "y": 283,
+      "h": 559,
+      "bottom": 842,
+      "w": 356
+    },
+    "secondary": {
+      "y": 842,
+      "h": 187,
+      "bottom": 1029,
+      "w": 356
+    },
+    "blocks": {
+      "dashboard-status": {
+        "y": 283,
+        "h": 559,
+        "bottom": 842,
+        "w": 356
+      },
+      "dashboard-secondary": {
+        "y": 842,
+        "h": 187,
+        "bottom": 1029,
+        "w": 356
+      },
+      "dashboard-my-work": {
+        "y": 1054,
+        "h": 352,
+        "bottom": 1406,
+        "w": 358
+      },
+      "group-hr": {
+        "y": 1430,
+        "h": 2672,
+        "bottom": 4102,
+        "w": 358
+      },
+      "dashboard-headcount": {
+        "y": 1672,
+        "h": 595,
+        "bottom": 2267,
+        "w": 358
+      },
+      "dashboard-contract-types": {
+        "y": 2283,
+        "h": 471,
+        "bottom": 2754,
+        "w": 358
+      },
+      "dashboard-contracts": {
+        "y": 2766,
+        "h": 801,
+        "bottom": 3567,
+        "w": 358
+      },
+      "phase2-history": {
+        "y": 3583,
+        "h": 519,
+        "bottom": 4102,
+        "w": 358
+      },
+      "group-admin": {
+        "y": 4126,
+        "h": 772,
+        "bottom": 4898,
+        "w": 358
+      },
+      "phase2-global_leave": {
+        "y": 4208,
+        "h": 318,
+        "bottom": 4526,
+        "w": 358
+      },
+      "dashboard-queue": {
+        "y": 4542,
+        "h": 356,
+        "bottom": 4898,
+        "w": 358
+      },
+      "group-recruitment": {
+        "y": 4922,
+        "h": 352,
+        "bottom": 5274,
+        "w": 358
+      },
+      "dashboard-agenda": {
+        "y": 5298,
+        "h": 317,
+        "bottom": 5615,
+        "w": 358
+      }
+    },
+    "docHeight": 5687,
+    "listRows": [
+      {
+        "h": 123,
+        "text": "Nhân viên giả lập 17DEMO-HĐ-01728/10/202"
+      },
+      {
+        "h": 123,
+        "text": "Nhân viên giả lập 22DEMO-HĐ-02228/10/202"
+      },
+      {
+        "h": 123,
+        "text": "Nhân viên giả lập 13DEMO-HĐ-01320/11/202"
+      },
+      {
+        "h": 123,
+        "text": "Nhân viên giả lập 18DEMO-HĐ-01820/11/202"
+      },
+      {
+        "h": 122,
+        "text": "Nhân viên giả lập 14DEMO-HĐ-01420/12/202"
+      },
+      {
+        "h": 123,
+        "text": "DEMO-QD-00321/10 16:41 Bản nháp"
+      },
+      {
+        "h": 123,
+        "text": "DEMO-QD-00221/10 16:41 Đã ban hành"
+      },
+      {
+        "h": 122,
+        "text": "DEMO-QD-00121/10 16:41 Chờ duyệt"
+      },
+      {
+        "h": 103,
+        "text": "Đơn nghỉ đang chờ trong phạm vi duyệt1Xử"
+      },
+      {
+        "h": 102,
+        "text": "Đề xuất tuyển dụng chờ duyệt1Xử lý →"
+      },
+      {
+        "h": 57,
+        "text": "Họp giao ban Trung tâmPhòng họp tầng 3 0"
+      },
+      {
+        "h": 57,
+        "text": "Đào tạo quy trình ISO nội bộHội trường A"
+      },
+      {
+        "h": 56,
+        "text": "Họp chuyên môn phòng Nhân sựPhòng 402 16"
+      }
+    ],
+    "rowHeights": [
+      123,
+      123,
+      123,
+      123,
+      122,
+      123,
+      123,
+      122,
+      103,
+      102,
+      57,
+      57,
+      56
+    ]
+  },
+  "employee 1756": {
+    "rootGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "bodyGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "streamGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "railGap": {
+      "row": "16px",
+      "col": "16px"
+    },
+    "rowGap": null,
+    "myWorkGap": {
+      "row": "16px",
+      "col": "16px"
+    },
+    "kpiBlock": null,
+    "kpiStrip": null,
+    "secondary": null,
+    "blocks": {
+      "dashboard-my-work": {
+        "y": 222,
+        "h": 209,
+        "bottom": 431,
+        "w": 901.3
+      },
+      "dashboard-agenda": {
+        "y": 222,
+        "h": 232,
+        "bottom": 454,
+        "w": 450.7
+      }
+    },
+    "docHeight": 1000,
+    "listRows": [
+      {
+        "h": 57,
+        "text": "Họp giao ban Trung tâmPhòng họp tầng 3 0"
+      },
+      {
+        "h": 56,
+        "text": "Đào tạo quy trình ISO nội bộHội trường A"
+      }
+    ],
+    "rowHeights": [
+      57,
+      56
+    ]
+  },
+  "employee 1440": {
+    "rootGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "bodyGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "streamGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "railGap": {
+      "row": "16px",
+      "col": "16px"
+    },
+    "rowGap": null,
+    "myWorkGap": {
+      "row": "16px",
+      "col": "16px"
+    },
+    "kpiBlock": null,
+    "kpiStrip": null,
+    "secondary": null,
+    "blocks": {
+      "dashboard-my-work": {
+        "y": 222,
+        "h": 209,
+        "bottom": 431,
+        "w": 853.3
+      },
+      "dashboard-agenda": {
+        "y": 222,
+        "h": 232,
+        "bottom": 454,
+        "w": 426.7
+      }
+    },
+    "docHeight": 900,
+    "listRows": [
+      {
+        "h": 57,
+        "text": "Họp giao ban Trung tâmPhòng họp tầng 3 0"
+      },
+      {
+        "h": 56,
+        "text": "Đào tạo quy trình ISO nội bộHội trường A"
+      }
+    ],
+    "rowHeights": [
+      57,
+      56
+    ]
+  },
+  "employee 390": {
+    "rootGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "bodyGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "streamGap": {
+      "row": "24px",
+      "col": "24px"
+    },
+    "railGap": {
+      "row": "16px",
+      "col": "16px"
+    },
+    "rowGap": null,
+    "myWorkGap": {
+      "row": "16px",
+      "col": "16px"
+    },
+    "kpiBlock": null,
+    "kpiStrip": null,
+    "secondary": null,
+    "blocks": {
+      "dashboard-my-work": {
+        "y": 214,
+        "h": 352,
+        "bottom": 566,
+        "w": 358
+      },
+      "dashboard-agenda": {
+        "y": 590,
+        "h": 260,
+        "bottom": 850,
+        "w": 358
+      }
+    },
+    "docHeight": 922,
+    "listRows": [
+      {
+        "h": 57,
+        "text": "Họp giao ban Trung tâmPhòng họp tầng 3 0"
+      },
+      {
+        "h": 56,
+        "text": "Đào tạo quy trình ISO nội bộHội trường A"
+      }
+    ],
+    "rowHeights": [
+      57,
+      56
+    ]
+  }
+}

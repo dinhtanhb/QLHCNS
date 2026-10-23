@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phương án B — đợt 4: nhịp dọc gọn lại, 5 chỉ số lên hàng 2 | IHRMS 23/10/2026</title>
+<style>
+:root,html[data-theme="light"]{--bg:#e7ecf4;--surface:#fff;--raised:#f4f6fb;--text:#101828;--muted:#475467;--border:#667085;--divider:#e8ecf3;--brand:#3a4fd0;--on-brand:#fff;--soft:#eef1fd;--ok:#067647;--ok-bg:#ecfdf3;--danger:#b42318;--danger-bg:#fef3f2;--warn:#b54708;--warn-bg:#fffaeb;--shadow:0 1px 2px rgb(16 24 40/.06)}
+html[data-theme="dark"]{--bg:#080c18;--surface:#131a2e;--raised:#1a2340;--text:#e8ecf8;--muted:#a9b4cc;--border:#8b97b3;--divider:#232d4a;--brand:#93a7ff;--on-brand:#0a1020;--soft:#1c2544;--ok:#86efac;--ok-bg:#0f2417;--danger:#fca5a5;--danger-bg:#2a1010;--warn:#fde68a;--warn-bg:#2a1f08;--shadow:none}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:32px 24px 96px}
+header.top{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.mark{width:36px;height:36px;border-radius:10px;background:var(--brand);color:var(--on-brand);display:grid;place-items:center;font-weight:700;font-size:13px}
+.brandline{font-weight:650}.brandline small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.tbtn{margin-left:auto;min-height:40px;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font:inherit;font-size:14px;cursor:pointer}
+h1{font-size:31px;line-height:1.25;margin:0 0 10px;letter-spacing:-.01em}
+.lede{color:var(--muted);margin:0 0 24px;max-width:78ch}
+h2{font-size:20px;margin:38px 0 8px}
+.sec-num{display:block;font-size:12px;font-weight:700;color:var(--brand);letter-spacing:.12em}
+.card{background:var(--surface);border:1px solid var(--divider);border-radius:12px;padding:20px;box-shadow:var(--shadow)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:20px 0 4px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:20px 0 4px}
+@media(max-width:860px){.grid3,.grid2{grid-template-columns:1fr}}
+.big{font-size:28px;font-weight:700;line-height:1.1;margin:2px 0 6px}
+.big small{font-size:13px;font-weight:500;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--divider)}
+th{font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border)}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+code{font:13px/1.5 ui-monospace,Consolas,monospace;background:var(--soft);padding:1px 5px;border-radius:4px}
+.pill{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:650;border:1px solid transparent}
+.pill--ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)}
+.pill--no{background:var(--danger-bg);color:var(--danger);border-color:var(--danger)}
+.pill--warn{background:var(--warn-bg);color:var(--warn);border-color:var(--warn)}
+figure{margin:16px 0 0}
+figure img{width:100%;display:block;border:1px solid var(--divider);border-radius:10px;background:var(--raised)}
+figcaption{color:var(--muted);font-size:13px;margin-top:8px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:860px){.pair{grid-template-columns:1fr}}
+.callout{border-left:3px solid var(--brand);background:var(--soft);border-radius:8px;padding:14px 16px;margin:16px 0}
+.callout p{margin:4px 0}
+.callout--warn{border-left-color:var(--warn);background:var(--warn-bg)}
+.muted{color:var(--muted)}.small{font-size:13.5px}
+ul.tight{margin:10px 0;padding-left:22px}ul.tight li{margin:5px 0}
+ol.tight{margin:10px 0;padding-left:22px}ol.tight li{margin:6px 0}
+footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--divider);color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="mark">IH</div>
+  <div class="brandline">IHRMS — Cổng thông tin nhân viên<small>Báo cáo triển khai · 23/10/2026 · Phương án B đợt 4</small></div>
+  <button class="tbtn" type="button" onclick="var h=document.documentElement;h.dataset.theme=h.dataset.theme==='dark'?'light':'dark'">Sáng / Tối</button>
+</header>
+
+<h1>Nhịp dọc gọn lại, 5 chỉ số phụ lên hàng 2 của thẻ KPI</h1>
+<p class="lede">Hai yêu cầu trong ảnh bạn gửi: khoảng cách giữa các dòng quá rộng, và dải 5 ô KPI ở đáy trang cần chuyển lên ngay dưới 4 ô chính. Cả hai đã vào mã. Điều đáng nói: sau khi chuyển, trang <em>ngắn hơn</em> 137px dù thêm một hàng vào đầu trang — vì nhịp dọc được siết cùng lúc.</p>
+
+<div class="grid3">
+  <div class="card"><div class="muted small">Nhịp giữa các khối</div><div class="big">24<small>px · trước 32</small></div><div class="small muted">Thang 8px, không phải số tuỳ ý</div></div>
+  <div class="card"><div class="muted small">Dòng danh sách hợp đồng</div><div class="big">71<small>px · trước 79</small></div><div class="small muted">Dòng quyết định 89 → 81</div></div>
+  <div class="card"><div class="muted small">Chiều cao trang (1440)</div><div class="big">2.654<small>px · trước 2.791</small></div><div class="small muted">Ngắn hơn 137px dù thêm hàng 2</div></div>
+</div>
+
+<h2><span class="sec-num">01</span>Việc 1 — siết khoảng cách các dòng</h2>
+<p>Bản trước dùng nhịp 32px cho mọi cấp: giữa các khối, trong luồng nội dung, giữa hai cột 8/4. Cộng với đệm 12px mỗi bên của dòng danh sách, trang đọc như bị "thở" quá nhiều. Đợt này hạ nhịp khối xuống 24px và bớt đệm dòng:</p>
+
+<table>
+<thead><tr><th>Điểm đo (tài khoản HR, 1440px)</th><th>Trước</th><th>Sau</th><th>Ghi chú</th></tr></thead>
+<tbody>
+<tr><td>Nhịp giữa các khối (<code>.home-dashboard</code>)</td><td class="num">32px</td><td class="num">24px</td><td>token <code>--ui-space-6</code></td></tr>
+<tr><td>Nhịp luồng nội dung chính</td><td class="num">32px</td><td class="num">24px</td><td></td></tr>
+<tr><td>Nhịp hai cột 8/4</td><td class="num">32px</td><td class="num">24px</td><td></td></tr>
+<tr><td>Dòng danh sách hợp đồng</td><td class="num">79px</td><td class="num">71px</td><td>đệm dọc 12 → 8</td></tr>
+<tr><td>Dòng quyết định nhân sự</td><td class="num">89px</td><td class="num">81px</td><td></td></tr>
+<tr><td>Dòng bảng nghỉ phép</td><td class="num">69px</td><td class="num">61px</td><td>ô bảng 12/8 → 8</td></tr>
+<tr><td>Nhịp trong một nhóm (giữa tiêu đề và thẻ)</td><td class="num">12px</td><td class="num">12px</td><td>giữ nguyên — đây là nhịp đọc, không phải nhịp khối</td></tr>
+</tbody>
+</table>
+
+<div class="callout">
+<p><strong>Vì sao không hạ cả nhịp trong nhóm xuống 8px?</strong> 12px là khoảng giữa tiêu đề nhóm và các thẻ bên dưới — hạ nữa thì tiêu đề dính vào thẻ, mất ranh giới nhóm. Chỗ gây cảm giác "dãn" là khoảng giữa các khối lớn, không phải chỗ này.</p>
+</div>
+
+<h2><span class="sec-num">02</span>Việc 2 — 5 chỉ số phụ thành hàng 2 của thẻ KPI</h2>
+<p>Trước đây 4 chỉ số chính là một thẻ, còn 5 chỉ số tổng hợp là một thẻ khác nằm tận đáy trang (y = 2.473). Nay cả hai nằm trong <strong>một</strong> thẻ: hàng 1 là 4 chỉ số chính, hàng 2 là 5 chỉ số tổng hợp, ngăn nhau bằng một đường kẻ ngang. Hàng 2 dùng nền tint nhẹ để đọc như phần tóm tắt của hàng 1.</p>
+
+<div class="pair">
+  <figure><img src="before-hr-1440-light-fold.png" alt="Trước: dải 5 chỉ số nằm ở đáy trang"><figcaption><strong>Trước</strong> — màn hình đầu chỉ có 4 chỉ số; 5 chỉ số phụ nằm ở đáy trang, phải cuộn hết mới thấy.</figcaption></figure>
+  <figure><img src="after-hr-1440-light-fold.png" alt="Sau: dải 5 chỉ số thành hàng 2"><figcaption><strong>Sau</strong> — cùng một thẻ, hàng 2 ngay dưới hàng 1; nhịp dọc cũng gọn hơn.</figcaption></figure>
+</div>
+
+<table>
+<thead><tr><th>Điểm đo</th><th>Trước</th><th>Sau</th></tr></thead>
+<tbody>
+<tr><td>Vị trí dải 5 chỉ số</td><td class="num">y 2.473 (đáy trang)</td><td class="num">y 407 (hàng 2)</td></tr>
+<tr><td>Chiều cao dải 5 chỉ số</td><td class="num">90px</td><td class="num">81px</td></tr>
+<tr><td>Chiều cao thẻ KPI</td><td class="num">138px</td><td class="num">219px (2 hàng + đường kẻ)</td></tr>
+<tr><td>Chiều cao trang</td><td class="num">2.791px</td><td class="num">2.654px</td></tr>
+<tr><td>"Công việc của tôi" bắt đầu</td><td class="num">y 448</td><td class="num">y 513</td></tr>
+</tbody>
+</table>
+
+<figure><img src="after-hr-1440-light-full.png" alt="Toàn trang sau khi sửa"><figcaption>Toàn trang sau khi sửa (1440px, nền sáng). Dải 5 chỉ số không còn ở đáy; khoảng giữa các nhóm gọn hơn rõ rệt.</figcaption></figure>
+
+<h2><span class="sec-num">03</span>Ba chỗ dễ vỡ khi gộp thẻ — và cách xử lý</h2>
+<ol class="tight">
+<li><strong>Tài khoản không có chỉ số nào.</strong> Nhân viên thường và tài khoản hệ thống không có KPI. Nếu dựng thẻ vô điều kiện, họ sẽ thấy một khung rỗng có viền. Template nay chỉ dựng <code>.home-kpi-block</code> khi có ít nhất một chỉ số.</li>
+<li><strong>Số lệch hàng khi nhãn dài.</strong> Ở 1280px, nhãn "Tin tuyển dụng đang mở" xuống hai dòng làm số của ô đó tụt xuống thấp hơn các ô khác. Hàng 2 nay chia hai dòng lưới <code>1fr auto</code>: nhãn bám trên, số bám đáy, nên 5 số luôn cùng một đường chân.</li>
+<li><strong>Điện thoại.</strong> Dải này giờ ở đầu trang; xếp dọc 5 ô sẽ đẩy "Công việc của tôi" xuống y 1.171. Dưới 768px hàng 2 đổi sang hai cột, nhãn và số nằm cùng dòng: chiều cao 304 → 187px, "Công việc của tôi" lên lại y 1.054.</li>
+</ol>
+
+<div class="pair">
+  <figure><img src="kpi-1280-light.png" alt="Thẻ KPI ở 1280px"><figcaption>1280px — số của 5 ô cùng đường chân dù nhãn ô 4 xuống hai dòng.</figcaption></figure>
+  <figure><img src="kpi-390-light.png" alt="Thẻ KPI ở 390px"><figcaption>390px — hàng 2 hai cột, nhãn trái số phải.</figcaption></figure>
+</div>
+
+<figure><img src="after-hr-1440-dark-fold.png" alt="Nền tối"><figcaption>Nền tối: hàng 2 dùng tint tối hơn mặt thẻ, đường kẻ ngang vẫn đọc được.</figcaption></figure>
+
+<div class="pair">
+  <figure><img src="after-hr-1756-light-fold.png" alt="1756px"><figcaption>1756px — hàng 1 và hàng 2 vẫn là một thẻ, 5 ô chia đều bề rộng.</figcaption></figure>
+  <figure><img src="after-hr-390-light-fold.png" alt="390px"><figcaption>390px — cùng thứ tự: 4 chỉ số chính rồi tới dải 5 ô, không còn phải cuộn hết trang mới thấy.</figcaption></figure>
+</div>
+
+<h2><span class="sec-num">04</span>Hai điều khoản cổng đo phải đổi — và lý do</h2>
+<div class="callout callout--warn">
+<p><strong>Nói thẳng:</strong> đây là thay đổi hợp đồng kiểm, không phải nới cổng để test xanh. Cả hai đều là hệ quả trực tiếp của yêu cầu trong ảnh.</p>
+</div>
+<table>
+<thead><tr><th>Điều khoản</th><th>Trước</th><th>Sau</th><th>Vì sao</th></tr></thead>
+<tbody>
+<tr><td><code>groupGap</code> trong <code>run_dashboard_layout_uat.py</code></td><td class="num">32px</td><td class="num">24px</td><td>Chính là yêu cầu "đừng dãn quá lớn"; cổng vẫn kiểm bằng nhau tuyệt đối, chỉ đổi giá trị hợp đồng.</td></tr>
+<tr><td>Màn hình đầu phải chứa trọn nhóm <code>group-projects</code></td><td class="num">đáy ≤ 900</td><td class="num">tiêu đề nhóm đầu &lt; 900</td><td>Thêm hàng 2 cao 81px vào đầu trang thì một nhóm nghiệp vụ không thể vừa 900px nữa. Giữ nguyên đòi hỏi này sẽ buộc phải bỏ yêu cầu của bạn. Tiêu đề nhóm vẫn phải hiện trong màn hình đầu, và "Công việc của tôi" vẫn phải trọn trong màn hình đầu.</td></tr>
+</tbody>
+</table>
+<p class="small muted">Đo được sau khi đổi: tài khoản Trưởng phòng có <code>group-projects</code> kết thúc ở y 953 (trước 895) — vượt 900 đúng 53px, trong khi tiêu đề nhóm nằm ở y 741. Tài khoản HR: "Công việc của tôi" kết thúc ở y 722, tiêu đề nhóm Nhân sự ở y 746.</p>
+
+<h2><span class="sec-num">05</span>Bốn cổng đã chạy lại</h2>
+<table>
+<thead><tr><th>Cổng</th><th>Kết quả</th><th>Chi tiết</th></tr></thead>
+<tbody>
+<tr><td>Test đơn vị (sqlite)</td><td><span class="pill pill--ok">OK</span></td><td>826 test, 7 bỏ qua</td></tr>
+<tr><td><code>run_dashboard_layout_uat.py</code></td><td><span class="pill pill--ok">0 lỗi</span></td><td>4.568 kiểm tra · 48 ảnh · 9 tài khoản × 6 bề rộng × 2 nền</td></tr>
+<tr><td><code>run_layout_alignment_audit.py</code></td><td><span class="pill pill--ok">0 vi phạm</span></td><td>150 route · 6.881 trường hợp · 0 lỗi</td></tr>
+<tr><td><code>check_ui_contrast.py</code></td><td><span class="pill pill--ok">0 lỗi</span></td><td>220 cặp token; nền tint mới đo tay: 7,11:1 (sáng) và 7,39:1 (tối)</td></tr>
+<tr><td><code>run_browser_uat.py --layout-only</code></td><td><span class="pill pill--ok">0 lỗi</span></td><td>128 kiểm tra · 32 ảnh · 0 lỗi</td></tr>
+</tbody>
+</table>
+
+<h2><span class="sec-num">06</span>Tệp đã sửa</h2>
+<table>
+<thead><tr><th>Tệp</th><th>Thay đổi</th></tr></thead>
+<tbody>
+<tr><td><code>src/apps/portal/templates/portal/dashboard.html</code></td><td>Dải 5 chỉ số chuyển vào <code>.home-kpi-block</code> ngay dưới 4 chỉ số chính; bỏ include ở đáy; chỉ dựng thẻ khi có chỉ số.</td></tr>
+<tr><td><code>src/static/css/home_dashboard.css</code></td><td>Nhịp khối 32 → 24; đệm dòng danh sách và ô bảng giảm 4px; thẻ KPI gộp hai hàng; hàng 2 nền tint + đường kẻ ngang; hàng 2 hai cột trên điện thoại.</td></tr>
+<tr><td><code>ops/run_dashboard_layout_uat.py</code></td><td><code>groupGap</code> 32 → 24; điều kiện màn hình đầu đổi sang "tiêu đề nhóm đầu tiên", áp cho mọi tài khoản.</td></tr>
+</tbody>
+</table>
+
+<h2><span class="sec-num">07</span>Còn lại</h2>
+<ul class="tight">
+<li>Ba commit trước (<code>44744ff</code>, <code>b8e77b0</code>, <code>a5277df</code>) cùng commit đợt này <strong>chưa push</strong> — cần đẩy lên và xem CI.</li>
+<li>Sau khi chốt giao diện web, mới sang phần PWA di động (kế hoạch đã có, chưa làm).</li>
+<li>Logo: bạn đã chốt giữ nguyên ở đợt 3, không có gì thay đổi.</li>
+</ul>
+
+<footer>IHRMS · báo cáo nội bộ · số đo lấy từ Edge (Chromium) trên dữ liệu giả thử nghiệm ngoài kho mã · 23/10/2026</footer>
+</div>
+</body>
+</html>

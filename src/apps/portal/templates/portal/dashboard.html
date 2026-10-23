@@ -14,7 +14,13 @@
 <h2 id="profile-warning-title">Tài khoản chưa gắn hồ sơ nhân viên</h2>
 <p>Liên hệ Phòng Nhân sự để liên kết hồ sơ và sử dụng thao tác cá nhân.</p>{% if profile_setup %}<a class="home-text-link" href="{{ profile_setup.href }}">{{ profile_setup.label }} →</a>{% endif %}</div>
 </section>{% endif %}
+{% comment %}Hai dải KPI nằm trong CÙNG một thẻ: hàng 1 là 4 chỉ số chính, hàng 2 là
+5 chỉ số tổng hợp (đợt 4 chuyển từ đáy trang lên). Tài khoản không có chỉ số nào
+thì không dựng thẻ, tránh một khung rỗng có viền.{% endcomment %}
+{% if dashboard_layout.main or dashboard_layout.secondary %}<div class="home-kpi-block">
 {% include 'portal/dashboard/_kpi_main.html' %}
+{% include 'portal/dashboard/_secondary_metrics.html' %}
+</div>{% endif %}
 <div class="home-dashboard-body">
 <div class="home-dashboard-stream">
 {% if employee %}{% include 'portal/dashboard/_my_work.html' %}{% endif %}
@@ -25,6 +31,5 @@
 </div>
 {% include 'portal/dashboard/_rail.html' %}
 </div>
-{% include 'portal/dashboard/_secondary_metrics.html' %}
 </div>
 {% endblock %}

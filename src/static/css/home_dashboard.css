@@ -5,7 +5,9 @@
   --ui-dash-donut-size:144px;
   --ui-chart-1:var(--ui-chart-series); --ui-chart-2:var(--ui-info-text); --ui-chart-3:var(--ui-warning-text);
   --ui-chart-4:var(--ui-chart-series-soft); --ui-chart-5:var(--ui-danger-text); --ui-chart-6:var(--ui-text-muted);
-  display:grid; gap:var(--ui-space-8); max-width:var(--ui-content-max-width); margin-inline:auto; min-width:0;
+  /* Nhịp dọc giữa các khối: 24px. Bản trước dùng 32px và bị chủ dự án đánh giá
+     là dãn quá rộng (đợt 4). 24px vẫn nằm trên thang 8px của token. */
+  display:grid; gap:var(--ui-space-6); max-width:var(--ui-content-max-width); margin-inline:auto; min-width:0;
   color:var(--ui-text); font-size:var(--ui-text-label); line-height:var(--ui-leading-label);
  }
  .home-dashboard :where(p,ul,ol,dl,h1,h2,h3,h4,dd) { margin:0; }
@@ -57,7 +59,7 @@
  .home-dashboard .home-info-body { position:absolute; right:0; top:100%; z-index:var(--ui-layer-navigation); display:grid; gap:var(--ui-space-2); width:min(340px,calc(100vw - 48px)); max-height:min(70vh,30rem); overflow:auto; padding:var(--ui-space-4); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); background:var(--ui-surface); color:var(--ui-text); overflow-wrap:anywhere; box-shadow:var(--ui-shadow-overlay); }
  .home-dashboard .home-info-body ul { padding-inline-start:var(--ui-space-4); }
  .home-dashboard .home-list,.home-dashboard .home-capacity,.home-dashboard .home-type-list { list-style:none; padding:0; }
- .home-dashboard .home-list>li { display:flex; align-items:center; justify-content:space-between; gap:var(--ui-space-3); min-height:var(--ui-target-min); padding-block:var(--ui-space-3); border-bottom:var(--ui-border-width) solid var(--ui-divider); }
+ .home-dashboard .home-list>li { display:flex; align-items:center; justify-content:space-between; gap:var(--ui-space-3); min-height:var(--ui-target-min); padding-block:var(--ui-space-2); border-bottom:var(--ui-border-width) solid var(--ui-divider); }
  .home-dashboard .home-list>li:last-child { border-bottom:0; }
  .home-dashboard .home-list strong { font-weight:var(--ui-weight-medium); }
  .home-dashboard .home-capacity { display:grid; grid-template-columns:200px minmax(32px,1fr) 72px auto; column-gap:var(--ui-space-4); }
@@ -108,7 +110,7 @@
  .home-dashboard .home-recruitment-strip>.home-info { position:absolute; top:var(--ui-space-2); right:var(--ui-space-2); }
  .home-dashboard .home-recruitment-metrics>div:last-child { padding-inline-end:var(--ui-space-8); }
  .home-dashboard .home-data-table { width:100%; border-collapse:collapse; table-layout:fixed; font-size:var(--ui-text-label); }
- .home-dashboard .home-data-table :is(th,td) { padding:var(--ui-space-3) var(--ui-space-2); border-bottom:var(--ui-border-width) solid var(--ui-divider); text-align:left; vertical-align:middle; overflow-wrap:anywhere; }
+ .home-dashboard .home-data-table :is(th,td) { padding:var(--ui-space-2); border-bottom:var(--ui-border-width) solid var(--ui-divider); text-align:left; vertical-align:middle; overflow-wrap:anywhere; }
  .home-dashboard .home-data-table tr:last-child :is(th,td) { border-bottom:0; }
  /* ui_controls.css đặt `th { white-space:nowrap }` cho bảng dữ liệu rộng. Trong
     popover chỉ rộng 340px, nowrap làm nhãn dài tràn sang cột số (đo được
@@ -193,8 +195,12 @@
     Một thẻ bao ngoài, bốn ô bên trong ngăn bằng đường kẻ dọc, không viền riêng.
     Giữ nguyên hook .home-main-kpis / .home-main-metric để các cổng đo hiện có
     (run_dashboard_layout_uat, run_browser_uat, run_asset_cache_uat) còn dùng được.
+    Đợt 4: thẻ bao ngoài chuyển sang .home-kpi-block để chứa được cả hàng thứ
+    hai (5 chỉ số tổng hợp); .home-main-kpis chỉ còn là hàng 1 bên trong.
     ------------------------------------------------------------------------ */
- .home-dashboard .home-main-kpis { gap:0; background:var(--ui-surface); border:var(--ui-border-width) solid var(--ui-card-border); border-radius:var(--ui-radius-card); overflow:hidden; }
+ .home-dashboard .home-kpi-block { display:grid; gap:0; min-width:0; background:var(--ui-surface); border:var(--ui-border-width) solid var(--ui-card-border); border-radius:var(--ui-radius-card); overflow:hidden; }
+ .home-dashboard .home-kpi-block>#dashboard-status { display:grid; gap:0; min-width:0; }
+ .home-dashboard .home-main-kpis { gap:0; }
  .home-dashboard .home-main-kpis .home-main-metric { padding:var(--ui-space-5); background:transparent; border:0; border-radius:0; box-shadow:none; }
  .home-dashboard .home-main-kpis .home-main-metric + .home-main-metric { border-inline-start:var(--ui-border-width) solid var(--ui-divider); }
  .home-dashboard .home-main-kpis a.home-main-metric { transition:background-color var(--ui-motion-feedback); }
@@ -213,9 +219,9 @@
     Phương án B — lưới 8/4: nội dung chính 8 cột, cột phải 4 cột.
     Dưới 1280px cột phải xuống dưới để bảng và biểu đồ giữ bề rộng tối thiểu.
     ------------------------------------------------------------------------ */
- .home-dashboard .home-dashboard-body { display:grid; grid-template-columns:minmax(0,8fr) minmax(0,4fr); gap:var(--ui-space-8); align-items:start; min-width:0; }
+ .home-dashboard .home-dashboard-body { display:grid; grid-template-columns:minmax(0,8fr) minmax(0,4fr); gap:var(--ui-space-6); align-items:start; min-width:0; }
  .home-dashboard .home-dashboard-body:not(:has(.home-rail)) { grid-template-columns:minmax(0,1fr); }
- .home-dashboard .home-dashboard-stream { display:grid; gap:var(--ui-space-8); min-width:0; }
+ .home-dashboard .home-dashboard-stream { display:grid; gap:var(--ui-space-6); min-width:0; }
  .home-dashboard .home-rail { display:grid; gap:var(--ui-space-4); min-width:0; position:sticky; top:var(--ui-space-4); }
  .home-dashboard .home-rail .home-card-header { flex-wrap:wrap; gap:var(--ui-space-2); }
  .home-dashboard .home-rail .home-list>li { align-items:start; }
@@ -236,17 +242,30 @@
   .home-dashboard .home-rail { position:static; grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr)); }
  }
 
- /* Dải số liệu thứ hai ở đáy: một thẻ, các ô ngăn bằng đường kẻ dọc. */
- .home-dashboard .home-secondary { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr)); column-gap:0; row-gap:var(--ui-space-3); background:var(--ui-surface); border:var(--ui-border-width) solid var(--ui-card-border); border-radius:var(--ui-radius-card); overflow:hidden; }
- .home-dashboard .home-secondary-item { display:grid; align-content:start; gap:var(--ui-space-1); padding:var(--ui-space-4) var(--ui-space-5); border-inline-start:var(--ui-border-width) solid var(--ui-divider); min-width:0; color:var(--ui-text); text-decoration:none; }
+ /* Đợt 4 — dải 5 chỉ số tổng hợp rời khỏi đáy trang, thành HÀNG 2 của chính thẻ
+    KPI (4 chỉ số chính là hàng 1). Không viền, không bo góc riêng: thẻ ngoài đã
+    lo phần đó. Hàng 2 ngăn với hàng 1 bằng một đường kẻ ngang và dùng nền tint
+    nhẹ để đọc như phần tóm tắt; các ô vẫn ngăn nhau bằng đường kẻ dọc.
+    Hook #dashboard-secondary / .home-secondary-item giữ nguyên cho các cổng đo. */
+ .home-dashboard .home-secondary { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr)); column-gap:0; row-gap:0; }
+ .home-dashboard .home-kpi-block .home-secondary { background:var(--ui-surface-tint); border-block-start:var(--ui-border-width) solid var(--ui-divider); }
+ .home-dashboard .home-secondary-item { display:grid; grid-template-rows:minmax(0,1fr) auto; align-content:stretch; gap:var(--ui-space-1); padding:var(--ui-space-3) var(--ui-space-5); border-inline-start:var(--ui-border-width) solid var(--ui-divider); min-width:0; color:var(--ui-text); text-decoration:none; }
  .home-dashboard .home-secondary-item:first-child { border-inline-start:0; }
  .home-dashboard a.home-secondary-item:hover { background:var(--ui-hover-bg); }
  .home-dashboard .home-secondary-label { display:flex; align-items:center; gap:var(--ui-space-2); color:var(--ui-text-muted); font-weight:var(--ui-weight-label); }
  .home-dashboard .home-secondary-value { font-size:var(--ui-text-stat); line-height:var(--ui-leading-stat); font-weight:var(--ui-weight-semibold); font-variant-numeric:var(--ui-numeric-variant); }
- /* Một cột thì đường ngăn chuyển từ dọc sang ngang, nếu không sẽ thành vạch thừa bên trái. */
+ /* Một cột thì đường ngăn chuyển từ dọc sang ngang, nếu không sẽ thành vạch thừa bên trái.
+    Trên điện thoại hàng 2 đổi sang hai cột và nhãn/số nằm cùng dòng: dải này giờ ở
+    đầu trang, xếp dọc 5 ô sẽ đẩy "Công việc của tôi" xuống quá sâu. */
  @media(max-width:767px) {
-  .home-dashboard .home-secondary-item { border-inline-start:0; }
-  .home-dashboard .home-secondary-item + .home-secondary-item { border-block-start:var(--ui-border-width) solid var(--ui-divider); }
+  .home-dashboard .home-secondary { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .home-dashboard .home-secondary-item { grid-template-columns:minmax(0,1fr) auto; grid-template-rows:auto; align-items:center; column-gap:var(--ui-space-2); row-gap:0; padding:var(--ui-space-3); border-inline-start:0; }
+  .home-dashboard .home-secondary-label { min-width:0; }
+  .home-dashboard .home-secondary-value { justify-self:end; }
+  .home-dashboard .home-secondary-item + .home-secondary-item { border-block-start:0; }
+  .home-dashboard .home-secondary-item:nth-child(even) { border-inline-start:var(--ui-border-width) solid var(--ui-divider); }
+  .home-dashboard .home-secondary-item:nth-child(n+3) { border-block-start:var(--ui-border-width) solid var(--ui-divider); }
+  .home-dashboard .home-secondary-item:last-child:nth-child(odd) { grid-column:1/-1; }
  }
 }
 }

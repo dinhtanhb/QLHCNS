@@ -115,7 +115,7 @@ def main():
  // Phương án B: KPI gộp một dải nên gap = 0 và ngăn bằng đường kẻ dọc; các lưới
  // còn lại vẫn giữ nhịp 16px. Đổi ở đây là đổi hợp đồng, không phải nới cổng.
  cardGap:[...root.querySelectorAll('.home-row,.home-my-work-grid')].every(x=>near(parseFloat(getComputedStyle(x).gap),16))&&[...root.querySelectorAll('.home-main-kpis')].every(x=>parseFloat(getComputedStyle(x).gap)===0),
-  groupGap:near(parseFloat(getComputedStyle(root).rowGap),32),
+  groupGap:near(parseFloat(getComputedStyle(root).rowGap),24),
   sectionGap:spacing.filter(x=>x.children.length>1).every(x=>near(parseFloat(getComputedStyle(x).rowGap),12)),
   type:scales.every(([selector,size,line])=>[...root.querySelectorAll(selector)].filter(visible).every(x=>near(parseFloat(getComputedStyle(x).fontSize),size)&&near(parseFloat(getComputedStyle(x).lineHeight),line))),
   rows:rows.every(x=>rect(x).height>=(x.querySelector('a')?43.5:39.5)),
@@ -133,12 +133,16 @@ def main():
                             check(not quality['overlaps'],label+' hit targets do not overlap')
                             if width>=1280 and quality['kpiHeights']:check(max(quality['kpiHeights'])-min(quality['kpiHeights'])<=1,label+' equal KPI heights')
                             if width==1440:
-                                for key in ('dashboard-status','dashboard-my-work','group-projects'):
+                                for key in ('dashboard-status','dashboard-my-work'):
                                     if key in measures['blocks']:check(measures['blocks'][key]['bottom']<=900,label+' first fold '+key)
+                                # Đợt 4: thẻ KPI có thêm hàng 2 (5 chỉ số tổng hợp), nên một nhóm
+                                # nghiệp vụ không còn vừa trọn màn hình đầu. Hợp đồng đổi thành
+                                # "tiêu đề nhóm đầu tiên phải nằm trong màn hình đầu", không đòi
+                                # cả nhóm; đây là đổi hợp đồng theo yêu cầu chủ dự án, không nới cổng.
+                                if groups:check(page.locator('#'+groups[0]+' > header').bounding_box()['y']<900,label+' first group title in first fold')
                             if width==1440 and page.locator('#dashboard-my-work').count():
                                 bottom=page.locator('#dashboard-my-work').bounding_box()['y']+page.locator('#dashboard-my-work').bounding_box()['height']
                                 check(bottom<=900,label+' first fold includes my work')
-                                if groups:check(page.locator('#'+groups[0]+' > header').bounding_box()['y']<900,label+' first group title in first fold')
                             check(page.locator('main summary').evaluate_all('xs=>xs.filter(x=>x.checkVisibility()).every(x=>x.getBoundingClientRect().height>=43.5)'),label+' calculation touch targets')
                             small=page.locator('main :is(p,span,strong,a,summary,th,td)').evaluate_all('xs=>xs.filter(x=>x.checkVisibility() && x.textContent.trim() && parseFloat(getComputedStyle(x).fontSize)<14).map(x=>[x.className,getComputedStyle(x).fontSize,x.textContent.slice(0,40)])');check(not small,label+' text >=14px '+str(small))
                             values=page.locator('.home-main-kpis .ui-kpi-value').evaluate_all('xs=>xs.map(x=>x.getBoundingClientRect().y)')
