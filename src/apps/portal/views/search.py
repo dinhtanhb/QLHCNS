@@ -21,7 +21,9 @@ PAGES = (
     ("Hồ sơ cá nhân", "profile", None),
     ("Nghỉ phép", "leave_list", None),
     ("Bảng công chấm công", "timesheet_month", None),
-    ("Công việc Task", "task_list", "view_activity_dashboard"),
+    # "Giao việc & hoàn tất" chỉ đọc việc được giao cho chính người dùng, nên
+    # hiện với mọi vai trò (đồng bộ nhóm "Dự án" trong base.html).
+    ("Công việc Task", "task_list", None),
     ("Thông báo", "notification_list", None),
     ("Nhân viên & hồ sơ nhân sự", "hr_employee_list", "manage_hr"),
     ("Hợp đồng lao động", "hr_contract_list", "manage_hr"),

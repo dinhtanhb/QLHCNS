@@ -2,8 +2,10 @@
 {% load ui_components %}
 {% block title %}Tạo hợp đồng{% endblock %}
 {% block hr_content %}
+{% include "ui/page_header.html" with title="Tạo hợp đồng lao động" description="Ghi nhận hợp đồng mới; hợp đồng ở trạng thái Nháp chưa tính vào định biên." %}
+<div class="ui-form-layout">
+<div class="ui-form-main">
 <div class="ui-card">
-    <h1 class="ui-page-title">Tạo hợp đồng lao động</h1>
     <form method="post" class="ui-form-stack" data-ui-form><div class="ui-form-grid ui-form-grid--grouped">
 
         {% csrf_token %}{% include "ui/error_summary.html" %}
@@ -23,5 +25,47 @@
             <button type="submit" class="ui-button ui-button--primary">Lưu</button>
             <a href="{% url 'portal:hr_contract_list' %}" class="ui-button ui-button--secondary">Hủy</a>
         </div></form>
+</div>
+</div>
+<aside class="ui-form-rail" aria-label="Thông tin tham chiếu khi tạo hợp đồng">
+{% if rail_employee %}
+<section class="ui-rail-card" aria-labelledby="contract-rail-employee">
+<h2 class="ui-rail-card-title" id="contract-rail-employee">Nhân viên đang chọn</h2>
+<dl class="ui-rail-list">
+<div class="ui-rail-pair"><dt>Họ tên</dt><dd><a href="{% url 'portal:hr_employee_detail' rail_employee.pk %}">{{ rail_employee.full_name|ui_number }}</a></dd></div>
+<div class="ui-rail-pair"><dt>Mã nhân viên</dt><dd>{{ rail_employee.employee_code|ui_number }}</dd></div>
+<div class="ui-rail-pair"><dt>Phòng ban</dt><dd>{{ rail_employee.department|ui_number }}</dd></div>
+<div class="ui-rail-pair"><dt>Vị trí</dt><dd>{{ rail_employee.position|ui_number }}</dd></div>
+<div class="ui-rail-pair"><dt>Ngày vào</dt><dd>{{ rail_employee.join_date|ui_date }}</dd></div>
+</dl>
+</section>
+{% if rail_current_contract %}
+<section class="ui-rail-card" aria-labelledby="contract-rail-current">
+<h2 class="ui-rail-card-title" id="contract-rail-current">Hợp đồng gần nhất</h2>
+<dl class="ui-rail-list">
+<div class="ui-rail-pair"><dt>Số hợp đồng</dt><dd>{{ rail_current_contract.contract_no|ui_number }}</dd></div>
+<div class="ui-rail-pair"><dt>Loại</dt><dd>{{ rail_current_contract.contract_type|ui_number }}</dd></div>
+<div class="ui-rail-pair"><dt>Bắt đầu</dt><dd>{{ rail_current_contract.start_date|ui_date }}</dd></div>
+<div class="ui-rail-pair"><dt>Kết thúc</dt><dd>{{ rail_current_contract.end_date|default:"Không xác định"|ui_date }}</dd></div>
+<div class="ui-rail-pair"><dt>Trạng thái</dt><dd>{% ui_badge "contract.contract:status" rail_current_contract.status %}</dd></div>
+</dl>
+</section>
+{% endif %}
+{% else %}
+<section class="ui-rail-card" aria-labelledby="contract-rail-hint">
+<h2 class="ui-rail-card-title" id="contract-rail-hint">Chọn nhân viên</h2>
+<p class="ui-rail-note">Chọn nhân viên ở trường đầu tiên để xem hồ sơ tóm tắt và hợp đồng gần nhất tại đây.</p>
+</section>
+{% endif %}
+<section class="ui-rail-card" aria-labelledby="contract-rail-rule">
+<h2 class="ui-rail-card-title" id="contract-rail-rule">Quy tắc ghi nhận</h2>
+<ul class="ui-rail-steps">
+<li>Bỏ trống ngày kết thúc = hợp đồng không xác định thời hạn.</li>
+<li>Chỉ hợp đồng Đang hiệu lực mới vào định biên và cảnh báo hết hạn.</li>
+<li>Mỗi lần gia hạn tạo hợp đồng mới, không sửa hợp đồng cũ.</li>
+</ul>
+</section>
+<ul class="ui-rail-links"><li><a href="{% url 'portal:hr_contract_list' %}">Xem danh sách hợp đồng</a></li></ul>
+</aside>
 </div>
 {% endblock %}

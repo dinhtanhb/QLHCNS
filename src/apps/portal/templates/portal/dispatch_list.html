@@ -32,16 +32,19 @@
 
     <!-- Bảng danh sách công văn -->
     <div class="ui-card ui-results-card">
+<div class="ui-list-toolbar no-print">
+{% include "ui/status_tabs.html" with aria_label="Lọc công văn theo trạng thái" %}
+<p class="ui-results-count ui-list-toolbar-meta" aria-live="polite">Có {{ page_obj.paginator.count|ui_number }} công văn phù hợp.</p>
+</div>
 <div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Tìm và lọc công văn" role="search">
 <div class="ui-query-fields">
 {% include "ui/field.html" with id="dispatch-list-q" name="q" label="Tìm kiếm" value=search_query  width="regular" %}
 {% include "ui/field.html" with id="dispatch-list-type" name="type" label="Loại văn bản" options_template="ui/query_options/dispatch_list-type.html"  width="regular" %}
-{% include "ui/field.html" with id="dispatch-list-status" name="status" label="Trạng thái" options_template="ui/query_options/dispatch_list-status.html"  width="regular" %}
+{% if selected_status %}<input type="hidden" name="status" value="{{ selected_status }}">{% endif %}
 </div>
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"q,type,status" %}
 </form>
-<p class="ui-results-count" aria-live="polite">Có {{ page_obj.paginator.count|ui_number }} công văn phù hợp.</p>
 </div>
         <div class="ui-scroll mobile-table-scroll" tabindex="0" role="region" aria-label="Danh sách công văn; cuộn ngang để xem đầy đủ">
             <table class="ui-table"><caption class="ui-sr-only">Danh sách công văn</caption>

@@ -152,6 +152,54 @@
  .ui-query-bar--date-echo { padding-bottom:calc(var(--ui-space-6) * 2 + var(--ui-space-2)); }
  @media(max-width:599px) { .ui-form-actions { justify-self:stretch; align-items:stretch; width:100%; } .ui-form-actions > :is(a,button) { flex:1 1 0; min-width:0; } }
 
+ /* --- Dải tab trạng thái + thanh công cụ dính (Phương án B, quyết định 23/10) ---
+    Tab thay các ô chọn trạng thái trong dải lọc: một hàng chữ thay cho một select,
+    thấy ngay phân bố và số lượng từng trạng thái. Mỗi tab là <a> nên không cần JS. */
+ .ui-status-tabs { min-width:0; max-width:100%; overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:thin; }
+ .ui-status-tabs > ul { display:flex; align-items:center; gap:var(--ui-space-1); margin:0; padding:0; list-style:none; }
+ .ui-status-tab { display:inline-flex; align-items:center; gap:var(--ui-space-2); min-height:var(--ui-target-min); padding:0 var(--ui-space-3); border:var(--ui-border-width) solid var(--ui-transparent); border-radius:var(--ui-radius-control); color:var(--ui-text-muted); font-size:var(--ui-font-size-small); font-weight:var(--ui-font-weight-label); text-decoration:none; white-space:nowrap; transition:background-color var(--ui-motion-feedback),color var(--ui-motion-feedback); }
+ .ui-status-tab:hover { background:var(--ui-hover-bg); color:var(--ui-text); }
+ .ui-status-tab[aria-current="page"] { background:var(--ui-brand-soft); color:var(--ui-brand); }
+ .ui-status-tab:focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:var(--ui-focus-offset); }
+ .ui-status-tab-count { min-width:1.75rem; padding:0 var(--ui-space-2); border-radius:var(--ui-radius-pill); background:var(--ui-surface-raised); color:var(--ui-text-muted); font-size:var(--ui-font-size-caption); font-variant-numeric:var(--ui-numeric-variant); text-align:center; }
+ .ui-status-tab[aria-current="page"] .ui-status-tab-count { background:var(--ui-brand); color:var(--ui-on-brand); }
+
+ /* Thanh công cụ dính: giữ tab và số kết quả trong tầm mắt khi cuộn bảng dài.
+    `top` bằng đúng chiều cao thanh trên cùng để không bị nó che. */
+ .ui-list-toolbar { position:sticky; top:var(--ui-shell-header-height); z-index:var(--ui-layer-sticky); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--ui-space-2) var(--ui-space-4); padding-block:var(--ui-space-2); background:var(--ui-surface); border-bottom:var(--ui-border-width) solid var(--ui-card-border); }
+ .ui-card:not(.ui-card--table):not(.ui-card--sectioned) > .ui-list-toolbar { margin-inline:calc(var(--ui-space-5) * -1); padding-inline:var(--ui-space-5); }
+ .ui-list-toolbar :is(.ui-results-count,.ui-query-note) { margin:0; }
+ .ui-list-toolbar > .ui-list-toolbar-meta { display:flex; flex-wrap:wrap; align-items:center; gap:var(--ui-space-2) var(--ui-space-3); font-size:var(--ui-font-size-small); color:var(--ui-text-muted); }
+ .ui-results-card > .ui-list-toolbar + .ui-query-card { margin-top:var(--ui-space-4); }
+ @media(max-width:767px) {
+  .ui-list-toolbar { flex-wrap:nowrap; overflow:hidden; }
+  .ui-list-toolbar > .ui-list-toolbar-meta { display:none; }
+ }
+
+ /* --- Biểu mẫu hai cột + cột ngữ cảnh (Phương án B, quyết định 23/10) ---
+    Trái: biểu mẫu. Phải: dữ liệu tham chiếu để điền đúng (số phép còn lại, quy
+    tắc, lịch sử gần đây). Cột phải KHÔNG chứa trường nhập nên không làm loãng
+    hợp đồng 4/3/2/1 cột của lưới trường — lưới trường vẫn chạy theo container. */
+ .ui-form-layout { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--ui-space-5); align-items:start; min-width:0; }
+ .ui-form-main { display:grid; gap:var(--ui-space-5); min-width:0; }
+ .ui-form-rail { display:grid; gap:var(--ui-space-4); min-width:0; }
+ .ui-rail-card { padding:var(--ui-space-4); background:var(--ui-surface); border:var(--ui-border-width) solid var(--ui-card-border); border-radius:var(--ui-radius-card); }
+ .ui-rail-card-title { margin:0 0 var(--ui-space-2); font-size:var(--ui-font-size-small); font-weight:var(--ui-weight-label); letter-spacing:.02em; color:var(--ui-text); }
+ .ui-rail-list { display:grid; margin:0; padding:0; list-style:none; }
+ .ui-rail-pair { display:flex; align-items:baseline; justify-content:space-between; gap:var(--ui-space-3); padding-block:var(--ui-space-2); border-bottom:var(--ui-border-width) solid var(--ui-divider); font-size:var(--ui-font-size-small); }
+ .ui-rail-pair:last-child { border-bottom:0; }
+ .ui-rail-pair dt,.ui-rail-pair-label { margin:0; color:var(--ui-text-muted); }
+ .ui-rail-pair dd,.ui-rail-pair-value { margin:0; font-weight:var(--ui-weight-semibold); font-variant-numeric:var(--ui-numeric-variant); white-space:nowrap; }
+ .ui-rail-note { margin:0; font-size:var(--ui-font-size-small); color:var(--ui-text-muted); }
+ .ui-rail-note + .ui-rail-note { margin-top:var(--ui-space-2); }
+ .ui-rail-steps { display:grid; gap:var(--ui-space-2); margin:0; padding-inline-start:var(--ui-space-5); font-size:var(--ui-font-size-small); color:var(--ui-text-muted); }
+ .ui-rail-links { display:grid; gap:var(--ui-space-1); margin:0; padding:0; list-style:none; font-size:var(--ui-font-size-small); }
+ .ui-rail-links a { display:flex; align-items:center; min-height:var(--ui-target-min); color:var(--ui-link); text-decoration:underline; text-underline-offset:.2em; }
+ @media(min-width:1280px) {
+  .ui-form-layout { grid-template-columns:minmax(0,1fr) 20rem; gap:var(--ui-space-6); }
+  .ui-form-rail { position:sticky; top:calc(var(--ui-shell-header-height) + var(--ui-space-4)); }
+ }
+
  .ui-paper-preview { max-width:100%; overflow-x:auto; }
  .ui-paper-heading { display:none; }
 }

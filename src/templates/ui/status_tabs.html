@@ -1,0 +1,8 @@
+{% load ui_components %}{% comment %}
+Dải tab trạng thái dùng chung (Phương án B). Mỗi tab là một liên kết thật nên
+vẫn lọc được khi tắt JavaScript, vẫn mở tab mới và vẫn chia sẻ được URL.
+`status_tabs` do view dựng bằng `_status_tabs()` — mỗi tab gồm
+value/label/count/url/active.
+{% endcomment %}{% if status_tabs %}<nav class="ui-status-tabs no-print" aria-label="{{ aria_label|default:'Lọc theo trạng thái' }}">
+<ul role="list">{% for tab in status_tabs %}<li><a class="ui-status-tab" href="{{ tab.url }}"{% if tab.active %} aria-current="page"{% endif %}><span class="ui-status-tab-label">{{ tab.label }}</span>{% if tab.count != None %}<span class="ui-status-tab-count">{{ tab.count|ui_number }}</span>{% endif %}</a></li>{% endfor %}</ul>
+</nav>{% endif %}

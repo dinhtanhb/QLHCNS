@@ -6,6 +6,10 @@
     {% if can_manage_hr %}<div class="ui-page-actions"><a href="{% url 'portal:hr_contract_create' %}" class="ui-button ui-button--primary">+ Tạo hợp đồng</a></div>{% endif %}
 </header>
 <div class="ui-card">
+    <div class="ui-list-toolbar no-print">
+        {% include "ui/status_tabs.html" with aria_label="Lọc hợp đồng theo trạng thái" %}
+        <p class="ui-results-count ui-list-toolbar-meta" aria-live="polite">Có {{ contracts|length|ui_number }} hợp đồng phù hợp.</p>
+    </div>
     <div class="ui-scroll overflow-x-auto mobile-table-scroll" tabindex="0" role="region" aria-label="Bảng dữ liệu nhân sự">
         <table class="ui-table ui-hr-table ui-table--contracts"><caption>Hợp đồng lao động</caption>
         <colgroup><col class="ui-col-medium"><col class="ui-col-large"><col class="ui-col-medium"><col class="ui-col-small"><col class="ui-col-small"><col class="ui-col-medium"></colgroup>

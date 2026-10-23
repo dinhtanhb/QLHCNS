@@ -2,6 +2,8 @@
 {% load ui_components %}
 {% block title %}{% if employee %}Sửa hồ sơ{% else %}Thêm nhân viên{% endif %}{% endblock %}
 {% block hr_content %}
+<div class="ui-form-layout">
+<div class="ui-form-main">
 <div class="ui-card">
     <h1 class="ui-page-title">{% if employee %}Sửa hồ sơ: {{ employee.full_name|ui_number }}{% else %}Thêm nhân viên mới{% endif %}</h1>
     <form method="post" class="ui-form-stack" data-ui-form>
@@ -40,5 +42,39 @@
             <a href="{% url 'portal:hr_employee_list' %}" class="ui-button ui-button--secondary">Hủy</a>
         </div>
 </form>
+</div>
+</div>
+<aside class="ui-form-rail" aria-label="Thông tin tham chiếu của hồ sơ">
+{% if employee %}
+<section class="ui-rail-card" aria-labelledby="employee-rail-current">
+<h2 class="ui-rail-card-title" id="employee-rail-current">Hồ sơ đang sửa</h2>
+<dl class="ui-rail-list">
+<div class="ui-rail-pair"><dt>Mã nhân viên</dt><dd>{{ employee.employee_code|ui_number }}</dd></div>
+<div class="ui-rail-pair"><dt>Phòng ban</dt><dd>{{ employee.department|default:"—"|ui_number }}</dd></div>
+<div class="ui-rail-pair"><dt>Vị trí</dt><dd>{{ employee.position|default:"—"|ui_number }}</dd></div>
+<div class="ui-rail-pair"><dt>Ngày vào</dt><dd>{{ employee.join_date|ui_date }}</dd></div>
+<div class="ui-rail-pair"><dt>Trạng thái</dt><dd>{% ui_badge "hrm.employee:employment_status" employee.employment_status %}</dd></div>
+</dl>
+<ul class="ui-rail-links">
+<li><a href="{% url 'portal:hr_employee_detail' employee.pk %}">Mở hồ sơ chi tiết</a></li>
+<li><a href="{% url 'portal:hr_contract_create' %}?employee_id={{ employee.pk }}">Tạo hợp đồng cho nhân viên này</a></li>
+</ul>
+</section>
+{% else %}
+<section class="ui-rail-card" aria-labelledby="employee-rail-hint">
+<h2 class="ui-rail-card-title" id="employee-rail-hint">Trước khi lưu</h2>
+<ul class="ui-rail-steps">
+<li>Mã nhân viên không trùng với hồ sơ đã có.</li>
+<li>Phòng ban và vị trí quyết định phạm vi dữ liệu người này được xem.</li>
+<li>Hồ sơ mới chỉ vào định biên khi có hợp đồng Đang hiệu lực.</li>
+</ul>
+</section>
+{% endif %}
+<section class="ui-rail-card" aria-labelledby="employee-rail-rule">
+<h2 class="ui-rail-card-title" id="employee-rail-rule">Dùng ở đâu</h2>
+<p class="ui-rail-note">Họ tên, mã nhân viên và phòng ban xuất hiện trên bảng công, phiếu lương, hợp đồng và báo cáo. Sai ở đây sẽ lan sang các màn hình đó.</p>
+</section>
+<ul class="ui-rail-links"><li><a href="{% url 'portal:hr_employee_list' %}">Về danh sách nhân viên</a></li></ul>
+</aside>
 </div>
 {% endblock %}

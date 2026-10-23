@@ -192,19 +192,20 @@
             <div class="ui-nav-group"><button type="button" class="ui-nav-trigger" data-menu-trigger aria-controls="menu-baocao" aria-expanded="false">{% include '_shell_icon.html' with name='chart' %}<span class="ui-nav-label">Báo cáo</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button><div id="menu-baocao" class="ui-nav-panel" hidden><a href="{{ u_report }}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'report_hub' %}aria-current="page"{% endif %}><span class="ui-nav-label">Báo cáo</span></a></div></div>
             {% endif %}
 
-            {% if can_view_activity_dashboard or can_approve_activity_proposals %}
+            <!-- DỰ ÁN: nhóm luôn hiện với mọi tài khoản đã đăng nhập (quyết định 23/10).
+                 "Giao việc & hoàn tất" tự giới hạn trong việc được giao cho chính mình
+                 nên mọi vai trò đều dùng được; các link giám sát/duyệt chỉ mở theo quyền. -->
             <div class="ui-nav-group">
                 <button type="button" data-menu-trigger aria-controls="menu-hoatdongduan" aria-expanded="false" class="ui-nav-trigger">{% include '_shell_icon.html' with name='folder' %}<span class="ui-nav-label">Dự án</span><span class="ui-nav-chevron">{% include '_shell_icon.html' with name='chevron' %}</span></button>
                 <div id="menu-hoatdongduan" class="ui-nav-panel" hidden>
-                    {% if can_approve_activity_proposals %}<a href="{% url 'portal:activity_proposal_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'activity_proposal_approval_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Duyệt đề xuất hoạt động{% if pending_activity_proposal_count %} <span class="ui-unread-badge ui-pending-badge">{{ pending_activity_proposal_count|ui_number }}</span>{% endif %}</span></a>{% endif %}
                     {% if can_view_activity_dashboard %}
                     <a href="{% url 'portal:activity_dashboard' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'activity_dashboard' %}aria-current="page"{% endif %}><span class="ui-nav-label">Theo dõi hoạt động</span></a>
                     <a href="{% url 'portal:activity_calendar' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'activity_calendar' %}aria-current="page"{% endif %}><span class="ui-nav-label">Lịch hoạt động</span></a>
-                    <a href="{% url 'portal:task_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'task_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Giao việc &amp; hoàn tất</span></a>
                     {% endif %}
+                    <a href="{% url 'portal:task_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'task_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Giao việc &amp; hoàn tất</span></a>
+                    {% if can_approve_activity_proposals %}<a href="{% url 'portal:activity_proposal_approval_list' %}" class="ui-nav-link" data-nav-link {% if request.resolver_match.url_name == 'activity_proposal_approval_list' %}aria-current="page"{% endif %}><span class="ui-nav-label">Duyệt đề xuất hoạt động{% if pending_activity_proposal_count %} <span class="ui-unread-badge ui-pending-badge">{{ pending_activity_proposal_count|ui_number }}</span>{% endif %}</span></a>{% endif %}
                 </div>
             </div>
-            {% endif %}
         </div>
     </nav>
 

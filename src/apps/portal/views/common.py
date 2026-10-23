@@ -26,6 +26,42 @@ def _paginated_context(request, queryset, name, per_page=20):
     return {name: page, 'page_obj': page, 'pagination_query': filters.urlencode()}
 
 
+def _status_tabs(request, queryset, choices, param="status", all_label="Tất cả"):
+    """Dải tab trạng thái cho danh sách (Phương án B, quyết định 23/10).
+
+    `queryset` phải đã áp phạm vi quyền nhưng CHƯA lọc theo `param`, để con số
+    trên tab là số của từng trạng thái chứ không phải số của kết quả đang lọc.
+    Toàn bộ tab chỉ tốn MỘT truy vấn đếm; các tham số lọc khác (q, type…) được
+    giữ nguyên trên mọi tab, `page` bị bỏ để không nhảy sang trang trống.
+    """
+    current = request.GET.get(param, "")
+    counts = {
+        row[param]: row["total"]
+        for row in queryset.order_by().values(param).annotate(total=models.Count("pk"))
+    }
+    base = request.GET.copy()
+    base.pop("page", None)
+    base.pop(param, None)
+
+    def tab_url(value):
+        params = base.copy()
+        if value:
+            params[param] = value
+        query = params.urlencode()
+        return f"{request.path}?{query}" if query else request.path
+
+    tabs = [{
+        "value": "", "label": all_label, "count": sum(counts.values()),
+        "url": tab_url(""), "active": not current,
+    }]
+    for value, label in choices:
+        tabs.append({
+            "value": value, "label": label, "count": counts.get(value, 0),
+            "url": tab_url(value), "active": current == value,
+        })
+    return tabs
+
+
 def _friendly_error(request, exc, user_message, log_context=""):
     """Log lỗi kỹ thuật ở server, chỉ hiển thị thông báo thân thiện cho người dùng.
 

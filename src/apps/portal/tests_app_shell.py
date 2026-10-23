@@ -88,7 +88,10 @@ class AppShellTests(TestCase):
         if permission("view_reports"):
             expected.append(url("report_hub"))
         if permission("view_activity_dashboard"):
-            expected += [url(name) for name in ("activity_dashboard", "activity_calendar", "task_list")]
+            expected += [url(name) for name in ("activity_dashboard", "activity_calendar")]
+        # Quyết định 23/10: nhóm "Dự án" gắn với mọi tài khoản; "Giao việc & hoàn tất"
+        # chỉ đọc việc được giao cho chính người dùng nên không cần quyền giám sát.
+        expected.append(url("task_list"))
         return expected
 
     def test_menu_preserves_link_multiset_for_all_supported_roles_with_and_without_employee(self):

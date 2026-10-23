@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phương án B — đợt 3: năm quyết định của chủ dự án đã vào mã | IHRMS 23/10/2026</title>
+<style>
+:root,html[data-theme="light"]{--bg:#e7ecf4;--surface:#fff;--raised:#f4f6fb;--text:#101828;--muted:#475467;--border:#667085;--divider:#e8ecf3;--brand:#3a4fd0;--on-brand:#fff;--soft:#eef1fd;--ok:#067647;--ok-bg:#ecfdf3;--danger:#b42318;--danger-bg:#fef3f2;--warn:#b54708;--warn-bg:#fffaeb;--shadow:0 1px 2px rgb(16 24 40/.06)}
+html[data-theme="dark"]{--bg:#080c18;--surface:#131a2e;--raised:#1a2340;--text:#e8ecf8;--muted:#a9b4cc;--border:#8b97b3;--divider:#232d4a;--brand:#93a7ff;--on-brand:#0a1020;--soft:#1c2544;--ok:#86efac;--ok-bg:#0f2417;--danger:#fca5a5;--danger-bg:#2a1010;--warn:#fde68a;--warn-bg:#2a1f08;--shadow:none}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:32px 24px 96px}
+header.top{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.mark{width:36px;height:36px;border-radius:10px;background:var(--brand);color:var(--on-brand);display:grid;place-items:center;font-weight:700;font-size:13px}
+.brandline{font-weight:650}.brandline small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.tbtn{margin-left:auto;min-height:40px;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font:inherit;font-size:14px;cursor:pointer}
+h1{font-size:31px;line-height:1.25;margin:0 0 10px;letter-spacing:-.01em}
+.lede{color:var(--muted);margin:0 0 24px;max-width:78ch}
+h2{font-size:20px;margin:38px 0 8px}
+.sec-num{display:block;font-size:12px;font-weight:700;color:var(--brand);letter-spacing:.12em}
+.card{background:var(--surface);border:1px solid var(--divider);border-radius:12px;padding:20px;box-shadow:var(--shadow)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:20px 0 4px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:20px 0 4px}
+@media(max-width:860px){.grid3,.grid2{grid-template-columns:1fr}}
+.big{font-size:28px;font-weight:700;line-height:1.1;margin:2px 0 6px}
+.big small{font-size:13px;font-weight:500;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--divider)}
+th{font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border)}
+code{font:13px/1.5 ui-monospace,Consolas,monospace;background:var(--soft);padding:1px 5px;border-radius:4px}
+.pill{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:650;border:1px solid transparent}
+.pill--ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)}
+.pill--no{background:var(--danger-bg);color:var(--danger);border-color:var(--danger)}
+.pill--warn{background:var(--warn-bg);color:var(--warn);border-color:var(--warn)}
+figure{margin:16px 0 0}
+figure img{width:100%;display:block;border:1px solid var(--divider);border-radius:10px;background:var(--raised)}
+figcaption{color:var(--muted);font-size:13px;margin-top:8px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:860px){.pair{grid-template-columns:1fr}}
+.callout{border-left:3px solid var(--brand);background:var(--soft);border-radius:8px;padding:14px 16px;margin:16px 0}
+.callout p{margin:4px 0}
+.callout--warn{border-left-color:var(--warn);background:var(--warn-bg)}
+.muted{color:var(--muted)}.small{font-size:13.5px}
+ul.tight{margin:10px 0;padding-left:22px}ul.tight li{margin:5px 0}
+ol.tight{margin:10px 0;padding-left:22px}ol.tight li{margin:6px 0}
+footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--divider);color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="mark">IH</div>
+  <div class="brandline">IHRMS — Cổng thông tin nhân viên<small>Báo cáo triển khai · 23/10/2026 · Phương án B đợt 3</small></div>
+  <button class="tbtn" type="button" onclick="var h=document.documentElement;h.dataset.theme=h.dataset.theme==='dark'?'light':'dark'">Sáng / Tối</button>
+</header>
+
+<h1>Năm quyết định của chủ dự án — đã vào mã, đã qua cổng</h1>
+<p class="lede">Bạn chốt 5 điểm. Bốn điểm cần sửa mã, một điểm chỉ cần ghi nhận. Tất cả nằm trong một commit trên <code>main</code>, kèm 826 test và 4 cổng giao diện xanh. Điểm đáng chú ý nhất không nằm trong danh sách bạn duyệt: ảnh bạn gửi cho thấy bảng trong popover "Cơ cấu loại hợp đồng" bị chồng chữ — tôi tìm ra nguyên nhân và sửa luôn.</p>
+
+<div class="grid3">
+  <div class="card"><span class="pill pill--ok">Đã xong</span><div class="big">4<small>/4 việc cần mã</small></div><p class="small muted">Menu Dự án toàn tài khoản · dải tab trạng thái + toolbar dính · biểu mẫu hai cột + cột ngữ cảnh · trần 25 truy vấn.</p></div>
+  <div class="card"><span class="pill pill--ok">Đã sửa</span><div class="big">1<small>lỗi hiển thị trong ảnh bạn gửi</small></div><p class="small muted">Nhãn dài trong bảng popover tràn sang cột số: <code>scrollWidth 93 &gt; clientWidth 77</code>.</p></div>
+  <div class="card"><span class="pill pill--ok">Đã ghi nhận</span><div class="big">1<small>quyết định không cần sửa mã</small></div><p class="small muted">Logo và icon PWA giữ nguyên mark xanh lá <code>#279048</code>.</p></div>
+</div>
+
+<h2><span class="sec-num">MỤC 1</span>Menu Dự án gắn với toàn bộ tài khoản</h2>
+<p>Nhóm "Dự án" trước đây chỉ hiện với vai trò có <code>view_activity_dashboard</code> hoặc <code>can_approve_activity_proposals</code> — nghĩa là nhân viên thường không thấy mục này trong menu, dù họ vẫn có việc được giao. Nay nhóm luôn hiện; bên trong chỉ mở link đúng quyền.</p>
+<ul class="tight">
+  <li><b>"Giao việc &amp; hoàn tất"</b> — mở cho mọi tài khoản. Trang này tự giới hạn trong việc <em>được giao cho chính mình</em> (<code>assigned_to_employee=employee</code>), không phải quyền giám sát, nên không lộ dữ liệu của người khác.</li>
+  <li><b>"Theo dõi hoạt động", "Lịch hoạt động"</b> — vẫn cần <code>view_activity_dashboard</code>.</li>
+  <li><b>"Duyệt đề xuất hoạt động"</b> — vẫn cần <code>approve_activity_proposals</code>, kèm badge số chờ duyệt.</li>
+</ul>
+<div class="callout">
+  <p><b>Một chỗ dễ hỏng khi đổi quyền menu:</b> ô tìm kiếm toàn ứng dụng có bảng đích danh <code>PAGES</code> riêng, và có test bắt hai bên phải khớp. Tôi đổi cả hai (<code>base.html</code> và <code>views/search.py</code>) để gõ "công việc" vẫn ra trang, và menu vẫn có link.</p>
+</div>
+<figure>
+  <img src="nav-project-employee.png" alt="Menu Dự án hiện với tài khoản nhân viên, chỉ có mục Giao việc và hoàn tất">
+  <figcaption>Tài khoản <code>demo-employee</code> (không có quyền dự án): nhóm "Dự án" hiện, bên trong chỉ có "Giao việc &amp; hoàn tất" — đúng một lối đi, không có mục chết.</figcaption>
+</figure>
+
+<h2><span class="sec-num">MỤC 3</span>Tab trạng thái thay một phần bộ lọc + toolbar dính</h2>
+<p>Đây là thay đổi lớn nhất. Dải lọc cũ có ô chọn "Trạng thái" chiếm một ô trong hàng; nay trạng thái thành một dải tab phía trên, mỗi tab kèm số lượng, và cả dải nằm trong thanh dính dưới thanh trên cùng.</p>
+<h3 style="font-size:16px;margin:22px 0 6px">Số trên tab là số thật của từng trạng thái</h3>
+<p>Điểm này quyết định tab có dùng được hay không: nếu đếm sau khi lọc thì mọi tab luôn bằng nhau và vô nghĩa. Hàm <code>_status_tabs()</code> đếm trên queryset <em>trước</em> khi áp bộ lọc trạng thái, và chỉ tốn <b>một</b> truy vấn <code>GROUP BY</code> cho toàn bộ tab. Tab cũng giữ nguyên từ khóa và loại văn bản đang lọc, bỏ <code>page</code> để không rơi vào trang trống.</p>
+<table>
+  <thead><tr><th>Trang</th><th>Trước</th><th>Sau</th><th>Đo được</th></tr></thead>
+  <tbody>
+    <tr><td>Quyết định nhân sự</td><td>Ô chọn trạng thái trong dải lọc (chỉ hiện với người quản lý)</td><td>7 tab + số lượng, giữ <code>q</code></td><td>Tất cả 3 · Bản nháp 1 · Chờ duyệt 1 · Đã ban hành 1 · còn lại 0</td></tr>
+    <tr><td>Công văn</td><td>Ô chọn trạng thái, thiếu lựa chọn "Đã lưu trữ"</td><td>6 tab sinh thẳng từ <code>OfficialDispatch.STATUS_CHOICES</code></td><td>Tab giữ <code>type=Incoming</code>; không thể lệch với model nữa</td></tr>
+    <tr><td>Hợp đồng lao động</td><td>Không có bộ lọc nào, đổ hết 27 dòng</td><td>5 tab + số lượng</td><td>Tất cả 27 · Đang hiệu lực 24 · Nháp 1 · Hết hạn 1 · Chấm dứt 1</td></tr>
+  </tbody>
+</table>
+<div class="callout callout--warn">
+  <p><b>Vì sao chỉ ba trang?</b> Tôi rà toàn bộ 11 trang có dải lọc: chỉ <b>hai</b> trang có bộ lọc trạng thái thật (quyết định, công văn) — phần còn lại lọc theo từ khóa, tháng, năm, khoảng ngày. Cộng thêm trang hợp đồng vốn không có bộ lọc nào. Nên "tab thay một phần bộ lọc" đã phủ hết bề mặt có trạng thái, không phải làm dở.</p>
+</div>
+<div class="pair">
+  <figure><img src="tabs-decisions.png" alt="Danh sách quyết định nhân sự với dải tab trạng thái"><figcaption>Quyết định nhân sự: dải tab thay ô chọn, số kết quả dồn sang phải thanh công cụ.</figcaption></figure>
+  <figure><img src="tabs-dispatches.png" alt="Danh sách công văn với dải tab trạng thái"><figcaption>Công văn: 6 tab sinh từ model, gồm cả "Đã lưu trữ" mà ô chọn cũ bỏ sót.</figcaption></figure>
+</div>
+<h3 style="font-size:16px;margin:26px 0 6px">Thanh dính: đo được, không chỉ "có vẻ dính"</h3>
+<p>Thanh công cụ dùng <code>position:sticky</code> với <code>top:var(--ui-shell-header-height)</code> — biến này do shell cập nhật theo chiều cao thật của thanh trên cùng, nên không bị che khi thanh trên cùng cao lên (breadcrumb xuống dòng). Đo trên trình duyệt thật:</p>
+<table>
+  <thead><tr><th>Phép đo</th><th>Kết quả</th></tr></thead>
+  <tbody>
+    <tr><td><code>position</code> / <code>top</code> của thanh</td><td><code>sticky</code> / <code>129px</code> = đúng chiều cao thanh trên cùng đo được (129px)</td></tr>
+    <tr><td>Sau khi cuộn 600–700px</td><td>Thanh vẫn ở <code>y = 129</code> trong khi bảng chạy bên dưới</td></tr>
+    <tr><td>Tràn ngang ở 390px</td><td>Không (<code>scrollWidth ≤ innerWidth</code>); tab cuộn trong chính nó</td></tr>
+  </tbody>
+</table>
+<figure><img src="tabs-contracts-sticky.png" alt="Thanh tab dính dưới thanh trên cùng khi cuộn bảng hợp đồng"><figcaption>Cuộn giữa bảng hợp đồng: dải tab và số kết quả vẫn nằm trong tầm mắt, tiêu đề trang đã trôi đi — đúng ý đồ của thanh dính.</figcaption></figure>
+
+<h2><span class="sec-num">MỤC 4</span>Biểu mẫu hai cột + cột ngữ cảnh</h2>
+<p>Trái là biểu mẫu, phải là cột ngữ cảnh <b>chỉ đọc</b>: quỹ phép, hồ sơ nhân viên đang chọn, hợp đồng gần nhất, quy tắc ghi nhận. Cột phải không chứa một trường nhập nào — có test khoá điều này, vì nếu nhét input vào đó thì nó thành cột thứ hai của biểu mẫu và phá hợp đồng lưới trường.</p>
+<p>Cột ngữ cảnh dính theo cuộn ở màn ≥1280px, xuống dưới biểu mẫu ở màn hẹp. Lưới trường bên trong vẫn chạy theo container query: đo ở 1756px, cột biểu mẫu rộng <b>1.032px</b> nên vẫn đủ 4 cột trường — không bị ép xuống 3 cột vì có thêm cột phải.</p>
+<div class="grid3">
+  <figure><img src="form-leave.png" alt="Biểu mẫu tạo đơn nghỉ hai cột với cột ngữ cảnh quỹ phép"><figcaption><b>Đơn nghỉ:</b> quỹ phép + cách tính + 3 bước sau khi gửi.</figcaption></figure>
+  <figure><img src="form-contract.png" alt="Biểu mẫu tạo hợp đồng với cột ngữ cảnh hồ sơ và hợp đồng gần nhất"><figcaption><b>Hợp đồng:</b> mở từ hồ sơ nhân viên thì cột phải hiện đúng người đó và hợp đồng gần nhất.</figcaption></figure>
+  <figure><img src="form-employee.png" alt="Biểu mẫu hồ sơ nhân viên với cột ngữ cảnh"><figcaption><b>Hồ sơ nhân viên:</b> tóm tắt hồ sơ đang sửa + lối tắt sang chi tiết và tạo hợp đồng.</figcaption></figure>
+</div>
+<div class="callout">
+  <p><b>Vì sao cột ngữ cảnh có giá trị thật, không phải trang trí:</b> trước đây muốn biết "nhân viên này đang có hợp đồng nào" để tạo hợp đồng nối tiếp, người nhập phải mở tab khác rồi quay lại — và mất dữ liệu đang nhập. Nay thông tin đó nằm ngay cạnh ô nhập.</p>
+</div>
+
+<h2><span class="sec-num">SỬA THÊM</span>Lỗi trong ảnh bạn gửi: bảng popover chồng chữ</h2>
+<p>Ảnh bạn gửi có hai chỗ chữ đè lên nhau trong popover "Cơ cấu loại hợp đồng" và "Định biên 2026". Đây là lỗi thật, không phải ảnh bị nén:</p>
+<ol class="tight">
+  <li><code>ui_controls.css</code> (layer <code>base</code>) đặt <code>table:not(.hcns-paper *) th { white-space: nowrap }</code> cho mọi bảng dữ liệu. Trong popover rộng 340px, nhãn "Hợp đồng không xác định thời hạn" không xuống dòng nên tràn sang cột số.</li>
+  <li>Bảng dùng <code>table-layout:fixed</code> mà không khai bề rộng cột, nên 4 cột chia đều 77px — không cột nào đủ cho nhãn.</li>
+</ol>
+<p>Đo trước khi sửa: <code>scrollWidth 93 &gt; clientWidth 77</code> trên ô nhãn. Sau khi sửa: <code>white-space: normal</code>, cột nhãn 46% (<code>141px</code>), <code>scrollWidth = clientWidth = 141</code> — không còn tràn. Thêm <code>box-shadow</code> để popover đọc ra là lớp nổi, và <code>max-height: min(70vh, 30rem)</code> để không chạy khỏi màn hình khi mở từ thẻ sát đáy.</p>
+<div class="pair">
+  <figure><img src="before-popover-contract.png" alt="Trước: nhãn hợp đồng tràn sang cột phần trăm"><figcaption><b>Trước</b> — ảnh bạn gửi: "Hợp đồng không xác định thời hạn" tràn sang cột tỷ trọng.</figcaption></figure>
+  <figure><img src="popover-fixed.png" alt="Sau: bảng popover xuống dòng đúng cột"><figcaption><b>Sau</b> — nhãn xuống dòng trong cột 141px, số và tỷ trọng thẳng cột, popover có bóng đổ.</figcaption></figure>
+</div>
+
+<h2><span class="sec-num">MỤC 2 &amp; 5</span>Hai quyết định chỉ cần ghi nhận</h2>
+<table>
+  <thead><tr><th>Quyết định</th><th>Đã làm</th></tr></thead>
+  <tbody>
+    <tr><td><b>Duyệt trần 25 truy vấn</b></td><td>Giữ nguyên mã; ghi rõ trong <code>test_home_dashboard.py</code> rằng chủ dự án đã duyệt mức 25 ngày 23/10/2026, kèm lý do (khối "Lịch hôm nay" thêm đúng một truy vấn). Đo lại: trang chủ vẫn ở 25, không phát sinh thêm.</td></tr>
+    <tr><td><b>Logo giữ nguyên</b></td><td>Không chạm <code>img/logo.png</code> và <code>ihrms-pwa-192/512.png</code> (mark xanh lá <code>#279048</code>). Ghi vào nhật ký dự án để lần sau không ai "tiện tay" đổi sang Chàm Đông.</td></tr>
+  </tbody>
+</table>
+
+<h2><span class="sec-num">KIỂM CHỨNG</span>Bốn cổng xanh, một bộ test đầy đủ</h2>
+<table>
+  <thead><tr><th>Cổng</th><th>Kết quả</th><th>Ghi chú</th></tr></thead>
+  <tbody>
+    <tr><td><code>ops/run_tests.py --backend sqlite</code></td><td><span class="pill pill--ok">826 test OK</span> (7 skip)</td><td>+9 test mới cho tab và biểu mẫu hai cột</td></tr>
+    <tr><td><code>ops/run_layout_alignment_audit.py</code></td><td><span class="pill pill--ok">150 route / 6.881 ca / 0 vi phạm / 0 lỗi</span></td><td>9 tài khoản × 7 độ rộng × sáng/tối</td></tr>
+    <tr><td><code>ops/check_ui_contrast.py</code></td><td><span class="pill pill--ok">220 cặp / 0 lỗi</span></td><td>Chữ nhỏ nhất 5,20:1 (sáng) · 5,71:1 (tối)</td></tr>
+    <tr><td><code>ops/run_browser_uat.py --layout-only</code></td><td><span class="pill pill--ok">128 kiểm tra / 32 ảnh / 0 lỗi</span></td><td>Bấm "Sửa hồ sơ" nên có chạm biểu mẫu đã đổi bố cục</td></tr>
+    <tr><td><code>ops/run_dashboard_layout_uat.py</code></td><td><span class="pill pill--ok">4.572 kiểm tra / 48 ảnh / 0 lỗi</span></td><td>Chạy lại sau khi sửa popover — không hồi quy</td></tr>
+  </tbody>
+</table>
+<div class="callout callout--warn">
+  <p><b>Ba test cũ đã phải sửa, và đây là lý do chính đáng:</b> <code>test_project_layout</code> khẳng định dải lọc công văn có đúng ba trường <code>q,type,status</code>. Sau khi trạng thái rời dải lọc sang tab, khẳng định đó sai theo thiết kế mới nên tôi cập nhật thành <code>q,type</code> và <code>q</code> kèm ghi chú quyết định. Tương tự, <code>tests_app_shell</code> và <code>test_global_search</code> phải cập nhật vì "Giao việc" nay hiện với mọi vai trò. Không có cổng nào bị nới.</p>
+</div>
+
+<h2><span class="sec-num">TIẾP THEO</span>Còn lại gì trước khi sang app mobile</h2>
+<ul class="tight">
+  <li><b>Đẩy commit và xem CI</b> — hai commit đợt 2 và đợt 3 đang nằm trên <code>main</code> cục bộ, chưa push. Tôi chờ bạn xem ảnh rồi push một lượt.</li>
+  <li><b>Rollout dải tab cho danh sách khác</b> — công thức đã cố định: 3 dòng ở view (<code>status_tabs = _status_tabs(...)</code>) + đổi ô chọn thành <code>{% include "ui/status_tabs.html" %}</code> + bọc trong <code>.ui-list-toolbar</code>. Trang nào chưa có bộ lọc trạng thái thì phải thêm bộ lọc trước, nên tôi không làm hàng loạt khi chưa có nhu cầu thật.</li>
+  <li><b>App mobile (PWA)</b> — chưa chạm trong đợt này, đúng thứ tự bạn đặt: web trước, mobile sau.</li>
+</ul>
+
+<footer>
+  Báo cáo tạo ngày 23/10/2026 · Ảnh chụp trên ứng dụng thật (dữ liệu tổng hợp, SQLite rời) ở 1756/1440/1024/390px, sáng và tối · Số liệu đo bằng Playwright trên Edge.
+</footer>
+</div>
+</body>
+</html>

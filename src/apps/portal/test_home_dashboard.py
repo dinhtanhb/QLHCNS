@@ -295,6 +295,7 @@ class PhaseOneSmokeTests(TestCase):
         # khối đọc có giới hạn (_agenda, 5 dòng) để hiển thị "Lịch hôm nay". Không
         # khối nào khác tăng; khối "Dự án đang chạy" chỉ chạy khi có
         # view_activity_dashboard nên HR_MANAGER không phát sinh thêm truy vấn.
+        # Chủ dự án đã duyệt mức 25 ngày 23/10/2026 (quyết định 2/5 của đợt này).
         self.assertLessEqual(sum(q["sql"].lstrip().upper().startswith("SELECT") for q in queries),25)
         # Existing idle-session middleware writes only its authentication session.
         writes=[q["sql"] for q in queries if q["sql"].lstrip().upper().startswith(("INSERT","UPDATE","DELETE"))]

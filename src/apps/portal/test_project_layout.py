@@ -59,8 +59,11 @@ class ProjectLayoutTests(TestCase):
         pages = {
             'activity_calendar':['month','cbda'], 'activity_dashboard':['month','cbda'],
             'hcns_catalog':['employee_id'], 'dashboard_people':['metric','on_date','q'],
-            'dispatch_list':['q','type','status'], 'hr_employee_list':['q'],
-            'kpi_score_list':['period'], 'personnel_decision_list':['q','status'],
+            # Quyết định 23/10: trạng thái rời dải lọc sang dải tab (.ui-status-tabs),
+            # nên bộ lọc chỉ còn từ khóa và loại văn bản; `status` vẫn nằm trên URL
+            # do tab sinh ra và vẫn được `Xóa lọc` reset.
+            'dispatch_list':['q','type'], 'hr_employee_list':['q'],
+            'kpi_score_list':['period'], 'personnel_decision_list':['q'],
             'report_budget':['year'], 'report_headcount':['year'],
             'report_hub':['from_date','to_date'], 'report_personnel_changes':['from_date','to_date'],
             'report_timesheet':['month','year'], 'timesheet_month':['month','year'],

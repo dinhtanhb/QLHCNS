@@ -8,15 +8,18 @@
 </div>
 
 <section class="ui-card ui-results-card" aria-label="Danh sách quyết định">
+<div class="ui-list-toolbar no-print">
+{% include "ui/status_tabs.html" with aria_label="Lọc quyết định theo trạng thái" %}
+<p class="ui-results-count ui-list-toolbar-meta" aria-live="polite">Có {{ page_obj.paginator.count|ui_number }} quyết định phù hợp.</p>
+</div>
 <div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Tìm và lọc quyết định" role="search">
 <div class="ui-query-fields">
 {% include "ui/field.html" with id="personnel-decision-list-q" name="q" label="Tìm kiếm" value=query  width="regular" %}
-{% if can_manage_decisions %}{% include "ui/field.html" with id="personnel-decision-list-status" name="status" label="Trạng thái" options_template="ui/query_options/personnel_decision_list-status.html"  width="regular" %}{% endif %}
+{% if selected_status %}<input type="hidden" name="status" value="{{ selected_status }}">{% endif %}
 </div>
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"q,status" %}
 </form>
-<p class="ui-results-count" aria-live="polite">Có {{ page_obj.paginator.count|ui_number }} quyết định phù hợp.</p>
 </div>
 <div class="ui-scroll decision-results" role="region" tabindex="0" aria-label="Danh sách quyết định nhân sự">
   <table class="ui-table ui-hr-table"><caption class="ui-visually-hidden">Quản lý quyết định nhân sự</caption>

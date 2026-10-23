@@ -21,6 +21,7 @@ from apps.notification.services import notify, notify_many
 from apps.security.models import SecurityEvent, User
 from apps.security.permissions import PERMISSION_MATRIX, has_permission
 from apps.security.data_access import visible_personnel_decisions_for
+from apps.portal.views.common import _status_tabs
 
 from .catalog import FORMS, GROUPS, tables_for
 from .exports import export_docx, export_xlsx
@@ -375,6 +376,9 @@ def personnel_decision_list(request):
     valid_statuses = {choice[0] for choice in PersonnelDecision.STATUS_CHOICES}
     if status in valid_statuses:
         decisions = decisions.filter(status=status)
+    # Dải tab trạng thái dựng trên queryset TRƯỚC khi lọc trạng thái để số trên
+    # tab là số của từng trạng thái, không phải số của kết quả đang xem.
+    status_tabs = _status_tabs(request, decisions, PersonnelDecision.STATUS_CHOICES)
     page_obj = Paginator(decisions.order_by("-created_date", "-pk"), 25).get_page(request.GET.get("page"))
     for decision in page_obj.object_list:
         decision.template_title = FORMS.get(decision.template_slug, {}).get("title", decision.template_slug)
@@ -384,6 +388,7 @@ def personnel_decision_list(request):
         "query": query,
         "selected_status": status,
         "status_choices": PersonnelDecision.STATUS_CHOICES,
+        "status_tabs": status_tabs,
         "can_manage_decisions": can_manage,
         "can_approve_decisions": can_approve,
     })

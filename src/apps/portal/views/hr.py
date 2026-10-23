@@ -19,7 +19,7 @@ from apps.payroll.models import EmployeeSalary
 from django.utils import timezone
 from apps.hrm.models import Employee
 from apps.organization.models import Position
-from .common import _friendly_error, _get_employee, _role_code, _paginated_context
+from .common import _friendly_error, _get_employee, _role_code, _paginated_context, _status_tabs
 from .finance import _can_manage_finance, _day_before
 
 
@@ -281,8 +281,19 @@ def hr_employee_history_create(request, pk, history_type):
 def hr_contract_list(request):
     if not _can_manage_hr(request):
         return HttpResponseForbidden("Bạn không có quyền xem danh sách hợp đồng nhân sự.")
-    contracts = Contract.objects.select_related("employee", "contract_type").order_by("-start_date")
-    return render(request, "portal/hr_contract_list.html", {"contracts": contracts, "can_manage_hr": _can_manage_hr(request)})
+    contracts = Contract.objects.select_related("employee", "contract_type")
+    # Tab trạng thái dựng trên toàn bộ hợp đồng trong phạm vi, trước khi lọc,
+    # để số trên tab là phân bố thật của từng trạng thái.
+    status_tabs = _status_tabs(request, contracts, Contract.STATUS_CHOICES)
+    selected_status = request.GET.get("status", "")
+    if selected_status:
+        contracts = contracts.filter(status=selected_status)
+    return render(request, "portal/hr_contract_list.html", {
+        "contracts": contracts.order_by("-start_date"),
+        "status_tabs": status_tabs,
+        "selected_status": selected_status,
+        "can_manage_hr": _can_manage_hr(request),
+    })
 
 
 @login_required
@@ -315,11 +326,28 @@ def hr_contract_create(request):
         except Exception as e:
             _friendly_error(request, e, "Không thể tạo hợp đồng.")
 
-    return render(request, "portal/hr_contract_form.html", {
+    context = {
         "employees": Employee.objects.filter(employment_status__in=["Active", "Probation"]),
         "contract_types": ContractType.objects.all(),
         "selected_employee": request.POST.get("employee") or request.GET.get("employee_id", ""),
-    })
+    }
+    # Cột ngữ cảnh của biểu mẫu hai cột: khi đã chọn nhân viên (từ nút "Tạo hợp
+    # đồng" trên hồ sơ), hiện luôn hồ sơ tóm tắt và hợp đồng gần nhất để người
+    # nhập biết mình đang nối tiếp hợp đồng nào thay vì phải mở tab khác.
+    try:
+        employee_id = int(context["selected_employee"])
+    except (TypeError, ValueError):
+        employee_id = None
+    if employee_id:
+        rail_employee = (
+            Employee.objects.select_related("department", "position").filter(pk=employee_id).first()
+        )
+        if rail_employee:
+            context["rail_employee"] = rail_employee
+            context["rail_current_contract"] = (
+                rail_employee.contracts.select_related("contract_type").order_by("-start_date").first()
+            )
+    return render(request, "portal/hr_contract_form.html", context)
 
 
 @login_required

@@ -54,7 +54,7 @@
  .home-dashboard .home-info summary { display:flex; align-items:center; justify-content:center; width:var(--ui-target-min); min-height:var(--ui-target-min); list-style:none; cursor:pointer; border-radius:var(--ui-radius-control); }
  .home-dashboard .home-info summary::-webkit-details-marker { display:none; }
  .home-dashboard .home-info summary:hover { background:var(--ui-hover-bg); }
- .home-dashboard .home-info-body { position:absolute; right:0; top:100%; z-index:var(--ui-layer-navigation); display:grid; gap:var(--ui-space-2); width:min(340px,calc(100vw - 48px)); padding:var(--ui-space-4); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); background:var(--ui-surface); color:var(--ui-text); overflow-wrap:anywhere; }
+ .home-dashboard .home-info-body { position:absolute; right:0; top:100%; z-index:var(--ui-layer-navigation); display:grid; gap:var(--ui-space-2); width:min(340px,calc(100vw - 48px)); max-height:min(70vh,30rem); overflow:auto; padding:var(--ui-space-4); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); background:var(--ui-surface); color:var(--ui-text); overflow-wrap:anywhere; box-shadow:var(--ui-shadow-overlay); }
  .home-dashboard .home-info-body ul { padding-inline-start:var(--ui-space-4); }
  .home-dashboard .home-list,.home-dashboard .home-capacity,.home-dashboard .home-type-list { list-style:none; padding:0; }
  .home-dashboard .home-list>li { display:flex; align-items:center; justify-content:space-between; gap:var(--ui-space-3); min-height:var(--ui-target-min); padding-block:var(--ui-space-3); border-bottom:var(--ui-border-width) solid var(--ui-divider); }
@@ -110,6 +110,12 @@
  .home-dashboard .home-data-table { width:100%; border-collapse:collapse; table-layout:fixed; font-size:var(--ui-text-label); }
  .home-dashboard .home-data-table :is(th,td) { padding:var(--ui-space-3) var(--ui-space-2); border-bottom:var(--ui-border-width) solid var(--ui-divider); text-align:left; vertical-align:middle; overflow-wrap:anywhere; }
  .home-dashboard .home-data-table tr:last-child :is(th,td) { border-bottom:0; }
+ /* ui_controls.css đặt `th { white-space:nowrap }` cho bảng dữ liệu rộng. Trong
+    popover chỉ rộng 340px, nowrap làm nhãn dài tràn sang cột số (đo được
+    scrollWidth 93 > clientWidth 77). Popover là nơi đọc, không phải bảng so
+    sánh, nên cho phép xuống dòng và dành 46% bề rộng cho cột nhãn. */
+ .home-dashboard .home-data-table :is(thead th,tbody th) { white-space:normal; }
+ .home-dashboard .home-data-table :is(thead th,tbody th):first-child { width:46%; }
  .home-dashboard .home-data-table thead th { color:var(--ui-text-muted); font-weight:var(--ui-weight-medium); }
  .home-dashboard .home-data-table tbody th { font-weight:var(--ui-weight-medium); }
  .home-dashboard .home-table-secondary { display:block; font-weight:var(--ui-font-weight-body); }

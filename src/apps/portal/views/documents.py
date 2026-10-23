@@ -12,7 +12,7 @@ from apps.organization.models import Department
 from apps.hrm.models import Employee
 from apps.document.models import Document, DocumentApproval
 from apps.reporting.views import _can_view_reports
-from .common import _friendly_error, _get_employee, _role_code, _paginated_context
+from .common import _friendly_error, _get_employee, _role_code, _paginated_context, _status_tabs
 
 
 
@@ -116,8 +116,6 @@ def dispatch_list(request):
         qs = qs.filter(dispatch_type=dispatch_type)
 
     status = request.GET.get("status")
-    if status:
-        qs = qs.filter(status=status)
 
     search = request.GET.get("q")
     if search:
@@ -127,11 +125,18 @@ def dispatch_list(request):
             models.Q(issuing_organization__icontains=search)
         )
 
+    # Tab trạng thái đếm trên tập đã lọc loại văn bản + từ khóa nhưng CHƯA lọc
+    # trạng thái, nên số trên tab khớp với những gì người dùng sắp thấy.
+    status_tabs = _status_tabs(request, qs, OfficialDispatch.STATUS_CHOICES)
+    if status:
+        qs = qs.filter(status=status)
+
     return render(request, "portal/dispatch_list.html", {
         **_paginated_context(request, qs.order_by('-issue_date', '-pk'), 'dispatches'),
         "selected_type": dispatch_type or "",
         "selected_status": status or "",
         "search_query": search or "",
+        "status_tabs": status_tabs,
         "is_management": is_mgmt,
         "can_export_dispatches": _can_view_reports(request),
     })
