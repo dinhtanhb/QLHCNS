@@ -15,10 +15,16 @@
 <p>Liên hệ Phòng Nhân sự để liên kết hồ sơ và sử dụng thao tác cá nhân.</p>{% if profile_setup %}<a class="home-text-link" href="{{ profile_setup.href }}">{{ profile_setup.label }} →</a>{% endif %}</div>
 </section>{% endif %}
 {% include 'portal/dashboard/_kpi_main.html' %}
+<div class="home-dashboard-body">
+<div class="home-dashboard-stream">
 {% if employee %}{% include 'portal/dashboard/_my_work.html' %}{% endif %}
 {% if dashboard_layout.project_allowed %}{% include 'portal/dashboard/_group_projects.html' %}{% endif %}
 {% if dashboard_layout.show_hr %}{% include 'portal/dashboard/_group_hr.html' %}{% endif %}
 {% if dashboard_layout.show_admin %}{% include 'portal/dashboard/_group_admin.html' %}{% endif %}
 {% if dashboard_layout.recruitment %}{% include 'portal/dashboard/_group_recruitment.html' %}{% endif %}
+</div>
+{% include 'portal/dashboard/_rail.html' %}
+</div>
+{% include 'portal/dashboard/_secondary_metrics.html' %}
 </div>
 {% endblock %}

@@ -245,4 +245,31 @@ def grouped_dashboard(user, context, presentation):
     if admin:layout["groups"].append(dict(key="admin",label="Hành chính"))
     if recruitment:layout["groups"].append(dict(key="recruitment",label="Tuyển dụng"))
     layout["show_hr"],layout["show_admin"]=hr,admin
+    # Phương án B: cột phải. Khối lịch luôn hiện (kể cả khi hôm nay trống) vì
+    # "hôm nay không có sự kiện" là thông tin; khối dự án chỉ hiện khi có dữ liệu.
+    agenda=sections.get("agenda")
+    layout["agenda"]=dict(agenda,rows=agenda.get("rows",[])) if agenda else None
+    running=sections.get("running_projects")
+    layout["running_projects"]=dict(running,rows=running.get("rows",[])) if running and running.get("rows") else None
+    layout["has_rail"]=bool(layout["agenda"] or layout["running_projects"])
+
+    # Dải số liệu thứ hai ở đáy: chỉ số tổng hợp đã có trong snapshot, không đọc
+    # thêm; bỏ mục trùng nhãn với dải KPI để không lặp số trên cùng màn hình.
+    secondary=[]
+    def add_secondary(label,value,href,icon):
+        if value is None or any(item.get("label")==label for item in layout["main"]):return
+        if any(item["label"]==label for item in secondary):return
+        secondary.append(dict(label=label,value=value,href=href,icon=icon))
+    contracts=sections.get("contracts") or {}
+    add_secondary("Hợp đồng đang hiệu lực",contracts.get("total"),
+                  reverse("portal:hr_contract_list") if has_permission(user,"manage_hr") else None,"contract")
+    queue_rows=(sections.get("queue") or {}).get("rows") or []
+    if queue_rows:add_secondary("Đơn nghỉ chờ duyệt",queue_rows[0].get("value"),queue_rows[0].get("href"),"checklist")
+    candidates=sections.get("candidates") or {}
+    add_secondary("Ứng viên đang xử lý",candidates.get("value"),candidates.get("cta"),"people")
+    postings=sections.get("postings") or {}
+    add_secondary("Tin tuyển dụng đang mở",postings.get("value"),postings.get("cta"),"document")
+    joined=sections.get("joined") or {}
+    add_secondary("Vào làm trong tháng",joined.get("value"),joined.get("href"),"person")
+    layout["secondary"]=secondary if len(secondary)>=2 else []
     return layout

@@ -1,0 +1,6 @@
+{% load ui_components %}{% if dashboard_layout.secondary %}<section class="home-secondary" id="dashboard-secondary" aria-label="Chỉ số tổng hợp">
+{% for item in dashboard_layout.secondary %}{% if item.href %}<a href="{{ item.href }}" class="home-secondary-item">{% else %}<div class="home-secondary-item">{% endif %}
+<span class="home-secondary-label">{% include '_shell_icon.html' with name=item.icon|default:'people' %}{{ item.label }}</span>
+<strong class="home-secondary-value">{{ item.value|ui_number }}</strong>
+{% if item.href %}</a>{% else %}</div>{% endif %}{% endfor %}
+</section>{% endif %}

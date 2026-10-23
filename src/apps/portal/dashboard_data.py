@@ -1,5 +1,5 @@
 """Phase-one read-only homepage data. Gates precede queries; no monetary DTOs."""
-from datetime import timedelta
+from datetime import datetime, time, timedelta
 from decimal import Decimal
 import logging
 import math
@@ -12,7 +12,8 @@ from django.utils import timezone
 from apps.contract.models import Contract
 from apps.hrm.models import Employee
 from apps.organization.models import Department
-from apps.planning.models import HeadcountPlan, with_headcounts
+from apps.planning.models import Event, HeadcountPlan, with_headcounts
+from apps.project.models import Project
 from apps.security.data_access import managed_departments_for
 from apps.security.permissions import get_role_code, has_permission
 from apps.portal.selectors import approvable_leave_requests
@@ -153,6 +154,41 @@ def _queue(user):
         href=reverse("portal:leave_approval_list"), note="Theo danh sách Pending; không phải số đơn có thể tự duyệt.") ]}
 
 
+RAIL_LIMIT = 4
+
+
+def _agenda(today, employee):
+    """Lịch hôm nay: sự kiện bắt đầu trong ngày, cùng phạm vi với trang Sự kiện.
+
+    Đọc 5 dòng để biết còn dòng bị cắt mà không tốn thêm truy vấn đếm.
+    """
+    zone = timezone.get_current_timezone()
+    start = timezone.make_aware(datetime.combine(today, time.min), zone)
+    end = timezone.make_aware(datetime.combine(today + timedelta(days=1), time.min), zone)
+    qs = Event.objects.filter(start_time__gte=start, start_time__lt=end)
+    department_id = employee.department_id if employee is not None and not employee.is_deleted else None
+    # Cùng quy tắc với trang Sự kiện: sự kiện toàn Trung tâm, hoặc của phòng mình.
+    qs = qs.filter(Q(department__isnull=True) | Q(department_id=department_id)) if department_id \
+        else qs.filter(department__isnull=True)
+    rows = list(qs.order_by("start_time", "pk").values(
+        "pk", "title", "event_type", "start_time", "end_time", "location")[:RAIL_LIMIT + 1])
+    return dict(state="ready" if rows else "empty", rows=rows[:RAIL_LIMIT],
+                more=len(rows) > RAIL_LIMIT, href=reverse("portal:event_list"))
+
+
+def _running_projects(today):
+    """Dự án đang chạy: còn hoạt động và hôm nay nằm trong khoảng thời gian dự án."""
+    qs = Project.objects.filter(
+        Q(start_date__isnull=True) | Q(start_date__lte=today),
+        Q(end_date__isnull=True) | Q(end_date__gte=today),
+        is_active=True,
+    )
+    rows = list(qs.order_by("end_date", "project_name").values(
+        "pk", "project_code", "project_name", "department__department_name", "end_date")[:RAIL_LIMIT + 1])
+    return dict(state="ready" if rows else "empty", rows=rows[:RAIL_LIMIT],
+                more=len(rows) > RAIL_LIMIT, href=reverse("portal:activity_dashboard"))
+
+
 def dashboard_snapshot(user, employee=None):
     today = timezone.localdate()
     result = dict(generated_at=timezone.now(), operational_date=today, plan_year=today.year,
@@ -209,5 +245,13 @@ def dashboard_snapshot(user, employee=None):
         (employee is not None and not employee.is_deleted)
     ):
         result["sections"]["queue"] = _read_block(lambda: _queue(user))
+    # Phương án B: hai khối cột phải. Mỗi khối có giới hạn dòng và chỉ mở khi
+    # người dùng mở được trang đích, để không tạo lối đi chết.
+    # Hồ sơ đã bị xóa mềm thì không đọc gì thêm: mọi khối khác cũng rỗng, và hợp
+    # đồng zero-query của tài khoản không còn phạm vi vẫn giữ nguyên.
+    if employee is None or not employee.is_deleted:
+        result["sections"]["agenda"] = _read_block(lambda: _agenda(today, employee))
+        if has_permission(user, "view_activity_dashboard"):
+            result["sections"]["running_projects"] = _read_block(lambda: _running_projects(today))
     result["sections"].update(phase2_sections(user, employee, today, _read_block))
     return result

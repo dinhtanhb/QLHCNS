@@ -105,11 +105,13 @@
  .ui-col-medium { width:var(--ui-table-col-medium); }
  .ui-col-large { width:var(--ui-table-col-large); }
  .ui-table--periods { min-width:calc(var(--ui-table-col-small) * 2 + var(--ui-table-col-medium) * 2); }
- .ui-table--employees { min-width:calc(var(--ui-table-col-medium) * 5); }
- .ui-table--employees-readonly { min-width:calc(var(--ui-table-col-medium) * 4); }
+ .ui-table--employees { min-width:calc(var(--ui-table-col-medium) * 5 + var(--ui-table-col-small)); }
+ .ui-table--employees-readonly { min-width:calc(var(--ui-table-col-medium) * 5 + var(--ui-table-col-small)); }
  .ui-table--contracts { min-width:calc(var(--ui-table-col-small) * 2 + var(--ui-table-col-medium) * 3 + var(--ui-table-col-large)); }
  .ui-table-link { display:flex; align-items:center; min-height:var(--ui-target-min); max-width:100%; white-space:normal; overflow-wrap:anywhere; color:var(--ui-link); text-decoration:underline; text-underline-offset:.2em; }
  .ui-table-link:focus-visible { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:var(--ui-focus-offset); }
+ /* Phương án B: ô ngày không xuống dòng và dùng chữ số đều cột để so sánh theo chiều dọc. */
+ .ui-table-date { white-space:nowrap; font-variant-numeric:var(--ui-numeric-variant); }
 
  .ui-detail-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--ui-space-4) var(--ui-space-6); }
  .ui-detail-item { min-width:0; }

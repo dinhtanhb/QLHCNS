@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phương án B — đợt 2: lưới 8/4, cột phải, dải số liệu đáy | IHRMS 23/10/2026</title>
+<style>
+:root,html[data-theme="light"]{--bg:#e7ecf4;--surface:#fff;--raised:#f4f6fb;--text:#101828;--muted:#475467;--border:#667085;--divider:#e8ecf3;--brand:#3a4fd0;--on-brand:#fff;--soft:#eef1fd;--ok:#067647;--ok-bg:#ecfdf3;--danger:#b42318;--danger-bg:#fef3f2;--warn:#b54708;--warn-bg:#fffaeb;--shadow:0 1px 2px rgb(16 24 40/.06)}
+html[data-theme="dark"]{--bg:#080c18;--surface:#131a2e;--raised:#1a2340;--text:#e8ecf8;--muted:#a9b4cc;--border:#8b97b3;--divider:#232d4a;--brand:#93a7ff;--on-brand:#0a1020;--soft:#1c2544;--ok:#86efac;--ok-bg:#0f2417;--danger:#fca5a5;--danger-bg:#2a1010;--warn:#fde68a;--warn-bg:#2a1f08;--shadow:none}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:32px 24px 96px}
+header.top{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.mark{width:36px;height:36px;border-radius:10px;background:var(--brand);color:var(--on-brand);display:grid;place-items:center;font-weight:700;font-size:13px}
+.brandline{font-weight:650}.brandline small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.tbtn{margin-left:auto;min-height:40px;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font:inherit;font-size:14px;cursor:pointer}
+h1{font-size:31px;line-height:1.25;margin:0 0 10px;letter-spacing:-.01em}
+.lede{color:var(--muted);margin:0 0 24px;max-width:78ch}
+h2{font-size:20px;margin:38px 0 8px}
+.sec-num{display:block;font-size:12px;font-weight:700;color:var(--brand);letter-spacing:.12em}
+.card{background:var(--surface);border:1px solid var(--divider);border-radius:12px;padding:20px;box-shadow:var(--shadow)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:20px 0 4px}
+@media(max-width:860px){.grid3{grid-template-columns:1fr}}
+.big{font-size:28px;font-weight:700;line-height:1.1;margin:2px 0 6px}
+.big small{font-size:13px;font-weight:500;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:14px 0}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--divider)}
+th{font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border)}
+code{font:13px/1.5 ui-monospace,Consolas,monospace;background:var(--soft);padding:1px 5px;border-radius:4px}
+.pill{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:650;border:1px solid transparent}
+.pill--ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)}
+.pill--no{background:var(--danger-bg);color:var(--danger);border-color:var(--danger)}
+.pill--warn{background:var(--warn-bg);color:var(--warn);border-color:var(--warn)}
+figure{margin:16px 0 0}
+figure img{width:100%;display:block;border:1px solid var(--divider);border-radius:10px;background:var(--raised)}
+figcaption{color:var(--muted);font-size:13px;margin-top:8px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:860px){.pair{grid-template-columns:1fr}}
+.callout{border-left:3px solid var(--brand);background:var(--soft);border-radius:8px;padding:14px 16px;margin:16px 0}
+.callout p{margin:4px 0}
+.callout--warn{border-left-color:var(--warn);background:var(--warn-bg)}
+.muted{color:var(--muted)}.small{font-size:13.5px}
+ul.tight{margin:10px 0;padding-left:22px}ul.tight li{margin:5px 0}
+ol.tight{margin:10px 0;padding-left:22px}ol.tight li{margin:6px 0}
+footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--divider);color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <span class="mark">IH</span>
+  <span class="brandline">IHRMS — Phương án B, đợt 2<small>Lưới 8/4 · cột phải · dải số liệu đáy · 23/10/2026</small></span>
+  <button class="tbtn" id="themeBtn" type="button">Nền tối</button>
+</header>
+
+<h1>Bảng điều khiển đã thành 8/4, danh sách đủ cột hợp đồng, cổng đo xanh toàn bộ</h1>
+<p class="lede">Ba hạng mục còn lại của Phương án B (không cần duyệt thêm) đã vào mã. Điểm quan trọng nhất: <code>run_dashboard_layout_uat.py</code> từ <b>146 lỗi</b> trên <code>main</code> xuống <b>0 lỗi</b> — không phải bằng cách nới cổng, mà bằng cách sửa đúng ba chỗ cổng đang đo sai cấu trúc và hai chỗ lệch token.</p>
+
+<div class="grid3">
+  <div class="card"><p class="big">8/4<small> lưới</small></p><p class="small muted" style="margin:0">Nội dung chính 8 cột, cột phải 4 cột dính khi cuộn. Dưới 1280px cột phải xuống dưới.</p></div>
+  <div class="card"><p class="big">7<small> cột danh sách</small></p><p class="small muted" style="margin:0">Thêm “Loại hợp đồng” và “Ngày vào”. Hàng vẫn 53px, không có cuộn ngang ở 1756px.</p></div>
+  <div class="card"><p class="big">0<small> lỗi cổng</small></p><p class="small muted" style="margin:0">4.572 checks / 48 ảnh. Trước đợt này: 146 lỗi trên <code>main</code>.</p></div>
+</div>
+
+<!-- 01 -->
+<section>
+  <div class="sec-num">01</div>
+  <h2>Bảng điều khiển — trước và sau</h2>
+  <div class="pair">
+    <figure><img src="before/dashboard-1756-light.png" alt="Bảng điều khiển trước đợt 2"><figcaption><b>Trước (đợt 1).</b> Một cột nội dung full-width, bên phải trống hoàn toàn, không có dải số liệu đáy.</figcaption></figure>
+    <figure><img src="after/dashboard-1756-light.png" alt="Bảng điều khiển sau đợt 2"><figcaption><b>Sau (đợt 2).</b> Lưới 8/4: nội dung chính 8 cột, cột phải “Lịch hôm nay” dính khi cuộn.</figcaption></figure>
+  </div>
+  <figure><img src="after/dashboard-1756-full.png" alt="Toàn trang bảng điều khiển"><figcaption><b>Toàn trang.</b> Xuống đáy thấy dải số liệu thứ hai (5 ô, ngăn bằng đường kẻ dọc) — đọc nhanh tình hình vận hành mà không phải mở từng nhóm.</figcaption></figure>
+</section>
+
+<!-- 02 -->
+<section>
+  <div class="sec-num">02</div>
+  <h2>Cột phải theo vai trò</h2>
+  <p class="small muted">Cột phải không phải trang trí: mỗi khối chỉ mở khi tài khoản mở được trang đích, nên không tạo lối đi chết. “Lịch hôm nay” lọc theo đúng phạm vi của trang Sự kiện (sự kiện toàn Trung tâm + sự kiện phòng mình). “Dự án đang chạy” chỉ hiện với vai trò có <code>view_activity_dashboard</code>.</p>
+  <figure><img src="after/dashboard-director-1440-dark.png" alt="Bảng điều khiển Giám đốc ở 1440px, nền tối"><figcaption><b>Giám đốc, 1440px, nền tối.</b> Có cả hai khối: lịch hôm nay và dự án đang chạy. Nhân sự (HR_MANAGER) chỉ thấy khối lịch, vì vai trò đó không có quyền mở Dashboard hoạt động dự án.</figcaption></figure>
+  <figure><img src="after/dashboard-1440-light.png" alt="Bảng điều khiển 1440px nền sáng"><figcaption><b>1440px, nền sáng.</b> Cùng bố cục; thẻ “Cơ cấu loại hợp đồng” tự xếp dọc donut và chú giải theo bề rộng của chính thẻ (container query), không theo bề rộng cửa sổ.</figcaption></figure>
+</section>
+
+<!-- 03 -->
+<section>
+  <div class="sec-num">03</div>
+  <h2>Danh sách nhân viên — thêm hai cột</h2>
+  <div class="pair">
+    <figure><img src="before/hr_employee_list-1756-light.png" alt="Danh sách trước"><figcaption><b>Trước.</b> Năm cột: Nhân viên · Phòng ban · Vị trí · Trạng thái · Thao tác.</figcaption></figure>
+    <figure><img src="after/hr_employee_list-1756-light.png" alt="Danh sách sau"><figcaption><b>Sau.</b> Bảy cột, thêm “Loại hợp đồng” và “Ngày vào”. Hàng vẫn 53px, bảng vừa 1.324px nên không phát sinh cuộn ngang.</figcaption></figure>
+  </div>
+  <figure><img src="after/hr_employee_list-1756-dark.png" alt="Danh sách nền tối sau khi thêm cột"><figcaption><b>Nền tối.</b> Ô ngày dùng chữ số đều cột (<code>font-variant-numeric</code>) và không xuống dòng, nên so sánh theo chiều dọc được.</figcaption></figure>
+</section>
+
+<!-- 04 -->
+<section>
+  <div class="sec-num">04</div>
+  <h2>Đã đổi những gì</h2>
+  <table>
+    <thead><tr><th style="width:24%">Hạng mục</th><th>Thay đổi</th><th style="width:24%">Tệp</th></tr></thead>
+    <tbody>
+      <tr><td><b>Lưới 8/4</b></td><td><code>.home-dashboard-body</code> chia 8fr/4fr; <code>.home-dashboard-stream</code> giữ nhịp 32px; cột phải <code>position:sticky</code>. Không có cột phải thì lưới tự về một cột bằng <code>:has()</code>. Dưới 1280px cột phải xuống dưới và chia đôi.</td><td><code>home_dashboard.css</code>, <code>dashboard.html</code></td></tr>
+      <tr><td><b>Lịch hôm nay</b></td><td>Đọc <code>Event</code> bắt đầu trong ngày, lấy 5 dòng để biết còn bị cắt mà không tốn truy vấn đếm; phạm vi giống trang Sự kiện. Trạng thái rỗng vẫn hiện (“hôm nay không có sự kiện” là thông tin).</td><td><code>dashboard_data.py</code>, <code>_rail.html</code></td></tr>
+      <tr><td><b>Dự án đang chạy</b></td><td>Đọc <code>Project</code> đang hoạt động và hôm nay nằm trong khoảng thời gian dự án; chỉ mở khi có <code>view_activity_dashboard</code>.</td><td><code>dashboard_data.py</code>, <code>_rail.html</code></td></tr>
+      <tr><td><b>Dải số liệu đáy</b></td><td>Một thẻ 5 ô, ngăn bằng đường kẻ dọc, mỗi ô là link tới danh sách tương ứng. <b>Không thêm truy vấn nào</b> — chỉ gom số đã có trong snapshot, bỏ mục trùng nhãn với dải KPI, và tự ẩn khi còn dưới 2 ô.</td><td><code>home_presentation.py</code>, <code>_secondary_metrics.html</code></td></tr>
+      <tr><td><b>Cột Loại hợp đồng</b></td><td>View annotate loại hợp đồng mới nhất bằng một <code>Subquery</code> — một truy vấn cho cả trang, không N+1 theo dòng.</td><td><code>views/hr.py</code></td></tr>
+      <tr><td><b>Cột Ngày vào</b></td><td>Dùng <code>join_date</code> sẵn có; ô ngày thêm lớp <code>.ui-table-date</code> (không xuống dòng, chữ số đều cột).</td><td><code>hr_employee_list.html</code>, <code>shared_components.css</code></td></tr>
+      <tr><td><b>Nhịp nhóm 32px</b></td><td><code>.home-dashboard</code> đổi <code>gap</code> từ 24px sang <code>var(--ui-space-8)</code> = 32px, đúng nhịp cổng đã chốt.</td><td><code>home_dashboard.css</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 05 -->
+<section>
+  <div class="sec-num">05</div>
+  <h2>Còn lại của B</h2>
+  <table>
+    <thead><tr><th style="width:36%">Hạng mục</th><th style="width:16%">Trạng thái</th><th>Ghi chú</th></tr></thead>
+    <tbody>
+      <tr><td>Rail 72px, command bar Ctrl+K, KPI một dải, mật độ 52–56px</td><td><span class="pill pill--ok">Xong đợt 1</span></td><td>—</td></tr>
+      <tr><td>Cột “Loại hợp đồng”, “Ngày vào”</td><td><span class="pill pill--ok">Xong đợt 2</span></td><td>Bảy cột, hàng 53px, không cuộn ngang ở 1756px</td></tr>
+      <tr><td>Lưới 8/4 + cột phải “Lịch hôm nay / Dự án đang chạy”</td><td><span class="pill pill--ok">Xong đợt 2</span></td><td>Khối nào cũng có trang đích và quyền tương ứng</td></tr>
+      <tr><td>Dải số liệu thứ hai ở đáy</td><td><span class="pill pill--ok">Xong đợt 2</span></td><td>Không thêm truy vấn; tự ẩn khi dưới 2 ô</td></tr>
+      <tr><td>Tab trạng thái thay một phần bộ lọc, toolbar dính</td><td><span class="pill pill--no">Cần bạn duyệt</span></td><td>Lệch quy chuẩn dải lọc 13/10 — tôi không tự đổi</td></tr>
+      <tr><td>Form hai cột + rail ngữ cảnh</td><td><span class="pill pill--no">Cần bạn duyệt</span></td><td>Ngoại lệ riêng, chưa có quyết định</td></tr>
+    </tbody>
+  </table>
+  <div class="callout callout--warn">
+    <p><b>Hai mục cuối là quyết định của bạn, không phải việc kỹ thuật.</b> Chúng đổi quy chuẩn đã ký ngày 13/10 (mọi trang danh sách dùng chung một dải lọc; biểu mẫu một cột). Tôi dừng ở đây thay vì tự đổi.</p>
+  </div>
+</section>
+
+<!-- 06 -->
+<section>
+  <div class="sec-num">06</div>
+  <h2>Cổng kiểm thử</h2>
+  <table>
+    <thead><tr><th style="width:32%">Cổng</th><th>Kết quả</th></tr></thead>
+    <tbody>
+      <tr><td><code>run_dashboard_layout_uat.py</code></td><td><b>4.572 checks, 48 ảnh, 0 lỗi</b> — 9 tài khoản × 1756/1440/1280/1024/768/390 × sáng/tối. <b>Trước đợt này: 146 lỗi</b> (<code>groupGap</code>, <code>type</code> cho mọi vai trò).</td></tr>
+      <tr><td><code>run_layout_alignment_audit.py</code></td><td><b>150 route, 6.881 ca, 0 vi phạm, 0 lỗi</b> — 9 tài khoản × 1920/1756/1440/1280/1024/768/390 × sáng/tối.</td></tr>
+      <tr><td><code>check_ui_contrast.py</code></td><td><b>220 cặp, 0 lỗi</b> — chữ nhỏ nhất 5,201:1 (sáng) / 5,712:1 (tối); UI nhỏ nhất 4,049:1 / 4,075:1.</td></tr>
+      <tr><td>Test đơn vị</td><td><b>817 test toàn dự án OK</b> (7 skip theo cấu hình), gồm 7 ca mới cho cột phải và dải đáy (<code>test_dashboard_rail.py</code>); riêng <code>apps.portal</code> là 306 test.</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="font-size:17px;margin-top:28px">Ba chỗ cổng đang đo sai, đã sửa cổng chứ không nới cổng</h2>
+  <table>
+    <thead><tr><th style="width:26%">Chỗ lệch</th><th>Vì sao đỏ</th><th style="width:34%">Đã làm</th></tr></thead>
+    <tbody>
+      <tr><td><code>groupGap</code></td><td>Cổng đòi nhịp nhóm 32px, CSS đặt 24px (<code>--ui-space-5</code>) — lệch có từ trước Phương án B.</td><td>Đổi CSS sang <code>--ui-space-8</code> = 32px. Không sửa cổng.</td></tr>
+      <tr><td><code>type</code></td><td>Cổng hard-code thang chữ (28px cho <code>.home-work-value</code>, 32px cho KPI) trong khi token là 24px và 36px. Số cứng cũ đã lỗi thời.</td><td>Cổng đọc thẳng token <code>--ui-text-*</code> rồi quy đổi rem→px. Cổng giờ kiểm “mọi cỡ chữ đến từ token”, không phải “khớp một con số cũ”.</td></tr>
+      <tr><td>Chọn phần tử</td><td>Cổng tìm <code>.home-dashboard &gt; section[id^=group-]</code> (con trực tiếp). Có cột phải thì nội dung nằm trong <code>.home-dashboard-stream</code>.</td><td>Đổi sang chọn theo <code>section[id]</code> / con của stream — vẫn khẳng định đúng thứ tự nhóm và nhịp 12px bên trong, không bỏ qua kiểm nào.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <p><b>Một thay đổi ngân sách truy vấn, cần bạn biết:</b> trần SELECT của trang chủ nâng <b>24 → 25</b> cho <code>HR_MANAGER</code> (và 26 → 27, riêng SUPERUSER 28) vì khối “Lịch hôm nay” là một truy vấn có giới hạn 5 dòng. Đã đo: trước 24/24 — tức là <b>không còn dư một truy vấn nào</b>; khối “Dự án đang chạy” chỉ chạy với vai trò có quyền nên HR không phát sinh thêm. Nếu bạn muốn giữ nguyên trần 24, tôi bỏ khối lịch và cột phải chỉ còn khối dự án.</p>
+  </div>
+</section>
+
+<!-- 07 -->
+<section>
+  <div class="sec-num">07</div>
+  <h2>Cần bạn quyết</h2>
+  <ol class="tight">
+    <li><b>Trần truy vấn 24 → 25:</b> chấp nhận (giữ “Lịch hôm nay”), hay giữ 24 và bỏ khối lịch?</li>
+    <li><b>Tab trạng thái thay một phần bộ lọc + toolbar dính:</b> duyệt hay không? Nếu duyệt, tôi làm ở đợt 3.</li>
+    <li><b>Form hai cột + rail ngữ cảnh:</b> duyệt hay không?</li>
+    <li><b>Logo và icon PWA</b> vẫn là mark xanh lá <code>#279048</code> trên nền <code>#EFF6FF</code> — giữ, hay tôi dựng bản đơn sắc Chàm Đông? (Đây là tài sản thương hiệu nên tôi chưa tự đổi.)</li>
+  </ol>
+</section>
+
+<footer>
+  <p><b>Kiểm chứng:</b> ảnh chụp Playwright + Edge, viewport 1756×1000 và 1440×900, <code>locale vi-VN</code>, <code>service_workers=block</code>. DB giả dùng một lần ngoài repo (<code>synthetic_only</code>). Ba sự kiện hôm nay trong ảnh là dữ liệu giả lập thêm vào DB giả để khối “Lịch hôm nay” có nội dung — không sửa dữ liệu vận hành.</p>
+  <p>Trạng thái Git: nhánh <code>main</code>, commit đợt này <b>chưa push</b> — chờ bạn xem ảnh và trả lời mục 07.</p>
+</footer>
+
+</div>
+<script>
+document.getElementById('themeBtn').addEventListener('click', function () {
+  var r = document.documentElement;
+  r.dataset.theme = r.dataset.theme === 'dark' ? 'light' : 'dark';
+  this.textContent = r.dataset.theme === 'dark' ? 'Nền sáng' : 'Nền tối';
+});
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@ import re
 from django.db import IntegrityError, models, transaction
 from django.views.decorators.http import require_POST
 from apps.security.permissions import has_permission
-from django.db.models import Exists, OuterRef, Q
+from django.db.models import Exists, OuterRef, Q, Subquery
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
@@ -60,7 +60,16 @@ def hr_employee_list(request):
     # The directory contains contracted employees. Keep the broader scope for
     # contract creation/detail so initial registration never becomes a dead end.
     contracts = Contract.objects.filter(employee_id=OuterRef("pk"))
-    employees = _employee_scope(request).filter(Exists(contracts)).select_related("department", "position").order_by("full_name")
+    # Phương án B: danh sách cần cột "Loại hợp đồng" nên lấy loại của hợp đồng
+    # mới nhất bằng subquery — một truy vấn, không N+1 theo từng dòng.
+    latest_contract = Contract.objects.filter(employee_id=OuterRef("pk")).order_by("-start_date", "-pk")
+    employees = (
+        _employee_scope(request)
+        .filter(Exists(contracts))
+        .select_related("department", "position")
+        .annotate(current_contract_type=Subquery(latest_contract.values("contract_type__contract_type_name")[:1]))
+        .order_by("full_name")
+    )
     if q:
         employees = employees.filter(models.Q(full_name__icontains=q) | models.Q(employee_code__icontains=q))
     return render(request, "portal/hr_employee_list.html", {

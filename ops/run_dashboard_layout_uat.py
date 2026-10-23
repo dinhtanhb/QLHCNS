@@ -53,8 +53,11 @@ def main():
                         page.evaluate('()=>scrollTo(0,0)')
                         measures=page.locator('.home-dashboard').evaluate(r"""root=>{
                             const rect=x=>{const r=x.getBoundingClientRect();return {y:r.y,h:r.height,w:r.width,bottom:r.bottom}};
+                            // Phương án B: nội dung nằm trong .home-dashboard-stream (8/4), nên
+                            // khối và nhóm được chọn theo section[id] thay vì con trực tiếp.
+                            const stream=root.querySelector('.home-dashboard-stream')||root;
                             return {page:rect(root),document_height:document.documentElement.scrollHeight,
-                             blocks:Object.fromEntries([...root.children].filter(x=>x.id).map(x=>[x.id,rect(x)])),
+                             blocks:Object.fromEntries([...root.querySelectorAll('section[id]')].map(x=>[x.id,rect(x)])),
                              kpis:[...root.querySelectorAll('.home-main-metric')].map(rect),
                              work:[...root.querySelectorAll('.home-work-card')].map(rect),
                              badges:[...root.querySelectorAll('.ui-badge')].filter(x=>x.checkVisibility()).map(x=>({...rect(x),nowrap:getComputedStyle(x).whiteSpace})),
@@ -69,7 +72,7 @@ def main():
                             nested=page.locator('.home-dashboard .ui-card *').evaluate_all('xs=>xs.filter(x=>x.checkVisibility() && ["auto","scroll"].includes(getComputedStyle(x).overflowY) && x.scrollHeight>x.clientHeight+1).map(x=>x.className)')
                             check(not nested,label+' no inner vertical scrolling '+str(nested))
                             check(page.locator('.home-dashboard .ui-card').evaluate_all('xs=>xs.every(x=>x.scrollHeight<=x.clientHeight+1)'),label+' cards fit content')
-                            groups=page.locator('.home-dashboard > section[id^=group-]').evaluate_all('xs=>xs.map(x=>x.id)')
+                            groups=page.locator('.home-dashboard section[id^=group-]').evaluate_all('xs=>xs.map(x=>x.id)')
                             check(groups==[x for x in ['group-projects','group-hr','group-admin','group-recruitment'] if x in groups],label+' business group order')
                             check(not page.locator('.home-dashboard').get_by_text('Thao tác nhanh',exact=True).count(),label+' quick actions removed')
                             check('theo tổng quan cũ' not in page.locator('main').inner_text(),label+' clear labels')
@@ -89,8 +92,18 @@ def main():
  const visible=x=>x.checkVisibility()&&!x.closest('.sr-only,.home-info-body');
  const cards=[...root.querySelectorAll('.ui-card')].filter(visible);
  const body=[...root.querySelectorAll('p,span,a,th,td,dt,dd')].filter(visible);
- const spacing=[...root.children].filter(x=>visible(x)&&x.matches('section'));
- const scales=[['h1',24,32],['h2',18,28],['.ui-kpi-value',32,40],['.home-work-card .home-work-value',28,32],['.home-project-metrics dd,.home-recruitment-metrics .home-work-value',24,32]];
+ const stream=root.querySelector('.home-dashboard-stream')||root;
+ const spacing=[...stream.children].filter(x=>visible(x)&&x.matches('section'));
+ // Thang chữ lấy thẳng từ token thay vì số cứng: cổng kiểm "mọi cỡ chữ trên
+ // bảng điều khiển đến từ token", nên đổi token không làm cổng sai lệch.
+ const rem=parseFloat(getComputedStyle(document.documentElement).fontSize)||16;
+ const token=name=>{const raw=getComputedStyle(root).getPropertyValue(name).trim();
+   return raw.endsWith('rem')?parseFloat(raw)*rem:parseFloat(raw)};
+ const scales=[['h1',token('--ui-text-h1'),token('--ui-leading-h1')],
+   ['h2',token('--ui-text-h2'),token('--ui-leading-h2')],
+   ['.ui-kpi-value',token('--ui-text-kpi'),token('--ui-leading-kpi')],
+   ['.home-work-card .home-work-value',token('--ui-text-work'),token('--ui-leading-stat')],
+   ['.home-project-metrics dd,.home-recruitment-metrics .home-work-value',token('--ui-text-stat'),token('--ui-leading-stat')]];
  const rows=[...root.querySelectorAll('.home-list>li,.home-capacity>li,.home-type-list>li')].filter(visible);
  const targets=[...root.querySelectorAll('a,summary')].filter(visible);
  const overlaps=targets.some((x,i)=>targets.slice(i+1).some(y=>{if(x.contains(y)||y.contains(x))return false;const a=rect(x),b=rect(y);return Math.min(a.right,b.right)-Math.max(a.left,b.left)>1&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>1}));

@@ -134,7 +134,9 @@ class DashboardFollowupTests(TestCase):
                 with CaptureQueriesContext(connection) as queries:
                     self.client.get(reverse('portal:dashboard'))
                 count=sum(q['sql'].lstrip().upper().startswith('SELECT') for q in queries)
-                self.assertLessEqual(count,24,(role,linked))  # Approved phase-two whole-page ceiling.
+                # Approved phase-two whole-page ceiling; Phương án B raises it by
+                # one for the bounded _agenda read behind the "Lịch hôm nay" rail.
+                self.assertLessEqual(count,25,(role,linked))
                 old=sum(q['sql'].lstrip().upper().startswith('SELECT') for q in baseline)
                 matrix[f'{role}-{linked}']={'before_note':old,'after':count}
         print('FOLLOWUP_QUERY_MATRIX='+json.dumps(matrix))

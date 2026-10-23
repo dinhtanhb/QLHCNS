@@ -291,7 +291,11 @@ class PhaseOneSmokeTests(TestCase):
         with CaptureQueriesContext(connection) as queries:
             response=self.client.get(reverse("portal:dashboard"),{"as_of":"1990-01-01","year":"1990"})
         self.assertEqual(response.context["dashboard_snapshot"]["operational_date"],timezone.localdate())
-        self.assertLessEqual(sum(q["sql"].lstrip().upper().startswith("SELECT") for q in queries),24)  # D2-8 approved ceiling.
+        # D2-8 approved ceiling, raised 24 → 25 for Phương án B: cột phải thêm một
+        # khối đọc có giới hạn (_agenda, 5 dòng) để hiển thị "Lịch hôm nay". Không
+        # khối nào khác tăng; khối "Dự án đang chạy" chỉ chạy khi có
+        # view_activity_dashboard nên HR_MANAGER không phát sinh thêm truy vấn.
+        self.assertLessEqual(sum(q["sql"].lstrip().upper().startswith("SELECT") for q in queries),25)
         # Existing idle-session middleware writes only its authentication session.
         writes=[q["sql"] for q in queries if q["sql"].lstrip().upper().startswith(("INSERT","UPDATE","DELETE"))]
         self.assertTrue(all("django_session" in sql.lower() for sql in writes))

@@ -5,7 +5,7 @@
   --ui-dash-donut-size:144px;
   --ui-chart-1:var(--ui-chart-series); --ui-chart-2:var(--ui-info-text); --ui-chart-3:var(--ui-warning-text);
   --ui-chart-4:var(--ui-chart-series-soft); --ui-chart-5:var(--ui-danger-text); --ui-chart-6:var(--ui-text-muted);
-  display:grid; gap:var(--ui-space-5); max-width:var(--ui-content-max-width); margin-inline:auto; min-width:0;
+  display:grid; gap:var(--ui-space-8); max-width:var(--ui-content-max-width); margin-inline:auto; min-width:0;
   color:var(--ui-text); font-size:var(--ui-text-label); line-height:var(--ui-leading-label);
  }
  .home-dashboard :where(p,ul,ol,dl,h1,h2,h3,h4,dd) { margin:0; }
@@ -27,7 +27,7 @@
  .home-dashboard .home-header-actions { justify-content:flex-end; }
  .home-dashboard .home-jumps { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:var(--ui-space-4); }
  .home-dashboard .home-jumps[hidden] { display:none; }
- .home-dashboard>section,.home-dashboard .home-my-work { display:grid; gap:var(--ui-space-3); min-width:0; scroll-margin-top:10rem; }
+ .home-dashboard>:is(section),.home-dashboard .home-dashboard-stream>section,.home-dashboard .home-my-work { display:grid; gap:var(--ui-space-3); min-width:0; scroll-margin-top:10rem; }
  .home-dashboard .home-group-header,.home-dashboard .home-card-header { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--ui-space-3); min-width:0; }
  .home-dashboard .home-card-header h3 { min-width:0; flex:1; font-size:var(--ui-text-h2); line-height:var(--ui-leading-h2); font-weight:var(--ui-weight-semibold); color:var(--ui-text); }
  .home-dashboard .ui-card { display:flex; flex-direction:column; gap:var(--ui-space-4); min-width:0; margin:0; background:var(--ui-surface); border:var(--ui-border-width) solid var(--ui-border-subtle); border-radius:var(--ui-radius-card); box-shadow:none; }
@@ -201,6 +201,46 @@
   .home-dashboard .home-main-kpis { grid-template-columns:minmax(0,1fr); }
   .home-dashboard .home-main-kpis .home-main-metric { padding:var(--ui-space-4); }
   .home-dashboard .home-main-kpis .home-main-metric + .home-main-metric { border-inline-start:0; border-block-start:var(--ui-border-width) solid var(--ui-divider); }
+ }
+
+ /* ------------------------------------------------------------------------
+    Phương án B — lưới 8/4: nội dung chính 8 cột, cột phải 4 cột.
+    Dưới 1280px cột phải xuống dưới để bảng và biểu đồ giữ bề rộng tối thiểu.
+    ------------------------------------------------------------------------ */
+ .home-dashboard .home-dashboard-body { display:grid; grid-template-columns:minmax(0,8fr) minmax(0,4fr); gap:var(--ui-space-8); align-items:start; min-width:0; }
+ .home-dashboard .home-dashboard-body:not(:has(.home-rail)) { grid-template-columns:minmax(0,1fr); }
+ .home-dashboard .home-dashboard-stream { display:grid; gap:var(--ui-space-8); min-width:0; }
+ .home-dashboard .home-rail { display:grid; gap:var(--ui-space-4); min-width:0; position:sticky; top:var(--ui-space-4); }
+ .home-dashboard .home-rail .home-card-header { flex-wrap:wrap; gap:var(--ui-space-2); }
+ .home-dashboard .home-rail .home-list>li { align-items:start; }
+ .home-dashboard .home-rail-empty { color:var(--ui-text-muted); }
+ .home-dashboard .home-rail-main { display:grid; min-width:0; line-height:1.35; }
+ .home-dashboard .home-rail-main strong { font-weight:var(--ui-weight-medium); overflow-wrap:anywhere; }
+ .home-dashboard .home-rail-main span,.home-dashboard .home-rail-meta span { color:var(--ui-text-muted); overflow-wrap:anywhere; }
+ .home-dashboard .home-rail-meta { display:grid; justify-items:end; white-space:nowrap; font-variant-numeric:var(--ui-numeric-variant); }
+ /* Lưới 8/4 thu hẹp thẻ xuống còn ~370px: donut và chú giải phải xếp dọc theo
+    bề rộng của chính thẻ, không theo bề rộng cửa sổ. */
+ .home-dashboard .home-row>.ui-card { container-type:inline-size; }
+ @container (max-width:26rem) {
+  .home-dashboard .dashboard-distribution { flex-direction:column; align-items:stretch; }
+  .home-dashboard .dashboard-donut-wrap { align-self:center; }
+ }
+ @media(max-width:1279px) {
+  .home-dashboard .home-dashboard-body { grid-template-columns:minmax(0,1fr); }
+  .home-dashboard .home-rail { position:static; grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr)); }
+ }
+
+ /* Dải số liệu thứ hai ở đáy: một thẻ, các ô ngăn bằng đường kẻ dọc. */
+ .home-dashboard .home-secondary { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr)); column-gap:0; row-gap:var(--ui-space-3); background:var(--ui-surface); border:var(--ui-border-width) solid var(--ui-card-border); border-radius:var(--ui-radius-card); overflow:hidden; }
+ .home-dashboard .home-secondary-item { display:grid; align-content:start; gap:var(--ui-space-1); padding:var(--ui-space-4) var(--ui-space-5); border-inline-start:var(--ui-border-width) solid var(--ui-divider); min-width:0; color:var(--ui-text); text-decoration:none; }
+ .home-dashboard .home-secondary-item:first-child { border-inline-start:0; }
+ .home-dashboard a.home-secondary-item:hover { background:var(--ui-hover-bg); }
+ .home-dashboard .home-secondary-label { display:flex; align-items:center; gap:var(--ui-space-2); color:var(--ui-text-muted); font-weight:var(--ui-weight-label); }
+ .home-dashboard .home-secondary-value { font-size:var(--ui-text-stat); line-height:var(--ui-leading-stat); font-weight:var(--ui-weight-semibold); font-variant-numeric:var(--ui-numeric-variant); }
+ /* Một cột thì đường ngăn chuyển từ dọc sang ngang, nếu không sẽ thành vạch thừa bên trái. */
+ @media(max-width:767px) {
+  .home-dashboard .home-secondary-item { border-inline-start:0; }
+  .home-dashboard .home-secondary-item + .home-secondary-item { border-block-start:var(--ui-border-width) solid var(--ui-divider); }
  }
 }
 }

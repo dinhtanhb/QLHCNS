@@ -15,12 +15,14 @@
 <div class="ui-query-meta"><p class="ui-results-count" aria-live="polite">Có {{ page_obj.paginator.count|ui_number }} nhân viên phù hợp.</p>
 {% if can_manage_hr %}<p class="ui-query-note">Chỉ hiển thị hồ sơ đã có hợp đồng. <a href="{% url 'portal:hr_contract_create' %}">Tạo hợp đồng cho hồ sơ mới</a></p>{% endif %}</div></div>
 {% if employees %}<div class="ui-scroll overflow-x-auto mobile-table-scroll" role="region" tabindex="0" aria-label="Danh sách nhân viên; cuộn ngang để xem đầy đủ cột">
-<table class="ui-table ui-table--employees{% if not can_manage_hr %} ui-table--employees-readonly{% endif %}"><caption class="ui-visually-hidden">Hồ sơ nhân viên trong phạm vi được xem</caption><colgroup><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium">{% if can_manage_hr %}<col class="ui-col-medium">{% endif %}</colgroup><thead><tr><th scope="col">Nhân viên</th><th scope="col">Phòng ban</th><th scope="col">Vị trí</th><th scope="col">Trạng thái</th>{% if can_manage_hr %}<th scope="col" class="ui-actions">Thao tác</th>{% endif %}</tr></thead><tbody>
+<table class="ui-table ui-table--employees{% if not can_manage_hr %} ui-table--employees-readonly{% endif %}"><caption class="ui-visually-hidden">Hồ sơ nhân viên trong phạm vi được xem</caption><colgroup><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-medium"><col class="ui-col-small"><col class="ui-col-medium">{% if can_manage_hr %}<col class="ui-col-medium">{% endif %}</colgroup><thead><tr><th scope="col">Nhân viên</th><th scope="col">Phòng ban</th><th scope="col">Vị trí</th><th scope="col">Loại hợp đồng</th><th scope="col">Ngày vào</th><th scope="col">Trạng thái</th>{% if can_manage_hr %}<th scope="col" class="ui-actions">Thao tác</th>{% endif %}</tr></thead><tbody>
         {% for e in employees %}
         <tr>
             <th scope="row"><div class="ui-person"><span class="ui-person-avatar" aria-hidden="true">{{ e.full_name|slice:":1"|upper }}</span><span class="ui-person-body"><a href="{% url 'portal:hr_employee_detail' e.pk %}" class="ui-person-name">{{ e.full_name|ui_number }}</a><span class="ui-person-code">{{ e.employee_code|ui_number }}</span></span></div></th>
             <td >{{ e.department|ui_number }}</td>
             <td >{{ e.position|ui_number }}</td>
+            <td >{{ e.current_contract_type|default:"—" }}</td>
+            <td class="ui-table-date">{{ e.join_date|ui_date }}</td>
             <td>{% ui_badge "hrm.employee:employment_status" e.employment_status %}</td>
             {% if can_manage_hr %}
             <td class="ui-actions">

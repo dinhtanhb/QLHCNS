@@ -202,7 +202,12 @@ class DashboardPhase2Tests(TestCase):
                 selects=sum(q['sql'].lstrip().upper().startswith('SELECT') for q in captured)
                 # Two independent read scopes now authorize leave history and
                 # the approval queue by reporting line; their cost is bounded.
-                self.assertLessEqual(selects,26,(role,linked))
+                # Phương án B adds at most two bounded rail reads: _agenda always
+                # (1) and _running_projects only for roles with
+                # view_activity_dashboard (1). Ceiling 26 → 27 covers the first;
+                # SUPERUSER holds both and is measured separately below.
+                ceiling = 28 if role == 'SUPERUSER' else 27
+                self.assertLessEqual(selects,ceiling,(role,linked))
                 matrix[f'{role}-{linked}']={'selects':selects,'cold_seconds':round(cold,4),
                     'p95_seconds':round(sorted(times)[math.ceil(len(times)*.95)-1],4)}
         print('PHASE2_QUERY_MATRIX='+json.dumps(matrix))
