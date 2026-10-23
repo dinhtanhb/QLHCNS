@@ -79,12 +79,15 @@ def main():
                             if page.locator('#dashboard-my-work').count():
                                 check(page.locator('#dashboard-my-work a[href="/portal/leave/create/"]').count()==1,label+' own leave creation')
                                 check(page.locator('#dashboard-my-work a[href="/portal/leave/"]').count()==1,label+' own leave list')
-                            grids=page.locator('.home-row,.home-my-work-grid').evaluate_all('xs=>xs.map(g=>[...g.children].map(x=>{let r=x.getBoundingClientRect();return {y:r.y,h:r.height,w:r.width}}))')
+                            grids=page.locator('.home-row,.home-my-work-grid').evaluate_all('xs=>xs.map(g=>({naturalHeight:!!g.closest("#group-hr"),cards:[...g.children].map(x=>{let r=x.getBoundingClientRect();return {y:r.y,h:r.height,w:r.width}})}))')
                             if width>=1024:
-                                for rows in grids:
+                                for grid in grids:
+                                    rows=grid['cards']
                                     if len(rows)>1:
                                         check(max(x['y'] for x in rows)-min(x['y'] for x in rows)<1.1,label+' row top alignment')
-                                        check(max(x['h'] for x in rows)-min(x['h'] for x in rows)<1.1,label+' equal card heights')
+                                        # HR summaries follow content height per the compact-layout request.
+                                        if not grid['naturalHeight']:
+                                            check(max(x['h'] for x in rows)-min(x['h'] for x in rows)<1.1,label+' equal card heights')
                                 ratios=page.locator('.home-row:not(.home-row--single),.home-my-work-grid').evaluate_all('xs=>xs.filter(x=>x.children.length===2).map(x=>x.children[0].getBoundingClientRect().width/x.children[1].getBoundingClientRect().width)')
                                 check(all(abs(ratio-1.5)<0.01 for ratio in ratios),label+' paired content is 60/40')
                             quality=page.locator('.home-dashboard').evaluate(r"""root=>{
@@ -118,7 +121,8 @@ def main():
   groupGap:near(parseFloat(getComputedStyle(root).rowGap),24),
   sectionGap:spacing.filter(x=>x.children.length>1).every(x=>near(parseFloat(getComputedStyle(x).rowGap),12)),
   type:scales.every(([selector,size,line])=>[...root.querySelectorAll(selector)].filter(visible).every(x=>near(parseFloat(getComputedStyle(x).fontSize),size)&&near(parseFloat(getComputedStyle(x).lineHeight),line))),
-  rows:rows.every(x=>rect(x).height>=(x.querySelector('a')?43.5:39.5)),
+  // Static HR reading rows use 32px; interactive targets remain 44px below.
+  rows:rows.every(x=>rect(x).height>=(x.querySelector('a')?43.5:x.matches('.home-capacity>li,.home-type-list>li')?31.5:39.5)),
   targets:targets.every(x=>rect(x).height>=43.5&&rect(x).width>=43.5),
   overlaps,
   capacityAligned:innerWidth<1280||['.home-department-name','.home-capacity-track','.home-capacity-value','.home-capacity-alert'].every(align),
