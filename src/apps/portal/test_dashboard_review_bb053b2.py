@@ -75,6 +75,15 @@ class DashboardReviewTests(TestCase):
         self.assertIn('global_leave-private-marker', html)
         self.assertNotIn('class="dashboard-own-leave"', html)
 
+    def test_empty_or_failed_global_source_keeps_personal_disclosure(self):
+        user = self.user('HR_MANAGER', True)
+        for state in ('empty', 'error'):
+            with self.subTest(state=state):
+                html = self.render_dashboard(user, {'global_leave': {'state': state, 'rows': []},
+                                                    'own_leave': self.leave('own_leave')})
+                self.assertIn('class="dashboard-own-leave"', html)
+                self.assertEqual(html.count('own_leave-private-marker'), 1)
+
     def test_unlinked_user_has_no_own_leave_data_or_markup(self):
         user = self.user('HR_MANAGER')
         sections = phase2_sections(user, None, date(2026, 10, 26), lambda builder: builder())
