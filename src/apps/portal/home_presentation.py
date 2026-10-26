@@ -216,8 +216,8 @@ def grouped_dashboard(user, context, presentation):
     layout["joined"] = joined if joined and not any(
         item.get("label") == joined.get("label") for item in layout["main"]
     ) else None
-    leave=sections.get("global_leave") or (sections.get("own_leave") if layout["manager"] else None)
-    layout["leave"] = dict(leave,rows=leave.get("rows",[])[:limit],all_rows=leave.get("rows",[]),total=len(leave.get("rows",[])),key="global_leave" if leave.get("global_scope") else "own_leave") if leave and (leave.get("rows") or leave.get("state")=="error") else None
+    leave=sections.get("global_leave") or sections.get("own_leave")
+    layout["leave"] = dict(leave,rows=leave.get("rows",[])[:limit],all_rows=leave.get("rows",[]),total=len(leave.get("rows",[])),global_scope="global_leave" in sections,key="global_leave" if "global_leave" in sections else "own_leave") if leave else None
     recruitment=[]
     for key in ("postings","candidates","requests"):
         data=sections.get(key)
@@ -245,6 +245,13 @@ def grouped_dashboard(user, context, presentation):
     if admin:layout["groups"].append(dict(key="admin",label="Hành chính"))
     if recruitment:layout["groups"].append(dict(key="recruitment",label="Tuyển dụng"))
     layout["show_hr"],layout["show_admin"]=hr,admin
+    # Only source DTOs already admitted by the read-side gates may expose errors.
+    # None in a legacy counter is not a substitute for the source error state.
+    labels = {"status": "Nhân sự đang quản lý", "joined": "Vào làm trong tháng",
+              "queue": "Việc cần xử lý", "postings": "Tin tuyển dụng",
+              "candidates": "Ứng viên đang xử lý", "requests": "Đề xuất tuyển dụng"}
+    layout["errors"] = [dict(key=key, label=label, state="error") for key, label in labels.items()
+                        if sections.get(key, {}).get("state") == "error"]
     # Phương án B: cột phải. Khối lịch luôn hiện (kể cả khi hôm nay trống) vì
     # "hôm nay không có sự kiện" là thông tin; khối dự án chỉ hiện khi có dữ liệu.
     agenda=sections.get("agenda")

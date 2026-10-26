@@ -90,7 +90,7 @@ def candidates():
     rows = status_counts(Candidate.objects.all(), choices)
     return dict(state='ready', label='Ứng viên đang xử lý', value=sum(row['value'] for row in rows[:4]),
         icon='people', rows=rows, note='Bốn nhóm đang xử lý; trạng thái hiện tại', href=None,
-        cta=reverse('portal:hr_candidate_list'), cta_label='Mở danh sách ứng viên')
+        cta=reverse('portal:hr_candidate_list'), cta_label='Xem ứng viên')
 
 
 def requests(user):
@@ -100,7 +100,7 @@ def requests(user):
     label = 'Đề xuất tuyển dụng của phòng tôi' if get_role_code(user) == 'DEPT_MANAGER' and not user.is_superuser else 'Đề xuất tuyển dụng'
     return dict(state='ready', label=label, value=sum(row['value'] for row in rows), rows=rows,
         icon='briefcase', note='Trạng thái hiện tại', href=None,
-        cta=reverse('portal:recruitment_list'), cta_label='Mở danh sách đề xuất')
+        cta=reverse('portal:recruitment_list'), cta_label='Xem đề xuất')
 
 
 def history(user, today):
@@ -140,5 +140,5 @@ def phase2_sections(user, employee, today, read_block):
         result['requests'] = read_block(lambda: requests(user))
     if any(has_permission(user, permission) for permission in ('manage_hr', 'request_recruitment', 'approve_recruitment')):
         if 'postings' in result:
-            result['postings'].update(cta=reverse('portal:recruitment_hub'), cta_label='Mở tuyển dụng')
+            result['postings'].update(cta=reverse('portal:recruitment_hub'), cta_label='Tuyển dụng')
     return result

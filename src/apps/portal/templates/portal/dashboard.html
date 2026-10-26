@@ -23,10 +23,11 @@ thì không dựng thẻ, tránh một khung rỗng có viền.{% endcomment %}
 </div>{% endif %}
 <div class="home-dashboard-body">
 <div class="home-dashboard-stream">
+{% for error in dashboard_layout.errors %}{% include 'portal/dashboard/_phase2_metric.html' with key=error.key data=error only %}{% endfor %}
 {% if employee %}{% include 'portal/dashboard/_my_work.html' %}{% endif %}
 {% if dashboard_layout.project_allowed %}{% include 'portal/dashboard/_group_projects.html' %}{% endif %}
 {% if dashboard_layout.show_hr %}{% include 'portal/dashboard/_group_hr.html' %}{% endif %}
-{% if dashboard_layout.show_admin %}{% include 'portal/dashboard/_group_admin.html' %}{% endif %}
+{% if dashboard_layout.show_admin %}{% include 'portal/dashboard/_group_admin.html' with own=dashboard_snapshot.sections.own_leave %}{% endif %}
 {% if dashboard_layout.recruitment %}{% include 'portal/dashboard/_group_recruitment.html' %}{% endif %}
 </div>
 {% include 'portal/dashboard/_rail.html' %}

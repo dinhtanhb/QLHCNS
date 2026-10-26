@@ -1,9 +1,9 @@
 {% load ui_components %}
 <section class="ui-card phase2-metric" id="phase2-{{ key }}" aria-label="{{ data.label }}">
-{% if data.state == 'error' %}<div class="ui-card">{% include 'ui/empty_state.html' with state='error' title='Không tải được dữ liệu' description=data.label %}</div>
+{% if data.state == 'error' %}{% include 'ui/empty_state.html' with state='error' title='Không tải được dữ liệu' description=data.label %}
 {% else %}{% include 'ui/kpi.html' with label=data.label value=data.value icon=data.icon href=data.href period=data.note only %}
 {% if data.rows or data.cta %}<div class="phase2-metric-footer">
 {% if data.rows %}<details class="phase2-breakdown"><summary>Trạng thái</summary><dl class="phase2-counts">{% for row in data.rows %}<div><dt>{{ row.label }}</dt><dd>{{ row.value|ui_number }}</dd></div>{% endfor %}</dl></details>{% endif %}
-{% if data.cta %}<a class="ui-button ui-button--secondary" href="{{ data.cta }}">{% if key == 'candidates' %}Xem ứng viên{% elif key == 'requests' %}Xem đề xuất{% else %}Tuyển dụng{% endif %}{% include '_shell_icon.html' with name='arrow' %}</a>{% endif %}
+{% if data.cta %}<a class="ui-button ui-button--secondary" href="{{ data.cta }}">{{ data.cta_label }}{% include '_shell_icon.html' with name='arrow' %}</a>{% endif %}
 </div>{% endif %}{% endif %}
 </section>

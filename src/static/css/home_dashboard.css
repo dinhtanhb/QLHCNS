@@ -58,6 +58,13 @@
  .home-dashboard .home-info summary:hover { background:var(--ui-hover-bg); }
  .home-dashboard .home-info-body { position:absolute; right:0; top:100%; z-index:var(--ui-layer-navigation); display:grid; gap:var(--ui-space-2); width:min(340px,calc(100vw - 48px)); max-height:min(70vh,30rem); overflow:auto; padding:var(--ui-space-4); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); background:var(--ui-surface); color:var(--ui-text); overflow-wrap:anywhere; box-shadow:var(--ui-shadow-overlay); }
  .home-dashboard .home-info-body ul { padding-inline-start:var(--ui-space-4); }
+ .home-dashboard .home-leave-group { display:grid; align-content:start; gap:var(--ui-space-3); min-width:0; }
+ .home-dashboard :is(.dashboard-own-leave,.phase2-breakdown)>summary { display:flex; align-items:center; gap:var(--ui-space-2); min-height:var(--ui-target-min); cursor:pointer; }
+ .home-dashboard :is(.dashboard-own-leave,.phase2-breakdown)[open]>summary::before { content:"−"; }
+ .home-dashboard .phase2-metric-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:var(--ui-space-2); }
+ .home-dashboard .phase2-breakdown { position:relative; min-width:0; }
+ .home-dashboard .phase2-breakdown[open] .phase2-counts { position:absolute; inset-block-start:100%; inset-inline-start:0; z-index:var(--ui-layer-navigation); width:min(17rem,calc(100vw - 4rem)); max-width:100cqw; padding:var(--ui-space-3); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); background:var(--ui-surface); overflow-wrap:anywhere; }
+ .home-dashboard .phase2-counts>div { display:flex; justify-content:space-between; gap:var(--ui-space-2); }
  .home-dashboard .home-list,.home-dashboard .home-capacity,.home-dashboard .home-type-list { list-style:none; padding:0; }
  .home-dashboard .home-list>li { display:flex; align-items:center; justify-content:space-between; gap:var(--ui-space-3); min-height:var(--ui-target-min); padding-block:var(--ui-space-2); border-bottom:var(--ui-border-width) solid var(--ui-divider); }
  .home-dashboard .home-list>li:last-child { border-bottom:0; }
