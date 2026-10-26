@@ -151,8 +151,17 @@ def main():
                             small=page.locator('main :is(p,span,strong,a,summary,th,td)').evaluate_all('xs=>xs.filter(x=>x.checkVisibility() && x.textContent.trim() && parseFloat(getComputedStyle(x).fontSize)<14).map(x=>[x.className,getComputedStyle(x).fontSize,x.textContent.slice(0,40)])');check(not small,label+' text >=14px '+str(small))
                             values=page.locator('.home-main-kpis .ui-kpi-value').evaluate_all('xs=>xs.map(x=>x.getBoundingClientRect().y)')
                             if width>=1280 and len(values)>1:check(max(values)-min(values)<=1,label+' main value baseline')
+                            # Spec 17 puts an admitted personal block inside native details.
+                            # Open its parent before exercising every nested calculation popover.
+                            own_summaries=page.locator('.dashboard-own-leave > summary').all()
+                            for summary in own_summaries:
+                                summary.focus();page.keyboard.press('Enter')
+                                check(summary.evaluate('x=>x.parentElement.open'),label+' personal leave keyboard opens')
                             for summary in page.locator('main details.home-info > summary').all():
                                 owner=summary.evaluate('x=>x.closest("section")?.id');summary.focus();bounds=page.locator('.home-dashboard').bounding_box();page.keyboard.press('Enter');check(summary.evaluate('x=>x.parentElement.open'),label+' '+str(owner)+' calculation keyboard opens');check(page.locator('.home-dashboard').bounding_box()==bounds,label+' info does not move content');page.keyboard.press('Escape');check(not summary.evaluate('x=>x.parentElement.open'),label+' '+str(owner)+' calculation Escape closes');page.keyboard.press('Enter');page.locator('h1').evaluate('x=>{x.tabIndex=-1;x.focus()}');check(not summary.evaluate('x=>x.parentElement.open'),label+' info blur closes')
+                            for summary in own_summaries:
+                                summary.focus();page.keyboard.press('Enter')
+                                check(not summary.evaluate('x=>x.parentElement.open'),label+' personal leave keyboard closes')
                         if width in (1756,1440,390) and role in ('employee','manager','hr','director'):
                             page.evaluate('()=>{document.activeElement.blur();scrollTo(0,0)}')
                             for full,suffix in ((False,'first'),(True,'full')):
