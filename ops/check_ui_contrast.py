@@ -2,8 +2,12 @@
 
 python ops/check_ui_contrast.py
 python ops/check_ui_contrast.py --write-doc
-Pairs outside this contract, gradients, alpha layers and rendered pages need
-their own measurements. This check does not certify the application as WCAG AA.
+Reads the default palette (viethealth) and the two fallback packs (chamdong,
+thanam) from src/static/css/ui_tokens.css. Every palette is measured in light
+and dark, and each palette's OS-fallback block must match its dark block
+exactly. Pairs outside this contract, gradients, alpha layers and rendered
+pages need their own measurements. This check does not certify the application
+as WCAG AA.
 """
 import argparse
 from pathlib import Path
@@ -16,16 +20,48 @@ DOC = ROOT / "docs/UI_DESIGN_SYSTEM_PHASE1.md"
 BEGIN = "<!-- UI_CONTRAST_BEGIN -->"
 END = "<!-- UI_CONTRAST_END -->"
 
+PALETTES = ("viethealth", "chamdong", "thanam")
+PACKS = PALETTES[1:]
+BODY = r"\{([^{}]+)\}"
+
 
 def declarations(body):
     return dict(re.findall(r"(--ui-[\w-]+)\s*:\s*([^;]+);", body))
 
 
-def palettes():
-    css = TOKENS.read_text(encoding="utf-8")
-    light = declarations(re.search(r'html\[data-theme="light"\]\s*\{([^}]+)', css).group(1))
-    dark = {**light, **declarations(re.search(r'html\[data-theme="dark"\]\s*\{([^}]+)', css).group(1))}
-    return {"light": light, "dark": dark}
+def _block(css, pattern, label):
+    match = re.search(pattern, css)
+    if not match:
+        raise ValueError(f"Missing {label} block in ui_tokens.css")
+    return declarations(match.group(1))
+
+
+def palette_blocks(css=None):
+    """Parse ui_tokens.css into {palette: {light, dark, fallback: declarations}}."""
+    if css is None:
+        css = TOKENS.read_text(encoding="utf-8")
+    blocks = {"viethealth": {
+        "light": _block(css, r':root\s*,\s*html\[data-theme="light"\]\s*' + BODY, "default light"),
+        "dark": _block(css, r'(?:^|\n)\s*html\[data-theme="dark"\]\s*' + BODY, "default dark"),
+        "fallback": _block(css, r'(?:^|\n)\s*:root:not\(\[data-theme\]\)\s*' + BODY, "default OS-fallback"),
+    }}
+    for palette in PACKS:
+        blocks[palette] = {
+            "light": _block(css, r'html\[data-palette="' + palette + r'"\]:root\s*' + BODY, f"{palette} pack light"),
+            "dark": _block(css, r'html\[data-palette="' + palette + r'"\]\[data-theme="dark"\]\s*' + BODY, f"{palette} pack dark"),
+            "fallback": _block(css, r'html\[data-palette="' + palette + r'"\]:root:not\(\[data-theme\]\)\s*' + BODY, f"{palette} pack OS-fallback"),
+        }
+    return blocks
+
+
+def fallback_mismatches(blocks):
+    """Return [(palette, token)] where a palette's OS-fallback differs from its dark."""
+    mismatches = []
+    for palette, themes in blocks.items():
+        for name in sorted(set(themes["dark"]) | set(themes["fallback"])):
+            if themes["dark"].get(name) != themes["fallback"].get(name):
+                mismatches.append((palette, name))
+    return mismatches
 
 
 def resolve(values, name, seen=()):
@@ -93,21 +129,32 @@ def pairings():
     return pairs
 
 
+def measure(blocks, pairs=None):
+    """Return rows [(palette, theme, fg, bg, fg-color, bg-color, ratio, minimum)]."""
+    pairs = pairings() if pairs is None else pairs
+    rows = []
+    for palette, themes in blocks.items():
+        for theme in ("light", "dark"):
+            values = {**themes["light"], **themes[theme]}
+            for fg, bg, minimum in pairs:
+                foreground = resolve(values, "--ui-" + fg)
+                background = resolve(values, "--ui-" + bg)
+                rows.append((palette, theme, fg, bg, foreground, background,
+                             ratio(foreground, background), minimum))
+    return rows
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--write-doc", action="store_true")
     args = parser.parse_args()
-    rows = []
-    for theme, values in palettes().items():
-        for fg, bg, minimum in pairings():
-            foreground = resolve(values, "--ui-" + fg)
-            background = resolve(values, "--ui-" + bg)
-            actual = ratio(foreground, background)
-            rows.append((theme, fg, bg, foreground, background, actual, minimum))
+    blocks = palette_blocks()
+    mismatches = fallback_mismatches(blocks)
+    rows = measure(blocks)
     failed = [row for row in rows if row[-2] < row[-1]]
     if args.write_doc:
-        header = "| Theme | Chữ/UI | Nền | Màu trước | Màu nền | Tỷ lệ | Ngưỡng | Kết quả |\n|---|---|---|---|---|---:|---:|---|\n"
-        table = header + "".join(f"| {theme} | `--ui-{fg}` | `--ui-{bg}` | `{front}` | `{back}` | {actual:.3f}:1 | {minimum:g}:1 | {'Đạt' if actual >= minimum else 'Không đạt'} |\n" for theme, fg, bg, front, back, actual, minimum in rows)
+        header = "| Palette | Theme | Chữ/UI | Nền | Màu trước | Màu nền | Tỷ lệ | Ngưỡng | Kết quả |\n|---|---|---|---|---|---|---:|---:|---|\n"
+        table = header + "".join(f"| {palette} | {theme} | `--ui-{fg}` | `--ui-{bg}` | `{front}` | `{back}` | {actual:.3f}:1 | {minimum:g}:1 | {'Đạt' if actual >= minimum else 'Không đạt'} |\n" for palette, theme, fg, bg, front, back, actual, minimum in rows)
         text = DOC.read_text(encoding="utf-8")
         section = BEGIN + "\n" + table + END
         if BEGIN in text and END in text:
@@ -117,13 +164,16 @@ def main():
         else:
             text += "\n\n" + section + "\n"
         DOC.write_text(text, encoding="utf-8")
-    for theme in ("light", "dark"):
-        subset = [row for row in rows if row[0] == theme]
-        print(f"{theme}: {len(subset)} pairs; min text={min(r[-2] for r in subset if r[-1] == 4.5):.3f}:1; min UI={min(r[-2] for r in subset if r[-1] == 3):.3f}:1")
-    print(f"{len(rows)} pairs; failures={len(failed)}; rendered/alpha layers not certified.")
+    for palette in PALETTES:
+        for theme in ("light", "dark"):
+            subset = [row for row in rows if row[0] == palette and row[1] == theme]
+            print(f"{palette}/{theme}: {len(subset)} pairs; min text={min(r[-2] for r in subset if r[-1] == 4.5):.3f}:1; min UI={min(r[-2] for r in subset if r[-1] == 3):.3f}:1")
+    print(f"{len(rows)} pairs; failures={len(failed)}; fallback mismatches={len(mismatches)}; rendered/alpha layers not certified.")
     for row in failed:
         print("FAIL:", row)
-    return bool(failed)
+    for palette, name in mismatches:
+        print(f"FALLBACK MISMATCH: {palette} {name}")
+    return bool(failed or mismatches)
 
 
 if __name__ == "__main__":
