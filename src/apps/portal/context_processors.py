@@ -4,6 +4,14 @@ from apps.security.permissions import get_role_name, has_permission, permission_
 from django.conf import settings
 
 
+def ui_palette(request):
+    """Dải màu giao diện do máy chủ chọn (UI_PALETTE) — gắn vào thẻ <html>.
+
+    Không có nút chọn cho từng người dùng: giá trị chỉ đến từ cấu hình máy chủ.
+    """
+    return {"ui_palette": settings.UI_PALETTE}
+
+
 def user_permissions(request):
     """Đưa quyền của người đang đăng nhập ra template (dùng để ẩn/hiện menu).
 

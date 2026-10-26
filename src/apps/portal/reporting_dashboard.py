@@ -28,12 +28,17 @@ from apps.project.models import Project
 from apps.recruitment.models import Candidate, Interview, JobPosting, Offer, RecruitmentRequest
 from apps.task.models import Task
 
+from .report_palette import GRID, WHITE, active as _active_palette
 
-# Palette Chàm Đông (indigo) cho bản Excel, đồng bộ với khối light của ui_tokens.css.
-BLUE = "3A4FD0"
-DARK = "101828"
-LIGHT = "EEF1FD"
-MUTED = "475467"
+
+# Bảng màu cho bản Excel, đồng bộ với khối light của ui_tokens.css theo palette
+# đang cấu hình (UI_PALETTE) — một nguồn Python duy nhất ở report_palette.py.
+# BLUE/DARK/LIGHT/MUTED là tên riêng của bản Excel, trỏ vào cùng bảng màu với slide.
+_PALETTE = _active_palette()
+BLUE = _PALETTE["TEAL"]
+DARK = _PALETTE["NAVY"]
+LIGHT = _PALETTE["MINT"]
+MUTED = _PALETTE["MUTED"]
 
 
 def _month_starts(from_date, to_date):
@@ -241,7 +246,7 @@ def export_snapshot_xlsx(snapshot):
     ws.sheet_view.showGridLines = False
     ws.merge_cells("A1:D1")
     ws["A1"] = "BÁO CÁO ĐIỀU HÀNH IHRMS"
-    ws["A1"].font = Font(name="Arial", size=16, bold=True, color="FFFFFF")
+    ws["A1"].font = Font(name="Arial", size=16, bold=True, color=WHITE)
     ws["A1"].fill = PatternFill("solid", fgColor=DARK)
     ws["A1"].alignment = Alignment(horizontal="left", vertical="center")
     ws.row_dimensions[1].height = 30
@@ -249,11 +254,11 @@ def export_snapshot_xlsx(snapshot):
     ws["A2"] = f"Kỳ báo cáo: {snapshot['from_date']:%d/%m/%Y} - {snapshot['to_date']:%d/%m/%Y}"
     ws["A2"].font = Font(name="Arial", italic=True, color=MUTED)
     row = 4
-    thin = Side(style="thin", color="CBD5E1")
+    thin = Side(style="thin", color=GRID)
     for section in snapshot["sections"]:
         ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=4)
         cell = ws.cell(row, 1, section["title"])
-        cell.font = Font(name="Arial", bold=True, color="FFFFFF")
+        cell.font = Font(name="Arial", bold=True, color=WHITE)
         cell.fill = PatternFill("solid", fgColor=BLUE)
         row += 1
         for metric in section["metrics"]:
@@ -274,7 +279,7 @@ def export_snapshot_xlsx(snapshot):
     for item in snapshot["month_rows"]:
         movement.append([item["label"], item["new_hires"], item["departures"], item["transfers"], item["promotions"]])
     for cell in movement[1]:
-        cell.font = Font(name="Arial", bold=True, color="FFFFFF")
+        cell.font = Font(name="Arial", bold=True, color=WHITE)
         cell.fill = PatternFill("solid", fgColor=DARK)
     if snapshot["month_rows"]:
         chart = LineChart()
@@ -294,7 +299,7 @@ def export_snapshot_xlsx(snapshot):
     for item in snapshot["recruitment_funnel"]:
         recruitment.append([item["label"], item["value"]])
     for cell in recruitment[1]:
-        cell.font = Font(name="Arial", bold=True, color="FFFFFF")
+        cell.font = Font(name="Arial", bold=True, color=WHITE)
         cell.fill = PatternFill("solid", fgColor=DARK)
     chart = BarChart()
     chart.type = "bar"

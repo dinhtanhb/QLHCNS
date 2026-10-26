@@ -15,19 +15,24 @@ from pptx.oxml.ns import qn
 from pptx.oxml.xmlchemy import OxmlElement
 from pptx.util import Inches, Pt
 
+from .report_palette import WHITE, active as _active_palette
 
-# Palette Chàm Đông (indigo), đồng bộ với khối light của ui_tokens.css.
-# Đổi màu ở ui_tokens.css thì sửa cả đây; test_report_palette.py giữ hai nơi khớp nhau.
-NAVY = "101828"
-TEAL = "3A4FD0"
-MINT = "EEF1FD"
-PAPER = "E7ECF4"
-WHITE = "FFFFFF"
-MUTED = "475467"
-LINE = "DFE4EE"
-RED = "B42318"
-AMBER = "B54708"
-BLUE = "175CD3"
+
+# Bảng màu đồng bộ với khối light của ui_tokens.css theo palette đang cấu hình
+# (UI_PALETTE) — một nguồn Python duy nhất ở report_palette.py vì pptx cần mã
+# hex chứ không đọc được biến CSS. Đổi CSS mà quên bảng kia, test_report_palette.py
+# sẽ đỏ ngay. Giá trị chốt tại thời điểm import: đổi UI_PALETTE thì khởi động lại
+# máy chủ, đúng như cách chọn palette của toàn ứng dụng.
+_PALETTE = _active_palette()
+NAVY = _PALETTE["NAVY"]
+TEAL = _PALETTE["TEAL"]
+MINT = _PALETTE["MINT"]
+PAPER = _PALETTE["PAPER"]
+MUTED = _PALETTE["MUTED"]
+LINE = _PALETTE["LINE"]
+RED = _PALETTE["RED"]
+AMBER = _PALETTE["AMBER"]
+BLUE = _PALETTE["BLUE"]
 FONT = "Arial"
 
 

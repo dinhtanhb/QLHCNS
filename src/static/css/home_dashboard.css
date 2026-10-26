@@ -4,7 +4,8 @@
  .home-dashboard {
   --ui-dash-donut-size:120px;
   --ui-chart-1:var(--ui-chart-series); --ui-chart-2:var(--ui-info-text); --ui-chart-3:var(--ui-warning-text);
-  --ui-chart-4:var(--ui-chart-series-soft); --ui-chart-5:var(--ui-danger-text); --ui-chart-6:var(--ui-text-muted);
+  --ui-chart-5:var(--ui-danger-text); --ui-chart-6:var(--ui-text-muted);
+  /* --ui-chart-4 khai báo theo từng palette trong ui_tokens.css (D5-B). */
   /* Nhịp dọc giữa các khối: 24px. Bản trước dùng 32px và bị chủ dự án đánh giá
      là dãn quá rộng (đợt 4). 24px vẫn nằm trên thang 8px của token. */
   display:grid; gap:var(--ui-space-6); max-width:var(--ui-content-max-width); margin-inline:auto; min-width:0;

@@ -10,13 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import logging
 import os
 from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 from django.core.exceptions import ImproperlyConfigured
 
-from config.env import env_flag
+from config.env import env_choice, env_flag
 
 # BASE_DIR là thư mục 'src'
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -182,6 +183,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'apps.portal.context_processors.user_permissions',
+                'apps.portal.context_processors.ui_palette',
             ],
         },
     },
@@ -543,3 +545,18 @@ LOGGING = {
         },
     },
 }
+
+# ==========================================
+# DẢI MÀU GIAO DIỆN
+# Chọn bằng CẤU HÌNH MÁY CHỦ UI_PALETTE ∈ {viethealth, chamdong, thanam},
+# mặc định viethealth (xem docs/KE_HOACH_DAI_MAU_VIETHEALTH.md). Không có nút
+# chọn cho từng người dùng. Giá trị lạ quay về viethealth và ghi cảnh báo log.
+# ==========================================
+UI_PALETTE, _ui_palette_invalid = env_choice(
+    "UI_PALETTE", ("viethealth", "chamdong", "thanam"), "viethealth"
+)
+if _ui_palette_invalid:
+    logging.getLogger(__name__).warning(
+        "UI_PALETTE=%r không hợp lệ (chọn trong: viethealth, chamdong, thanam); dùng mặc định 'viethealth'.",
+        _ui_palette_invalid,
+    )
