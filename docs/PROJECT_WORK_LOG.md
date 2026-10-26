@@ -1,5 +1,16 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-26 — Lập kế hoạch đổi dải màu theo logo VietHealth (chưa thi công)
+
+- **Nguồn yêu cầu:** chủ dự án gửi logo VietHealth kèm yêu cầu "lập kế hoạch sửa dải màu cho dự án theo màu chủ đạo của Logo". Đây là **đợt lập kế hoạch**, không sửa mã nguồn.
+- **Màu đo được:** `#279048` xanh lá (17,7 % điểm ảnh — màu chủ đạo), `#CE181F` đỏ (5,9 %), nền trắng. Đo bằng đếm điểm ảnh trên `src/static/img/logo.png` và trên ảnh chủ dự án gửi; hai nguồn khớp nhau, lệch ≤ 1 đơn vị mỗi kênh.
+- **Phát hiện quyết định kỹ thuật:** chữ trắng trên `#279048` chỉ đạt **4,06:1**, dưới ngưỡng 4,5:1 của `check_ui_contrast.py`. Vì vậy mã logo **không dùng được làm màu nút**; kế hoạch tách hai vai trò — `#279048` cho trang trí (biểu tượng, thanh tiến độ, lát biểu đồ), `#1F7A3D` cho bề mặt có chữ (nút, link, focus, 5,37:1).
+- **Bảng màu đề xuất đã kiểm chứng:** dựng tệp token ứng viên và chạy chính cổng của dự án — **220 cặp, 0 lỗi**; chữ nhỏ nhất 4,741:1 (nền sáng) và 7,410:1 (nền tối); UI nhỏ nhất 4,010:1 / 3,624:1. So với palette hiện tại (5,201 / 5,712) biên mỏng hơn nhưng vẫn trên ngưỡng.
+- **Phạm vi ảnh hưởng đo được:** hệ thống đã token hoá 100% — **không có một mã hex nào trong `src/templates/` và `src/static/js/`**; toàn bộ màu nằm ở `ui_tokens.css` (141 hex) và `design_tokens.css` (104 hex, nhưng phần lớn là alias `var()`; khối hex còn lại là `.hcns-paper` đóng băng, cố ý không đổi). Ngoài CSS chỉ còn 4 chỗ: `manifest.json`, `reporting_slides.py`, `reporting_dashboard.py`, docstring `test_report_palette.py`.
+- **Sáu quyết định trình chủ dự án:** D1 xung đột xanh thương hiệu với xanh "thành công"; D2 đỏ logo có thành màu nguy hiểm; D3 nền trung tính pha xanh lá hay giữ xanh dương; D4 nền tối pha xanh lá hay giữ navy; D5 màu biểu đồ thứ 4 (donut 6 lát có hai xanh); D6 biên tương phản của link (`#1F7A3D` 4,74:1 hay `#1D7437` 5,14:1).
+- **Sản phẩm:** `docs/KE_HOACH_DAI_MAU_VIETHEALTH.md` (kế hoạch 13 mục, phân đợt P0–P5 kèm cổng kiểm) và bản xem trước trực quan `outputs/palette-viethealth-20261026/index.html` (7 mục, đổi được nền sáng/tối, dựng thành phần thật bằng đúng token đề xuất, có bảng tương phản). Tệp `candidate-tokens.css` trong cùng thư mục là bộ token đã đo, dùng trực tiếp cho đợt P1.
+- **Chưa thi công:** chờ chủ dự án chốt D1–D6. Không commit mã nguồn; `outputs/` giữ ngoài Git như các đợt trước.
+
 ## 2026-10-26 — Xử lý review bb053b2 trên main hiện tại (test / UI / docs riêng)
 
 - **Yêu cầu/phạm vi:** chủ dự án giao bảy mục review commit `bb053b25b5ebec5af52e7253c2bca7be60c3214a` và yêu cầu giữ mọi gate Đợt 1/2, chỉ trình bày/test, không đổi quyền/scope/query/action/CSRF/guard/Word/PDF/giấy in. Đã đọc `AGENTS.md`, `CLAUDE.md`, §17 `DASHBOARD_ATOMS_TECH_SPEC.md` và ba mục nhật ký mới nhất. Đầu lượt `main` tại `acad8ffb8d7082cb7d95bcd5d17feb9a208d35f1`, fetch `origin main`, ahead/behind 0/0. Giữ nguyên các biến động `.qoder/`, `.workbuddy-ai/`, hai tài liệu Git và `outputs/` theo quyền “cho phép” trong phiên; không stage chúng. Không force-push/deploy/migration DB vận hành. Chỉ tác nhân chính ghi mã.
