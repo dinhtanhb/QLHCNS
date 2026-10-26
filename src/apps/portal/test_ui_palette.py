@@ -29,6 +29,23 @@ class UiPaletteContextTests(SimpleTestCase):
         for asset in ('js/theme.js', 'css/admin.css'):
             self.assertContains(response, f'{static(asset)}?v={get_asset_hash(asset)}')
 
+    def test_admin_login_loads_admin_css_once(self):
+        source = self.client.get('/admin/login/').content.decode()
+        self.assertEqual(len(re.findall(r'<link[^>]+href="[^"]*/css/admin\.css(?:\?[^"]*)?"', source)), 1)
+
+    def test_admin_head_versions_control_assets(self):
+        from django.contrib.auth.models import AnonymousUser
+        from django.template.loader import render_to_string
+        from django.templatetags.static import static
+        from apps.common.asset_version import get_asset_hash
+
+        request = RequestFactory().get('/admin/')
+        request.user = AnonymousUser()
+        source = render_to_string('admin/base_site.html', request=request)
+        for asset in ('css/ui_controls.css', 'js/ui_numbers.js'):
+            self.assertIn(f'{static(asset)}?v={get_asset_hash(asset)}', source)
+        self.assertEqual(len(re.findall(r'<link[^>]+href="[^"]*/css/admin\.css(?:\?[^"]*)?"', source)), 1)
+
     def test_admin_login_exposes_palette_before_synchronous_theme_script(self):
         for palette in ("viethealth", "chamdong", "thanam"):
             with self.subTest(palette=palette), override_settings(UI_PALETTE=palette):

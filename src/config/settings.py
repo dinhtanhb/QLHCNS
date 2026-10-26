@@ -351,8 +351,7 @@ JAZZMIN_SETTINGS = {
         {"name": "Tổng quan Quản trị", "url": "admin:index", "icon": "fas fa-tachometer-alt"},
     ],
 
-    # Làm liên kết quay về portal thành nút nổi bật, luôn dễ thấy trên navbar.
-    "custom_css": "css/admin.css",
+    # CSS quản trị nạp một lần bằng hash trong extrahead của admin/login.
 
     # Menu tài khoản góc trên bên phải
     "usermenu_links": [

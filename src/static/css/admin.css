@@ -144,7 +144,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
  .timeline>div>.timeline-item>.timeline-header { color:var(--ui-text); border-color:var(--ui-divider); }
  .timeline>div>.timeline-item>.time { color:var(--ui-text-muted); }
  .table { --bs-table-bg:var(--ui-surface); --bs-table-color:var(--ui-text); --bs-table-striped-bg:var(--ui-surface-raised); --bs-table-striped-color:var(--ui-text); --bs-table-hover-bg:var(--ui-hover-bg); --bs-table-hover-color:var(--ui-text); --bs-table-border-color:var(--ui-divider); }
- :is(.app-main,.timeline,.login-page) a:not(.btn):not(.nav-link):not(.dropdown-item) { color:var(--ui-link); }
+ :is(.app-main,.timeline,.login-page) a:not(.btn):not(.nav-link):not(.dropdown-item):not(.deletelink):not(.closelink) { color:var(--ui-link); }
+ /* Django submit actions keep their fixed red/gray vendor backgrounds. Their
+    foreground must stay white across palettes, themes and interaction states. */
+ :root[data-theme] .submit-row a:is(.deletelink,.closelink):any-link { color:white; }
  :root[data-theme] :is(.form-control,.form-select,textarea) { background-color:var(--ui-surface); color:var(--ui-text); border-color:var(--ui-border); }
  :is(.form-control,textarea)::placeholder { color:var(--ui-text-muted); opacity:1; }
  :root[data-theme] :is(.form-control,.form-select,textarea):disabled { background-color:var(--ui-disabled-bg); color:var(--ui-disabled-text); border-color:var(--ui-disabled-border); }

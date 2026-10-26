@@ -49,6 +49,8 @@ Nút mặt trăng/mặt trời trên header (cả portal, đăng nhập và qu�
 
 Admin đồng bộ `data-bs-theme` của Jazzmin/Bootstrap với `data-theme` theo duy nhất lựa chọn `ihrms-theme`; giá trị `jazzmin-theme-mode` cũ không được quyết định màu thẻ riêng. Adapter màn hình trong `admin.css` đặt các biến Bootstrap/Django và màu bề mặt ngoài CSS layer để thắng CSS vendor; thẻ, lịch sử, bảng, ô nhập và dropdown theo token của palette. Admin và login nạp CSS/JS bằng hash nội dung. Nghiệm thu bằng `ops/run_admin_theme_uat.py` phải đo màu thực của từng thành phần, kiểm chuyển bằng bàn phím, reload, storage event và fallback hệ điều hành; chỉ kiểm thuộc tính `<html>` chưa đủ.
 
+`admin.css` chỉ nạp một lần qua link có hash trong `extrahead` của admin hoặc login, không khai báo lại qua Jazzmin `custom_css`; admin cũng hash `ui_controls.css` và `ui_numbers.js`. Nút Django `.submit-row a.deletelink`/`a.closelink` không nhận màu link thương hiệu: giữ nền đỏ/xám của Django và chữ trắng rõ ở cả ba palette, sáng/tối. Cổng UAT phải đo tương phản chữ/nền thực của cả Delete và Close trên form sửa, gồm thường/hover/focus, tối thiểu 4,5:1; phải có ca kiểm âm trên nguồn trước sửa. Các nút `.btn` tương ứng của Jazzmin được kiểm riêng; không tự tạo hoặc cấp quyền xóa để làm xuất hiện nút.
+
 ## Điều hướng, bảng và biểu đồ
 
 - Menu hiển thị theo ma trận quyền; URL trực tiếp vẫn phải được kiểm tra quyền ở view.

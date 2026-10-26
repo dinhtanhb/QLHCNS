@@ -13,8 +13,21 @@ SURFACES = r"""() => {
  const surface=color('--ui-surface'),text=color('--ui-text');
  const components=[...document.querySelectorAll('.card,.timeline-item,.form-control,.form-select,textarea,.select2-selection--single,.select2-selection--multiple,.select2-dropdown,.dropdown-menu.show')].filter(x=>visible(x)&&!x.disabled);
  const mismatches=components.filter(x=>getComputedStyle(x).backgroundColor!==surface).map(x=>({selector:x.id?'#'+x.id:x.tagName+'.'+x.className,background:getComputedStyle(x).backgroundColor,expected:surface}));
- const links=[...document.querySelectorAll('.app-main .card a:not(.btn):not(.nav-link):not(.dropdown-item):not(.deletelink)')].filter(visible);
- return {theme:root.dataset.theme,bootstrap:root.dataset.bsTheme,palette:root.dataset.palette,surface,text,components:components.length,mismatches,links:links.map(x=>({color:getComputedStyle(x).color,expected:color('--ui-link')})),overflow:root.scrollWidth>innerWidth+1};
+ const links=[...document.querySelectorAll('.app-main .card a:not(.btn):not(.nav-link):not(.dropdown-item)')].filter(visible);
+ const assets=[...document.querySelectorAll('link[rel="stylesheet"],script[src]')].map(x=>new URL(x.href||x.src,location.href)).filter(x=>['/css/admin.css','/js/theme.js','/css/ui_controls.css','/js/ui_numbers.js'].some(path=>x.pathname.endsWith(path))).map(x=>({path:x.pathname,hash:x.searchParams.get('v')}));
+ return {theme:root.dataset.theme,bootstrap:root.dataset.bsTheme,palette:root.dataset.palette,surface,text,components:components.length,mismatches,assets,links:links.map(x=>({color:getComputedStyle(x).color,expected:x.matches('.submit-row a.deletelink,.submit-row a.closelink')?'rgb(255, 255, 255)':color('--ui-link')})),overflow:root.scrollWidth>innerWidth+1};
+}"""
+
+
+CONTRAST = r"""el => {
+ const rgba=value=>{const xs=value.match(/[\d.]+/g).map(Number);return [...xs.slice(0,3),xs.length>3?xs[3]:1]};
+ const blend=(fg,bg)=>[...fg.slice(0,3).map((v,i)=>v*fg[3]+bg[i]*(1-fg[3])),1];
+ let bg=[255,255,255,1];const chain=[];for(let x=el;x;x=x.parentElement)chain.unshift(x);
+ for(const x of chain)bg=blend(rgba(getComputedStyle(x).backgroundColor),bg);
+ const style=getComputedStyle(el),fg=blend(rgba(style.color),bg);
+ const luminance=rgb=>rgb.slice(0,3).map(x=>{x/=255;return x<=.04045?x/12.92:((x+.055)/1.055)**2.4}).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0);
+ const a=luminance(fg),b=luminance(bg);
+ return {foreground:style.color,background:style.backgroundColor,effectiveBackground:bg.slice(0,3),ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05),text:el.textContent.trim(),href:el.getAttribute('href')};
 }"""
 
 
@@ -25,6 +38,8 @@ def main():
     parser.add_argument('--port', type=int, required=True)
     parser.add_argument('--palette', choices=('viethealth', 'chamdong', 'thanam'), required=True)
     parser.add_argument('--widths', type=int, nargs='+', default=[1920, 1756, 1440, 1280, 1024, 768, 390])
+    parser.add_argument('--actions-only', action='store_true', help='Focused contrast regression; still requires both real submit actions.')
+    parser.add_argument('--submit-style', choices=('jazzmin', 'django'), default='jazzmin', help='Label the installed template or external Django submit-row compatibility fixture.')
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     folder = args.directory.resolve()
@@ -34,13 +49,14 @@ def main():
         parser.error('Synthetic marker required.')
     with sqlite3.connect(f'file:{(folder / "synthetic.sqlite3").as_posix()}?mode=ro', uri=True) as db:
         user_id = db.execute('SELECT id FROM tblUser WHERE username=?', ('demo-layout-admin',)).fetchone()[0]
+        department_id = db.execute('SELECT id FROM tblDepartment WHERE IsDeleted=0 ORDER BY id LIMIT 1').fetchone()[0]
     password = next(line.split(': ', 1)[1] for line in (folder / 'DEMO_ACCOUNTS.txt').read_text(encoding='utf-8').splitlines() if line.startswith('Mật khẩu'))
     sys.path.insert(0, str(args.packages_dir.resolve()))
     from playwright.sync_api import sync_playwright
 
-    output = folder / ('admin-theme-' + args.palette)
+    output = folder / ('admin-theme-' + args.palette + ('-django' if args.submit_style == 'django' else ''))
     output.mkdir(exist_ok=True)
-    report = {'synthetic_only': True, 'palette': args.palette, 'checks': [], 'errors': [], 'cases': [], 'screenshots': []}
+    report = {'synthetic_only': True, 'palette': args.palette, 'submit_style': args.submit_style, 'checks': [], 'errors': [], 'cases': [], 'actions': [], 'screenshots': []}
     base = f'http://127.0.0.1:{args.port}'
 
     def check(ok, label):
@@ -54,13 +70,17 @@ def main():
         check(data['theme'] == data['bootstrap'] == theme, label + ' both theme attributes')
         check(data['palette'] == args.palette, label + ' server palette')
         check(not data['mismatches'], label + ' semantic surfaces ' + str(data['mismatches']))
+        # Every link is checked, including Django's white submit actions;
+        # actual button contrast is independently required below.
         check(all(link['color'] == link['expected'] for link in data['links']), label + ' semantic link colors')
         check(not data['overflow'], label + ' no document overflow')
+        check(sum(asset['path'].endswith('/css/admin.css') for asset in data['assets']) == 1, label + ' admin CSS loaded once')
+        check(all(asset['hash'] and len(asset['hash']) == 8 and all(c in '0123456789abcdef' for c in asset['hash']) for asset in data['assets']), label + ' content hashes for theme/control assets')
 
     try:
         with sync_playwright() as pw:
             browser = pw.chromium.launch(channel='msedge', headless=True)
-            for theme in ('light', 'dark'):
+            for theme in (() if args.actions_only else ('light', 'dark')):
                 context = browser.new_context(viewport={'width': 1756, 'height': 1000}, locale='vi-VN', service_workers='block')
                 # A stale vendor preference must not compete with the IHRMS toggle.
                 context.add_init_script('if(!localStorage.getItem("ihrms-theme"))localStorage.setItem("ihrms-theme",' + json.dumps(theme) + ');localStorage.setItem("jazzmin-theme-mode",' + json.dumps('light' if theme == 'dark' else 'dark') + ');')
@@ -127,7 +147,7 @@ def main():
                     page.evaluate('(theme)=>{localStorage.setItem("ihrms-theme",theme);dispatchEvent(new StorageEvent("storage",{key:"ihrms-theme",newValue:theme}))}', theme)
                     inspect(page, f'{width} storage event', theme)
                 context.close()
-            for mode in ('light', 'dark'):
+            for mode in (() if args.actions_only else ('light', 'dark')):
                 context = browser.new_context(color_scheme=mode, service_workers='block')
                 context.add_init_script('Object.defineProperty(window,"localStorage",{get(){throw new Error("QA storage blocked")}})')
                 page = context.new_page()
@@ -138,11 +158,56 @@ def main():
                 page.wait_for_function('(theme)=>document.documentElement.dataset.bsTheme===theme', arg=opposite)
                 inspect(page, 'storage blocked system change ' + mode, opposite)
                 context.close()
+            # Existing SYS_ADMIN QA can view Department but cannot change it;
+            # use that real read-only form for Close, never change app permissions.
+            for account, action in (('demo-layout-admin', 'delete'), ('demo-sys', 'close')):
+                for theme in ('light', 'dark'):
+                    context = browser.new_context(viewport={'width': 1756, 'height': 1000}, service_workers='block')
+                    context.add_init_script('localStorage.setItem("ihrms-theme",' + json.dumps(theme) + ');')
+                    page = context.new_page()
+                    page.goto(base + '/admin/login/', wait_until='load')
+                    page.locator('[name=username]').fill(account)
+                    page.locator('[name=password]').fill(password)
+                    page.locator('button[type=submit],input[type=submit]').first.click()
+                    page.wait_for_load_state('load')
+                    for width in args.widths:
+                        page.set_viewport_size({'width': width, 'height': 1000})
+                        response = page.goto(base + f'/admin/organization/department/{department_id}/change/', wait_until='load')
+                        label = f'{action} {width} {theme}'
+                        check(response.status == 200, label + ' form opens')
+                        attributes = page.locator('html').evaluate('x=>({theme:x.dataset.theme,bootstrap:x.dataset.bsTheme,palette:x.dataset.palette})')
+                        check(attributes['theme'] == attributes['bootstrap'] == theme and attributes['palette'] == args.palette, label + ' actual requested palette/theme')
+                        if args.submit_style == 'django':
+                            selector = '.submit-row a.' + ('deletelink' if action == 'delete' else 'closelink')
+                        elif action == 'delete':
+                            selector = '#jazzy-actions a.btn[href*="/delete/"]'
+                        else:
+                            selector = '#jazzy-actions a.btn[href="/admin/organization/department/"]'
+                        button = page.locator(selector)
+                        check(button.count() == 1 and button.is_visible(), label + ' actual submit button present')
+                        if button.count() != 1:
+                            continue
+                        for state in ('default', 'hover', 'focus'):
+                            page.mouse.move(0, 0)
+                            button.evaluate('x=>x.blur()')
+                            if state == 'hover':
+                                button.hover()
+                            elif state == 'focus':
+                                button.focus()
+                            button.evaluate('async x=>Promise.all(x.getAnimations().filter(a=>a.effect.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})))')
+                            sample = button.evaluate(CONTRAST)
+                            report['actions'].append(dict(action=action, width=width, theme=theme, state=state, **sample))
+                            check(sample['ratio'] >= 4.5, label + ' ' + state + ' contrast ' + str(round(sample['ratio'], 4)))
+                        if width in (1756, 390):
+                            filename = f'{action}-form-{width}-{theme}.png'
+                            page.screenshot(path=str(output / filename), full_page=True)
+                            report['screenshots'].append(filename)
+                    context.close()
             browser.close()
     except Exception as error:
         report['errors'].append(str(error))
     (output / 'result.json').write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
-    print(json.dumps({'checks': len(report['checks']), 'cases': len(report['cases']), 'errors': report['errors'], 'output': str(output)}))
+    print(json.dumps({'checks': len(report['checks']), 'cases': len(report['cases']), 'action_samples': len(report['actions']), 'errors': report['errors'], 'output': str(output)}))
     return bool(report['errors'])
 
 
