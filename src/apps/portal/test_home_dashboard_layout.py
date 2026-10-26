@@ -1,11 +1,58 @@
 """Grouped Dashboard presentation must preserve the existing permission DTO."""
 from copy import deepcopy
+from html.parser import HTMLParser
 from types import SimpleNamespace
 from unittest.mock import patch
 
 from django.test import SimpleTestCase
 
 from apps.portal.home_presentation import grouped_dashboard
+
+
+class DashboardCardStructureTests(SimpleTestCase):
+    def test_dashboard_css_change_invalidates_service_worker_cache(self):
+        from apps.common.asset_version import get_asset_hash, get_service_worker_cache_version
+
+        before = get_service_worker_cache_version()
+        with patch('apps.common.asset_version.get_asset_hash', side_effect=lambda path:
+                   'changed-dashboard-css' if path == 'css/home_dashboard.css' else get_asset_hash(path)):
+            self.assertNotEqual(get_service_worker_cache_version(), before)
+
+    def test_work_cards_keep_header_and_body_inside_the_same_pair(self):
+        """A stray closing div must not eject the second card from its grid."""
+        from django.template.loader import render_to_string
+
+        class Structure(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.stack = []
+                self.cards = []
+
+            def handle_starttag(self, tag, attrs):
+                attrs = dict(attrs)
+                if 'home-work-card' in attrs.get('class', '').split():
+                    self.cards.append((self.stack[-1], []))
+                if self.cards and attrs.get('class') in ('home-card-header', 'home-card-body'):
+                    self.cards[-1][1].append((attrs['class'], self.stack[-1]))
+                self.stack.append((tag, attrs.get('class', '')))
+
+            def handle_endtag(self, tag):
+                if not self.stack or self.stack[-1][0] != tag:
+                    raise AssertionError('Unbalanced Dashboard work-card markup')
+                self.stack.pop()
+
+        parser = Structure()
+        parser.feed(render_to_string('portal/dashboard/_my_work.html', {
+            'dashboard_layout': {}, 'my_pending_leaves': 0, 'my_open_tasks': 0,
+        }))
+        self.assertEqual(parser.stack, [])
+        self.assertEqual(len(parser.cards), 2)
+        for parent, children in parser.cards:
+            self.assertEqual(parent, ('div', 'home-my-work-grid'))
+            self.assertEqual(children, [
+                ('home-card-header', ('div', 'ui-card home-work-card')),
+                ('home-card-body', ('div', 'ui-card home-work-card')),
+            ])
 
 
 class GroupedDashboardTests(SimpleTestCase):

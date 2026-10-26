@@ -13,6 +13,8 @@ Chuẩn màu hiện hành là VietHealth (xanh lá logo)/trung tính theo quyế
 
 Ba trang mẫu Dashboard/Tuyển dụng/Tài sản và ảnh trước/sau là điểm duyệt trước khi mở rộng template. Có CSS dùng chung không đồng nghĩa mọi route đã được nghiệm thu. Bằng chứng, số vi phạm và phần còn mở ghi duy nhất tại `PROJECT_WORK_LOG.md`.
 
+Dashboard: header và thân thẻ dùng cùng lề ngang 24px (16px trên mobile); tiêu đề nhóm cùng lề với tiêu đề thẻ. Hai thẻ cùng hàng chia sẻ track header/thân để đường phân cách và mép đáy thẳng nhau, kể cả nhóm Nhân sự và nghỉ phép. Khi thẻ hẹp, link hành động xuống dòng riêng, tiêu đề và nút thông tin vẫn cùng dòng nếu đủ chỗ; tên dài được xuống dòng đầy đủ. Container query đặt trên header/thân, không đặt trên thẻ dùng subgrid. Disclosure nghỉ cá nhân nằm sau cặp thẻ Hành chính. Đây là căn chỉnh màn hình theo phản hồi 26/10/2026; giữ vùng bấm 44px và hợp đồng bản in độc lập.
+
 Tài liệu này là chuẩn triển khai hiện hành cho portal và trang Báo cáo. Đặc tả trong [09_UI_UX_Specification.md](09_UI_UX_Specification.md) mô tả yêu cầu nghiệp vụ; khi màu, cỡ chữ hoặc menu mẫu cũ khác mã đang chạy, dùng chuẩn tại đây và đối chiếu quyền trong [10_RBAC_Permission_Matrix.md](10_RBAC_Permission_Matrix.md). Lịch sử thay đổi được ghi tại [PROJECT_WORK_LOG.md](PROJECT_WORK_LOG.md).
 
 ## Nguồn mã

@@ -1,6 +1,6 @@
 {% load ui_components %}{% if dashboard_layout.has_rail %}<aside class="home-rail" aria-label="Thông tin trong ngày">
 {% if dashboard_layout.agenda %}<section class="ui-card" id="dashboard-agenda" aria-labelledby="dashboard-agenda-title">
-<header class="home-card-header"><h3 id="dashboard-agenda-title">Lịch hôm nay</h3><a href="{{ dashboard_layout.agenda.href }}" class="home-text-link">Mở lịch →</a></header>
+<header class="home-card-header"><h3 id="dashboard-agenda-title">Lịch hôm nay</h3><div class="home-card-actions"><a href="{{ dashboard_layout.agenda.href }}" class="home-text-link">Mở lịch →</a></div></header><div class="home-card-body">
 {% if dashboard_layout.agenda.state == 'error' %}{% include 'ui/empty_state.html' with state='error' title='Không tải được dữ liệu' %}
 {% elif not dashboard_layout.agenda.rows %}<p class="home-rail-empty">Hôm nay không có sự kiện nào được lên lịch.</p>
 {% else %}<ul class="home-list home-agenda">{% for row in dashboard_layout.agenda.rows %}<li>
@@ -8,13 +8,13 @@
 <div class="home-rail-meta"><time>{{ row.start_time|date:"H:i" }}</time><span>{{ row.end_time|date:"H:i" }}</span></div>
 </li>{% endfor %}</ul>
 {% if dashboard_layout.agenda.more %}<a class="home-text-link" href="{{ dashboard_layout.agenda.href }}">Xem toàn bộ lịch →</a>{% endif %}{% endif %}
-</section>{% endif %}
+</div></section>{% endif %}
 {% if dashboard_layout.running_projects %}<section class="ui-card" id="dashboard-projects-running" aria-labelledby="dashboard-projects-running-title">
-<header class="home-card-header"><h3 id="dashboard-projects-running-title">Dự án đang chạy</h3><a href="{{ dashboard_layout.running_projects.href }}" class="home-text-link">Mở hoạt động →</a></header>
+<header class="home-card-header"><h3 id="dashboard-projects-running-title">Dự án đang chạy</h3><div class="home-card-actions"><a href="{{ dashboard_layout.running_projects.href }}" class="home-text-link">Mở hoạt động →</a></div></header><div class="home-card-body">
 <ul class="home-list home-projects">{% for row in dashboard_layout.running_projects.rows %}<li>
 <div class="home-rail-main"><strong>{{ row.project_name }}</strong><span>{{ row.project_code }}{% if row.department__department_name %} · {{ row.department__department_name }}{% endif %}</span></div>
 {% if row.end_date %}<div class="home-rail-meta"><time>{{ row.end_date|date:"d/m/Y" }}</time></div>{% else %}<span class="ui-badge">Không thời hạn</span>{% endif %}
 </li>{% endfor %}</ul>
 {% if dashboard_layout.running_projects.more %}<a class="home-text-link" href="{{ dashboard_layout.running_projects.href }}">Xem tất cả dự án →</a>{% endif %}
-</section>{% endif %}
+</div></section>{% endif %}
 </aside>{% endif %}

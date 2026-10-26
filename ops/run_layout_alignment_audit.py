@@ -33,6 +33,14 @@ MEASURE = r"""() => {
   if(!visible(card)||!screen(card)||card.closest('.ui-login-wrap'))continue;
   if(card.matches('.ui-card--sectioned,.ui-card--table'))continue;
   const s=getComputedStyle(card),minimum=innerWidth<768?16:24;
+  const header=card.querySelector(':scope > .home-card-header'),body=card.querySelector(':scope > .home-card-body');
+  if(card.closest('.home-dashboard')&&header&&body){
+   const hs=getComputedStyle(header),bs=getComputedStyle(body);
+   // Sectioned Dashboard cards move the inset to the actual reading surface.
+   // Keep the same 24/16px threshold; also check both header edges align.
+   if(['paddingTop','paddingRight','paddingBottom','paddingLeft'].some(k=>parseFloat(bs[k])<minimum-.5)||['paddingLeft','paddingRight'].some(k=>Math.abs(parseFloat(hs[k])-parseFloat(bs[k]))>1))fail('CARD_INSET',card,{minimum,headerPadding:hs.padding,bodyPadding:bs.padding});
+   continue;
+  }
   if(['paddingTop','paddingRight','paddingBottom','paddingLeft'].some(k=>parseFloat(s[k])<minimum-.5))fail('CARD_INSET',card,{minimum,padding:s.padding});
  }
  for(const title of main.querySelectorAll('.ui-card-title'))if(visible(title)&&screen(title)&&parseFloat(getComputedStyle(title).fontSize)<17.5)fail('CARD_TITLE',title,getComputedStyle(title).fontSize);

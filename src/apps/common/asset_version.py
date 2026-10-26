@@ -37,6 +37,7 @@ def get_service_worker_cache_version() -> str:
         "css/shared_components.css",
         "css/project_layout.css",
         "css/report_dashboard.css",
+        "css/home_dashboard.css",
         "css/hcns_forms.css",
         "js/shared_components.js",
         "js/ui_choices.js",

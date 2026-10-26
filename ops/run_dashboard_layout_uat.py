@@ -79,15 +79,18 @@ def main():
                             if page.locator('#dashboard-my-work').count():
                                 check(page.locator('#dashboard-my-work a[href="/portal/leave/create/"]').count()==1,label+' own leave creation')
                                 check(page.locator('#dashboard-my-work a[href="/portal/leave/"]').count()==1,label+' own leave list')
-                            grids=page.locator('.home-row,.home-my-work-grid').evaluate_all('xs=>xs.map(g=>({naturalHeight:!!g.closest("#group-hr"),cards:[...g.children].map(x=>{let r=x.getBoundingClientRect();return {y:r.y,h:r.height,w:r.width}})}))')
+                            grids=page.locator('.home-row,.home-my-work-grid').evaluate_all('xs=>xs.map(g=>({cards:[...g.children].map(x=>{let r=x.getBoundingClientRect();let header=x.querySelector(":scope > .home-card-header"), h=header?.getBoundingClientRect();return {y:r.y,h:r.height,w:r.width,headerBottom:h?.bottom,titleY:header?.querySelector("h3")?.getBoundingClientRect().y}})}))')
+                            if page.locator('#dashboard-my-work').count():
+                                check(page.locator('.home-my-work-grid > .home-work-card').count()==2,label+' two work cards remain in their shared grid')
                             if width>=1024:
                                 for grid in grids:
                                     rows=grid['cards']
                                     if len(rows)>1:
                                         check(max(x['y'] for x in rows)-min(x['y'] for x in rows)<1.1,label+' row top alignment')
-                                        # HR summaries follow content height per the compact-layout request.
-                                        if not grid['naturalHeight']:
-                                            check(max(x['h'] for x in rows)-min(x['h'] for x in rows)<1.1,label+' equal card heights')
+                                        check(max(x['h'] for x in rows)-min(x['h'] for x in rows)<1.1,label+' equal card heights including HR and leave')
+                                        if all(x.get('headerBottom') is not None for x in rows):
+                                            check(max(x['headerBottom'] for x in rows)-min(x['headerBottom'] for x in rows)<1.1,label+' shared card header boundary')
+                                            check(max(x['titleY'] for x in rows)-min(x['titleY'] for x in rows)<1.1,label+' paired title top alignment')
                                 ratios=page.locator('.home-row:not(.home-row--single),.home-my-work-grid').evaluate_all('xs=>xs.filter(x=>x.children.length===2).map(x=>x.children[0].getBoundingClientRect().width/x.children[1].getBoundingClientRect().width)')
                                 check(all(abs(ratio-1.5)<0.01 for ratio in ratios),label+' paired content is 60/40')
                             quality=page.locator('.home-dashboard').evaluate(r"""root=>{
@@ -114,10 +117,16 @@ def main():
  const align=selector=>{const xs=capacity.map(x=>x.querySelector(selector)).filter(Boolean).map(x=>rect(x).x);return !xs.length||Math.max(...xs)-Math.min(...xs)<=1};
  const metrics=[...root.querySelectorAll('.home-project-metrics,.home-recruitment-metrics')];
  return {
-  padding:cards.every(x=>['paddingTop','paddingBottom','paddingLeft','paddingRight'].every(k=>parseFloat(getComputedStyle(x)[k])>=16)),
+  // Sectioned cards put the readable inset on the body, with the same header
+  // inset. Check those actual surfaces instead of requiring double padding.
+  padding:cards.every(x=>{const header=x.querySelector(':scope > .home-card-header'),body=x.querySelector(':scope > .home-card-body');
+    if(header&&body){const h=getComputedStyle(header),b=getComputedStyle(body);return ['paddingTop','paddingBottom','paddingLeft','paddingRight'].every(k=>parseFloat(b[k])>=16)&&near(parseFloat(h.paddingLeft),parseFloat(b.paddingLeft))&&near(parseFloat(h.paddingRight),parseFloat(b.paddingRight));}
+    return ['paddingTop','paddingBottom','paddingLeft','paddingRight'].every(k=>parseFloat(getComputedStyle(x)[k])>=16)}),
  // Phương án B: KPI gộp một dải nên gap = 0 và ngăn bằng đường kẻ dọc; các lưới
  // còn lại vẫn giữ nhịp 16px. Đổi ở đây là đổi hợp đồng, không phải nới cổng.
- cardGap:[...root.querySelectorAll('.home-row,.home-my-work-grid')].every(x=>near(parseFloat(getComputedStyle(x).gap),16))&&[...root.querySelectorAll('.home-main-kpis')].every(x=>parseFloat(getComputedStyle(x).gap)===0),
+ // Shared header/body tracks have zero row gap inside each pair; stacked
+ // cards keep the existing 16px separation below the two-column breakpoint.
+ cardGap:[...root.querySelectorAll('.home-row,.home-my-work-grid')].every(x=>{const s=getComputedStyle(x);return near(parseFloat(s.columnGap),16)&&near(parseFloat(s.rowGap),innerWidth>=1024?0:16)})&&[...root.querySelectorAll('.home-main-kpis')].every(x=>parseFloat(getComputedStyle(x).gap)===0),
   groupGap:near(parseFloat(getComputedStyle(root).rowGap),24),
   sectionGap:spacing.filter(x=>x.children.length>1).every(x=>near(parseFloat(getComputedStyle(x).rowGap),12)),
   type:scales.every(([selector,size,line])=>[...root.querySelectorAll(selector)].filter(visible).every(x=>near(parseFloat(getComputedStyle(x).fontSize),size)&&near(parseFloat(getComputedStyle(x).lineHeight),line))),
