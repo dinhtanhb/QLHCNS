@@ -1,10 +1,10 @@
 {% extends "admin/base_site.html" %}
-{% load static %}
+{% load static ui_components %}
 {% block extrahead %}
 {{ block.super }}
 <meta name="ui-palette" content="{{ ui_palette }}">
-<script src="{% static 'js/theme.js' %}?v=20261026-admin-palette"></script>
-<link rel="stylesheet" href="{% static 'css/admin.css' %}?v=20261012-ui-2c">
+<script src="{% asset 'js/theme.js' %}"></script>
+<link rel="stylesheet" href="{% asset 'css/admin.css' %}">
 <link rel="stylesheet" href="{% static 'css/ui_controls.css' %}?v=20261012-ui-2c">
 <script src="{% static 'js/ui_numbers.js' %}?v=20261012-ui-2c" defer></script>
 {% endblock %}

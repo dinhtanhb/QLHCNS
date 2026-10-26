@@ -124,6 +124,37 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 /* AdminLTE and Select2 own higher-priority backgrounds; resolve them per theme. */
 @media screen {
+ /* Unlayered vendor CSS outranks theme.css's base layer. Map Bootstrap's native
+    theme variables here as well as its component surfaces, for all palettes. */
+ :root[data-theme] {
+  --bs-body-bg:var(--ui-bg); --bs-body-color:var(--ui-text);
+  --bs-secondary-bg:var(--ui-surface); --bs-tertiary-bg:var(--ui-surface-raised);
+  --bs-secondary-color:var(--ui-text-muted); --bs-tertiary-color:var(--ui-text-muted);
+  --bs-emphasis-color:var(--ui-text); --bs-heading-color:var(--ui-text);
+  --bs-border-color:var(--ui-border); --bs-border-color-translucent:var(--ui-divider);
+  --bs-link-color:var(--ui-link); --bs-link-hover-color:var(--ui-brand-hover);
+  --body-bg:var(--ui-surface); --body-fg:var(--ui-text); --body-quiet-color:var(--ui-text-muted);
+  --body-loud-color:var(--ui-text); --darkened-bg:var(--ui-surface-raised);
+  --selected-bg:var(--ui-selected-bg); --hairline-color:var(--ui-divider);
+  --border-color:var(--ui-border); --link-fg:var(--ui-link); --link-hover-color:var(--ui-brand-hover);
+ }
+ .card { --bs-card-bg:var(--ui-surface); --bs-card-color:var(--ui-text); --bs-card-cap-bg:var(--ui-surface-raised); --bs-card-cap-color:var(--ui-text); background:var(--ui-surface); color:var(--ui-text); border-color:var(--ui-divider); }
+ .card-header,.card-footer { background:var(--ui-surface-raised); color:var(--ui-text); border-color:var(--ui-divider); }
+ .timeline>div>.timeline-item { background:var(--ui-surface); color:var(--ui-text); box-shadow:none; border:var(--ui-border-width) solid var(--ui-divider); }
+ .timeline>div>.timeline-item>.timeline-header { color:var(--ui-text); border-color:var(--ui-divider); }
+ .timeline>div>.timeline-item>.time { color:var(--ui-text-muted); }
+ .table { --bs-table-bg:var(--ui-surface); --bs-table-color:var(--ui-text); --bs-table-striped-bg:var(--ui-surface-raised); --bs-table-striped-color:var(--ui-text); --bs-table-hover-bg:var(--ui-hover-bg); --bs-table-hover-color:var(--ui-text); --bs-table-border-color:var(--ui-divider); }
+ :is(.app-main,.timeline,.login-page) a:not(.btn):not(.nav-link):not(.dropdown-item) { color:var(--ui-link); }
+ :root[data-theme] :is(.form-control,.form-select,textarea) { background-color:var(--ui-surface); color:var(--ui-text); border-color:var(--ui-border); }
+ :is(.form-control,textarea)::placeholder { color:var(--ui-text-muted); opacity:1; }
+ :root[data-theme] :is(.form-control,.form-select,textarea):disabled { background-color:var(--ui-disabled-bg); color:var(--ui-disabled-text); border-color:var(--ui-disabled-border); }
+ .dropdown-menu { --bs-dropdown-bg:var(--ui-surface); --bs-dropdown-color:var(--ui-text); --bs-dropdown-link-color:var(--ui-text); --bs-dropdown-link-hover-bg:var(--ui-hover-bg); --bs-dropdown-link-hover-color:var(--ui-text); --bs-dropdown-link-active-bg:var(--ui-selected-bg); --bs-dropdown-link-active-color:var(--ui-selected-text); }
+ .page-link { --bs-pagination-bg:var(--ui-surface); --bs-pagination-color:var(--ui-link); --bs-pagination-border-color:var(--ui-border); --bs-pagination-hover-bg:var(--ui-hover-bg); --bs-pagination-hover-color:var(--ui-link); }
+ .nav-tabs { --bs-nav-tabs-link-active-bg:var(--ui-surface); --bs-nav-tabs-link-active-color:var(--ui-text); --bs-nav-tabs-border-color:var(--ui-divider); }
+ .modal-content,.list-group-item { background:var(--ui-surface); color:var(--ui-text); border-color:var(--ui-divider); }
+ .calendarbox,.clockbox { background:var(--ui-surface); color:var(--ui-text); border-color:var(--ui-border); }
+ .calendar td.selected a { background:var(--ui-selected-bg); color:var(--ui-selected-text)!important; }
+ .calendar td a:hover,.timelist a:hover { background:var(--ui-hover-bg); color:var(--ui-text); }
  .app-wrapper,.app-main,.app-content,.app-content-header { background:var(--ui-bg)!important; color:var(--ui-text); }
  .breadcrumb .breadcrumb-item.active { color:var(--ui-text-muted)!important; }
  .select2-container--default :is(.select2-selection--single,.select2-selection--multiple),.select2-dropdown { background:var(--ui-surface)!important; color:var(--ui-text)!important; border-color:var(--ui-border)!important; }

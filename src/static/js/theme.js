@@ -10,6 +10,9 @@
     function systemMode() { return preference.matches ? 'dark' : 'light'; }
     function apply(mode) {
         root.dataset.theme = mode === 'dark' ? 'dark' : 'light';
+        // Jazzmin/Bootstrap components use a second attribute. Keep one saved
+        // preference; stale jazzmin-theme-mode must not leave light cards in dark mode.
+        if (paletteMeta) root.dataset.bsTheme = root.dataset.theme;
         root.style.colorScheme = root.dataset.theme;
         const themeMeta = document.querySelector('meta[name="theme-color"]');
         if (themeMeta) {

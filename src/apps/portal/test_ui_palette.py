@@ -21,6 +21,14 @@ from apps.portal.context_processors import ui_palette
 
 
 class UiPaletteContextTests(SimpleTestCase):
+    def test_admin_login_versions_both_theme_assets_by_content(self):
+        from apps.common.asset_version import get_asset_hash
+        from django.templatetags.static import static
+
+        response = self.client.get('/admin/login/')
+        for asset in ('js/theme.js', 'css/admin.css'):
+            self.assertContains(response, f'{static(asset)}?v={get_asset_hash(asset)}')
+
     def test_admin_login_exposes_palette_before_synchronous_theme_script(self):
         for palette in ("viethealth", "chamdong", "thanam"):
             with self.subTest(palette=palette), override_settings(UI_PALETTE=palette):
