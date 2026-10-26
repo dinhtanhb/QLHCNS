@@ -1,5 +1,9 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-26 — Sửa palette admin sau 4b6153f
+
+- `main` nền `111fe58a`, giữ thay đổi cũ theo quyền “cho phép”: head admin/registration truyền meta cho `theme.js` đồng bộ trước vẽ; thêm test login ba palette và sửa mục “Quay lại dải dự phòng” (`UI_PALETTE`: portal + admin; manifest/bản in không đổi); không đổi quyền/nghiệp vụ/cổng. Test palette/mobile/contrast/report: SQLite và SQL Server **38/38 mỗi backend**; contrast **660/0 lỗi**; Edge QA SQLite **16 ca admin + 8 portal**, sáng/tối × 1756/390px, có ảnh/keyboard; layout trước/sau **150 route, 6.825 ca/lượt, 0 vi phạm/0 lỗi**, đủ chín vai trò/bảy độ rộng; form/query **1.053 ca/lượt, 0 khác biệt**. Lệnh, ảnh, contact sheet, bản sao nguồn review ZIP (976 SHA-256 khớp, không phải backup) tại `%TEMP%/ihrms-admin-palette-20261026-synthetic_only/{validation.json,edge/,IHRMS_admin_palette_review_20261026.zip}`; CI/SHA remote chốt một lần sau push ở `delivery.json`, không thêm commit ghi CI. Chưa kiểm máy triển khai; chủ dự án pull/restart khi phát hành.
+
 ## 2026-10-26 — Thi công VietHealth làm palette mặc định, giữ Chàm Đông/Than Ấm dự phòng (test / UI / docs riêng)
 
 - **Nguồn yêu cầu/phạm vi:** triển khai `docs/KE_HOACH_DAI_MAU_VIETHEALTH.md` (commit `f3fb1ca`); quyết định chốt **D1-A, D2-B, D3-A, D4-A, D5-B, D6-A**. Không đổi nghiệp vụ/route/quyền/dữ liệu; không nới cổng kiểm (ngưỡng 4,5 chữ / 3 UI giữ nguyên); không sửa `.hcns-paper`, `print_forms.css`, `hcns_forms.css`, logo; không force-push/deploy; không thêm hex vào template hoặc JS — palette chỉ chọn bằng cấu hình máy chủ `UI_PALETTE ∈ {viethealth, chamdong, thanam}`, không có nút cho từng người dùng. Đầu lượt `main` tại `f3fb1ca`, fetch origin main, ahead/behind 0/0; đã đọc `AGENTS.md`, `CLAUDE.md`, `DESIGN.md`, `docs/UI_DESIGN_SYSTEM.md` và ba mục nhật ký mới nhất. Giữ nguyên biến động `.qoder/`, `.workbuddy-ai/`, `docs/09_Git_*`, `outputs/plan-b4b-20261023/`, không stage chúng.

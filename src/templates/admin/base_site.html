@@ -2,7 +2,8 @@
 {% load static %}
 {% block extrahead %}
 {{ block.super }}
-<script src="{% static 'js/theme.js' %}?v=20261012-ui-2c"></script>
+<meta name="ui-palette" content="{{ ui_palette }}">
+<script src="{% static 'js/theme.js' %}?v=20261026-admin-palette"></script>
 <link rel="stylesheet" href="{% static 'css/admin.css' %}?v=20261012-ui-2c">
 <link rel="stylesheet" href="{% static 'css/ui_controls.css' %}?v=20261012-ui-2c">
 <script src="{% static 'js/ui_numbers.js' %}?v=20261012-ui-2c" defer></script>

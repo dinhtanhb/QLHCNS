@@ -2,6 +2,8 @@
 (function () {
     'use strict';
     const root = document.documentElement;
+    const paletteMeta = document.querySelector('meta[name="ui-palette"]');
+    if (paletteMeta) root.dataset.palette = paletteMeta.content;
     const key = 'ihrms-theme';
     const preference = window.matchMedia('(prefers-color-scheme: dark)');
     let selected = null;

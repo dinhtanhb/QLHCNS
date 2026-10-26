@@ -83,3 +83,5 @@ Hình thức sự kiện lưu `attendance_mode` Online/Offline; mới mặc đ�
 ## Quay lại dải dự phòng
 
 Palette mặc định là **VietHealth**. Hai dải dự phòng Chàm Đông (indigo) và Than Ấm (graphite) được chọn bằng cấu hình máy chủ `UI_PALETTE ∈ {viethealth, chamdong, thanam}`; không có nút chọn cho từng người dùng. Cách bật: đặt `UI_PALETTE=chamdong` hoặc `UI_PALETTE=thanam` trong môi trường máy chủ (hoặc `.env`) rồi khởi động lại ứng dụng — không cần đổi mã. Giá trị lạ tự quay về `viethealth` kèm cảnh báo log. Than Ấm chỉ áp cho màn hình; bản in/bản giấy HCNS không đổi với mọi palette.
+
+`UI_PALETTE` áp dụng cho **portal và admin**, kể cả hai trang đăng nhập. Portal đặt `data-palette` trực tiếp trên `<html>`; Jazzmin có template gốc ngoài `src/`, nên admin truyền `<meta name="ui-palette">` qua `extrahead` của `admin/base_site.html` và `registration/base.html`. `theme.js` nạp đồng bộ trong head, đọc meta và đặt `document.documentElement.dataset.palette` trước khi vẽ, cùng cơ chế đặt theme sáng/tối; không thêm inline script. `manifest.json` vẫn tĩnh theo VietHealth và bản in/bản giấy HCNS không đổi theo `UI_PALETTE`.

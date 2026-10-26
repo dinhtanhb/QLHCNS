@@ -1,6 +1,7 @@
 """Ràng buộc chọn palette bằng cấu hình máy chủ (UI_PALETTE).
 
 - Mọi thẻ <html> của template phải mang data-palette="{{ ui_palette }}".
+- Login Jazzmin ngoài src/ truyền palette qua meta trước theme.js đồng bộ.
 - context processor trả đúng giá trị settings.UI_PALETTE.
 - settings quy giá trị lạ về viethealth kèm cảnh báo log; mặc định = viethealth.
 - ui_tokens.css thật phải vượt cổng tương phản cho CẢ 3 palette (220 cặp/palette).
@@ -20,6 +21,27 @@ from apps.portal.context_processors import ui_palette
 
 
 class UiPaletteContextTests(SimpleTestCase):
+    def test_admin_login_exposes_palette_before_synchronous_theme_script(self):
+        for palette in ("viethealth", "chamdong", "thanam"):
+            with self.subTest(palette=palette), override_settings(UI_PALETTE=palette):
+                response = self.client.get("/admin/login/")
+                meta = f'<meta name="ui-palette" content="{palette}">'
+                self.assertContains(response, meta, html=True)
+                source = response.content.decode()
+                script = re.search(r'<script[^>]+src="[^"]*js/theme\.js[^"]*"[^>]*>', source)
+                self.assertIsNotNone(script)
+                self.assertLess(source.index(meta), script.start())
+                self.assertNotRegex(script.group(), r"\b(?:async|defer)\b")
+                self.assertLess(script.start(), source.index("</head>"))
+
+    def test_portal_login_html_carries_configured_palette(self):
+        for palette in ("viethealth", "chamdong", "thanam"):
+            with self.subTest(palette=palette), override_settings(UI_PALETTE=palette):
+                response = self.client.get("/portal/login/")
+                self.assertEqual(response.status_code, 200)
+                tag = re.search(r"<html[^>]*>", response.content.decode()).group()
+                self.assertIn(f'data-palette="{palette}"', tag)
+
     def test_context_processor_returns_configured_palette(self):
         request = RequestFactory().get("/")
         for palette in ("viethealth", "chamdong", "thanam"):

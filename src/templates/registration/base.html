@@ -1,0 +1,7 @@
+{% extends "registration/base.html" %}
+{% load static %}
+{% block extrahead %}
+{{ block.super }}
+<meta name="ui-palette" content="{{ ui_palette }}">
+<script src="{% static 'js/theme.js' %}?v=20261026-admin-palette"></script>
+{% endblock %}
