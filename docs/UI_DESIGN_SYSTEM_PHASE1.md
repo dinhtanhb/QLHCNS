@@ -16,226 +16,666 @@ Chạy `python ops/check_ui_contrast.py` bằng Python hệ thống (stdlib, kh�
 
 
 <!-- UI_CONTRAST_BEGIN -->
-| Theme | Chữ/UI | Nền | Màu trước | Màu nền | Tỷ lệ | Ngưỡng | Kết quả |
-|---|---|---|---|---|---:|---:|---|
-| light | `--ui-text` | `--ui-divider` | `#101828` | `#e8ecf3` | 14.978:1 | 3:1 | Đạt |
-| light | `--ui-warning-text` | `--ui-divider` | `#b54708` | `#e8ecf3` | 4.580:1 | 3:1 | Đạt |
-| light | `--ui-chart-series` | `--ui-divider` | `#3a4fd0` | `#e8ecf3` | 5.523:1 | 3:1 | Đạt |
-| light | `--ui-info-text` | `--ui-surface` | `#175cd3` | `#ffffff` | 5.986:1 | 3:1 | Đạt |
-| light | `--ui-warning-text` | `--ui-surface` | `#b54708` | `#ffffff` | 5.427:1 | 3:1 | Đạt |
-| light | `--ui-text` | `--ui-bg` | `#101828` | `#e7ecf4` | 14.960:1 | 4.5:1 | Đạt |
-| light | `--ui-text-muted` | `--ui-bg` | `#475467` | `#e7ecf4` | 6.480:1 | 4.5:1 | Đạt |
-| light | `--ui-link` | `--ui-bg` | `#3a4fd0` | `#e7ecf4` | 5.516:1 | 4.5:1 | Đạt |
-| light | `--ui-border` | `--ui-bg` | `#667085` | `#e7ecf4` | 4.194:1 | 3:1 | Đạt |
-| light | `--ui-focus` | `--ui-bg` | `#3a4fd0` | `#e7ecf4` | 5.516:1 | 3:1 | Đạt |
-| light | `--ui-text` | `--ui-surface` | `#101828` | `#ffffff` | 17.747:1 | 4.5:1 | Đạt |
-| light | `--ui-text-muted` | `--ui-surface` | `#475467` | `#ffffff` | 7.687:1 | 4.5:1 | Đạt |
-| light | `--ui-link` | `--ui-surface` | `#3a4fd0` | `#ffffff` | 6.544:1 | 4.5:1 | Đạt |
-| light | `--ui-border` | `--ui-surface` | `#667085` | `#ffffff` | 4.975:1 | 3:1 | Đạt |
-| light | `--ui-focus` | `--ui-surface` | `#3a4fd0` | `#ffffff` | 6.544:1 | 3:1 | Đạt |
-| light | `--ui-text` | `--ui-surface-raised` | `#101828` | `#f4f6fb` | 16.413:1 | 4.5:1 | Đạt |
-| light | `--ui-text-muted` | `--ui-surface-raised` | `#475467` | `#f4f6fb` | 7.109:1 | 4.5:1 | Đạt |
-| light | `--ui-link` | `--ui-surface-raised` | `#3a4fd0` | `#f4f6fb` | 6.052:1 | 4.5:1 | Đạt |
-| light | `--ui-border` | `--ui-surface-raised` | `#667085` | `#f4f6fb` | 4.601:1 | 3:1 | Đạt |
-| light | `--ui-focus` | `--ui-surface-raised` | `#3a4fd0` | `#f4f6fb` | 6.052:1 | 3:1 | Đạt |
-| light | `--ui-text` | `--ui-hover-bg` | `#101828` | `#eef1fd` | 15.749:1 | 4.5:1 | Đạt |
-| light | `--ui-text-muted` | `--ui-hover-bg` | `#475467` | `#eef1fd` | 6.822:1 | 4.5:1 | Đạt |
-| light | `--ui-link` | `--ui-hover-bg` | `#3a4fd0` | `#eef1fd` | 5.807:1 | 4.5:1 | Đạt |
-| light | `--ui-border` | `--ui-hover-bg` | `#667085` | `#eef1fd` | 4.415:1 | 3:1 | Đạt |
-| light | `--ui-focus` | `--ui-hover-bg` | `#3a4fd0` | `#eef1fd` | 5.807:1 | 3:1 | Đạt |
-| light | `--ui-on-brand` | `--ui-brand` | `#ffffff` | `#3a4fd0` | 6.544:1 | 4.5:1 | Đạt |
-| light | `--ui-on-brand` | `--ui-brand-hover` | `#ffffff` | `#2f42b5` | 8.180:1 | 4.5:1 | Đạt |
-| light | `--ui-on-brand` | `--ui-brand-active` | `#ffffff` | `#26349b` | 10.259:1 | 4.5:1 | Đạt |
-| light | `--ui-link` | `--ui-brand-soft` | `#3a4fd0` | `#eef1fd` | 5.807:1 | 4.5:1 | Đạt |
-| light | `--ui-selected-text` | `--ui-selected-bg` | `#2f42b5` | `#e6eafc` | 6.832:1 | 4.5:1 | Đạt |
-| light | `--ui-disabled-text` | `--ui-disabled-bg` | `#475467` | `#e3e8f2` | 6.256:1 | 4.5:1 | Đạt |
-| light | `--ui-disabled-border` | `--ui-disabled-bg` | `#667085` | `#e3e8f2` | 4.049:1 | 3:1 | Đạt |
-| light | `--ui-border` | `--ui-selected-bg` | `#667085` | `#e6eafc` | 4.155:1 | 3:1 | Đạt |
-| light | `--ui-focus` | `--ui-selected-bg` | `#3a4fd0` | `#e6eafc` | 5.465:1 | 3:1 | Đạt |
-| light | `--ui-success-text` | `--ui-success-bg` | `#067647` | `#ecfdf3` | 5.396:1 | 4.5:1 | Đạt |
-| light | `--ui-success-border` | `--ui-success-bg` | `#067647` | `#ecfdf3` | 5.396:1 | 3:1 | Đạt |
-| light | `--ui-success-border` | `--ui-surface` | `#067647` | `#ffffff` | 5.691:1 | 3:1 | Đạt |
-| light | `--ui-warning-text` | `--ui-warning-bg` | `#b54708` | `#fffaeb` | 5.201:1 | 4.5:1 | Đạt |
-| light | `--ui-warning-border` | `--ui-warning-bg` | `#b54708` | `#fffaeb` | 5.201:1 | 3:1 | Đạt |
-| light | `--ui-warning-border` | `--ui-surface` | `#b54708` | `#ffffff` | 5.427:1 | 3:1 | Đạt |
-| light | `--ui-danger-text` | `--ui-danger-bg` | `#b42318` | `#fef3f2` | 6.047:1 | 4.5:1 | Đạt |
-| light | `--ui-danger-border` | `--ui-danger-bg` | `#b42318` | `#fef3f2` | 6.047:1 | 3:1 | Đạt |
-| light | `--ui-danger-border` | `--ui-surface` | `#b42318` | `#ffffff` | 6.574:1 | 3:1 | Đạt |
-| light | `--ui-info-text` | `--ui-info-bg` | `#175cd3` | `#eff8ff` | 5.571:1 | 4.5:1 | Đạt |
-| light | `--ui-info-border` | `--ui-info-bg` | `#175cd3` | `#eff8ff` | 5.571:1 | 3:1 | Đạt |
-| light | `--ui-info-border` | `--ui-surface` | `#175cd3` | `#ffffff` | 5.986:1 | 3:1 | Đạt |
-| light | `--ui-error-text` | `--ui-error-bg` | `#b42318` | `#fef3f2` | 6.047:1 | 4.5:1 | Đạt |
-| light | `--ui-error-border` | `--ui-error-bg` | `#b42318` | `#fef3f2` | 6.047:1 | 3:1 | Đạt |
-| light | `--ui-error-border` | `--ui-surface` | `#b42318` | `#ffffff` | 6.574:1 | 3:1 | Đạt |
-| light | `--ui-sidebar-text` | `--ui-sidebar-bg` | `#1d2939` | `#ffffff` | 14.701:1 | 4.5:1 | Đạt |
-| light | `--ui-sidebar-border` | `--ui-sidebar-bg` | `#667085` | `#ffffff` | 4.975:1 | 3:1 | Đạt |
-| light | `--ui-sidebar-focus` | `--ui-sidebar-bg` | `#3a4fd0` | `#ffffff` | 6.544:1 | 3:1 | Đạt |
-| light | `--ui-sidebar-text` | `--ui-sidebar-hover-bg` | `#1d2939` | `#eef1fd` | 13.046:1 | 4.5:1 | Đạt |
-| light | `--ui-sidebar-border` | `--ui-sidebar-hover-bg` | `#667085` | `#eef1fd` | 4.415:1 | 3:1 | Đạt |
-| light | `--ui-sidebar-focus` | `--ui-sidebar-hover-bg` | `#3a4fd0` | `#eef1fd` | 5.807:1 | 3:1 | Đạt |
-| light | `--ui-sidebar-active-text` | `--ui-sidebar-active-bg` | `#2f42b5` | `#e6eafc` | 6.832:1 | 4.5:1 | Đạt |
-| light | `--ui-sidebar-marker` | `--ui-sidebar-active-bg` | `#3a4fd0` | `#e6eafc` | 5.465:1 | 3:1 | Đạt |
-| light | `--ui-sidebar-hover-text` | `--ui-sidebar-hover-bg` | `#2f42b5` | `#eef1fd` | 7.259:1 | 4.5:1 | Đạt |
-| light | `--ui-sidebar-marker` | `--ui-sidebar-hover-bg` | `#3a4fd0` | `#eef1fd` | 5.807:1 | 3:1 | Đạt |
-| light | `--ui-sidebar-muted` | `--ui-sidebar-bg` | `#5b6675` | `#ffffff` | 5.830:1 | 4.5:1 | Đạt |
-| light | `--ui-sidebar-focus` | `--ui-sidebar-active-bg` | `#3a4fd0` | `#e6eafc` | 5.465:1 | 3:1 | Đạt |
-| light | `--ui-chart-series` | `--ui-bg` | `#3a4fd0` | `#e7ecf4` | 5.516:1 | 3:1 | Đạt |
-| light | `--ui-chart-series-soft` | `--ui-bg` | `#2f42b5` | `#e7ecf4` | 6.895:1 | 3:1 | Đạt |
-| light | `--ui-chart-series-strong` | `--ui-bg` | `#26349b` | `#e7ecf4` | 8.648:1 | 3:1 | Đạt |
-| light | `--ui-chart-grid` | `--ui-bg` | `#667085` | `#e7ecf4` | 4.194:1 | 3:1 | Đạt |
-| light | `--ui-chart-hire` | `--ui-bg` | `#3a4fd0` | `#e7ecf4` | 5.516:1 | 3:1 | Đạt |
-| light | `--ui-chart-departure` | `--ui-bg` | `#b42318` | `#e7ecf4` | 5.542:1 | 3:1 | Đạt |
-| light | `--ui-chart-transfer` | `--ui-bg` | `#175cd3` | `#e7ecf4` | 5.046:1 | 3:1 | Đạt |
-| light | `--ui-chart-promotion` | `--ui-bg` | `#067647` | `#e7ecf4` | 4.797:1 | 3:1 | Đạt |
-| light | `--ui-chart-axis` | `--ui-bg` | `#475467` | `#e7ecf4` | 6.480:1 | 4.5:1 | Đạt |
-| light | `--ui-chart-label` | `--ui-bg` | `#101828` | `#e7ecf4` | 14.960:1 | 4.5:1 | Đạt |
-| light | `--ui-chart-series` | `--ui-surface` | `#3a4fd0` | `#ffffff` | 6.544:1 | 3:1 | Đạt |
-| light | `--ui-chart-series-soft` | `--ui-surface` | `#2f42b5` | `#ffffff` | 8.180:1 | 3:1 | Đạt |
-| light | `--ui-chart-series-strong` | `--ui-surface` | `#26349b` | `#ffffff` | 10.259:1 | 3:1 | Đạt |
-| light | `--ui-chart-grid` | `--ui-surface` | `#667085` | `#ffffff` | 4.975:1 | 3:1 | Đạt |
-| light | `--ui-chart-hire` | `--ui-surface` | `#3a4fd0` | `#ffffff` | 6.544:1 | 3:1 | Đạt |
-| light | `--ui-chart-departure` | `--ui-surface` | `#b42318` | `#ffffff` | 6.574:1 | 3:1 | Đạt |
-| light | `--ui-chart-transfer` | `--ui-surface` | `#175cd3` | `#ffffff` | 5.986:1 | 3:1 | Đạt |
-| light | `--ui-chart-promotion` | `--ui-surface` | `#067647` | `#ffffff` | 5.691:1 | 3:1 | Đạt |
-| light | `--ui-chart-axis` | `--ui-surface` | `#475467` | `#ffffff` | 7.687:1 | 4.5:1 | Đạt |
-| light | `--ui-chart-label` | `--ui-surface` | `#101828` | `#ffffff` | 17.747:1 | 4.5:1 | Đạt |
-| light | `--ui-chart-series` | `--ui-surface-raised` | `#3a4fd0` | `#f4f6fb` | 6.052:1 | 3:1 | Đạt |
-| light | `--ui-chart-series-soft` | `--ui-surface-raised` | `#2f42b5` | `#f4f6fb` | 7.565:1 | 3:1 | Đạt |
-| light | `--ui-chart-series-strong` | `--ui-surface-raised` | `#26349b` | `#f4f6fb` | 9.488:1 | 3:1 | Đạt |
-| light | `--ui-chart-grid` | `--ui-surface-raised` | `#667085` | `#f4f6fb` | 4.601:1 | 3:1 | Đạt |
-| light | `--ui-chart-hire` | `--ui-surface-raised` | `#3a4fd0` | `#f4f6fb` | 6.052:1 | 3:1 | Đạt |
-| light | `--ui-chart-departure` | `--ui-surface-raised` | `#b42318` | `#f4f6fb` | 6.080:1 | 3:1 | Đạt |
-| light | `--ui-chart-transfer` | `--ui-surface-raised` | `#175cd3` | `#f4f6fb` | 5.537:1 | 3:1 | Đạt |
-| light | `--ui-chart-promotion` | `--ui-surface-raised` | `#067647` | `#f4f6fb` | 5.263:1 | 3:1 | Đạt |
-| light | `--ui-chart-axis` | `--ui-surface-raised` | `#475467` | `#f4f6fb` | 7.109:1 | 4.5:1 | Đạt |
-| light | `--ui-chart-label` | `--ui-surface-raised` | `#101828` | `#f4f6fb` | 16.413:1 | 4.5:1 | Đạt |
-| light | `--ui-on-brand` | `--ui-chart-series` | `#ffffff` | `#3a4fd0` | 6.544:1 | 4.5:1 | Đạt |
-| light | `--ui-on-brand` | `--ui-chart-series-soft` | `#ffffff` | `#2f42b5` | 8.180:1 | 4.5:1 | Đạt |
-| light | `--ui-on-brand` | `--ui-chart-series-strong` | `#ffffff` | `#26349b` | 10.259:1 | 4.5:1 | Đạt |
-| light | `--ui-danger-text` | `--ui-danger-bg` | `#b42318` | `#fef3f2` | 6.047:1 | 4.5:1 | Đạt |
-| light | `--ui-danger-border` | `--ui-danger-bg` | `#b42318` | `#fef3f2` | 6.047:1 | 3:1 | Đạt |
-| light | `--ui-warning-text` | `--ui-warning-bg` | `#b54708` | `#fffaeb` | 5.201:1 | 4.5:1 | Đạt |
-| light | `--ui-warning-border` | `--ui-warning-bg` | `#b54708` | `#fffaeb` | 5.201:1 | 3:1 | Đạt |
-| light | `--ui-info-text` | `--ui-info-bg` | `#175cd3` | `#eff8ff` | 5.571:1 | 4.5:1 | Đạt |
-| light | `--ui-info-border` | `--ui-info-bg` | `#175cd3` | `#eff8ff` | 5.571:1 | 3:1 | Đạt |
-| light | `--ui-text` | `--ui-surface` | `#101828` | `#ffffff` | 17.747:1 | 4.5:1 | Đạt |
-| light | `--ui-text-muted` | `--ui-surface` | `#475467` | `#ffffff` | 7.687:1 | 4.5:1 | Đạt |
-| light | `--ui-link` | `--ui-surface` | `#3a4fd0` | `#ffffff` | 6.544:1 | 4.5:1 | Đạt |
-| light | `--ui-focus` | `--ui-surface` | `#3a4fd0` | `#ffffff` | 6.544:1 | 3:1 | Đạt |
-| light | `--ui-brand-700` | `--ui-surface` | `#2f42b5` | `#ffffff` | 8.180:1 | 4.5:1 | Đạt |
-| light | `--ui-brand-700` | `--ui-surface-tint` | `#2f42b5` | `#f4f6fb` | 7.565:1 | 4.5:1 | Đạt |
-| light | `--ui-text` | `--ui-surface-tint` | `#101828` | `#f4f6fb` | 16.413:1 | 4.5:1 | Đạt |
-| light | `--ui-text-muted` | `--ui-surface-tint` | `#475467` | `#f4f6fb` | 7.109:1 | 4.5:1 | Đạt |
-| light | `--ui-brand-600` | `--ui-surface` | `#3a4fd0` | `#ffffff` | 6.544:1 | 3:1 | Đạt |
-| light | `--ui-brand-600` | `--ui-surface-tint` | `#3a4fd0` | `#f4f6fb` | 6.052:1 | 3:1 | Đạt |
-| dark | `--ui-text` | `--ui-divider` | `#eef2ff` | `#1e2740` | 13.231:1 | 3:1 | Đạt |
-| dark | `--ui-warning-text` | `--ui-divider` | `#fde68a` | `#1e2740` | 11.879:1 | 3:1 | Đạt |
-| dark | `--ui-chart-series` | `--ui-divider` | `#93a7ff` | `#1e2740` | 6.490:1 | 3:1 | Đạt |
-| dark | `--ui-info-text` | `--ui-surface` | `#93c5fd` | `#131a2e` | 9.586:1 | 3:1 | Đạt |
-| dark | `--ui-warning-text` | `--ui-surface` | `#fde68a` | `#131a2e` | 13.880:1 | 3:1 | Đạt |
-| dark | `--ui-text` | `--ui-bg` | `#eef2ff` | `#080c18` | 17.452:1 | 4.5:1 | Đạt |
-| dark | `--ui-text-muted` | `--ui-bg` | `#a5b0c9` | `#080c18` | 8.971:1 | 4.5:1 | Đạt |
-| dark | `--ui-link` | `--ui-bg` | `#93a7ff` | `#080c18` | 8.561:1 | 4.5:1 | Đạt |
-| dark | `--ui-border` | `--ui-bg` | `#7d8ab0` | `#080c18` | 5.700:1 | 3:1 | Đạt |
-| dark | `--ui-focus` | `--ui-bg` | `#93a7ff` | `#080c18` | 8.561:1 | 3:1 | Đạt |
-| dark | `--ui-text` | `--ui-surface` | `#eef2ff` | `#131a2e` | 15.458:1 | 4.5:1 | Đạt |
-| dark | `--ui-text-muted` | `--ui-surface` | `#a5b0c9` | `#131a2e` | 7.946:1 | 4.5:1 | Đạt |
-| dark | `--ui-link` | `--ui-surface` | `#93a7ff` | `#131a2e` | 7.583:1 | 4.5:1 | Đạt |
-| dark | `--ui-border` | `--ui-surface` | `#7d8ab0` | `#131a2e` | 5.049:1 | 3:1 | Đạt |
-| dark | `--ui-focus` | `--ui-surface` | `#93a7ff` | `#131a2e` | 7.583:1 | 3:1 | Đạt |
-| dark | `--ui-text` | `--ui-surface-raised` | `#eef2ff` | `#1b2440` | 13.678:1 | 4.5:1 | Đạt |
-| dark | `--ui-text-muted` | `--ui-surface-raised` | `#a5b0c9` | `#1b2440` | 7.031:1 | 4.5:1 | Đạt |
-| dark | `--ui-link` | `--ui-surface-raised` | `#93a7ff` | `#1b2440` | 6.710:1 | 4.5:1 | Đạt |
-| dark | `--ui-border` | `--ui-surface-raised` | `#7d8ab0` | `#1b2440` | 4.468:1 | 3:1 | Đạt |
-| dark | `--ui-focus` | `--ui-surface-raised` | `#93a7ff` | `#1b2440` | 6.710:1 | 3:1 | Đạt |
-| dark | `--ui-text` | `--ui-hover-bg` | `#eef2ff` | `#1b2440` | 13.678:1 | 4.5:1 | Đạt |
-| dark | `--ui-text-muted` | `--ui-hover-bg` | `#a5b0c9` | `#1b2440` | 7.031:1 | 4.5:1 | Đạt |
-| dark | `--ui-link` | `--ui-hover-bg` | `#93a7ff` | `#1b2440` | 6.710:1 | 4.5:1 | Đạt |
-| dark | `--ui-border` | `--ui-hover-bg` | `#7d8ab0` | `#1b2440` | 4.468:1 | 3:1 | Đạt |
-| dark | `--ui-focus` | `--ui-hover-bg` | `#93a7ff` | `#1b2440` | 6.710:1 | 3:1 | Đạt |
-| dark | `--ui-on-brand` | `--ui-brand` | `#0b1020` | `#93a7ff` | 8.305:1 | 4.5:1 | Đạt |
-| dark | `--ui-on-brand` | `--ui-brand-hover` | `#0b1020` | `#b3c2ff` | 10.888:1 | 4.5:1 | Đạt |
-| dark | `--ui-on-brand` | `--ui-brand-active` | `#0b1020` | `#6c85f7` | 5.712:1 | 4.5:1 | Đạt |
-| dark | `--ui-link` | `--ui-brand-soft` | `#93a7ff` | `#18203a` | 7.051:1 | 4.5:1 | Đạt |
-| dark | `--ui-selected-text` | `--ui-selected-bg` | `#c7d2fe` | `#1d2a52` | 9.353:1 | 4.5:1 | Đạt |
-| dark | `--ui-disabled-text` | `--ui-disabled-bg` | `#a5b0c9` | `#1b2440` | 7.031:1 | 4.5:1 | Đạt |
-| dark | `--ui-disabled-border` | `--ui-disabled-bg` | `#7d8ab0` | `#1b2440` | 4.468:1 | 3:1 | Đạt |
-| dark | `--ui-border` | `--ui-selected-bg` | `#7d8ab0` | `#1d2a52` | 4.075:1 | 3:1 | Đạt |
-| dark | `--ui-focus` | `--ui-selected-bg` | `#93a7ff` | `#1d2a52` | 6.120:1 | 3:1 | Đạt |
-| dark | `--ui-success-text` | `--ui-success-bg` | `#86efac` | `#0d2a18` | 10.985:1 | 4.5:1 | Đạt |
-| dark | `--ui-success-border` | `--ui-success-bg` | `#86efac` | `#0d2a18` | 10.985:1 | 3:1 | Đạt |
-| dark | `--ui-success-border` | `--ui-surface` | `#86efac` | `#131a2e` | 12.310:1 | 3:1 | Đạt |
-| dark | `--ui-warning-text` | `--ui-warning-bg` | `#fde68a` | `#2b2006` | 12.853:1 | 4.5:1 | Đạt |
-| dark | `--ui-warning-border` | `--ui-warning-bg` | `#fde68a` | `#2b2006` | 12.853:1 | 3:1 | Đạt |
-| dark | `--ui-warning-border` | `--ui-surface` | `#fde68a` | `#131a2e` | 13.880:1 | 3:1 | Đạt |
-| dark | `--ui-danger-text` | `--ui-danger-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 4.5:1 | Đạt |
-| dark | `--ui-danger-border` | `--ui-danger-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 3:1 | Đạt |
-| dark | `--ui-danger-border` | `--ui-surface` | `#fca5a5` | `#131a2e` | 9.107:1 | 3:1 | Đạt |
-| dark | `--ui-info-text` | `--ui-info-bg` | `#93c5fd` | `#0b1e33` | 9.333:1 | 4.5:1 | Đạt |
-| dark | `--ui-info-border` | `--ui-info-bg` | `#93c5fd` | `#0b1e33` | 9.333:1 | 3:1 | Đạt |
-| dark | `--ui-info-border` | `--ui-surface` | `#93c5fd` | `#131a2e` | 9.586:1 | 3:1 | Đạt |
-| dark | `--ui-error-text` | `--ui-error-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 4.5:1 | Đạt |
-| dark | `--ui-error-border` | `--ui-error-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 3:1 | Đạt |
-| dark | `--ui-error-border` | `--ui-surface` | `#fca5a5` | `#131a2e` | 9.107:1 | 3:1 | Đạt |
-| dark | `--ui-sidebar-text` | `--ui-sidebar-bg` | `#cdd5ea` | `#0d1322` | 12.619:1 | 4.5:1 | Đạt |
-| dark | `--ui-sidebar-border` | `--ui-sidebar-bg` | `#7d8ab0` | `#0d1322` | 5.412:1 | 3:1 | Đạt |
-| dark | `--ui-sidebar-focus` | `--ui-sidebar-bg` | `#93a7ff` | `#0d1322` | 8.128:1 | 3:1 | Đạt |
-| dark | `--ui-sidebar-text` | `--ui-sidebar-hover-bg` | `#cdd5ea` | `#1b2440` | 10.416:1 | 4.5:1 | Đạt |
-| dark | `--ui-sidebar-border` | `--ui-sidebar-hover-bg` | `#7d8ab0` | `#1b2440` | 4.468:1 | 3:1 | Đạt |
-| dark | `--ui-sidebar-focus` | `--ui-sidebar-hover-bg` | `#93a7ff` | `#1b2440` | 6.710:1 | 3:1 | Đạt |
-| dark | `--ui-sidebar-active-text` | `--ui-sidebar-active-bg` | `#c7d2fe` | `#1d2a52` | 9.353:1 | 4.5:1 | Đạt |
-| dark | `--ui-sidebar-marker` | `--ui-sidebar-active-bg` | `#93a7ff` | `#1d2a52` | 6.120:1 | 3:1 | Đạt |
-| dark | `--ui-sidebar-hover-text` | `--ui-sidebar-hover-bg` | `#ffffff` | `#1b2440` | 15.295:1 | 4.5:1 | Đạt |
-| dark | `--ui-sidebar-marker` | `--ui-sidebar-hover-bg` | `#93a7ff` | `#1b2440` | 6.710:1 | 3:1 | Đạt |
-| dark | `--ui-sidebar-muted` | `--ui-sidebar-bg` | `#93a0bb` | `#0d1322` | 7.047:1 | 4.5:1 | Đạt |
-| dark | `--ui-sidebar-focus` | `--ui-sidebar-active-bg` | `#93a7ff` | `#1d2a52` | 6.120:1 | 3:1 | Đạt |
-| dark | `--ui-chart-series` | `--ui-bg` | `#93a7ff` | `#080c18` | 8.561:1 | 3:1 | Đạt |
-| dark | `--ui-chart-series-soft` | `--ui-bg` | `#b3c2ff` | `#080c18` | 11.223:1 | 3:1 | Đạt |
-| dark | `--ui-chart-series-strong` | `--ui-bg` | `#6c85f7` | `#080c18` | 5.888:1 | 3:1 | Đạt |
-| dark | `--ui-chart-grid` | `--ui-bg` | `#7d8ab0` | `#080c18` | 5.700:1 | 3:1 | Đạt |
-| dark | `--ui-chart-hire` | `--ui-bg` | `#93a7ff` | `#080c18` | 8.561:1 | 3:1 | Đạt |
-| dark | `--ui-chart-departure` | `--ui-bg` | `#fca5a5` | `#080c18` | 10.282:1 | 3:1 | Đạt |
-| dark | `--ui-chart-transfer` | `--ui-bg` | `#93c5fd` | `#080c18` | 10.822:1 | 3:1 | Đạt |
-| dark | `--ui-chart-promotion` | `--ui-bg` | `#86efac` | `#080c18` | 13.898:1 | 3:1 | Đạt |
-| dark | `--ui-chart-axis` | `--ui-bg` | `#a5b0c9` | `#080c18` | 8.971:1 | 4.5:1 | Đạt |
-| dark | `--ui-chart-label` | `--ui-bg` | `#eef2ff` | `#080c18` | 17.452:1 | 4.5:1 | Đạt |
-| dark | `--ui-chart-series` | `--ui-surface` | `#93a7ff` | `#131a2e` | 7.583:1 | 3:1 | Đạt |
-| dark | `--ui-chart-series-soft` | `--ui-surface` | `#b3c2ff` | `#131a2e` | 9.941:1 | 3:1 | Đạt |
-| dark | `--ui-chart-series-strong` | `--ui-surface` | `#6c85f7` | `#131a2e` | 5.215:1 | 3:1 | Đạt |
-| dark | `--ui-chart-grid` | `--ui-surface` | `#7d8ab0` | `#131a2e` | 5.049:1 | 3:1 | Đạt |
-| dark | `--ui-chart-hire` | `--ui-surface` | `#93a7ff` | `#131a2e` | 7.583:1 | 3:1 | Đạt |
-| dark | `--ui-chart-departure` | `--ui-surface` | `#fca5a5` | `#131a2e` | 9.107:1 | 3:1 | Đạt |
-| dark | `--ui-chart-transfer` | `--ui-surface` | `#93c5fd` | `#131a2e` | 9.586:1 | 3:1 | Đạt |
-| dark | `--ui-chart-promotion` | `--ui-surface` | `#86efac` | `#131a2e` | 12.310:1 | 3:1 | Đạt |
-| dark | `--ui-chart-axis` | `--ui-surface` | `#a5b0c9` | `#131a2e` | 7.946:1 | 4.5:1 | Đạt |
-| dark | `--ui-chart-label` | `--ui-surface` | `#eef2ff` | `#131a2e` | 15.458:1 | 4.5:1 | Đạt |
-| dark | `--ui-chart-series` | `--ui-surface-raised` | `#93a7ff` | `#1b2440` | 6.710:1 | 3:1 | Đạt |
-| dark | `--ui-chart-series-soft` | `--ui-surface-raised` | `#b3c2ff` | `#1b2440` | 8.796:1 | 3:1 | Đạt |
-| dark | `--ui-chart-series-strong` | `--ui-surface-raised` | `#6c85f7` | `#1b2440` | 4.615:1 | 3:1 | Đạt |
-| dark | `--ui-chart-grid` | `--ui-surface-raised` | `#7d8ab0` | `#1b2440` | 4.468:1 | 3:1 | Đạt |
-| dark | `--ui-chart-hire` | `--ui-surface-raised` | `#93a7ff` | `#1b2440` | 6.710:1 | 3:1 | Đạt |
-| dark | `--ui-chart-departure` | `--ui-surface-raised` | `#fca5a5` | `#1b2440` | 8.059:1 | 3:1 | Đạt |
-| dark | `--ui-chart-transfer` | `--ui-surface-raised` | `#93c5fd` | `#1b2440` | 8.482:1 | 3:1 | Đạt |
-| dark | `--ui-chart-promotion` | `--ui-surface-raised` | `#86efac` | `#1b2440` | 10.893:1 | 3:1 | Đạt |
-| dark | `--ui-chart-axis` | `--ui-surface-raised` | `#a5b0c9` | `#1b2440` | 7.031:1 | 4.5:1 | Đạt |
-| dark | `--ui-chart-label` | `--ui-surface-raised` | `#eef2ff` | `#1b2440` | 13.678:1 | 4.5:1 | Đạt |
-| dark | `--ui-on-brand` | `--ui-chart-series` | `#0b1020` | `#93a7ff` | 8.305:1 | 4.5:1 | Đạt |
-| dark | `--ui-on-brand` | `--ui-chart-series-soft` | `#0b1020` | `#b3c2ff` | 10.888:1 | 4.5:1 | Đạt |
-| dark | `--ui-on-brand` | `--ui-chart-series-strong` | `#0b1020` | `#6c85f7` | 5.712:1 | 4.5:1 | Đạt |
-| dark | `--ui-danger-text` | `--ui-danger-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 4.5:1 | Đạt |
-| dark | `--ui-danger-border` | `--ui-danger-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 3:1 | Đạt |
-| dark | `--ui-warning-text` | `--ui-warning-bg` | `#fde68a` | `#2b2006` | 12.853:1 | 4.5:1 | Đạt |
-| dark | `--ui-warning-border` | `--ui-warning-bg` | `#fde68a` | `#2b2006` | 12.853:1 | 3:1 | Đạt |
-| dark | `--ui-info-text` | `--ui-info-bg` | `#93c5fd` | `#0b1e33` | 9.333:1 | 4.5:1 | Đạt |
-| dark | `--ui-info-border` | `--ui-info-bg` | `#93c5fd` | `#0b1e33` | 9.333:1 | 3:1 | Đạt |
-| dark | `--ui-text` | `--ui-surface` | `#eef2ff` | `#131a2e` | 15.458:1 | 4.5:1 | Đạt |
-| dark | `--ui-text-muted` | `--ui-surface` | `#a5b0c9` | `#131a2e` | 7.946:1 | 4.5:1 | Đạt |
-| dark | `--ui-link` | `--ui-surface` | `#93a7ff` | `#131a2e` | 7.583:1 | 4.5:1 | Đạt |
-| dark | `--ui-focus` | `--ui-surface` | `#93a7ff` | `#131a2e` | 7.583:1 | 3:1 | Đạt |
-| dark | `--ui-brand-700` | `--ui-surface` | `#b3c2ff` | `#131a2e` | 9.941:1 | 4.5:1 | Đạt |
-| dark | `--ui-brand-700` | `--ui-surface-tint` | `#b3c2ff` | `#18203a` | 9.244:1 | 4.5:1 | Đạt |
-| dark | `--ui-text` | `--ui-surface-tint` | `#eef2ff` | `#18203a` | 14.374:1 | 4.5:1 | Đạt |
-| dark | `--ui-text-muted` | `--ui-surface-tint` | `#a5b0c9` | `#18203a` | 7.389:1 | 4.5:1 | Đạt |
-| dark | `--ui-brand-600` | `--ui-surface` | `#93a7ff` | `#131a2e` | 7.583:1 | 3:1 | Đạt |
-| dark | `--ui-brand-600` | `--ui-surface-tint` | `#93a7ff` | `#18203a` | 7.051:1 | 3:1 | Đạt |
+| Palette | Theme | Chữ/UI | Nền | Màu trước | Màu nền | Tỷ lệ | Ngưỡng | Kết quả |
+|---|---|---|---|---|---|---:|---:|---|
+| viethealth | light | `--ui-text` | `--ui-divider` | `#101828` | `#e4ebe6` | 14.641:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-warning-text` | `--ui-divider` | `#b54708` | `#e4ebe6` | 4.477:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-series` | `--ui-divider` | `#1f7a3d` | `#e4ebe6` | 4.431:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-info-text` | `--ui-surface` | `#175cd3` | `#ffffff` | 5.986:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-warning-text` | `--ui-surface` | `#b54708` | `#ffffff` | 5.427:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-text` | `--ui-bg` | `#101828` | `#edf2ee` | 15.665:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-text-muted` | `--ui-bg` | `#475467` | `#edf2ee` | 6.785:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-link` | `--ui-bg` | `#1f7a3d` | `#edf2ee` | 4.741:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-border` | `--ui-bg` | `#667085` | `#edf2ee` | 4.391:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-focus` | `--ui-bg` | `#1f7a3d` | `#edf2ee` | 4.741:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-text` | `--ui-surface` | `#101828` | `#ffffff` | 17.747:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-text-muted` | `--ui-surface` | `#475467` | `#ffffff` | 7.687:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-link` | `--ui-surface` | `#1f7a3d` | `#ffffff` | 5.372:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-border` | `--ui-surface` | `#667085` | `#ffffff` | 4.975:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-focus` | `--ui-surface` | `#1f7a3d` | `#ffffff` | 5.372:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-text` | `--ui-surface-raised` | `#101828` | `#f5f8f5` | 16.587:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-text-muted` | `--ui-surface-raised` | `#475467` | `#f5f8f5` | 7.185:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-link` | `--ui-surface-raised` | `#1f7a3d` | `#f5f8f5` | 5.021:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-border` | `--ui-surface-raised` | `#667085` | `#f5f8f5` | 4.650:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-focus` | `--ui-surface-raised` | `#1f7a3d` | `#f5f8f5` | 5.021:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-text` | `--ui-hover-bg` | `#101828` | `#e9f5ee` | 15.854:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-text-muted` | `--ui-hover-bg` | `#475467` | `#e9f5ee` | 6.867:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-link` | `--ui-hover-bg` | `#1f7a3d` | `#e9f5ee` | 4.799:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-border` | `--ui-hover-bg` | `#667085` | `#e9f5ee` | 4.444:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-focus` | `--ui-hover-bg` | `#1f7a3d` | `#e9f5ee` | 4.799:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-on-brand` | `--ui-brand` | `#ffffff` | `#1f7a3d` | 5.372:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-on-brand` | `--ui-brand-hover` | `#ffffff` | `#17652f` | 7.145:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-on-brand` | `--ui-brand-active` | `#ffffff` | `#0f4f24` | 9.703:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-link` | `--ui-brand-soft` | `#1f7a3d` | `#e9f5ee` | 4.799:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-selected-text` | `--ui-selected-bg` | `#17652f` | `#d9eee2` | 5.879:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-disabled-text` | `--ui-disabled-bg` | `#475467` | `#e3e8e4` | 6.197:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-disabled-border` | `--ui-disabled-bg` | `#667085` | `#e3e8e4` | 4.010:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-border` | `--ui-selected-bg` | `#667085` | `#d9eee2` | 4.093:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-focus` | `--ui-selected-bg` | `#1f7a3d` | `#d9eee2` | 4.420:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-success-text` | `--ui-success-bg` | `#067647` | `#ecfdf3` | 5.396:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-success-border` | `--ui-success-bg` | `#067647` | `#ecfdf3` | 5.396:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-success-border` | `--ui-surface` | `#067647` | `#ffffff` | 5.691:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-warning-text` | `--ui-warning-bg` | `#b54708` | `#fffaeb` | 5.201:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-warning-border` | `--ui-warning-bg` | `#b54708` | `#fffaeb` | 5.201:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-warning-border` | `--ui-surface` | `#b54708` | `#ffffff` | 5.427:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-danger-text` | `--ui-danger-bg` | `#ce181f` | `#fef3f2` | 5.117:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-danger-border` | `--ui-danger-bg` | `#ce181f` | `#fef3f2` | 5.117:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-danger-border` | `--ui-surface` | `#ce181f` | `#ffffff` | 5.563:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-info-text` | `--ui-info-bg` | `#175cd3` | `#eff8ff` | 5.571:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-info-border` | `--ui-info-bg` | `#175cd3` | `#eff8ff` | 5.571:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-info-border` | `--ui-surface` | `#175cd3` | `#ffffff` | 5.986:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-error-text` | `--ui-error-bg` | `#ce181f` | `#fef3f2` | 5.117:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-error-border` | `--ui-error-bg` | `#ce181f` | `#fef3f2` | 5.117:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-error-border` | `--ui-surface` | `#ce181f` | `#ffffff` | 5.563:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-sidebar-text` | `--ui-sidebar-bg` | `#1d2939` | `#ffffff` | 14.701:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-sidebar-border` | `--ui-sidebar-bg` | `#667085` | `#ffffff` | 4.975:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-sidebar-focus` | `--ui-sidebar-bg` | `#1f7a3d` | `#ffffff` | 5.372:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-sidebar-text` | `--ui-sidebar-hover-bg` | `#1d2939` | `#e9f5ee` | 13.133:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-sidebar-border` | `--ui-sidebar-hover-bg` | `#667085` | `#e9f5ee` | 4.444:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-sidebar-focus` | `--ui-sidebar-hover-bg` | `#1f7a3d` | `#e9f5ee` | 4.799:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-sidebar-active-text` | `--ui-sidebar-active-bg` | `#17652f` | `#d9eee2` | 5.879:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-sidebar-marker` | `--ui-sidebar-active-bg` | `#1f7a3d` | `#d9eee2` | 4.420:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-sidebar-hover-text` | `--ui-sidebar-hover-bg` | `#17652f` | `#e9f5ee` | 6.383:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-sidebar-marker` | `--ui-sidebar-hover-bg` | `#1f7a3d` | `#e9f5ee` | 4.799:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-sidebar-muted` | `--ui-sidebar-bg` | `#5b6675` | `#ffffff` | 5.830:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-sidebar-focus` | `--ui-sidebar-active-bg` | `#1f7a3d` | `#d9eee2` | 4.420:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-series` | `--ui-bg` | `#1f7a3d` | `#edf2ee` | 4.741:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-series-soft` | `--ui-bg` | `#17652f` | `#edf2ee` | 6.307:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-series-strong` | `--ui-bg` | `#0f4f24` | `#edf2ee` | 8.565:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-grid` | `--ui-bg` | `#667085` | `#edf2ee` | 4.391:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-hire` | `--ui-bg` | `#1f7a3d` | `#edf2ee` | 4.741:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-departure` | `--ui-bg` | `#ce181f` | `#edf2ee` | 4.911:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-transfer` | `--ui-bg` | `#175cd3` | `#edf2ee` | 5.284:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-promotion` | `--ui-bg` | `#067647` | `#edf2ee` | 5.023:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-axis` | `--ui-bg` | `#475467` | `#edf2ee` | 6.785:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-chart-label` | `--ui-bg` | `#101828` | `#edf2ee` | 15.665:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-chart-series` | `--ui-surface` | `#1f7a3d` | `#ffffff` | 5.372:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-series-soft` | `--ui-surface` | `#17652f` | `#ffffff` | 7.145:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-series-strong` | `--ui-surface` | `#0f4f24` | `#ffffff` | 9.703:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-grid` | `--ui-surface` | `#667085` | `#ffffff` | 4.975:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-hire` | `--ui-surface` | `#1f7a3d` | `#ffffff` | 5.372:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-departure` | `--ui-surface` | `#ce181f` | `#ffffff` | 5.563:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-transfer` | `--ui-surface` | `#175cd3` | `#ffffff` | 5.986:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-promotion` | `--ui-surface` | `#067647` | `#ffffff` | 5.691:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-axis` | `--ui-surface` | `#475467` | `#ffffff` | 7.687:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-chart-label` | `--ui-surface` | `#101828` | `#ffffff` | 17.747:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-chart-series` | `--ui-surface-raised` | `#1f7a3d` | `#f5f8f5` | 5.021:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-series-soft` | `--ui-surface-raised` | `#17652f` | `#f5f8f5` | 6.679:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-series-strong` | `--ui-surface-raised` | `#0f4f24` | `#f5f8f5` | 9.069:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-grid` | `--ui-surface-raised` | `#667085` | `#f5f8f5` | 4.650:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-hire` | `--ui-surface-raised` | `#1f7a3d` | `#f5f8f5` | 5.021:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-departure` | `--ui-surface-raised` | `#ce181f` | `#f5f8f5` | 5.200:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-transfer` | `--ui-surface-raised` | `#175cd3` | `#f5f8f5` | 5.595:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-promotion` | `--ui-surface-raised` | `#067647` | `#f5f8f5` | 5.319:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-chart-axis` | `--ui-surface-raised` | `#475467` | `#f5f8f5` | 7.185:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-chart-label` | `--ui-surface-raised` | `#101828` | `#f5f8f5` | 16.587:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-on-brand` | `--ui-chart-series` | `#ffffff` | `#1f7a3d` | 5.372:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-on-brand` | `--ui-chart-series-soft` | `#ffffff` | `#17652f` | 7.145:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-on-brand` | `--ui-chart-series-strong` | `#ffffff` | `#0f4f24` | 9.703:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-danger-text` | `--ui-danger-bg` | `#ce181f` | `#fef3f2` | 5.117:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-danger-border` | `--ui-danger-bg` | `#ce181f` | `#fef3f2` | 5.117:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-warning-text` | `--ui-warning-bg` | `#b54708` | `#fffaeb` | 5.201:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-warning-border` | `--ui-warning-bg` | `#b54708` | `#fffaeb` | 5.201:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-info-text` | `--ui-info-bg` | `#175cd3` | `#eff8ff` | 5.571:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-info-border` | `--ui-info-bg` | `#175cd3` | `#eff8ff` | 5.571:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-text` | `--ui-surface` | `#101828` | `#ffffff` | 17.747:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-text-muted` | `--ui-surface` | `#475467` | `#ffffff` | 7.687:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-link` | `--ui-surface` | `#1f7a3d` | `#ffffff` | 5.372:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-focus` | `--ui-surface` | `#1f7a3d` | `#ffffff` | 5.372:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-brand-700` | `--ui-surface` | `#17652f` | `#ffffff` | 7.145:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-brand-700` | `--ui-surface-tint` | `#17652f` | `#f5f8f5` | 6.679:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-text` | `--ui-surface-tint` | `#101828` | `#f5f8f5` | 16.587:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-text-muted` | `--ui-surface-tint` | `#475467` | `#f5f8f5` | 7.185:1 | 4.5:1 | Đạt |
+| viethealth | light | `--ui-brand-600` | `--ui-surface` | `#1f7a3d` | `#ffffff` | 5.372:1 | 3:1 | Đạt |
+| viethealth | light | `--ui-brand-600` | `--ui-surface-tint` | `#1f7a3d` | `#f5f8f5` | 5.021:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-text` | `--ui-divider` | `#eef5f0` | `#1c2a21` | 13.515:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-warning-text` | `--ui-divider` | `#fde68a` | `#1c2a21` | 12.023:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-series` | `--ui-divider` | `#6ee7a0` | `#1c2a21` | 9.698:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-info-text` | `--ui-surface` | `#93c5fd` | `#111a14` | 9.855:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-warning-text` | `--ui-surface` | `#fde68a` | `#111a14` | 14.270:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-text` | `--ui-bg` | `#eef5f0` | `#08120d` | 17.190:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-text-muted` | `--ui-bg` | `#a3b5a9` | `#08120d` | 8.833:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-link` | `--ui-bg` | `#6ee7a0` | `#08120d` | 12.335:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-border` | `--ui-bg` | `#7c8f82` | `#08120d` | 5.540:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-focus` | `--ui-bg` | `#6ee7a0` | `#08120d` | 12.335:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-text` | `--ui-surface` | `#eef5f0` | `#111a14` | 16.040:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-text-muted` | `--ui-surface` | `#a3b5a9` | `#111a14` | 8.242:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-link` | `--ui-surface` | `#6ee7a0` | `#111a14` | 11.510:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-border` | `--ui-surface` | `#7c8f82` | `#111a14` | 5.169:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-focus` | `--ui-surface` | `#6ee7a0` | `#111a14` | 11.510:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-text` | `--ui-surface-raised` | `#eef5f0` | `#18241c` | 14.492:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-text-muted` | `--ui-surface-raised` | `#a3b5a9` | `#18241c` | 7.447:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-link` | `--ui-surface-raised` | `#6ee7a0` | `#18241c` | 10.399:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-border` | `--ui-surface-raised` | `#7c8f82` | `#18241c` | 4.670:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-focus` | `--ui-surface-raised` | `#6ee7a0` | `#18241c` | 10.399:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-text` | `--ui-hover-bg` | `#eef5f0` | `#18241c` | 14.492:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-text-muted` | `--ui-hover-bg` | `#a3b5a9` | `#18241c` | 7.447:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-link` | `--ui-hover-bg` | `#6ee7a0` | `#18241c` | 10.399:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-border` | `--ui-hover-bg` | `#7c8f82` | `#18241c` | 4.670:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-focus` | `--ui-hover-bg` | `#6ee7a0` | `#18241c` | 10.399:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-on-brand` | `--ui-brand` | `#0b1020` | `#6ee7a0` | 12.262:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-on-brand` | `--ui-brand-hover` | `#0b1020` | `#8ff0b8` | 13.815:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-on-brand` | `--ui-brand-active` | `#0b1020` | `#4cc97f` | 8.987:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-link` | `--ui-brand-soft` | `#6ee7a0` | `#14261a` | 10.289:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-selected-text` | `--ui-selected-bg` | `#b6f2cd` | `#1d3a26` | 9.832:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-disabled-text` | `--ui-disabled-bg` | `#a3b5a9` | `#18241c` | 7.447:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-disabled-border` | `--ui-disabled-bg` | `#7c8f82` | `#18241c` | 4.670:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-border` | `--ui-selected-bg` | `#7c8f82` | `#1d3a26` | 3.624:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-focus` | `--ui-selected-bg` | `#6ee7a0` | `#1d3a26` | 8.070:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-success-text` | `--ui-success-bg` | `#86efac` | `#0d2a18` | 10.985:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-success-border` | `--ui-success-bg` | `#86efac` | `#0d2a18` | 10.985:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-success-border` | `--ui-surface` | `#86efac` | `#111a14` | 12.656:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-warning-text` | `--ui-warning-bg` | `#fde68a` | `#2b2006` | 12.853:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-warning-border` | `--ui-warning-bg` | `#fde68a` | `#2b2006` | 12.853:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-warning-border` | `--ui-surface` | `#fde68a` | `#111a14` | 14.270:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-danger-text` | `--ui-danger-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-danger-border` | `--ui-danger-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-danger-border` | `--ui-surface` | `#fca5a5` | `#111a14` | 9.363:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-info-text` | `--ui-info-bg` | `#93c5fd` | `#0b1e33` | 9.333:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-info-border` | `--ui-info-bg` | `#93c5fd` | `#0b1e33` | 9.333:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-info-border` | `--ui-surface` | `#93c5fd` | `#111a14` | 9.855:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-error-text` | `--ui-error-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-error-border` | `--ui-error-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-error-border` | `--ui-surface` | `#fca5a5` | `#111a14` | 9.363:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-sidebar-text` | `--ui-sidebar-bg` | `#cfe0d5` | `#0b140f` | 13.625:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-sidebar-border` | `--ui-sidebar-bg` | `#7c8f82` | `#0b140f` | 5.448:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-sidebar-focus` | `--ui-sidebar-bg` | `#6ee7a0` | `#0b140f` | 12.131:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-sidebar-text` | `--ui-sidebar-hover-bg` | `#cfe0d5` | `#16241b` | 11.730:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-sidebar-border` | `--ui-sidebar-hover-bg` | `#7c8f82` | `#16241b` | 4.690:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-sidebar-focus` | `--ui-sidebar-hover-bg` | `#6ee7a0` | `#16241b` | 10.444:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-sidebar-active-text` | `--ui-sidebar-active-bg` | `#b6f2cd` | `#1b3324` | 10.722:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-sidebar-marker` | `--ui-sidebar-active-bg` | `#6ee7a0` | `#1b3324` | 8.800:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-sidebar-hover-text` | `--ui-sidebar-hover-bg` | `#ffffff` | `#16241b` | 16.125:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-sidebar-marker` | `--ui-sidebar-hover-bg` | `#6ee7a0` | `#16241b` | 10.444:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-sidebar-muted` | `--ui-sidebar-bg` | `#93a89a` | `#0b140f` | 7.410:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-sidebar-focus` | `--ui-sidebar-active-bg` | `#6ee7a0` | `#1b3324` | 8.800:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-series` | `--ui-bg` | `#6ee7a0` | `#08120d` | 12.335:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-series-soft` | `--ui-bg` | `#8ff0b8` | `#08120d` | 13.897:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-series-strong` | `--ui-bg` | `#4cc97f` | `#08120d` | 9.040:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-grid` | `--ui-bg` | `#7c8f82` | `#08120d` | 5.540:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-hire` | `--ui-bg` | `#6ee7a0` | `#08120d` | 12.335:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-departure` | `--ui-bg` | `#fca5a5` | `#08120d` | 10.034:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-transfer` | `--ui-bg` | `#93c5fd` | `#08120d` | 10.561:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-promotion` | `--ui-bg` | `#86efac` | `#08120d` | 13.564:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-axis` | `--ui-bg` | `#a3b5a9` | `#08120d` | 8.833:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-chart-label` | `--ui-bg` | `#eef5f0` | `#08120d` | 17.190:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-chart-series` | `--ui-surface` | `#6ee7a0` | `#111a14` | 11.510:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-series-soft` | `--ui-surface` | `#8ff0b8` | `#111a14` | 12.968:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-series-strong` | `--ui-surface` | `#4cc97f` | `#111a14` | 8.436:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-grid` | `--ui-surface` | `#7c8f82` | `#111a14` | 5.169:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-hire` | `--ui-surface` | `#6ee7a0` | `#111a14` | 11.510:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-departure` | `--ui-surface` | `#fca5a5` | `#111a14` | 9.363:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-transfer` | `--ui-surface` | `#93c5fd` | `#111a14` | 9.855:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-promotion` | `--ui-surface` | `#86efac` | `#111a14` | 12.656:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-axis` | `--ui-surface` | `#a3b5a9` | `#111a14` | 8.242:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-chart-label` | `--ui-surface` | `#eef5f0` | `#111a14` | 16.040:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-chart-series` | `--ui-surface-raised` | `#6ee7a0` | `#18241c` | 10.399:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-series-soft` | `--ui-surface-raised` | `#8ff0b8` | `#18241c` | 11.716:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-series-strong` | `--ui-surface-raised` | `#4cc97f` | `#18241c` | 7.621:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-grid` | `--ui-surface-raised` | `#7c8f82` | `#18241c` | 4.670:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-hire` | `--ui-surface-raised` | `#6ee7a0` | `#18241c` | 10.399:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-departure` | `--ui-surface-raised` | `#fca5a5` | `#18241c` | 8.459:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-transfer` | `--ui-surface-raised` | `#93c5fd` | `#18241c` | 8.904:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-promotion` | `--ui-surface-raised` | `#86efac` | `#18241c` | 11.435:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-chart-axis` | `--ui-surface-raised` | `#a3b5a9` | `#18241c` | 7.447:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-chart-label` | `--ui-surface-raised` | `#eef5f0` | `#18241c` | 14.492:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-on-brand` | `--ui-chart-series` | `#0b1020` | `#6ee7a0` | 12.262:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-on-brand` | `--ui-chart-series-soft` | `#0b1020` | `#8ff0b8` | 13.815:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-on-brand` | `--ui-chart-series-strong` | `#0b1020` | `#4cc97f` | 8.987:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-danger-text` | `--ui-danger-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-danger-border` | `--ui-danger-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-warning-text` | `--ui-warning-bg` | `#fde68a` | `#2b2006` | 12.853:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-warning-border` | `--ui-warning-bg` | `#fde68a` | `#2b2006` | 12.853:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-info-text` | `--ui-info-bg` | `#93c5fd` | `#0b1e33` | 9.333:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-info-border` | `--ui-info-bg` | `#93c5fd` | `#0b1e33` | 9.333:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-text` | `--ui-surface` | `#eef5f0` | `#111a14` | 16.040:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-text-muted` | `--ui-surface` | `#a3b5a9` | `#111a14` | 8.242:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-link` | `--ui-surface` | `#6ee7a0` | `#111a14` | 11.510:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-focus` | `--ui-surface` | `#6ee7a0` | `#111a14` | 11.510:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-brand-700` | `--ui-surface` | `#8ff0b8` | `#111a14` | 12.968:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-brand-700` | `--ui-surface-tint` | `#8ff0b8` | `#18241c` | 11.716:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-text` | `--ui-surface-tint` | `#eef5f0` | `#18241c` | 14.492:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-text-muted` | `--ui-surface-tint` | `#a3b5a9` | `#18241c` | 7.447:1 | 4.5:1 | Đạt |
+| viethealth | dark | `--ui-brand-600` | `--ui-surface` | `#6ee7a0` | `#111a14` | 11.510:1 | 3:1 | Đạt |
+| viethealth | dark | `--ui-brand-600` | `--ui-surface-tint` | `#6ee7a0` | `#18241c` | 10.399:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-text` | `--ui-divider` | `#101828` | `#e8ecf3` | 14.978:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-warning-text` | `--ui-divider` | `#b54708` | `#e8ecf3` | 4.580:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-series` | `--ui-divider` | `#3a4fd0` | `#e8ecf3` | 5.523:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-info-text` | `--ui-surface` | `#175cd3` | `#ffffff` | 5.986:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-warning-text` | `--ui-surface` | `#b54708` | `#ffffff` | 5.427:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-text` | `--ui-bg` | `#101828` | `#e7ecf4` | 14.960:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-text-muted` | `--ui-bg` | `#475467` | `#e7ecf4` | 6.480:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-link` | `--ui-bg` | `#3a4fd0` | `#e7ecf4` | 5.516:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-border` | `--ui-bg` | `#667085` | `#e7ecf4` | 4.194:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-focus` | `--ui-bg` | `#3a4fd0` | `#e7ecf4` | 5.516:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-text` | `--ui-surface` | `#101828` | `#ffffff` | 17.747:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-text-muted` | `--ui-surface` | `#475467` | `#ffffff` | 7.687:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-link` | `--ui-surface` | `#3a4fd0` | `#ffffff` | 6.544:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-border` | `--ui-surface` | `#667085` | `#ffffff` | 4.975:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-focus` | `--ui-surface` | `#3a4fd0` | `#ffffff` | 6.544:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-text` | `--ui-surface-raised` | `#101828` | `#f4f6fb` | 16.413:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-text-muted` | `--ui-surface-raised` | `#475467` | `#f4f6fb` | 7.109:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-link` | `--ui-surface-raised` | `#3a4fd0` | `#f4f6fb` | 6.052:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-border` | `--ui-surface-raised` | `#667085` | `#f4f6fb` | 4.601:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-focus` | `--ui-surface-raised` | `#3a4fd0` | `#f4f6fb` | 6.052:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-text` | `--ui-hover-bg` | `#101828` | `#eef1fd` | 15.749:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-text-muted` | `--ui-hover-bg` | `#475467` | `#eef1fd` | 6.822:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-link` | `--ui-hover-bg` | `#3a4fd0` | `#eef1fd` | 5.807:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-border` | `--ui-hover-bg` | `#667085` | `#eef1fd` | 4.415:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-focus` | `--ui-hover-bg` | `#3a4fd0` | `#eef1fd` | 5.807:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-on-brand` | `--ui-brand` | `#ffffff` | `#3a4fd0` | 6.544:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-on-brand` | `--ui-brand-hover` | `#ffffff` | `#2f42b5` | 8.180:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-on-brand` | `--ui-brand-active` | `#ffffff` | `#26349b` | 10.259:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-link` | `--ui-brand-soft` | `#3a4fd0` | `#eef1fd` | 5.807:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-selected-text` | `--ui-selected-bg` | `#2f42b5` | `#e6eafc` | 6.832:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-disabled-text` | `--ui-disabled-bg` | `#475467` | `#e3e8f2` | 6.256:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-disabled-border` | `--ui-disabled-bg` | `#667085` | `#e3e8f2` | 4.049:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-border` | `--ui-selected-bg` | `#667085` | `#e6eafc` | 4.155:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-focus` | `--ui-selected-bg` | `#3a4fd0` | `#e6eafc` | 5.465:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-success-text` | `--ui-success-bg` | `#067647` | `#ecfdf3` | 5.396:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-success-border` | `--ui-success-bg` | `#067647` | `#ecfdf3` | 5.396:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-success-border` | `--ui-surface` | `#067647` | `#ffffff` | 5.691:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-warning-text` | `--ui-warning-bg` | `#b54708` | `#fffaeb` | 5.201:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-warning-border` | `--ui-warning-bg` | `#b54708` | `#fffaeb` | 5.201:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-warning-border` | `--ui-surface` | `#b54708` | `#ffffff` | 5.427:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-danger-text` | `--ui-danger-bg` | `#b42318` | `#fef3f2` | 6.047:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-danger-border` | `--ui-danger-bg` | `#b42318` | `#fef3f2` | 6.047:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-danger-border` | `--ui-surface` | `#b42318` | `#ffffff` | 6.574:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-info-text` | `--ui-info-bg` | `#175cd3` | `#eff8ff` | 5.571:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-info-border` | `--ui-info-bg` | `#175cd3` | `#eff8ff` | 5.571:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-info-border` | `--ui-surface` | `#175cd3` | `#ffffff` | 5.986:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-error-text` | `--ui-error-bg` | `#b42318` | `#fef3f2` | 6.047:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-error-border` | `--ui-error-bg` | `#b42318` | `#fef3f2` | 6.047:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-error-border` | `--ui-surface` | `#b42318` | `#ffffff` | 6.574:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-sidebar-text` | `--ui-sidebar-bg` | `#1d2939` | `#ffffff` | 14.701:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-sidebar-border` | `--ui-sidebar-bg` | `#667085` | `#ffffff` | 4.975:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-sidebar-focus` | `--ui-sidebar-bg` | `#3a4fd0` | `#ffffff` | 6.544:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-sidebar-text` | `--ui-sidebar-hover-bg` | `#1d2939` | `#eef1fd` | 13.046:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-sidebar-border` | `--ui-sidebar-hover-bg` | `#667085` | `#eef1fd` | 4.415:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-sidebar-focus` | `--ui-sidebar-hover-bg` | `#3a4fd0` | `#eef1fd` | 5.807:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-sidebar-active-text` | `--ui-sidebar-active-bg` | `#2f42b5` | `#e6eafc` | 6.832:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-sidebar-marker` | `--ui-sidebar-active-bg` | `#3a4fd0` | `#e6eafc` | 5.465:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-sidebar-hover-text` | `--ui-sidebar-hover-bg` | `#2f42b5` | `#eef1fd` | 7.259:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-sidebar-marker` | `--ui-sidebar-hover-bg` | `#3a4fd0` | `#eef1fd` | 5.807:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-sidebar-muted` | `--ui-sidebar-bg` | `#5b6675` | `#ffffff` | 5.830:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-sidebar-focus` | `--ui-sidebar-active-bg` | `#3a4fd0` | `#e6eafc` | 5.465:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-series` | `--ui-bg` | `#3a4fd0` | `#e7ecf4` | 5.516:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-series-soft` | `--ui-bg` | `#2f42b5` | `#e7ecf4` | 6.895:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-series-strong` | `--ui-bg` | `#26349b` | `#e7ecf4` | 8.648:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-grid` | `--ui-bg` | `#667085` | `#e7ecf4` | 4.194:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-hire` | `--ui-bg` | `#3a4fd0` | `#e7ecf4` | 5.516:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-departure` | `--ui-bg` | `#b42318` | `#e7ecf4` | 5.542:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-transfer` | `--ui-bg` | `#175cd3` | `#e7ecf4` | 5.046:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-promotion` | `--ui-bg` | `#067647` | `#e7ecf4` | 4.797:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-axis` | `--ui-bg` | `#475467` | `#e7ecf4` | 6.480:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-chart-label` | `--ui-bg` | `#101828` | `#e7ecf4` | 14.960:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-chart-series` | `--ui-surface` | `#3a4fd0` | `#ffffff` | 6.544:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-series-soft` | `--ui-surface` | `#2f42b5` | `#ffffff` | 8.180:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-series-strong` | `--ui-surface` | `#26349b` | `#ffffff` | 10.259:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-grid` | `--ui-surface` | `#667085` | `#ffffff` | 4.975:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-hire` | `--ui-surface` | `#3a4fd0` | `#ffffff` | 6.544:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-departure` | `--ui-surface` | `#b42318` | `#ffffff` | 6.574:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-transfer` | `--ui-surface` | `#175cd3` | `#ffffff` | 5.986:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-promotion` | `--ui-surface` | `#067647` | `#ffffff` | 5.691:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-axis` | `--ui-surface` | `#475467` | `#ffffff` | 7.687:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-chart-label` | `--ui-surface` | `#101828` | `#ffffff` | 17.747:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-chart-series` | `--ui-surface-raised` | `#3a4fd0` | `#f4f6fb` | 6.052:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-series-soft` | `--ui-surface-raised` | `#2f42b5` | `#f4f6fb` | 7.565:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-series-strong` | `--ui-surface-raised` | `#26349b` | `#f4f6fb` | 9.488:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-grid` | `--ui-surface-raised` | `#667085` | `#f4f6fb` | 4.601:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-hire` | `--ui-surface-raised` | `#3a4fd0` | `#f4f6fb` | 6.052:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-departure` | `--ui-surface-raised` | `#b42318` | `#f4f6fb` | 6.080:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-transfer` | `--ui-surface-raised` | `#175cd3` | `#f4f6fb` | 5.537:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-promotion` | `--ui-surface-raised` | `#067647` | `#f4f6fb` | 5.263:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-chart-axis` | `--ui-surface-raised` | `#475467` | `#f4f6fb` | 7.109:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-chart-label` | `--ui-surface-raised` | `#101828` | `#f4f6fb` | 16.413:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-on-brand` | `--ui-chart-series` | `#ffffff` | `#3a4fd0` | 6.544:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-on-brand` | `--ui-chart-series-soft` | `#ffffff` | `#2f42b5` | 8.180:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-on-brand` | `--ui-chart-series-strong` | `#ffffff` | `#26349b` | 10.259:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-danger-text` | `--ui-danger-bg` | `#b42318` | `#fef3f2` | 6.047:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-danger-border` | `--ui-danger-bg` | `#b42318` | `#fef3f2` | 6.047:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-warning-text` | `--ui-warning-bg` | `#b54708` | `#fffaeb` | 5.201:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-warning-border` | `--ui-warning-bg` | `#b54708` | `#fffaeb` | 5.201:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-info-text` | `--ui-info-bg` | `#175cd3` | `#eff8ff` | 5.571:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-info-border` | `--ui-info-bg` | `#175cd3` | `#eff8ff` | 5.571:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-text` | `--ui-surface` | `#101828` | `#ffffff` | 17.747:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-text-muted` | `--ui-surface` | `#475467` | `#ffffff` | 7.687:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-link` | `--ui-surface` | `#3a4fd0` | `#ffffff` | 6.544:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-focus` | `--ui-surface` | `#3a4fd0` | `#ffffff` | 6.544:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-brand-700` | `--ui-surface` | `#2f42b5` | `#ffffff` | 8.180:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-brand-700` | `--ui-surface-tint` | `#2f42b5` | `#f4f6fb` | 7.565:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-text` | `--ui-surface-tint` | `#101828` | `#f4f6fb` | 16.413:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-text-muted` | `--ui-surface-tint` | `#475467` | `#f4f6fb` | 7.109:1 | 4.5:1 | Đạt |
+| chamdong | light | `--ui-brand-600` | `--ui-surface` | `#3a4fd0` | `#ffffff` | 6.544:1 | 3:1 | Đạt |
+| chamdong | light | `--ui-brand-600` | `--ui-surface-tint` | `#3a4fd0` | `#f4f6fb` | 6.052:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-text` | `--ui-divider` | `#eef2ff` | `#1e2740` | 13.231:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-warning-text` | `--ui-divider` | `#fde68a` | `#1e2740` | 11.879:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-series` | `--ui-divider` | `#93a7ff` | `#1e2740` | 6.490:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-info-text` | `--ui-surface` | `#93c5fd` | `#131a2e` | 9.586:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-warning-text` | `--ui-surface` | `#fde68a` | `#131a2e` | 13.880:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-text` | `--ui-bg` | `#eef2ff` | `#080c18` | 17.452:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-text-muted` | `--ui-bg` | `#a5b0c9` | `#080c18` | 8.971:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-link` | `--ui-bg` | `#93a7ff` | `#080c18` | 8.561:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-border` | `--ui-bg` | `#7d8ab0` | `#080c18` | 5.700:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-focus` | `--ui-bg` | `#93a7ff` | `#080c18` | 8.561:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-text` | `--ui-surface` | `#eef2ff` | `#131a2e` | 15.458:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-text-muted` | `--ui-surface` | `#a5b0c9` | `#131a2e` | 7.946:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-link` | `--ui-surface` | `#93a7ff` | `#131a2e` | 7.583:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-border` | `--ui-surface` | `#7d8ab0` | `#131a2e` | 5.049:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-focus` | `--ui-surface` | `#93a7ff` | `#131a2e` | 7.583:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-text` | `--ui-surface-raised` | `#eef2ff` | `#1b2440` | 13.678:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-text-muted` | `--ui-surface-raised` | `#a5b0c9` | `#1b2440` | 7.031:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-link` | `--ui-surface-raised` | `#93a7ff` | `#1b2440` | 6.710:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-border` | `--ui-surface-raised` | `#7d8ab0` | `#1b2440` | 4.468:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-focus` | `--ui-surface-raised` | `#93a7ff` | `#1b2440` | 6.710:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-text` | `--ui-hover-bg` | `#eef2ff` | `#1b2440` | 13.678:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-text-muted` | `--ui-hover-bg` | `#a5b0c9` | `#1b2440` | 7.031:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-link` | `--ui-hover-bg` | `#93a7ff` | `#1b2440` | 6.710:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-border` | `--ui-hover-bg` | `#7d8ab0` | `#1b2440` | 4.468:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-focus` | `--ui-hover-bg` | `#93a7ff` | `#1b2440` | 6.710:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-on-brand` | `--ui-brand` | `#0b1020` | `#93a7ff` | 8.305:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-on-brand` | `--ui-brand-hover` | `#0b1020` | `#b3c2ff` | 10.888:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-on-brand` | `--ui-brand-active` | `#0b1020` | `#6c85f7` | 5.712:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-link` | `--ui-brand-soft` | `#93a7ff` | `#18203a` | 7.051:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-selected-text` | `--ui-selected-bg` | `#c7d2fe` | `#1d2a52` | 9.353:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-disabled-text` | `--ui-disabled-bg` | `#a5b0c9` | `#1b2440` | 7.031:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-disabled-border` | `--ui-disabled-bg` | `#7d8ab0` | `#1b2440` | 4.468:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-border` | `--ui-selected-bg` | `#7d8ab0` | `#1d2a52` | 4.075:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-focus` | `--ui-selected-bg` | `#93a7ff` | `#1d2a52` | 6.120:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-success-text` | `--ui-success-bg` | `#86efac` | `#0d2a18` | 10.985:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-success-border` | `--ui-success-bg` | `#86efac` | `#0d2a18` | 10.985:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-success-border` | `--ui-surface` | `#86efac` | `#131a2e` | 12.310:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-warning-text` | `--ui-warning-bg` | `#fde68a` | `#2b2006` | 12.853:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-warning-border` | `--ui-warning-bg` | `#fde68a` | `#2b2006` | 12.853:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-warning-border` | `--ui-surface` | `#fde68a` | `#131a2e` | 13.880:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-danger-text` | `--ui-danger-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-danger-border` | `--ui-danger-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-danger-border` | `--ui-surface` | `#fca5a5` | `#131a2e` | 9.107:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-info-text` | `--ui-info-bg` | `#93c5fd` | `#0b1e33` | 9.333:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-info-border` | `--ui-info-bg` | `#93c5fd` | `#0b1e33` | 9.333:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-info-border` | `--ui-surface` | `#93c5fd` | `#131a2e` | 9.586:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-error-text` | `--ui-error-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-error-border` | `--ui-error-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-error-border` | `--ui-surface` | `#fca5a5` | `#131a2e` | 9.107:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-sidebar-text` | `--ui-sidebar-bg` | `#cdd5ea` | `#0d1322` | 12.619:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-sidebar-border` | `--ui-sidebar-bg` | `#7d8ab0` | `#0d1322` | 5.412:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-sidebar-focus` | `--ui-sidebar-bg` | `#93a7ff` | `#0d1322` | 8.128:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-sidebar-text` | `--ui-sidebar-hover-bg` | `#cdd5ea` | `#1b2440` | 10.416:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-sidebar-border` | `--ui-sidebar-hover-bg` | `#7d8ab0` | `#1b2440` | 4.468:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-sidebar-focus` | `--ui-sidebar-hover-bg` | `#93a7ff` | `#1b2440` | 6.710:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-sidebar-active-text` | `--ui-sidebar-active-bg` | `#c7d2fe` | `#1d2a52` | 9.353:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-sidebar-marker` | `--ui-sidebar-active-bg` | `#93a7ff` | `#1d2a52` | 6.120:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-sidebar-hover-text` | `--ui-sidebar-hover-bg` | `#ffffff` | `#1b2440` | 15.295:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-sidebar-marker` | `--ui-sidebar-hover-bg` | `#93a7ff` | `#1b2440` | 6.710:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-sidebar-muted` | `--ui-sidebar-bg` | `#93a0bb` | `#0d1322` | 7.047:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-sidebar-focus` | `--ui-sidebar-active-bg` | `#93a7ff` | `#1d2a52` | 6.120:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-series` | `--ui-bg` | `#93a7ff` | `#080c18` | 8.561:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-series-soft` | `--ui-bg` | `#b3c2ff` | `#080c18` | 11.223:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-series-strong` | `--ui-bg` | `#6c85f7` | `#080c18` | 5.888:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-grid` | `--ui-bg` | `#7d8ab0` | `#080c18` | 5.700:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-hire` | `--ui-bg` | `#93a7ff` | `#080c18` | 8.561:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-departure` | `--ui-bg` | `#fca5a5` | `#080c18` | 10.282:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-transfer` | `--ui-bg` | `#93c5fd` | `#080c18` | 10.822:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-promotion` | `--ui-bg` | `#86efac` | `#080c18` | 13.898:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-axis` | `--ui-bg` | `#a5b0c9` | `#080c18` | 8.971:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-chart-label` | `--ui-bg` | `#eef2ff` | `#080c18` | 17.452:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-chart-series` | `--ui-surface` | `#93a7ff` | `#131a2e` | 7.583:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-series-soft` | `--ui-surface` | `#b3c2ff` | `#131a2e` | 9.941:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-series-strong` | `--ui-surface` | `#6c85f7` | `#131a2e` | 5.215:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-grid` | `--ui-surface` | `#7d8ab0` | `#131a2e` | 5.049:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-hire` | `--ui-surface` | `#93a7ff` | `#131a2e` | 7.583:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-departure` | `--ui-surface` | `#fca5a5` | `#131a2e` | 9.107:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-transfer` | `--ui-surface` | `#93c5fd` | `#131a2e` | 9.586:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-promotion` | `--ui-surface` | `#86efac` | `#131a2e` | 12.310:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-axis` | `--ui-surface` | `#a5b0c9` | `#131a2e` | 7.946:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-chart-label` | `--ui-surface` | `#eef2ff` | `#131a2e` | 15.458:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-chart-series` | `--ui-surface-raised` | `#93a7ff` | `#1b2440` | 6.710:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-series-soft` | `--ui-surface-raised` | `#b3c2ff` | `#1b2440` | 8.796:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-series-strong` | `--ui-surface-raised` | `#6c85f7` | `#1b2440` | 4.615:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-grid` | `--ui-surface-raised` | `#7d8ab0` | `#1b2440` | 4.468:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-hire` | `--ui-surface-raised` | `#93a7ff` | `#1b2440` | 6.710:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-departure` | `--ui-surface-raised` | `#fca5a5` | `#1b2440` | 8.059:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-transfer` | `--ui-surface-raised` | `#93c5fd` | `#1b2440` | 8.482:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-promotion` | `--ui-surface-raised` | `#86efac` | `#1b2440` | 10.893:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-chart-axis` | `--ui-surface-raised` | `#a5b0c9` | `#1b2440` | 7.031:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-chart-label` | `--ui-surface-raised` | `#eef2ff` | `#1b2440` | 13.678:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-on-brand` | `--ui-chart-series` | `#0b1020` | `#93a7ff` | 8.305:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-on-brand` | `--ui-chart-series-soft` | `#0b1020` | `#b3c2ff` | 10.888:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-on-brand` | `--ui-chart-series-strong` | `#0b1020` | `#6c85f7` | 5.712:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-danger-text` | `--ui-danger-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-danger-border` | `--ui-danger-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-warning-text` | `--ui-warning-bg` | `#fde68a` | `#2b2006` | 12.853:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-warning-border` | `--ui-warning-bg` | `#fde68a` | `#2b2006` | 12.853:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-info-text` | `--ui-info-bg` | `#93c5fd` | `#0b1e33` | 9.333:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-info-border` | `--ui-info-bg` | `#93c5fd` | `#0b1e33` | 9.333:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-text` | `--ui-surface` | `#eef2ff` | `#131a2e` | 15.458:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-text-muted` | `--ui-surface` | `#a5b0c9` | `#131a2e` | 7.946:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-link` | `--ui-surface` | `#93a7ff` | `#131a2e` | 7.583:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-focus` | `--ui-surface` | `#93a7ff` | `#131a2e` | 7.583:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-brand-700` | `--ui-surface` | `#b3c2ff` | `#131a2e` | 9.941:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-brand-700` | `--ui-surface-tint` | `#b3c2ff` | `#18203a` | 9.244:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-text` | `--ui-surface-tint` | `#eef2ff` | `#18203a` | 14.374:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-text-muted` | `--ui-surface-tint` | `#a5b0c9` | `#18203a` | 7.389:1 | 4.5:1 | Đạt |
+| chamdong | dark | `--ui-brand-600` | `--ui-surface` | `#93a7ff` | `#131a2e` | 7.583:1 | 3:1 | Đạt |
+| chamdong | dark | `--ui-brand-600` | `--ui-surface-tint` | `#93a7ff` | `#18203a` | 7.051:1 | 3:1 | Đạt |
+| thanam | light | `--ui-text` | `--ui-divider` | `#1c1917` | `#efeae3` | 14.614:1 | 3:1 | Đạt |
+| thanam | light | `--ui-warning-text` | `--ui-divider` | `#a16207` | `#efeae3` | 4.114:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-series` | `--ui-divider` | `#9a4a1a` | `#efeae3` | 5.210:1 | 3:1 | Đạt |
+| thanam | light | `--ui-info-text` | `--ui-surface` | `#1e5a8a` | `#ffffff` | 7.280:1 | 3:1 | Đạt |
+| thanam | light | `--ui-warning-text` | `--ui-surface` | `#a16207` | `#ffffff` | 4.923:1 | 3:1 | Đạt |
+| thanam | light | `--ui-text` | `--ui-bg` | `#1c1917` | `#efebe3` | 14.709:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-text-muted` | `--ui-bg` | `#57534e` | `#efebe3` | 6.417:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-link` | `--ui-bg` | `#9a4a1a` | `#efebe3` | 5.244:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-border` | `--ui-bg` | `#78716c` | `#efebe3` | 4.035:1 | 3:1 | Đạt |
+| thanam | light | `--ui-focus` | `--ui-bg` | `#9a4a1a` | `#efebe3` | 5.244:1 | 3:1 | Đạt |
+| thanam | light | `--ui-text` | `--ui-surface` | `#1c1917` | `#ffffff` | 17.488:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-text-muted` | `--ui-surface` | `#57534e` | `#ffffff` | 7.629:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-link` | `--ui-surface` | `#9a4a1a` | `#ffffff` | 6.234:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-border` | `--ui-surface` | `#78716c` | `#ffffff` | 4.798:1 | 3:1 | Đạt |
+| thanam | light | `--ui-focus` | `--ui-surface` | `#9a4a1a` | `#ffffff` | 6.234:1 | 3:1 | Đạt |
+| thanam | light | `--ui-text` | `--ui-surface-raised` | `#1c1917` | `#f8f5f0` | 16.081:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-text-muted` | `--ui-surface-raised` | `#57534e` | `#f8f5f0` | 7.015:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-link` | `--ui-surface-raised` | `#9a4a1a` | `#f8f5f0` | 5.733:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-border` | `--ui-surface-raised` | `#78716c` | `#f8f5f0` | 4.412:1 | 3:1 | Đạt |
+| thanam | light | `--ui-focus` | `--ui-surface-raised` | `#9a4a1a` | `#f8f5f0` | 5.733:1 | 3:1 | Đạt |
+| thanam | light | `--ui-text` | `--ui-hover-bg` | `#1c1917` | `#faf1e8` | 15.666:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-text-muted` | `--ui-hover-bg` | `#57534e` | `#faf1e8` | 6.834:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-link` | `--ui-hover-bg` | `#9a4a1a` | `#faf1e8` | 5.585:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-border` | `--ui-hover-bg` | `#78716c` | `#faf1e8` | 4.298:1 | 3:1 | Đạt |
+| thanam | light | `--ui-focus` | `--ui-hover-bg` | `#9a4a1a` | `#faf1e8` | 5.585:1 | 3:1 | Đạt |
+| thanam | light | `--ui-on-brand` | `--ui-brand` | `#ffffff` | `#9a4a1a` | 6.234:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-on-brand` | `--ui-brand-hover` | `#ffffff` | `#7f3c13` | 8.209:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-on-brand` | `--ui-brand-active` | `#ffffff` | `#6b3210` | 10.053:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-link` | `--ui-brand-soft` | `#9a4a1a` | `#faf1e8` | 5.585:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-selected-text` | `--ui-selected-bg` | `#7f3c13` | `#f6ece3` | 7.046:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-disabled-text` | `--ui-disabled-bg` | `#57534e` | `#e5ded3` | 5.711:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-disabled-border` | `--ui-disabled-bg` | `#78716c` | `#e5ded3` | 3.592:1 | 3:1 | Đạt |
+| thanam | light | `--ui-border` | `--ui-selected-bg` | `#78716c` | `#f6ece3` | 4.118:1 | 3:1 | Đạt |
+| thanam | light | `--ui-focus` | `--ui-selected-bg` | `#9a4a1a` | `#f6ece3` | 5.351:1 | 3:1 | Đạt |
+| thanam | light | `--ui-success-text` | `--ui-success-bg` | `#4d7c0f` | `#f7fee7` | 4.824:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-success-border` | `--ui-success-bg` | `#4d7c0f` | `#f7fee7` | 4.824:1 | 3:1 | Đạt |
+| thanam | light | `--ui-success-border` | `--ui-surface` | `#4d7c0f` | `#ffffff` | 4.993:1 | 3:1 | Đạt |
+| thanam | light | `--ui-warning-text` | `--ui-warning-bg` | `#a16207` | `#fefce8` | 4.760:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-warning-border` | `--ui-warning-bg` | `#a16207` | `#fefce8` | 4.760:1 | 3:1 | Đạt |
+| thanam | light | `--ui-warning-border` | `--ui-surface` | `#a16207` | `#ffffff` | 4.923:1 | 3:1 | Đạt |
+| thanam | light | `--ui-danger-text` | `--ui-danger-bg` | `#b42318` | `#fef2f2` | 6.010:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-danger-border` | `--ui-danger-bg` | `#b42318` | `#fef2f2` | 6.010:1 | 3:1 | Đạt |
+| thanam | light | `--ui-danger-border` | `--ui-surface` | `#b42318` | `#ffffff` | 6.574:1 | 3:1 | Đạt |
+| thanam | light | `--ui-info-text` | `--ui-info-bg` | `#1e5a8a` | `#eff6fb` | 6.672:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-info-border` | `--ui-info-bg` | `#1e5a8a` | `#eff6fb` | 6.672:1 | 3:1 | Đạt |
+| thanam | light | `--ui-info-border` | `--ui-surface` | `#1e5a8a` | `#ffffff` | 7.280:1 | 3:1 | Đạt |
+| thanam | light | `--ui-error-text` | `--ui-error-bg` | `#b42318` | `#fef2f2` | 6.010:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-error-border` | `--ui-error-bg` | `#b42318` | `#fef2f2` | 6.010:1 | 3:1 | Đạt |
+| thanam | light | `--ui-error-border` | `--ui-surface` | `#b42318` | `#ffffff` | 6.574:1 | 3:1 | Đạt |
+| thanam | light | `--ui-sidebar-text` | `--ui-sidebar-bg` | `#292524` | `#ffffff` | 15.169:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-sidebar-border` | `--ui-sidebar-bg` | `#78716c` | `#ffffff` | 4.798:1 | 3:1 | Đạt |
+| thanam | light | `--ui-sidebar-focus` | `--ui-sidebar-bg` | `#9a4a1a` | `#ffffff` | 6.234:1 | 3:1 | Đạt |
+| thanam | light | `--ui-sidebar-text` | `--ui-sidebar-hover-bg` | `#292524` | `#faf1e8` | 13.589:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-sidebar-border` | `--ui-sidebar-hover-bg` | `#78716c` | `#faf1e8` | 4.298:1 | 3:1 | Đạt |
+| thanam | light | `--ui-sidebar-focus` | `--ui-sidebar-hover-bg` | `#9a4a1a` | `#faf1e8` | 5.585:1 | 3:1 | Đạt |
+| thanam | light | `--ui-sidebar-active-text` | `--ui-sidebar-active-bg` | `#7f3c13` | `#f6ece3` | 7.046:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-sidebar-marker` | `--ui-sidebar-active-bg` | `#9a4a1a` | `#f6ece3` | 5.351:1 | 3:1 | Đạt |
+| thanam | light | `--ui-sidebar-hover-text` | `--ui-sidebar-hover-bg` | `#7f3c13` | `#faf1e8` | 7.354:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-sidebar-marker` | `--ui-sidebar-hover-bg` | `#9a4a1a` | `#faf1e8` | 5.585:1 | 3:1 | Đạt |
+| thanam | light | `--ui-sidebar-muted` | `--ui-sidebar-bg` | `#6b625c` | `#ffffff` | 5.954:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-sidebar-focus` | `--ui-sidebar-active-bg` | `#9a4a1a` | `#f6ece3` | 5.351:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-series` | `--ui-bg` | `#9a4a1a` | `#efebe3` | 5.244:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-series-soft` | `--ui-bg` | `#7f3c13` | `#efebe3` | 6.904:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-series-strong` | `--ui-bg` | `#6b3210` | `#efebe3` | 8.456:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-grid` | `--ui-bg` | `#78716c` | `#efebe3` | 4.035:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-hire` | `--ui-bg` | `#9a4a1a` | `#efebe3` | 5.244:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-departure` | `--ui-bg` | `#b42318` | `#efebe3` | 5.530:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-transfer` | `--ui-bg` | `#1e5a8a` | `#efebe3` | 6.123:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-promotion` | `--ui-bg` | `#4d7c0f` | `#efebe3` | 4.200:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-axis` | `--ui-bg` | `#57534e` | `#efebe3` | 6.417:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-chart-label` | `--ui-bg` | `#1c1917` | `#efebe3` | 14.709:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-chart-series` | `--ui-surface` | `#9a4a1a` | `#ffffff` | 6.234:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-series-soft` | `--ui-surface` | `#7f3c13` | `#ffffff` | 8.209:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-series-strong` | `--ui-surface` | `#6b3210` | `#ffffff` | 10.053:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-grid` | `--ui-surface` | `#78716c` | `#ffffff` | 4.798:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-hire` | `--ui-surface` | `#9a4a1a` | `#ffffff` | 6.234:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-departure` | `--ui-surface` | `#b42318` | `#ffffff` | 6.574:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-transfer` | `--ui-surface` | `#1e5a8a` | `#ffffff` | 7.280:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-promotion` | `--ui-surface` | `#4d7c0f` | `#ffffff` | 4.993:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-axis` | `--ui-surface` | `#57534e` | `#ffffff` | 7.629:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-chart-label` | `--ui-surface` | `#1c1917` | `#ffffff` | 17.488:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-chart-series` | `--ui-surface-raised` | `#9a4a1a` | `#f8f5f0` | 5.733:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-series-soft` | `--ui-surface-raised` | `#7f3c13` | `#f8f5f0` | 7.549:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-series-strong` | `--ui-surface-raised` | `#6b3210` | `#f8f5f0` | 9.244:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-grid` | `--ui-surface-raised` | `#78716c` | `#f8f5f0` | 4.412:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-hire` | `--ui-surface-raised` | `#9a4a1a` | `#f8f5f0` | 5.733:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-departure` | `--ui-surface-raised` | `#b42318` | `#f8f5f0` | 6.045:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-transfer` | `--ui-surface-raised` | `#1e5a8a` | `#f8f5f0` | 6.694:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-promotion` | `--ui-surface-raised` | `#4d7c0f` | `#f8f5f0` | 4.592:1 | 3:1 | Đạt |
+| thanam | light | `--ui-chart-axis` | `--ui-surface-raised` | `#57534e` | `#f8f5f0` | 7.015:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-chart-label` | `--ui-surface-raised` | `#1c1917` | `#f8f5f0` | 16.081:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-on-brand` | `--ui-chart-series` | `#ffffff` | `#9a4a1a` | 6.234:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-on-brand` | `--ui-chart-series-soft` | `#ffffff` | `#7f3c13` | 8.209:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-on-brand` | `--ui-chart-series-strong` | `#ffffff` | `#6b3210` | 10.053:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-danger-text` | `--ui-danger-bg` | `#b42318` | `#fef2f2` | 6.010:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-danger-border` | `--ui-danger-bg` | `#b42318` | `#fef2f2` | 6.010:1 | 3:1 | Đạt |
+| thanam | light | `--ui-warning-text` | `--ui-warning-bg` | `#a16207` | `#fefce8` | 4.760:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-warning-border` | `--ui-warning-bg` | `#a16207` | `#fefce8` | 4.760:1 | 3:1 | Đạt |
+| thanam | light | `--ui-info-text` | `--ui-info-bg` | `#1e5a8a` | `#eff6fb` | 6.672:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-info-border` | `--ui-info-bg` | `#1e5a8a` | `#eff6fb` | 6.672:1 | 3:1 | Đạt |
+| thanam | light | `--ui-text` | `--ui-surface` | `#1c1917` | `#ffffff` | 17.488:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-text-muted` | `--ui-surface` | `#57534e` | `#ffffff` | 7.629:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-link` | `--ui-surface` | `#9a4a1a` | `#ffffff` | 6.234:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-focus` | `--ui-surface` | `#9a4a1a` | `#ffffff` | 6.234:1 | 3:1 | Đạt |
+| thanam | light | `--ui-brand-700` | `--ui-surface` | `#7f3c13` | `#ffffff` | 8.209:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-brand-700` | `--ui-surface-tint` | `#7f3c13` | `#f8f5f0` | 7.549:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-text` | `--ui-surface-tint` | `#1c1917` | `#f8f5f0` | 16.081:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-text-muted` | `--ui-surface-tint` | `#57534e` | `#f8f5f0` | 7.015:1 | 4.5:1 | Đạt |
+| thanam | light | `--ui-brand-600` | `--ui-surface` | `#9a4a1a` | `#ffffff` | 6.234:1 | 3:1 | Đạt |
+| thanam | light | `--ui-brand-600` | `--ui-surface-tint` | `#9a4a1a` | `#f8f5f0` | 5.733:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-text` | `--ui-divider` | `#f5f1ec` | `#292420` | 13.657:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-warning-text` | `--ui-divider` | `#fde68a` | `#292420` | 12.331:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-series` | `--ui-divider` | `#e9a97f` | `#292420` | 7.639:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-info-text` | `--ui-surface` | `#93c5fd` | `#1c1917` | 9.698:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-warning-text` | `--ui-surface` | `#fde68a` | `#1c1917` | 14.043:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-text` | `--ui-bg` | `#f5f1ec` | `#0e0c0a` | 17.362:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-text-muted` | `--ui-bg` | `#b5aca2` | `#0e0c0a` | 8.727:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-link` | `--ui-bg` | `#e9a97f` | `#0e0c0a` | 9.712:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-border` | `--ui-bg` | `#8c837a` | `#0e0c0a` | 5.246:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-focus` | `--ui-bg` | `#e9a97f` | `#0e0c0a` | 9.712:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-text` | `--ui-surface` | `#f5f1ec` | `#1c1917` | 15.553:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-text-muted` | `--ui-surface` | `#b5aca2` | `#1c1917` | 7.818:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-link` | `--ui-surface` | `#e9a97f` | `#1c1917` | 8.700:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-border` | `--ui-surface` | `#8c837a` | `#1c1917` | 4.699:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-focus` | `--ui-surface` | `#e9a97f` | `#1c1917` | 8.700:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-text` | `--ui-surface-raised` | `#f5f1ec` | `#262220` | 14.020:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-text-muted` | `--ui-surface-raised` | `#b5aca2` | `#262220` | 7.047:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-link` | `--ui-surface-raised` | `#e9a97f` | `#262220` | 7.842:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-border` | `--ui-surface-raised` | `#8c837a` | `#262220` | 4.236:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-focus` | `--ui-surface-raised` | `#e9a97f` | `#262220` | 7.842:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-text` | `--ui-hover-bg` | `#f5f1ec` | `#2a211b` | 14.023:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-text-muted` | `--ui-hover-bg` | `#b5aca2` | `#2a211b` | 7.049:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-link` | `--ui-hover-bg` | `#e9a97f` | `#2a211b` | 7.844:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-border` | `--ui-hover-bg` | `#8c837a` | `#2a211b` | 4.237:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-focus` | `--ui-hover-bg` | `#e9a97f` | `#2a211b` | 7.844:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-on-brand` | `--ui-brand` | `#1c1917` | `#e9a97f` | 8.700:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-on-brand` | `--ui-brand-hover` | `#1c1917` | `#f2c4a3` | 10.993:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-on-brand` | `--ui-brand-active` | `#1c1917` | `#d08a5c` | 6.222:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-link` | `--ui-brand-soft` | `#e9a97f` | `#2a211b` | 7.844:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-selected-text` | `--ui-selected-bg` | `#f2c4a3` | `#3a2a1f` | 8.623:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-disabled-text` | `--ui-disabled-bg` | `#b5aca2` | `#262220` | 7.047:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-disabled-border` | `--ui-disabled-bg` | `#8c837a` | `#262220` | 4.236:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-border` | `--ui-selected-bg` | `#8c837a` | `#3a2a1f` | 3.686:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-focus` | `--ui-selected-bg` | `#e9a97f` | `#3a2a1f` | 6.824:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-success-text` | `--ui-success-bg` | `#86efac` | `#0d2a18` | 10.985:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-success-border` | `--ui-success-bg` | `#86efac` | `#0d2a18` | 10.985:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-success-border` | `--ui-surface` | `#86efac` | `#1c1917` | 12.455:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-warning-text` | `--ui-warning-bg` | `#fde68a` | `#2b2006` | 12.853:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-warning-border` | `--ui-warning-bg` | `#fde68a` | `#2b2006` | 12.853:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-warning-border` | `--ui-surface` | `#fde68a` | `#1c1917` | 14.043:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-danger-text` | `--ui-danger-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-danger-border` | `--ui-danger-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-danger-border` | `--ui-surface` | `#fca5a5` | `#1c1917` | 9.214:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-info-text` | `--ui-info-bg` | `#93c5fd` | `#0b1e33` | 9.333:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-info-border` | `--ui-info-bg` | `#93c5fd` | `#0b1e33` | 9.333:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-info-border` | `--ui-surface` | `#93c5fd` | `#1c1917` | 9.698:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-error-text` | `--ui-error-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-error-border` | `--ui-error-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-error-border` | `--ui-surface` | `#fca5a5` | `#1c1917` | 9.214:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-sidebar-text` | `--ui-sidebar-bg` | `#e7e0d8` | `#171412` | 14.016:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-sidebar-border` | `--ui-sidebar-bg` | `#8c837a` | `#171412` | 4.927:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-sidebar-focus` | `--ui-sidebar-bg` | `#e9a97f` | `#171412` | 9.122:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-sidebar-text` | `--ui-sidebar-hover-bg` | `#e7e0d8` | `#2a211b` | 12.052:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-sidebar-border` | `--ui-sidebar-hover-bg` | `#8c837a` | `#2a211b` | 4.237:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-sidebar-focus` | `--ui-sidebar-hover-bg` | `#e9a97f` | `#2a211b` | 7.844:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-sidebar-active-text` | `--ui-sidebar-active-bg` | `#f2c4a3` | `#3a2a1f` | 8.623:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-sidebar-marker` | `--ui-sidebar-active-bg` | `#e9a97f` | `#3a2a1f` | 6.824:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-sidebar-hover-text` | `--ui-sidebar-hover-bg` | `#f2c4a3` | `#2a211b` | 9.911:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-sidebar-marker` | `--ui-sidebar-hover-bg` | `#e9a97f` | `#2a211b` | 7.844:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-sidebar-muted` | `--ui-sidebar-bg` | `#a49a90` | `#171412` | 6.639:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-sidebar-focus` | `--ui-sidebar-active-bg` | `#e9a97f` | `#3a2a1f` | 6.824:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-series` | `--ui-bg` | `#e9a97f` | `#0e0c0a` | 9.712:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-series-soft` | `--ui-bg` | `#f2c4a3` | `#0e0c0a` | 12.272:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-series-strong` | `--ui-bg` | `#d08a5c` | `#0e0c0a` | 6.946:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-grid` | `--ui-bg` | `#8c837a` | `#0e0c0a` | 5.246:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-hire` | `--ui-bg` | `#e9a97f` | `#0e0c0a` | 9.712:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-departure` | `--ui-bg` | `#fca5a5` | `#0e0c0a` | 10.286:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-transfer` | `--ui-bg` | `#93c5fd` | `#0e0c0a` | 10.827:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-promotion` | `--ui-bg` | `#86efac` | `#0e0c0a` | 13.904:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-axis` | `--ui-bg` | `#b5aca2` | `#0e0c0a` | 8.727:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-chart-label` | `--ui-bg` | `#f5f1ec` | `#0e0c0a` | 17.362:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-chart-series` | `--ui-surface` | `#e9a97f` | `#1c1917` | 8.700:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-series-soft` | `--ui-surface` | `#f2c4a3` | `#1c1917` | 10.993:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-series-strong` | `--ui-surface` | `#d08a5c` | `#1c1917` | 6.222:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-grid` | `--ui-surface` | `#8c837a` | `#1c1917` | 4.699:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-hire` | `--ui-surface` | `#e9a97f` | `#1c1917` | 8.700:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-departure` | `--ui-surface` | `#fca5a5` | `#1c1917` | 9.214:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-transfer` | `--ui-surface` | `#93c5fd` | `#1c1917` | 9.698:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-promotion` | `--ui-surface` | `#86efac` | `#1c1917` | 12.455:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-axis` | `--ui-surface` | `#b5aca2` | `#1c1917` | 7.818:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-chart-label` | `--ui-surface` | `#f5f1ec` | `#1c1917` | 15.553:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-chart-series` | `--ui-surface-raised` | `#e9a97f` | `#262220` | 7.842:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-series-soft` | `--ui-surface-raised` | `#f2c4a3` | `#262220` | 9.910:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-series-strong` | `--ui-surface-raised` | `#d08a5c` | `#262220` | 5.609:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-grid` | `--ui-surface-raised` | `#8c837a` | `#262220` | 4.236:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-hire` | `--ui-surface-raised` | `#e9a97f` | `#262220` | 7.842:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-departure` | `--ui-surface-raised` | `#fca5a5` | `#262220` | 8.306:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-transfer` | `--ui-surface-raised` | `#93c5fd` | `#262220` | 8.742:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-promotion` | `--ui-surface-raised` | `#86efac` | `#262220` | 11.228:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-chart-axis` | `--ui-surface-raised` | `#b5aca2` | `#262220` | 7.047:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-chart-label` | `--ui-surface-raised` | `#f5f1ec` | `#262220` | 14.020:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-on-brand` | `--ui-chart-series` | `#1c1917` | `#e9a97f` | 8.700:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-on-brand` | `--ui-chart-series-soft` | `#1c1917` | `#f2c4a3` | 10.993:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-on-brand` | `--ui-chart-series-strong` | `#1c1917` | `#d08a5c` | 6.222:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-danger-text` | `--ui-danger-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-danger-border` | `--ui-danger-bg` | `#fca5a5` | `#2b1010` | 9.342:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-warning-text` | `--ui-warning-bg` | `#fde68a` | `#2b2006` | 12.853:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-warning-border` | `--ui-warning-bg` | `#fde68a` | `#2b2006` | 12.853:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-info-text` | `--ui-info-bg` | `#93c5fd` | `#0b1e33` | 9.333:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-info-border` | `--ui-info-bg` | `#93c5fd` | `#0b1e33` | 9.333:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-text` | `--ui-surface` | `#f5f1ec` | `#1c1917` | 15.553:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-text-muted` | `--ui-surface` | `#b5aca2` | `#1c1917` | 7.818:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-link` | `--ui-surface` | `#e9a97f` | `#1c1917` | 8.700:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-focus` | `--ui-surface` | `#e9a97f` | `#1c1917` | 8.700:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-brand-700` | `--ui-surface` | `#f2c4a3` | `#1c1917` | 10.993:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-brand-700` | `--ui-surface-tint` | `#f2c4a3` | `#262220` | 9.910:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-text` | `--ui-surface-tint` | `#f5f1ec` | `#262220` | 14.020:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-text-muted` | `--ui-surface-tint` | `#b5aca2` | `#262220` | 7.047:1 | 4.5:1 | Đạt |
+| thanam | dark | `--ui-brand-600` | `--ui-surface` | `#e9a97f` | `#1c1917` | 8.700:1 | 3:1 | Đạt |
+| thanam | dark | `--ui-brand-600` | `--ui-surface-tint` | `#e9a97f` | `#262220` | 7.842:1 | 3:1 | Đạt |
 <!-- UI_CONTRAST_END -->
