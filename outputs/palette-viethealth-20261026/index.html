@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dải màu VietHealth — bản xem trước</title>
+<style>
+  :root{
+    --sp1:4px; --sp2:8px; --sp3:12px; --sp4:16px; --sp5:24px; --sp6:32px; --sp8:48px;
+    --r-ctl:8px; --r-card:8px; --r-pill:9999px;
+    --font:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  }
+  html[data-theme="light"]{
+    --bg:#edf2ee; --surface:#ffffff; --raised:#f5f8f5;
+    --text:#101828; --muted:#475467; --border:#667085; --divider:#e4ebe6; --card-border:#dce4de;
+    --brand:#1f7a3d; --brand-hover:#17652f; --brand-active:#0f4f24; --on-brand:#ffffff;
+    --brand-soft:#e9f5ee; --link:#1f7a3d; --focus:#1f7a3d;
+    --hover:#e9f5ee; --selected:#d9eee2; --selected-text:#17652f;
+    --ok-text:#067647; --ok-bg:#ecfdf3; --warn-text:#b54708; --warn-bg:#fffaeb;
+    --danger-text:#ce181f; --danger-bg:#fef3f2; --info-text:#175cd3; --info-bg:#eff8ff;
+    --chip-edge:#dce4de;
+  }
+  html[data-theme="dark"]{
+    --bg:#08120d; --surface:#111a14; --raised:#18241c;
+    --text:#eef5f0; --muted:#a3b5a9; --border:#7c8f82; --divider:#1c2a21; --card-border:#26382c;
+    --brand:#6ee7a0; --brand-hover:#8ff0b8; --brand-active:#4cc97f; --on-brand:#0b1020;
+    --brand-soft:#14261a; --link:#6ee7a0; --focus:#6ee7a0;
+    --hover:#18241c; --selected:#1d3a26; --selected-text:#b6f2cd;
+    --ok-text:#86efac; --ok-bg:#0d2a18; --warn-text:#fde68a; --warn-bg:#2b2006;
+    --danger-text:#fca5a5; --danger-bg:#2b1010; --info-text:#93c5fd; --info-bg:#0b1e33;
+    --chip-edge:#26382c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 var(--font);
+       -webkit-font-smoothing:antialiased;transition:background .18s ease,color .18s ease}
+  .wrap{max-width:1080px;margin:0 auto;padding:var(--sp6) var(--sp5) var(--sp8)}
+  header.top{display:flex;align-items:center;gap:var(--sp4);flex-wrap:wrap;
+             padding-bottom:var(--sp5);border-bottom:1px solid var(--divider);margin-bottom:var(--sp5)}
+  header.top img{height:44px;width:auto}
+  .top h1{margin:0;font-size:20px;line-height:28px;font-weight:600}
+  .top p{margin:2px 0 0;color:var(--muted);font-size:13px}
+  .grow{flex:1;min-width:0}
+  .toggle{display:inline-flex;align-items:center;gap:var(--sp2);padding:0 var(--sp4);height:40px;
+          border:1px solid var(--border);border-radius:var(--r-ctl);background:var(--surface);
+          color:var(--text);font:500 14px var(--font);cursor:pointer}
+  .toggle:hover{background:var(--hover)}
+  .toggle:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  h2{font-size:16px;line-height:24px;font-weight:600;margin:var(--sp6) 0 var(--sp3);
+     display:flex;align-items:center;gap:var(--sp3);flex-wrap:wrap}
+  h2 .num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;
+          border-radius:var(--r-pill);background:var(--brand-soft);color:var(--brand);
+          font-size:12px;font-weight:600;flex:none}
+  h2 small{font-weight:400;color:var(--muted);font-size:13px}
+  .card{background:var(--surface);border:1px solid var(--card-border);border-radius:var(--r-card);
+        padding:var(--sp5)}
+  .grid{display:grid;gap:var(--sp4)}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));align-items:start}
+  @media (max-width:900px){ .g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (max-width:560px){ .g3,.g4{grid-template-columns:minmax(0,1fr)} }
+  .swatch{border:1px solid var(--card-border);border-radius:var(--r-card);overflow:hidden;background:var(--surface)}
+  .chip{height:72px;border-bottom:1px solid var(--chip-edge)}
+  .swatch .meta{padding:var(--sp3)}
+  .swatch .meta b{display:block;font:600 13px var(--font)}
+  .swatch .meta code{font:12px ui-monospace,Consolas,monospace;color:var(--muted);word-break:break-word}
+  .swatch .meta span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:var(--sp2) var(--sp3);border-bottom:1px solid var(--divider)}
+  th{font-weight:600;color:var(--muted);font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+  td code{font:12px ui-monospace,Consolas,monospace}
+  .pass{color:var(--ok-text);font-weight:600}
+  .demo{display:flex;flex-wrap:wrap;gap:var(--sp3);align-items:center}
+  .btn{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 var(--sp4);
+       border-radius:var(--r-ctl);border:1px solid transparent;font:500 14px var(--font);cursor:pointer}
+  .btn-primary{background:var(--brand);color:var(--on-brand)}
+  .btn-primary:hover{background:var(--brand-hover)}
+  .btn-secondary{background:var(--surface);color:var(--text);border-color:var(--border)}
+  .btn-secondary:hover{background:var(--hover)}
+  .btn-danger{background:var(--danger-text);color:var(--on-brand)}
+  .btn:disabled{background:var(--divider);color:var(--muted);border-color:var(--card-border);cursor:not-allowed}
+  .btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  a.link{color:var(--link);font-weight:500;text-underline-offset:4px}
+  a.link:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:4px}
+  .badge{display:inline-flex;align-items:center;gap:var(--sp2);height:28px;padding:0 var(--sp3);
+         border-radius:var(--r-ctl);font-size:13px;font-weight:500;white-space:nowrap}
+  .b-ok{background:var(--ok-bg);color:var(--ok-text)}
+  .b-warn{background:var(--warn-bg);color:var(--warn-text)}
+  .b-danger{background:var(--danger-bg);color:var(--danger-text)}
+  .b-info{background:var(--info-bg);color:var(--info-text)}
+  .dot{width:8px;height:8px;border-radius:var(--r-pill);background:currentColor;flex:none}
+  .nav{display:grid;gap:2px}
+  .nav a{display:flex;align-items:center;gap:var(--sp3);height:40px;padding:0 var(--sp3);
+         border-radius:var(--r-ctl);color:var(--text);text-decoration:none;font-weight:500}
+  .nav a:hover{background:var(--hover);color:var(--selected-text)}
+  .nav a.active{background:var(--selected);color:var(--selected-text);position:relative}
+  .nav a.active::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;
+                        border-radius:var(--r-pill);background:var(--brand)}
+  .field label{display:block;font-weight:500;margin-bottom:var(--sp2)}
+  .field input{width:100%;height:44px;padding:0 var(--sp3);border:1px solid var(--border);
+               border-radius:var(--r-ctl);background:var(--surface);color:var(--text);font:14px var(--font)}
+  .field input:focus{outline:3px solid var(--focus);outline-offset:2px;border-color:var(--brand)}
+  .kpi{background:var(--surface);border:1px solid var(--card-border);border-radius:var(--r-card);padding:var(--sp4)}
+  .kpi .lbl{color:var(--muted);font-weight:500;font-size:13px}
+  .kpi .val{font-size:36px;line-height:40px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:var(--sp2)}
+  .kpi .note{color:var(--muted);font-size:12px;margin-top:var(--sp1)}
+  .bars{display:grid;gap:var(--sp3)}
+  .bar-row{display:grid;grid-template-columns:112px minmax(0,1fr) 52px;gap:var(--sp3);
+           align-items:center;font-size:13px}
+  .track{height:8px;border-radius:var(--r-pill);background:var(--divider);overflow:hidden}
+  .fill{display:block;height:100%;border-radius:inherit;background:var(--brand)}
+  .bar-row .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+  .donut-wrap{display:flex;gap:var(--sp5);align-items:center;flex-wrap:wrap}
+  .donut{width:132px;height:132px;border-radius:50%;flex:none;position:relative;
+    background:conic-gradient(var(--c1) 0 34%,var(--c2) 34% 56%,var(--c3) 56% 72%,
+                              var(--c4) 72% 84%,var(--c5) 84% 94%,var(--c6) 94% 100%);
+    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 18px),#000 calc(100% - 17px));
+    mask:radial-gradient(farthest-side,transparent calc(100% - 18px),#000 calc(100% - 17px));}
+  .legend{display:grid;gap:var(--sp2);flex:1;min-width:200px}
+  .legend div{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:var(--sp2);
+              align-items:center;font-size:13px}
+  .legend i{width:8px;height:8px;border-radius:var(--r-pill);display:block}
+  .legend b{font-weight:500;font-variant-numeric:tabular-nums}
+  .tbl-card{background:var(--surface);border:1px solid var(--card-border);border-radius:var(--r-card);overflow:hidden}
+  .tbl-card table{margin:0}
+  .tbl-card thead th{background:var(--raised);border-bottom:1px solid var(--divider);white-space:nowrap}
+  .tbl-card tbody tr:hover{background:var(--hover)}
+  .num{text-align:right;font-variant-numeric:tabular-nums}
+  .note-box{background:var(--brand-soft);border:1px solid color-mix(in srgb,var(--brand) 30%,transparent);
+            border-radius:var(--r-card);padding:var(--sp4);font-size:13px;color:var(--text)}
+  .note-box b{color:var(--selected-text)}
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp4)}
+  .compare h3{margin:0 0 var(--sp3);font-size:12px;font-weight:600;color:var(--muted);
+              letter-spacing:.04em;text-transform:uppercase}
+  .old-btn{background:#3a4fd0;color:#fff;display:inline-flex;align-items:center;height:44px;
+           padding:0 var(--sp4);border-radius:var(--r-ctl);font:500 14px var(--font)}
+  .old-sel{background:#e6eafc;color:#2f42b5;padding:var(--sp2) var(--sp3);border-radius:var(--r-ctl);font-weight:500}
+  .old-bg{background:#e7ecf4;color:#101828;padding:var(--sp3);border-radius:var(--r-ctl);font-size:13px}
+  .foot{margin-top:var(--sp8);padding-top:var(--sp5);border-top:1px solid var(--divider);
+        color:var(--muted);font-size:12px}
+  @media (max-width:640px){ .compare{grid-template-columns:1fr} .wrap{padding:var(--sp5) var(--sp4)} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <img src="logo.png" alt="VietHealth">
+    <div class="grow">
+      <h1>Dải màu theo nhận diện VietHealth</h1>
+      <p>Bản xem trước để duyệt trước khi sửa mã · 26/10/2026</p>
+    </div>
+    <button class="toggle" id="themeBtn" type="button" aria-pressed="false">
+      <span id="themeIcon">◐</span><span id="themeLabel">Nền tối</span>
+    </button>
+  </header>
+
+  <div class="note-box">
+    <b>Đang xem bản đề xuất, chưa áp dụng.</b> Mọi thành phần bên dưới dùng đúng bộ token sẽ thay vào
+    <code>ui_tokens.css</code>. Bấm nút góc phải để đổi nền sáng/tối — các mục 02–04 đổi theo.
+    Bảng tương phản ở mục 06 đo bằng chính cổng <code>check_ui_contrast.py</code> của dự án.
+  </div>
+
+  <h2><span class="num">01</span> Màu đo từ logo <small>đếm theo điểm ảnh trên logo.png — không đổi theo theme</small></h2>
+  <div class="grid g3">
+    <div class="swatch">
+      <div class="chip" style="background:#279048"></div>
+      <div class="meta"><b>Xanh chủ đạo</b><code>#279048</code><span>17,7 % điểm ảnh · dùng trang trí</span></div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background:#ce181f"></div>
+      <div class="meta"><b>Đỏ nhấn</b><code>#CE181F</code><span>5,9 % điểm ảnh · màu nguy hiểm</span></div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background:#ffffff"></div>
+      <div class="meta"><b>Nền</b><code>#FFFFFF</code><span>55,8 % điểm ảnh</span></div>
+    </div>
+  </div>
+
+  <h2><span class="num">02</span> Thang xanh thương hiệu <small>mã gốc không đủ 4,5:1 nên tách hai vai trò</small></h2>
+  <div class="grid g3" id="brandGrid"></div>
+
+  <h2><span class="num">03</span> Trung tính <small>pha xanh lá thay vì xanh dương</small></h2>
+  <div class="grid g4" id="neutralGrid"></div>
+
+  <h2><span class="num">04</span> Màu ngữ nghĩa <small>giữ nguyên, trừ đỏ lấy từ logo</small></h2>
+  <div class="grid g4" id="semanticGrid"></div>
+
+  <h2><span class="num">05</span> Thành phần thật <small>dựng bằng đúng token sẽ áp dụng</small></h2>
+  <div class="grid g2">
+    <div class="card">
+      <div class="demo" style="margin-bottom:var(--sp4)">
+        <button class="btn btn-primary" type="button">Lưu thay đổi</button>
+        <button class="btn btn-secondary" type="button">Hủy</button>
+        <button class="btn btn-danger" type="button">Xóa</button>
+        <button class="btn" type="button" disabled>Đang lưu…</button>
+      </div>
+      <p style="margin:0 0 var(--sp4)"><a class="link" href="#">Xem toàn bộ hồ sơ nhân viên</a></p>
+      <div class="demo">
+        <span class="badge b-ok"><span class="dot"></span>Đã duyệt</span>
+        <span class="badge b-warn"><span class="dot"></span>Chờ duyệt</span>
+        <span class="badge b-danger"><span class="dot"></span>Từ chối</span>
+        <span class="badge b-info"><span class="dot"></span>Bản nháp</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="field">
+        <label for="demoInput">Tên phòng ban</label>
+        <input id="demoInput" value="Phòng Nhân sự" autocomplete="off">
+        <p style="margin:var(--sp2) 0 0;font-size:12px;color:var(--muted)">Viền focus 3px màu thương hiệu.</p>
+      </div>
+      <div class="nav" style="margin-top:var(--sp5)">
+        <a href="#" class="active">Tổng quan</a>
+        <a href="#">Hồ sơ nhân viên</a>
+        <a href="#">Hợp đồng</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid g4" style="margin-top:var(--sp4)">
+    <div class="kpi"><div class="lbl">Nhân sự đang làm</div><div class="val">248</div><div class="note">+6 so với tháng trước</div></div>
+    <div class="kpi"><div class="lbl">Hợp đồng sắp hết hạn</div><div class="val">12</div><div class="note">trong 30 ngày tới</div></div>
+    <div class="kpi"><div class="lbl">Đơn nghỉ chờ duyệt</div><div class="val">7</div><div class="note">cần xử lý hôm nay</div></div>
+    <div class="kpi"><div class="lbl">Ứng viên đang xử lý</div><div class="val">31</div><div class="note">4 vòng phỏng vấn</div></div>
+  </div>
+
+  <div class="grid g2" style="margin-top:var(--sp4)">
+    <div class="card">
+      <div class="bars">
+        <div class="bar-row"><span>Phòng Nhân sự</span><span class="track"><span class="fill" style="width:86%"></span></span><span class="v">43/50</span></div>
+        <div class="bar-row"><span>Phòng Kỹ thuật</span><span class="track"><span class="fill" style="width:72%"></span></span><span class="v">58/80</span></div>
+        <div class="bar-row"><span>Phòng Tài chính</span><span class="track"><span class="fill" style="width:54%"></span></span><span class="v">27/50</span></div>
+        <div class="bar-row"><span>Phòng Kinh doanh</span><span class="track"><span class="fill" style="width:95%"></span></span><span class="v">76/80</span></div>
+      </div>
+    </div>
+
+    <div class="card" style="--c1:#1f7a3d;--c2:#175cd3;--c3:#b54708;--c4:#0f766e;--c5:#ce181f;--c6:#475467">
+      <div class="donut-wrap">
+        <div class="donut" role="img" aria-label="Cơ cấu loại hợp đồng"></div>
+        <div class="legend">
+          <div><i style="background:var(--c1)"></i><span>Không xác định thời hạn</span><b>34%</b></div>
+          <div><i style="background:var(--c2)"></i><span>Xác định thời hạn 12 tháng</span><b>22%</b></div>
+          <div><i style="background:var(--c3)"></i><span>Xác định thời hạn 24 tháng</span><b>16%</b></div>
+          <div><i style="background:var(--c4)"></i><span>Thử việc</span><b>12%</b></div>
+          <div><i style="background:var(--c5)"></i><span>Thời vụ</span><b>10%</b></div>
+          <div><i style="background:var(--c6)"></i><span>Khác</span><b>6%</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tbl-card" style="margin-top:var(--sp4)">
+    <table>
+      <thead><tr><th>Nhân viên</th><th>Phòng ban</th><th class="num">Ngày công</th><th class="num">Phép còn lại</th><th>Trạng thái</th></tr></thead>
+      <tbody>
+        <tr><td>Nguyễn Văn An</td><td>Nhân sự</td><td class="num">21</td><td class="num">8</td><td><span class="badge b-ok"><span class="dot"></span>Đủ công</span></td></tr>
+        <tr><td>Trần Thị Bích</td><td>Kỹ thuật</td><td class="num">18</td><td class="num">3</td><td><span class="badge b-warn"><span class="dot"></span>Thiếu 3 ngày</span></td></tr>
+        <tr><td>Lê Hoàng Cường</td><td>Tài chính</td><td class="num">22</td><td class="num">11</td><td><span class="badge b-ok"><span class="dot"></span>Đủ công</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2><span class="num">06</span> Tương phản <small>đo bằng cổng của dự án, 220 cặp, 0 lỗi</small></h2>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table>
+      <thead><tr><th>Cặp</th><th>Nền sáng</th><th>Nền tối</th><th>Ngưỡng</th></tr></thead>
+      <tbody>
+        <tr><td>Chữ trên nút chính</td><td>5,37:1</td><td>12,26:1</td><td>4,5</td></tr>
+        <tr><td>Link trên nền trang</td><td>4,74:1</td><td>12,33:1</td><td>4,5</td></tr>
+        <tr><td>Link trên nền brand-soft</td><td>4,80:1</td><td>10,29:1</td><td>4,5</td></tr>
+        <tr><td>Chữ phụ trên nền trang</td><td>6,79:1</td><td>8,83:1</td><td>4,5</td></tr>
+        <tr><td>Mục đang chọn</td><td>6,38:1</td><td>9,83:1</td><td>4,5</td></tr>
+        <tr><td>Viền control trên nền trang</td><td>4,39:1</td><td>5,54:1</td><td>3,0</td></tr>
+        <tr><td>Đỏ nguy hiểm trên nền đỏ nhạt</td><td>5,12:1</td><td>9,34:1</td><td>4,5</td></tr>
+        <tr><td><b>Thấp nhất toàn bộ</b></td><td><b>4,74:1</b></td><td><b>3,62:1</b></td><td class="pass">Đạt</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2><span class="num">07</span> Trước và sau <small>cùng một thành phần</small></h2>
+  <div class="compare">
+    <div class="card">
+      <h3>Hiện tại — Chàm Đông</h3>
+      <div class="demo">
+        <span class="old-btn">Lưu thay đổi</span>
+        <span class="old-sel">Đang chọn</span>
+      </div>
+      <div class="old-bg" style="margin-top:var(--sp4)">Nền trang #E7ECF4 · thương hiệu #3A4FD0</div>
+    </div>
+    <div class="card">
+      <h3>Đề xuất — VietHealth</h3>
+      <div class="demo">
+        <button class="btn btn-primary" type="button">Lưu thay đổi</button>
+        <span class="badge b-ok" style="height:32px"><span class="dot"></span>Đang chọn</span>
+      </div>
+      <div style="margin-top:var(--sp4);background:var(--bg);padding:var(--sp3);border-radius:var(--r-ctl);font-size:13px">
+        Nền trang #EDF2EE · thương hiệu #1F7A3D
+      </div>
+    </div>
+  </div>
+
+  <p class="foot">
+    Bản xem trước chỉ để duyệt màu; chưa sửa mã nguồn. Kế hoạch đầy đủ:
+    <code>docs/KE_HOACH_DAI_MAU_VIETHEALTH.md</code>. Sau khi chủ dự án chốt sáu quyết định D1–D6,
+    đợt P1 chỉ sửa một tệp <code>ui_tokens.css</code>.
+  </p>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement,
+      btn=document.getElementById('themeBtn'),
+      icon=document.getElementById('themeIcon'),
+      label=document.getElementById('themeLabel');
+
+  var brand=[
+    ['Logo (trang trí)','#279048','#279048','4,06:1 với chữ trắng — không dùng cho nút'],
+    ['Brand — nút, link','#1F7A3D','#6EE7A0','5,37:1 với chữ trắng ✓'],
+    ['Hover','#17652F','#8FF0B8','7,15:1 ✓'],
+    ['Active','#0F4F24','#4CC97F','9,70:1 ✓'],
+    ['Brand soft','#E9F5EE','#14261A','nền chip, hover, selected'],
+    ['Selected','#D9EEE2','#1D3A26','mục đang chọn']
+  ];
+  var neutral=[
+    ['nền trang','--ui-bg','#EDF2EE','#08120D'],
+    ['thẻ, bảng','--ui-surface','#FFFFFF','#111A14'],
+    ['nền nâng','--ui-surface-raised','#F5F8F5','#18241C'],
+    ['chữ chính','--ui-text','#101828','#EEF5F0'],
+    ['chữ phụ','--ui-text-muted','#475467','#A3B5A9'],
+    ['viền control','--ui-border','#667085','#7C8F82'],
+    ['đường ngăn','--ui-divider','#E4EBE6','#1C2A21'],
+    ['viền thẻ','--ui-card-border','#DCE4DE','#26382C']
+  ];
+  var semantic=[
+    ['Thành công','#067647 / #ECFDF3','#86EFAC / #0D2A18','#ECFDF3','#0D2A18','giữ nguyên'],
+    ['Cảnh báo','#B54708 / #FFFAEB','#FDE68A / #2B2006','#FFFAEB','#2B2006','giữ nguyên'],
+    ['Nguy hiểm','#CE181F / #FEF3F2','#FCA5A5 / #2B1010','#FEF3F2','#2B1010','đổi sang đỏ logo · 5,56:1 ✓'],
+    ['Thông tin','#175CD3 / #EFF8FF','#93C5FD / #0B1E33','#EFF8FF','#0B1E33','giữ nguyên']
+  ];
+
+  function render(){
+    var dark = root.dataset.theme === 'dark';
+    document.getElementById('brandGrid').innerHTML = brand.map(function(t){
+      var hex = dark ? t[2] : t[1];
+      return '<div class="swatch"><div class="chip" style="background:'+hex+'"></div>'+
+        '<div class="meta"><b>'+t[0]+'</b><code>'+hex+'</code><span>'+t[3]+'</span></div></div>';
+    }).join('');
+
+    document.getElementById('neutralGrid').innerHTML = neutral.map(function(t){
+      var hex = dark ? t[3] : t[2];
+      return '<div class="swatch"><div class="chip" style="background:'+hex+'"></div>'+
+        '<div class="meta"><b>'+t[0]+'</b><code>'+t[1]+'</code><span>'+hex+'</span></div></div>';
+    }).join('');
+
+    document.getElementById('semanticGrid').innerHTML = semantic.map(function(t){
+      var hex = dark ? t[2] : t[1];
+      var chip = dark ? t[4] : t[3];
+      return '<div class="swatch"><div class="chip" style="background:'+chip+'"></div>'+
+        '<div class="meta"><b>'+t[0]+'</b><code>'+hex+'</code><span>'+t[5]+'</span></div></div>';
+    }).join('');
+  }
+
+  function set(mode){
+    root.dataset.theme = mode;
+    var dark = mode === 'dark';
+    btn.setAttribute('aria-pressed', String(dark));
+    icon.textContent = dark ? '◑' : '◐';
+    label.textContent = dark ? 'Nền sáng' : 'Nền tối';
+    render();
+  }
+
+  btn.addEventListener('click', function(){
+    set(root.dataset.theme === 'dark' ? 'light' : 'dark');
+  });
+  set(root.dataset.theme);
+})();
+</script>
+</body>
+</html>
