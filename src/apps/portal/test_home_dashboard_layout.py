@@ -37,11 +37,13 @@ class GroupedDashboardTests(SimpleTestCase):
                          ["hr", "admin", "recruitment"])
         self.assertEqual(self.build(sections, permissions=("manage_hr",))["limit"], 5)
 
-    def test_employee_has_only_my_work_and_no_own_leave_history(self):
+    def test_employee_keeps_my_work_and_authorized_own_leave_history(self):
         result = self.build({"own_leave": {"rows": [{"pk": 1}]}}, employee=object())
         self.assertTrue(result["my_work"])
-        self.assertFalse(result["groups"])
-        self.assertIsNone(result["leave"])
+        # Review bb053b2 / spec 17: an admitted own-only DTO is a regular block.
+        self.assertEqual(result["groups"], [{"key": "admin", "label": "Hành chính"}])
+        self.assertEqual(result["leave"]["key"], "own_leave")
+        self.assertEqual(result["leave"]["rows"], [{"pk": 1}])
         self.assertFalse(result["project_allowed"])
 
     def test_capacity_marker_and_excess_use_local_geometry_without_changing_counts(self):
