@@ -283,3 +283,36 @@
  }
 }
 }
+
+@layer pages { @media screen {
+ .home-dashboard .home-info:not([open])>.home-info-body { display:none; }
+ .home-dashboard .home-info-body { max-width:calc(var(--ui-shell-inline-size,100vw) - 2 * var(--ui-space-5)); }
+ .home-dashboard .home-recruitment-strip { container:home-recruitment / inline-size; }
+ @container home-recruitment (max-width:22rem) {
+  .home-dashboard .home-recruitment-metrics { grid-template-columns:minmax(0,1fr); }
+  .home-dashboard .home-recruitment-metrics>div { padding-inline:0; border-inline-start:0; }
+ }
+} }
+
+@layer pages { @media screen {
+ .home-dashboard { container:home-dashboard / inline-size; }
+ @container home-dashboard (max-width:36rem) {
+  .home-dashboard :is(.home-row,.home-my-work-grid) { grid-template-columns:minmax(0,1fr); grid-template-rows:none; row-gap:var(--ui-space-4); }
+  .home-dashboard :is(.home-row,.home-my-work-grid)>.ui-card { grid-row:auto; grid-template-rows:auto 1fr; }
+  .home-dashboard .home-page-header { grid-template-columns:minmax(0,1fr); }
+  .home-dashboard .home-page-header>.ui-header-actions { grid-column:1; grid-row:3; }
+  .home-dashboard .home-main-kpis { grid-template-columns:minmax(0,1fr); }
+  .home-dashboard .home-main-kpis .home-main-metric + .home-main-metric { border-inline-start:0; border-block-start:var(--ui-border-width) solid var(--ui-divider); }
+  .home-dashboard .home-project-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .home-dashboard .home-project-metrics>div:nth-child(odd) { padding-inline-start:0; border-inline-start:0; }
+ }
+ @container (max-width:22rem) {
+  .home-dashboard .home-capacity { grid-template-columns:minmax(0,1fr) 72px auto; row-gap:var(--ui-space-3); }
+  .home-dashboard .home-department-name { grid-column:1/-1; }
+  .home-dashboard .home-capacity>li { row-gap:var(--ui-space-2); padding-block:var(--ui-space-2); }
+  .home-dashboard .home-plan-missing { grid-column:2/-1; }
+  .home-dashboard .home-contracts>li,.home-dashboard .home-decisions>li { grid-template-columns:minmax(0,1fr); }
+  .home-dashboard .home-contract-meta { align-items:flex-start; }
+  .home-dashboard .home-decisions .ui-badge { justify-self:start; }
+ }
+} }

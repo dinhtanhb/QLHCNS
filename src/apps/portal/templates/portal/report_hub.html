@@ -10,6 +10,7 @@
   </header>
 
 <section class="ui-card ui-results-card ui-results-group" aria-label="Kết quả báo cáo điều hành">
+<div class="report-toolbar no-print">
 <div class="ui-query-card no-print">
 <form method="get" class="ui-query-bar" aria-label="Lọc kỳ báo cáo">
 <div class="ui-query-fields">
@@ -19,12 +20,13 @@
 {% include "ui/query_actions.html" with reset_url=request.path has_filters=request.GET|ui_has_filters:"from_date,to_date" %}
 </form>
 
-</div>  <div class="ui-page-actions" role="group" aria-label="Xuất báo cáo">
+</div>  <div class="ui-page-actions report-export-actions" role="group" aria-label="Xuất báo cáo">
     <a class="ui-button ui-button--secondary" href="{% url 'portal:report_hub_export' 'xlsx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Xuất Excel</a>
     <a class="ui-button ui-button--secondary" href="{% url 'portal:report_hub_export' 'docx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Xuất Word</a>
     <a class="ui-button ui-button--primary" href="{% url 'portal:report_hub_export' 'pptx' %}?from_date={{ from_date|date:'Y-m-d' }}&amp;to_date={{ to_date|date:'Y-m-d' }}">Tạo slide</a>
   </div>
-  <section aria-label="Số liệu tổng quan"><p class="ui-page-description">Kỳ báo cáo {{ from_date|ui_date }} đến {{ to_date|ui_date }}</p><div class="ui-kpi-grid">
+  </div>
+  <section class="report-kpis" aria-label="Số liệu tổng quan"><p class="ui-page-description">Kỳ báo cáo {{ from_date|ui_date }} đến {{ to_date|ui_date }}</p><div class="ui-kpi-grid">
 {% include "ui/kpi.html" with label="Nhân sự đang làm việc" value=headline.active %}
 {% include "ui/kpi.html" with label="Tuyển mới trong kỳ" value=headline.new_hires %}
 {% include "ui/kpi.html" with label="Nghỉ việc trong kỳ" value=headline.departures %}
@@ -34,8 +36,8 @@
 </div></section>
   <div class="report-visuals">
     <section class="report-panel ui-card" aria-labelledby="movement-heading">
-      <h2 id="movement-heading">Biến động nhân sự theo tháng</h2>
-      <p class="report-panel-note">Tuyển mới, nghỉ việc, điều chuyển và bổ nhiệm trong phạm vi đã chọn.</p>
+<header class="ui-card-header"><div><h2 id="movement-heading">Biến động nhân sự theo tháng</h2>
+      <p class="report-panel-note">Tuyển mới, nghỉ việc, điều chuyển và bổ nhiệm trong phạm vi đã chọn.</p></div></header><div class="ui-card-body">
       <div class="movement-chart" role="region" tabindex="0" aria-label="Biểu đồ biến động nhân sự; dùng phím mũi tên để cuộn trên màn hình nhỏ. Số liệu chi tiết ở bảng bên dưới.">
         {% for row in month_rows %}
         <div class="movement-month" aria-hidden="true">
@@ -53,22 +55,22 @@
           </table>
         </div>
       </details>
-    </section>
+    </div></section>
     <section class="report-panel ui-card" aria-labelledby="recruitment-heading">
-      <h2 id="recruitment-heading">Phễu tuyển dụng</h2><p class="report-panel-note">Trạng thái tổng hợp hiện tại của quy trình tuyển dụng.</p>
+<header class="ui-card-header"><div><h2 id="recruitment-heading">Phễu tuyển dụng</h2><p class="report-panel-note">Trạng thái tổng hợp hiện tại của quy trình tuyển dụng.</p></div></header><div class="ui-card-body">
       <ul class="funnel">{% for item in recruitment_funnel %}<li class="funnel-row"><span class="funnel-label">{{ item.label|ui_number }}</span><span class="funnel-track" aria-hidden="true"><span class="funnel-fill" data-empty="{% if item.value > 0 %}false{% else %}true{% endif %}" style="width:{{ item.width }}%"></span></span><strong class="funnel-value">{{ item.value|ui_number }}</strong></li>{% endfor %}</ul>
-    </section>
+    </div></section>
   </div>
   <div class="report-section-grid">{% for section in sections %}
     <section class="report-section ui-card" id="{{ section.key }}" aria-labelledby="section-{{ section.key }}">
-      <div class="section-heading"><div><h2 id="section-{{ section.key }}">{{ section.title|ui_number }}</h2><p>{{ section.description|ui_number }}</p></div>
-        {% if section.href or section.key == 'planning' %}<div class="section-links">
-          {% if section.href %}<a class="section-link" href="{% url section.href %}">{% if section.key == 'planning' %}Xem định biên{% else %}Xem chi tiết{% endif %}</a>{% endif %}
-          {% if section.key == 'planning' %}<a class="section-link" href="{% url 'portal:report_budget' %}">Xem ngân sách</a>{% endif %}
+      <header class="section-heading ui-card-header"><div><h2 id="section-{{ section.key }}">{{ section.title|ui_number }}</h2><p>{{ section.description|ui_number }}</p></div>
+        {% if section.href or section.key == 'planning' %}<div class="section-links ui-card-actions">
+          {% if section.href %}<a class="section-link ui-link-action" href="{% url section.href %}">{% if section.key == 'planning' %}Xem định biên{% else %}Xem chi tiết{% endif %}</a>{% endif %}
+          {% if section.key == 'planning' %}<a class="section-link ui-link-action" href="{% url 'portal:report_budget' %}">Xem ngân sách</a>{% endif %}
         </div>{% endif %}
-      </div>
-      <div class="metric-grid">{% for metric in section.metrics %}<div class="metric" data-tone="{% if metric.value > 0 %}{{ metric.tone }}{% else %}neutral{% endif %}"><span class="metric-label">{{ metric.label|ui_number }}</span><strong class="metric-value">{{ metric.display|ui_number }}</strong></div>{% endfor %}</div>
-    </section>
+      </header>
+      <div class="ui-card-body"><div class="metric-grid">{% for metric in section.metrics %}<div class="metric" data-tone="{% if metric.value > 0 %}{{ metric.tone }}{% else %}neutral{% endif %}"><span class="metric-label">{{ metric.label|ui_number }}</span><strong class="metric-value">{{ metric.display|ui_number }}</strong></div>{% endfor %}</div>
+    </div></section>
   {% endfor %}</div>
 </section>
 </div>

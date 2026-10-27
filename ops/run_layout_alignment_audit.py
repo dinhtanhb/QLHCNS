@@ -36,7 +36,7 @@ MEASURE = r"""() => {
   if(card.matches('.ui-card--sectioned,.ui-card--table'))continue;
   const s=getComputedStyle(card),minimum=innerWidth<768?16:24;
   const header=card.querySelector(':scope > .ui-card-header'),body=card.querySelector(':scope > .ui-card-body');
-  if(card.closest('.home-dashboard')&&header&&body){
+  if(card.closest('.home-dashboard,.report-shell')&&header&&body){
    const hs=getComputedStyle(header),bs=getComputedStyle(body);
    // Sectioned Dashboard cards move the inset to the actual reading surface.
    // Keep the same 24/16px threshold; also check both header edges align.

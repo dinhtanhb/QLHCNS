@@ -229,3 +229,11 @@
 @media (prefers-reduced-motion: reduce) {
     .ui-tabbar__item { transition-duration: 1ms; }
 }
+
+/* CSS zoom can make the actual header container narrower than media queries. */
+@media screen {
+ @container ui-shell (max-width:22rem) {
+  .portal-app .ui-topbar-row { flex-wrap:wrap; }
+  .portal-app .ui-topbar-actions { flex-basis:100%; flex-wrap:wrap; justify-content:flex-start; }
+ }
+}

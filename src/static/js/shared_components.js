@@ -185,3 +185,23 @@
   document.addEventListener('click',event=>{if(!more.contains(event.target))more.open=false;});
  }
 })();
+
+/* Align report exports with the filter's real submit control, including wrap. */
+(() => {
+ for(const toolbar of document.querySelectorAll('.report-toolbar')){
+  const form=toolbar.querySelector('form'),exports=toolbar.querySelector('.report-export-actions');
+  if(!form||!exports)continue;
+  let frame;
+  const align=()=>{
+   frame=undefined;const button=form.querySelector('button[type=submit]');if(!button)return;
+   const a=form.getBoundingClientRect(),b=exports.getBoundingClientRect();
+   const scale=toolbar.getBoundingClientRect().width/toolbar.offsetWidth||1;
+   const offset=Math.abs(a.top-b.top)<=1?Math.max(0,(button.getBoundingClientRect().top-b.top)/scale):0;
+   const value=offset+'px';if(exports.style.getPropertyValue('--ui-report-action-offset')!==value)exports.style.setProperty('--ui-report-action-offset',value);
+   const reserve=Math.max(0,...[...form.querySelectorAll('.ui-date-echo')].filter(x=>x.textContent).map(x=>x.getBoundingClientRect().height/scale+parseFloat(getComputedStyle(x).marginTop)));
+   const echoValue=reserve+'px';if(form.style.getPropertyValue('--ui-report-echo-reserve')!==echoValue)form.style.setProperty('--ui-report-echo-reserve',echoValue);
+  };
+  const schedule=()=>{if(frame===undefined)frame=requestAnimationFrame(align);};
+  const observer=new ResizeObserver(schedule);observer.observe(toolbar);observer.observe(form);form.querySelectorAll('.ui-date-echo').forEach(x=>observer.observe(x));schedule();
+ }
+})();

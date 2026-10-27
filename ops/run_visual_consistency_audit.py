@@ -152,9 +152,10 @@ def main():
         print(json.dumps(errors, ensure_ascii=False, indent=2))
         return 1
     import run_layout_alignment_audit as runner
+    from run_header_report_uat import MEASURE as shell_measure
     # Run the complete existing alignment contract in the same browser visit.
     # This keeps the full route/role matrix while avoiding a second Edge fleet.
-    runner.MEASURE = "() => {const layout=(" + runner.MEASURE + ")();const visual=(" + MEASURE + ")();return {violations:[...layout.violations,...visual.violations],measurements:{...layout.measurements,...visual.measurements}}}"
+    runner.MEASURE = "() => {const layout=(" + runner.MEASURE + ")();const visual=(" + MEASURE + ")();const shell=(" + shell_measure + ")();return {violations:[...layout.violations,...visual.violations,...shell.violations],measurements:{...layout.measurements,...visual.measurements,...shell.measurements}}}"
     return runner.main()
 
 

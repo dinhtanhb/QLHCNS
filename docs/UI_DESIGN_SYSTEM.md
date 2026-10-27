@@ -1,10 +1,17 @@
 # Hệ thống giao diện IHRMS
 
+
+Quyết định sửa hồi quy Dashboard/Báo cáo ngày 27/10/2026: topbar cố định khi cuộn; `--ui-shell-header-height` là tổng banner QA (nếu có) và topbar/breadcrumb, được đo bằng `offsetHeight` để không nhân đôi khoảng đệm ở zoom200%. Nội dung và sidebar desktop dùng cùng offset; khung header có container query để control xuống hàng khi vùng thật hẹp, không ẩn chức năng.
+
+KPI dùng chung `.ui-kpi-heading` (nhãn+icon), giá trị và `.ui-kpi-meta`, chia sẻ ba track subgrid theo từng hàng; nhãn dài không đẩy số lệch hàng. Báo cáo dùng cùng max-width với Dashboard, toolbar lọc/xuất căn theo nút Áp dụng thực và chiều cao date echo thực. `.report-kpis` chọn1/2/3/6 cột ở container23/35/71rem; không dùng viewport để đoán độ rộng còn lại sau sidebar. Các wrapper mới flatten về hộp in cũ; không đổi mẫu hay hàm xuất Office.
+
+Cổng `run_header_report_uat.py` đo header đầu/giữa/cuối trang, che phủ và offset, icon/nhãn, baseline số KPI (≤1px), lưới theo container, toolbar, sidebar mở/thu và zoom200%; được ghép vào visual/layout audit toàn bộ route. Kiểm âm trên DOM QA kiểm từng tiêu chí. Gate cũ bỏ sót vì chủ yếu đo tại đầu trang, chỉ kiểm heading Dashboard, không so icon và số giữa các thẻ Báo cáo có nhãn dài. Gate inset nay đọc header/body thực cho cả Dashboard và Báo cáo, vẫn giữ ngưỡng24/16px.
+
 Quyết định D1–D6 ngày 27/10/2026 có hiệu lực cho giao diện màn hình, thay các trị số cũ bên dưới khi trùng phạm vi. Giai đoạn 1 áp component mới cho Dashboard; các bố cục phân hệ còn lại chờ duyệt giai đoạn 2. Bản in/PDF/Office giữ nguyên quy cách riêng.
 
 - **D1:** con trỏ `fine` và rộng từ **770px**: control/nút tối thiểu 36px, dòng bảng 40px; màn hình ≤769px hoặc con trỏ `coarse` giữ 44px. Ngưỡng 769px chồng lấn trong yêu cầu được giải bằng ưu tiên quy tắc mobile. Control nhiều dòng có thể cao hơn.
 - **D2:** một họ `--ui-type-{page,group,card,body,kpi,stat}`: 24/20/16/14/36/24px; heading 600, line-height trang/nhóm/thẻ 32/28/24px. Sáu vai trò, năm cỡ chữ; tên cũ là alias màn hình, trị số in cũ vẫn giữ. Không có `font-size` literal ngoài token, generated Tailwind và CSS giấy in.
-- **D3:** `ui-section` gồm `[tiêu đề + meta | actions]` và nội dung; title/content 12px, `ui-section-content` gom nội dung cùng nhóm với gap 16px, giữa nhóm ≥32px. Header thẻ dùng cùng nền với thân, ngăn bằng divider; nhóm không có khung/nền riêng. Đệm đọc 24px desktop, 16px mobile; giữ subgrid để cặp header và đáy thẻ thẳng nhau.
+- **D3:** `ui-section` gồm `[tiêu đề + meta | actions]` và nội dung; title/content 12px, `ui-section-content` gom nội dung cùng nhóm với gap 16px, giữa nhóm ≥32px. Header thẻ dùng cùng nền với thân, ngăn bằng divider; header nhóm là dải gọn nền `--ui-surface`/viền nhẹ, đệm dọc4px và ngang24px desktop/16px mobile (khoảng46/54px, tăng tự nhiên khi chữ dài), theo kế hoạch sửa hồi quy được duyệt sau giai đoạn1. Đệm đọc 24px desktop, 16px mobile; giữ subgrid để cặp header và đáy thẻ thẳng nhau.
 - **D4:** `ui-link-action` có mũi tên CSS `::after`, nhãn không có ký tự mũi tên, không wrap; cùng hàng tiêu đề, tối đa một primary và hai link. Khi thiếu chỗ, `Xem thêm` giữ nguyên các liên kết trong native details, Enter/Escape/blur dùng được; chỉ xếp dọc khi vùng nội dung header <18rem.
 - **D5–D6:** badge không tương tác, chữ 14px, cao 24px với nền nhẹ/viền trong suốt; Dashboard dùng `ui-card-header`, `ui-section-header`, `ui-link-action`, giữ hook layout/data và guard nghiệp vụ.
 

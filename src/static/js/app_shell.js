@@ -26,9 +26,19 @@
         return Array.from(container.querySelectorAll('a[href],button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),[tabindex="0"]'))
             .filter(el => el.getClientRects().length && !el.closest('[hidden],[inert]'));
     }
+    function placeUserMenu() {
+        if (!userPanel || userPanel.hidden || !header) return;
+        userPanel.style.setProperty('--ui-user-menu-shift', '0px');
+        const scale = header.getBoundingClientRect().width / header.offsetWidth || 1;
+        const bounds = userPanel.getBoundingClientRect();
+        const edge = parseFloat(getComputedStyle(userPanel).paddingLeft) * scale;
+        const left = Math.max(edge, Math.min(bounds.left, window.innerWidth - edge - bounds.width));
+        userPanel.style.setProperty('--ui-user-menu-shift', (left - bounds.left) / scale + 'px');
+    }
     function userOpen(open, restore) {
         if (!userButton || !userPanel) return;
         userPanel.hidden = !open;
+        if (open) placeUserMenu();
         userButton.setAttribute('aria-expanded', String(open));
         if (restore) userButton.focus();
     }
@@ -77,8 +87,26 @@
         }
         state();
     }
-    if (header && window.ResizeObserver) {
-        new ResizeObserver(() => body.style.setProperty('--ui-shell-header-height', header.getBoundingClientRect().height + 'px')).observe(header);
+    if (header) {
+        const banner = document.querySelector('.ui-demo-banner');
+        const sizeShell = () => {
+            // offsetHeight is in CSS pixels; rect.height would double the
+            // reserved space again when the document is zoomed to 200%.
+            const bannerHeight = banner ? banner.offsetHeight : 0;
+            body.style.setProperty('--ui-shell-banner-height', bannerHeight + 'px');
+            body.style.setProperty('--ui-shell-inline-size', header.offsetWidth + 'px');
+            const scale = header.getBoundingClientRect().width / header.offsetWidth || 1;
+            body.style.setProperty('--ui-shell-block-size', (window.innerHeight / scale) + 'px');
+            body.style.setProperty('--ui-shell-header-height', (header.offsetHeight + bannerHeight) + 'px');
+            placeUserMenu();
+        };
+        sizeShell();
+        if (window.ResizeObserver) {
+            const observer = new ResizeObserver(sizeShell);
+            observer.observe(header);
+            if (banner) observer.observe(banner);
+        }
+        window.addEventListener('resize', sizeShell);
     }
     if (sidebar) {
         sidebar.querySelectorAll('[data-menu-trigger]').forEach(button => {

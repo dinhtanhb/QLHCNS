@@ -36,7 +36,7 @@
     .portal-app ::selection { background:var(--ui-selected-bg); color:var(--ui-selected-text); text-shadow:none; }
     .ui-skip-link { position:fixed; top:var(--ui-space-2); left:var(--ui-space-2); z-index:var(--ui-layer-toast); transform:translateY(-200%); padding:var(--ui-space-3) var(--ui-space-4); background:var(--ui-surface); color:var(--ui-link); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); }
     .ui-skip-link:focus { transform:none; }
-    .ui-topbar { position:sticky; top:0; z-index:var(--ui-layer-navigation); background:var(--ui-surface); color:var(--ui-text); border-bottom:var(--ui-border-width) solid var(--ui-border); }
+    .ui-topbar { position:fixed; inset-inline:0; top:var(--ui-shell-banner-height,0px); z-index:var(--ui-layer-navigation); background:var(--ui-surface); color:var(--ui-text); border-bottom:var(--ui-border-width) solid var(--ui-border); container:ui-shell / inline-size; }
     .ui-topbar-row { display:flex; align-items:center; gap:var(--ui-space-2); padding:var(--ui-space-2); min-height:var(--ui-header-min-height); }
     .ui-brand { display:inline-flex; align-items:center; min-width:0; min-height:var(--ui-target-min); margin-right:auto; color:var(--ui-text); font-size:var(--ui-font-size-body); font-weight:var(--ui-font-weight-heading); text-decoration:none; }
     .ui-brand-full { display:none; }
@@ -155,3 +155,21 @@
     .ui-main-wrap.has-sidebar { padding-left:0; }
     .ui-main { max-width:none; margin:0; padding:0; }
 }
+
+/* Persistent screen chrome reserves its measured CSS-pixel height. */
+@layer layouts {
+ @media screen {
+  .portal-app { padding-block-start:var(--ui-shell-header-height); }
+  .portal-app>.ui-demo-banner { position:fixed; inset-block-start:0; inset-inline:0; z-index:var(--ui-layer-navigation); }
+  @container ui-shell (max-width:64rem) {
+   .ui-topbar .ui-brand-full,.ui-topbar .ui-global-search { display:none; }
+   .ui-topbar .ui-brand-short { display:inline; }
+   .ui-topbar .ui-topbar-actions>.ui-mobile-only { display:inline-flex; }
+  }
+ }
+}
+
+@layer layouts { @media screen {
+ .ui-user-dropdown { transform:translateX(var(--ui-user-menu-shift,0px)); max-width:calc(var(--ui-shell-inline-size,100vw) - var(--ui-space-8)); max-height:calc(var(--ui-shell-block-size,100dvh) - var(--ui-shell-header-height) - var(--ui-space-8)); }
+ @container ui-shell (max-width:40rem) { .ui-topbar .ui-user-summary { display:none; } }
+} }

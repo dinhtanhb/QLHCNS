@@ -973,7 +973,7 @@
  .ui-section { display:grid; gap:var(--ui-space-3); min-width:0; }
  .ui-section-content { display:grid; gap:var(--ui-space-4); min-width:0; }
  .ui-section-header,.ui-card-header { display:flex; flex-wrap:nowrap; align-items:center; justify-content:space-between; gap:var(--ui-space-3); min-width:0; }
- .ui-section-header { padding:0; border:0; background:transparent; min-height:var(--ui-target-min); }
+ .ui-section-header { padding:var(--ui-space-1) var(--ui-space-5); border:var(--ui-border-width) solid var(--ui-border-subtle); border-radius:var(--ui-radius-card); background:var(--ui-surface); min-height:calc(var(--ui-target-min) + 2 * var(--ui-space-1) + 2 * var(--ui-border-width)); box-sizing:border-box; }
  .ui-section-header :is(h2,h3),.ui-card-header :is(h2,h3) { min-width:0; margin:0; overflow-wrap:anywhere; }
  .ui-card-header { padding:var(--ui-space-2) var(--ui-space-5); min-height:calc(var(--ui-target-min) + 2 * var(--ui-space-2)); border-bottom:var(--ui-border-width) solid var(--ui-divider); border-radius:var(--ui-radius-card) var(--ui-radius-card) 0 0; box-sizing:border-box; }
  .ui-card-header h3 { font-size:var(--ui-type-card); line-height:var(--ui-leading-card); align-self:start; padding-block:calc((var(--ui-target-min) - var(--ui-leading-card)) / 2); }
@@ -1000,3 +1000,18 @@
 }
 
 @layer components { @media screen and (max-width:767px) { .ui-card-header { padding-inline:var(--ui-space-4); } } }
+
+/* Metadata stays display:contents on paper, retaining the original flex items. */
+@layer components {
+ .ui-kpi-meta { display:contents; }
+ @media screen {
+  .ui-kpi-grid>.ui-kpi { display:grid; grid-template-rows:subgrid; grid-row:span 3; gap:var(--ui-space-2); align-content:start; }
+  .ui-kpi-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:var(--ui-space-2); min-width:0; }
+  .ui-kpi-label { min-width:0; overflow-wrap:anywhere; }
+  .ui-kpi-symbol { display:flex; flex:none; color:var(--ui-text-muted); }
+  .ui-kpi-value { align-self:start; }
+  .ui-kpi-meta { display:grid; align-content:start; gap:var(--ui-space-2); min-width:0; }
+  .ui-kpi-meta:empty { display:none; }
+  @media(max-width:767px) { .ui-section-header { padding-inline:var(--ui-space-4); } }
+ }
+}
