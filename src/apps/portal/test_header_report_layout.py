@@ -95,9 +95,13 @@ class HeaderReportLayoutTests(SimpleTestCase):
             self.assertIn(f"'portal:report_hub_export' '{kind}'", source)
         self.assertEqual(source.count('with label='), 6)
 
-    def test_report_column_breakpoints_target_the_live_grid(self):
+    def test_report_spacing_and_column_breakpoints_target_live_controls(self):
         css = (ROOT/'src/static/css/report_dashboard.css').read_text(encoding='utf-8')
         blocks = list(audit.css_blocks(css))
+        self.assertTrue(any(ctx[-1] == '.report-toolbar .ui-query-bar--date-echo :is(.ui-field,.ui-query-actions)'
+                            and '@media screen' in ctx
+                            and 'margin-bottom:var(--ui-report-echo-reserve,' in body
+                            for ctx, body in blocks))
         for width, columns in ((23, 2), (35, 3), (71, 6)):
             self.assertTrue(any(f'@container report-kpis (min-width:{width}rem)' in ctx
                                 and ctx[-1] == '.report-kpis>.ui-kpi-grid'

@@ -76,7 +76,8 @@
  .report-shell { max-width:var(--ui-content-max-width); }
  .report-shell .report-toolbar { display:flex; flex-wrap:wrap; align-items:flex-start; gap:var(--ui-space-4); margin:0; }
  .report-toolbar>.ui-query-card { flex:1 1 32rem; min-width:0; margin:0; padding:0; border:0; }
- .report-toolbar .ui-query-bar--date-echo { padding-bottom:var(--ui-report-echo-reserve,calc(var(--ui-space-5) + var(--ui-space-2))); }
+ .report-toolbar .ui-query-bar--date-echo { padding-bottom:0; }
+ .report-toolbar .ui-query-bar--date-echo :is(.ui-field,.ui-query-actions) { margin-bottom:var(--ui-report-echo-reserve,calc(var(--ui-space-5) + var(--ui-space-2))); }
  .report-toolbar>.report-export-actions { flex:none; max-width:100%; flex-wrap:wrap; gap:var(--ui-space-2); margin:0; padding-block-start:var(--ui-report-action-offset,0px); }
  .report-kpis { container:report-kpis / inline-size; }
  .report-kpis>.ui-page-description { margin:0 0 var(--ui-space-2); }

@@ -26,6 +26,10 @@ MEASURE = r"""() => {
  if(report){
   const toolbar=report.querySelector('.report-toolbar');if(toolbar){
    const form=toolbar.querySelector('form'),exports=toolbar.querySelector('.report-export-actions'),submit=form?.querySelector('button[type=submit]');
+   for(const echo of toolbar.querySelectorAll('.ui-date-echo')){if(!visible(echo)||!echo.textContent)continue;const a=rect(echo);
+    for(const control of toolbar.querySelectorAll('label,input,button,a')){if(!visible(control))continue;const b=rect(control);
+     if(Math.min(a.right,b.right)-Math.max(a.left,b.left)>1&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>1)fail('REPORT_DATE_ECHO_OVERLAP',echo,{echo:echo.textContent,control:control.id||control.textContent.trim()});}
+   }
    if(form&&exports&&submit&&rect(exports).left>=rect(form).right-1){const ys=[...exports.querySelectorAll('a')].map(x=>rect(x).bottom);if(ys.some(y=>Math.abs(y-rect(submit).bottom)>1))fail('REPORT_TOOLBAR_ALIGNMENT',toolbar,{submit:rect(submit).bottom,exports:ys});}
   }
   const cards=[...report.querySelectorAll('.ui-kpi-grid > .ui-kpi')],rows=[];
@@ -107,6 +111,7 @@ def interactions(page, base, output, report, negative_controls=False):
         ('KPI_VALUE_ALIGNMENT','/portal/reports/','.ui-kpi-value','transform','translateY(5px)',0),
         ('REPORT_KPI_COLUMNS','/portal/reports/','.report-kpis>.ui-kpi-grid','grid-template-columns','repeat(2,minmax(0,1fr))',0),
         ('REPORT_TOOLBAR_ALIGNMENT','/portal/reports/','.report-export-actions','margin-top','8px',0),
+        ('REPORT_DATE_ECHO_OVERLAP','/portal/reports/','.ui-date-echo','transform','translateY(-30px)',0),
     ):
         page.goto(base+route,wait_until='networkidle')
         page.evaluate('([selector,key,value,y])=>{document.querySelector(selector).style.setProperty(key,value);scrollTo(0,y)}',[selector,property_name,value,scroll])
