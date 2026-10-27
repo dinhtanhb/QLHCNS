@@ -69,6 +69,9 @@ class VisualConsistencyTests(SimpleTestCase):
         self.assertIn('ui-section-header', text)
         self.assertIn('ui-card-header', text)
         self.assertIn('ui-link-action', text)
+        for name in ('_my_work.html','_group_hr.html','_group_projects.html',
+                     '_group_admin.html','_group_recruitment.html'):
+            self.assertEqual((directory / name).read_text(encoding='utf-8').count('class="ui-section-content"'), 1, name)
 
     def test_screen_type_family_has_exactly_six_roles(self):
         text = (ROOT / 'src/static/css/ui_tokens.css').read_text(encoding='utf-8')

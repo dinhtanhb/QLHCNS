@@ -1,5 +1,5 @@
 {% load ui_components %}<section class="home-my-work ui-section" id="dashboard-my-work" aria-labelledby="my-work-title">
-<header class="ui-section-header"><h2 id="my-work-title">Công việc của tôi</h2></header>
+<header class="ui-section-header"><h2 id="my-work-title">Công việc của tôi</h2></header><div class="ui-section-content">
 <div class="home-my-work-grid">
 <div class="ui-card home-work-card" role="group" aria-labelledby="my-leave-title">
 <header class="ui-card-header"><h3 id="my-leave-title">Đơn nghỉ của tôi đang chờ duyệt</h3></header><div class="ui-card-body">
@@ -22,4 +22,4 @@
 </div>
 </div>
 {% if dashboard_layout.my_checklist %}<p>{{ dashboard_layout.my_checklist.label }}: {{ dashboard_layout.my_checklist.value|ui_number }} · <a class="ui-link-action" href="{{ dashboard_layout.my_checklist.href }}">Xem checklist</a></p>{% endif %}
-</section>
+</div></section>

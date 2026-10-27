@@ -131,6 +131,11 @@ MEASURE = r"""() => {
  if(stream&&parseFloat(getComputedStyle(stream).rowGap)<32)fail('GROUP_GAP',stream,getComputedStyle(stream).rowGap);
  for(const section of root.querySelectorAll('.ui-section')){
   if(Math.abs(parseFloat(getComputedStyle(section).rowGap)-12)>1)fail('TITLE_CONTENT_GAP',section,getComputedStyle(section).rowGap);
+  const header=section.querySelector(':scope > .ui-section-header'),content=section.querySelector(':scope > .ui-section-content');
+  if(!content){fail('SECTION_CONTENT',section,'missing common content container');continue;}
+  if(header&&Math.abs(rect(content).top-rect(header).bottom-12)>1)fail('TITLE_CONTENT_GAP',section,{actual:rect(content).top-rect(header).bottom,expected:12});
+  if(Math.abs(parseFloat(getComputedStyle(content).rowGap)-16)>1)fail('SECTION_CONTENT_GAP',content,getComputedStyle(content).rowGap);
+  const rows=[...content.children].filter(visible);for(let i=1;i<rows.length;i++)if(Math.abs(rect(rows[i]).top-rect(rows[i-1]).bottom-16)>1)fail('SECTION_CONTENT_GAP',content,{actual:rect(rows[i]).top-rect(rows[i-1]).bottom,expected:16});
  }
  for(const pair of root.querySelectorAll('.home-row,.home-my-work-grid'))if(Math.abs(parseFloat(getComputedStyle(pair).columnGap)-16)>1)fail('CONTENT_GAP',pair,getComputedStyle(pair).columnGap);
  return {violations,measurements};

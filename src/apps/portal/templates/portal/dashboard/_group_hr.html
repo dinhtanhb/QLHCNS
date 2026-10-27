@@ -2,7 +2,7 @@
 <header class="ui-section-header"><h2 id="group-hr-title">Nhân sự</h2><div class="ui-header-actions ui-action-cluster">
 {% if dashboard_layout.joined %}<a id="phase2-joined" class="ui-link-action" href="{{ dashboard_layout.joined.href }}">Vào làm trong tháng: {{ dashboard_layout.joined.value|ui_number }}</a>{% endif %}
 {% if dashboard_layout.create_employee %}<a class="ui-button ui-button--primary" href="{{ dashboard_layout.create_employee.href }}">Tạo hồ sơ nhân viên</a>{% endif %}
-{% if dashboard_layout.headcount_href %}<a class="ui-link-action" href="{{ dashboard_layout.headcount_href }}">Mở báo cáo định biên</a>{% endif %}</div></header>
+{% if dashboard_layout.headcount_href %}<a class="ui-link-action" href="{{ dashboard_layout.headcount_href }}">Mở báo cáo định biên</a>{% endif %}</div></header><div class="ui-section-content">
 {% if dashboard_layout.density == 'compact' %}
 <div class="home-row{% if not dashboard_layout.headcount or not dashboard_layout.history %} home-row--single{% endif %}">
 {% if dashboard_layout.headcount %}{% include 'portal/dashboard/_headcount_chart.html' with data=dashboard_layout.headcount %}{% endif %}
@@ -16,4 +16,4 @@
 <div class="home-row{% if not dashboard_layout.show_expiring or not dashboard_layout.history %} home-row--single{% endif %}">
 {% if dashboard_layout.show_expiring %}{% include 'portal/dashboard/_expiring_contracts.html' with data=dashboard_layout.contracts %}{% endif %}
 {% if dashboard_layout.history %}{% include 'portal/dashboard/_decision_history.html' with data=dashboard_layout.history %}{% endif %}</div>{% endif %}
-{% endif %}</section>
+{% endif %}</div></section>

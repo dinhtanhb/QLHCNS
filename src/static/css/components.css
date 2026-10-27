@@ -971,6 +971,7 @@
  .ui-main h3 { font-size:var(--ui-type-card); line-height:var(--ui-leading-card); font-weight:var(--ui-weight-semibold); }
  .ui-main .ui-card-title:not(h1) { font-size:var(--ui-type-card); line-height:var(--ui-leading-card); }
  .ui-section { display:grid; gap:var(--ui-space-3); min-width:0; }
+ .ui-section-content { display:grid; gap:var(--ui-space-4); min-width:0; }
  .ui-section-header,.ui-card-header { display:flex; flex-wrap:nowrap; align-items:center; justify-content:space-between; gap:var(--ui-space-3); min-width:0; }
  .ui-section-header { padding:0; border:0; background:transparent; min-height:var(--ui-target-min); }
  .ui-section-header :is(h2,h3),.ui-card-header :is(h2,h3) { min-width:0; margin:0; overflow-wrap:anywhere; }

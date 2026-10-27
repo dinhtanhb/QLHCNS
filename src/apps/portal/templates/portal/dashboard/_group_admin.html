@@ -1,4 +1,5 @@
 {% load ui_components %}<section class="ui-section" id="group-admin" aria-labelledby="group-admin-title">{% include 'portal/dashboard/_group_header.html' with key='admin' title='Hành chính' create=dashboard_layout.create_dispatch %}
+<div class="ui-section-content">
 <div class="home-row{% if not dashboard_layout.leave %} home-row--single{% endif %}">{% if dashboard_layout.leave %}{% include 'portal/dashboard/_recent_leave.html' with data=dashboard_layout.leave only %}{% endif %}{% include 'portal/dashboard/_admin_queue.html' %}</div>
 {% if dashboard_layout.leave.global_scope and own %}<details class="dashboard-own-leave"><summary>Đơn nghỉ gần đây của tôi</summary>{% include 'portal/dashboard/_recent_leave.html' with data=own only %}</details>{% endif %}
-{% if dashboard_layout.totals %}<dl class="home-inline-totals">{% for item in dashboard_layout.totals %}<div><dt>{{ item.label }}</dt><dd>{{ item.value|ui_number }}</dd>{% if item.href %}<a href="{{ item.href }}">Xem</a>{% endif %}</div>{% endfor %}</dl>{% endif %}</section>
+{% if dashboard_layout.totals %}<dl class="home-inline-totals">{% for item in dashboard_layout.totals %}<div><dt>{{ item.label }}</dt><dd>{{ item.value|ui_number }}</dd>{% if item.href %}<a href="{{ item.href }}">Xem</a>{% endif %}</div>{% endfor %}</dl>{% endif %}</div></section>
