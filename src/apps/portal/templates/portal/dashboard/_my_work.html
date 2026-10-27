@@ -1,25 +1,25 @@
-{% load ui_components %}<section class="home-my-work" id="dashboard-my-work" aria-labelledby="my-work-title">
-<h2 id="my-work-title" class="home-card-title">Công việc của tôi</h2>
+{% load ui_components %}<section class="home-my-work ui-section" id="dashboard-my-work" aria-labelledby="my-work-title">
+<header class="ui-section-header"><h2 id="my-work-title">Công việc của tôi</h2></header>
 <div class="home-my-work-grid">
 <div class="ui-card home-work-card" role="group" aria-labelledby="my-leave-title">
-<header class="home-card-header"><h3 id="my-leave-title">Đơn nghỉ của tôi đang chờ duyệt</h3></header><div class="home-card-body">
+<header class="ui-card-header"><h3 id="my-leave-title">Đơn nghỉ của tôi đang chờ duyệt</h3></header><div class="ui-card-body">
 <div class="home-work-bottom">
 <strong class="home-work-value">{{ my_pending_leaves|ui_number }}</strong>
 <div class="home-work-actions">
 <a href="{% url 'portal:leave_create' %}" class="ui-button ui-button--primary">Tạo đơn nghỉ</a>
-<a href="{% url 'portal:leave_list' %}" class="home-text-link">Mở đơn nghỉ →</a>
+<a href="{% url 'portal:leave_list' %}" class="ui-link-action">Mở đơn nghỉ</a>
 </div>
 </div>
 </div>
 </div>
 <div class="ui-card home-work-card" role="group" aria-labelledby="my-task-title">
-<header class="home-card-header"><h3 id="my-task-title">Công việc của tôi chưa hoàn thành</h3></header><div class="home-card-body">
+<header class="ui-card-header"><h3 id="my-task-title">Công việc của tôi chưa hoàn thành</h3></header><div class="ui-card-body">
 <div class="home-work-bottom">
 <strong class="home-work-value">{{ my_open_tasks|ui_number }}</strong>
-<a href="{% url 'portal:task_list' %}?scope=assigned_to_me" class="home-text-link">Mở công việc →</a>
+<a href="{% url 'portal:task_list' %}?scope=assigned_to_me" class="ui-link-action">Mở công việc</a>
 </div>
 </div>
 </div>
 </div>
-{% if dashboard_layout.my_checklist %}<p>{{ dashboard_layout.my_checklist.label }}: {{ dashboard_layout.my_checklist.value|ui_number }} · <a class="home-text-link" href="{{ dashboard_layout.my_checklist.href }}">Xem checklist →</a></p>{% endif %}
+{% if dashboard_layout.my_checklist %}<p>{{ dashboard_layout.my_checklist.label }}: {{ dashboard_layout.my_checklist.value|ui_number }} · <a class="ui-link-action" href="{{ dashboard_layout.my_checklist.href }}">Xem checklist</a></p>{% endif %}
 </section>

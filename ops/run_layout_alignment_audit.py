@@ -18,6 +18,8 @@ import sys
 
 MEASURE = r"""() => {
  const violations=[], measurements={};
+ // D1: fine desktop 36px; touch/mobile 44px. Never derive the floor from CSS under test.
+ const targetFloor=matchMedia('(min-width:770px) and (pointer:fine)').matches?36:44;
  const rect=x=>{const r=x.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom}};
  const controlSource=x=>x.dataset.uiChoiceSource?document.getElementById(x.dataset.uiChoiceSource):x.id?.endsWith('-display')?document.getElementById(x.id.replace(/-display$/,'')):null;
  const visible=x=>x.checkVisibility()&&x.getBoundingClientRect().width>0;
@@ -33,7 +35,7 @@ MEASURE = r"""() => {
   if(!visible(card)||!screen(card)||card.closest('.ui-login-wrap'))continue;
   if(card.matches('.ui-card--sectioned,.ui-card--table'))continue;
   const s=getComputedStyle(card),minimum=innerWidth<768?16:24;
-  const header=card.querySelector(':scope > .home-card-header'),body=card.querySelector(':scope > .home-card-body');
+  const header=card.querySelector(':scope > .ui-card-header'),body=card.querySelector(':scope > .ui-card-body');
   if(card.closest('.home-dashboard')&&header&&body){
    const hs=getComputedStyle(header),bs=getComputedStyle(body);
    // Sectioned Dashboard cards move the inset to the actual reading surface.
@@ -43,11 +45,12 @@ MEASURE = r"""() => {
   }
   if(['paddingTop','paddingRight','paddingBottom','paddingLeft'].some(k=>parseFloat(s[k])<minimum-.5))fail('CARD_INSET',card,{minimum,padding:s.padding});
  }
- for(const title of main.querySelectorAll('.ui-card-title'))if(visible(title)&&screen(title)&&parseFloat(getComputedStyle(title).fontSize)<17.5)fail('CARD_TITLE',title,getComputedStyle(title).fontSize);
- for(const button of main.querySelectorAll('.ui-button'))if(visible(button)&&screen(button)&&button.matches('a,button,input')){const s=getComputedStyle(button);if(rect(button).h<43.5)fail('BUTTON_HEIGHT',button,rect(button).h);if(parseFloat(s.fontSize)<14)fail('BUTTON_FONT',button,s.fontSize);}
+ for(const title of main.querySelectorAll('.ui-card-title'))if(visible(title)&&screen(title)&&parseFloat(getComputedStyle(title).fontSize)<15.5)fail('CARD_TITLE',title,getComputedStyle(title).fontSize);
+ for(const button of main.querySelectorAll('.ui-button'))if(visible(button)&&screen(button)&&button.matches('a,button,input')){const s=getComputedStyle(button);if(rect(button).h<targetFloor-.5)fail('BUTTON_HEIGHT',button,rect(button).h);if(parseFloat(s.fontSize)<14)fail('BUTTON_FONT',button,s.fontSize);}
+ for(const row of main.querySelectorAll('.ui-table tbody tr'))if(visible(row)&&screen(row)&&rect(row).h<(targetFloor===36?40:44)-.5)fail('TABLE_ROW_HEIGHT',row,rect(row).h);
  const controls=[...main.querySelectorAll('input,select,textarea')].filter(x=>visible(x)&&screen(x)&&!['hidden','checkbox','radio'].includes(x.type));
  for(const f of main.querySelectorAll('form')){const fields=controls.filter(x=>x.form===f);if(fields.length>12&&!f.querySelector('fieldset'))fail('FORM_GROUPS',f,fields.length);for(const c of fields){if(!c.closest('.ui-form-grid--event')&&['address','reason','description','notes'].includes(c.name)&&rect(c.closest('.ui-field')||c).w<(rect(c.closest('.ui-form-grid')||f).w-parseFloat(getComputedStyle(c.closest('.ui-form-grid')||f).columnGap||0))/2-9)fail('LONG_FIELD',c,{width:rect(c).w,form:rect(f).w});const hint=(c.closest('.ui-field')||c.parentElement).querySelector('.ui-field-help,.ui-hr-text');if(hint&&visible(hint)&&!c.getAttribute('aria-describedby')?.split(' ').includes(hint.id))fail('HINT_ASSOCIATION',c,hint.textContent);}}
- for(const c of controls){const s=getComputedStyle(c);if(rect(c).h<43.5)fail('CONTROL_HEIGHT',c,rect(c).h);if(parseFloat(s.fontSize)<14)fail('FONT',c,s.fontSize);if(![...c.labels||[]].some(visible))fail('LABEL',c,c.name);if(['date','month'].includes(c.type)&&!c.parentElement.querySelector('.ui-date-echo'))fail('DATE_ECHO',c,c.type);if(['date','month'].includes(c.type)&&!c.hasAttribute('lang'))fail('DATE_LANGUAGE',c,c.type);}
+ for(const c of controls){const s=getComputedStyle(c);if(rect(c).h<targetFloor-.5)fail('CONTROL_HEIGHT',c,rect(c).h);if(parseFloat(s.fontSize)<14)fail('FONT',c,s.fontSize);if(![...c.labels||[]].some(visible))fail('LABEL',c,c.name);if(['date','month'].includes(c.type)&&!c.parentElement.querySelector('.ui-date-echo'))fail('DATE_ECHO',c,c.type);if(['date','month'].includes(c.type)&&!c.hasAttribute('lang'))fail('DATE_LANGUAGE',c,c.type);}
  const grids=[...main.querySelectorAll('.ui-form-grid')].filter(x=>visible(x)&&screen(x)&&controls.some(c=>c.closest('.ui-form-grid')===x));measurements.grids=[];
  measurements.grid_rules=[];
  const rules=(items,source,active=true)=>{for(const rule of items){if(rule.selectorText?.includes('.ui-form-grid')&&rule.style?.gridTemplateColumns)measurements.grid_rules.push({source,selector:rule.selectorText,columns:rule.style.gridTemplateColumns,active});if(rule.cssRules)rules(rule.cssRules,source,active&&(!rule.conditionText||matchMedia(rule.conditionText).matches));}};

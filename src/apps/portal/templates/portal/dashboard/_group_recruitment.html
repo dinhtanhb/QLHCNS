@@ -1,7 +1,7 @@
-{% load ui_components %}<section class="home-recruitment-group" id="group-recruitment" aria-labelledby="group-recruitment-title">
+{% load ui_components %}<section class="home-recruitment-group ui-section" id="group-recruitment" aria-labelledby="group-recruitment-title">
 {% include 'portal/dashboard/_group_header.html' with key='recruitment' title='Tuyển dụng' link=dashboard_layout.recruitment_href link_label='Mở tuyển dụng' %}
 <div class="ui-card home-recruitment-strip" aria-label="Tổng quan tuyển dụng">
 <div class="home-recruitment-metrics" style="--home-metric-count:{{ dashboard_layout.recruitment|length }}">{% for item in dashboard_layout.recruitment %}<div id="phase2-{{ item.key }}">
-<strong class="home-work-value">{{ item.value|ui_number }}</strong><h3>{% if item.cta %}<a class="home-text-link" href="{{ item.cta }}">{% endif %}{% if item.key == 'postings' %}Tin đang tuyển{% elif item.key == 'candidates' %}Ứng viên đang xử lý{% else %}{{ item.label }}{% endif %}{% if item.cta %}</a>{% endif %}</h3>
+<strong class="home-work-value">{{ item.value|ui_number }}</strong><p class="ui-metric-label">{% if item.cta %}<a class="ui-link-action" href="{{ item.cta }}">{% endif %}{% if item.key == 'postings' %}Tin đang tuyển{% elif item.key == 'candidates' %}Ứng viên đang xử lý{% else %}{{ item.label }}{% endif %}{% if item.cta %}</a>{% endif %}</p>
 {% if item.key == 'requests' %}<dl class="home-inline-totals">{% for row in item.rows %}<div><dt>{{ row.label }}</dt><dd>{{ row.value|ui_number }}</dd></div>{% endfor %}</dl>{% endif %}</div>{% endfor %}</div>
 {% include 'portal/dashboard/_info_popover.html' with content_template='portal/dashboard/_recruitment_info.html' info_label='Tuyển dụng' %}</div></section>

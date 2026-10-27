@@ -24,7 +24,7 @@
             {% include "ui/field.html" with id="hr-form-1-effective_date" name="effective_date" label="Ngày hiệu lực" type="date" required=True value=""  width="wide" %}
             {% include "ui/field.html" with id="hr-form-1-reason" name="reason" label="Lý do" type="text" value=""  width="full" %}
             <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Ghi nhận điều chuyển</button></div>
-            {% if can_draft_hr %}<div class="ui-form-actions"><button type="submit" name="next" value="hcns" class="ui-button ui-button--primary">Ghi nhận và soạn quyết định →</button></div>{% endif %}
+            {% if can_draft_hr %}<div class="ui-form-actions"><button type="submit" name="next" value="hcns" class="ui-button ui-button--primary">Ghi nhận và soạn quyết định</button></div>{% endif %}
         </div></fieldset></form>
     </div>
     <div class="ui-card" id="bonhiem">
@@ -35,7 +35,7 @@
             {% include "ui/field.html" with id="hr-form-2-effective_date" name="effective_date" label="Ngày hiệu lực" type="date" required=True value=""  width="wide" %}
             {% include "ui/field.html" with id="hr-form-2-reason" name="reason" label="Lý do" type="text" value=""  width="full" %}
             <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Ghi nhận bổ nhiệm</button></div>
-            {% if can_draft_hr %}<div class="ui-form-actions"><button type="submit" name="next" value="hcns" class="ui-button ui-button--primary">Ghi nhận và soạn quyết định →</button></div>{% endif %}
+            {% if can_draft_hr %}<div class="ui-form-actions"><button type="submit" name="next" value="hcns" class="ui-button ui-button--primary">Ghi nhận và soạn quyết định</button></div>{% endif %}
         </div></fieldset></form>
     </div>
     <div class="ui-card">
@@ -73,7 +73,7 @@
             {% include "ui/field.html" with id="hr-form-5-current_basic_salary" name="current_basic_salary" label="Mức lương mới" type="number" required=True value=""  width="wide" %}
             {% include "ui/field.html" with id="hr-form-5-effective_date" name="effective_date" label="Ngày hiệu lực" type="date" required=True value=""  width="wide" %}
             <div class="ui-form-actions"><button type="submit" class="ui-button ui-button--primary">Ghi nhận nâng lương</button></div>
-            {% if can_draft_hr %}<div class="ui-form-actions"><button type="submit" name="next" value="hcns" class="ui-button ui-button--primary">Ghi nhận và soạn quyết định →</button></div>{% endif %}
+            {% if can_draft_hr %}<div class="ui-form-actions"><button type="submit" name="next" value="hcns" class="ui-button ui-button--primary">Ghi nhận và soạn quyết định</button></div>{% endif %}
         </div></fieldset></form>
     </div>
     <div class="ui-card" id="hopdong">
@@ -82,7 +82,7 @@
             {% if current_contract %}Hợp đồng hiện tại: {{ current_contract.contract_no|ui_number }} (hết hạn {{ current_contract.end_date|default:"Không xác định"|ui_date }}){% else %}Chưa có hợp đồng nào{% endif %}
         </p>
         <p class="ui-field-help">Bộ mẫu HCNS chưa có mẫu hợp đồng / phụ lục gia hạn.</p>
-        <a href="{% url 'portal:hr_contract_list' %}" class="ui-button ui-button--secondary">Quản lý hợp đồng / phụ lục →</a>
+        <a href="{% url 'portal:hr_contract_list' %}" class="ui-link-action ui-button ui-button--secondary">Quản lý hợp đồng / phụ lục</a>
         {% if current_contract %}
         <form method="post" action="{% url 'portal:hr_contract_renew' employee.pk %}" class="ui-form-stack ui-history-form" data-ui-form>
             {% csrf_token %}{% include "ui/error_summary.html" %}<fieldset class="ui-form-section"><legend class="ui-field-label">Thông tin cần ghi nhận</legend><div class="ui-form-grid ui-form-grid--grouped">
@@ -100,7 +100,7 @@
     <h2 class="ui-card-title">Lịch sử & Hợp đồng</h2>
     <div class="ui-history-list">
         {% for c in contracts %}
-        <details class="ui-history-disclosure"><summary>Hợp đồng: {{ c.contract_no|ui_number }} ({{ c.contract_type|ui_number }}) — {{ c.start_date|ui_date }} → {{ c.end_date|default:"Không xác định"|ui_date }}</summary>
+        <details class="ui-history-disclosure"><summary>Hợp đồng: {{ c.contract_no|ui_number }} ({{ c.contract_type|ui_number }}) — {{ c.start_date|ui_date }} đến {{ c.end_date|default:"Không xác định"|ui_date }}</summary>
             {% for appendix in c.appendices.all %}<p>Phụ lục {{ appendix.appendix_no|ui_number }} — {{ appendix.effective_date|ui_date }}: {{ appendix.description|ui_number }}</p>{% empty %}<p class="ui-text-muted">Chưa có phụ lục.</p>{% endfor %}
             {% if can_manage_hr %}<form method="post" action="{% url 'portal:hr_contract_appendix_create' c.pk %}" class="ui-form-stack ui-history-form" data-ui-form>
                 {% csrf_token %}{% include "ui/error_summary.html" %}<fieldset class="ui-form-section"><legend class="ui-field-label">Thông tin cần ghi nhận</legend><div class="ui-form-grid ui-form-grid--grouped">
@@ -110,9 +110,9 @@
                 <div class="ui-form-actions"><button class="ui-button ui-button--primary" type="submit">Ghi nhận phụ lục</button></div>
             </div></fieldset></form>{% endif %}
         </details>{% endfor %}
-        {% for t in transfers %}<div class="ui-history-row"><span>{{ t.effective_date|ui_date }}</span><span>Điều chuyển: {{ t.from_department|ui_number }} → {{ t.to_department|ui_number }}</span>{% if can_draft_hr %}<a class="ui-table-link" href="{% url 'portal:hcns_draft' 'salary-decision' %}?transfer_id={{ t.pk }}">Soạn QĐ điều chỉnh →</a>{% endif %}</div>{% endfor %}
-        {% for pr in promotions %}<div class="ui-history-row"><span>{{ pr.effective_date|ui_date }}</span><span>Bổ nhiệm: {{ pr.old_position|ui_number }} → {{ pr.new_position|ui_number }}</span>{% if can_draft_hr %}<a class="ui-table-link" href="{% url 'portal:hcns_draft' 'appointment-decision' %}?promotion_id={{ pr.pk }}">Soạn QĐ bổ nhiệm →</a>{% endif %}</div>{% endfor %}
-        {% for salary in salaries %}<div class="ui-history-row"><span>{{ salary.effective_date|ui_date }}</span><span>Lương: {{ salary.current_basic_salary|ui_vnd }}</span>{% if can_draft_hr %}<a class="ui-table-link" href="{% url 'portal:hcns_draft' 'salary-decision' %}?salary_id={{ salary.pk }}">Soạn QĐ mức lương này →</a>{% endif %}</div>{% endfor %}
+        {% for t in transfers %}<div class="ui-history-row"><span>{{ t.effective_date|ui_date }}</span><span>Điều chuyển: {{ t.from_department|ui_number }} → {{ t.to_department|ui_number }}</span>{% if can_draft_hr %}<a class="ui-link-action ui-table-link" href="{% url 'portal:hcns_draft' 'salary-decision' %}?transfer_id={{ t.pk }}">Soạn QĐ điều chỉnh</a>{% endif %}</div>{% endfor %}
+        {% for pr in promotions %}<div class="ui-history-row"><span>{{ pr.effective_date|ui_date }}</span><span>Bổ nhiệm: {{ pr.old_position|ui_number }} → {{ pr.new_position|ui_number }}</span>{% if can_draft_hr %}<a class="ui-link-action ui-table-link" href="{% url 'portal:hcns_draft' 'appointment-decision' %}?promotion_id={{ pr.pk }}">Soạn QĐ bổ nhiệm</a>{% endif %}</div>{% endfor %}
+        {% for salary in salaries %}<div class="ui-history-row"><span>{{ salary.effective_date|ui_date }}</span><span>Lương: {{ salary.current_basic_salary|ui_vnd }}</span>{% if can_draft_hr %}<a class="ui-link-action ui-table-link" href="{% url 'portal:hcns_draft' 'salary-decision' %}?salary_id={{ salary.pk }}">Soạn QĐ mức lương này</a>{% endif %}</div>{% endfor %}
         {% for r in rewards %}<div class="ui-history-row"><span class="ui-history-date">{{ r.reward_date|ui_date }}</span><span class="ui-text-success">Khen thưởng: {{ r.reward_type|ui_number }}</span></div>{% endfor %}
         {% for d in disciplines %}<div class="ui-history-row"><span class="ui-history-date">{{ d.discipline_date|ui_date }}</span><span class="ui-text-danger">Kỷ luật: {{ d.discipline_type|ui_number }}</span></div>{% endfor %}
     </div>

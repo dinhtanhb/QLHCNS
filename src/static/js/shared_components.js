@@ -140,3 +140,48 @@
  document.querySelectorAll('.ui-form-grid').forEach(x=>rowObserver.observe(x));
  window.addEventListener('resize',scheduleRows);document.addEventListener('toggle',scheduleRows,true);scheduleRows();
 })();
+
+/* Shared responsive header actions. Move existing nodes: URLs and permission
+   guards stay intact; native details keeps keyboard access without a JS menu API. */
+(() => {
+ 'use strict';
+ const headers=[...document.querySelectorAll('.ui-section-header,.ui-card-header')];
+ for(const header of headers){
+  const actions=header.querySelector(':scope > :is(.ui-header-actions,.ui-card-actions)');
+  if(!actions)continue;
+  const links=[...actions.children].filter(x=>x.matches('a'));
+  if(!links.length)continue;
+  const markers=links.map(link=>{const marker=document.createComment('action');link.before(marker);return marker;});
+  const more=document.createElement('details');more.className='ui-action-overflow';more.hidden=true;
+  const summary=document.createElement('summary');summary.textContent='Xem thêm';
+  const menu=document.createElement('div');menu.className='ui-action-menu';
+  more.append(summary,menu);actions.append(more);
+  let frame;
+  const layout=()=>{
+   frame=undefined;
+   // Do not relocate an active control during keyboard navigation.
+   if(more.open||actions.contains(document.activeElement))return;
+   links.forEach((link,i)=>markers[i].after(link));more.hidden=true;
+   const style=getComputedStyle(header),padding=parseFloat(style.paddingLeft)+parseFloat(style.paddingRight);
+   const available=header.clientWidth-padding;
+   const title=header.querySelector(':scope > :is(h2,h3,div:not(.ui-header-actions):not(.ui-card-actions))');
+   const titleWidth=title?Math.min(title.scrollWidth,Math.max(available*.5,160)):0;
+   const gap=parseFloat(style.columnGap)||0;
+   const primary=links.filter(x=>x.matches('.ui-button--primary'));
+   const secondary=links.filter(x=>!x.matches('.ui-button--primary'));
+   if(primary.length>1||secondary.length>2){
+    [...primary.slice(1),...secondary.slice(1)].forEach(link=>menu.append(link));more.hidden=false;
+   }
+   if(titleWidth+actions.scrollWidth+gap>available){
+    links.forEach(link=>menu.append(link));more.hidden=false;
+   }
+   header.classList.toggle('ui-header--stacked',available<288);
+  };
+  const schedule=()=>{if(frame===undefined)frame=requestAnimationFrame(layout);};
+  new ResizeObserver(schedule).observe(header);schedule();
+  actions.addEventListener('focusout',schedule);
+  more.addEventListener('keydown',event=>{if(event.key==='Escape'){more.open=false;summary.focus();}});
+  more.addEventListener('focusout',()=>requestAnimationFrame(()=>{if(!more.contains(document.activeElement))more.open=false;}));
+  document.addEventListener('click',event=>{if(!more.contains(event.target))more.open=false;});
+ }
+})();

@@ -1,13 +1,24 @@
 # Hệ thống giao diện IHRMS
 
+Quyết định D1–D6 ngày 27/10/2026 có hiệu lực cho giao diện màn hình, thay các trị số cũ bên dưới khi trùng phạm vi. Giai đoạn 1 áp component mới cho Dashboard; các bố cục phân hệ còn lại chờ duyệt giai đoạn 2. Bản in/PDF/Office giữ nguyên quy cách riêng.
+
+- **D1:** con trỏ `fine` và rộng từ **770px**: control/nút tối thiểu 36px, dòng bảng 40px; màn hình ≤769px hoặc con trỏ `coarse` giữ 44px. Ngưỡng 769px chồng lấn trong yêu cầu được giải bằng ưu tiên quy tắc mobile. Control nhiều dòng có thể cao hơn.
+- **D2:** một họ `--ui-type-{page,group,card,body,kpi,stat}`: 24/20/16/14/36/24px; heading 600, line-height trang/nhóm/thẻ 32/28/24px. Sáu vai trò, năm cỡ chữ; tên cũ là alias màn hình, trị số in cũ vẫn giữ. Không có `font-size` literal ngoài token, generated Tailwind và CSS giấy in.
+- **D3:** `ui-section` gồm `[tiêu đề + meta | actions]` và nội dung; title/content 12px, nội dung cùng nhóm 16px, giữa nhóm ≥32px. Header thẻ dùng cùng nền với thân, ngăn bằng divider; nhóm không có khung/nền riêng. Đệm đọc 24px desktop, 16px mobile; giữ subgrid để cặp header và đáy thẻ thẳng nhau.
+- **D4:** `ui-link-action` có mũi tên CSS `::after`, nhãn không có ký tự mũi tên, không wrap; cùng hàng tiêu đề, tối đa một primary và hai link. Khi thiếu chỗ, `Xem thêm` giữ nguyên các liên kết trong native details, Enter/Escape/blur dùng được; chỉ xếp dọc khi vùng nội dung header <18rem.
+- **D5–D6:** badge không tương tác, chữ 14px, cao 24px với nền nhẹ/viền trong suốt; Dashboard dùng `ui-card-header`, `ui-section-header`, `ui-link-action`, giữ hook layout/data và guard nghiệp vụ.
+
+Cổng `run_layout_alignment_audit.py`, `run_dashboard_layout_uat.py`, `run_project_layout_uat.py`, `run_ui_consistency_uat.py` đổi sàn control 44px thành 36/44px theo D1; tiêu đề thẻ 18→16px theo D2; Dashboard group gap 24→32px theo D3. Sàn được tính độc lập từ media query, không lấy từ token đang kiểm. Không đổi ngưỡng tương phản, overflow, hợp đồng form hay PDF. Cổng mẫu `run_ui_consistency_uat.py` cũng sửa kỳ vọng cũ ở container 900/901px từ 3 thành 4 track theo quyết định bốn cột 18/10 đã có trong baseline; không đổi CSS form. `run_visual_consistency_audit.py --lint-only` chạy trong CI qua `test_visual_consistency.py`; phép đo Edge kiểm Dashboard giai đoạn 1 và kiểm kê các route khác cho giai đoạn 2.
+
+
 ## Hợp đồng thành phần đang áp dụng
 
 Chuẩn màu hiện hành là VietHealth (xanh lá logo)/trung tính theo quyết định chủ dự án 26/10/2026 trong `DESIGN.md`, `design-system/MASTER.md` và token `--ui-*` trong `ui_tokens.css`; hai pack dự phòng Chàm Đông và Than Ấm bật bằng `UI_PALETTE` (xem mục "Quay lại dải dự phòng" cuối tài liệu).
 
-- Khung nội dung tối đa 1440px, lề 24px trên desktop và 16px dưới 768px; nhóm nội dung cách nhau 24px.
+- Khung nội dung tối đa 1440px, lề 24px trên desktop và 16px dưới 768px; nhóm nội dung cách nhau ít nhất 32px.
 - Card màn hình mặc định có đệm 24px, mobile 16px, viền nhẹ và không bóng. Nội dung trực tiếp trong `.ui-card` vẫn được hỗ trợ. `.ui-card--sectioned` dùng header/body tự có đệm; `.ui-card--table` cho bảng sát mép, tiêu đề vẫn có đệm. Không dùng các modifier này cho card chưa có cấu trúc tương ứng.
-- Tiêu đề trang 24px/700; tiêu đề nhóm/card 18px/600, cách nội dung 16px; nhãn và nhãn KPI 14px. Không đặt chiều cao cố định để ép nội dung.
-- Nút thường tối thiểu 44px, chữ 14px, bo 8px, nhóm có gap 8–12px và wrap. Primary xanh lá VietHealth (mặc định; indigo/thanam khi chọn pack dự phòng) dùng cho tạo/thêm/lưu/gửi/đặt/giao/duyệt/tiếp nhận/cập nhật/chọn-áp dụng; secondary cho mở/xem/quản lý/theo dõi/in/xuất/tải/quay lại/hủy điều hướng; tertiary là liên kết điều hướng phụ. Từ chối, hủy dữ liệu, khóa kỳ và thanh lý dùng danger viền; chỉ xác nhận phá hủy trong dialog mới dùng danger đặc. Dashboard cho phép mọi thao tác tạo hoặc giao việc là primary, còn điều hướng là link. Dữ liệu kiểm tra máy đọc từ `UI_BUTTON_KINDS.json`; hành động ngang vai dùng cùng variant.
+- Tiêu đề trang 24px/600, nhóm 20px/600, thẻ 16px/600; nhóm cách nội dung 12px; nhãn và nhãn KPI 14px. Không đặt chiều cao cố định để ép nội dung.
+- Nút thường tối thiểu 36px trên desktop fine, 44px trên mobile/coarse, chữ 14px, bo 8px, nhóm có gap 8–12px và wrap. Primary xanh lá VietHealth (mặc định; indigo/thanam khi chọn pack dự phòng) dùng cho tạo/thêm/lưu/gửi/đặt/giao/duyệt/tiếp nhận/cập nhật/chọn-áp dụng; secondary cho mở/xem/quản lý/theo dõi/in/xuất/tải/quay lại/hủy điều hướng; tertiary là liên kết điều hướng phụ. Từ chối, hủy dữ liệu, khóa kỳ và thanh lý dùng danger viền; chỉ xác nhận phá hủy trong dialog mới dùng danger đặc. Dashboard cho phép mọi thao tác tạo hoặc giao việc là primary, còn điều hướng là link. Dữ liệu kiểm tra máy đọc từ `UI_BUTTON_KINDS.json`; hành động ngang vai dùng cùng variant.
 - `.ui-form-stack` có trường nhập, `.ui-form-container` và `.ui-form-section` cung cấp named container `ui-form`; grid tương thích cũ chuyển 1/2/3/4 cột ở 420/640/900px; form đã chuyển dùng mẫu inline/grouped/long/event theo nội dung. Form chỉ có nút không tạo size container để tránh mất bề rộng nội tại trong hàng flex. Không đặt size container trên chính grid để query grid đó. Span số cũ chỉ là lớp tương thích; khi chuyển từng form phải xác định trường thường/rộng/toàn hàng theo nội dung.
 - Hàng nút nằm cuối form, không sticky đè lên trường nhập. Dải lọc GET giữ hợp đồng riêng trong `MASTER.md`; bản in và giấy HCNS độc lập với lưới màn hình.
 
@@ -30,7 +41,7 @@ Tài liệu này là chuẩn triển khai hiện hành cho portal và trang Báo
 | Thành phần | Chuẩn portal |
 | --- | --- |
 | Font | System sans, ưu tiên Segoe UI trên Windows; nội dung và nhãn tối thiểu 14px |
-| Tiêu đề | Trang 24px, panel 18px, đậm và theo thứ bậc h1/h2 |
+| Tiêu đề | Trang 24px, nhóm 20px, thẻ 16px, đậm 600 và theo vai trò |
 | Màu chính | VietHealth theo `--ui-brand`, `--ui-on-brand` (mặc định); bề mặt theo token ngữ nghĩa và theme |
 | Chữ | `--ui-text`, `--ui-text-muted`; tiêu đề card 600, tiêu đề trang 700 |
 | Viền/focus | `--ui-border`, `--ui-focus`; focus bàn phím rõ, không phụ thuộc hover |

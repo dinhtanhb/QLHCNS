@@ -79,7 +79,7 @@ def main():
                             if page.locator('#dashboard-my-work').count():
                                 check(page.locator('#dashboard-my-work a[href="/portal/leave/create/"]').count()==1,label+' own leave creation')
                                 check(page.locator('#dashboard-my-work a[href="/portal/leave/"]').count()==1,label+' own leave list')
-                            grids=page.locator('.home-row,.home-my-work-grid').evaluate_all('xs=>xs.map(g=>({cards:[...g.children].map(x=>{let r=x.getBoundingClientRect();let header=x.querySelector(":scope > .home-card-header"), h=header?.getBoundingClientRect();return {y:r.y,h:r.height,w:r.width,headerBottom:h?.bottom,titleY:header?.querySelector("h3")?.getBoundingClientRect().y}})}))')
+                            grids=page.locator('.home-row,.home-my-work-grid').evaluate_all('xs=>xs.map(g=>({cards:[...g.children].map(x=>{let r=x.getBoundingClientRect();let header=x.querySelector(":scope > .ui-card-header"), h=header?.getBoundingClientRect();return {y:r.y,h:r.height,w:r.width,headerBottom:h?.bottom,titleY:header?.querySelector("h3")?.getBoundingClientRect().y}})}))')
                             if page.locator('#dashboard-my-work').count():
                                 check(page.locator('.home-my-work-grid > .home-work-card').count()==2,label+' two work cards remain in their shared grid')
                             if width>=1024:
@@ -106,10 +106,11 @@ def main():
  const token=name=>{const raw=getComputedStyle(root).getPropertyValue(name).trim();
    return raw.endsWith('rem')?parseFloat(raw)*rem:parseFloat(raw)};
  const scales=[['h1',token('--ui-text-h1'),token('--ui-leading-h1')],
-   ['h2',token('--ui-text-h2'),token('--ui-leading-h2')],
+   ['h2',20,28], ['h3',16,24],
    ['.ui-kpi-value',token('--ui-text-kpi'),token('--ui-leading-kpi')],
    ['.home-work-card .home-work-value',token('--ui-text-work'),token('--ui-leading-stat')],
    ['.home-project-metrics dd,.home-recruitment-metrics .home-work-value',token('--ui-text-stat'),token('--ui-leading-stat')]];
+ const targetFloor=matchMedia('(min-width:770px) and (pointer:fine)').matches?36:44;
  const rows=[...root.querySelectorAll('.home-list>li,.home-capacity>li,.home-type-list>li')].filter(visible);
  const targets=[...root.querySelectorAll('a,summary')].filter(visible);
  const overlaps=targets.some((x,i)=>targets.slice(i+1).some(y=>{if(x.contains(y)||y.contains(x))return false;const a=rect(x),b=rect(y);return Math.min(a.right,b.right)-Math.max(a.left,b.left)>1&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>1}));
@@ -119,7 +120,7 @@ def main():
  return {
   // Sectioned cards put the readable inset on the body, with the same header
   // inset. Check those actual surfaces instead of requiring double padding.
-  padding:cards.every(x=>{const header=x.querySelector(':scope > .home-card-header'),body=x.querySelector(':scope > .home-card-body');
+  padding:cards.every(x=>{const header=x.querySelector(':scope > .ui-card-header'),body=x.querySelector(':scope > .ui-card-body');
     if(header&&body){const h=getComputedStyle(header),b=getComputedStyle(body);return ['paddingTop','paddingBottom','paddingLeft','paddingRight'].every(k=>parseFloat(b[k])>=16)&&near(parseFloat(h.paddingLeft),parseFloat(b.paddingLeft))&&near(parseFloat(h.paddingRight),parseFloat(b.paddingRight));}
     return ['paddingTop','paddingBottom','paddingLeft','paddingRight'].every(k=>parseFloat(getComputedStyle(x)[k])>=16)}),
  // Phương án B: KPI gộp một dải nên gap = 0 và ngăn bằng đường kẻ dọc; các lưới
@@ -127,12 +128,12 @@ def main():
  // Shared header/body tracks have zero row gap inside each pair; stacked
  // cards keep the existing 16px separation below the two-column breakpoint.
  cardGap:[...root.querySelectorAll('.home-row,.home-my-work-grid')].every(x=>{const s=getComputedStyle(x);return near(parseFloat(s.columnGap),16)&&near(parseFloat(s.rowGap),innerWidth>=1024?0:16)})&&[...root.querySelectorAll('.home-main-kpis')].every(x=>parseFloat(getComputedStyle(x).gap)===0),
-  groupGap:near(parseFloat(getComputedStyle(root).rowGap),24),
+  groupGap:near(parseFloat(getComputedStyle(root).rowGap),32),
   sectionGap:spacing.filter(x=>x.children.length>1).every(x=>near(parseFloat(getComputedStyle(x).rowGap),12)),
   type:scales.every(([selector,size,line])=>[...root.querySelectorAll(selector)].filter(visible).every(x=>near(parseFloat(getComputedStyle(x).fontSize),size)&&near(parseFloat(getComputedStyle(x).lineHeight),line))),
   // Static HR reading rows use 32px; interactive targets remain 44px below.
-  rows:rows.every(x=>rect(x).height>=(x.querySelector('a')?43.5:x.matches('.home-capacity>li,.home-type-list>li')?31.5:39.5)),
-  targets:targets.every(x=>rect(x).height>=43.5&&rect(x).width>=43.5),
+  rows:rows.every(x=>rect(x).height>=(x.querySelector('a')?targetFloor-.5:x.matches('.home-capacity>li,.home-type-list>li')?31.5:39.5)),
+  targets:targets.every(x=>rect(x).height>=targetFloor-.5&&rect(x).width>=targetFloor-.5),
   overlaps,
   capacityAligned:innerWidth<1280||['.home-department-name','.home-capacity-track','.home-capacity-value','.home-capacity-alert'].every(align),
   metricsAligned:innerWidth<768||metrics.every(x=>{const ys=[...x.querySelectorAll('.home-work-value,dd')].filter(y=>y.parentElement.parentElement===x).map(y=>rect(y).y);return !ys.length||Math.max(...ys)-Math.min(...ys)<=1}),
@@ -156,7 +157,7 @@ def main():
                             if width==1440 and page.locator('#dashboard-my-work').count():
                                 bottom=page.locator('#dashboard-my-work').bounding_box()['y']+page.locator('#dashboard-my-work').bounding_box()['height']
                                 check(bottom<=900,label+' first fold includes my work')
-                            check(page.locator('main summary').evaluate_all('xs=>xs.filter(x=>x.checkVisibility()).every(x=>x.getBoundingClientRect().height>=43.5)'),label+' calculation touch targets')
+                            check(page.locator('main summary').evaluate_all('xs=>xs.filter(x=>x.checkVisibility()).every(x=>x.getBoundingClientRect().height>=(matchMedia("(min-width:770px) and (pointer:fine)").matches?35.5:43.5))'),label+' calculation touch targets')
                             small=page.locator('main :is(p,span,strong,a,summary,th,td)').evaluate_all('xs=>xs.filter(x=>x.checkVisibility() && x.textContent.trim() && parseFloat(getComputedStyle(x).fontSize)<14).map(x=>[x.className,getComputedStyle(x).fontSize,x.textContent.slice(0,40)])');check(not small,label+' text >=14px '+str(small))
                             values=page.locator('.home-main-kpis .ui-kpi-value').evaluate_all('xs=>xs.map(x=>x.getBoundingClientRect().y)')
                             if width>=1280 and len(values)>1:check(max(values)-min(values)<=1,label+' main value baseline')

@@ -25,11 +25,11 @@
     --ui-safe-top: env(safe-area-inset-top, 0px);
     --ui-safe-bottom: env(safe-area-inset-bottom, 0px);
 
-    --ui-m-title: 1.375rem;
-    --ui-m-heading: 1.0625rem;
-    --ui-m-body: 0.9375rem;
-    --ui-m-meta: 0.8125rem;
-    --ui-m-label: 0.6875rem;
+    --ui-m-title: var(--ui-type-page);
+    --ui-m-heading: var(--ui-type-card);
+    --ui-m-body: var(--ui-type-body);
+    --ui-m-meta: var(--ui-type-body);
+    --ui-m-label: var(--ui-type-body);
 }
 
 /* Chỉ hiện trên mobile — ẩn hoàn toàn ở desktop */
@@ -168,7 +168,7 @@
         border-radius: 999px;
         background: var(--ui-danger-text);
         color: var(--ui-danger-bg);
-        font-size: 10px;
+        font-size: var(--ui-type-body);
         font-weight: 700;
         line-height: 17px;
         text-align: center;
@@ -208,7 +208,7 @@
 
     /* 16px để iOS không tự phóng to khi chạm vào ô nhập */
     .ui-main :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]) {
-        font-size: 1rem;
+        font-size: var(--ui-type-card);
         min-block-size: var(--ui-tap);
     }
 

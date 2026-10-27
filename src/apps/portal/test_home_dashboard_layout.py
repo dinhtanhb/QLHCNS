@@ -32,7 +32,7 @@ class DashboardCardStructureTests(SimpleTestCase):
                 attrs = dict(attrs)
                 if 'home-work-card' in attrs.get('class', '').split():
                     self.cards.append((self.stack[-1], []))
-                if self.cards and attrs.get('class') in ('home-card-header', 'home-card-body'):
+                if self.cards and attrs.get('class') in ('ui-card-header', 'ui-card-body'):
                     self.cards[-1][1].append((attrs['class'], self.stack[-1]))
                 self.stack.append((tag, attrs.get('class', '')))
 
@@ -50,8 +50,8 @@ class DashboardCardStructureTests(SimpleTestCase):
         for parent, children in parser.cards:
             self.assertEqual(parent, ('div', 'home-my-work-grid'))
             self.assertEqual(children, [
-                ('home-card-header', ('div', 'ui-card home-work-card')),
-                ('home-card-body', ('div', 'ui-card home-work-card')),
+                ('ui-card-header', ('div', 'ui-card home-work-card')),
+                ('ui-card-body', ('div', 'ui-card home-work-card')),
             ])
 
 

@@ -757,3 +757,24 @@ html[data-palette="thanam"][data-theme="dark"] {
 }
 }
 }
+
+/* D1/D2, 27/10/2026: one screen type family; legacy paper values above stay fixed. */
+@layer tokens {
+@media screen {
+ :root {
+  --ui-type-page:1.5rem; --ui-type-group:1.25rem; --ui-type-card:1rem;
+  --ui-type-body:.875rem; --ui-type-kpi:2.25rem; --ui-type-stat:1.5rem;
+  --ui-font-size-caption:var(--ui-type-body); --ui-font-size-small:var(--ui-type-body);
+  --ui-font-size-body:var(--ui-type-body); --ui-font-size-lg:var(--ui-type-card);
+  --ui-font-size-xl:var(--ui-type-group); --ui-font-size-title:var(--ui-type-page);
+  --ui-font-size-display:var(--ui-type-kpi); --ui-component-heading:var(--ui-type-card);
+  --ui-text-h1:var(--ui-type-page); --ui-text-h2:var(--ui-type-group);
+  --ui-text-label:var(--ui-type-body); --ui-text-kpi:var(--ui-type-kpi);
+  --ui-text-stat:var(--ui-type-stat); --ui-text-work:var(--ui-type-stat);
+  --ui-leading-h1:2rem; --ui-leading-h2:1.75rem; --ui-leading-card:1.5rem;
+ }
+}
+@media screen and (min-width:770px) and (pointer:fine) {
+ :root { --ui-target-min:2.25rem; --ui-control-height:2.25rem; --ui-table-row-min:2.5rem; }
+}
+}

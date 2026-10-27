@@ -1,8 +1,8 @@
-{% load ui_components %}<section id="group-hr" aria-labelledby="group-hr-title">
-<header class="home-group-header"><h2 id="group-hr-title">Nhân sự</h2><div class="home-header-actions ui-action-cluster">
-{% if dashboard_layout.joined %}<a id="phase2-joined" class="home-text-link" href="{{ dashboard_layout.joined.href }}">Vào làm trong tháng: {{ dashboard_layout.joined.value|ui_number }} →</a>{% endif %}
+{% load ui_components %}<section class="ui-section" id="group-hr" aria-labelledby="group-hr-title">
+<header class="ui-section-header"><h2 id="group-hr-title">Nhân sự</h2><div class="ui-header-actions ui-action-cluster">
+{% if dashboard_layout.joined %}<a id="phase2-joined" class="ui-link-action" href="{{ dashboard_layout.joined.href }}">Vào làm trong tháng: {{ dashboard_layout.joined.value|ui_number }}</a>{% endif %}
 {% if dashboard_layout.create_employee %}<a class="ui-button ui-button--primary" href="{{ dashboard_layout.create_employee.href }}">Tạo hồ sơ nhân viên</a>{% endif %}
-{% if dashboard_layout.headcount_href %}<a class="home-text-link" href="{{ dashboard_layout.headcount_href }}">Mở báo cáo định biên →</a>{% endif %}</div></header>
+{% if dashboard_layout.headcount_href %}<a class="ui-link-action" href="{{ dashboard_layout.headcount_href }}">Mở báo cáo định biên</a>{% endif %}</div></header>
 {% if dashboard_layout.density == 'compact' %}
 <div class="home-row{% if not dashboard_layout.headcount or not dashboard_layout.history %} home-row--single{% endif %}">
 {% if dashboard_layout.headcount %}{% include 'portal/dashboard/_headcount_chart.html' with data=dashboard_layout.headcount %}{% endif %}

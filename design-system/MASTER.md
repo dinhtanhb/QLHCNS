@@ -1,5 +1,16 @@
 # IHRMS — Design system đã duyệt
 
+Quyết định D1–D6 ngày 27/10/2026 có hiệu lực cho giao diện màn hình, thay các trị số cũ bên dưới khi trùng phạm vi. Giai đoạn 1 áp component mới cho Dashboard; các bố cục phân hệ còn lại chờ duyệt giai đoạn 2. Bản in/PDF/Office giữ nguyên quy cách riêng.
+
+- **D1:** con trỏ `fine` và rộng từ **770px**: control/nút tối thiểu 36px, dòng bảng 40px; màn hình ≤769px hoặc con trỏ `coarse` giữ 44px. Ngưỡng 769px chồng lấn trong yêu cầu được giải bằng ưu tiên quy tắc mobile. Control nhiều dòng có thể cao hơn.
+- **D2:** một họ `--ui-type-{page,group,card,body,kpi,stat}`: 24/20/16/14/36/24px; heading 600, line-height trang/nhóm/thẻ 32/28/24px. Sáu vai trò, năm cỡ chữ; tên cũ là alias màn hình, trị số in cũ vẫn giữ. Không có `font-size` literal ngoài token, generated Tailwind và CSS giấy in.
+- **D3:** `ui-section` gồm `[tiêu đề + meta | actions]` và nội dung; title/content 12px, nội dung cùng nhóm 16px, giữa nhóm ≥32px. Header thẻ dùng cùng nền với thân, ngăn bằng divider; nhóm không có khung/nền riêng. Đệm đọc 24px desktop, 16px mobile; giữ subgrid để cặp header và đáy thẻ thẳng nhau.
+- **D4:** `ui-link-action` có mũi tên CSS `::after`, nhãn không có ký tự mũi tên, không wrap; cùng hàng tiêu đề, tối đa một primary và hai link. Khi thiếu chỗ, `Xem thêm` giữ nguyên các liên kết trong native details, Enter/Escape/blur dùng được; chỉ xếp dọc khi vùng nội dung header <18rem.
+- **D5–D6:** badge không tương tác, chữ 14px, cao 24px với nền nhẹ/viền trong suốt; Dashboard dùng `ui-card-header`, `ui-section-header`, `ui-link-action`, giữ hook layout/data và guard nghiệp vụ.
+
+Cổng `run_layout_alignment_audit.py`, `run_dashboard_layout_uat.py`, `run_project_layout_uat.py`, `run_ui_consistency_uat.py` đổi sàn control 44px thành 36/44px theo D1; tiêu đề thẻ 18→16px theo D2; Dashboard group gap 24→32px theo D3. Sàn được tính độc lập từ media query, không lấy từ token đang kiểm. Không đổi ngưỡng tương phản, overflow, hợp đồng form hay PDF. `run_visual_consistency_audit.py --lint-only` chạy trong CI qua `test_visual_consistency.py`; phép đo Edge kiểm Dashboard giai đoạn 1 và kiểm kê các route khác cho giai đoạn 2.
+
+
 ## Trang chủ và bảng số liệu — chuẩn thay thế ngày 15/10/2026
 
 Dashboard/Định biên dùng thang opt-in h1/h2/nhãn/KPI/số vừa:24/32,18/28,14/20,32/40,24/32; trọng lượng600 cho tiêu đề/số,500 cho nhãn/link. Số công việc28/32. Nền trang và thẻ là hai mặt phẳng; thẻ viền subtle, không bóng, đệm ngang20/dọc16–20px, gap thẻ16px/nhóm32px. Không dùng trần chiều cao để ép toàn trang; các quy định mật độ/chiều cao cũ bên dưới không còn áp dụng cho hai trang này. Thứ tự nhóm và tỷ lệ60/40 giữ nguyên; màn hình đầu1440×900 ưu tiên header/KPI/công việc/Dự án khi được cấp quyền. Giám đốc gọn bằng số dòng, không nén chữ/đệm.
@@ -35,8 +46,8 @@ Nguồn giá trị chính thức: [`ui_tokens.css`](../src/static/css/ui_tokens.
 - Theo quyết định 26/10/2026, màu thương hiệu mặc định là **VietHealth (xanh lá logo)**: light `#1f7a3d`, dark `#6ee7a0` (mã logo `#279048` chỉ dùng trang trí vì chữ trắng trên đó chỉ 4,06:1); sidebar light nền trắng `#ffffff` / chữ `#1d2939`, sidebar dark `#0b140f`, nền light `#edf2ee`, dark `#08120d`; bốn màu ngữ nghĩa đi theo palette (light success `#067647`, warning `#b54708`, danger `#ce181f` theo D2-B, info `#175cd3`). Giữ không gradient/glow. Viền card `--ui-card-border` nhẹ, tách viền control `--ui-border` đủ3:1; sidebar có `--ui-sidebar-focus` riêng. Hai pack dự phòng bật bằng `UI_PALETTE`: Chàm Đông (light `#3a4fd0` / dark `#93a7ff`, giá trị cũ trước 26/10) và Than Ấm (graphite, brand `#9a4a1a`). Than Ấm chỉ áp cho màn hình khi `UI_PALETTE=thanam`; bản in/bản giấy HCNS không đổi với mọi palette. Lịch sử: palette tím (trước 12/10) → teal light `#0b7461`/dark `#63dbc2` theo tham khảo Atoms ngày 12/10/2026 → Chàm Đông 21/10/2026 → VietHealth mặc định 26/10/2026.
 - Bốn màu ngữ nghĩa: success xanh lá, warning hổ phách, danger đỏ, info xanh dương; mỗi trạng thái có text/background/border riêng cho hai theme. Trạng thái luôn có chữ và SVG tương ứng. Warning chỉ việc chờ xử lý, danger chỉ lỗi/quá hạn/hành động nguy hiểm.
 - Dùng font hệ thống `"Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif`; không tải Google Fonts/CDN, không thêm asset/dependency. Cần kiểm tra glyph tiếng Việt ở máy đích; kết quả kiểm tra local ghi trong nhật ký. Bỏ Fira Code cho văn bản thường và Plus Jakarta Sans remote vì không cần font mạng hay phong cách kỹ thuật. Không tuyên bố đã kiểm Be Vietnam Pro/Inter khi chưa có font đó.
-- Body 16px (`1rem` với root mặc định), bảng/nhãn 14px, phụ chú 12px; line height 1.5, heading 1.25. Không giảm root font-size; hỗ trợ zoom. Số dùng tabular-nums, tiền `vi-VN`, ngày `dd/MM/yyyy`; giữ quy tắc làm tròn và dữ liệu backend hiện có.
-- Khoảng cách 4/8/12/16/24/32/48px; radius 4/8/12px theo vai trò; control 8px, card phẳng không bóng. Control/row min 44px nhưng có thể cao hơn khi chữ xuống dòng. Bỏ row 36px và thân chữ 12px trong đề xuất dashboard để đáp ứng vùng chạm và độ đọc.
+- Body/bảng/nhãn/phụ chú 14px (`--ui-type-body`); line height 1.5, heading 1.25. Không giảm root font-size; hỗ trợ zoom. Số dùng tabular-nums, tiền `vi-VN`, ngày `dd/MM/yyyy`; giữ quy tắc làm tròn và dữ liệu backend hiện có.
+- Khoảng cách 4/8/12/16/24/32/48px; radius 4/8/12px theo vai trò; control 8px, card phẳng không bóng. Control min36px, row min40px trên desktop fine ≥770px; mobile/coarse min44px nhưng có thể cao hơn khi chữ xuống dòng. Bỏ row 36px và thân chữ 12px trong đề xuất dashboard để đáp ứng vùng chạm và độ đọc.
 - Focus 3px, offset 3px, thêm khoảng nền tương phản quanh nút filled trước ring; hover/active/selected/disabled/error có tokens. Disabled dùng semantics thật, không chỉ đổi màu hay opacity.
 - Motion feedback 120ms, panel 180ms, về 0 khi reduced motion. Không thêm GSAP, shimmer liên tục hoặc transition màu khi đổi theme.
 
@@ -52,7 +63,7 @@ Trang chủ ưu tiên Việc của tôi, Cần duyệt, Thao tác nhanh rồi Ho
 
 - Card/KPI: tiêu đề 14–16px, số 24–32px, căn thống nhất; trạng thái chờ duyệt nhấn bằng chữ/icon, không chỉ màu. Số 0 hợp lệ giữ hiển thị; thiếu dữ liệu dùng “Chưa có dữ liệu”.
 - Bảng: caption/heading, `scope`, link thực cho chi tiết; header sticky không che focus. Bộ lọc dùng mẫu “Dải lọc với thao tác liền kề” dưới đây; giữ GET, URL names, CSRF và field names. Chỉ dùng `aria-sort` khi backend đã hỗ trợ sort. 360px dùng vùng cuộn ngang có nhãn/focus hoặc card với nhãn cột; trang không tràn ngang. Không thêm bulk action/sort mới chỉ vì skill gợi ý.
-- Nút: cùng cỡ 44px, chữ 14px, radius 8px. Primary xanh lá VietHealth (mặc định; indigo/thanam khi chọn pack dự phòng) biểu thị thao tác tạo/thêm/lưu/gửi/đặt/giao/duyệt/tiếp nhận/cập nhật/chọn hoặc áp dụng; secondary dùng cho mở/xem/quản lý/theo dõi/in/xuất/tải/quay lại và hủy điều hướng; tertiary là điều hướng phụ. Từ chối, hủy dữ liệu, khóa kỳ và thanh lý là danger viền; danger đặc chỉ xuất hiện trong dialog xác nhận thao tác phá hủy. Hành động tạo/giao việc trên Dashboard là primary, liên kết đi tới danh sách/chi tiết là text link. Danh sách chuẩn và ngoại lệ được kiểm máy tại `docs/UI_BUTTON_KINDS.json`.
+- Nút: 36px desktop fine ≥770px, 44px mobile/coarse, chữ 14px, radius 8px. Primary xanh lá VietHealth (mặc định; indigo/thanam khi chọn pack dự phòng) biểu thị thao tác tạo/thêm/lưu/gửi/đặt/giao/duyệt/tiếp nhận/cập nhật/chọn hoặc áp dụng; secondary dùng cho mở/xem/quản lý/theo dõi/in/xuất/tải/quay lại và hủy điều hướng; tertiary là điều hướng phụ. Từ chối, hủy dữ liệu, khóa kỳ và thanh lý là danger viền; danger đặc chỉ xuất hiện trong dialog xác nhận thao tác phá hủy. Hành động tạo/giao việc trên Dashboard là primary, liên kết đi tới danh sách/chi tiết là text link. Danh sách chuẩn và ngoại lệ được kiểm máy tại `docs/UI_BUTTON_KINDS.json`.
 - Form dài: chia nhóm `fieldset/legend`, một submit chính, errors cạnh field qua `aria-describedby`/`aria-invalid`; error summary có link tới field và nhận focus sau submit lỗi. Giữ dữ liệu đã nhập, CSRF, field name, validation và quyền hiện hành. Không thêm autosave/multi-step nghiệp vụ.
 - Badge/alert: SVG outline 24 viewBox, stroke 2, dùng cùng hệ Heroicons-style inline sẵn có; icon trang trí `aria-hidden`, nút icon có accessible name. Sau duyệt chọn một bộ paths nhất quán; chưa thêm thư viện. Alert nguy cấp tồn tại đến khi giải quyết, không auto-dismiss.
 - Empty state: phân biệt chưa tạo dữ liệu, bộ lọc không có kết quả, không có quyền và lỗi tải; thông điệp + một hành động hợp lệ. Không hiển thị chart rỗng hoặc thanh 100% cho một phòng ban; một nhóm dùng số/tóm tắt, nhiều nhóm dùng bar ngang và bảng dữ liệu thay thế.
@@ -87,10 +98,10 @@ Nền trang/card/control và track biểu đồ dùng neutral xanh lạnh theo p
 
 Đây là quy chuẩn chuẩn bị; đợt 2b chưa áp dụng bố cục này trên toàn ứng dụng.
 
-- Mọi trang: breadcrumb (nếu có) → tiêu đề trang (h1, 24px, 700) + mô tả ngắn + nhóm hành động chính căn phải (xuống dòng gọn trên mobile) → các card nội dung cách nhau 24px. Lề trang và độ rộng tối đa giống nhau mọi nơi.
-- Card: viền 1px, bo 8–12px, đệm 24px, tiêu đề card 18px/600.
-- Form/bộ lọc: nhãn luôn hiện phía trên ô (không dùng placeholder thay nhãn), mọi ô cao 44px, bo 8px, viền `--ui-border`; lưới nhiều cột trên desktop, xếp dọc trên mobile; nút gửi cùng hàng, cao 44px, `white-space: nowrap`, có chiều rộng tối thiểu, không bao giờ bị bóp để chữ rớt dòng.
-- Bảng: đặt trong card; tiêu đề cột 14px/600 trên nền `--ui-surface-raised`; ô đệm 12px 16px, dòng cao tối thiểu 44px, kẻ ngang `--ui-divider`; hover dòng; cột số và tiền căn phải, `tabular-nums`; cột trạng thái dùng badge (chữ + icon); cột thao tác căn phải, cùng một kiểu nút; độ rộng cột đặt chủ động.
+- Mọi trang: breadcrumb (nếu có) → tiêu đề trang (h1, 24px, 600) + mô tả ngắn + nhóm hành động chính căn phải (xuống dòng gọn trên mobile) → các card nội dung cách nhau 24px. Lề trang và độ rộng tối đa giống nhau mọi nơi.
+- Card: viền 1px, bo 8–12px, đệm 24px, tiêu đề card 16px/600.
+- Form/bộ lọc: nhãn luôn hiện phía trên ô (không dùng placeholder thay nhãn), ô một dòng cao theo D1, bo 8px, viền `--ui-border`; lưới nhiều cột trên desktop, xếp dọc trên mobile; nút gửi cùng hàng, cao theo D1, `white-space: nowrap`, có chiều rộng tối thiểu, không bao giờ bị bóp để chữ rớt dòng.
+- Bảng: đặt trong card; tiêu đề cột 14px/600 trên nền `--ui-surface-raised`; ô đệm 12px 16px, dòng cao tối thiểu theo D1, kẻ ngang `--ui-divider`; hover dòng; cột số và tiền căn phải, `tabular-nums`; cột trạng thái dùng badge (chữ + icon); cột thao tác căn phải, cùng một kiểu nút; độ rộng cột đặt chủ động.
 - Trạng thái trống nằm trong chính card của bảng: icon, một câu giải thích, một hành động hợp lệ (nếu có quyền).
 - Trang chi tiết: card theo nhóm, dạng nhãn–giá trị 2 cột trên desktop, 1 cột trên mobile.
 
@@ -99,7 +110,7 @@ Nền trang/card/control và track biểu đồ dùng neutral xanh lạnh theo p
 
 Hiển thị theo Việt Nam: `5.000.000`, `0,07`, số âm `-1.234,5`; số tiền/số lượng căn phải, tabular-nums. Năm/tháng, mã, ID, URL, JSON, thuộc tính máy và giá trị POST không phân nhóm. Ô số hiển thị qua proxy tiếng Việt; native NumberInput giữ tên trường, min/max/step và giá trị chuẩn, không dùng parseFloat cho chuỗi phân nhóm. Không đổi phép tính hay giá trị ô Excel số.
 
-Nút và input/select một dòng cao tối thiểu 44px, bo 8px, chữ 14px, padding theo token; nút không co hẹp, nhóm control có gap 8–12px và wrap trên mobile. Textarea nhiều dòng, checkbox/radio và nội dung giấy HCNS giữ loại control riêng. Bảng rộng cuộn trong vùng bảng, không ép tiêu đề thành từng ký tự. Editor/catalog/card/control dark dùng surface token và chữ token; bản giấy HCNS giữ nền trắng/chữ đen ở cả hai theme. Dùng “Trung tâm” trong nội dung hiển thị nguồn; không thay dữ liệu nghiệp vụ đã lưu hay sửa lịch sử migration.
+Nút và input/select một dòng cao tối thiểu theo D1, bo 8px, chữ 14px, padding theo token; nút không co hẹp, nhóm control có gap 8–12px và wrap trên mobile. Textarea nhiều dòng, checkbox/radio và nội dung giấy HCNS giữ loại control riêng. Bảng rộng cuộn trong vùng bảng, không ép tiêu đề thành từng ký tự. Editor/catalog/card/control dark dùng surface token và chữ token; bản giấy HCNS giữ nền trắng/chữ đen ở cả hai theme. Dùng “Trung tâm” trong nội dung hiển thị nguồn; không thay dữ liệu nghiệp vụ đã lưu hay sửa lịch sử migration.
 
 ## Component opt-in Giai đoạn 4
 
@@ -135,7 +146,7 @@ CSS/JS thay đổi phải có URL phiên bản mới, kể cả stylesheet nạp
 - Lịch công tác giữ thành phần Hành chính; ngày lễ có nhãn chữ/ngày theo ui_date, không chỉ phân biệt bằng màu. Đào tạo dùng trạng thái ui_badge và thông báo rõ tài khoản chưa gắn hồ sơ; portal hiện chỉ đọc danh sách đã đăng ký.
 - Form giao KPI dùng nhãn thường trực, error_summary và mẫu form nhóm; tỷ lệ 60/40 chỉ dành cho hai vùng nội dung của trang. Màn hình hẹp xếp theo thứ tự đọc. Không đổi người được giao, tên chỉ tiêu, kỳ, trọng số hoặc công thức.
 - Bảng chấm KPI có caption, scope, vùng cuộn được focus; cột số ui-number căn phải và chữ số tabular. Mỗi ô thực tế có ID riêng và tên nhân viên/tiêu chí; 0 là số hợp lệ, năm trong kỳ giữ nguyên 2026.
-- Dải lọc kỳ giữ ui-query-card/ui-query-bar/query_actions, nút ngay sau trường, Áp dụng/Enter, Xóa lọc khi có lọc và số kết quả. Không thêm lọc/sắp xếp/phân trang. Nút tối thiểu 44px, chữ 14px, sáng/tối và reduced-motion theo token hiện có.
+- Dải lọc kỳ giữ ui-query-card/ui-query-bar/query_actions, nút ngay sau trường, Áp dụng/Enter, Xóa lọc khi có lọc và số kết quả. Không thêm lọc/sắp xếp/phân trang. Nút tối thiểu theo D1, chữ 14px, sáng/tối và reduced-motion theo token hiện có.
 - Không thêm route đăng ký đào tạo hoặc sửa giấy in. Khi cập nhật asset, tăng URL/cache và chạy hồi quy PDF chung/BCC trên nguồn cuối.
 
 ## Hợp đồng form màn hình — 17/10/2026

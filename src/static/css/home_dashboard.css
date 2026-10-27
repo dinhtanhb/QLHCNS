@@ -6,16 +6,15 @@
   --ui-chart-1:var(--ui-chart-series); --ui-chart-2:var(--ui-info-text); --ui-chart-3:var(--ui-warning-text);
   --ui-chart-5:var(--ui-danger-text); --ui-chart-6:var(--ui-text-muted);
   /* --ui-chart-4 khai báo theo từng palette trong ui_tokens.css (D5-B). */
-  /* Nhịp dọc giữa các khối: 24px. Bản trước dùng 32px và bị chủ dự án đánh giá
-     là dãn quá rộng (đợt 4). 24px vẫn nằm trên thang 8px của token. */
-  display:grid; gap:var(--ui-space-6); max-width:var(--ui-content-max-width); margin-inline:auto; min-width:0;
+  /* D3: group rhythm 32px; section title to content 12px. */
+  display:grid; gap:var(--ui-space-8); max-width:var(--ui-content-max-width); margin-inline:auto; min-width:0;
   color:var(--ui-text); font-size:var(--ui-text-label); line-height:var(--ui-leading-label);
  }
  .home-dashboard :where(p,ul,ol,dl,h1,h2,h3,h4,dd) { margin:0; }
  .home-dashboard :where(h1,h2) { color:var(--ui-text); font-weight:var(--ui-weight-semibold); }
- .home-dashboard h1 { font-size:var(--ui-text-h1); line-height:var(--ui-leading-h1); font-weight:700; }
+ .home-dashboard h1 { font-size:var(--ui-text-h1); line-height:var(--ui-leading-h1); font-weight:var(--ui-weight-semibold); }
  .home-dashboard h2 { font-size:var(--ui-text-h2); line-height:var(--ui-leading-h2); }
- .home-dashboard h3 { font-size:var(--ui-text-label); line-height:var(--ui-leading-label); font-weight:var(--ui-weight-medium); color:var(--ui-text-muted); }
+ .home-dashboard h3 { font-size:var(--ui-type-card); line-height:var(--ui-leading-card); font-weight:var(--ui-weight-semibold); color:var(--ui-text); }
  .home-dashboard a:not(.ui-button) { color:var(--ui-link); font-weight:var(--ui-weight-medium); text-underline-offset:var(--ui-space-1); }
  .home-dashboard a:not(.ui-button):not(.ui-card):hover { text-decoration:underline; }
  .home-dashboard a.ui-card:is(:hover,:focus-visible) { text-decoration:none; background:var(--ui-hover-bg); }
@@ -25,14 +24,12 @@
  .home-dashboard .home-page-intro { display:contents; }
  .home-dashboard .home-page-intro h1 { grid-column:1; grid-row:1; align-self:center; }
  .home-dashboard .home-page-intro .home-period { grid-column:1/-1; grid-row:2; }
- .home-dashboard .home-page-header>.home-header-actions { grid-column:2; grid-row:1; }
- .home-dashboard .home-header-actions,.home-dashboard .home-work-actions { display:flex; align-items:center; flex-wrap:wrap; gap:var(--ui-space-3); }
- .home-dashboard .home-header-actions { justify-content:flex-end; }
+ .home-dashboard .home-page-header>.ui-header-actions { grid-column:2; grid-row:1; }
+ .home-dashboard .home-work-actions { display:flex; align-items:center; flex-wrap:wrap; gap:var(--ui-space-3); }
+
  .home-dashboard .home-jumps { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:var(--ui-space-4); }
  .home-dashboard .home-jumps[hidden] { display:none; }
  .home-dashboard>:is(section),.home-dashboard .home-dashboard-stream>section,.home-dashboard .home-my-work { display:grid; gap:var(--ui-space-3); min-width:0; scroll-margin-top:10rem; }
- .home-dashboard .home-group-header,.home-dashboard .home-card-header { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--ui-space-3); min-width:0; }
- .home-dashboard .home-card-header h3 { min-width:0; flex:1; font-size:var(--ui-text-h2); line-height:var(--ui-leading-h2); font-weight:var(--ui-weight-semibold); color:var(--ui-text); }
  .home-dashboard .ui-card { display:flex; flex-direction:column; gap:var(--ui-space-4); min-width:0; margin:0; background:var(--ui-surface); border:var(--ui-border-width) solid var(--ui-border-subtle); border-radius:var(--ui-radius-card); box-shadow:none; }
  .home-dashboard a.ui-card { color:var(--ui-text); text-decoration:none; transition:border-color var(--ui-motion-feedback) var(--ui-motion-easing); }
  .home-dashboard a.ui-card:hover { border-color:var(--ui-border); }
@@ -50,7 +47,7 @@
  .home-dashboard .home-row--single { grid-template-columns:minmax(0,1fr); }
  .home-dashboard .home-work-bottom { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:var(--ui-space-3); }
  .home-dashboard .home-work-value { font-size:var(--ui-text-work); line-height:var(--ui-leading-stat); font-weight:var(--ui-weight-semibold); font-variant-numeric:var(--ui-numeric-variant); }
- .home-dashboard .home-text-link,.home-dashboard .home-jumps a,.home-dashboard .home-list a { display:inline-flex; align-items:center; min-height:var(--ui-target-min); min-width:var(--ui-target-min); }
+ .home-dashboard .ui-link-action,.home-dashboard .home-jumps a,.home-dashboard .home-list a { display:inline-flex; align-items:center; min-height:var(--ui-target-min); min-width:var(--ui-target-min); }
  .home-dashboard .home-joined-chip { gap:var(--ui-space-2); padding-inline:var(--ui-space-3); border-radius:var(--ui-radius-control); background:var(--ui-surface-raised); }
  .home-dashboard .home-info { position:relative; flex:none; margin:0; }
  .home-dashboard .home-info summary { display:flex; align-items:center; justify-content:center; width:var(--ui-target-min); min-height:var(--ui-target-min); list-style:none; cursor:pointer; border-radius:var(--ui-radius-control); }
@@ -89,26 +86,20 @@
  .home-dashboard .home-decisions>li { display:grid; grid-template-columns:minmax(0,1fr) auto; }
  .home-dashboard .home-decision-main { min-width:0; overflow-wrap:anywhere; }
  .home-dashboard .home-decision-main time { display:block; color:var(--ui-text-muted); font-variant-numeric:var(--ui-numeric-variant); }
- .home-dashboard .ui-badge { display:inline-flex; align-items:center; gap:var(--ui-space-1); flex:none; padding:var(--ui-space-1) var(--ui-space-2); border-radius:var(--ui-radius-control); white-space:nowrap; font-size:var(--ui-text-label); line-height:var(--ui-leading-label); }
+ .home-dashboard .ui-badge { display:inline-flex; align-items:center; gap:var(--ui-space-1); flex:none; padding:0 var(--ui-space-2); border-radius:var(--ui-radius-control); white-space:nowrap; font-size:var(--ui-text-label); line-height:var(--ui-leading-label); }
  .home-dashboard .home-queue-list>li { display:grid; grid-template-columns:minmax(0,1fr) auto auto; }
  .home-dashboard .home-queue-empty { flex:1; display:flex; align-items:center; justify-content:center; gap:var(--ui-space-2); padding-block:var(--ui-space-6); color:var(--ui-text-muted); }
  .home-dashboard .home-inline-totals { display:flex; flex-wrap:wrap; gap:var(--ui-space-1) var(--ui-space-3); color:var(--ui-text-muted); }
  .home-dashboard .home-inline-totals>div { display:flex; gap:var(--ui-space-1); }
  .home-dashboard .home-project-heading { display:flex; align-items:baseline; flex-wrap:wrap; gap:var(--ui-space-3); }
  .home-dashboard .home-project-heading>span { color:var(--ui-text-muted); }
-.home-dashboard :is(.home-group-header h2,.home-card-title) { font-size:var(--ui-text-h2); font-weight:var(--ui-weight-semibold); line-height:var(--ui-leading-h2); letter-spacing:-.012em; }
-.home-dashboard :is(.home-group-header,.home-my-work > .home-card-title) { min-block-size:calc(var(--ui-target-min) + 2 * var(--ui-space-3) + 2 * var(--ui-border-width)); padding:var(--ui-space-3) var(--ui-space-5); background:var(--ui-surface-tint); border:var(--ui-border-width) solid var(--ui-divider); border-radius:var(--ui-radius-control); }
- .home-dashboard .home-my-work > .home-card-title { display:flex; align-items:center; }
  /* The header and body are shared tracks within each pair. Content stays
     complete; a short card stretches to the same bottom as its neighbour. */
- .home-dashboard .ui-card:has(>.home-card-header) { display:grid; grid-template-rows:auto 1fr; padding:0; gap:0; }
+ .home-dashboard .ui-card:has(>.ui-card-header) { display:grid; grid-template-rows:auto 1fr; padding:0; gap:0; }
  .home-dashboard :is(.home-row,.home-my-work-grid) { grid-template-rows:auto 1fr; row-gap:0; }
  .home-dashboard :is(.home-row,.home-my-work-grid)>.ui-card { grid-row:span 2; grid-template-rows:subgrid; }
- .home-dashboard .home-card-header { display:grid; grid-template-columns:minmax(0,1fr) auto; align-content:start; align-items:center; min-block-size:calc(var(--ui-target-min) + 2 * var(--ui-space-3) + 2 * var(--ui-border-width)); margin:0; padding:var(--ui-space-3) var(--ui-space-5); gap:0 var(--ui-space-3); background:var(--ui-surface-tint); border-bottom:var(--ui-border-width) solid var(--ui-divider); border-radius:var(--ui-radius-card) var(--ui-radius-card) 0 0; }
- .home-dashboard .home-card-header h3 { align-self:start; padding-block:var(--ui-space-2); overflow-wrap:anywhere; }
- .home-dashboard .home-card-actions { display:flex; align-items:center; gap:var(--ui-space-3); }
- .home-dashboard .home-card-body { display:flex; flex-direction:column; min-width:0; gap:var(--ui-space-3); padding:var(--ui-space-5); }
- .home-dashboard .home-work-card .home-card-body { justify-content:flex-end; }
+ .home-dashboard .ui-card-body { display:flex; flex-direction:column; min-width:0; gap:var(--ui-space-3); padding:var(--ui-space-5); }
+ .home-dashboard .home-work-card .ui-card-body { justify-content:flex-end; }
  .home-dashboard :is(.home-contracts,.home-decisions)>li { padding-block:var(--ui-space-1); }
  .home-dashboard .home-decisions .home-decision-link { display:flex; flex-wrap:wrap; justify-content:space-between; gap:0 var(--ui-space-3); }
  .home-dashboard .home-decision-link time { font-weight:var(--ui-font-weight-body); }
@@ -166,7 +157,6 @@
 
  @media(max-width:1279px) {
   .home-dashboard .home-main-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .home-dashboard .home-group-header { flex-wrap:wrap; }
   /* Thẻ hẹp hơn 1280px vẫn đủ chỗ cho một dòng: tên phòng co lại, thanh và số
      giữ nguyên. Bản trước đẩy tên xuống một dòng riêng nên mỗi dòng cao 64px
      (đo ở 1024px) — chủ dự án đánh giá là quá rộng. Chỉ xếp dọc dưới 768px. */
@@ -179,9 +169,9 @@
   .home-dashboard .home-row,.home-dashboard .home-my-work-grid { grid-template-columns:minmax(0,1fr); }
   .home-dashboard :is(.home-row,.home-my-work-grid) { grid-template-rows:none; row-gap:var(--ui-space-4); }
   .home-dashboard :is(.home-row,.home-my-work-grid)>.ui-card { grid-row:auto; grid-template-rows:auto 1fr; }
-  .home-dashboard .home-header-actions { justify-content:flex-start; }
+
   .home-dashboard .home-page-header { grid-template-columns:minmax(0,1fr); }
-  .home-dashboard .home-page-header>.home-header-actions { grid-column:1; grid-row:3; }
+  .home-dashboard .home-page-header>.ui-header-actions { grid-column:1; grid-row:3; }
   .home-dashboard .home-jumps { grid-row:4; }
  }
  @media(max-width:767px) {
@@ -194,8 +184,8 @@
   .home-dashboard .home-metric-heading { flex-wrap:wrap; }
   .home-dashboard .home-metric-heading>.ui-icon { order:-1; }
   .home-dashboard .home-metric-label { flex-basis:100%; }
-  .home-dashboard :is(.home-card-header,.home-card-body,.home-group-header,.home-my-work > .home-card-title) { padding-inline:var(--ui-space-4); }
-  .home-dashboard .home-card-body { padding-block:var(--ui-space-4); }
+  .home-dashboard :is(.ui-card-header,.ui-card-body) { padding-inline:var(--ui-space-4); }
+  .home-dashboard .ui-card-body { padding-block:var(--ui-space-4); }
   .home-dashboard .home-page-header .home-info-body { left:0; right:auto; }
   .home-dashboard .home-contracts>li,.home-dashboard .home-decisions>li { grid-template-columns:minmax(0,1fr); }
   .home-dashboard .home-contract-meta { align-items:flex-start; }
@@ -244,7 +234,7 @@
     ------------------------------------------------------------------------ */
  .home-dashboard .home-dashboard-body { display:grid; grid-template-columns:minmax(0,8fr) minmax(0,4fr); gap:var(--ui-space-6); align-items:start; min-width:0; }
  .home-dashboard .home-dashboard-body:not(:has(.home-rail)) { grid-template-columns:minmax(0,1fr); }
- .home-dashboard .home-dashboard-stream { display:grid; gap:var(--ui-space-6); min-width:0; }
+ .home-dashboard .home-dashboard-stream { display:grid; gap:var(--ui-space-8); min-width:0; }
  .home-dashboard .home-rail { display:grid; gap:var(--ui-space-4); min-width:0; position:sticky; top:var(--ui-space-4); }
  .home-dashboard .home-rail .home-list>li { align-items:start; }
  .home-dashboard .home-rail-empty { color:var(--ui-text-muted); }
@@ -256,15 +246,10 @@
     bề rộng của chính thẻ, không theo bề rộng cửa sổ. */
  /* Size containment on the card disables its shared subgrid tracks in Edge.
     Query the independent header/body containers, leaving the card in subgrid. */
- .home-dashboard :is(.home-card-header,.home-card-body) { container-type:inline-size; }
+ .home-dashboard .ui-card-body { container-type:inline-size; }
  @container (max-width:26rem) {
   .home-dashboard .dashboard-distribution { flex-direction:column; align-items:stretch; }
   .home-dashboard .dashboard-donut-wrap { align-self:center; }
-  .home-dashboard .home-card-actions { display:contents; }
-  .home-dashboard .home-card-header h3 { grid-column:1; grid-row:1; }
-  .home-dashboard .home-card-header:not(:has(.home-info)) h3 { grid-column:1/-1; }
-  .home-dashboard .home-card-actions>.home-info { grid-column:2; grid-row:1; }
-  .home-dashboard .home-card-actions>.home-text-link { grid-column:1/-1; grid-row:2; justify-self:start; }
  }
  @media(max-width:1279px) {
   .home-dashboard .home-dashboard-body { grid-template-columns:minmax(0,1fr); }
@@ -277,7 +262,7 @@
     nhẹ để đọc như phần tóm tắt; các ô vẫn ngăn nhau bằng đường kẻ dọc.
     Hook #dashboard-secondary / .home-secondary-item giữ nguyên cho các cổng đo. */
  .home-dashboard .home-secondary { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr)); column-gap:0; row-gap:0; }
- .home-dashboard .home-kpi-block .home-secondary { background:var(--ui-surface-tint); border-block-start:var(--ui-border-width) solid var(--ui-divider); }
+ .home-dashboard .home-kpi-block .home-secondary { background:var(--ui-surface); border-block-start:var(--ui-border-width) solid var(--ui-divider); }
  .home-dashboard .home-secondary-item { display:grid; grid-template-rows:minmax(0,1fr) auto; align-content:stretch; gap:var(--ui-space-1); padding:var(--ui-space-3) var(--ui-space-5); border-inline-start:var(--ui-border-width) solid var(--ui-divider); min-width:0; color:var(--ui-text); text-decoration:none; }
  .home-dashboard .home-secondary-item:first-child { border-inline-start:0; }
  .home-dashboard a.home-secondary-item:hover { background:var(--ui-hover-bg); }

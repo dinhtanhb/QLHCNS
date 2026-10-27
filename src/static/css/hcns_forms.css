@@ -1,8 +1,8 @@
 .hcns-heading { display:flex; justify-content:space-between; gap:1rem; align-items:center; margin-bottom:1.25rem; }
 .hcns-export-summary { overflow-wrap:anywhere; }
-.hcns-heading h1 { font-size:1.5rem; font-weight:600; color:var(--ui-text); margin:.4rem 0; }
-.hcns-heading p,.hcns-heading a { font-size:.875rem; color:var(--ui-text-muted); }
-.hcns-notice { background:var(--ui-info-bg); border:1px solid var(--ui-border); border-radius:8px; padding:.85rem 1rem; font-size:.875rem; margin:1rem 0; line-height:1.6; }
+.hcns-heading h1 { font-size:var(--ui-font-size-title); font-weight:600; color:var(--ui-text); margin:.4rem 0; }
+.hcns-heading p,.hcns-heading a { font-size:var(--ui-font-size-small); color:var(--ui-text-muted); }
+.hcns-notice { background:var(--ui-info-bg); border:1px solid var(--ui-border); border-radius:8px; padding:.85rem 1rem; font-size:var(--ui-font-size-small); margin:1rem 0; line-height:1.6; }
 .hcns-button { display:inline-flex; align-items:center; justify-content:center; gap:var(--ui-space-2); min-height:var(--ui-control-height); padding:var(--ui-space-2) var(--ui-space-4); border:1px solid var(--ui-border); border-radius:var(--ui-radius-control); background:var(--ui-surface); color:var(--ui-text-muted); font-weight:var(--ui-font-weight-medium); font-size:var(--ui-font-size-small); cursor:pointer; }
 .hcns-button:hover { background:var(--ui-hover-bg); }
 .hcns-button.primary { background:var(--ui-brand); border-color:var(--ui-brand); color:var(--ui-on-brand); }
@@ -15,30 +15,30 @@
 @media (max-width:639px) { .hcns-cards { grid-template-columns:minmax(0,1fr); } }
 .hcns-card { display:flex; flex-direction:column; padding:var(--ui-space-5); background:var(--ui-surface); border:var(--ui-border-width) solid var(--ui-border-subtle); border-radius:var(--ui-radius-card); text-decoration:none; transition:border-color var(--ui-motion-feedback,120ms) ease; }
 .hcns-card:hover { border-color:var(--ui-brand); box-shadow:none; }
-.hcns-format { color:var(--ui-text-muted); font-size:var(--ui-font-size-xsmall); letter-spacing:.05em; font-weight:var(--ui-weight-semibold); text-transform:uppercase; }
-.hcns-card h3 { font-size:var(--ui-font-size-base); line-height:var(--ui-line-height-body); font-weight:var(--ui-weight-semibold); color:var(--ui-text); margin:var(--ui-space-2) 0; flex:1; }
+.hcns-format { color:var(--ui-text-muted); font-size:var(--ui-font-size-small); letter-spacing:.05em; font-weight:var(--ui-weight-semibold); text-transform:uppercase; }
+.hcns-card h3 { font-size:var(--ui-font-size-lg); line-height:var(--ui-line-height-body); font-weight:var(--ui-weight-semibold); color:var(--ui-text); margin:var(--ui-space-2) 0; flex:1; }
 .hcns-card p { font-size:var(--ui-font-size-small); color:var(--ui-text-muted); overflow-wrap:anywhere; min-height:1.5rem; margin:0 0 var(--ui-space-3); }
 .hcns-card-action { display:inline-flex; align-items:center; color:var(--ui-brand); font-size:var(--ui-font-size-small); font-weight:var(--ui-weight-medium); margin-top:auto; }
 .hcns-editor { border:1px solid var(--ui-border); border-radius:10px; background:var(--ui-surface); margin:1rem 0 2rem; padding:1.2rem; }
 .hcns-editor summary { cursor:pointer; font-weight:700; }
-.hcns-editor h2 { font-size:1rem; font-weight:700; border-top:1px solid #edf1f6; padding-top:1.25rem; margin:1.25rem 0 .7rem; }
+.hcns-editor h2 { font-size:var(--ui-font-size-lg); font-weight:700; border-top:1px solid #edf1f6; padding-top:1.25rem; margin:1.25rem 0 .7rem; }
 .hcns-field-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; margin:1rem 0; }
-.hcns-field label { display:block; font-size:.82rem; font-weight:600; margin-bottom:.35rem; }
+.hcns-field label { display:block; font-size:var(--ui-font-size-small); font-weight:600; margin-bottom:.35rem; }
 .hcns-field.wide { grid-column:1/-1; }
-.hcns-field input,.hcns-field textarea,.hcns-field select,.hcns-table-editor input,.hcns-table-editor select { width:100%; border:1px solid var(--ui-border); border-radius:5px; padding:.5rem; background:var(--ui-surface); font-size:.875rem; }
+.hcns-field input,.hcns-field textarea,.hcns-field select,.hcns-table-editor input,.hcns-table-editor select { width:100%; border:1px solid var(--ui-border); border-radius:5px; padding:.5rem; background:var(--ui-surface); font-size:var(--ui-font-size-small); }
 .hcns-field input:focus,.hcns-field textarea:focus,.hcns-field select:focus,.hcns-table-editor input:focus { outline:var(--ui-focus-width) solid var(--ui-focus); outline-offset:1px; }
 .hcns-table-editor { margin:1.4rem 0; }
-.hcns-table-editor h3 { font-size:.9rem; font-weight:700; margin-bottom:.7rem; }
+.hcns-table-editor h3 { font-size:var(--ui-font-size-lg); font-weight:700; margin-bottom:.7rem; }
 .hcns-table-scroll { overflow:auto; margin-bottom:.75rem; }
-.hcns-table-editor table { border-collapse:collapse; font-size:.8rem; width:100%; }
+.hcns-table-editor table { border-collapse:collapse; font-size:var(--ui-font-size-small); width:100%; }
 .hcns-table-editor th,.hcns-table-editor td { border:1px solid var(--ui-border); padding:.5rem; vertical-align:top; min-width:110px; }
 .hcns-table-editor th { background:var(--ui-surface-raised); text-align:left; }
 .hcns-table-editor input[type=number] { min-width:90px; }
 .hcns-remove { color:var(--ui-danger-text); white-space:nowrap; padding:.5rem; }
 .hcns-actions { display:flex; flex-wrap:wrap; gap:.6rem; margin:1rem 0; }
-.hcns-editor-note { color:var(--ui-text-muted); font-size:.8rem; }
-.hcns-editor .errorlist { color:var(--ui-error-text); font-size:.8rem; margin:.3rem 0; }
-.hcns-preview-label { font-size:.85rem; font-weight:600; color:var(--ui-text-muted); margin:1rem 0; }
+.hcns-editor-note { color:var(--ui-text-muted); font-size:var(--ui-font-size-small); }
+.hcns-editor .errorlist { color:var(--ui-error-text); font-size:var(--ui-font-size-small); margin:.3rem 0; }
+.hcns-preview-label { font-size:var(--ui-font-size-small); font-weight:600; color:var(--ui-text-muted); margin:1rem 0; }
 .hcns-paper { background:white; border:1px solid #d9dee5; padding:18mm 18mm; margin:0 auto 2rem; width:100%; max-width:210mm; font-family:'Times New Roman',serif; font-size:12pt; line-height:1.45; color:#000; overflow-wrap:anywhere; }
 .hcns-paper.landscape { max-width:297mm; padding:12mm; }
 .hcns-document-header { text-align:center; font-weight:bold; font-size:10pt; margin-bottom:1.3rem; }

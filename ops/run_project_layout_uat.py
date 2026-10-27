@@ -108,7 +108,7 @@ def main():
                         const sameRow=Math.abs(a.bottom-b.bottom)<=1;
                         const gap=a.left-b.right;
                         const links=[...f.querySelectorAll('.ui-query-actions a')];
-                        return {gap,baseline:Math.abs(a.bottom-b.bottom),height:a.height,
+                        return {gap,baseline:Math.abs(a.bottom-b.bottom),height:a.height,target:matchMedia('(min-width:770px) and (pointer:fine)').matches?36:44,
                             close:!sameRow || gap>=0&&gap<=17,
                             fit:a.right<=innerWidth+1,stack:innerWidth>=1024||a.top>=b.bottom,
                             labels:fields.every(x=>!!f.querySelector('label[for="'+x.id+'"]')),
@@ -117,12 +117,12 @@ def main():
                     })''')
                     for row in geometry:
                         report.setdefault('filter_geometry', {})[label]=row
-                        check(row['close'] and row['fit'] and row['stack'] and row['mobile'] and row['labels'] and row['font'] and row['height']>=44, label + ' inline filter controls')
+                        check(row['close'] and row['fit'] and row['stack'] and row['mobile'] and row['labels'] and row['font'] and row['height']>=row['target']-.5, label + ' inline filter controls')
                     if args.only and page.locator('.ui-administration,.ui-planning').count():
                         check(page.locator('main h1:visible').count()==1,label+' single visible page title')
                         check(page.locator('.ui-administration > .ui-print-only:visible').count()==0,label+' print register hidden on screen')
-                        controls=page.locator('main input:not([type=hidden]):not(.ui-number-source),main select,main textarea,main button').evaluate_all('''xs=>xs.filter(x=>x.checkVisibility()).map(x=>({height:x.getBoundingClientRect().height,font:parseFloat(getComputedStyle(x).fontSize),label:x.tagName!=='BUTTON'?!!document.querySelector('label[for="'+x.id+'"]'):true}))''')
-                        check(all(x['height']>=43.5 and x['font']>=14 and x['label'] for x in controls),label+' controls, labels and type size')
+                        controls=page.locator('main input:not([type=hidden]):not(.ui-number-source),main select,main textarea,main button').evaluate_all('''xs=>xs.filter(x=>x.checkVisibility()).map(x=>({height:x.getBoundingClientRect().height,target:matchMedia('(min-width:770px) and (pointer:fine)').matches?36:44,font:parseFloat(getComputedStyle(x).fontSize),label:x.tagName!=='BUTTON'?!!document.querySelector('label[for="'+x.id+'"]'):true}))''')
+                        check(all(x['height']>=x['target']-.5 and x['font']>=14 and x['label'] for x in controls),label+' controls, labels and type size')
                         if page.locator('.ui-planning-kpi').count():
                             table=page.locator('.ui-planning-kpi')
                             check(table.evaluate('x=>getComputedStyle(x).tableLayout==="auto"'),label+' KPI automatic column sizing')

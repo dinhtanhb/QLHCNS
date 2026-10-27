@@ -72,11 +72,12 @@ def main():
                         label = f'{width}/{theme}/{name}'
                         check(page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'), label+' no page overflow')
                         styles = page.locator('.ui-card:not(.ui-card--table):not(.ui-card--sectioned)').evaluate_all(
-                            '(xs)=>xs.filter(x=>x.checkVisibility()).map(x=>parseFloat(getComputedStyle(x).paddingLeft))')
+                            '(xs)=>xs.filter(x=>x.checkVisibility()).map(x=>parseFloat(getComputedStyle(x.querySelector(":scope > .ui-card-body")||x).paddingLeft))')
                         check(bool(styles) and all(x >= (16 if width<768 else 24) for x in styles), label+' card insets')
                         sizes = page.locator('.ui-button').evaluate_all(
                             '(xs)=>xs.filter(x=>x.checkVisibility()).map(x=>({h:x.getBoundingClientRect().height,font:parseFloat(getComputedStyle(x).fontSize)}))')
-                        check(bool(sizes) and all(x['h']>=43.5 and x['font']>=14 for x in sizes), label+' buttons 44px/14px')
+                        floor = page.evaluate('matchMedia("(min-width:770px) and (pointer:fine)").matches ? 36 : 44')
+                        check(bool(sizes) and all(x['h']>=floor-.5 and x['font']>=14 for x in sizes), label+' buttons D1/14px')
                         if name == 'recruitment':
                             check(page.locator('.ui-recruitment-step').count()==6, label+' six steps')
                             geometry = page.locator('.ui-recruitment-steps').evaluate(
@@ -84,11 +85,11 @@ def main():
                             expected = 3 if geometry['width']>=1024 else 2 if geometry['width']>=640 else 1
                             check(geometry['columns']==expected, label+' container columns')
                         if name == 'dashboard':
-                            titles = page.locator('.home-card-header h3').evaluate_all('(xs)=>xs.map(x=>parseFloat(getComputedStyle(x).fontSize))')
-                            check(bool(titles) and all(x==18 for x in titles), label+' 18px content card titles')
+                            titles = page.locator('.ui-card-header h3').evaluate_all('(xs)=>xs.map(x=>parseFloat(getComputedStyle(x).fontSize))')
+                            check(bool(titles) and all(x==16 for x in titles), label+' 16px content card titles')
                         if name == 'assets':
                             titles = page.locator('.ui-card-title').evaluate_all('(xs)=>xs.map(x=>parseFloat(getComputedStyle(x).fontSize))')
-                            check(all(x==18 for x in titles), label+' 18px card titles')
+                            check(all(x==16 for x in titles), label+' 16px card titles')
                             check(page.locator('form:has([name=asset_code])').evaluate('(x)=>x.querySelector(".ui-form-actions").getBoundingClientRect().top>=x.querySelector("[name=note]").getBoundingClientRect().bottom'), label+' actions below last field')
                             page.locator('[name=asset_code]').focus()
                             page.keyboard.press('Tab')
@@ -112,8 +113,9 @@ def main():
                 form = page.locator('form[action*="assets"]').first
                 if not form.count():
                     form = page.locator('form:has([name=asset_code])')
-                # The asset form now follows the long-form 1/2/3-column contract.
-                for width, expected in ((419,1),(420,2),(421,2),(639,2),(640,3),(641,3),(899,3),(900,3),(901,3)):
+                # Approved 18/10 long-form contract: 1/2/3/4 tracks at 420/640/900px.
+                # The old 900/901 assertions predated that change; baseline also has four.
+                for width, expected in ((419,1),(420,2),(421,2),(639,2),(640,3),(641,3),(899,3),(900,4),(901,4)):
                     form.evaluate('(x,w)=>{x.style.width=w+"px";x.style.maxWidth="none"}', width)
                     columns = form.locator('.ui-form-grid').evaluate('(x)=>getComputedStyle(x).gridTemplateColumns.split(" ").length')
                     check(columns==expected, f'container {width}px -> {expected} columns')

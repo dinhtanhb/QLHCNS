@@ -25,7 +25,7 @@
   <div class="hcns-cards">{% for item in group.forms %}
     <a class="hcns-card ui-card" href="{% url 'portal:hcns_draft' item.slug %}{% if item.source_query %}?{{ item.source_query }}{% endif %}">
       <span class="hcns-format">{% if item.kind == "xlsx" %}EXCEL{% else %}WORD{% endif %} · IN / PDF</span>
-      <h3>{{ item.title|ui_number }}</h3><p>{{ item.source|ui_number }}</p><span class="hcns-card-action">Soạn biểu mẫu →</span>
+      <h3>{{ item.title|ui_number }}</h3><p>{{ item.source|ui_number }}</p><span class="hcns-card-action"><span class="ui-link-action">Soạn biểu mẫu</span></span>
     </a>
   {% endfor %}</div>
 </section>

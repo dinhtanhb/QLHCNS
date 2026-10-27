@@ -32,10 +32,10 @@ typography:
   family:   "\"Segoe UI\", system-ui, -apple-system, Roboto, Arial, sans-serif"
   monoFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
   source:   "font hệ thống, không tải font ngoài"
-  weights:  "400 (thân), 600 (nhãn), 700 (tiêu đề)"
-  body: 16px
+  weights:  "400 (thân), 500 (link), 600 (nhãn/tiêu đề)"
+  body: 14px
   table: 14px
-  caption: 12px
+  caption: 14px
   lineHeightBody: 1.5
   lineHeightHeading: 1.25
 
@@ -43,6 +43,16 @@ spacing: { xs: 4px, sm: 8px, md: 12px, lg: 16px, xl: 24px, xxl: 32px, section: 4
 radius:  { sm: 4px, md: 8px, lg: 12px }
 motion:  { feedback: 120ms, panel: 180ms }
 ---
+
+Quyết định D1–D6 ngày 27/10/2026 có hiệu lực cho giao diện màn hình, thay các trị số cũ bên dưới khi trùng phạm vi. Giai đoạn 1 áp component mới cho Dashboard; các bố cục phân hệ còn lại chờ duyệt giai đoạn 2. Bản in/PDF/Office giữ nguyên quy cách riêng.
+
+- **D1:** con trỏ `fine` và rộng từ **770px**: control/nút tối thiểu 36px, dòng bảng 40px; màn hình ≤769px hoặc con trỏ `coarse` giữ 44px. Ngưỡng 769px chồng lấn trong yêu cầu được giải bằng ưu tiên quy tắc mobile. Control nhiều dòng có thể cao hơn.
+- **D2:** một họ `--ui-type-{page,group,card,body,kpi,stat}`: 24/20/16/14/36/24px; heading 600, line-height trang/nhóm/thẻ 32/28/24px. Sáu vai trò, năm cỡ chữ; tên cũ là alias màn hình, trị số in cũ vẫn giữ. Không có `font-size` literal ngoài token, generated Tailwind và CSS giấy in.
+- **D3:** `ui-section` gồm `[tiêu đề + meta | actions]` và nội dung; title/content 12px, nội dung cùng nhóm 16px, giữa nhóm ≥32px. Header thẻ dùng cùng nền với thân, ngăn bằng divider; nhóm không có khung/nền riêng. Đệm đọc 24px desktop, 16px mobile; giữ subgrid để cặp header và đáy thẻ thẳng nhau.
+- **D4:** `ui-link-action` có mũi tên CSS `::after`, nhãn không có ký tự mũi tên, không wrap; cùng hàng tiêu đề, tối đa một primary và hai link. Khi thiếu chỗ, `Xem thêm` giữ nguyên các liên kết trong native details, Enter/Escape/blur dùng được; chỉ xếp dọc khi vùng nội dung header <18rem.
+- **D5–D6:** badge không tương tác, chữ 14px, cao 24px với nền nhẹ/viền trong suốt; Dashboard dùng `ui-card-header`, `ui-section-header`, `ui-link-action`, giữ hook layout/data và guard nghiệp vụ.
+
+Cổng `run_layout_alignment_audit.py`, `run_dashboard_layout_uat.py`, `run_project_layout_uat.py`, `run_ui_consistency_uat.py` đổi sàn control 44px thành 36/44px theo D1; tiêu đề thẻ 18→16px theo D2; Dashboard group gap 24→32px theo D3. Sàn được tính độc lập từ media query, không lấy từ token đang kiểm. Không đổi ngưỡng tương phản, overflow, hợp đồng form hay PDF. `run_visual_consistency_audit.py --lint-only` chạy trong CI qua `test_visual_consistency.py`; phép đo Edge kiểm Dashboard giai đoạn 1 và kiểm kê các route khác cho giai đoạn 2.
 
 # Quy tắc thiết kế IHRMS
 
@@ -98,14 +108,14 @@ Dùng token ngữ nghĩa trước. Giá trị nguồn trong phần frontmatter c
 
 ### Chữ
 - Họ chữ: `"Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif`.
-- Thân 16px, bảng và nhãn 14px, chú thích 12px; không giảm root font-size, phải zoom được tới 200%.
+- Thân, bảng, nhãn và chú thích 14px; không giảm root font-size, phải zoom được tới 200%.
 - Số dùng `tabular-nums`; tiền định dạng `vi-VN`, ngày `dd/MM/yyyy`; không đổi quy tắc làm tròn/dữ liệu backend.
 - Tiêu đề đúng cấp ngữ nghĩa; kích thước theo tầm quan trọng bố cục, không theo số h1–h6. Letter-spacing mặc định 0.
 
 ### Khoảng cách và bo góc
 - Thang 4/8/12/16/24/32/48px. Không thêm giá trị mới nếu thang giải quyết được.
 - Bo góc: 4px (control nhỏ), 8px (card, ô nhập chuẩn), 12px (khối lớn).
-- Control và dòng bảng cao tối thiểu 44px (có thể cao hơn khi chữ xuống dòng).
+- Control/nút tối thiểu 36px và dòng bảng 40px trên desktop fine ≥770px; mobile/coarse giữ 44px (có thể cao hơn khi chữ xuống dòng).
 
 ### Chọn văn bản
 Dùng màu chọn từ token (`--ui-selected-bg` nền, `--ui-selected-text` chữ), không dùng `text-shadow` kiểu Neumorphism.
@@ -183,10 +193,10 @@ Nền trang/card/control và track biểu đồ dùng neutral xanh lạnh theo p
 
 Đây là quy chuẩn chuẩn bị; đợt 2b chưa áp dụng bố cục này trên toàn ứng dụng.
 
-- Mọi trang: breadcrumb (nếu có) → tiêu đề trang (h1, 24px, 700) + mô tả ngắn + nhóm hành động chính căn phải (xuống dòng gọn trên mobile) → các card nội dung cách nhau 24px. Lề trang và độ rộng tối đa giống nhau mọi nơi.
-- Card: viền 1px, bo 8–12px, đệm 24px, tiêu đề card 18px/600.
-- Form/bộ lọc: nhãn luôn hiện phía trên ô (không dùng placeholder thay nhãn), mọi ô cao 44px, bo 8px, viền `--ui-border`; lưới nhiều cột trên desktop, xếp dọc trên mobile; nút gửi cùng hàng, cao 44px, `white-space: nowrap`, có chiều rộng tối thiểu, không bao giờ bị bóp để chữ rớt dòng.
-- Bảng: đặt trong card; tiêu đề cột 14px/600 trên nền `--ui-surface-raised`; ô đệm 12px 16px, dòng cao tối thiểu 44px, kẻ ngang `--ui-divider`; hover dòng; cột số và tiền căn phải, `tabular-nums`; cột trạng thái dùng badge (chữ + icon); cột thao tác căn phải, cùng một kiểu nút; độ rộng cột đặt chủ động.
+- Mọi trang: breadcrumb (nếu có) → tiêu đề trang (h1, 24px, 600) + mô tả ngắn + nhóm hành động chính căn phải (xuống dòng gọn trên mobile) → các card nội dung cách nhau 24px. Lề trang và độ rộng tối đa giống nhau mọi nơi.
+- Card: viền 1px, bo 8–12px, đệm 24px, tiêu đề card 16px/600.
+- Form/bộ lọc: nhãn luôn hiện phía trên ô (không dùng placeholder thay nhãn), ô một dòng theo D1 (36px desktop fine, 44px mobile/coarse), bo 8px, viền `--ui-border`; lưới nhiều cột trên desktop, xếp dọc trên mobile; nút gửi cùng hàng, cao theo D1, `white-space: nowrap`, có chiều rộng tối thiểu, không bao giờ bị bóp để chữ rớt dòng.
+- Bảng: đặt trong card; tiêu đề cột 14px/600 trên nền `--ui-surface-raised`; ô đệm 12px 16px, dòng cao tối thiểu theo D1 (40px desktop fine, 44px mobile/coarse), kẻ ngang `--ui-divider`; hover dòng; cột số và tiền căn phải, `tabular-nums`; cột trạng thái dùng badge (chữ + icon); cột thao tác căn phải, cùng một kiểu nút; độ rộng cột đặt chủ động.
 - Trạng thái trống nằm trong chính card của bảng: icon, một câu giải thích, một hành động hợp lệ (nếu có quyền).
 - Trang chi tiết: card theo nhóm, dạng nhãn–giá trị 2 cột trên desktop, 1 cột trên mobile.
 
@@ -195,7 +205,7 @@ Nền trang/card/control và track biểu đồ dùng neutral xanh lạnh theo p
 
 Hiển thị theo Việt Nam: `5.000.000`, `0,07`, số âm `-1.234,5`; số tiền/số lượng căn phải, tabular-nums. Năm/tháng, mã, ID, URL, JSON, thuộc tính máy và giá trị POST không phân nhóm. Ô số hiển thị qua proxy tiếng Việt; native NumberInput giữ tên trường, min/max/step và giá trị chuẩn, không dùng parseFloat cho chuỗi phân nhóm. Không đổi phép tính hay giá trị ô Excel số.
 
-Nút và input/select một dòng cao tối thiểu 44px, bo 8px, chữ 14px, padding theo token; nút không co hẹp, nhóm control có gap 8–12px và wrap trên mobile. Textarea nhiều dòng, checkbox/radio và nội dung giấy HCNS giữ loại control riêng. Bảng rộng cuộn trong vùng bảng, không ép tiêu đề thành từng ký tự. Editor/catalog/card/control dark dùng surface token và chữ token; bản giấy HCNS giữ nền trắng/chữ đen ở cả hai theme. Dùng “Trung tâm” trong nội dung hiển thị nguồn; không thay dữ liệu nghiệp vụ đã lưu hay sửa lịch sử migration.
+Nút và input/select một dòng cao tối thiểu theo D1 (36px desktop fine ≥770px, 44px mobile/coarse), bo 8px, chữ 14px, padding theo token; nút không co hẹp, nhóm control có gap 8–12px và wrap trên mobile. Textarea nhiều dòng, checkbox/radio và nội dung giấy HCNS giữ loại control riêng. Bảng rộng cuộn trong vùng bảng, không ép tiêu đề thành từng ký tự. Editor/catalog/card/control dark dùng surface token và chữ token; bản giấy HCNS giữ nền trắng/chữ đen ở cả hai theme. Dùng “Trung tâm” trong nội dung hiển thị nguồn; không thay dữ liệu nghiệp vụ đã lưu hay sửa lịch sử migration.
 
 ## Component opt-in Giai đoạn 4
 

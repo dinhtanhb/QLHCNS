@@ -35,7 +35,7 @@
 
 #jazzy-navbar .navbar-nav:first-child > li > a[href="/portal/"]::before {
     content: "\2190";
-    font-size: 1.05rem;
+    font-size: var(--ui-font-size-body);
     line-height: 1;
 }
 
@@ -48,7 +48,7 @@
 
 @media (max-width: 767.98px) {
     #jazzy-navbar .navbar-nav:first-child > li > a[href="/portal/"] {
-        font-size: 0.8125rem;
+        font-size: var(--ui-font-size-small);
         padding: 0.4rem 0.55rem;
     }
 }
