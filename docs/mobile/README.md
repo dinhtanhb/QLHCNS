@@ -8,6 +8,7 @@ Phạm vi đã duyệt: nhân viên, người duyệt và Nhân sự; hồ sơ c
 - [Cài và dùng thử trên điện thoại — dành cho người không lập trình](HUONG_DAN_CAI_VA_DUNG_THU.md)
 - [Chuẩn bị môi trường — dành cho người kỹ thuật](KY_THUAT_TEST_LOCAL_APK.md)
 - [Tạo tài khoản và phát hành nội bộ](TAO_TAI_KHOAN_VA_PHAT_HANH.md)
+- [Tạo Expo và Firebase để nhận thông báo Android — từng bước trên trình duyệt](TAO_EXPO_FIREBASE_THONG_BAO.md)
 - [API và bảo mật phiên](API.md)
 - Kết quả thực tế, giới hạn và bàn giao: [nhật ký dự án](../PROJECT_WORK_LOG.md).
 
