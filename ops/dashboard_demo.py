@@ -71,7 +71,9 @@ def seed(folder):
     from apps.portal.dashboard_data import dashboard_snapshot
 
     today = timezone.localdate()
-    password = secrets.token_urlsafe(24)
+    # Synthetic demo accounts only: ten easy-to-type characters, no punctuation
+    # or easily confused 0/O/1/l/I. Runtime SECRET_KEY stays independently strong.
+    password = ''.join(secrets.choice('abcdefghjkmnpqrstuvwxyz23456789') for _ in range(10))
     account_lines = ["IHRMS — DỮ LIỆU GIẢ THỬ NGHIỆM; KHÔNG PHẢI DỮ LIỆU VẬN HÀNH",
                      "URL: http://127.0.0.1:8766/portal/", "Mật khẩu chung trong bản demo: " + password, ""]
     with transaction.atomic():

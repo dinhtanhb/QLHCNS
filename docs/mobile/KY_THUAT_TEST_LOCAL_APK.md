@@ -16,6 +16,8 @@ venv/Scripts/python.exe ops/mobile_qa.py serve --directory D:/IHRMS_Mobile_QA/ru
 
 Mở `http://127.0.0.1:8789/`. Tên tài khoản và mật khẩu QA nằm trong `DEMO_ACCOUNTS.txt` của thư mục trên, không gửi vào Git. Có `demo-employee`, `demo-manager`, `demo-hr`, được gắn cây quản lý giả. Địa chỉ IHRMS trong bản web QA điền sẵn origin hiện tại.
 
+Khi tạo mới, mật khẩu dùng chung của bộ demo được sinh ngẫu nhiên đúng 10 ký tự chữ thường/số, không dấu cách/ký tự đặc biệt và bỏ các ký tự dễ nhầm `0/O/1/l/I`. Chỉ mật khẩu demo thay đổi; SECRET_KEY và chính sách tài khoản vận hành giữ nguyên. Chọn thư mục mới để sinh lại bộ demo, không ghi đè DB thử đang có; tài khoản trong thư mục demo cũ không tự đổi mật khẩu.
+
 Trong cửa sổ khác:
 
 ```powershell

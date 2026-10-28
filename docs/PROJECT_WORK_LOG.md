@@ -1,5 +1,13 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-28 — Mật khẩu demo 10 ký tự và sinh lại bộ tài khoản thử
+
+- **Yêu cầu/phạm vi:** chủ dự án yêu cầu sửa code sinh tài khoản demo với mật khẩu đơn giản khoảng 10 ký tự. Đầu lượt `main/213d7a3`, working tree sạch, fetch origin thành công, ahead/behind `0/0`; đọc ba mục nhật ký mới nhất, áp dụng hướng dẫn ihrms-project. Không đổi chính sách mật khẩu, tài khoản thật, model/migration hoặc APK.
+- **Thay đổi:** `ops/dashboard_demo.py` sinh mật khẩu chung ngẫu nhiên đúng 10 ký tự bằng `secrets.choice`, chỉ chữ thường/số và bỏ ký tự dễ nhầm; không dùng mật khẩu cố định trong mã, không đổi SECRET_KEY ngẫu nhiên độc lập. `ops/mobile_qa.py create` kế thừa hành vi này. Bổ sung cách dùng vào hướng dẫn người dùng và kỹ thuật; bộ cũ không tự đổi mật khẩu.
+- **Sinh lại dữ liệu:** `venv/Scripts/python.exe ops/mobile_qa.py create --directory D:/IHRMS_Review_Exports/Mobile_Demo10_20261028/qa --port 8790` tạo bộ mới ngoài repository, giữ nguyên bộ QA cũ. Tài khoản/mật khẩu nằm riêng trong `qa/DEMO_ACCOUNTS.txt`, không ghi vào Git hoặc nhật ký. `verify_demo.py` ngoài repo xác nhận 6 tài khoản, password đúng 10 ký tự theo bảng chữ cho phép, 6 hash đều khớp, SECRET_KEY dài trên 50; kết quả `verification.json` không có mật khẩu. Server QA cục bộ mở tại `http://127.0.0.1:8790/` với DB/media giả.
+- **Kiểm thử cuối:** chạy `ops/run_mobile_uat.py --directory D:/IHRMS_Review_Exports/Mobile_Demo10_20261028/qa --url http://127.0.0.1:8790 --output D:/IHRMS_Review_Exports/Mobile_Demo10_20261028/uat`: 38 kiểm tra/27 ảnh/0 lỗi JavaScript, gồm đăng nhập, tạo đơn, duyệt, thông báo, logout và mất mạng. Không chạy SQL Server/đóng gói lại APK vì chỉ đổi sinh mật khẩu của DB demo SQLite và tài liệu; không tuyên bố kiểm thiết bị thật. Kiểm diff/UTF-8 và liên kết tài liệu trên nguồn cuối.
+- **Bàn giao:** bản sao review từ index `D:/IHRMS_Review_Exports/Mobile_Demo10_20261028/IHRMS_source_review.zip`, có manifest tree/base commit/SHA-256, mở lại xác minh từng tệp; loại secrets/DB/media/runtime/log và credentials, không phải backup dữ liệu. Commit/push main, xác minh SHA remote/trạng thái Git, ghi ngoài repo `delivery.json`. Người dùng lấy mật khẩu ở file tài khoản mới và đăng nhập đúng môi trường demo mới; khi thử qua điện thoại cần người phụ trách cấp địa chỉ LAN đúng và chạy server theo hướng dẫn. Không deploy production.
+
 ## 2026-10-28 — Hướng dẫn cài và dùng thử mobile cho người không lập trình
 
 - **Yêu cầu/phạm vi:** viết lại hướng dẫn dễ hiểu cho người không phải coder. Đầu lượt `main/f842b07`, working tree sạch, fetch origin thành công, ahead/behind `0/0`; đọc ba mục nhật ký mới nhất. Chỉ thay tài liệu, không đổi ứng dụng/backend/APK/DB.

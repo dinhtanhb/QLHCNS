@@ -18,6 +18,8 @@ Nhờ người phụ trách gửi đủ:
 
 Nhân viên và quản lý có thể thử lần lượt trên một điện thoại bằng cách đăng xuất rồi đăng nhập lại. Nếu thiếu địa chỉ hoặc tài khoản, hãy nhờ người phụ trách chuẩn bị trước; không tự dùng tài khoản nhân viên thật.
 
+Các tài khoản trong cùng bộ demo mới dùng chung một mật khẩu gồm **10 ký tự chữ thường và số**, không có dấu cách hoặc ký tự đặc biệt. Nhập đúng mật khẩu người phụ trách cấp; mỗi lần tạo bộ demo mới có thể có mật khẩu khác. Mật khẩu này chỉ dùng cho dữ liệu thử.
+
 File đã tạo nằm trên máy tính phát triển tại:
 
 ```text
