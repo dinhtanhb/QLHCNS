@@ -1,5 +1,12 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-28 — Hướng dẫn cài và dùng thử mobile cho người không lập trình
+
+- **Yêu cầu/phạm vi:** viết lại hướng dẫn dễ hiểu cho người không phải coder. Đầu lượt `main/f842b07`, working tree sạch, fetch origin thành công, ahead/behind `0/0`; đọc ba mục nhật ký mới nhất. Chỉ thay tài liệu, không đổi ứng dụng/backend/APK/DB.
+- **Thực hiện:** thêm `docs/mobile/HUONG_DAN_CAI_VA_DUNG_THU.md` theo thứ tự nhận file/thông tin → cài APK → Wi-Fi/địa chỉ/đăng nhập → hồ sơ/chấm công/gửi/duyệt/từ chối/thông báo → tình huống lỗi → mẫu kết quả. Giải thích APK/QA, địa chỉ ví dụ không phải đích thực, tài khoản nhân viên/quản lý giả, phân biệt thông báo trong app/push và giới hạn iPhone. Không yêu cầu người dùng gõ lệnh hay xử lý cấu hình máy chủ. Chuyển nội dung kỹ thuật cũ nguyên vẹn sang `KY_THUAT_TEST_LOCAL_APK.md`; giữ `TEST_LOCAL_APK.md` làm trang dẫn theo đối tượng, cập nhật README mobile, không lặp hướng dẫn dài ở hai nơi.
+- **Kiểm tra:** đối chiếu nhãn thao tác với mã login/nghỉ phép/duyệt/thông báo/session hiện hành; kiểm UTF-8, liên kết tương đối và `git diff --cached --check` trên tài liệu cuối. Chỉ đổi tài liệu nên không chạy lại DB/browser/native và không nhận kết quả cũ là kiểm thử lượt này. Giới hạn: chưa quan sát một người không lập trình tự làm theo trên thiết bị thật; hướng dẫn nêu rõ cần người kỹ thuật cung cấp máy chủ/tài khoản trước.
+- **Bàn giao:** bản sao nguồn từ index tại `D:/IHRMS_Review_Exports/Mobile_20261028/user-guide/IHRMS_source_review.zip`, manifest tree/base commit/SHA-256, mở lại xác minh từng tệp; loại dữ liệu vận hành/bí mật/runtime, không phải backup dữ liệu. Commit/push main theo quyền hiện hành, SHA/remote/trạng thái chốt ngoài repo trong `user-guide/delivery.json`. APK cũ giữ nguyên; người dùng đọc tài liệu mới, nhận file/địa chỉ/tài khoản từ người phụ trách rồi làm theo. Không deploy/phát hành.
+
 ## 2026-10-28 — Tiếp tục hoàn tất: UAT nghiệp vụ APK và đối chiếu dependency
 
 - **Phạm vi:** theo yêu cầu “tiếp tục hoàn thành”, kiểm `main/fa58eea`, working tree sạch, fetch origin và ahead/behind `0/0`; đọc ba mục nhật ký mới nhất. Tiếp tục skill ihrms-project. Không đổi app/backend/model/migration hay APK; mở rộng runner native và tài liệu trong phạm vi mobile.

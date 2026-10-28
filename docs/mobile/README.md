@@ -5,6 +5,8 @@ Mã app ở `mobile/`, React Native + Expo SDK 58 + TypeScript, dùng chung back
 Phạm vi đã duyệt: nhân viên, người duyệt và Nhân sự; hồ sơ cá nhân, xem chấm công, tạo/theo dõi nghỉ phép, duyệt/từ chối và thông báo. Nhân sự dùng quyền hiện có, không được đọc đơn ngoài cây quản lý. Quản trị hồ sơ/hạn mức và nghiệp vụ ngoài MVP vẫn thực hiện trên web. Bản đầu cần mạng; không lưu hồ sơ/chấm công/đơn nghỉ vào bộ nhớ bền vững của thiết bị, không tự gửi lại POST.
 
 - [Kiểm thử cục bộ và APK](TEST_LOCAL_APK.md)
+- [Cài và dùng thử trên điện thoại — dành cho người không lập trình](HUONG_DAN_CAI_VA_DUNG_THU.md)
+- [Chuẩn bị môi trường — dành cho người kỹ thuật](KY_THUAT_TEST_LOCAL_APK.md)
 - [Tạo tài khoản và phát hành nội bộ](TAO_TAI_KHOAN_VA_PHAT_HANH.md)
 - [API và bảo mật phiên](API.md)
 - Kết quả thực tế, giới hạn và bàn giao: [nhật ký dự án](../PROJECT_WORK_LOG.md).
