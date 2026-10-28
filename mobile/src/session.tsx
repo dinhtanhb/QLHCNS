@@ -43,7 +43,9 @@ export function SessionProvider({ children }: PropsWithChildren) {
     }
   }, [forget]);
   const refreshMe = useCallback(async () => {
-    const value = await request<Me>('me/'); setMe(value);
+    const current = credentials.current;
+    const value = await request<Me>('me/');
+    if (credentials.current === current) { setMe(value); setError(''); }
   }, [request]);
 
   useEffect(() => {
@@ -57,11 +59,17 @@ export function SessionProvider({ children }: PropsWithChildren) {
           if (!saved.token || !Number.isFinite(Date.parse(saved.expires_at)) || Date.parse(saved.expires_at) <= Date.now()
               || (fixed && serverURL(fixed) !== saved.server)) { await persist(null); return; }
           saved.server = serverURL(saved.server);
+          // Retain the saved session while the server is temporarily unreachable.
+          // Foreground revalidation can then recover without another login.
+          if (alive) credentials.current = saved;
           const value = await call<Me>(saved.server, saved.token, 'me/');
           if (alive) { credentials.current = saved; setMe(value); }
         }
       } catch (err) {
-        await persist(null).catch(() => undefined);
+        if (err instanceof SyntaxError || (err instanceof ApiError && err.status === 401)) {
+          if (alive) credentials.current = null;
+          await persist(null).catch(() => undefined);
+        }
         if (alive) setError(err instanceof Error ? err.message : 'Không thể mở phiên đăng nhập.');
       } finally { if (alive) setReady(true); }
     })();
@@ -75,6 +83,16 @@ export function SessionProvider({ children }: PropsWithChildren) {
     });
     return () => subscription.remove();
   }, [refreshMe]);
+
+  // Recover a saved session after startup network failures, without requiring
+  // the user to close the app or enter their password again.
+  useEffect(() => {
+    if (!ready || me || !credentials.current) return;
+    const retry = setInterval(() => {
+      void refreshMe().catch(err => setError(err.message));
+    }, 15000);
+    return () => clearInterval(retry);
+  }, [ready, me, refreshMe]);
 
   const login = async (raw: string, username: string, password: string) => {
     setBusy(true); setError('');
