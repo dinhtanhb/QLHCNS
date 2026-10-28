@@ -53,6 +53,16 @@ Build Windows dùng compiler Hermes đúng lockfile được sao ra thư mục �
 
 Chính sách xác minh developer của Android đang thay đổi theo khu vực/thiết bị; kiểm [nguồn Android chính thức](https://developer.android.com/developer-verification) trước khi phân phối nhiều nhân viên. Việc tạo APK cục bộ không yêu cầu tài khoản store; việc cài/phân phối thực tế vẫn theo chính sách áp dụng trên thiết bị.
 
+## Hồi quy nghiệp vụ trên APK bằng emulator
+
+Sau khi khởi động Android emulator riêng và backend giả ở cổng 8789, chạy từ gốc repository:
+
+```powershell
+venv/Scripts/python.exe ops/run_mobile_android_uat.py --business --directory D:/IHRMS_Mobile_QA/run1 --apk D:/IHRMS_Mobile_Builds/qa/IHRMS-QA.apk --sdk D:/IHRMS_BuildTools/android-sdk --output D:/IHRMS_Mobile_QA/native-evidence
+```
+
+Runner chỉ chấp nhận serial `emulator-*`, xóa dữ liệu của package QA trên emulator để bắt đầu, dùng tài khoản giả trong thư mục đã xác minh. `--business` chọn ngày làm việc chưa có đơn trùng, tạo đơn bằng thao tác native, đăng xuất, đăng nhập quản lý và duyệt bằng native; đối chiếu trạng thái, lịch sử và thông báo trên đúng DB giả. Không in mật khẩu/token vào lỗi timeout. File validation gắn SHA-256 APK được cài; không thay thế thử điện thoại thật/iPhone.
+
 ## iPhone
 
 Mã dùng chung nhưng file APK chỉ dành cho Android. Kiểm iOS native bằng Xcode trên macOS hoặc bản ký qua EAS/TestFlight sau khi tổ chức có tài khoản. Không coi web export/JavaScript bundle iOS là đã build, ký hoặc UAT iPhone. Làm lại cùng danh sách luồng trên iPhone thật trước nghiệm thu.

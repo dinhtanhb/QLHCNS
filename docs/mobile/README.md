@@ -25,6 +25,8 @@ Màu app sinh từ `src/static/css/ui_tokens.css` bằng `venv/Scripts/python.ex
 
 `npm audit` hiện ghi nhận 8 mục (3 high, 5 low), liên quan các dependency CLI/config/lint trong cây Expo hiện tại (`zod`, `deepmerge` và gói phụ thuộc). Chưa dùng `audit fix --force` vì đề xuất đó hạ Expo về SDK khác và phá bộ phiên bản. Đây là giới hạn còn mở trước phát hành production; kết quả và phiên bản được ghi tại nhật ký, không coi APK QA là đã vượt cổng bảo mật phát hành.
 
+Đối chiếu nguồn chính thức ngày 28/10/2026: [Zod advisory](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5) liệt kê bản vá từ 4.6.6, trong khi CLI/lint đang yêu cầu Zod 3; [deepmerge advisory](https://github.com/advisories/GHSA-gcqx-w48m-w2h4) chưa liệt kê bản vá. Registry vẫn trả Expo 58.0.20 và deepmerge 4.3.1 là latest khi kiểm. Không ép đổi major hoặc bỏ advisory khỏi kết quả. Người bảo trì chạy `npm audit --json` trong `mobile/`, theo dõi bản vá của Expo/upstream, kiểm lại build và UAT sau khi thay lockfile. Không kết luận cảnh báo vô hại chỉ vì nằm ở bộ công cụ.
+
 ## Bật backend
 
 API bị tắt mặc định. Sau kiểm thử trên môi trường phù hợp, người vận hành đặt `MOBILE_API_ENABLED=True` trong cấu hình riêng của backend và khởi động lại theo quy trình triển khai. Không cần migration mới cho mobile; dùng session/nhân sự/nghỉ phép/thông báo hiện có. Không tự chạy `migrate` trên DB vận hành.
