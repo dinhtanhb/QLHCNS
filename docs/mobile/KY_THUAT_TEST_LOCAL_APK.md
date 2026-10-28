@@ -47,6 +47,8 @@ Build Windows dùng compiler Hermes đúng lockfile được sao ra thư mục �
 
 ## Cài lên điện thoại Android
 
+Server mặc định chỉ bind `127.0.0.1`, phục vụ kiểm trên chính PC; điện thoại qua Wi-Fi không vào được. Dùng IP Wi-Fi thực của PC với `--bind` và đúng cổng của bộ demo, ví dụ bộ demo mới dùng cổng 8790. Không chạy đồng thời hai server cùng IP/cổng. Không tự đổi mạng Public sang Private hoặc tắt tường lửa; nếu cần, IT cấu hình quyền inbound hẹp cho cổng demo, IP cục bộ và subnet thử tin cậy. Giữ server này chỉ dùng dữ liệu giả.
+
 1. Xác minh SHA-256 khớp manifest. Chuyển APK qua kênh nội bộ tin cậy tới điện thoại QA Android 7 trở lên tương thích; bản mặc định có arm64-v8a/x86_64, chưa gồm CPU 32-bit.
 2. Trên thiết bị, mở APK và cho phép ứng dụng quản lý tệp đang dùng được “cài ứng dụng không rõ nguồn gốc” nếu Android yêu cầu. Sau cài có thể tắt lại quyền này. Hoặc dùng `adb install -r <đường-dẫn>/IHRMS-QA.apk` trên thiết bị QA đã bật USB debugging.
 3. Khi dùng backend QA trên PC, cả hai phải ở cùng mạng. `127.0.0.1` trên điện thoại là chính điện thoại, không phải PC. Dừng server QA cũ rồi chạy `ops/mobile_qa.py serve ... --bind <IP-LAN-PC> --port 8789`, nhập `http://<IP-LAN-PC>:8789` vào app; chỉ cấp tường lửa cho mạng riêng nếu cần. Chỉ thực hiện với dữ liệu giả. Qua USB có thể `adb reverse tcp:8789 tcp:8789` rồi dùng `http://127.0.0.1:8789`.

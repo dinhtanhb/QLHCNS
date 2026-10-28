@@ -65,6 +65,8 @@ http://192.168.1.20:8789
 
 Máy chủ chỉ hoạt động trong Wi-Fi nội bộ có thể không truy cập được qua 4G/5G. Phần truy cập ngoài công ty cần người kỹ thuật cấu hình riêng.
 
+**Lưu ý về số cổng:** `8789` và `8790` là hai môi trường thử riêng. Phải dùng đúng cổng do người phụ trách cấp, không trộn tài khoản của bộ demo này với máy chủ của bộ khác. Với bộ demo 10 ký tự được tạo ngày 28/10, người phụ trách đang dùng cổng **8790**. IP máy tính có thể đổi khi đổi Wi-Fi hoặc khởi động lại, nên cần xác nhận lại địa chỉ.
+
 ## 4. Thử từng chức năng
 
 ### A. Xem thông tin cá nhân
@@ -134,6 +136,8 @@ Không dùng đơn đã duyệt ở bước D để thử từ chối.
 ## 6. Nếu gặp lỗi
 
 **Không kết nối được:** kiểm Wi-Fi, địa chỉ đã nhập và máy tính chạy IHRMS có còn bật không. Nếu vẫn lỗi, báo người hỗ trợ kiểm máy chủ/mạng; không tự đổi cấu hình bảo mật.
+
+Để phân biệt lỗi mạng và lỗi ứng dụng, mở Chrome trên điện thoại, nhập **cùng địa chỉ IHRMS được cấp**. Nếu trang cũng không mở, người hỗ trợ cần kiểm IP/cổng, server có cho điện thoại kết nối không và tường lửa; chưa phải lỗi mật khẩu. Cùng tên Wi-Fi vẫn có thể không kết nối giữa các máy nếu dùng mạng khách hoặc Wi-Fi có chế độ cách ly thiết bị.
 
 **Sai tài khoản/mật khẩu:** kiểm chữ hoa và khoảng trắng. Không thử liên tục nhiều lần vì tài khoản có thể tạm bị khóa. Nhờ người hỗ trợ xác nhận lại tài khoản thử.
 

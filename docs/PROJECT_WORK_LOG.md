@@ -1,5 +1,13 @@
 # Nhật ký công việc IHRMS
 
+## 2026-10-28 — Sửa kết nối LAN của server demo điện thoại
+
+- **Yêu cầu:** điện thoại cùng Wi-Fi báo không kết nối, người dùng hỏi vì sao cổng 8789/8790 và nêu IP 192.126.1.12. Đầu lượt `main/0e5a3ad`, working tree sạch, fetch/ahead-behind `0/0`, đọc ba mục nhật ký mới nhất; dùng diagnosing-bugs/ihrms-operations. Không sửa app/APK/DB/schema/chính sách tường lửa.
+- **Chẩn đoán:** `Get-NetIPAddress` xác nhận Wi-Fi PC `192.168.1.12/24`; IP người dùng ghi khác. `Get-NetTCPConnection` xác nhận hai demo cũ/mới chỉ listen loopback 127.0.0.1:8789/8790. Socket probe LAN 192.168.1.12:8790 thất bại trước đổi bind. Wi-Fi Windows đang Public; không tự đổi loại mạng hoặc firewall.
+- **Xử lý:** dừng đúng hai process của server bộ `Mobile_Demo10_20261028/qa` cổng 8790, giữ các tiến trình ngoài phạm vi; chạy lại `venv/Scripts/python.exe ops/mobile_qa.py serve --directory D:/IHRMS_Review_Exports/Mobile_Demo10_20261028/qa --bind 192.168.1.12 --port 8790`. Chỉ dùng DB/media/tài khoản giả đã tạo. Bộ mới mật khẩu 10 ký tự ở cổng 8790; cổng 8789 thuộc môi trường khác. Cập nhật hướng dẫn người dùng/kỹ thuật phân biệt cổng, loopback, địa chỉ IP thật, Chrome trên điện thoại và giới hạn mạng khách/cách ly thiết bị.
+- **Kiểm tra:** `check_lan.py` ngoài repo xác nhận TCP PASS, GET trang gốc HTTP200 và POST login rỗng HTTP400 qua LAN IP; không dùng mật khẩu/token để probe. Bằng chứng `D:/IHRMS_Review_Exports/Mobile_Demo10_20261028/lan-verification.json`. Kiểm LAN từ PC không chứng nhận điện thoại đã vào được. Nếu điện thoại vẫn không mở Chrome cùng URL, IT kiểm inbound firewall trên mạng Public với cổng/IP/subnet thử cụ thể và Wi-Fi client isolation; không tắt bảo vệ chung. Cần người dùng thử lại URL `http://192.168.1.12:8790` trên điện thoại và báo kết quả.
+- **Bàn giao:** chỉ thay tài liệu và điều chỉnh runtime QA; diff check sạch, không chạy lại build/backend/UAT do không đổi mã ứng dụng. Bản sao review index `D:/IHRMS_Review_Exports/Mobile_Demo10_20261028/lan/IHRMS_source_review.zip`, manifest tree/SHA-256 mở lại kiểm, không phải backup dữ liệu; commit/push main và remote SHA/trạng thái ghi `lan/delivery.json`. Server LAN QA được giữ chạy để người dùng thử, không deploy production.
+
 ## 2026-10-28 — Mật khẩu demo 10 ký tự và sinh lại bộ tài khoản thử
 
 - **Yêu cầu/phạm vi:** chủ dự án yêu cầu sửa code sinh tài khoản demo với mật khẩu đơn giản khoảng 10 ký tự. Đầu lượt `main/213d7a3`, working tree sạch, fetch origin thành công, ahead/behind `0/0`; đọc ba mục nhật ký mới nhất, áp dụng hướng dẫn ihrms-project. Không đổi chính sách mật khẩu, tài khoản thật, model/migration hoặc APK.
