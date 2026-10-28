@@ -14,13 +14,13 @@ BASELINE APPROVED
 
 ## Authority Level
 
-HIGHEST PRIORITY DOCUMENT
+Thiết kế nền ban đầu; yêu cầu hiện hành của chủ dự án và [AGENTS.md](../AGENTS.md) có ưu tiên cao hơn.
 
 ---
 
 # 1. PURPOSE
 
-Đây là tài liệu gốc cuối cùng của dự án.
+Đây là tài liệu thiết kế nền ban đầu của dự án. Phần hiện trạng dưới đây phân biệt mã đã có với công nghệ từng dự kiến.
 
 Tài liệu này được sử dụng để:
 
@@ -34,13 +34,20 @@ Tài liệu này được sử dụng để:
 - Khóa giao diện
 - Khóa tiêu chuẩn lập trình
 
-Nếu có mâu thuẫn giữa các tài liệu:
+Khi có mâu thuẫn, áp dụng yêu cầu hiện hành của chủ dự án và [AGENTS.md](../AGENTS.md), rồi đối chiếu hợp đồng chuyên đề và mã nguồn. Không tự triển khai một công nghệ chỉ vì được liệt kê trong baseline cũ.
 
-```text
-99_Architecture_Baseline.md
-```
+## Hiện trạng đối chiếu ngày 28/10/2026
 
-được ưu tiên cao nhất.
+- Chỉ phát triển trên `main`; mã Django trong `src/`, dependency ghim tại `requirements.txt`: Python 3.12, Django 5.2.17, `mssql-django`, Jazzmin và Waitress. Không có Django REST Framework trong dependency hiện hành.
+- Portal dùng Django Templates, CSS token/component và JavaScript; Admin dùng Jazzmin khi được cài. Các mô tả Bootstrap/AdminLTE/jQuery phía dưới thuộc thiết kế ban đầu, không phải yêu cầu thay giao diện hiện tại.
+- Đăng nhập dùng session Django với Axes/ModelBackend và `security.User`. Không có JWT/refresh token/Entra SSO đang vận hành.
+- SQL Server là đích vận hành; SQLite và SQL Server dùng cho kiểm thử cô lập. Schema thực là model/migration trong `src/apps/`; thiết kế bảng không thay thế migration. Không áp migration lên DB vận hành chỉ để kiểm tài liệu.
+- SharePoint qua Microsoft Graph khi cấu hình; Outlook mở nháp để người dùng gửi. OneDrive, Teams, SSO và gửi thư máy chủ chưa được triển khai.
+- Hoạt động dự án NGO đã có Dashboard, lịch, đề xuất/PDF, hàng chờ duyệt và Task báo cáo theo [lộ trình](NGO_Activity_Planning_MEL_Roadmap.md). Sổ ngân sách tài trợ, chứng từ/quyết toán và MEL chuyên sâu vẫn ngoài phạm vi hiện hành.
+- Máy chủ mục tiêu là Windows Server, Waitress sau reverse proxy HTTPS; dùng [runbook SIT](Server_Trial_Readiness_2026-09-27.md). Chưa có bằng chứng xác nhận triển khai/restore drill/UAT trên máy chủ đích.
+- Chuẩn giao diện hiện hành ở [UI_DESIGN_SYSTEM.md](UI_DESIGN_SYSTEM.md), phân quyền ở [10_RBAC_Permission_Matrix.md](10_RBAC_Permission_Matrix.md). Kết quả thực chạy và giới hạn chỉ ghi tại [PROJECT_WORK_LOG.md](PROJECT_WORK_LOG.md).
+
+Các mục bên dưới giữ làm nền thiết kế lịch sử; khi trùng phạm vi, phần hiện trạng trên và hợp đồng chuyên đề hiện hành được áp dụng.
 
 ---
 

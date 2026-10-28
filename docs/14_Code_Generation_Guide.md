@@ -1,5 +1,7 @@
 # CODE GENERATION GUIDE
 
+> Phạm vi áp dụng (28/10/2026): đây là hướng dẫn sinh mã ban đầu. Không dùng các yêu cầu DRF/JWT/Entra ID bên dưới để tự thêm công nghệ hoặc dựng lại skeleton hiện có. Mã hiện hành dùng Django ORM, template, session auth và RBAC phía máy chủ. Đọc [baseline hiện hành](99_Architecture_Baseline.md), [tiêu chuẩn backend](05_Backend_Standards.md) và [AGENTS.md](../AGENTS.md); chỉ sinh mã trong phạm vi chủ dự án giao.
+
 ## Project
 
 Internal Administration & Human Resource Management System (IHRMS)

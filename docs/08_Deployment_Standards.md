@@ -1,5 +1,7 @@
 # DEPLOYMENT & OPERATION STANDARDS
 
+> Áp dụng hiện tại (28/10/2026): chỉ dùng `main` theo [AGENTS.md](../AGENTS.md). SIT Windows dùng Waitress sau reverse proxy HTTPS theo [runbook](Server_Trial_Readiness_2026-09-27.md); không dùng `runserver` làm máy chủ. JWT/Entra SSO/Teams ở phần thiết kế/checklist cũ chưa được triển khai. Không coi dấu tick mẫu là kết quả kiểm tra thật; bằng chứng và giới hạn ở [PROJECT_WORK_LOG.md](PROJECT_WORK_LOG.md). Mỗi DB/môi trường phải có cấu hình và secrets riêng, xác nhận đích và backup/restore trước migration.
+
 ## Project
 
 Internal Administration & Human Resource Management System (IHRMS)
@@ -398,13 +400,9 @@ Git
 
 ```text
 main
-
-uat
-
-develop
-
-feature/*
 ```
+
+Không tạo hoặc tiếp tục nhánh khác trừ khi chủ dự án yêu cầu rõ ràng. Kiểm trạng thái cục bộ và đồng bộ `origin/main` trước lượt làm việc; giữ nguyên thay đổi chưa commit. Quy trình commit/push tại [AGENTS.md](../AGENTS.md).
 
 ---
 

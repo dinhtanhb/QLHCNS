@@ -1,5 +1,7 @@
 # API CONTRACT SPECIFICATION
 
+> Phạm vi áp dụng (28/10/2026): đây là thiết kế API dự kiến, không phải danh sách endpoint đã được triển khai hoặc chứng nhận JWT đang hoạt động. Các tuyến thật được khai báo trong `src/config/urls.py` và `urls.py` từng app; xác thực hiện hành dùng session Django. Không tạo API/DRF/JWT chỉ để khớp tài liệu nền. Đối chiếu [baseline hiện hành](99_Architecture_Baseline.md), [thiết kế bảo mật](04_Security_Design.md), mã và test trước khi tích hợp.
+
 ## Project
 
 Internal Administration & Human Resource Management System (IHRMS)

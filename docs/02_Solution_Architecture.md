@@ -2,6 +2,10 @@
 
 # SOLUTION ARCHITECTURE DOCUMENT
 
+## Phạm vi áp dụng hiện tại
+
+Đối chiếu mã ngày 28/10/2026: ứng dụng là Django modular monolith trong `src/`, portal dùng Django Templates và CSS token/component; Admin dùng Jazzmin khi có cài đặt. Đăng nhập hiện hành dùng session Django và Axes, không dùng JWT/Entra SSO. SharePoint dùng Microsoft Graph khi được cấu hình; Outlook mở bản nháp do người dùng tự gửi. OneDrive, Teams và SSO chưa được triển khai. Máy chủ SIT mục tiêu dùng Waitress sau reverse proxy HTTPS; chưa có xác nhận vận hành trên máy chủ đích. Những sơ đồ/công nghệ tích hợp phía dưới là thiết kế ban đầu, không chứng minh thành phần đã có trong mã. Xem [baseline hiện hành](99_Architecture_Baseline.md), [runbook SIT](Server_Trial_Readiness_2026-09-27.md) và [nhật ký](PROJECT_WORK_LOG.md) trước khi triển khai.
+
 ## Project
 
 Internal Administration & Human Resource Management System (IHRMS)

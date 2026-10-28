@@ -1,5 +1,7 @@
 # PROJECT CHARTER
 
+> Phạm vi đối chiếu 28/10/2026: đây là charter nền, gồm cả mục tiêu chưa triển khai. Hiện trạng công nghệ và phạm vi bổ sung đã duyệt ở [99_Architecture_Baseline.md](99_Architecture_Baseline.md); kết quả thực hiện ở [PROJECT_WORK_LOG.md](PROJECT_WORK_LOG.md). JWT/Entra SSO/Teams và OneDrive được nêu bên dưới chưa phải tính năng vận hành. Hoạt động dự án NGO hiện có phần đã triển khai theo [lộ trình](NGO_Activity_Planning_MEL_Roadmap.md). Không dùng danh sách mục tiêu làm bằng chứng nghiệm thu.
+
 ## 1. THÔNG TIN DỰ ÁN
 
 ### Tên dự án

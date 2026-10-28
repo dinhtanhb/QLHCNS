@@ -1,11 +1,11 @@
 # Hướng dẫn đưa IHRMS lên máy chủ chạy thử (SIT)
 
-Cập nhật: 27/09/2026
+Cập nhật hướng dẫn: 28/10/2026; các số liệu kiểm thử ngày 27/09 bên dưới là snapshot lịch sử.
 Phạm vi: dựng môi trường SIT nội bộ trên Windows Server, SQL Server riêng và reverse proxy HTTPS. Đây chưa phải hướng dẫn production/go-live.
 
 ## Kết luận hiện tại
 
-Mã nguồn đạt 177 test trên SQL Server test database tạm; manage.py check, makemigrations --check --dry-run và pip check đạt. Đã bổ sung STATIC_ROOT để đóng gói CSS/JS. Chưa có kết quả trên máy chủ đích, hostname/chứng chỉ, tài khoản SQL SIT, restore drill hay UAT. Có thể bắt đầu dựng SIT sau khi IT chuẩn bị các thông tin dưới đây. Không dùng DB production hoặc dữ liệu nhân sự/lương thật.
+Kết quả local/CI và migration mới hơn nằm tại [nhật ký công việc](PROJECT_WORK_LOG.md); không dùng mốc 177 test bên dưới để mô tả HEAD hiện tại. Trước khi dựng SIT phải kiểm toàn bộ kế hoạch migration, gồm `hrm.0007_effective_change_processed_at`, và trạng thái DB đích theo quy trình dự án. Chưa có kết quả xác nhận trên máy chủ đích, hostname/chứng chỉ, tài khoản SQL SIT, restore drill hay UAT. Có thể bắt đầu dựng SIT sau khi IT chuẩn bị các thông tin dưới đây. Không dùng DB production hoặc dữ liệu nhân sự/lương thật; dùng tài khoản QA riêng, không mượn phiên người dùng thật.
 
 ## Kiểm tra đã thực hiện ở máy phát triển
 

@@ -1,5 +1,7 @@
 # Yêu cầu Codex: sửa các finding review 2026-10-08
 
+> Trạng thái đối chiếu 28/10/2026: Nhóm A có mục sửa trong [nhật ký](../../PROJECT_WORK_LOG.md). Giữ yêu cầu để truy vết Nhóm B/C chưa được xác minh đóng từng mục trong lượt dọn tài liệu; xem [việc còn mở](../../Viec_Cho_Chu_Du_An_Quyet_Dinh.md). Các quyền thao tác trong bản yêu cầu gốc bên dưới chỉ áp dụng cho đợt lịch sử đó; không thay thế yêu cầu hiện hành của chủ dự án và [AGENTS.md](../../../AGENTS.md).
+
 Workspace: `D:\QLHCNS`. Chế độ **FIX**, chỉ làm trên `main`. Đọc trước: `AGENTS.md`, `docs/Huong_Dan_Review_Du_An.md`, `docs/archive/reviews/Code_Review_Report_2026-10-08.md` (nguồn của các mã F-xx bên dưới; mỗi finding có `path:line`, trigger và hướng sửa).
 
 ## Quy tắc chung

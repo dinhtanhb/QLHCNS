@@ -1,5 +1,7 @@
 # 05_Backend_Standards.md
 
+> Áp dụng hiện tại (28/10/2026): backend là Django modular monolith, ORM và session auth; dependency không có DRF/JWT. Các ví dụ serializer/repository/API/JWT bên dưới là thiết kế nền, không bắt buộc thêm tầng hoặc thư viện vào module hiện có. Giữ hợp đồng, service và quyền trong mã; dùng [baseline hiện hành](99_Architecture_Baseline.md), [ma trận quyền](10_RBAC_Permission_Matrix.md) và [AGENTS.md](../AGENTS.md) để giải quyết mâu thuẫn.
+
 # BACKEND DEVELOPMENT STANDARDS
 
 ## Project

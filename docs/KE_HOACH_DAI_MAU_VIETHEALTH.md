@@ -1,6 +1,8 @@
 # Kế hoạch đổi dải màu IHRMS theo màu chủ đạo logo VietHealth
 
-**Ngày lập:** 26/10/2026 · **Trạng thái:** chờ chủ dự án duyệt · **Nhánh:** `main`
+**Ngày lập:** 26/10/2026 · **Trạng thái:** phần đổi palette đã triển khai; P5 là tùy chọn riêng · **Nhánh:** `main`
+
+Đối chiếu ngày 28/10/2026: D1-A, D2-B, D3-A, D4-A, D5-B, D6-A đã được chốt trong [nhật ký](PROJECT_WORK_LOG.md). Mặc định hiện tại là VietHealth; Chàm Đông và Than Ấm được giữ làm dải dự phòng qua cấu hình máy chủ `UI_PALETTE`, không phải bị xóa khỏi mã. Hợp đồng hiện hành ở [UI_DESIGN_SYSTEM.md](UI_DESIGN_SYSTEM.md). Các bảng “hiện tại/đề xuất”, bước triển khai và checkbox phía dưới là kế hoạch gốc để truy vết, không phải danh sách việc phải chạy lại. Cổng hiện tại đo 660 cặp trên ba palette; các lỗi in có sẵn và giới hạn kiểm thử được ghi trong nhật ký, không coi mọi cổng đã xanh. Giữ tài liệu vì P5 tùy chọn chưa được xác nhận hoàn tất; không suy ra quyền triển khai P5 từ việc dọn tài liệu.
 **Bản xem trước trực quan:** [`outputs/palette-viethealth-20261026/index.html`](../outputs/palette-viethealth-20261026/index.html)
 
 ---

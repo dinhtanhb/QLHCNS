@@ -24,13 +24,14 @@ Hướng dẫn dựng SIT, danh sách việc IT cần chuẩn bị và checklist
 
 ## Tài liệu dự án
 
+- [Mục lục và trạng thái tài liệu](docs/README.md): phân biệt tài liệu hiện hành, kế hoạch còn mở và hồ sơ lịch sử.
 - [Cẩm nang sử dụng](docs/HUONG_DAN_SU_DUNG_IHRMS.md), [giáo án tập huấn](docs/TAP_HUAN_IHRMS.md), [kịch bản UAT](docs/UAT_Kich_Ban_Nghiem_Thu_4_Hang_Muc.md)
 - [Lộ trình Hoạt động dự án NGO](docs/NGO_Activity_Planning_MEL_Roadmap.md)
 - [Đánh giá sẵn sàng lịch sử](docs/Production_Readiness_Review_2026-09-23.md) là snapshot ngày 24/09; xem runbook SIT để biết trạng thái mới hơn
 - [Tiêu chuẩn triển khai](docs/08_Deployment_Standards.md); hướng dẫn Codex ở .agents/skills/
 - [Hướng dẫn review tổng thể hoặc thay đổi, mẫu yêu cầu và lệnh kiểm tra](docs/Huong_Dan_Review_Du_An.md); skill [ihrms-review](.agents/skills/ihrms-review/SKILL.md)
 - [Hệ thống giao diện hiện hành](docs/UI_DESIGN_SYSTEM.md), [tiêu chuẩn frontend](docs/06_Frontend_Standards.md) và [đặc tả màn hình](docs/09_UI_UX_Specification.md)
-- Báo cáo review, phê bình thiết kế, kế hoạch migration đã áp dụng và yêu cầu đã xử lý lưu tại [`docs/archive/`](docs/archive/); nhật ký công việc một nơi duy nhất là [`docs/PROJECT_WORK_LOG.md`](docs/PROJECT_WORK_LOG.md)
+- Báo cáo review và kế hoạch migration cần truy vết lưu tại [`docs/archive/`](docs/archive/). Yêu cầu đã xử lý và tài liệu tạm có thể được xóa sau đối chiếu; nhật ký công việc một nơi duy nhất là [`docs/PROJECT_WORK_LOG.md`](docs/PROJECT_WORK_LOG.md).
 
 Hoạt động dự án có dashboard, lịch, Task báo cáo, đề xuất PDF và hàng chờ duyệt. Người dùng soạn/gửi thư xin duyệt bằng Outlook trên máy họ. Ứng dụng chưa tự gửi thư qua máy chủ, chưa có sổ ngân sách/chứng từ/quyết toán và chưa triển khai SSO, Teams hay Office tự động. SharePoint cần cấu hình và kiểm tra quyền riêng cho SIT.
 
