@@ -21,6 +21,8 @@ Thời hạn tuyệt đối dùng `SESSION_COOKIE_AGE` (hiện 8 giờ), không 
 - `POST notifications/<id>/read/`: chỉ đánh dấu thông báo của bản thân.
 - `POST push-token/`: đăng ký Expo token với phiên hiện tại; trả 503 khi push chưa bật. Đăng ký trên tài khoản mới tháo địa chỉ push khỏi phiên cũ. Đăng xuất thu hồi phiên đồng thời bỏ đăng ký đó.
 
+Ứng dụng native kiểm tra quyền thông báo hiện tại khi phiên đăng nhập được khôi phục và mỗi lần trở lại foreground. Nếu quyền đã được cấp, ứng dụng lấy token Expo và đăng ký lại vào phiên hiện tại; nếu chưa cấp thì không tự bật hộp thoại. Người dùng chỉ cần chọn **Bật thông báo trên điện thoại** một lần sau khi cấp quyền; thao tác này cũng thử đăng ký ngay.
+
 POST yêu cầu `Content-Type: application/json`, không quá 16 KiB. API không dùng cookie nên các endpoint này miễn CSRF; web portal vẫn giữ CSRF hiện có. Không bật CORS rộng: QA web được phục vụ cùng origin với backend cô lập.
 
 Lỗi gồm `error` để hiển thị: 400 dữ liệu, 401 hết phiên/đăng nhập sai, 403 thiếu quyền, 404 ngoài phạm vi hoặc không tồn tại, 405 sai method, 413 quá lớn, 415 sai content type. Axes có thể trả trang khóa 403; client cũng xử lý phản hồi không phải JSON mà không hiển thị chi tiết kỹ thuật. Tất cả phản hồi API không được cache.

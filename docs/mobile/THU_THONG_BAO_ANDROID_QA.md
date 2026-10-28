@@ -9,6 +9,7 @@ Chỉ dùng dữ liệu và tài khoản demo. Ngày cấu hình: 28/10/2026. Vi
 3. Điện thoại và PC cùng Wi-Fi, cả hai có Internet. Backend thử là **http://192.168.1.12:8790**. Giữ máy tính mở trong khi thử.
 4. Mật khẩu demo nằm trong `D:\IHRMS_Review_Exports\Mobile_Demo10_20261028\qa\DEMO_ACCOUNTS.txt` trên PC. Không gửi ảnh hoặc nội dung file này vào nhóm/chat.
 5. Đăng nhập `demo-hr`. Trong tab **Tôi**, cuộn xuống dưới nút Đăng xuất, bấm **Bật thông báo trên điện thoại**, chọn **Cho phép** khi Android hỏi. Chờ dòng **Đã bật thông báo trên thiết bị này**; dòng này xác nhận đăng ký thiết bị với backend, chưa xác nhận nhận lời nhắc.
+6. Sau khi đã cho phép, APK mới tự đăng ký lại token khi mở ứng dụng và khi quay lại từ nền. Những lần sau không cần bấm nút này; nếu điện thoại chưa có quyền, ứng dụng không tự bật hộp thoại hỏi.
 
 Nếu đã từ chối quyền: mở **Cài đặt điện thoại → Ứng dụng → IHRMS QA → Thông báo** và bật quyền. Nếu lời nhắc chỉ nằm trong khay, kiểm tra mục **Cập nhật IHRMS** có cho phép âm thanh/hiện nổi và điện thoại không ở chế độ Không làm phiền. Tên mục tùy hãng máy; ứng dụng không thể tự vượt lựa chọn của bạn.
 

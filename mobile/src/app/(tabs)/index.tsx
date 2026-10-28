@@ -23,7 +23,7 @@ export default function Profile() {
       <Copy muted>Đã tính các đơn đang chờ duyệt.</Copy></Card> : null}
     {me?.can_manage_hr ? <Card><Copy title>Dành cho Nhân sự</Copy><Copy>Đợt đầu hỗ trợ theo dõi và duyệt nghỉ phép theo quyền. Quản trị hồ sơ, hạn mức và cấu hình tiếp tục thực hiện trên cổng web.</Copy></Card> : null}
     <Copy muted>Tài khoản: {me?.username}</Copy><Button label="Đăng xuất" onPress={() => setConfirm(true)} secondary busy={busy} />
-    {pushConfigured ? <Card><Copy title>Thông báo trên điện thoại</Copy><Copy muted>Chỉ hiện lời nhắc chung; mở ứng dụng để xem nội dung.</Copy>
+    {pushConfigured ? <Card><Copy title>Thông báo trên điện thoại</Copy><Copy muted>Sau khi cấp quyền, ứng dụng tự đăng ký lại khi mở hoặc trở về. Lời nhắc chỉ hiển thị chung; mở ứng dụng để xem nội dung.</Copy>
       <Button label="Bật thông báo trên điện thoại" secondary busy={pushBusy} onPress={() => {
         setPushBusy(true); setPushMessage('');
         void enablePush().then(token => request('push-token/', { token })).then(() => setPushMessage('Đã bật thông báo trên thiết bị này.'))
