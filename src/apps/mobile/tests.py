@@ -223,6 +223,7 @@ class MobileAPITests(TestCase):
             payload = json.loads(network.call_args.args[0].data)
             self.assertEqual(payload[0]['body'], 'Bạn có cập nhật mới. Mở IHRMS để xem chi tiết.')
             self.assertEqual(payload[0]['data'], {'screen': 'notifications'})
+            self.assertEqual(payload[0]['priority'], 'high')
             self.assertNotIn(self.people[3].full_name, json.dumps(payload, ensure_ascii=False))
         self.assertEqual(self.post('push-token/', {'token': 'not-a-token'}).status_code, 400)
         self.assertEqual(self.post('logout/', client=second).status_code, 200)

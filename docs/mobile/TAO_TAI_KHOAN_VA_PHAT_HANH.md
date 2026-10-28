@@ -44,7 +44,7 @@ Nếu chưa có Expo/Firebase, làm theo [hướng dẫn tạo từng bước ch
 
 Theo [Expo push setup](https://docs.expo.dev/push-notifications/push-notifications-setup/): cấu hình FCM v1 cho Android và APNs/Apple credentials cho iOS của đúng app ID; giữ service-account/key ngoài Git. Với Android thêm `google-services.json` bằng cấu hình build bí mật và `android.googleServicesFile` phù hợp trước build, không dùng file của dự án khác. Đặt EAS project ID, build lại native, bật `MOBILE_PUSH_ENABLED=True` trên backend; nếu dùng Expo enhanced push security, đặt access token chỉ trên backend. Không bật khi chưa thống nhất việc gửi token thiết bị qua nhà cung cấp push.
 
-Người dùng vào Tôi → Bật thông báo trên điện thoại để cấp quyền và đăng ký. Thử thiết bị thật đang khóa màn hình, app nền/đóng, quyền bị từ chối, token đổi, đăng xuất/chuyển tài khoản. Nội dung push chỉ là lời nhắc chung. Kiểm chứng APNs/FCM/Expo delivery và receipt trước khi xem push là đã nghiệm thu; hiện chưa có credentials để thực hiện bước này. Thông báo trong app vẫn dùng được khi push chưa bật.
+Người dùng vào Tôi → Bật thông báo trên điện thoại để cấp quyền và đăng ký. Thử thiết bị thật đang khóa màn hình, app nền/đóng, quyền bị từ chối, token đổi, đăng xuất/chuyển tài khoản. Nội dung push chỉ là lời nhắc chung. Kiểm chứng APNs/FCM/Expo delivery và receipt trước khi xem push là đã nghiệm thu. Android QA đã có project/khóa FCM; xem [cách cài và thử lời nhắc](THU_THONG_BAO_ANDROID_QA.md), không tạo lại project. iOS/APNs và kiểm giao nhận thật vẫn là các bước riêng. Thông báo trong app vẫn dùng được khi push chưa bật.
 
 ## Trước khi mở rộng khỏi nhóm pilot
 

@@ -21,7 +21,8 @@ def configure(folder):
     os.environ.update(DJANGO_SETTINGS_MODULE='config.settings', APP_ENV='test',
         DB_ENGINE='django.db.backends.sqlite3', SECRET_KEY=runtime['secret_key'],
         DEBUG='True', M365_STORAGE_ENABLED='False', ENABLE_HTTPS_ENFORCEMENT='False',
-        MOBILE_API_ENABLED='True', MOBILE_PUSH_ENABLED='False')
+        MOBILE_API_ENABLED='True', MOBILE_PUSH_ENABLED='False',
+        MOBILE_EXPO_ACCESS_TOKEN=os.environ.get('MOBILE_QA_EXPO_ACCESS_TOKEN', ''))
     sys.path.insert(0, str(root/'src'))
     import config.settings as cfg
     cfg.DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': str(folder/'synthetic.sqlite3'), 'OPTIONS': {'timeout': 30}}}
@@ -40,7 +41,11 @@ def main():
     parser.add_argument('--directory', type=Path, required=True)
     parser.add_argument('--port', type=int, default=8789)
     parser.add_argument('--bind', default='127.0.0.1', help='LAN IP only for isolated phone QA, default loopback')
+    parser.add_argument('--enable-push', action='store_true',
+        help='Opt in to real Expo delivery on this verified synthetic QA runtime only')
     args = parser.parse_args()
+    if args.enable_push and args.command != 'serve':
+        parser.error('--enable-push is only valid with serve')
     root = Path(__file__).resolve().parents[1]
     folder = args.directory.resolve()
     if folder == root or root in folder.parents:
@@ -48,6 +53,9 @@ def main():
     if args.command == 'create':
         subprocess.run([sys.executable, str(root/'ops/dashboard_demo.py'), 'create', '--directory', str(folder)], check=True)
     root = configure(folder)
+    if args.enable_push:
+        from django.conf import settings
+        settings.MOBILE_PUSH_ENABLED = True
     if args.command == 'create':
         from django.utils import timezone
         from apps.security.models import User

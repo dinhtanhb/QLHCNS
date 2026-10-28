@@ -32,6 +32,8 @@ SQL Server test dùng DB có tên ngẫu nhiên và tự dọn theo `ops/run_tes
 
 ## Build APK QA trên Windows
 
+Với project Expo/Firebase QA hiện tại, xem [lệnh build và thử push](THU_THONG_BAO_ANDROID_QA.md). Script build dùng workspace native ngoài repository; cần giữ keystore QA đã dùng tại `mobile/android/app/debug.keystore` để cài cập nhật cùng chữ ký. Nếu thiếu, script dừng để người phụ trách khôi phục khóa.
+
 Cài JDK 21 và Android SDK theo [Expo local builds](https://docs.expo.dev/guides/local-app-development/), [Android tools](https://developer.android.com/studio). SDK/NDK/build-tools theo phiên bản React Native trong lockfile; dùng Android SDK Manager để cài các gói thiếu. Bộ native được sinh bởi Expo, không sửa tay hoặc commit `mobile/android`, `mobile/ios`.
 
 ```powershell
@@ -41,7 +43,7 @@ cd D:\QLHCNS
 ./ops/build_mobile_qa_apk.ps1 -JavaHome D:/IHRMS_BuildTools/jdk -AndroidSdk D:/IHRMS_BuildTools/android-sdk -OutputDirectory D:/IHRMS_Mobile_Builds/qa -AllowLocalHttp
 ```
 
-Đầu ra `IHRMS-QA.apk` và `apk-manifest.json` có SHA-256, commit nền và trạng thái nguồn. APK release bundle độc lập, không cần Metro/Expo Go hay Google Play để chạy. Đây là **bản QA**, package `vn.ihrms.internal.qa`, dùng khóa debug do native template sinh, không dùng làm bản production. Bản ký chính thức dùng định danh/khóa thuộc tổ chức theo hướng dẫn phát hành. Xem [hướng dẫn APK của Expo](https://docs.expo.dev/build-reference/apk/).
+Đầu ra `IHRMS-QA.apk` và `apk-manifest.json` có SHA-256, commit nền và trạng thái nguồn. APK release bundle độc lập, không cần Metro/Expo Go hay Google Play để chạy. Đây là **bản QA**, package `vn.ihrms.internal.qa`, giữ khóa debug đã dùng cho bản QA cũ, không dùng làm bản production. Bản ký chính thức dùng định danh/khóa thuộc tổ chức theo hướng dẫn phát hành. Xem [hướng dẫn APK của Expo](https://docs.expo.dev/build-reference/apk/).
 
 Build Windows dùng compiler Hermes đúng lockfile được sao ra thư mục đầu ra, kiểm SHA-256 và phép thử ghi bytecode, rồi đặt `REACT_NATIVE_OVERRIDE_HERMES_DIR` chỉ trong tiến trình build. Máy này tái hiện lỗi ghi file khi chạy binary từ `node_modules`, trong khi cùng binary bên ngoài ghi được; không thay ACL/tắt bảo vệ hệ thống. Plugin CMake giới hạn đường dẫn object ở 240 ký tự để tránh giới hạn Windows. Khi tự export native bundles trên Windows, có thể chạy `./ops/prepare_mobile_hermes.ps1 -Directory D:/IHRMS_BuildTools/hermes` trong cùng cửa sổ PowerShell trước lệnh Expo.
 

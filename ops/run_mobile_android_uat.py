@@ -18,6 +18,8 @@ def main():
     parser.add_argument('--sdk', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--serial', default='emulator-5556')
+    parser.add_argument('--server', default='http://127.0.0.1:8789', help='Synthetic QA backend used by this APK')
+    parser.add_argument('--fixed-api', action='store_true', help='APK bundles its backend URL and has no server input')
     parser.add_argument('--business', action='store_true', help='Also submit and approve leave through native controls and verify synthetic DB')
     args = parser.parse_args()
     if not args.serial.startswith('emulator-'):
@@ -106,9 +108,11 @@ def main():
     run('shell', 'monkey', '-p', package, '1')
     tree = wait_text('Đăng nhập')
     editors = [n for n in tree.iter('node') if n.get('class') == 'android.widget.EditText']
-    if len(editors) != 3:
-        raise RuntimeError('Expected QA server, username and password controls')
-    for index, value in enumerate(('http://127.0.0.1:8789', 'demo-employee', password)):
+    expected = 2 if args.fixed_api else 3
+    if len(editors) != expected:
+        raise RuntimeError('Unexpected number of QA login controls')
+    values = ('demo-employee', password) if args.fixed_api else (args.server, 'demo-employee', password)
+    for index, value in enumerate(values):
         tree = xml(); editors = [n for n in tree.iter('node') if n.get('class') == 'android.widget.EditText']
         enter(editors[index], value)
         run('shell', 'input', 'keyevent', '4')
@@ -137,7 +141,8 @@ def main():
         # Reset only the emulator QA package, avoiding stale server/user fields.
         run('shell', 'am', 'force-stop', package); run('shell', 'pm', 'clear', package)
         run('shell', 'monkey', '-p', package, '1'); wait_text('Đăng nhập')
-        for index, value in enumerate(('http://127.0.0.1:8789', 'demo-manager', password)):
+        values = ('demo-manager', password) if args.fixed_api else (args.server, 'demo-manager', password)
+        for index, value in enumerate(values):
             editors = [n for n in xml().iter('node') if n.get('class') == 'android.widget.EditText']
             enter(editors[index], value); run('shell', 'input', 'keyevent', '4')
         tap('Đăng nhập'); wait_text('Hồ sơ của tôi'); tap('Duyệt đơn')
@@ -160,6 +165,7 @@ def main():
         raise RuntimeError('Native fatal error present; inspect isolated runtime evidence')
     checks.append('No fatal Android/React Native exception')
     result = {'synthetic_only': True, 'package': package, 'serial': args.serial,
+        'backend': args.server, 'fixed_api': args.fixed_api,
         'android_api': run('shell', 'getprop', 'ro.build.version.sdk').decode().strip(),
         'apk_sha256': hashlib.sha256(args.apk.read_bytes()).hexdigest(), 'checks': checks,
         'count': len(checks), 'business_flow': args.business, 'physical_device_tested': False}

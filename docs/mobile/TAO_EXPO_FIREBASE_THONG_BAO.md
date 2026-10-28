@@ -2,6 +2,8 @@
 
 **Dành cho người chưa có tài khoản, thao tác bằng trình duyệt trên máy tính.** Làm trước cho bản **IHRMS QA** trên Android. Chưa cần đăng ký Google Play hoặc Apple Developer để thực hiện phần Android này.
 
+Project QA hiện đã được tạo: `@viethealth.org.vn/ihrms`, ID `53634c3e-75ad-4a4c-895c-28e298b63256`, Firebase `ihrms-qa`. Với dự án này, không tạo lại; dùng [hướng dẫn cài và thử thông báo QA](THU_THONG_BAO_ANDROID_QA.md).
+
 Sau khi làm xong, người kỹ thuật vẫn cần cấu hình và tạo **APK mới**. Chỉ tạo tài khoản không làm APK đang cài tự có thông báo.
 
 ## Chuẩn bị
@@ -25,7 +27,7 @@ Không gửi mật khẩu, mã xác minh hoặc khóa dịch vụ trong chat. N�
 ## Bước 2 — Tạo dự án Expo cho bản QA
 
 1. Trong dashboard, chuyển sang đúng tổ chức ở bước 1.
-2. Nếu giao diện có nút tạo project, chọn tạo project mới, tên **IHRMS QA**, slug **ihrms-internal** nếu tên đó còn dùng được trong tổ chức.
+2. Chỉ khi chưa có project, nếu giao diện có nút tạo project, chọn tạo project mới, tên **IHRMS QA**, slug **ihrms** nếu tên đó còn dùng được trong tổ chức.
 3. Mở **Project settings → General** của project, tìm **Project ID** và ghi lại. Đây là chuỗi định danh project, không phải mật khẩu hay access token.
 
 Nếu giao diện không có cách tạo hoặc không thấy Project ID, **dừng tại đây và báo đã tạo xong tổ chức**. Người kỹ thuật có thể liên kết project bằng EAS trên máy; bạn không cần tự tìm lệnh hoặc tải mã nguồn lên Expo.

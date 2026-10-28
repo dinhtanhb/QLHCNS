@@ -9,6 +9,7 @@ Phạm vi đã duyệt: nhân viên, người duyệt và Nhân sự; hồ sơ c
 - [Chuẩn bị môi trường — dành cho người kỹ thuật](KY_THUAT_TEST_LOCAL_APK.md)
 - [Tạo tài khoản và phát hành nội bộ](TAO_TAI_KHOAN_VA_PHAT_HANH.md)
 - [Tạo Expo và Firebase để nhận thông báo Android — từng bước trên trình duyệt](TAO_EXPO_FIREBASE_THONG_BAO.md)
+- [Cài APK QA mới và thử lời nhắc Android](THU_THONG_BAO_ANDROID_QA.md)
 - [API và bảo mật phiên](API.md)
 - Kết quả thực tế, giới hạn và bàn giao: [nhật ký dự án](../PROJECT_WORK_LOG.md).
 
@@ -38,4 +39,4 @@ Truy cập ngoài công ty cần tên miền HTTPS thật, chứng chỉ hợp l
 
 ## Thông báo điện thoại
 
-Thông báo trong app hoạt động qua API. Push là tích hợp tùy chọn đã có mã nhưng mặc định tắt, chưa thể chứng nhận giao nhận thật khi tổ chức chưa có Expo project/FCM/APNs. Khi bật, bên ngoài IHRMS chỉ nhận token thiết bị và lời nhắc chung, không có tên nhân viên, lý do nghỉ hoặc trạng thái đơn. Người dùng chủ động bật quyền trong màn hình Tôi sau khi cấu hình project. Xem hướng dẫn phát hành để hoàn tất và thử trên thiết bị thật.
+Thông báo trong app hoạt động qua API. Push mặc định tắt trên backend; project Expo/Firebase Android QA đã được chuẩn bị. Việc nhận trên điện thoại thật cần kiểm riêng theo [hướng dẫn thử push QA](THU_THONG_BAO_ANDROID_QA.md). Khi bật, bên ngoài IHRMS chỉ nhận token thiết bị và lời nhắc chung, không có tên nhân viên, lý do nghỉ hoặc trạng thái đơn. Người dùng chủ động bật quyền trong màn hình Tôi sau khi cấu hình project. iOS còn cần APNs và bản ký riêng.

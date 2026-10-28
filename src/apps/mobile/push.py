@@ -61,7 +61,8 @@ def send_generic_push(employee_ids):
         tokens.add(token)
     messages = [{'to': token, 'title': 'IHRMS',
         'body': 'Bạn có cập nhật mới. Mở IHRMS để xem chi tiết.',
-        'data': {'screen': 'notifications'}, 'sound': 'default', 'channelId': 'ihrms-updates'} for token in sorted(tokens)]
+        'data': {'screen': 'notifications'}, 'sound': 'default', 'channelId': 'ihrms-updates',
+        'priority': 'high'} for token in sorted(tokens)]
     for start in range(0, len(messages), 100):
         headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
         if settings.MOBILE_EXPO_ACCESS_TOKEN:

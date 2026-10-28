@@ -54,6 +54,7 @@ graphify-out/
 /.mcp.json
 *.swp
 node_modules/
+/mobile/.cxx/
 # Cấu hình và checkpoint riêng của công cụ; không phải tài liệu dự án.
 /.qoder/settings.local.json
 /.qoder/repowiki/en/meta/repowiki-metadata.json

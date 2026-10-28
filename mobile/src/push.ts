@@ -5,12 +5,22 @@ import { AndroidImportance } from 'expo-notifications';
 
 export const pushConfigured = Platform.OS !== 'web' && Boolean(Constants.expoConfig?.extra?.eas?.projectId);
 
+// Keep foreground presentation explicit instead of relying on SDK defaults.
+if (pushConfigured) {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowBanner: true, shouldShowList: true,
+      shouldPlaySound: true, shouldSetBadge: false,
+    }),
+  });
+}
+
 export async function enablePush() {
   const projectId = Constants.expoConfig?.extra?.eas?.projectId as string | undefined;
   if (!projectId || Platform.OS === 'web') throw new Error('Thông báo điện thoại chưa được cấu hình.');
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('ihrms-updates', {
-      name: 'Cập nhật IHRMS', importance: AndroidImportance.DEFAULT,
+      name: 'Cập nhật IHRMS', importance: AndroidImportance.HIGH, sound: 'default',
     });
   }
   let permission = await Notifications.getPermissionsAsync();
