@@ -57,6 +57,32 @@ jobs:
       - run: npm ci
       - run: npm audit --audit-level=low
       - run: npm run build:css
+  mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          submodules: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - name: Verify mobile tokens against approved web source
+        run: python ../ops/sync_mobile_tokens.py --check
+      - name: Bundle shared screens for Android, iOS and browser QA
+        run: npx expo export --platform all
   backup-command-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 5

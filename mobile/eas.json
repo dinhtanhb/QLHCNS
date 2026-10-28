@@ -1,0 +1,15 @@
+{
+  "cli": { "version": ">=16.0.0", "appVersionSource": "local" },
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "android": { "buildType": "apk" },
+      "env": { "MOBILE_VARIANT": "qa" }
+    },
+    "production": {
+      "env": { "MOBILE_VARIANT": "production" },
+      "android": { "buildType": "app-bundle" }
+    }
+  },
+  "submit": { "production": {} }
+}

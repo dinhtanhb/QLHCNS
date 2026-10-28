@@ -4,6 +4,8 @@
 
 ## Phạm vi áp dụng hiện tại
 
+Mobile bổ sung API JSON opt-in `/api/mobile/v1/`, dùng session Django riêng qua bearer, Axes và quyền/dữ liệu hiện hành; không phải JWT. Phạm vi, thời hạn, lưu phiên native và push tùy chọn được mô tả tại [API mobile](mobile/API.md). Web vẫn dùng cookie/CSRF như trước.
+
 Đối chiếu mã ngày 28/10/2026: đăng nhập dùng session Django, backend Axes và `ModelBackend`; quyền nghiệp vụ được kiểm phía máy chủ trong `apps/security/permissions.py` và bộ lọc dữ liệu trong `apps/security/data_access.py`. JWT, refresh token, Entra SSO và thông báo Teams bên dưới là thiết kế dự kiến, chưa phải chức năng đang hoạt động. Áp dụng [ma trận quyền hiện hành](10_RBAC_Permission_Matrix.md), [hướng dẫn review](Huong_Dan_Review_Du_An.md) và quy tắc tài khoản QA trong [AGENTS.md](../AGENTS.md). Không dùng quyền kiểm thử để mượn danh tính hoặc phiên người dùng thật. Các biện pháp cấu hình máy chủ phải được kiểm trên đúng đích theo [checklist go-live](Checklist_Go_Live_IHRMS.md); tài liệu thiết kế không thay cho bằng chứng kiểm thử.
 
 ## Project

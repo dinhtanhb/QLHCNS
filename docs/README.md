@@ -8,6 +8,7 @@ Mục lục đối chiếu ngày 28/10/2026. Quy tắc làm việc tại [AGENTS
 - [Việc còn mở cần chủ dự án quyết định](Viec_Cho_Chu_Du_An_Quyet_Dinh.md): phần chưa xác nhận đóng; không tự suy ra quyền triển khai.
 - [Hướng dẫn review](Huong_Dan_Review_Du_An.md): FULL/CHANGES và REVIEW/FIX.
 - [Hệ thống giao diện hiện hành](UI_DESIGN_SYSTEM.md): ưu tiên các quyết định mới hơn khi trùng phạm vi tài liệu UI cũ.
+- [Ứng dụng mobile nội bộ](mobile/README.md): API, kiểm thử cục bộ/APK Android và hướng dẫn tài khoản/phát hành Android/iOS.
 
 ## Đặc tả và tiêu chuẩn nền
 

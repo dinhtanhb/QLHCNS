@@ -1062,3 +1062,6 @@ Ready For:
 ✅ Deployment
 
 ✅ Production Release
+# Bổ sung mobile nội bộ
+
+App React Native/Expo trong `mobile/` dùng backend/database IHRMS hiện có qua API JSON opt-in `/api/mobile/v1/`. Lệnh nghỉ phép được dùng chung với web trong `apps.leave.services`; native không dùng WebView và không có database nghiệp vụ riêng. Xem [phạm vi/API/kiểm thử/phát hành mobile](mobile/README.md). JWT/SSO được nhắc trong baseline lịch sử bên dưới vẫn không phải cơ chế xác thực mobile này. Kết quả nghiệm thu và giới hạn theo [nhật ký](PROJECT_WORK_LOG.md).

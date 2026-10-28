@@ -10,6 +10,7 @@ def block_raw_media(request, name):
     raise Http404
 
 urlpatterns = [
+    path('api/mobile/v1/', include('apps.mobile.urls')),
     path('private-files/<path:name>', private_file, name='private_file'),
     path('media/<path:name>', block_raw_media),
     path("", RedirectView.as_view(url="/portal/", permanent=False)),

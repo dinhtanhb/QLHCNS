@@ -1,5 +1,5 @@
 import datetime
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import models, transaction
 from django.views.decorators.http import require_POST
 from apps.security.permissions import has_permission
@@ -7,7 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from apps.attendance.models import Attendance
-from apps.leave.models import LeaveApproval, LeaveRequest, LeaveType
+from apps.leave.models import LeaveRequest, LeaveType
+from apps.leave.services import decide_leave, leave_approvers_for, submit_leave
 from apps.notification.services import notify, notify_with_email_draft
 from decimal import Decimal
 import calendar as calendar_module
@@ -34,17 +35,8 @@ def _can_approve(request):
 
 
 def _leave_approvers_for(employee):
-    """Những nhân viên có quyền duyệt đơn nghỉ phép của `employee` (HR/Director toàn Trung tâm + Trưởng phòng của họ)."""
-    ancestors, seen = [], {employee.pk}
-    current = employee.manager
-    while current and not current.is_deleted and current.pk not in seen:
-        ancestors.append(current.pk)
-        seen.add(current.pk)
-        current = current.manager
-    return Employee.objects.filter(pk__in=ancestors).filter(
-        models.Q(user_account__role__role_code__in=["HR_MANAGER", "DEPT_MANAGER", "DIRECTOR"])
-        | models.Q(user_account__is_superuser=True)
-    ).distinct()
+    return leave_approvers_for(employee)
+
 
 
 def _approvable_leave_requests(request):
@@ -102,26 +94,8 @@ def leave_create(request):
         to_date = request.POST.get("to_date")
         reason = request.POST.get("reason", "")
         try:
-            with transaction.atomic():
-                # Serialize submissions for one employee, including the case where a
-                # LeaveBalance row has not been created yet.
-                employee = Employee.objects.select_for_update().get(pk=employee.pk)
-                leave_request = LeaveRequest(
-                    employee=employee,
-                    leave_type_id=leave_type_id,
-                    from_date=from_date,
-                    to_date=to_date,
-                    reason=reason,
-                    created_by=request.user,
-                )
-                leave_request.full_clean()
-                leave_request.save()
-                for approver in _leave_approvers_for(employee):
-                    notify(
-                        approver, "leave", "Có đơn nghỉ phép chờ duyệt",
-                        f"{employee.full_name} xin nghỉ {leave_request.from_date} - {leave_request.to_date}.",
-                        link="/portal/leave/approvals/", created_by=request.user,
-                    )
+            submit_leave(request.user, leave_type=leave_type_id,
+                from_date=from_date, to_date=to_date, reason=reason)
             messages.success(request, "Đã gửi đơn xin nghỉ phép, chờ phê duyệt.")
             return redirect("portal:leave_list")
         except Exception as e:
@@ -163,50 +137,12 @@ def leave_approve(request, pk):
         messages.error(request, "Tài khoản của anh/chị chưa gắn hồ sơ nhân viên, không thể duyệt.")
         return redirect("portal:leave_approval_list")
 
-    # I12 (đã sửa): bọc transaction.atomic() + select_for_update() ngay trên chính đơn nghỉ
-    # đang duyệt — trước đây get_object_or_404 lấy đơn từ _approvable_leave_requests() (filter
-    # status="Pending") KHÔNG khóa dòng, nên 2 request duyệt gửi gần như đồng thời đều có thể
-    # đọc được status="Pending" trước khi bên kia kịp lưu → tạo 2 dòng LeaveApproval trùng cho
-    # cùng 1 đơn, status cuối cùng phụ thuộc thứ tự save (race condition).
-    with transaction.atomic():
-        leave_request = get_object_or_404(
-            _approvable_leave_requests(request).select_for_update(), pk=pk
-        )
-
-        # I2 (đã sửa): trước đây không có bước nào chặn người duyệt tự duyệt đơn nghỉ của
-        # chính mình — Trưởng phòng (DEPT_MANAGER) vốn nằm trong phạm vi _approvable_leave_requests
-        # của chính phòng mình nên tự duyệt được đơn của bản thân. HR_MANAGER/DIRECTOR (có quyền
-        # approve_leave_all_departments) vẫn được duyệt đơn của mình vì không còn ai cấp trên hơn
-        # để duyệt thay — chỉ chặn khi người duyệt là DEPT_MANAGER duyệt đơn của chính mình.
-        if leave_request.employee_id == approver.pk and _role_code(request) == "DEPT_MANAGER":
-            messages.error(request, "Anh/chị không thể tự duyệt đơn nghỉ phép của chính mình.")
-            return redirect("portal:leave_approval_list")
-
-        leave_request.status = decision
-        leave_request.modified_by = request.user
-        leave_request.save()
-        LeaveApproval.objects.create(
-            leave_request=leave_request,
-            approver=approver,
-            decision=decision,
-            created_by=request.user,
-        )
-        label = "Đã duyệt" if decision == "Approved" else "Đã từ chối"
-        notify_with_email_draft(
-            leave_request.employee,
-            "leave",
-            f"Đơn nghỉ phép {label.lower()}",
-            f"Đơn nghỉ {leave_request.from_date} - {leave_request.to_date} của bạn {label.lower()}.",
-            link="/portal/leave/",
-            email_subject="IHRMS: Có cập nhật về đơn nghỉ phép của bạn",
-            email_body=(
-                "Anh/chị có cập nhật mới về yêu cầu nghỉ phép trong IHRMS. "
-                "Vui lòng đăng nhập cổng nhân viên để xem trạng thái và chi tiết."
-            ),
-            created_by=request.user,
-            idempotency_key=f"leave-decision:{leave_request.pk}:{decision}",
-        )
+    try:
+        decide_leave(request.user, pk, decision)
+    except PermissionDenied as error:
+        messages.error(request, str(error))
     return redirect("portal:leave_approval_list")
+
 
 
 def _leave_days_in_month(employee, code, year, month):

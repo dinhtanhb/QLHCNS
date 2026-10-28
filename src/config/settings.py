@@ -96,6 +96,9 @@ X_FRAME_OPTIONS = "DENY"  # chặn nhúng trang vào iframe từ site khác (ch�
 SESSION_COOKIE_AGE = 8 * 60 * 60
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_IDLE_TIMEOUT = int(os.getenv('SESSION_IDLE_TIMEOUT', '1800'))
+MOBILE_API_ENABLED = env_flag('MOBILE_API_ENABLED')
+MOBILE_PUSH_ENABLED = env_flag('MOBILE_PUSH_ENABLED')
+MOBILE_EXPO_ACCESS_TOKEN = os.getenv('MOBILE_EXPO_ACCESS_TOKEN', '')
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SAMESITE = 'Lax'
@@ -146,6 +149,7 @@ INSTALLED_APPS = (['jazzmin'] if HAS_JAZZMIN else []) + [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'apps.mobile.middleware.MobileSessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

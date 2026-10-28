@@ -1,0 +1,80 @@
+{
+  "viethealth": {
+    "light": {
+      "bg": "#edf2ee",
+      "surface": "#ffffff",
+      "text": "#101828",
+      "muted": "#475467",
+      "brand": "#1f7a3d",
+      "onBrand": "#ffffff",
+      "border": "#667085",
+      "cardBorder": "#dce4de",
+      "danger": "#ce181f",
+      "dangerBg": "#fef3f2"
+    },
+    "dark": {
+      "bg": "#08120d",
+      "surface": "#111a14",
+      "text": "#eef5f0",
+      "muted": "#a3b5a9",
+      "brand": "#6ee7a0",
+      "onBrand": "#0b140f",
+      "border": "#7c8f82",
+      "cardBorder": "#26382c",
+      "danger": "#fca5a5",
+      "dangerBg": "#2b1010"
+    }
+  },
+  "chamdong": {
+    "light": {
+      "bg": "#e7ecf4",
+      "surface": "#ffffff",
+      "text": "#101828",
+      "muted": "#475467",
+      "brand": "#3a4fd0",
+      "onBrand": "#ffffff",
+      "border": "#667085",
+      "cardBorder": "#dfe4ee",
+      "danger": "#b42318",
+      "dangerBg": "#fef3f2"
+    },
+    "dark": {
+      "bg": "#080c18",
+      "surface": "#131a2e",
+      "text": "#eef2ff",
+      "muted": "#a5b0c9",
+      "brand": "#93a7ff",
+      "onBrand": "#0b1020",
+      "border": "#7d8ab0",
+      "cardBorder": "#2a3552",
+      "danger": "#fca5a5",
+      "dangerBg": "#2b1010"
+    }
+  },
+  "thanam": {
+    "light": {
+      "bg": "#efebe3",
+      "surface": "#ffffff",
+      "text": "#1c1917",
+      "muted": "#57534e",
+      "brand": "#9a4a1a",
+      "onBrand": "#ffffff",
+      "border": "#78716c",
+      "cardBorder": "#e5dfd6",
+      "danger": "#b42318",
+      "dangerBg": "#fef2f2"
+    },
+    "dark": {
+      "bg": "#0e0c0a",
+      "surface": "#1c1917",
+      "text": "#f5f1ec",
+      "muted": "#b5aca2",
+      "brand": "#e9a97f",
+      "onBrand": "#1c1917",
+      "border": "#8c837a",
+      "cardBorder": "#332e2a",
+      "danger": "#fca5a5",
+      "dangerBg": "#2b1010"
+    }
+  }
+}

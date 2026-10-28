@@ -28,6 +28,7 @@ def main():
         DEBUG='False',
         M365_STORAGE_ENABLED='False',
         ENABLE_HTTPS_ENFORCEMENT='False',
+        MOBILE_PUSH_ENABLED='False',  # Never deliver external push from isolated regression runs.
     )
     if args.backend == 'sqlite':
         os.environ['DB_ENGINE'] = 'django.db.backends.sqlite3'
