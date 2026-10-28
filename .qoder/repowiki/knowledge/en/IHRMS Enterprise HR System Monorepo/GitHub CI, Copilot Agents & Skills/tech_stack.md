@@ -1,1 +1,0 @@
-GitHub Actions (checkout@v5, setup-python@v6, setup-node@v6) running Python 3.12 and Node 22; SQL Server 2022 via `mcr.microsoft.com/mssql/server:2022-latest` container with ODBC Driver 18; dependency auditing via `pip-audit==2.9.0` and `npm audit`.

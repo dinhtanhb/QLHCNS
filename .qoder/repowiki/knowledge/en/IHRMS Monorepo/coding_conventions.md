@@ -1,0 +1,5 @@
+- All development happens on the single `main` branch; feature branches are not created unless explicitly requested by the project owner.
+- Every substantive change updates the single changelog at `docs/PROJECT_WORK_LOG.md` rather than scattering notes across READMEs or tickets.
+- Secrets, `.env`, real database dumps, media/uploads, and runtime logs are excluded from Git (enforced by `.gitignore`).
+- Browser-based business-flow verification uses dedicated QA accounts on isolated DB/media, never production credentials or borrowed sessions.
+- Migration/model changes are committed separately from business logic and validated with `sqlmigrate` against both SQLite and a temporary SQL Server config before deployment.

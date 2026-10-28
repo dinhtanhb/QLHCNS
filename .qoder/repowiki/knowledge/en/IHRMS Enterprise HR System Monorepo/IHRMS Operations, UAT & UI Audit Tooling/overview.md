@@ -1,1 +1,0 @@
-Django/Playwright-based operational scripts for running isolated tests, browser UAT suites, UI design audits, SQL Server backup/restore automation, and QA data seeding against the IHRMS application.

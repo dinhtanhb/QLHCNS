@@ -54,6 +54,11 @@ graphify-out/
 /.mcp.json
 *.swp
 node_modules/
+# Cấu hình và checkpoint riêng của công cụ; không phải tài liệu dự án.
+/.qoder/settings.local.json
+/.qoder/repowiki/en/meta/repowiki-metadata.json
+# Ảnh thử nghiệm cũ đã bàn giao ngoài repo tại IHRMS_Review_Exports.
+/outputs/plan-b4b-20261023/
 
 # --- Windows / macOS ---
 Thumbs.db

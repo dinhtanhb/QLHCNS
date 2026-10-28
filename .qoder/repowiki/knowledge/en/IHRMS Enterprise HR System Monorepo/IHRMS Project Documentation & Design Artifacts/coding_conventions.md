@@ -1,5 +1,0 @@
-- Design documents follow a numeric prefix convention (00_Project_Charter through 16_Django_Module_Blueprint) so their reading order reflects the project lifecycle from charter to implementation blueprint.
-- The top-level `99_Architecture_Baseline.md` serves as the single source of truth and is explicitly cited as the conflict-resolution authority over all other docs.
-- Screenshot assets use a uniform naming scheme `<page>_<width>x<height>_<theme>.png` (or `<width>px_<theme>.png`) covering light/dark variants and multiple breakpoints.
-- HR template files under `templates/hcns/` are grouped by business domain folders named with leading numbers (01_NhanSu, 02_HopDong_QuyetDinh, etc.) and prefixed with `VH_` or `TOR -` to indicate document type.
-- Working artifacts such as code review reports, UAT scripts, and migration plans are named with an ISO-style date stamp (e.g. `Code_Review_Report_2026-10-08.md`, `Ke_Hoach_UAT_May_Chu_Cong_Ty_2026-10-16.md`) for chronological traceability.

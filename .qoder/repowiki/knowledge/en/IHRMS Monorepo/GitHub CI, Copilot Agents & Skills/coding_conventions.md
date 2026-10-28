@@ -1,0 +1,4 @@
+- CI jobs pin runner images (`ubuntu-latest` or `ubuntu-22.04`), set explicit `timeout-minutes`, and disable submodules with `persist-credentials: false`.
+- Django settings are injected through env vars (`DJANGO_SETTINGS_MODULE`, `DB_ENGINE`, `DEBUG`, `M365_STORAGE_ENABLED`, `ENABLE_HTTPS_ENFORCEMENT`) rather than secrets or config files in the workflow.
+- Test execution goes through the shared `ops/run_tests.py` entry point with a `--backend` flag instead of calling pytest directly from the workflow.
+- Copilot assets follow a flat convention: one Markdown file per role (`*.agent.md`, `*.instructions.md`, `SKILL.md`) with no nested code.

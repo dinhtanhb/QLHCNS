@@ -1,6 +1,0 @@
-- Each CLI script defines a `main()` function, parses arguments with `argparse.ArgumentParser(description=__doc__)`, and exits via `raise SystemExit(main())` at module bottom.
-- Scripts bootstrap Django by setting `DJANGO_SETTINGS_MODULE='config.settings'` and `APP_ENV='test'`, inserting `root/src` into `sys.path`, then calling `django.setup()` before importing any `apps.*` models.
-- Long-running operations create a disposable directory under `tempfile.mkdtemp(prefix='ihrms-*')` for screenshots/media/logs and write a JSON summary report there before cleanup.
-- Database access is restricted to disposable targets: SQL Server names must match `test_ihrms_*` / `*_uat_*` patterns and the script refuses to operate on the configured application database.
-- External secrets (backup paths, credentials, demo accounts) are required as absolute paths outside the repository root and validated before any destructive operation.
-- UI assertions use a local helper `check(condition, label)` that records the label in a `report['checks']` list and raises `AssertionError` on failure, so every assertion is both a gate and a logged result.

@@ -1,1 +1,0 @@
-Claude Code / Agents.md skill definitions that encode the IHRMS project's end-to-end engineering flows — from idea through spec, tickets, implementation, review, and retro — as reusable agent prompts.

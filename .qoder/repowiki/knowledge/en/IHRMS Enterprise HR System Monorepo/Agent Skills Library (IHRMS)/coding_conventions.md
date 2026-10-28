@@ -1,5 +1,0 @@
-- Each skill is a directory containing a single `SKILL.md` with YAML frontmatter declaring `name`, `description`, and optional model-invocation flags.
-- Cross-skill orchestration uses slash-prefixed invocations (`/skill-name`) so skills call siblings as named commands rather than importing shared code.
-- Stateful skills persist context in repository artifacts (`GLOSSARY.md`, ADRs, `.scratch/<feature>/issues/`, prototype branches) instead of in-memory state, making sessions portable across windows.
-- The two skill trees under `.agents/skills/` and `.claude/skills/` are kept in sync, duplicating each skill's `SKILL.md` for both the agents framework and Claude Code.
-- Skills distinguish between model-invoked (agent-triggered) and human-invoked flows, marking the latter with `disable-model-invocation: true` where appropriate.

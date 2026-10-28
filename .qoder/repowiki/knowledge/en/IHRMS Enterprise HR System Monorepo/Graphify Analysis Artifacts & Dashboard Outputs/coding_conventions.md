@@ -1,2 +1,0 @@
-- Graphify stores each analyzed file as a separate JSON file under `cache/ast/<version>/` named after the file's content hash, with metadata indexed by `cache/stat-index.json`.
-- The top-level `manifest.json` uses source-file paths as keys and pairs each entry with identical-length `ast_hash` and `semantic_hash` values, plus `mtime` and `seen` timestamps.

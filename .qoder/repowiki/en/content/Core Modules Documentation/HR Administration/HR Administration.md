@@ -18,7 +18,23 @@
 - [layouts.py](file://src/apps/document/hcns/layouts.py)
 - [services.py](file://src/apps/lifecycle/services.py)
 - [send_lifecycle_reminders.py](file://src/apps/lifecycle/management/commands/send_lifecycle_reminders.py)
+- [common.py](file://src/apps/portal/views/common.py)
+- [hr.py](file://src/apps/portal/views/hr.py)
+- [hr_contract_list.html](file://src/apps/portal/templates/portal/hr_contract_list.html)
+- [hr_contract_form.html](file://src/apps/portal/templates/portal/hr_contract_form.html)
+- [hr_employee_list.html](file://src/apps/portal/templates/portal/hr_employee_list.html)
+- [status_tabs.html](file://src/templates/ui/status_tabs.html)
+- [shared_components.css](file://src/static/css/shared_components.css)
+- [hr_ui.css](file://src/static/css/hr_ui.css)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Updated Employee List View section to reflect enhanced contract type information using Subqueries
+- Added Status Tabs Implementation section documenting the new shared status tabs component
+- Updated Contract Management Forms section to document two-column layout with contextual rail
+- Enhanced Performance Considerations section with Subquery optimization details
+- Added new UI components and CSS architecture documentation for status tabs and form layouts
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -26,15 +42,21 @@
 3. [Core Components](#core-components)
 4. [Architecture Overview](#architecture-overview)
 5. [Detailed Component Analysis](#detailed-component-analysis)
-6. [Dependency Analysis](#dependency-analysis)
-7. [Performance Considerations](#performance-considerations)
-8. [Troubleshooting Guide](#troubleshooting-guide)
-9. [Conclusion](#conclusion)
+6. [Status Tabs Implementation](#status-tabs-implementation)
+7. [Enhanced Employee List View](#enhanced-employee-list-view)
+8. [Improved Contract Management Forms](#improved-contract-management-forms)
+9. [Performance Optimizations](#performance-optimizations)
+10. [Dependency Analysis](#dependency-analysis)
+11. [Performance Considerations](#performance-considerations)
+12. [Troubleshooting Guide](#troubleshooting-guide)
+13. [Conclusion](#conclusion)
 
 ## Introduction
 This document explains the HR administration capabilities implemented in IHRMS, focusing on employee lifecycle management, contract administration, decision workflows, and official document generation. It maps business requirements to Django models, workflow definitions, portal interfaces, and automation helpers used for onboarding and offboarding.
 
 IHRMS is a modular monolith built with Django 5.2, targeting internal administration, human resources, recruitment, attendance, payroll, contracts, documents, tasks, KPIs, assets, procurement, dashboards, and Microsoft 365 integration. The system aims to replace manual Excel, email, Word, paper forms, and fragmented file sharing with a single authoritative platform.
+
+Recent enhancements include an improved employee list view with contract type information, enhanced contract management forms with two-column layout, status tabs implementation, and performance optimizations using Subqueries.
 
 **Section sources**
 - [README.md:1-90](file://README.md#L1-L90)
@@ -414,7 +436,7 @@ Settlement --> OffDone["Completed"]
 ```
 
 **Diagram sources**
-- [11_Workflow_Definition.md:450-494](file://docs/11_Workflow_Definition.md#L450-L494)
+- [11_Workflow_Definition.md:450-494](file://docs/11_Workflow_Definition.md#L450-494)
 - [11_Workflow_Definition.md:538-583](file://docs/11_Workflow_Definition.md#L538-L583)
 
 Operational guidance:
@@ -429,6 +451,152 @@ Operational guidance:
 - [services.py:10-33](file://src/apps/lifecycle/services.py#L10-L33)
 - [send_lifecycle_reminders.py:1-11](file://src/apps/lifecycle/management/commands/send_lifecycle_reminders.py#L1-L11)
 
+## Status Tabs Implementation
+
+The status tabs system provides a unified filtering mechanism across HR list views, replacing traditional dropdown filters with interactive tabs showing real-time counts for each status.
+
+### Shared Status Tabs Component
+The `_status_tabs()` function in `views/common.py` generates tab data with accurate counts by performing a single GROUP BY query before applying status filters. This ensures tab counts represent the total distribution across all records, not just filtered results.
+
+```mermaid
+flowchart TD
+Request["HTTP Request"] --> Queryset["Base Queryset (unfiltered)"]
+Queryset --> CountQuery["Single GROUP BY COUNT query"]
+CountQuery --> TabData["Tab data with counts"]
+TabData --> Template["status_tabs.html template"]
+Template --> HTML["Interactive tab links"]
+```
+
+**Diagram sources**
+- [common.py:29-62](file://src/apps/portal/views/common.py#L29-L62)
+- [status_tabs.html:1-9](file://src/templates/ui/status_tabs.html#L1-L9)
+
+### Implementation Details
+- **Single Query Optimization**: Uses `annotate(total=models.Count("pk"))` with `values(param)` for efficient counting
+- **URL Parameter Handling**: Preserves other filter parameters (q, type) while removing pagination (`page`)
+- **Active State Management**: Marks current tab with `aria-current="page"` for accessibility
+- **Responsive Design**: Horizontal scrolling with sticky positioning under the header bar
+
+### Applied Pages
+Status tabs are implemented across three key HR pages:
+- **Personnel Decisions**: 7 tabs covering all decision states
+- **Official Dispatches**: 6 tabs generated from model choices
+- **Contracts**: 5 tabs for contract status filtering
+
+**Section sources**
+- [common.py:29-62](file://src/apps/portal/views/common.py#L29-L62)
+- [status_tabs.html:1-9](file://src/templates/ui/status_tabs.html#L1-L9)
+- [shared_components.css:155-177](file://src/static/css/shared_components.css#L155-L177)
+
+## Enhanced Employee List View
+
+The employee list view now displays contract type information using optimized Subqueries to avoid N+1 query problems.
+
+### Subquery Implementation
+The `hr_employee_list()` view uses Django's `Subquery` and `Exists` to efficiently retrieve the latest contract type for each employee:
+
+```python
+latest_contract = Contract.objects.filter(employee_id=OuterRef("pk")).order_by("-start_date", "-pk")
+employees = (
+    _employee_scope(request)
+    .filter(Exists(contracts))
+    .select_related("department", "position")
+    .annotate(current_contract_type=Subquery(latest_contract.values("contract_type__contract_type_name")[:1]))
+    .order_by("full_name")
+)
+```
+
+### Key Features
+- **Performance**: Single query for all employees instead of N+1 queries per row
+- **Latest Contract Logic**: Orders by `-start_date, -pk` to get most recent contract
+- **Filtering**: Only shows employees who have contracts using `Exists()`
+- **Display**: Shows contract type column with fallback "—" for missing data
+
+### Template Updates
+The employee list template includes:
+- New "Loại hợp đồng" (Contract Type) column
+- New "Ngày vào" (Join Date) column with numeric formatting
+- Updated column group widths for proper layout
+
+**Section sources**
+- [hr.py:57-78](file://src/apps/portal/views/hr.py#L57-L78)
+- [hr_employee_list.html:17-25](file://src/apps/portal/templates/portal/hr_employee_list.html#L17-L25)
+- [shared_components.css:113-114](file://src/static/css/shared_components.css#L113-L114)
+
+## Improved Contract Management Forms
+
+Contract management forms now feature a two-column layout with contextual information rail to improve data entry accuracy and efficiency.
+
+### Two-Column Layout Architecture
+The form uses CSS Grid with responsive behavior:
+- **Desktop (≥1280px)**: Main form area + 20rem fixed-width contextual rail
+- **Mobile (<1280px)**: Single column layout with rail below form
+- **Sticky Rail**: Contextual information stays visible during scrolling
+
+### Contextual Information Rail
+When creating contracts from an employee profile, the right rail displays:
+- Selected employee summary (name, code, department, position, join date)
+- Current contract information (number, type, dates, status)
+- Business rules and guidelines
+- Quick navigation links
+
+### Form Structure
+```mermaid
+flowchart TD
+FormContainer["ui-form-layout container"] --> MainForm["ui-form-main (left)"]
+FormContainer --> ContextRail["ui-form-rail (right)"]
+MainForm --> ContractFields["Contract input fields"]
+ContextRail --> EmployeeInfo["Selected employee info"]
+ContextRail --> CurrentContract["Current contract details"]
+ContextRail --> Rules["Business rules"]
+```
+
+**Diagram sources**
+- [hr_contract_form.html:6-70](file://src/apps/portal/templates/portal/hr_contract_form.html#L6-L70)
+- [shared_components.css:179-201](file://src/static/css/shared_components.css#L179-L201)
+
+### View Enhancements
+The `hr_contract_create()` view adds contextual data when an employee is selected:
+- Loads employee with department and position relationships
+- Retrieves current contract with contract type
+- Passes both to template for rail display
+
+**Section sources**
+- [hr_contract_form.html:6-70](file://src/apps/portal/templates/portal/hr_contract_form.html#L6-L70)
+- [hr.py:299-350](file://src/apps/portal/views/hr.py#L299-L350)
+- [shared_components.css:179-201](file://src/static/css/shared_components.css#L179-L201)
+
+## Performance Optimizations
+
+Recent changes focus on database query optimization and efficient data retrieval patterns.
+
+### Subquery Pattern for Employee List
+The employee list uses Subqueries to avoid N+1 query problems:
+- **Before**: Separate query for each employee's latest contract
+- **After**: Single annotated query with Subquery for all employees
+- **Result**: O(1) additional queries regardless of employee count
+
+### Status Tabs Query Optimization
+Status tabs use efficient aggregation:
+- **Single GROUP BY query** for all status counts
+- **Pre-filtering** before status application to maintain accurate counts
+- **Memory-efficient** tab data structure
+
+### Database Query Budget
+The system maintains strict query budgets:
+- Dashboard pages: ≤25 SELECT queries
+- Employee lists: Single query for contract type annotation
+- Status tabs: One aggregate query per list view
+
+### Caching Strategies
+- **select_related()** for foreign key relationships
+- **prefetch_related()** for reverse relations where needed
+- **Annotated queries** to minimize round trips
+
+**Section sources**
+- [hr.py:57-78](file://src/apps/portal/views/hr.py#L57-L78)
+- [common.py:29-62](file://src/apps/portal/views/common.py#L29-L62)
+
 ## Dependency Analysis
 The HR administration components have clear dependencies:
 
@@ -437,6 +605,8 @@ The HR administration components have clear dependencies:
 - `lifecycle.models` depends on notification services for reminders and may link to asset allocation records.
 - Portal templates depend on view-provided permissions and URLs for decision workflows and profile change requests.
 - HCNS layouts depend on template slugs and interpolated values to render official documents.
+- Status tabs depend on the shared `_status_tabs()` utility function.
+- Two-column forms depend on CSS Grid layout classes and responsive breakpoints.
 
 ```mermaid
 graph LR
@@ -447,6 +617,8 @@ LifecycleModels["Lifecycle Models"] --> NotificationService["Notification Servic
 PortalTemplates["Portal Templates"] --> DecisionViews["Decision Views"]
 DecisionViews --> DocumentModels
 HcnsLayouts["HCNS Layouts"] --> DecisionValues["Decision Values"]
+StatusTabs["Status Tabs"] --> CommonUtils["Common Utilities"]
+TwoColumnForms["Two-Column Forms"] --> CssGrid["CSS Grid Layout"]
 ```
 
 **Diagram sources**
@@ -454,6 +626,8 @@ HcnsLayouts["HCNS Layouts"] --> DecisionValues["Decision Values"]
 - [models.py:100-124](file://src/apps/document/models.py#L100-L124)
 - [models.py:6-94](file://src/apps/lifecycle/models.py#L6-L94)
 - [layouts.py:17-35](file://src/apps/document/hcns/layouts.py#L17-L35)
+- [common.py:29-62](file://src/apps/portal/views/common.py#L29-L62)
+- [shared_components.css:179-201](file://src/static/css/shared_components.css#L179-L201)
 
 **Section sources**
 - [models.py:11-124](file://src/apps/hrm/models.py#L11-L124)
@@ -467,6 +641,9 @@ HcnsLayouts["HCNS Layouts"] --> DecisionValues["Decision Values"]
 - Avoid heavy template rendering on every page load; cache layout configuration where safe.
 - Schedule lifecycle reminders through Windows Task Scheduler only after confirming runtime stability.
 - Monitor storage capacity for SharePoint-backed uploads and ensure backup procedures cover both SQL Server and file storage.
+- **New**: Leverage Subqueries for complex joins instead of Python-level loops to prevent N+1 query problems.
+- **New**: Use status tabs with pre-aggregated counts to minimize database queries per page load.
+- **New**: Implement two-column layouts with CSS Grid for better responsive behavior without JavaScript overhead.
 
 [No sources needed since this section provides general guidance]
 
@@ -482,6 +659,9 @@ Common issues and resolutions:
 | Word download fails | Missing filename stem or unavailable layout | Check template slug and rendered context |
 | Lifecycle reminder not received | Scheduler not configured | Run reminder command manually and configure Windows Task Scheduler |
 | File upload or open error | SharePoint permissions or storage misconfiguration | Report IT with IHRMS record, time, and error; do not delete files directly in SharePoint |
+| Employee list shows slow performance | N+1 query problem with contract types | Verify Subquery implementation is working correctly |
+| Status tabs show incorrect counts | Query filtering applied before counting | Check that `_status_tabs()` receives unfiltered queryset |
+| Two-column form breaks on mobile | CSS Grid breakpoint issues | Verify responsive CSS classes are properly applied |
 
 **Section sources**
 - [views.py:454-476](file://src/apps/document/hcns/views.py#L454-L476)
@@ -490,6 +670,14 @@ Common issues and resolutions:
 - [send_lifecycle_reminders.py:1-11](file://src/apps/lifecycle/management/commands/send_lifecycle_reminders.py#L1-L11)
 
 ## Conclusion
-IHRMS implements HR administration through well-defined models, controlled workflows, and integrated document generation. Employee profiles support personal data and change requests with approval safeguards. Contracts capture types, terms, and appendices. Personnel decisions provide auditable workflows, snapshots, and official document rendering. Lifecycle checklists standardize onboarding and offboarding, while reminders and notifications keep processes visible. For reliable operations, HR should follow the documented workflows, IT should maintain storage and scheduler configuration, and users should treat decisions and attachments as official records requiring proper access control.
+IHRMS implements HR administration through well-defined models, controlled workflows, and integrated document generation. Employee profiles support personal data and change requests with approval safeguards. Contracts capture types, terms, and appendices. Personnel decisions provide auditable workflows, snapshots, and official document rendering. Lifecycle checklists standardize onboarding and offboarding, while reminders and notifications keep processes visible.
+
+Recent enhancements significantly improve the user experience and system performance:
+- **Enhanced employee list view** with contract type information using efficient Subqueries
+- **Status tabs implementation** providing intuitive filtering with accurate counts
+- **Two-column contract forms** with contextual information rails for better data entry
+- **Performance optimizations** reducing database queries and improving response times
+
+For reliable operations, HR should follow the documented workflows, IT should maintain storage and scheduler configuration, and users should treat decisions and attachments as official records requiring proper access control. The new UI patterns and performance improvements ensure the system scales effectively while maintaining usability.
 
 [No sources needed since this section summarizes without analyzing specific files]

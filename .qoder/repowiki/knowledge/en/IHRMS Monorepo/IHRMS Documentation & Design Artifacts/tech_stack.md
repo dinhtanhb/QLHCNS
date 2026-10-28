@@ -1,0 +1,1 @@
+Documentation artifacts are authored in Markdown, DOCX, XLSX, and XLSM; UI registry metadata is stored as JSON (`UI_BUTTON_KINDS.json`, `UI_FORM_REGISTRY.json`); screenshots are PNG images captured at multiple device widths.

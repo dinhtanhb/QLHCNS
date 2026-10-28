@@ -1,8 +1,9 @@
 # Getting Started Guide
 
 <cite>
-**Referenced Files in This Document**   
+**Referenced Files in This Document**
 - [README.md](file://README.md)
+- [AGENTS.md](file://AGENTS.md)
 - [requirements.txt](file://requirements.txt)
 - [src\manage.py](file://src/manage.py)
 - [src\config\settings.py](file://src/config/settings.py)
@@ -10,28 +11,43 @@
 - [ops\run_tests.py](file://ops/run_tests.py)
 - [src\apps\security\permissions.py](file://src/apps/security/permissions.py)
 - [docs\08_Deployment_Standards.md](file://docs/08_Deployment_Standards.md)
+- [docs\PROJECT_WORK_LOG.md](file://docs/PROJECT_WORK_LOG.md)
+- [.workbuddy-ai\memory\2026-10-21.md](file://.workbuddy-ai/memory/2026-10-21.md)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Updated Project Structure section to include documentation organization guidelines
+- Added new section on Documentation Workflow emphasizing PROJECT_WORK_LOG.md as single source of truth
+- Enhanced Introduction to mention docs/archive/ for historical documents
+- Added .workbuddy-ai memory integration information for development workflow
+- Updated references to reflect current repository structure and documentation practices
 
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Project Structure](#project-structure)
 3. [Core Components](#core-components)
 4. [Architecture Overview](#architecture-overview)
-5. [Detailed Component Analysis](#detailed-component-analysis)
-6. [Dependency Analysis](#dependency-analysis)
-7. [Performance Considerations](#performance-considerations)
-8. [Troubleshooting Guide](#troubleshooting-guide)
-9. [Conclusion](#conclusion)
-10. [Appendices](#appendices)
+5. [Documentation Workflow](#documentation-workflow)
+6. [Detailed Component Analysis](#detailed-component-analysis)
+7. [Dependency Analysis](#dependency-analysis)
+8. [Performance Considerations](#performance-considerations)
+9. [Troubleshooting Guide](#troubleshooting-guide)
+10. [Conclusion](#conclusion)
+11. [Appendices](#appendices)
 
 ## Introduction
 This guide explains how to set up the IHRMS development environment on Windows and run the application for the first time. It covers Python 3.12 virtual environment creation, dependency installation from `requirements.txt`, `.env` configuration, database migration, superuser creation, running the development server on port 8001, basic navigation to `/portal/`, understanding role-based access control, and running tests with `ops/Run-Tests.ps1`.
 
 IHRMS is a Django 5.2 internal application that provides an employee portal at `/portal/`, a Django admin interface at `/admin/`, and multiple business modules under `src/apps/`. The repository root is `D:\QLHCNS`, and the Django project lives under `src/`.
 
+The project follows strict documentation practices where `docs/PROJECT_WORK_LOG.md` serves as the single source of truth for all project changes, while historical documents like review reports, design critiques, and migration plans are archived in `docs/archive/`. Development workflow also integrates with `.workbuddy-ai/memory/` for tracking development activities.
+
 **Section sources**
 - [README.md:1-6](file://README.md#L1-L6)
+- [README.md:25-33](file://README.md#L25-L33)
 - [README.md:48-69](file://README.md#L48-L69)
+- [AGENTS.md:12-18](file://AGENTS.md#L12-L18)
 
 ## Project Structure
 The relevant parts for getting started are:
@@ -45,6 +61,9 @@ The relevant parts for getting started are:
 | `ops/Run-Tests.ps1` | PowerShell wrapper for running tests against SQLite or SQL Server |
 | `ops/run_tests.py` | Test runner that isolates media storage, sets test environment variables, and enforces non-zero test discovery |
 | `src/apps/security/permissions.py` | Centralized role and permission matrix used by the portal and admin UI |
+| `docs/` | Project documentation including standards, guides, and the single source of truth work log |
+| `docs/archive/` | Historical documents including review reports, design critiques, and migration plans |
+| `.workbuddy-ai/memory/` | Development workflow memory files for tracking activities and decisions |
 | `docs/08_Deployment_Standards.md` | Deployment, environment separation, backup, and operational standards |
 
 ```mermaid
@@ -52,14 +71,18 @@ graph TB
 Repo["Repository Root<br/>D:\\QLHCNS"] --> Src["src/<br/>Django project"]
 Repo --> Ops["ops/<br/>test scripts"]
 Repo --> Docs["docs/<br/>standards and guides"]
+Repo --> Archive["docs/archive/<br/>historical documents"]
+Repo --> Memory[".workbuddy-ai/memory/<br/>development workflow"]
 Src --> Manage["manage.py"]
 Src --> Config["config/settings.py"]
 Ops --> RunTestsPS["Run-Tests.ps1"]
 Ops --> RunTestsPy["run_tests.py"]
 Repo --> Requirements["requirements.txt"]
+Docs --> WorkLog["PROJECT_WORK_LOG.md<br/>single source of truth"]
 ```
 
 **Diagram sources**
+- [README.md:25-33](file://README.md#L25-L33)
 - [README.md:48-69](file://README.md#L48-L69)
 - [src/manage.py:1-33](file://src/manage.py#L1-L33)
 - [src/config/settings.py:1-546](file://src/config/settings.py#L1-L546)
@@ -68,6 +91,7 @@ Repo --> Requirements["requirements.txt"]
 - [requirements.txt:1-21](file://requirements.txt#L1-L21)
 
 **Section sources**
+- [README.md:25-33](file://README.md#L25-L33)
 - [README.md:48-69](file://README.md#L48-L69)
 - [src/manage.py:1-33](file://src/manage.py#L1-L33)
 - [src/config/settings.py:1-546](file://src/config/settings.py#L1-L546)
@@ -83,15 +107,19 @@ For a new developer, the most important components are:
 - **Superuser account**: Created through `python src\manage.py createsuperuser`.
 - **Development server**: Runs locally on port 8001 by default.
 - **Test wrapper**: `ops/Run-Tests.ps1` runs tests safely against SQLite or SQL Server without touching production data.
+- **Documentation system**: `docs/PROJECT_WORK_LOG.md` as single source of truth, with historical documents in `docs/archive/`.
+- **Development workflow**: `.workbuddy-ai/memory/` for tracking development activities and decisions.
 
 **Section sources**
 - [README.md:48-87](file://README.md#L48-L87)
+- [README.md:25-33](file://README.md#L25-L33)
+- [AGENTS.md:12-18](file://AGENTS.md#L12-L18)
 - [requirements.txt:1-21](file://requirements.txt#L1-L21)
 - [src/config/settings.py:21-35](file://src/config/settings.py#L21-L35)
 - [src/config/settings.py:193-225](file://src/config/settings.py#L193-L225)
 
 ## Architecture Overview
-At startup, Django loads settings from `src/config/settings.py`, which reads `.env` from the repository root. The application then connects to either SQLite or SQL Server based on `DB_ENGINE` and related database variables. Authentication uses Django’s built-in backend plus Axes for login attempt tracking. The portal URL is mounted under the main Django URL configuration, and the default login redirect points to the portal dashboard.
+At startup, Django loads settings from `src/config/settings.py`, which reads `.env` from the repository root. The application then connects to either SQLite or SQL Server based on `DB_ENGINE` and related database variables. Authentication uses Django's built-in backend plus Axes for login attempt tracking. The portal URL is mounted under the main Django URL configuration, and the default login redirect points to the portal dashboard.
 
 ```mermaid
 sequenceDiagram
@@ -117,6 +145,44 @@ App-->>Dev : Login page or dashboard after authentication
 - [src/config/settings.py:21-35](file://src/config/settings.py#L21-L35)
 - [src/config/settings.py:193-225](file://src/config/settings.py#L193-L225)
 - [src/config/settings.py:269-273](file://src/config/settings.py#L269-L273)
+
+## Documentation Workflow
+IHRMS follows strict documentation practices to maintain clarity and traceability:
+
+### Single Source of Truth
+`docs/PROJECT_WORK_LOG.md` is the single source of truth for all project changes. Every significant change must be documented here with:
+- Date and objective/scope
+- Related files or modules
+- Steps taken, testing performed, and results
+- Branch/commit information if applicable
+- Open items and specific actions needed by the project owner
+
+### Historical Documents
+Historical documents including review reports, design critiques, applied migration plans, and processed requirements are stored in `docs/archive/`. This keeps the main documentation clean while preserving important historical context.
+
+### Development Workflow Integration
+The `.workbuddy-ai/memory/` directory contains dated memory files that track development activities, decisions, and reviews. These files provide context for AI-assisted development workflows and help maintain continuity across development sessions.
+
+```mermaid
+flowchart TD
+Start(["Development Activity"]) --> LogWork["Update docs/PROJECT_WORK_LOG.md"]
+LogWork --> ArchiveDocs["Archive historical documents to docs/archive/"]
+LogWork --> MemoryFile["Create/update .workbuddy-ai/memory/date.md"]
+MemoryFile --> ReviewProcess["Follow review process per AGENTS.md"]
+ReviewProcess --> GitCommit["Commit changes to main branch"]
+GitCommit --> PushRemote["Push to origin/main"]
+PushRemote --> NotifyOwner["Notify project owner of completion"]
+```
+
+**Diagram sources**
+- [AGENTS.md:12-18](file://AGENTS.md#L12-L18)
+- [AGENTS.md:24-35](file://AGENTS.md#L24-L35)
+- [README.md:25-33](file://README.md#L25-L33)
+
+**Section sources**
+- [AGENTS.md:12-18](file://AGENTS.md#L12-L18)
+- [AGENTS.md:24-35](file://AGENTS.md#L24-L35)
+- [README.md:25-33](file://README.md#L25-L33)
 
 ## Detailed Component Analysis
 
@@ -295,7 +361,7 @@ PermissionMatrix --> User : "checks roles and permissions"
 Use the provided PowerShell wrapper to run tests safely. From the repository root:
 
 - Default tests (SQLite):
-  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1`
+  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1 -Backend sqlite`
 - SQL Server test database:
   - `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1 -Backend sqlserver`
 
@@ -389,7 +455,7 @@ This section focuses on setup performance and safety rather than runtime tuning:
 
 **Resolution:**
 1. Copy the example file: `Copy-Item .env.example .env`.
-2. Generate a new secret key using Django’s utility.
+2. Generate a new secret key using Django's utility.
 3. Paste the generated key into `.env`.
 4. Restart the server.
 
@@ -486,6 +552,8 @@ This section focuses on setup performance and safety rather than runtime tuning:
 ## Conclusion
 You now have the essential information to set up IHRMS on Windows, configure the environment, create a superuser, run the development server on port 8001, navigate to `/portal/`, understand the role-based permission system, and run tests safely. Always keep development and production environments isolated, protect `.env` secrets, and validate database connections before applying migrations.
 
+The project also emphasizes proper documentation practices: use `docs/PROJECT_WORK_LOG.md` as the single source of truth for all changes, archive historical documents in `docs/archive/`, and integrate with `.workbuddy-ai/memory/` for development workflow tracking.
+
 [No sources needed since this section summarizes without analyzing specific files]
 
 ## Appendices
@@ -502,8 +570,23 @@ You now have the essential information to set up IHRMS on Windows, configure the
 | Apply migrations | `python src\manage.py migrate` |
 | Create superuser | `python src\manage.py createsuperuser` |
 | Run development server | `python src\manage.py runserver` |
-| Run default tests | `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1` |
+| Run default tests | `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1 -Backend sqlite` |
 | Run SQL Server tests | `powershell -NoProfile -ExecutionPolicy Bypass -File .\ops\Run-Tests.ps1 -Backend sqlserver` |
 
 **Section sources**
 - [README.md:48-83](file://README.md#L48-L83)
+
+### Documentation Workflow Checklist
+| Task | Location/Action |
+|---|---|
+| Record project changes | `docs/PROJECT_WORK_LOG.md` (single source of truth) |
+| Archive historical documents | `docs/archive/` |
+| Track development activities | `.workbuddy-ai/memory/YYYY-MM-DD.md` |
+| Follow review process | Per `AGENTS.md` and `ihrms-review` skill |
+| Commit changes | `main` branch only |
+| Push to remote | `git push origin main` |
+
+**Section sources**
+- [AGENTS.md:12-18](file://AGENTS.md#L12-L18)
+- [AGENTS.md:24-35](file://AGENTS.md#L24-L35)
+- [README.md:25-33](file://README.md#L25-L33)

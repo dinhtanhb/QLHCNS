@@ -3,11 +3,11 @@ schema_version: 1
 locale: en-US
 branch: main
 nodes_managed: true
-exported_at: "2026-10-21T02:47:35Z"
+exported_at: "2026-10-26T07:41:32Z"
 modules:
     "":
-        dir_name: IHRMS Enterprise HR System Monorepo
-        title: IHRMS Enterprise HR System Monorepo
+        dir_name: IHRMS Monorepo
+        title: IHRMS Monorepo
         scope:
             - README.md
             - DESIGN.md
@@ -40,8 +40,8 @@ modules:
         depends_on: []
         related_to: []
     build_artifacts:
-        dir_name: Graphify Analysis Artifacts & Dashboard Outputs
-        title: Graphify Analysis Artifacts & Dashboard Outputs
+        dir_name: Graphify Analysis Cache & IHRMS Dashboard Artifacts
+        title: Graphify Analysis Cache & IHRMS Dashboard Artifacts
         scope:
             - graphify-out/
             - outputs/
@@ -50,25 +50,25 @@ modules:
         depends_on: []
         related_to: []
     django_backend:
-        dir_name: IHRMS Django Enterprise Backend
-        title: IHRMS Django Enterprise Backend
+        dir_name: IHRMS Django Backend (HR, Payroll & Office Portal)
+        title: IHRMS Django Backend (HR, Payroll & Office Portal)
         scope:
             - src/
         source_files: []
         children: []
         depends_on: []
         related_to:
-            - path: github_actions
             - path: ops_tooling
     documentation:
-        dir_name: IHRMS Project Documentation & Design Artifacts
-        title: IHRMS Project Documentation & Design Artifacts
+        dir_name: IHRMS Documentation & Design Artifacts
+        title: IHRMS Documentation & Design Artifacts
         scope:
             - docs/
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ops_tooling
     github_actions:
         dir_name: GitHub CI, Copilot Agents & Skills
         title: GitHub CI, Copilot Agents & Skills
@@ -78,11 +78,10 @@ modules:
         children: []
         depends_on: []
         related_to:
-            - path: django_backend
             - path: ops_tooling
     ops_tooling:
-        dir_name: IHRMS Operations, UAT & UI Audit Tooling
-        title: IHRMS Operations, UAT & UI Audit Tooling
+        dir_name: IHRMS Operations, UAT & QA Tooling
+        title: IHRMS Operations, UAT & QA Tooling
         scope:
             - ops/
         source_files: []
@@ -90,4 +89,5 @@ modules:
         depends_on: []
         related_to:
             - path: django_backend
+            - path: documentation
             - path: github_actions

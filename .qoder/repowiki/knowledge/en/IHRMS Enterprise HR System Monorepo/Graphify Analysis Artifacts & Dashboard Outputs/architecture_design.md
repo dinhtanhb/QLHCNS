@@ -1,6 +1,0 @@
-Two unrelated artifact trees co-located at the repo root:
-
-- `graphify-out/` — output of the external `graphify` analysis tool. `manifest.json` is the index mapping every source file path to its `mtime`, `seen`, `ast_hash`, and `semantic_hash`. `cache/ast/<version>/` holds one SHA256-named JSON blob per analyzed file (the AST payload), keyed by `cache/stat-index.json`; `cache/semantic/<hash>/` mirrors semantic payloads. `.graphify_analysis.json` contains the higher-level community detection result (a `communities` map grouping symbols like `src_apps_*_models_employee` into clusters). `graph.html` / `graph.json` are the rendered dependency graph and its data. `.graphify_root` records the workspace root used during analysis.
-- `outputs/` — produced deliverables for the IHRMS analytics dashboard: dated subdirectories (`ihrms-analytics-dashboard-20261009`, `ihrms-dashboard-final-20261009`) containing an Excel workbook (`IHRMS_Analytics_Dashboard.xlsx`), a PNG screenshot (`Dashboard.png`), and an NDJSON inspection log (`*.xlsx.inspect.ndjson`); plus a standalone `home-dashboard-options.html`.
-
-There is no executable code in this module; it is consumed-only output that should be regenerated when the source tree changes.

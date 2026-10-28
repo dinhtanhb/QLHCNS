@@ -1,1 +1,0 @@
-GitHub-hosted CI pipelines for Django/Node regression plus Copilot agent instructions, skills, and project-wide working rules.

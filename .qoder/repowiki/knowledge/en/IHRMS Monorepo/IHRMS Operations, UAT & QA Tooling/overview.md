@@ -1,0 +1,1 @@
+Django/Playwright operational scripts that run isolated unit and browser UAT suites, audit UI design tokens and contrast, seed disposable QA data, and automate SQL Server backup/restore via PowerShell.

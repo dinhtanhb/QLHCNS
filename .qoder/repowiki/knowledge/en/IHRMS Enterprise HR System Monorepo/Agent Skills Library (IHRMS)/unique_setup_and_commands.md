@@ -1,1 +1,0 @@
-Run `/setup-matt-pocock-skills` before any engineering flow to configure issue tracker labels and doc layout; skills are invoked by name with a leading slash (e.g. `/grill-with-docs`, `/implement`, `/retro`) inside an agent conversation.

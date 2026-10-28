@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: ops_tooling
+title: IHRMS Operations, UAT & QA Tooling
+scope:
+    - ops/
+source_files: []
+depends_on: []
+related_to:
+    - path: django_backend
+    - path: documentation
+    - path: github_actions

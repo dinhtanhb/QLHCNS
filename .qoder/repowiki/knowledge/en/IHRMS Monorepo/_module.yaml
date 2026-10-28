@@ -1,0 +1,17 @@
+schema_version: 1
+module_path: ""
+title: IHRMS Monorepo
+scope:
+    - README.md
+    - DESIGN.md
+    - AGENTS.md
+    - CLAUDE.md
+    - .gitignore
+    - package.json
+    - package-lock.json
+    - requirements.txt
+    - skills-lock.json
+    - .env.example
+source_files: []
+depends_on: []
+related_to: []

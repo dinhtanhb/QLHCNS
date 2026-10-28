@@ -1,1 +1,0 @@
-Django 5.2 with `mssql-django` + `pyodbc` against SQL Server, MSAL for Microsoft 365 integration, Tailwind CSS 4.x compiled at repo root, Playwright-based UAT in ops, and Claude Code / Agents.md skills driving the workflow.

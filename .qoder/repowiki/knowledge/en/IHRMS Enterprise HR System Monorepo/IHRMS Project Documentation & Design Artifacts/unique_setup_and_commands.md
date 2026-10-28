@@ -1,1 +1,0 @@
-No build or test commands apply — this is a static documentation tree. The authoritative baseline to consult when documents conflict is `docs/99_Architecture_Baseline.md`, which declares itself the highest-priority document.

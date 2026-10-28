@@ -1,7 +1,7 @@
 # Project Overview
 
 <cite>
-**Referenced Files in This Document**   
+**Referenced Files in This Document**
 - [README.md](file://README.md)
 - [00_Project_Charter.md](file://docs/00_Project_Charter.md)
 - [01_BRD_MASTER.md](file://docs/01_BRD_MASTER.md)
@@ -12,25 +12,41 @@
 - [hrm/models.py](file://src/apps/hrm/models.py)
 - [attendance/models.py](file://src/apps/attendance/models.py)
 - [payroll/models.py](file://src/apps/payroll/models.py)
+- [mobile_shell.css](file://src/static/css/mobile_shell.css)
+- [mobile_tabbar.html](file://src/templates/ui/mobile_tabbar.html)
+- [manifest.json](file://src/static/manifest.json)
+- [service-worker.js](file://src/static/js/service-worker.js)
+- [tests_mobile.py](file://src/apps/portal/tests_mobile.py)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Added comprehensive mobile application shell implementation details for P0 milestone completion
+- Documented Progressive Web App (PWA) adoption strategy with manifest and service worker configuration
+- Updated architecture overview to include mobile-first responsive design approach
+- Added new section on mobile interface components and navigation patterns
+- Enhanced technology stack documentation with PWA capabilities and mobile deployment considerations
 
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Project Structure](#project-structure)
 3. [Core Components](#core-components)
 4. [Architecture Overview](#architecture-overview)
-5. [Detailed Component Analysis](#detailed-component-analysis)
-6. [Dependency Analysis](#dependency-analysis)
-7. [Performance Considerations](#performance-considerations)
-8. [Troubleshooting Guide](#troubleshooting-guide)
-9. [Conclusion](#conclusion)
+5. [Mobile Application Shell Implementation](#mobile-application-shell-implementation)
+6. [Detailed Component Analysis](#detailed-component-analysis)
+7. [Dependency Analysis](#dependency-analysis)
+8. [Performance Considerations](#performance-considerations)
+9. [Troubleshooting Guide](#troubleshooting-guide)
+10. [Conclusion](#conclusion)
 
 ## Introduction
 IHRMS is the Internal Administration and Human Resource Management System, known in Vietnamese as QLHCNS. It is an integrated administrative and HR platform designed for internal operations, with explicit scope covering organization management, human resources, recruitment, attendance, leave, payroll, contracts, documents, tasks, KPIs, assets, procurement, reporting, and Microsoft 365 integration. The system replaces manual processes such as Excel spreadsheets, email chains, Word templates, shared folders, Teams chat, and paper forms with a single centralized source of truth.
 
 The project charter defines IHRMS as an on-premise enterprise application intended to standardize organizational and employee data, digitize administrative workflows, automate approvals, improve KPI and task tracking, reduce Excel dependency, strengthen auditability, and provide executive dashboards. The business requirement document further maps these goals into functional modules and end-to-end workflows including leave approval, recruitment lifecycle, procurement approval, and task progression.
 
-For newcomers, IHRMS can be understood as the company’s central HR and administration system where employees manage personal information, request leave, view attendance and payslips, while managers approve requests and track team performance. For developers, it is a modular Django monolith under `src/`, with business logic split across apps under `src/apps/`, security and roles defined centrally, and database-backed models for each domain.
+For newcomers, IHRMS can be understood as the company's central HR and administration system where employees manage personal information, request leave, view attendance and payslips, while managers approve requests and track team performance. For developers, it is a modular Django monolith under `src/`, with business logic split across apps under `src/apps/`, security and roles defined centrally, and database-backed models for each domain.
+
+**Updated** The system now includes a complete mobile application shell implementation (P0 milestone) with Progressive Web App (PWA) capabilities, providing native-like mobile experiences through responsive design and offline asset caching.
 
 **Section sources**
 - [00_Project_Charter.md:43-67](file://docs/00_Project_Charter.md#L43-L67)
@@ -70,11 +86,19 @@ Apps --> Payroll["payroll"]
 Apps --> Portal["portal"]
 Apps --> Reporting["reporting"]
 Apps --> M365["m365"]
+Static --> MobileShell["mobile_shell.css"]
+Static --> Manifest["manifest.json"]
+Static --> ServiceWorker["service-worker.js"]
+Templates --> MobileTabbar["mobile_tabbar.html"]
 ```
 
 **Diagram sources**
 - [settings.py:111-143](file://src/config/settings.py#L111-L143)
 - [settings.py:269-279](file://src/config/settings.py#L269-L279)
+- [mobile_shell.css:1-12](file://src/static/css/mobile_shell.css#L1-L12)
+- [manifest.json:1-26](file://src/static/manifest.json#L1-L26)
+- [service-worker.js:1-20](file://src/static/js/service-worker.js#L1-L20)
+- [mobile_tabbar.html:1-9](file://src/templates/ui/mobile_tabbar.html#L1-L9)
 
 **Section sources**
 - [README.md:1-5](file://README.md#L1-L5)
@@ -96,8 +120,11 @@ IHRMS is organized around several core domains that together form the QLHCNS pla
 | Portal | Employee-facing pages, dashboards, personal profile, navigation | Views, templates, context processors, dashboard data | Employees, managers |
 | Admin | Django admin interface with Jazzmin styling and role-aware menus | Admin registrations, menu ordering, icons | Administrators, HR, finance |
 | Microsoft 365 | SharePoint/OneDrive storage, Graph client, tenant configuration | `M365_*` settings, Graph client, storage backend | IT, document-heavy workflows |
+| **Mobile Shell** | **Responsive mobile interface with bottom navigation and PWA capabilities** | **`mobile_shell.css`, `mobile_tabbar.html`, PWA manifest** | **Mobile users, field workers** |
 
 The security module defines the custom user model and role-based access control foundation. The organization module provides the structural backbone for departments and positions. The HR module owns employee records and personnel lifecycle changes. Attendance and payroll are tightly coupled: approved monthly attendance summaries feed payroll calculations, which then produce gross income, insurance deductions, tax, and net pay.
+
+**Updated** The mobile shell component provides a responsive interface optimized for mobile devices with a fixed bottom navigation bar, touch-friendly controls, and Progressive Web App capabilities for installation and offline asset caching.
 
 **Section sources**
 - [security/models.py:5-46](file://src/apps/security/models.py#L5-L46)
@@ -106,6 +133,7 @@ The security module defines the custom user model and role-based access control 
 - [attendance/models.py:10-52](file://src/apps/attendance/models.py#L10-L52)
 - [payroll/models.py:33-53](file://src/apps/payroll/models.py#L33-L53)
 - [payroll/models.py:248-369](file://src/apps/payroll/models.py#L248-L369)
+- [mobile_shell.css:1-12](file://src/static/css/mobile_shell.css#L1-L12)
 
 ## Architecture Overview
 IHRMS follows a modular monolith architecture. All business modules run inside one Django application, but they are separated by clear domain boundaries. The logical architecture places end users behind a web browser, optionally behind IIS or another reverse proxy, into the Django application, which persists data to SQL Server and integrates with Microsoft 365 services such as SharePoint, OneDrive, Outlook, and Teams.
@@ -114,7 +142,7 @@ The physical architecture targets an on-premise Windows Server environment with 
 
 ```mermaid
 graph TB
-Browser["Web Browser"] --> Proxy["Reverse Proxy / IIS"]
+Browser["Web Browser<br/>Desktop/Mobile"] --> Proxy["Reverse Proxy / IIS"]
 Proxy --> Django["Django Modular Monolith"]
 Django --> DB["SQL Server"]
 Django --> M365["Microsoft 365"]
@@ -122,11 +150,15 @@ M365 --> SharePoint["SharePoint"]
 M365 --> OneDrive["OneDrive"]
 M365 --> Outlook["Outlook"]
 M365 --> Teams["Teams"]
+Browser --> PWA["Progressive Web App<br/>Service Worker Cache"]
+PWA --> Assets["Static Assets<br/>CSS/JS/Images"]
 ```
 
 **Diagram sources**
 - [02_Solution_Architecture.md:93-125](file://docs/02_Solution_Architecture.md#L93-L125)
 - [02_Solution_Architecture.md:129-173](file://docs/02_Solution_Architecture.md#L129-L173)
+- [service-worker.js:1-20](file://src/static/js/service-worker.js#L1-L20)
+- [manifest.json:1-26](file://src/static/manifest.json#L1-L26)
 
 The technology stack includes:
 - Backend: Python 3.12, Django 5.2, Django REST Framework.
@@ -136,8 +168,11 @@ The technology stack includes:
 - Authorization: Role-Based Access Control.
 - Storage: SharePoint and OneDrive when enabled; local media directory otherwise.
 - Server: Windows Server, IIS, or reverse proxy with TLS.
+- **Mobile**: Responsive CSS with mobile-first design, Progressive Web App (PWA) with installable interface, service worker for asset caching.
 
 The configuration file enforces HTTPS requirements for UAT and production, configures session timeouts, sets the custom user model, registers all business apps, and prepares Microsoft 365 integration settings such as tenant ID, client credentials, SharePoint hostname, library paths, and folder mappings.
+
+**Updated** The mobile architecture includes a dedicated mobile shell with responsive breakpoints at 1024px, touch-optimized controls with minimum 48px tap targets, and PWA capabilities for offline asset caching and home screen installation.
 
 **Section sources**
 - [02_Solution_Architecture.md:175-245](file://docs/02_Solution_Architecture.md#L175-L245)
@@ -145,11 +180,85 @@ The configuration file enforces HTTPS requirements for UAT and production, confi
 - [settings.py:48-100](file://src/config/settings.py#L48-L100)
 - [settings.py:111-143](file://src/config/settings.py#L111-L143)
 - [settings.py:281-332](file://src/config/settings.py#L281-L332)
+- [mobile_shell.css:17-33](file://src/static/css/mobile_shell.css#L17-L33)
+
+## Mobile Application Shell Implementation
+
+### P0 Milestone Completion
+The mobile application shell implementation represents the completion of the P0 milestone, establishing the foundation for mobile-first user experience across the IHRMS platform. This implementation focuses on responsive design principles rather than creating separate native applications, leveraging the existing Django template system with mobile-specific enhancements.
+
+### Mobile Shell Architecture
+The mobile shell is implemented through a dedicated CSS stylesheet (`mobile_shell.css`) that activates only below 1024px viewport width, ensuring desktop interfaces remain unchanged. The implementation includes:
+
+- **Responsive Breakpoints**: Mobile styles activate at `max-width: 1024px` with additional optimizations at 639px and 360px
+- **Touch-Optimized Controls**: Minimum 48px tap targets for all interactive elements
+- **Fixed Bottom Navigation**: Five-tab navigation bar with role-based content switching
+- **Adaptive Layouts**: Tables convert to scrollable containers with sticky first columns
+- **Form Optimization**: Single-column layouts for small screens with proper input sizing
+
+```mermaid
+flowchart TD
+ViewportCheck{"Viewport Width <br/>1024px?"} --> |Yes| MobileStyles["Apply Mobile Shell Styles"]
+ViewportCheck --> |No| DesktopStyles["Use Desktop Layout"]
+MobileStyles --> TabBar["Fixed Bottom Navigation<br/>5 Tabs"]
+MobileStyles --> TouchControls["48px Tap Targets<br/>Touch-Optimized Forms"]
+MobileStyles --> AdaptiveTables["Scrollable Tables<br/>Sticky First Column"]
+MobileStyles --> PWAFeatures["PWA Capabilities<br/>Install & Cache"]
+```
+
+**Diagram sources**
+- [mobile_shell.css:38-224](file://src/static/css/mobile_shell.css#L38-L224)
+- [mobile_tabbar.html:10-55](file://src/templates/ui/mobile_tabbar.html#L10-L55)
+
+### Progressive Web App (PWA) Implementation
+The PWA implementation provides native-like app capabilities through web technologies:
+
+- **Manifest Configuration**: Defines app metadata, icons, and standalone display mode
+- **Service Worker**: Caches static assets for faster loading and offline availability
+- **Installation Support**: Allows users to add IHRMS to their device home screen
+- **Asset Caching Strategy**: Precaches critical CSS and JS files while keeping business data network-only
+
+```mermaid
+sequenceDiagram
+participant User as "User Device"
+participant Browser as "Web Browser"
+participant SW as "Service Worker"
+participant Cache as "Cache Storage"
+User->>Browser : Install IHRMS App
+Browser->>SW : Register Service Worker
+SW->>Cache : Precache Static Assets
+User->>Browser : Open IHRMS
+Browser->>SW : Request Assets
+SW->>Cache : Serve Cached Assets
+SW->>Browser : Return Fast Response
+```
+
+**Diagram sources**
+- [manifest.json:1-26](file://src/static/manifest.json#L1-L26)
+- [service-worker.js:1-59](file://src/static/js/service-worker.js#L1-L59)
+
+### Mobile Navigation Design
+The mobile navigation implements a five-tab bottom bar with role-based content adaptation:
+
+| Tab | Employee View | Manager View | HR/Admin View |
+|-----|---------------|--------------|---------------|
+| Home | Today's Tasks | Approval Queue + Team KPI | Overview + Profile Alerts |
+| Tab 2 | Timesheet Entry | Leave Approvals | Combined Approval Queue |
+| Tab 3 | My Leave Requests | Timesheet Approvals | Employee Records |
+| More | Module Drawer | Module Drawer | Module Drawer |
+| Me | Profile + Payslips | Profile + Payslips | Profile + Settings |
+
+**Section sources**
+- [mobile_shell.css:1-239](file://src/static/css/mobile_shell.css#L1-L239)
+- [mobile_tabbar.html:1-56](file://src/templates/ui/mobile_tabbar.html#L1-L56)
+- [manifest.json:1-26](file://src/static/manifest.json#L1-L26)
+- [service-worker.js:1-59](file://src/static/js/service-worker.js#L1-L59)
+- [tests_mobile.py:184-274](file://src/apps/portal/tests_mobile.py#L184-L274)
 
 ## Detailed Component Analysis
 
 ### Security and Identity
-The security module extends Django’s abstract user model and introduces a role model. Each user can be associated with a role and a corresponding HR employee record. Security events capture access metadata such as action, resource, and timestamp without storing sensitive values.
+The security module extends Django's abstract user model and introduces a role model. Each user can be associated with a role and a corresponding HR employee record. Security events capture access metadata such as action, resource, and timestamp without storing sensitive values.
 
 ```mermaid
 classDiagram
@@ -180,7 +289,7 @@ User --> SecurityEvent : "one-to-many"
 - [security/models.py:5-46](file://src/apps/security/models.py#L5-L46)
 
 Key responsibilities:
-- Centralized authentication via Django’s auth framework and Axes middleware.
+- Centralized authentication via Django's auth framework and Axes middleware.
 - Role-based authorization through the `Role` model and permission checks enforced by views and admin interfaces.
 - Audit-friendly security event logging.
 - Optional Entra ID integration through `external_object_id` and Microsoft 365 configuration.
@@ -380,7 +489,7 @@ Portal-->>Employee : Dashboard and available workflows
 - [settings.py:269-272](file://src/config/settings.py#L269-L272)
 
 ### Leave Request Workflow
-The leave workflow follows the business requirement document’s multi-step approval pattern:
+The leave workflow follows the business requirement document's multi-step approval pattern:
 
 1. Employee submits a leave request.
 2. Department manager reviews and approves or rejects.
@@ -457,6 +566,8 @@ Hrm --> Payroll["payroll"]
 Attendance --> Payroll
 Settings["config/settings.py"] --> AllApps["All registered apps"]
 M365["m365"] --> Settings
+MobileShell["mobile_shell.css"] --> BaseTemplate["base.html"]
+PWA["PWA Components"] --> StaticAssets["Static Assets"]
 ```
 
 **Diagram sources**
@@ -465,12 +576,14 @@ M365["m365"] --> Settings
 - [hrm/models.py:43-58](file://src/apps/hrm/models.py#L43-L58)
 - [attendance/models.py:31-49](file://src/apps/attendance/models.py#L31-L49)
 - [payroll/models.py:405-444](file://src/apps/payroll/models.py#L405-L444)
+- [mobile_shell.css:1-12](file://src/static/css/mobile_shell.css#L1-L12)
 
 Coupling is intentional and bounded by domain:
 - HR depends on organization but not directly on payroll.
 - Attendance depends on HR and payroll only for locking and approved data.
 - Payroll depends on attendance only for approved leave days and standard working days.
 - Security is a cross-cutting concern applied through middleware and user model configuration.
+- Mobile shell is isolated within responsive breakpoints and doesn't affect desktop functionality.
 
 Potential risks include circular imports if business logic is placed directly in models rather than services, which the code mitigates by deferring imports inside methods and using service functions for lifecycle updates.
 
@@ -489,6 +602,9 @@ Practical considerations include:
 - Keep Microsoft 365 file operations asynchronous where possible to avoid blocking HTTP requests.
 - Monitor SQL Server query performance for large attendance and payroll tables.
 - Use pagination and filtering in portal and admin lists.
+- **Mobile Performance**: Leverage service worker caching for static assets, optimize images for mobile devices, and minimize JavaScript execution on mobile browsers.
+
+**Updated** Mobile performance considerations include responsive image loading, efficient CSS media queries, and PWA asset caching strategies that reduce network requests and improve load times on mobile devices.
 
 [No sources needed since this section provides general guidance]
 
@@ -503,8 +619,13 @@ Common operational issues and their likely causes:
 | Cannot edit timesheet or monthly summary | Payroll period is locked or month is already approved | Unlock period or reopen summary for reapproval |
 | Overlapping salary error | Multiple active salary records for the same employee | End previous salary record before creating a new effective date |
 | Duplicate dependent deduction warning | Same dependent registered with overlapping dates | Merge or adjust dependent registration periods |
+| **Mobile layout broken** | CSS media queries conflicting with custom styles | Check `mobile_shell.css` loading order and breakpoint conflicts |
+| **PWA not installing** | Missing manifest or HTTPS requirements | Verify `manifest.json` exists and site uses HTTPS or localhost |
+| **Service worker not caching** | Cache version mismatch or incorrect scope | Check `STATIC_CACHE` version and service worker registration |
 
 Configuration-related troubleshooting should always start with `src/manage.py check`, migration state verification, and environment variable validation. Production and UAT require `DEBUG=False`, HTTPS enforcement, a strong secret key, and explicit allowed hosts.
+
+**Updated** Mobile-specific troubleshooting includes checking responsive breakpoints, verifying PWA manifest configuration, and validating service worker registration and cache policies.
 
 **Section sources**
 - [README.md:19-23](file://README.md#L19-L23)
@@ -513,10 +634,15 @@ Configuration-related troubleshooting should always start with `src/manage.py ch
 - [settings.py:228-244](file://src/config/settings.py#L228-L244)
 - [payroll/models.py:335-357](file://src/apps/payroll/models.py#L335-L357)
 - [attendance/models.py:214-257](file://src/apps/attendance/models.py#L214-L257)
+- [tests_mobile.py:145-175](file://src/apps/portal/tests_mobile.py#L145-L175)
 
 ## Conclusion
 IHRMS is a mature, modular Django HR and administration platform built for internal organizational use. Its purpose is to centralize HR operations, digitize administrative workflows, and provide reliable data for decision-making. The system combines an employee portal, admin interface, and business modules covering organization, HR, attendance, leave, payroll, contracts, documents, tasks, KPIs, assets, procurement, reporting, and Microsoft 365 integration.
 
 Its maturity is reflected in comprehensive testing coverage, structured documentation, RBAC design, auditability, and deployment standards targeting Windows Server and SQL Server. For newcomers, IHRMS represents the modern QLHCNS system where employees and managers collaborate through standardized workflows. For developers, it is a well-structured Django monolith with clear domain boundaries, secure defaults, and extensible modules ready for further HR automation and reporting enhancements.
+
+**Updated** The recent addition of the mobile application shell implementation (P0 milestone) significantly enhances the platform's accessibility and usability across devices. The Progressive Web App capabilities provide native-like experiences while maintaining the flexibility and maintainability of web technologies. This mobile-first approach ensures that field workers and remote employees can effectively use the system through responsive interfaces optimized for touch interaction and mobile workflows.
+
+The mobile shell implementation demonstrates the platform's commitment to modern web standards, including responsive design principles, progressive enhancement strategies, and offline-capable applications. With 783+ passing tests, comprehensive documentation, and robust architectural patterns, IHRMS continues to evolve as a comprehensive HR management solution that adapts to diverse user needs and technological environments.
 
 [No sources needed since this section summarizes without analyzing specific files]

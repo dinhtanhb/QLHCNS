@@ -1,6 +1,0 @@
-- Every business model inherits `apps.common.models.BaseAuditModel`, gaining `created_by/modified_by/deleted_by` timestamps and soft-delete semantics via `objects` (filtered) and `all_objects` (unfiltered) managers.
-- Domain logic beyond views/models lives in per-app `services.py` modules (activity, attendance, lifecycle, office, payroll) that are imported directly by views rather than being called through a central service registry.
-- Cross-app authorization is performed via `apps.security.permissions.has_permission(user, perm_code)` decorators/functions instead of Django's built-in `@permission_required` or object-level permissions.
-- Environment-driven toggles use the `env_flag()` helper from `config.env` (e.g. `DEBUG`, `ENABLE_HTTPS_ENFORCEMENT`, `M365_STORAGE_ENABLED`) so boolean flags come from string env vars consistently.
-- Long-running or scheduled work is implemented as Django management commands under each app's `management/commands/` (e.g. `send_activity_report_reminders`, `apply_due_employee_changes`, `send_lifecycle_reminders`, `purge_search_logs`) rather than Celery or async tasks.
-- Database column names are explicitly declared via `db_column=` on every field and `db_table=` on `Meta`, keeping Django model names distinct from the legacy SQL Server table/column naming convention.
