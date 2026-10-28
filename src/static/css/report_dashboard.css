@@ -66,7 +66,7 @@
 @media (prefers-reduced-motion: reduce) { .report-button { transition: none; } }
 .report-shell :is(.headline-value, .metric-value) { width: 100%; text-align: center; font-variant-numeric: tabular-nums; }
 @media screen {
- .report-shell .ui-card { padding:var(--ui-space-5); box-shadow:none; }
+ .report-shell .ui-card { padding:var(--ui-space-6); box-shadow:none; }
  @media(max-width:767px) { .report-shell .ui-card { padding:var(--ui-space-4); } }
 }
 }
@@ -77,7 +77,7 @@
  .report-shell .report-toolbar { display:flex; flex-wrap:wrap; align-items:flex-start; gap:var(--ui-space-4); margin:0; }
  .report-toolbar>.ui-query-card { flex:1 1 32rem; min-width:0; margin:0; padding:0; border:0; }
  .report-toolbar .ui-query-bar--date-echo { padding-bottom:0; }
- .report-toolbar .ui-query-bar--date-echo :is(.ui-field,.ui-query-actions) { margin-bottom:var(--ui-report-echo-reserve,calc(var(--ui-space-5) + var(--ui-space-2))); }
+ .report-toolbar .ui-query-bar--date-echo :is(.ui-field,.ui-query-actions) { margin-bottom:var(--ui-report-echo-reserve,calc(var(--ui-space-6) + var(--ui-space-2))); }
  .report-toolbar>.report-export-actions { flex:none; max-width:100%; flex-wrap:wrap; gap:var(--ui-space-2); margin:0; padding-block-start:var(--ui-report-action-offset,0px); }
  .report-kpis { container:report-kpis / inline-size; }
  .report-kpis>.ui-page-description { margin:0 0 var(--ui-space-2); }
@@ -86,7 +86,7 @@
  @container report-kpis (min-width:35rem) { .report-kpis>.ui-kpi-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
  @container report-kpis (min-width:71rem) { .report-kpis>.ui-kpi-grid { grid-template-columns:repeat(6,minmax(0,1fr)); } }
  .report-shell :is(.report-panel,.report-section).ui-card { padding:0; border-color:var(--ui-card-border); }
- .report-panel>.ui-card-header,.report-section>.ui-card-header { margin:0; min-height:0; padding:var(--ui-space-4) var(--ui-space-5); background:var(--ui-surface); }
+ .report-panel>.ui-card-header,.report-section>.ui-card-header { margin:0; min-height:0; padding:var(--ui-space-4) var(--ui-space-6); background:var(--ui-surface); }
  .report-panel>.ui-card-header>div,.report-section>.ui-card-header>div:not(.ui-card-actions) { min-width:0; max-width:100%; }
  .report-panel .ui-card-header h2,.report-section .ui-card-header h2 { font-size:var(--ui-type-card); line-height:var(--ui-leading-card); }
  .report-section>.ui-card-header { align-items:flex-start; }

@@ -73,7 +73,7 @@ class HeaderReportLayoutTests(SimpleTestCase):
                   if ctx[-1] == '.ui-section-header']
         self.assertTrue(any('background:var(--ui-surface)' in body and
                             'var(--ui-border-subtle)' in body and
-                            'padding:var(--ui-space-1) var(--ui-space-5)' in body
+                            'padding:var(--ui-space-1) var(--ui-space-6)' in body
                             for _, body in blocks))
 
     def test_shared_kpi_tracks_are_screen_only_and_paper_metadata_is_flat(self):

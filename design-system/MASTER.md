@@ -47,7 +47,7 @@ Nguồn giá trị chính thức: [`ui_tokens.css`](../src/static/css/ui_tokens.
 - Bốn màu ngữ nghĩa: success xanh lá, warning hổ phách, danger đỏ, info xanh dương; mỗi trạng thái có text/background/border riêng cho hai theme. Trạng thái luôn có chữ và SVG tương ứng. Warning chỉ việc chờ xử lý, danger chỉ lỗi/quá hạn/hành động nguy hiểm.
 - Dùng font hệ thống `"Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif`; không tải Google Fonts/CDN, không thêm asset/dependency. Cần kiểm tra glyph tiếng Việt ở máy đích; kết quả kiểm tra local ghi trong nhật ký. Bỏ Fira Code cho văn bản thường và Plus Jakarta Sans remote vì không cần font mạng hay phong cách kỹ thuật. Không tuyên bố đã kiểm Be Vietnam Pro/Inter khi chưa có font đó.
 - Body/bảng/nhãn/phụ chú 14px (`--ui-type-body`); line height 1.5, heading 1.25. Không giảm root font-size; hỗ trợ zoom. Số dùng tabular-nums, tiền `vi-VN`, ngày `dd/MM/yyyy`; giữ quy tắc làm tròn và dữ liệu backend hiện có.
-- Khoảng cách 4/8/12/16/24/32/48px; radius 4/8/12px theo vai trò; control 8px, card phẳng không bóng. Control min36px, row min40px trên desktop fine ≥770px; mobile/coarse min44px nhưng có thể cao hơn khi chữ xuống dòng. Bỏ row 36px và thân chữ 12px trong đề xuất dashboard để đáp ứng vùng chạm và độ đọc.
+- Khoảng cách 4/8/12/16/24/32/48px; radius đúng ba vai trò 4/8px cộng pill (không có bán kính 12px trong token); control 8px, card phẳng không bóng. Control min36px, row min40px trên desktop fine ≥770px; mobile/coarse min44px nhưng có thể cao hơn khi chữ xuống dòng. Bỏ row 36px và thân chữ 12px trong đề xuất dashboard để đáp ứng vùng chạm và độ đọc.
 - Focus 3px, offset 3px, thêm khoảng nền tương phản quanh nút filled trước ring; hover/active/selected/disabled/error có tokens. Disabled dùng semantics thật, không chỉ đổi màu hay opacity.
 - Motion feedback 120ms, panel 180ms, về 0 khi reduced motion. Không thêm GSAP, shimmer liên tục hoặc transition màu khi đổi theme.
 
@@ -99,7 +99,7 @@ Nền trang/card/control và track biểu đồ dùng neutral xanh lạnh theo p
 Đây là quy chuẩn chuẩn bị; đợt 2b chưa áp dụng bố cục này trên toàn ứng dụng.
 
 - Mọi trang: breadcrumb (nếu có) → tiêu đề trang (h1, 24px, 600) + mô tả ngắn + nhóm hành động chính căn phải (xuống dòng gọn trên mobile) → các card nội dung cách nhau 24px. Lề trang và độ rộng tối đa giống nhau mọi nơi.
-- Card: viền 1px, bo 8–12px, đệm 24px, tiêu đề card 16px/600.
+- Card: viền 1px, bo 8px, đệm 24px, tiêu đề card 16px/600.
 - Form/bộ lọc: nhãn luôn hiện phía trên ô (không dùng placeholder thay nhãn), ô một dòng cao theo D1, bo 8px, viền `--ui-border`; lưới nhiều cột trên desktop, xếp dọc trên mobile; nút gửi cùng hàng, cao theo D1, `white-space: nowrap`, có chiều rộng tối thiểu, không bao giờ bị bóp để chữ rớt dòng.
 - Bảng: đặt trong card; tiêu đề cột 14px/600 trên nền `--ui-surface-raised`; ô đệm 12px 16px, dòng cao tối thiểu theo D1, kẻ ngang `--ui-divider`; hover dòng; cột số và tiền căn phải, `tabular-nums`; cột trạng thái dùng badge (chữ + icon); cột thao tác căn phải, cùng một kiểu nút; độ rộng cột đặt chủ động.
 - Trạng thái trống nằm trong chính card của bảng: icon, một câu giải thích, một hành động hợp lệ (nếu có quyền).

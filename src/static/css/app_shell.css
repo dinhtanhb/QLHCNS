@@ -88,7 +88,7 @@
     .ui-nav-section-label { margin:var(--ui-space-3) var(--ui-space-3) var(--ui-space-1); color:var(--ui-sidebar-muted); font-size:var(--ui-font-size-caption); }
     .ui-nav-separator { border-top:var(--ui-border-width) solid var(--ui-divider); margin:var(--ui-space-2) 0; }
     .ui-nav-tooltip { position:fixed; z-index:var(--ui-layer-toast); max-width:var(--ui-sidebar-width); padding:var(--ui-space-2) var(--ui-space-3); background:var(--ui-surface); color:var(--ui-text); border:var(--ui-border-width) solid var(--ui-border); border-radius:var(--ui-radius-control); box-shadow:var(--ui-shadow-card); font-size:var(--ui-font-size-small); overflow-wrap:anywhere; }
-    .ui-main { min-width:0; max-width:var(--ui-content-max-width); padding:var(--ui-space-5); margin:0 auto; scroll-margin-top:calc(var(--ui-shell-header-height) + var(--ui-space-4)); }
+    .ui-main { min-width:0; max-width:var(--ui-content-max-width); padding:var(--ui-space-6); margin:0 auto; scroll-margin-top:calc(var(--ui-shell-header-height) + var(--ui-space-4)); }
     @media(max-width:767px) { .ui-main { padding:var(--ui-space-4); } }
     .ui-main :is(a,button,input,select,textarea) { scroll-margin-block:calc(var(--ui-shell-header-height) + var(--ui-space-4)); }
     .ui-alert { display:flex; align-items:flex-start; gap:var(--ui-space-3); padding:var(--ui-space-3) var(--ui-space-4); margin-bottom:var(--ui-space-4); border:var(--ui-border-width) solid var(--ui-info-border); border-radius:var(--ui-radius-control); background:var(--ui-info-bg); color:var(--ui-info-text); }

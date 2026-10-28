@@ -167,7 +167,7 @@
  /* Thanh công cụ dính: giữ tab và số kết quả trong tầm mắt khi cuộn bảng dài.
     `top` bằng đúng chiều cao thanh trên cùng để không bị nó che. */
  .ui-list-toolbar { position:sticky; top:var(--ui-shell-header-height); z-index:var(--ui-layer-sticky); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--ui-space-2) var(--ui-space-4); padding-block:var(--ui-space-2); background:var(--ui-surface); border-bottom:var(--ui-border-width) solid var(--ui-card-border); }
- .ui-card:not(.ui-card--table):not(.ui-card--sectioned) > .ui-list-toolbar { margin-inline:calc(var(--ui-space-5) * -1); padding-inline:var(--ui-space-5); }
+ .ui-card:not(.ui-card--table):not(.ui-card--sectioned) > .ui-list-toolbar { margin-inline:calc(var(--ui-space-6) * -1); padding-inline:var(--ui-space-6); }
  .ui-list-toolbar :is(.ui-results-count,.ui-query-note) { margin:0; }
  .ui-list-toolbar > .ui-list-toolbar-meta { display:flex; flex-wrap:wrap; align-items:center; gap:var(--ui-space-2) var(--ui-space-3); font-size:var(--ui-font-size-small); color:var(--ui-text-muted); }
  .ui-results-card > .ui-list-toolbar + .ui-query-card { margin-top:var(--ui-space-4); }
@@ -180,8 +180,8 @@
     Trái: biểu mẫu. Phải: dữ liệu tham chiếu để điền đúng (số phép còn lại, quy
     tắc, lịch sử gần đây). Cột phải KHÔNG chứa trường nhập nên không làm loãng
     hợp đồng 4/3/2/1 cột của lưới trường — lưới trường vẫn chạy theo container. */
- .ui-form-layout { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--ui-space-5); align-items:start; min-width:0; }
- .ui-form-main { display:grid; gap:var(--ui-space-5); min-width:0; }
+ .ui-form-layout { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--ui-space-6); align-items:start; min-width:0; }
+ .ui-form-main { display:grid; gap:var(--ui-space-6); min-width:0; }
  .ui-form-rail { display:grid; gap:var(--ui-space-4); min-width:0; }
  .ui-rail-card { padding:var(--ui-space-4); background:var(--ui-surface); border:var(--ui-border-width) solid var(--ui-card-border); border-radius:var(--ui-radius-card); }
  .ui-rail-card-title { margin:0 0 var(--ui-space-2); font-size:var(--ui-font-size-small); font-weight:var(--ui-weight-label); letter-spacing:.02em; color:var(--ui-text); }
@@ -192,7 +192,7 @@
  .ui-rail-pair dd,.ui-rail-pair-value { margin:0; font-weight:var(--ui-weight-semibold); font-variant-numeric:var(--ui-numeric-variant); white-space:nowrap; }
  .ui-rail-note { margin:0; font-size:var(--ui-font-size-small); color:var(--ui-text-muted); }
  .ui-rail-note + .ui-rail-note { margin-top:var(--ui-space-2); }
- .ui-rail-steps { display:grid; gap:var(--ui-space-2); margin:0; padding-inline-start:var(--ui-space-5); font-size:var(--ui-font-size-small); color:var(--ui-text-muted); }
+ .ui-rail-steps { display:grid; gap:var(--ui-space-2); margin:0; padding-inline-start:var(--ui-space-6); font-size:var(--ui-font-size-small); color:var(--ui-text-muted); }
  .ui-rail-links { display:grid; gap:var(--ui-space-1); margin:0; padding:0; list-style:none; font-size:var(--ui-font-size-small); }
  .ui-rail-links a { display:flex; align-items:center; min-height:var(--ui-target-min); color:var(--ui-link); text-decoration:underline; text-underline-offset:.2em; }
  @media(min-width:1280px) {

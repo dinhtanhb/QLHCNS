@@ -98,7 +98,7 @@
  .home-dashboard .ui-card:has(>.ui-card-header) { display:grid; grid-template-rows:auto 1fr; padding:0; gap:0; }
  .home-dashboard :is(.home-row,.home-my-work-grid) { grid-template-rows:auto 1fr; row-gap:0; }
  .home-dashboard :is(.home-row,.home-my-work-grid)>.ui-card { grid-row:span 2; grid-template-rows:subgrid; }
- .home-dashboard .ui-card-body { display:flex; flex-direction:column; min-width:0; gap:var(--ui-space-3); padding:var(--ui-space-5); }
+ .home-dashboard .ui-card-body { display:flex; flex-direction:column; min-width:0; gap:var(--ui-space-3); padding:var(--ui-space-6); }
  .home-dashboard .home-work-card .ui-card-body { justify-content:flex-end; }
  .home-dashboard :is(.home-contracts,.home-decisions)>li { padding-block:var(--ui-space-1); }
  .home-dashboard .home-decisions .home-decision-link { display:flex; flex-wrap:wrap; justify-content:space-between; gap:0 var(--ui-space-3); }
@@ -214,7 +214,7 @@
  .home-dashboard .home-kpi-block { display:grid; gap:0; min-width:0; background:var(--ui-surface); border:var(--ui-border-width) solid var(--ui-card-border); border-radius:var(--ui-radius-card); overflow:hidden; }
  .home-dashboard .home-kpi-block>#dashboard-status { display:grid; gap:0; min-width:0; }
  .home-dashboard .home-main-kpis { gap:0; }
- .home-dashboard .home-main-kpis .home-main-metric { padding:var(--ui-space-5); background:transparent; border:0; border-radius:0; box-shadow:none; }
+ .home-dashboard .home-main-kpis .home-main-metric { padding:var(--ui-space-6); background:transparent; border:0; border-radius:0; box-shadow:none; }
  .home-dashboard .home-main-kpis .home-main-metric + .home-main-metric { border-inline-start:var(--ui-border-width) solid var(--ui-divider); }
  .home-dashboard .home-main-kpis a.home-main-metric { transition:background-color var(--ui-motion-feedback); }
  .home-dashboard .home-main-kpis a.home-main-metric:hover { background:var(--ui-hover-bg); }
@@ -263,7 +263,7 @@
     Hook #dashboard-secondary / .home-secondary-item giữ nguyên cho các cổng đo. */
  .home-dashboard .home-secondary { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr)); column-gap:0; row-gap:0; }
  .home-dashboard .home-kpi-block .home-secondary { background:var(--ui-surface); border-block-start:var(--ui-border-width) solid var(--ui-divider); }
- .home-dashboard .home-secondary-item { display:grid; grid-template-rows:minmax(0,1fr) auto; align-content:stretch; gap:var(--ui-space-1); padding:var(--ui-space-3) var(--ui-space-5); border-inline-start:var(--ui-border-width) solid var(--ui-divider); min-width:0; color:var(--ui-text); text-decoration:none; }
+ .home-dashboard .home-secondary-item { display:grid; grid-template-rows:minmax(0,1fr) auto; align-content:stretch; gap:var(--ui-space-1); padding:var(--ui-space-3) var(--ui-space-6); border-inline-start:var(--ui-border-width) solid var(--ui-divider); min-width:0; color:var(--ui-text); text-decoration:none; }
  .home-dashboard .home-secondary-item:first-child { border-inline-start:0; }
  .home-dashboard a.home-secondary-item:hover { background:var(--ui-hover-bg); }
  .home-dashboard .home-secondary-label { display:flex; align-items:center; gap:var(--ui-space-2); color:var(--ui-text-muted); font-weight:var(--ui-weight-label); }
@@ -286,7 +286,7 @@
 
 @layer pages { @media screen {
  .home-dashboard .home-info:not([open])>.home-info-body { display:none; }
- .home-dashboard .home-info-body { max-width:calc(var(--ui-shell-inline-size,100vw) - 2 * var(--ui-space-5)); }
+ .home-dashboard .home-info-body { max-width:calc(var(--ui-shell-inline-size,100vw) - 2 * var(--ui-space-6)); }
  .home-dashboard .home-recruitment-strip { container:home-recruitment / inline-size; }
  @container home-recruitment (max-width:22rem) {
   .home-dashboard .home-recruitment-metrics { grid-template-columns:minmax(0,1fr); }

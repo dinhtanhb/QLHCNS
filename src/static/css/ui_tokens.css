@@ -34,12 +34,11 @@
     --ui-weight-medium: 500;
     --ui-weight-semibold: 600;
     --ui-border-subtle: var(--ui-card-border);
-    /* Spacing scale: 4 8 12 16 24 32 48 64 96 128 */
+    /* Spacing scale: names x 4px (Tailwind convention); 20px is intentionally absent, 5 omitted */
     --ui-space-1: 0.25rem;  /* 4px */
     --ui-space-2: 0.5rem;   /* 8px */
     --ui-space-3: 0.75rem;  /* 12px */
     --ui-space-4: 1rem;     /* 16px */
-    --ui-space-5: 1.5rem;   /* 24px */
     --ui-space-6: 1.5rem;   /* 24px */
     --ui-space-8: 2rem;     /* 32px */
     --ui-space-12: 3rem;    /* 48px */
@@ -203,7 +202,7 @@ html[data-theme="dark"] {
     --ui-brand: #6ee7a0;
     --ui-brand-hover: #8ff0b8;
     --ui-brand-active: #4cc97f;
-    --ui-on-brand: #0b1020;
+    --ui-on-brand: #0b140f;
     --ui-brand-soft: #14261a;
     --ui-link: #6ee7a0;
     --ui-focus: #6ee7a0;
@@ -280,7 +279,7 @@ html[data-theme="dark"] {
     --ui-brand: #6ee7a0;
     --ui-brand-hover: #8ff0b8;
     --ui-brand-active: #4cc97f;
-    --ui-on-brand: #0b1020;
+    --ui-on-brand: #0b140f;
     --ui-brand-soft: #14261a;
     --ui-link: #6ee7a0;
     --ui-focus: #6ee7a0;

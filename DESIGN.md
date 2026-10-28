@@ -40,7 +40,7 @@ typography:
   lineHeightHeading: 1.25
 
 spacing: { xs: 4px, sm: 8px, md: 12px, lg: 16px, xl: 24px, xxl: 32px, section: 48px }
-radius:  { sm: 4px, md: 8px, lg: 12px }
+radius:  { sm: 4px, md: 8px, pill: 9999px }
 motion:  { feedback: 120ms, panel: 180ms }
 ---
 
@@ -114,7 +114,7 @@ Dùng token ngữ nghĩa trước. Giá trị nguồn trong phần frontmatter c
 
 ### Khoảng cách và bo góc
 - Thang 4/8/12/16/24/32/48px. Không thêm giá trị mới nếu thang giải quyết được.
-- Bo góc: 4px (control nhỏ), 8px (card, ô nhập chuẩn), 12px (khối lớn).
+- Bo góc: đúng ba vai trò theo `ui_tokens.css` — 4px (control nhỏ), 8px (card, ô nhập chuẩn, khối lớn), pill (badge). Không dùng bán kính khác ngoài token.
 - Control/nút tối thiểu 36px và dòng bảng 40px trên desktop fine ≥770px; mobile/coarse giữ 44px (có thể cao hơn khi chữ xuống dòng).
 
 ### Chọn văn bản
@@ -194,7 +194,7 @@ Nền trang/card/control và track biểu đồ dùng neutral xanh lạnh theo p
 Đây là quy chuẩn chuẩn bị; đợt 2b chưa áp dụng bố cục này trên toàn ứng dụng.
 
 - Mọi trang: breadcrumb (nếu có) → tiêu đề trang (h1, 24px, 600) + mô tả ngắn + nhóm hành động chính căn phải (xuống dòng gọn trên mobile) → các card nội dung cách nhau 24px. Lề trang và độ rộng tối đa giống nhau mọi nơi.
-- Card: viền 1px, bo 8–12px, đệm 24px, tiêu đề card 16px/600.
+- Card: viền 1px, bo 8px, đệm 24px, tiêu đề card 16px/600.
 - Form/bộ lọc: nhãn luôn hiện phía trên ô (không dùng placeholder thay nhãn), ô một dòng theo D1 (36px desktop fine, 44px mobile/coarse), bo 8px, viền `--ui-border`; lưới nhiều cột trên desktop, xếp dọc trên mobile; nút gửi cùng hàng, cao theo D1, `white-space: nowrap`, có chiều rộng tối thiểu, không bao giờ bị bóp để chữ rớt dòng.
 - Bảng: đặt trong card; tiêu đề cột 14px/600 trên nền `--ui-surface-raised`; ô đệm 12px 16px, dòng cao tối thiểu theo D1 (40px desktop fine, 44px mobile/coarse), kẻ ngang `--ui-divider`; hover dòng; cột số và tiền căn phải, `tabular-nums`; cột trạng thái dùng badge (chữ + icon); cột thao tác căn phải, cùng một kiểu nút; độ rộng cột đặt chủ động.
 - Trạng thái trống nằm trong chính card của bảng: icon, một câu giải thích, một hành động hợp lệ (nếu có quyền).
