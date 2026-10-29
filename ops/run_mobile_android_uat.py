@@ -23,18 +23,20 @@ def main():
     parser.add_argument('--business', action='store_true', help='Also submit and approve leave through native controls and verify synthetic DB')
     parser.add_argument('--settings', action='store_true', help='Verify appearance choices persist across native process termination')
     parser.add_argument('--employee', action='store_true', help='Exercise the employee services menu, detailed profile and organization directory')
+    parser.add_argument('--workspace', action='store_true', help='Exercise a native timesheet POST through the shared form contract')
     args = parser.parse_args()
     if not args.serial.startswith('emulator-'):
         parser.error('Only an isolated emulator may be used; this clears its QA app data')
     marker = json.loads((args.directory/'synthetic-demo.json').read_text(encoding='utf-8'))
     if marker.get('synthetic_only') is not True:
         parser.error('Only synthetic QA credentials may be used')
-    if args.business:
+    if args.business or args.workspace:
         from mobile_qa import configure
         configure(args.directory.resolve())
         from django.utils import timezone
         from apps.leave.models import LeaveApproval, LeaveRequest
         from apps.notification.models import Notification
+        from apps.attendance.models import TimesheetEntry
         day = timezone.localdate()+timedelta(days=60)
         while day.weekday() >= 5 or LeaveRequest.objects.filter(employee__user_account__username='demo-employee',
                 from_date__lte=day, to_date__gte=day, status__in=['Pending', 'Approved']).exists():
@@ -64,12 +66,25 @@ def main():
             raise RuntimeError('QA control has no visible bounds')
         run('shell', 'input', 'tap', str((b[0]+b[2])//2), str((b[1]+b[3])//2))
     def tap(label):
-        for _ in range(15):
-            node = find(label)
+        for attempt in range(16):
+            tree = xml()
+            node = find(label, tree)
             if node is not None:
-                tap_node(node); return
-            # Start inside scroll content, above the fixed tab bar/system inset.
-            run('shell', 'input', 'swipe', '540', '1200', '540', '500', '350')
+                bounds = list(map(int, re.findall(r'\d+', node.get('bounds', ''))))
+                navigation = next((n for n in tree.iter('node') if n.get('resource-id') == 'android:id/navigationBarBackground'), None)
+                screen = next(tree.iter('node'))
+                edge = list(map(int, re.findall(r'\d+', (navigation if navigation is not None else screen).get('bounds', ''))))
+                bottom = edge[1] if navigation is not None else edge[3]
+                # UiAutomator can expose clipped controls behind Android's
+                # navigation bar. Scroll them fully into view before tapping.
+                if len(bounds) == 4 and bounds[1] >= 0 and bounds[3] <= bottom and bounds[3] > bounds[1]:
+                    tap_node(node); return
+            # A returning screen retains scroll position. Search above as well
+            # before progressing down; Back/settings controls may be at its top.
+            if attempt == 0 and node is None:
+                scroll_top()
+            else:
+                run('shell', 'input', 'swipe', '540', '1200', '540', '500', '350')
         raise RuntimeError('QA control not found: '+label)
     def wait_text(label):
         for _ in range(15):
@@ -80,8 +95,11 @@ def main():
         raise RuntimeError('Native QA screen not reached: '+label)
     def screenshot(name):
         (args.output/(name+'.png')).write_bytes(run('exec-out', 'screencap', '-p'))
+    def scroll_top():
+        for _ in range(5):
+            run('shell', 'input', 'swipe', '540', '400', '540', '1800', '250')
     def enter(node, value):
-        if not re.fullmatch(r'[A-Za-z0-9_:/.-]+', value):
+        if not re.fullmatch(r'[A-Za-z0-9_:/.,-]+', value):
             raise RuntimeError('Unsupported synthetic input characters')
         tap_node(node)
         run('shell', 'input', 'keyevent', '123')
@@ -124,6 +142,37 @@ def main():
     run('shell', 'monkey', '-p', package, '1')
     wait_text('Hồ sơ của tôi')
     checks.append('SecureStore restores login after process termination without credentials')
+    if args.workspace:
+        work_date = timezone.localdate()+timedelta(days=120)
+        while work_date.weekday() >= 5 or TimesheetEntry.objects.filter(employee__user_account__username='demo-employee', work_date=work_date).exists():
+            work_date += timedelta(days=1)
+        reason = 'QA-NATIVE-WORKSPACE-'+uuid.uuid4().hex[:8]
+        tap('Nghiệp vụ'); tap('Bảng công'); wait_text('Ghi nhận giờ làm việc')
+        field('Ngày làm việc *', work_date.isoformat())
+        field('Công việc thực hiện', reason)
+        field('Số giờ *', '2,5')
+        tap('Thêm dòng chấm công')
+        time.sleep(1)
+        for _ in range(3):
+            run('shell', 'input', 'swipe', '540', '400', '540', '1800', '350')
+        wait_text('Đã ghi nhận giờ làm việc.')
+        entry = TimesheetEntry.objects.get(task_description=reason)
+        assert str(entry.hours) == '2.50' and entry.employee.user_account.username == 'demo-employee'
+        screenshot('native-workspace-timesheet-saved')
+        checks.append('Native workspace form saves owned Decimal timesheet through the web command')
+        tap('Quay lại'); scroll_top(); wait_text('Hồ sơ chi tiết')
+        tap('Phiếu lương'); wait_text('Phiếu lương của tôi')
+        tap('Tải PDF'); wait_text('Tệp đã sẵn sàng. Chọn Mở hoặc lưu tệp để sử dụng.')
+        screenshot('native-workspace-pdf-downloaded')
+        tap('Mở hoặc lưu tệp'); time.sleep(2)
+        assert b'ChooserActivity' in run('shell', 'dumpsys', 'activity', 'top'), 'Native PDF share sheet did not open'
+        screenshot('native-workspace-pdf-share-sheet')
+        run('shell', 'input', 'keyevent', '4')
+        checks.append('Native authenticated PDF stream downloads and opens Android share sheet without sending')
+        tap('Quay lại'); wait_text('Phiếu lương của tôi')
+        tap('Quay lại'); scroll_top(); wait_text('Hồ sơ chi tiết')
+        run('shell', 'input', 'keyevent', '4')
+        run('shell', 'input', 'swipe', '540', '400', '540', '1800', '350'); wait_text('Hồ sơ của tôi')
     if args.employee:
         tap('Nghiệp vụ'); wait_text('Hồ sơ chi tiết')
         tap('Hồ sơ chi tiết'); wait_text('Thông tin cá nhân và quá trình công tác của bạn')

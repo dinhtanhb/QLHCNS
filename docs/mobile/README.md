@@ -12,6 +12,7 @@ Phạm vi đã duyệt: nhân viên, người duyệt và Nhân sự; hồ sơ c
 - [Cài APK QA mới và thử lời nhắc Android](THU_THONG_BAO_ANDROID_QA.md)
 - [API và bảo mật phiên](API.md)
 - [Danh mục đối chiếu nghiệp vụ web–mobile và thứ tự triển khai](NGHIEP_VU_WEB_MOBILE.md)
+- [Dùng các biểu mẫu và nghiệp vụ native còn lại](NGHIEP_VU_NATIVE.md)
 - [Cài đặt tài khoản, đổi mật khẩu, cập nhật thông tin và sáng/tối](CAI_DAT_TAI_KHOAN.md)
 - Kết quả thực tế, giới hạn và bàn giao: [nhật ký dự án](../PROJECT_WORK_LOG.md).
 

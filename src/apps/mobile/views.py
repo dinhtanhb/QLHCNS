@@ -29,7 +29,7 @@ def reply(data, status=200):
     return JsonResponse(data, status=status, json_dumps_params={'ensure_ascii': False})
 
 
-def endpoint(*methods, anonymous=False):
+def endpoint(*methods, anonymous=False, parse_json=True):
     def decorate(view):
         @csrf_exempt  # Cookie authentication is rejected in MobileSessionMiddleware.
         @wraps(view)
@@ -41,7 +41,7 @@ def endpoint(*methods, anonymous=False):
             if not anonymous and not request.user.is_authenticated:
                 return reply({'error': 'Phiên đã hết hạn. Vui lòng đăng nhập lại.'}, 401)
             try:
-                if request.method == 'POST':
+                if request.method == 'POST' and parse_json:
                     if request.content_type != 'application/json':
                         return reply({'error': 'Yêu cầu phải dùng JSON.'}, 415)
                     if len(request.body) > 16_384:
@@ -308,6 +308,7 @@ def decision(request, pk):
 
 @endpoint('GET')
 def notifications(request):
+    from .workspace import allowed_route
     employee = employee_for(request.user)
     qs = Notification.objects.filter(employee=employee) if employee else Notification.objects.none()
     return page(request, qs.order_by('-created_date', '-pk'), lambda row: {
@@ -315,7 +316,9 @@ def notifications(request):
         'is_read': row.is_read, 'created_at': row.created_date,
         'destination': 'approvals' if row.link == '/portal/leave/approvals/' else
                        'leaves' if row.link == '/portal/leave/' else
-                       'profile-requests' if row.link == '/portal/profile/requests/' else None})
+                       'profile-requests' if row.link == '/portal/profile/requests/' else
+                       'workspace' if allowed_route(row.link or '') else None,
+        'path': row.link if allowed_route(row.link or '') else None})
 
 
 @endpoint('POST')

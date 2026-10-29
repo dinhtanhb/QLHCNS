@@ -3,6 +3,7 @@ import { AppState, Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { ApiError, call, serverURL } from './api';
 import type { Me } from './types';
+import { clearWorkspaceFiles } from './workspace-files';
 
 type Credentials = { server: string; token: string; expires_at: string };
 type Session = {
@@ -31,6 +32,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
   const forget = useCallback(async () => {
     credentials.current = null; setMe(null);
     await persist(null);
+    await clearWorkspaceFiles();
   }, []);
   const request = useCallback(async <T,>(path: string, data?: unknown): Promise<T> => {
     const current = credentials.current;
@@ -52,6 +54,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     let alive = true;
     (async () => {
+      await clearWorkspaceFiles();
       try {
         const raw = Platform.OS === 'web' ? null : await SecureStore.getItemAsync(KEY);
         if (raw) {

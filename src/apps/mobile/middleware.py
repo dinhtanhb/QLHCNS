@@ -6,6 +6,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.contrib.sessions.models import Session
 from django.db import transaction
+from django.contrib.sessions.backends.base import UpdateError
 
 PREFIX = '/api/mobile/v1/'
 
@@ -22,7 +23,10 @@ def save_native_session(native):
     native.pop('expo_push_token', None)
     if current.get('expo_push_token'):
         native['expo_push_token'] = current['expo_push_token']
-    native.save()
+    try:
+        native.save()
+    except UpdateError:
+        return False
     return True
 
 

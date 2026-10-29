@@ -22,7 +22,7 @@ const config: ExpoConfig = {
       'android.permission.READ_EXTERNAL_STORAGE', 'android.permission.WRITE_EXTERNAL_STORAGE'],
     adaptiveIcon: { foregroundImage: './assets/app-icon.png', backgroundColor: '#ffffff' } },
   web: { bundler: 'metro', output: 'single', favicon: './assets/app-icon.png' },
-  plugins: ['expo-router', 'expo-secure-store', 'expo-notifications', './plugins/with-short-cmake-paths',
+  plugins: ['expo-router', 'expo-secure-store', 'expo-notifications', 'expo-sharing', '@react-native-community/datetimepicker', './plugins/with-short-cmake-paths',
     ['expo-build-properties', { android: { usesCleartextTraffic: qa && process.env.EXPO_PUBLIC_ALLOW_HTTP === 'true' } }]],
   extra: { qa, ...(projectId ? { eas: { projectId } } : {}) },
 };

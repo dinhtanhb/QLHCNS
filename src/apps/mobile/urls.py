@@ -1,8 +1,10 @@
 from django.urls import path
 from . import views
+from .workspace import workspace
 
 app_name = 'mobile'
 urlpatterns = [
+    path('workspace/', workspace, name='workspace'),
     path('my-profile/', views.my_profile, name='my_profile'),
     path('profile-history/', views.profile_history, name='profile_history'),
     path('organization/', views.organization, name='organization'),

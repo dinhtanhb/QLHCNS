@@ -1,5 +1,19 @@
 # API mobile v1
 
+## Workspace cho nghiệp vụ còn lại
+
+`POST workspace/` nhận JSON `{path, method: "GET"|"POST", fields: [[name,value],...]}` hoặc multipart có `payload` JSON và `uploads: [{key,name}]` trỏ tới các phần tệp. Giới hạn1MiB JSON,2.000 trường,20 tệp; mỗi tệp áp validators hiện hành20MB/định dạng. Không nới giới hạn16KiB của các endpoint cũ.
+
+Transport chỉ gọi route Django đã đăng ký trong portal/reporting/admin/assistant và private_file, dùng chính bearer user/session. Từ chối địa chỉ mạng/traversal/login/logout, không proxy HTTP, không tạo phiên dưới tài khoản khác. Mọi permission/object scope và command vẫn do view web kiểm; các form admin có cặp CSRF nội bộ sinh tại server vì request native dùng bearer, không dùng cookie trình duyệt.
+
+HTML kết quả được chuyển thành schema page/text/table/form/link, loại scripts, CSRF và password hash. Form giữ thứ tự/tên trùng/default/options/action submitter/confirmation, hỗ trợ formset và hàng mua sắm; kiểm chọn remote qua autocomplete admin có kiểm quyền. React Native dựng controls, không dùng WebView hoặc thực thi HTML/script trên thiết bị. Danh mục navigation lấy theo quyền template. Trợ lý dùng nguyên JSON endpoint và throttle/history hiện có.
+
+HCNS bổ sung `reference/referenceKey` và `references` từ đúng dữ liệu tham chiếu được view web kiểm quyền. App cập nhật các trường liên quan khi đổi nhân viên/ứng viên/tài sản; lương bằng chữ do server tính. Action in trong form gửi `{method:"POST", fields, print:true}` với `action=preview`, dùng nội dung vừa gửi và không lưu quyết định. HTML lỗi422 được chuyển lại thành schema có lỗi/giá trị đang nhập, không xuất bản in lỗi. Các nút in trang đọc dùng GET với `print:true`.
+
+Tệp nhị phân/stream có header `X-IHRMS-Document: 1`, được tải với bearer trong header; không đưa bearer vào URL hoặc trình duyệt ngoài. Chỉ response ngoài phát request_finished; response nội bộ đóng resource không đóng kết nối SQL Server giữa transaction. Hết phiên khi lưu trả401. In HTML dùng bản tự chứa CSS/ảnh static, loại script/remote asset/password/CSRF; app chuyển bản đó thành PDF bằng bộ in của hệ điều hành. Không khẳng định PDF thiết bị giống bản chuẩn khi chưa so ảnh.
+
+Các thao tác ghi không tự retry; phiên/mạng lỗi hiển thị để người dùng tải lại kiểm dữ liệu trước khi gửi lại. Xem [hướng dẫn](NGHIEP_VU_NATIVE.md) và [nhật ký](../PROJECT_WORK_LOG.md) để biết mức kiểm chứng từng luồng.
+
 Gốc `/api/mobile/v1/`, JSON, UTF-8. `MOBILE_API_ENABLED=False` trả 404. Danh sách phân trang 30 dòng, `page`, trả `items`, `page`, `count`, `has_next`; tham số employee trên client không quyết định phạm vi dữ liệu.
 
 ## Phiên
@@ -25,7 +39,7 @@ Thời hạn tuyệt đối dùng `SESSION_COOKIE_AGE` (hiện 8 giờ), không 
 - `GET my-profile/`: chi tiết, lương cơ bản Active và hợp đồng mới nhất của **chính người gọi**, theo truy vấn trang hồ sơ web; không nhận employee id. Không có hồ sơ trả các phần null.
 - `GET profile-history/?kind=transfers|promotions|rewards|disciplines`: lịch sử bản thân, phân trang; tiền là chuỗi thập phân, client định dạng không chuyển qua số dấu phẩy động.
 - `GET organization/`: danh sách Active có tên/mã, phòng ban, vị trí và quản lý Active; không trả liên hệ cá nhân/lương/giấy tờ.
-- `GET profile-approvals/`: yêu cầu Pending cho người có quyền `approve_profile_change_request`. `POST profile-requests/<id>/decision/` nhận `decision=approve|reject|more_info` và `note`, dùng cùng `apps.hrm.services.decide_profile_change` với web. Khóa employee rồi request, kiểm snapshot, ngăn xử lý lặp, lưu audit và thông báo. Mobile chưa tải chứng từ đính kèm: HR xem chứng từ trên web trước khi quyết định.
+- `GET profile-approvals/`: yêu cầu Pending cho người có quyền `approve_profile_change_request`. `POST profile-requests/<id>/decision/` nhận `decision=approve|reject|more_info` và `note`, dùng cùng `apps.hrm.services.decide_profile_change` với web. Khóa employee rồi request, kiểm snapshot, ngăn xử lý lặp, lưu audit và thông báo. Màn hình chuyên biệt chưa có nút chứng từ; HR có thể mở trang yêu cầu tương ứng trong workspace để tải có kiểm quyền trước khi quyết định.
 
 `me/` bổ sung `can_approve_profile_change`; đây chỉ là capability hiển thị, endpoint quyết định vẫn kiểm quyền độc lập. Thông báo cập nhật hồ sơ có destination `profile-requests`, mở lịch sử của người nhận trong app.
 
@@ -33,7 +47,7 @@ Cài đặt giao diện nằm ở **Tôi → Cài đặt → Giao diện**: Theo
 
 Ứng dụng native kiểm tra quyền thông báo hiện tại khi phiên đăng nhập được khôi phục và mỗi lần trở lại foreground. Nếu quyền đã được cấp, ứng dụng lấy token Expo và đăng ký lại vào phiên hiện tại; nếu chưa cấp thì không tự bật hộp thoại. Người dùng chỉ cần chọn **Bật thông báo trên điện thoại** một lần sau khi cấp quyền; thao tác này cũng thử đăng ký ngay.
 
-POST yêu cầu `Content-Type: application/json`, không quá 16 KiB. API không dùng cookie nên các endpoint này miễn CSRF; web portal vẫn giữ CSRF hiện có. Không bật CORS rộng: QA web được phục vụ cùng origin với backend cô lập.
+POST các endpoint chuyên biệt yêu cầu `Content-Type: application/json`, không quá 16 KiB; ngoại lệ `workspace/` theo hợp đồng biểu mẫu/tệp bên trên. API không dùng cookie nên các endpoint này miễn CSRF; web portal vẫn giữ CSRF hiện có. Không bật CORS rộng: QA web được phục vụ cùng origin với backend cô lập.
 
 Lỗi gồm `error` để hiển thị: 400 dữ liệu, 401 hết phiên/đăng nhập sai, 403 thiếu quyền, 404 ngoài phạm vi hoặc không tồn tại, 405 sai method, 413 quá lớn, 415 sai content type. Axes có thể trả trang khóa 403; client cũng xử lý phản hồi không phải JSON mà không hiển thị chi tiết kỹ thuật. Tất cả phản hồi API không được cache.
 
