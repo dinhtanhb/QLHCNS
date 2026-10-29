@@ -6,6 +6,8 @@ import time
 
 from django.conf import settings
 from django.contrib import auth
+from django.contrib.auth.password_validation import validate_password, password_changed
+from django.db import transaction
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
 from django.http import Http404, JsonResponse
@@ -15,6 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.debug import sensitive_post_parameters
 
 from apps.attendance.models import Attendance
+from apps.hrm.models import Employee, EmployeeProfileChangeRequest
 from apps.leave.models import LeaveBalance, LeaveType
 from apps.leave.services import decide_leave, employee_for, submit_leave
 from apps.notification.models import Notification
@@ -112,6 +115,57 @@ def logout(request):
     return reply({'ok': True})
 
 
+@sensitive_post_parameters('old_password', 'new_password', 'confirm_password')
+@endpoint('POST')
+def change_password(request):
+    data = request.mobile_data
+    old = text(data, 'old_password', limit=1024, required=True)
+    new = text(data, 'new_password', limit=1024, required=True)
+    confirm = text(data, 'confirm_password', limit=1024, required=True)
+    user = auth.authenticate(request, username=request.user.username, password=old)
+    if user is None:
+        return reply({'error': 'Mật khẩu hiện tại không đúng hoặc tài khoản tạm bị khóa.'}, 400)
+    if new != confirm:
+        raise ValidationError('Hai mật khẩu mới chưa khớp.')
+    if old == new:
+        raise ValidationError('Mật khẩu mới phải khác mật khẩu hiện tại.')
+    validate_password(new, user)
+    user.set_password(new)
+    user.save(update_fields=['password'])
+    password_changed(new, user)
+    auth.logout(request)
+    return reply({'ok': True})
+
+
+@endpoint('GET', 'POST')
+def profile_requests(request):
+    employee = employee_for(request.user)
+    if not employee or not has_permission(request.user, 'submit_profile_change_request'):
+        raise PermissionDenied('Tài khoản không có quyền gửi yêu cầu cập nhật hồ sơ.')
+    if request.method == 'POST':
+        field = text(request.mobile_data, 'field_name', limit=50, required=True)
+        if field not in EmployeeProfileChangeRequest.ALLOWED_FIELDS:
+            raise PermissionDenied('Trường hồ sơ không được phép cập nhật.')
+        value = text(request.mobile_data, 'new_value', limit=500).strip()
+        if field == 'mobile_phone' and not value:
+            raise ValidationError('Số điện thoại không được để trống.')
+        employee._meta.get_field(field).clean(value, employee)
+        with transaction.atomic():
+            employee = Employee.objects.select_for_update().get(pk=employee.pk)
+            if EmployeeProfileChangeRequest.objects.filter(employee=employee, field_name=field,
+                    new_value=value, status='Pending').exists():
+                raise ValidationError('Yêu cầu này đang chờ Nhân sự duyệt.')
+            item = EmployeeProfileChangeRequest(employee=employee, field_name=field,
+                old_value=str(getattr(employee, field) or ''), submitted_snapshot=str(getattr(employee, field) or ''),
+                new_value=value, reason=text(request.mobile_data, 'reason', limit=500).strip(), created_by=request.user)
+            item.full_clean()
+            item.save()
+        return reply({'ok': True}, 201)
+    return page(request, EmployeeProfileChangeRequest.objects.filter(employee=employee).order_by('-created_date', '-pk'),
+        lambda row: {'id': row.pk, 'field_label': row.get_field_name_display(), 'new_value': row.new_value,
+                     'status_label': row.get_status_display(), 'decision_note': row.decision_note or ''})
+
+
 @endpoint('GET')
 def me(request):
     user = request.user
@@ -121,9 +175,11 @@ def me(request):
         profile = {'employee_code': employee.employee_code, 'full_name': employee.full_name,
             'department': str(employee.department), 'position': str(employee.position),
             'company_email': employee.company_email or '', 'join_date': employee.join_date}
+        profile.update({field: getattr(employee, field) or '' for field in EmployeeProfileChangeRequest.ALLOWED_FIELDS})
     return reply({'username': user.username, 'role': get_role_code(user), 'profile': profile,
         'can_approve': has_permission(user, 'approve_leave') and employee is not None,
         'can_manage_hr': has_permission(user, 'manage_hr'),
+        'can_request_profile_change': employee is not None and has_permission(user, 'submit_profile_change_request'),
         'palette': settings.UI_PALETTE})
 
 

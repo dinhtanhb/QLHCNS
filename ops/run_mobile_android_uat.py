@@ -21,6 +21,7 @@ def main():
     parser.add_argument('--server', default='http://127.0.0.1:8789', help='Synthetic QA backend used by this APK')
     parser.add_argument('--fixed-api', action='store_true', help='APK bundles its backend URL and has no server input')
     parser.add_argument('--business', action='store_true', help='Also submit and approve leave through native controls and verify synthetic DB')
+    parser.add_argument('--settings', action='store_true', help='Verify appearance choices persist across native process termination')
     args = parser.parse_args()
     if not args.serial.startswith('emulator-'):
         parser.error('Only an isolated emulator may be used; this clears its QA app data')
@@ -122,6 +123,25 @@ def main():
     run('shell', 'monkey', '-p', package, '1')
     wait_text('Hồ sơ của tôi')
     checks.append('SecureStore restores login after process termination without credentials')
+    if args.settings:
+        tap('Cài đặt'); wait_text('Theo điện thoại'); tap('Tối')
+        assert find('Tối').get('checked') == 'true'
+        screenshot('native-settings-dark')
+        run('shell', 'am', 'force-stop', package)
+        run('shell', 'monkey', '-p', package, '1'); wait_text('Hồ sơ của tôi')
+        tap('Cài đặt'); wait_text('Theo điện thoại')
+        for _ in range(8):
+            selected = find('Tối')
+            if selected is not None:
+                break
+            run('shell', 'input', 'swipe', '540', '1200', '540', '500', '350')
+        assert selected is not None and selected.get('checked') == 'true'
+        checks.append('Native dark preference survives process termination in SecureStore')
+        tap('Sáng'); assert find('Sáng').get('checked') == 'true'
+        screenshot('native-settings-light')
+        tap('Theo điện thoại'); assert find('Theo điện thoại').get('checked') == 'true'
+        checks.append('Native light and system preferences selectable')
+        run('shell', 'input', 'keyevent', '4'); wait_text('Hồ sơ của tôi')
     screenshot('native-profile-light')
     tap('Chấm công'); wait_text('8.00 giờ làm việc')
     checks.append('Native attendance displays server record')

@@ -3,6 +3,8 @@ from . import views
 
 app_name = 'mobile'
 urlpatterns = [
+    path('change-password/', views.change_password, name='change_password'),
+    path('profile-requests/', views.profile_requests, name='profile_requests'),
     path('push-token/', views.push_token, name='push_token'),
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),

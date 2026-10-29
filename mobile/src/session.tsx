@@ -9,6 +9,7 @@ type Session = {
   me: Me | null; ready: boolean; busy: boolean; error: string;
   login: (server: string, username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  changePassword: (old_password: string, new_password: string, confirm_password: string) => Promise<void>;
   request: <T>(path: string, data?: unknown) => Promise<T>;
   refreshMe: () => Promise<void>;
 };
@@ -117,7 +118,11 @@ export function SessionProvider({ children }: PropsWithChildren) {
     } catch (err) { setError(err instanceof Error ? err.message : 'Chưa thể đăng xuất.'); throw err; }
     finally { setBusy(false); }
   };
-  return <Context.Provider value={{ me, ready, busy, error, login, logout, request, refreshMe }}>{children}</Context.Provider>;
+  const changePassword = async (old_password: string, new_password: string, confirm_password: string) => {
+    await request('change-password/', { old_password, new_password, confirm_password });
+    await forget();
+  };
+  return <Context.Provider value={{ me, ready, busy, error, login, logout, changePassword, request, refreshMe }}>{children}</Context.Provider>;
 }
 
 export function useSession() {

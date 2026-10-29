@@ -20,6 +20,10 @@ Thời hạn tuyệt đối dùng `SESSION_COOKIE_AGE` (hiện 8 giờ), không 
 - `GET notifications/`: thông báo của chính nhân viên. `destination` chỉ dùng giá trị điều hướng được cho phép; không mở URL tùy ý từ thông báo.
 - `POST notifications/<id>/read/`: chỉ đánh dấu thông báo của bản thân.
 - `POST push-token/`: đăng ký Expo token với phiên hiện tại; trả 503 khi push chưa bật. Đăng ký trên tài khoản mới tháo địa chỉ push khỏi phiên cũ. Đăng xuất thu hồi phiên đồng thời bỏ đăng ký đó.
+- `POST change-password/`: `old_password`, `new_password`, `confirm_password`; kiểm mật khẩu hiện tại qua backend/Axes, kiểm chính sách mật khẩu Django. Thành công thu hồi phiên hiện tại và các phiên khác mất hiệu lực theo hash mật khẩu; app yêu cầu đăng nhập lại.
+- `GET profile-requests/`: phân trang các yêu cầu cập nhật hồ sơ của chính người gọi; `POST` nhận `field_name`, `new_value`, `reason`. Chỉ email cá nhân (`personal_email`), điện thoại (`mobile_phone`), địa chỉ (`address`), phải có hồ sơ và quyền `submit_profile_change_request`. Tạo yêu cầu Pending, giữ nguyên dữ liệu nhân viên đến khi HR duyệt qua quy trình web hiện có. Không nhận employee/status từ client, kiểm kiểu/độ dài/email và ngăn gửi trùng đang chờ duyệt.
+
+Cài đặt giao diện nằm ở **Tôi → Cài đặt → Giao diện**: Theo điện thoại/Sáng/Tối. Lưu riêng trên thiết bị (SecureStore native, localStorage chỉ chứa lựa chọn giao diện trên web), không gắn vào hồ sơ nhân sự; không thay palette do máy chủ chọn. Cài đặt cũng hiển thị quyền thông báo của hệ điều hành, không coi quyền này là bằng chứng token đã đăng ký hay push đã nhận.
 
 Ứng dụng native kiểm tra quyền thông báo hiện tại khi phiên đăng nhập được khôi phục và mỗi lần trở lại foreground. Nếu quyền đã được cấp, ứng dụng lấy token Expo và đăng ký lại vào phiên hiện tại; nếu chưa cấp thì không tự bật hộp thoại. Người dùng chỉ cần chọn **Bật thông báo trên điện thoại** một lần sau khi cấp quyền; thao tác này cũng thử đăng ký ngay.
 

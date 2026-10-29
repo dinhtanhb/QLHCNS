@@ -56,6 +56,43 @@ class MobileAPITests(TestCase):
         return LeaveRequest.objects.create(employee=self.people[employee], leave_type=self.kind,
             from_date=date(2026, 11, 2), to_date=date(2026, 11, 2), reason='QA', **kwargs)
 
+    def test_profile_request_is_owned_validated_and_requires_hr_review(self):
+        from apps.hrm.models import EmployeeProfileChangeRequest
+        self.login_as()
+        payload = {'field_name': 'personal_email', 'new_value': 'qa-new@example.test', 'employee_id': self.people[3].pk, 'status': 'Approved'}
+        self.assertEqual(self.post('profile-requests/', payload).status_code, 201)
+        row = EmployeeProfileChangeRequest.objects.get()
+        self.assertEqual(row.employee_id, self.people[0].pk)
+        self.assertEqual(row.status, 'Pending')
+        self.people[0].refresh_from_db()
+        self.assertNotEqual(self.people[0].personal_email, row.new_value)
+        self.assertEqual(self.post('profile-requests/', payload).status_code, 400)
+        self.assertEqual(self.post('profile-requests/', {'field_name': 'personal_email', 'new_value': 'bad-email'}).status_code, 400)
+        self.assertEqual(self.post('profile-requests/', {'field_name': 'department', 'new_value': 'x'}).status_code, 403)
+        self.login_as(3)
+        self.assertEqual(self.client.get(BASE+'profile-requests/').json()['count'], 0)
+
+    def test_password_change_checks_old_confirmation_strength_and_revokes_sessions(self):
+        self.login_as()
+        second = Client(); self.login_as(client=second)
+        payload = {'old_password': 'wrong', 'new_password': 'QA-strong!2026-session', 'confirm_password': 'QA-strong!2026-session'}
+        self.assertEqual(self.post('change-password/', payload).status_code, 400)
+        self.assertEqual(self.client.get(BASE+'me/').status_code, 200)
+        payload['old_password'] = 'qa-password'; payload['confirm_password'] = 'mismatch'
+        self.assertEqual(self.post('change-password/', payload).status_code, 400)
+        payload.update(new_password='123', confirm_password='123')
+        self.assertEqual(self.post('change-password/', payload).status_code, 400)
+        payload.update(new_password='QA-strong!2026-session', confirm_password='QA-strong!2026-session')
+        self.assertEqual(self.post('change-password/', payload).status_code, 200)
+        self.assertEqual(self.client.get(BASE+'me/').status_code, 401)
+        self.assertEqual(second.get(BASE+'me/').status_code, 401)
+        self.users[0].refresh_from_db()
+        self.assertTrue(self.users[0].check_password(payload['new_password']))
+
+    def test_account_endpoints_reject_anonymous(self):
+        self.assertEqual(self.post('change-password/').status_code, 401)
+        self.assertEqual(self.post('profile-requests/').status_code, 401)
+
     def test_login_session_is_separate_and_does_not_set_cookies(self):
         portal = Client()
         portal.force_login(self.users[3])

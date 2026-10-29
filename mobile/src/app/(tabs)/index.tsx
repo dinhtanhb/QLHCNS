@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useSession } from '../../session';
 import { Button, Card, Confirm, Copy, ErrorNote, Screen } from '../../ui';
 import type { LeaveOptions } from '../../types';
@@ -22,7 +22,9 @@ export default function Profile() {
     {options ? <Card><Copy title>Phép năm {options.year}</Copy><Copy>{options.annual_available === null ? 'Chưa được cấp hạn mức phép năm.' : `${options.annual_available} ngày còn có thể đăng ký`}</Copy>
       <Copy muted>Đã tính các đơn đang chờ duyệt.</Copy></Card> : null}
     {me?.can_manage_hr ? <Card><Copy title>Dành cho Nhân sự</Copy><Copy>Đợt đầu hỗ trợ theo dõi và duyệt nghỉ phép theo quyền. Quản trị hồ sơ, hạn mức và cấu hình tiếp tục thực hiện trên cổng web.</Copy></Card> : null}
-    <Copy muted>Tài khoản: {me?.username}</Copy><Button label="Đăng xuất" onPress={() => setConfirm(true)} secondary busy={busy} />
+    <Copy muted>Tài khoản: {me?.username}</Copy>
+    <Button label="Cài đặt" onPress={() => router.push('/settings')} secondary />
+    <Button label="Đăng xuất" onPress={() => setConfirm(true)} secondary busy={busy} />
     {pushConfigured ? <Card><Copy title>Thông báo trên điện thoại</Copy><Copy muted>Sau khi cấp quyền, ứng dụng tự đăng ký lại khi mở hoặc trở về. Lời nhắc chỉ hiển thị chung; mở ứng dụng để xem nội dung.</Copy>
       <Button label="Bật thông báo trên điện thoại" secondary busy={pushBusy} onPress={() => {
         setPushBusy(true); setPushMessage('');
