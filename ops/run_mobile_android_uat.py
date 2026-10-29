@@ -125,7 +125,7 @@ def main():
     run('shell', 'settings', 'put', 'system', 'screen_off_timeout', '2147483647')
     run('shell', 'input', 'keyevent', '82')
     run('logcat', '-c')
-    run('shell', 'monkey', '-p', package, '1')
+    run('shell', 'am', 'start', '-n', f'{package}/.MainActivity')
     tree = wait_text('Đăng nhập')
     editors = [n for n in tree.iter('node') if n.get('class') == 'android.widget.EditText']
     expected = 2 if args.fixed_api else 3
@@ -136,19 +136,25 @@ def main():
         tree = xml(); editors = [n for n in tree.iter('node') if n.get('class') == 'android.widget.EditText']
         enter(editors[index], value)
         run('shell', 'input', 'keyevent', '4')
-    tap('Đăng nhập'); wait_text('Hồ sơ của tôi')
+    tap('Đăng nhập'); wait_text('Trang chủ')
+    wait_text('Bản ghi chấm công'); wait_text('Đơn nghỉ chờ duyệt')
+    wait_text('Chấm công gần nhất')
+    screenshot('native-home-dashboard-light')
+    checks.append('Native home summary cards and the latest attendance snapshot render')
     checks.append('Native login through isolated real API without Metro')
     run('shell', 'am', 'force-stop', package)
-    run('shell', 'monkey', '-p', package, '1')
-    wait_text('Hồ sơ của tôi')
+    run('shell', 'am', 'start', '-n', f'{package}/.MainActivity')
+    wait_text('Trang chủ')
     checks.append('SecureStore restores login after process termination without credentials')
     if args.workspace:
         work_date = timezone.localdate()+timedelta(days=120)
         while work_date.weekday() >= 5 or TimesheetEntry.objects.filter(employee__user_account__username='demo-employee', work_date=work_date).exists():
             work_date += timedelta(days=1)
         reason = 'QA-NATIVE-WORKSPACE-'+uuid.uuid4().hex[:8]
-        tap('Nghiệp vụ'); tap('Bảng công'); wait_text('Ghi nhận giờ làm việc')
+        tap('Nghiệp vụ'); tap('Cá nhân, 4 mục'); tap('Bảng công'); wait_text('Ghi nhận giờ làm việc')
         field('Ngày làm việc *', work_date.isoformat())
+        tap('Chọn ngày/giờ: Ngày làm việc'); wait_text('Đóng lịch'); tap(str(work_date.day)); wait_text(work_date.isoformat())
+        checks.append('Native date field opens an in-app monthly calendar grid and applies selected day')
         field('Công việc thực hiện', reason)
         field('Số giờ *', '2,5')
         tap('Thêm dòng chấm công')
@@ -172,9 +178,10 @@ def main():
         tap('Quay lại'); wait_text('Phiếu lương của tôi')
         tap('Quay lại'); scroll_top(); wait_text('Hồ sơ chi tiết')
         run('shell', 'input', 'keyevent', '4')
-        run('shell', 'input', 'swipe', '540', '400', '540', '1800', '350'); wait_text('Hồ sơ của tôi')
+        run('shell', 'input', 'swipe', '540', '400', '540', '1800', '350'); wait_text('Trang chủ')
     if args.employee:
         tap('Nghiệp vụ'); wait_text('Hồ sơ chi tiết')
+        tap('Cá nhân, 4 mục'); wait_text('Bảng công'); screenshot('native-business-groups')
         tap('Hồ sơ chi tiết'); wait_text('Thông tin cá nhân và quá trình công tác của bạn')
         screenshot('native-personal-profile')
         run('shell', 'input', 'keyevent', '4'); wait_text('Hồ sơ chi tiết')
@@ -183,15 +190,15 @@ def main():
         run('shell', 'input', 'keyevent', '4'); wait_text('Hồ sơ chi tiết')
         run('shell', 'input', 'keyevent', '4')
         run('shell', 'input', 'swipe', '540', '400', '540', '1800', '350')
-        wait_text('Hồ sơ của tôi')
+        wait_text('Trang chủ')
         checks.append('Native employee profile and organization directory load and Back returns to profile')
     if args.settings:
-        tap('Cài đặt'); wait_text('Theo điện thoại'); tap('Tối')
+        tap('Tôi'); tap('Cài đặt'); wait_text('Theo điện thoại'); tap('Tối')
         assert find('Tối').get('checked') == 'true'
         screenshot('native-settings-dark')
         run('shell', 'am', 'force-stop', package)
-        run('shell', 'monkey', '-p', package, '1'); wait_text('Hồ sơ của tôi')
-        tap('Cài đặt'); wait_text('Theo điện thoại')
+        run('shell', 'am', 'start', '-n', f'{package}/.MainActivity'); wait_text('Trang chủ')
+        tap('Tôi'); tap('Cài đặt'); wait_text('Theo điện thoại')
         for _ in range(8):
             selected = find('Tối')
             if selected is not None:
@@ -228,12 +235,12 @@ def main():
         tap('Tôi'); tap('Đăng xuất'); tap('Xác nhận'); wait_text('Đăng nhập')
         # Reset only the emulator QA package, avoiding stale server/user fields.
         run('shell', 'am', 'force-stop', package); run('shell', 'pm', 'clear', package)
-        run('shell', 'monkey', '-p', package, '1'); wait_text('Đăng nhập')
+        run('shell', 'am', 'start', '-n', f'{package}/.MainActivity'); wait_text('Đăng nhập')
         values = ('demo-manager', password) if args.fixed_api else (args.server, 'demo-manager', password)
         for index, value in enumerate(values):
             editors = [n for n in xml().iter('node') if n.get('class') == 'android.widget.EditText']
             enter(editors[index], value); run('shell', 'input', 'keyevent', '4')
-        tap('Đăng nhập'); wait_text('Hồ sơ của tôi'); tap('Duyệt đơn')
+        tap('Đăng nhập'); wait_text('Trang chủ'); tap('Mở đơn cần xử lý'); wait_text('Duyệt đơn')
         tap(f'Duyệt đơn #{leave.pk}'); wait_text('Duyệt đơn nghỉ phép?'); tap('Xác nhận')
         wait_text('Đã xử lý đơn nghỉ phép.')
         leave.refresh_from_db()

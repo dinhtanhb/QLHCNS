@@ -61,7 +61,7 @@ http://192.168.1.20:8789
 4. Nhập tài khoản thử **của nhân viên** và mật khẩu được cấp.
 5. Chạm **Đăng nhập** một lần và chờ.
 
-**Kết quả đúng:** thấy **Hồ sơ của tôi** và thông tin nhân viên giả lập. Nếu ứng dụng báo tài khoản chưa gắn hồ sơ, nhờ người phụ trách chuẩn bị lại tài khoản trước khi thử nghỉ phép.
+**Kết quả đúng:** thấy **Trang chủ** với số liệu tóm tắt. Tab **Tôi** mở thông tin hồ sơ; Cài đặt nằm trong tab này. Nếu ứng dụng báo tài khoản chưa gắn hồ sơ, nhờ người phụ trách chuẩn bị lại tài khoản trước khi thử nghỉ phép.
 
 Máy chủ chỉ hoạt động trong Wi-Fi nội bộ có thể không truy cập được qua 4G/5G. Phần truy cập ngoài công ty cần người kỹ thuật cấu hình riêng.
 
@@ -74,6 +74,12 @@ Máy chủ chỉ hoạt động trong Wi-Fi nội bộ có thể không truy c�
 Chạm **Tôi** ở thanh dưới cùng. Kiểm tra tên, mã nhân viên, phòng ban, email và quỹ phép nếu đã được cấp.
 
 **Đúng khi:** dữ liệu thuộc nhân viên thử đang đăng nhập. Nếu chưa có hạn mức, ứng dụng báo chưa được cấp quỹ phép.
+
+### Trang chủ và nghiệp vụ
+
+Trang chủ có các ô số liệu; chạm từng ô để mở danh sách tương ứng. Nếu có nhiều ngày chấm công, biểu đồ cột thể hiện tối đa 7 bản ghi gần nhất; nếu mới có một bản ghi, ứng dụng hiện ngày và số giờ gần nhất. Mở **Nghiệp vụ** để xem các nhóm; chạm tên nhóm để bung/thu danh sách.
+
+Admin, Trung tâm Báo cáo Excel và các màn hình cần thao tác máy tính không hiện trong menu mobile. Dùng bản web cho những việc đó.
 
 ### B. Xem chấm công
 

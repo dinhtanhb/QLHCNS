@@ -2,6 +2,8 @@
 
 Thứ tự chủ dự án chọn ngày 29/10/2026: **Nhân viên và người duyệt → Nhân sự → Hành chính → Tài chính/quản trị**. Các nghiệp vụ trên web là nguồn quy tắc; app dùng API Django có cùng quyền và phạm vi dữ liệu. Không coi màn hình mở website là tính năng native đã triển khai.
 
+Danh sách dưới đây mô tả các luồng native đã được xây dựng; danh mục điện thoại chỉ hiển thị phần phù hợp để xem và xử lý nhanh. Những mục quản trị/báo cáo nặng được lọc khỏi menu mobile và tiếp tục dùng trên web.
+
 ## Đã có trước đợt mở rộng
 
 - Đăng nhập/đăng xuất, khôi phục phiên, hồ sơ cơ bản, xem chấm công, hạn mức nghỉ phép.
@@ -39,15 +41,15 @@ Các phần đã bổ sung vào **Tôi → Nghiệp vụ** qua biểu mẫu nati
 - Tài sản, kiểm kê, đề nghị thanh lý, phê duyệt/biên bản và tài liệu xuất.
 - Công việc/lịch/hoạt động dự án: bổ sung phần quản lý, đề xuất và phê duyệt; giữ nguyên phạm vi dự án tách biệt HCNS.
 
-## Nhóm Tài chính/quản trị — truy cập qua danh mục native
+## Nhóm Tài chính/quản trị — giới hạn danh mục trên điện thoại
 
-- Kỳ lương, tính/kiểm tra/khóa kỳ, phát hành phiếu; phụ thuộc, cấu hình thuế/bảo hiểm và ngân sách.
-- Báo cáo nhân sự, chấm công, biến động, ngân sách; xuất có kiểm quyền.
-- Quản trị mô hình theo quyền staff/model của Django; chọn quan hệ, tìm kiếm, biểu mẫu nhiều dòng và tệp có controls native. Không tự mở quyền vì app có menu.
+- Cấu hình kỳ lương, dữ liệu thuế/bảo hiểm và các thao tác quản trị tài chính tiếp tục thực hiện trên web.
+- Trang Admin và Trung tâm Báo cáo Excel không có trong menu mobile. Các màn hình quản lý tài sản, kiểm kê/thanh lý và báo cáo tổng hợp cũng được ẩn khỏi danh mục điện thoại vì cần thao tác trên máy tính.
+- Việc ẩn menu chỉ điều chỉnh cách dùng app; Django vẫn là nơi kiểm quyền. Không dùng app để thay thế các quy trình quản trị trên web.
 
 ## Phạm vi nghiệm thu
 
-Các nhóm trên đã có đường truy cập và thao tác native dùng cùng xử lý máy chủ. Bảng web được chuyển thành thẻ, không giữ nguyên bố cục desktop hoặc chạy JavaScript trong app. Đã bổ sung riêng chọn ngày/giờ, chọn và tải tệp, in/lưu PDF, dòng hàng mua sắm, formset và mở dòng kiểm kê/thanh lý. Xem [hướng dẫn sử dụng](NGHIEP_VU_NATIVE.md).
+Các nghiệp vụ vẫn dùng chung xử lý máy chủ và quyền như web. Danh mục điện thoại chỉ giữ các chức năng xem thông tin và xử lý nhanh; Admin, báo cáo Excel và thao tác quản trị nặng được dùng trên web. Bảng web được chuyển thành thẻ, không giữ bố cục desktop hoặc chạy JavaScript trong app. Xem [hướng dẫn sử dụng](NGHIEP_VU_NATIVE.md).
 
 Kiểm thử tự động bao gồm các luồng đại diện và phân quyền; quét trang GET không thay cho kiểm thử thao tác ghi của mọi màn hình. Các tích hợp SharePoint thật, máy in, iOS và nghiệm thu toàn bộ biểu mẫu trên điện thoại thật vẫn cần kiểm riêng trước khi phát hành nội bộ rộng. Chi tiết đã chạy và giới hạn nằm trong [nhật ký](../PROJECT_WORK_LOG.md).
 
@@ -57,7 +59,7 @@ Kiểm API/quyền và ghi dữ liệu trên DB QA cô lập, kiểm giao diện
 
 ## Dùng các chức năng mới
 
-Trong tab **Tôi**, chọn **Nghiệp vụ**:
+Từ **Trang chủ** hoặc tab **Tôi**, chọn **Nghiệp vụ** rồi mở nhóm phù hợp:
 
 1. **Hồ sơ chi tiết**: xem thông tin cá nhân, hợp đồng/lương cơ bản nếu có; chọn Điều chuyển/Bổ nhiệm/Khen thưởng/Kỷ luật để xem từng loại lịch sử. Dùng Trang sau/Trang trước khi có nhiều bản ghi.
 2. **Sơ đồ tổ chức**: xem danh sách nhân viên đang làm việc, phòng ban, vị trí và người quản lý trực tiếp.

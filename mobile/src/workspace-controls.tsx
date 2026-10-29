@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Modal, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import * as DocumentPicker from 'expo-document-picker';
 import { Button, Card, Copy, Field, s } from './ui';
@@ -24,7 +25,7 @@ export function NativeControl({ field, value, checked, files, busy, onChange, on
   const t = useTheme(); const [choosing, setChoosing] = useState(false); const [search, setSearch] = useState('');
   const { dark } = useAppearance();
   const { request } = useSession();
-  const [dateOpen, setDateOpen] = useState(false); const [fileError, setFileError] = useState('');
+  const [dateOpen, setDateOpen] = useState(false); const [calendarOpen, setCalendarOpen] = useState(false); const [calendarMonth, setCalendarMonth] = useState(new Date()); const [fileError, setFileError] = useState('');
   const [remoteOptions, setRemoteOptions] = useState<WorkspaceField['options']>([]); const [queryBusy, setQueryBusy] = useState(false);
   const [remotePage, setRemotePage] = useState(1); const [more, setMore] = useState(false);
   useEffect(() => {
@@ -94,7 +95,13 @@ export function NativeControl({ field, value, checked, files, busy, onChange, on
   const isDate = ['date', 'month', 'time', 'datetime-local'].includes(field.type);
   const parsed = field.type === 'time' ? new Date(`2000-01-01T${raw || '12:00'}`) : new Date(raw.length === 7 ? raw+'-01T12:00' : raw.length === 10 ? raw+'T12:00' : raw);
   const initialDate = Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+  const calendarStart = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1);
+  const calendarOffset = (calendarStart.getDay() + 6) % 7;
+  const calendarDays = Array.from({ length: 42 }, (_, index) => new Date(calendarStart.getFullYear(), calendarStart.getMonth(), index - calendarOffset + 1));
+  const selectedDay = /^\d{4}-\d{2}-\d{2}/.test(raw) ? raw.slice(0, 10) : '';
+  const isoDay = (date: Date) => `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;
   const pick = () => {
+    if (field.type !== 'time') { setCalendarMonth(initialDate); setCalendarOpen(true); return; }
     if (Platform.OS !== 'android') { setDateOpen(true); return; }
     DateTimePickerAndroid.open({ value: initialDate, mode: field.type === 'time' ? 'time' : 'date',
       onChange: (event, picked) => {
@@ -111,6 +118,32 @@ export function NativeControl({ field, value, checked, files, busy, onChange, on
     keyboardType={field.type === 'number' ? 'decimal-pad' : field.type === 'email' ? 'email-address' : field.type === 'tel' ? 'phone-pad' : 'default'}
     maxLength={field.maxLength || undefined} placeholder={field.placeholder || (field.numericLocale ? 'Ví dụ: 1.000 hoặc 0,5' : isDate ? field.type === 'time' ? 'HH:MM' : field.type === 'month' ? 'YYYY-MM' : field.type === 'datetime-local' ? 'YYYY-MM-DDTHH:MM' : 'YYYY-MM-DD' : undefined)} />
     {isDate && Platform.OS !== 'web' ? <Button label={'Chọn ngày/giờ: '+field.label} secondary disabled={disabled} onPress={pick} /> : null}
+    <Modal visible={calendarOpen} transparent animationType="fade" onRequestClose={() => setCalendarOpen(false)}>
+      <View style={[s.overlay, { backgroundColor: t.bg }]}><Card>
+        <View style={[s.row, { justifyContent: 'space-between' }]}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Tháng trước" onPress={() => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth()-1, 1))} style={[s.button, { minWidth: 48, backgroundColor: t.surface, borderColor: t.border }]}><Ionicons name="chevron-back" size={20} color={t.text} /></Pressable>
+          <Copy title>{calendarMonth.toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' })}</Copy>
+          <Pressable accessibilityRole="button" accessibilityLabel="Tháng sau" onPress={() => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth()+1, 1))} style={[s.button, { minWidth: 48, backgroundColor: t.surface, borderColor: t.border }]}><Ionicons name="chevron-forward" size={20} color={t.text} /></Pressable>
+        </View>
+        <View style={{ flexDirection: 'row' }}>{['T2','T3','T4','T5','T6','T7','CN'].map(day => <View key={day} style={{ flex: 1, alignItems: 'center', paddingVertical: 8 }}><Copy muted>{day}</Copy></View>)}</View>
+        {Array.from({ length: 6 }, (_, week) => <View key={week} style={{ flexDirection: 'row' }}>{calendarDays.slice(week*7, week*7+7).map((day, index) => {
+          const value = isoDay(day); const outside = day.getMonth() !== calendarMonth.getMonth(); const selected = value === selectedDay;
+          const belowMin = !!field.min && value < field.min.slice(0, 10); const aboveMax = !!field.max && value > field.max.slice(0, 10); const unavailable = disabled || belowMin || aboveMax;
+          return <Pressable key={index} accessibilityRole="button" accessibilityLabel={day.toLocaleDateString('vi-VN')} accessibilityState={{ selected, disabled: unavailable || outside }} disabled={unavailable || outside}
+            onPress={() => {
+              onChange(dateValue(day, field.type)); setCalendarOpen(false);
+              if (field.type === 'datetime-local' && Platform.OS === 'android') DateTimePickerAndroid.open({ value: day, mode: 'time', onChange: (event, picked) => {
+                if (event.type === 'set' && picked) { const chosen = new Date(day); chosen.setHours(picked.getHours(), picked.getMinutes()); onChange(dateValue(chosen, field.type)); }
+              } });
+              else if (field.type === 'datetime-local') setDateOpen(true);
+            }} style={{ flex: 1, minHeight: 44, margin: 2, alignItems: 'center', justifyContent: 'center', borderRadius: 8, backgroundColor: selected ? t.brand : 'transparent', opacity: outside ? 0.35 : unavailable ? 0.45 : 1 }}>
+            <Text style={{ color: selected ? t.onBrand : t.text, fontSize: 16, fontWeight: selected ? '600' : '400' }}>{day.getDate()}</Text>
+          </Pressable>;
+        })}</View>)}
+        <Button label="Hôm nay" secondary onPress={() => { const today = new Date(); setCalendarMonth(today); onChange(dateValue(today, field.type)); setCalendarOpen(false); }} />
+        <Button label="Đóng lịch" secondary onPress={() => setCalendarOpen(false)} />
+      </Card></View>
+    </Modal>
     {dateOpen && Platform.OS === 'ios' ? <><DateTimePicker value={initialDate} mode={field.type === 'time' ? 'time' : field.type === 'datetime-local' ? 'datetime' : 'date'}
       themeVariant={dark ? 'dark' : 'light'} onChange={(_, picked) => { if (picked) onChange(dateValue(picked, field.type)); }} />
       <Button label="Xong" secondary onPress={() => setDateOpen(false)} /></> : null}

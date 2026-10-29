@@ -1,13 +1,13 @@
 # Nghiệp vụ native dùng cùng quy tắc với web
 
-Vào **Tôi → Nghiệp vụ**. Danh mục hiển thị theo quyền của tài khoản. Bảng trên web được trình bày thành thẻ bản ghi; biểu mẫu là các trường và nút native.
+Từ **Trang chủ**, mở **Nghiệp vụ**. Danh mục lấy theo quyền tài khoản, chia thành các nhóm có thể mở/thu gọn và có biểu tượng để tìm nhanh. Tab **Tôi** giữ hồ sơ cá nhân và Cài đặt. Trang chủ hiển thị số chấm công, đơn nghỉ chờ, số đơn cần duyệt theo quyền, thông báo chưa đọc và giờ làm gần nhất; biểu đồ giờ làm hiện khi có từ hai bản ghi trở lên.
 
 ## Cài bản QA và thử nhanh
 
 1. Lấy APK QA mới nhất tại `D:\IHRMS_Review_Exports\Mobile_ActCode_QA_20261029\apk\IHRMS-QA.apk` trên máy tính, gửi sang điện thoại bằng cáp hoặc cách chia sẻ tệp nội bộ.
 2. Mở tệp trên điện thoại và chọn **Cập nhật/Cài đặt**. Bản QA giữ cùng khóa ký; không cần gỡ bản đang dùng. Nếu Android hỏi quyền cài từ ứng dụng quản lý tệp, cấp cho đúng ứng dụng đó.
 3. Điện thoại và máy tính cùng mạng. Bản APK này dùng cố định `http://192.168.1.12:8790`; đây là backend với dữ liệu giả, không phải hệ thống vận hành. Dùng tài khoản trong `D:\IHRMS_Review_Exports\Mobile_Demo10_20261028\qa\DEMO_ACCOUNTS.txt` trên máy tính; không đưa tệp tài khoản vào Git hoặc gửi chung APK.
-4. Đăng nhập nhân viên, vào **Tôi → Nghiệp vụ → Bảng công**, tạo một dòng thử với `2,5` giờ. Kiểm tra thông báo thành công và dữ liệu trong đúng tháng.
+4. Đăng nhập nhân viên, vào **Trang chủ → Nghiệp vụ → Cá nhân → Bảng công**, tạo một dòng thử với `2,5` giờ. Ô ngày có thể nhập trực tiếp hoặc mở lịch theo tháng. Kiểm tra thông báo thành công và dữ liệu trong đúng tháng.
 5. Mở **Phiếu lương → Tải PDF → Mở hoặc lưu tệp**. Thử quay lại app, đóng/mở lại và chuyển sáng/tối.
 6. Thử tiếp tài khoản HR, hành chính và tài chính đúng quyền. Với các thao tác duyệt, dùng hai tài khoản QA khác nhau và kiểm tra cả trạng thái đã lưu lẫn thông báo của người gửi.
 
@@ -29,9 +29,9 @@ Giữ cửa sổ đó mở trong lúc thử. Nếu báo cổng đã được s�
 
 ## Nhân sự, Hành chính, Tài chính/quản trị
 
-Mở nhóm tương ứng để truy cập nhân viên/hợp đồng/lịch sử, tuyển dụng/checklist, công văn/tài liệu, phòng/xe/VPP/mua sắm, tài sản/kiểm kê/thanh lý, hoạt động dự án, kỳ lương/cấu hình và báo cáo. Chọn bản ghi để mở thao tác; máy chủ tiếp tục kiểm quyền đối tượng, quy trình và trạng thái.
+Mở nhóm tương ứng để xem nhân viên/hợp đồng, công văn/tài liệu, phòng/xe/VPP/mua sắm, lịch/đào tạo, dự án và các thao tác nhanh được giữ cho điện thoại. Chọn bản ghi để xem hoặc xử lý; máy chủ tiếp tục kiểm quyền đối tượng, quy trình và trạng thái.
 
-Tài khoản quản trị có thể mở **Trang Quản Trị (Admin)**. Quyền từng mô hình vẫn được kiểm. Danh sách lựa chọn có tìm kiếm; dùng **Tải thêm lựa chọn** nếu máy chủ còn kết quả.
+Admin, Trung tâm Báo cáo Excel và các màn hình thiên về máy tính như chạy/cấu hình lương, quản lý tài sản, kiểm kê và thanh lý không xuất hiện trong danh mục mobile. Những chức năng này vẫn dùng trên web theo quyền hiện có. Các trang nghiệp vụ mobile còn lại vẫn được máy chủ kiểm quyền như trước.
 
 Liên kết thêm danh mục mở thành trang riêng trên app. Nên tạo danh mục cần dùng trước khi điền biểu mẫu chính; khi quay lại trang trước, app tải lại dữ liệu và không tự giữ bản nhập chưa lưu. Biểu đồ dựng bằng JavaScript của web chưa được tái hiện nguyên dạng trên mobile; dùng các bảng, thẻ số liệu và tệp báo cáo tương ứng để tra cứu.
 
@@ -39,7 +39,7 @@ Liên kết thêm danh mục mở thành trang riêng trên app. Nên tạo danh
 
 1. Ô có `*` là bắt buộc. Trường bị khóa không sửa được.
 2. Mở danh sách để tìm/chọn; với nhiều lựa chọn, bấm **Xong** sau khi chọn.
-3. Ngày dùng `YYYY-MM-DD`, giờ `HH:MM`, ngày kèm giờ `YYYY-MM-DDTHH:MM`. Điện thoại có nút mở bộ chọn ngày/giờ hệ thống.
+3. Ngày dùng `YYYY-MM-DD`, giờ `HH:MM`, ngày kèm giờ `YYYY-MM-DDTHH:MM`. Bấm **Chọn ngày/giờ** để mở lịch tháng; trường ngày kèm giờ sẽ tiếp tục cho chọn giờ.
 4. Số tiền dùng dạng `1.000.000` hoặc `12,5`; không nhập đơn vị “đồng”.
 5. Biểu mẫu nhiều dòng có **Thêm dòng/Xóa dòng**; mua sắm có **Thêm dòng hàng hóa**. Biểu mẫu HCNS tự điền các trường liên quan khi chọn nhân viên/ứng viên/tài sản trong phạm vi quyền. Kiểm tra lại sau khi chọn; lương/ngày hiệu lực phải xác nhận riêng. **In / lưu PDF** kiểm tra và dùng nội dung đang nhập, không tự lưu bản nháp quyết định. Lương bằng chữ được tính khi cập nhật bản xem trước hoặc xuất/in.
 6. **Chọn tệp** mở trình chọn tài liệu. Mỗi tệp tối đa20 MB; máy chủ vẫn kiểm định dạng. Bấm **Bỏ tệp** nếu chọn nhầm.

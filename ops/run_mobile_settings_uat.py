@@ -32,23 +32,43 @@ def main():
             page.get_by_role('textbox', name='Tên đăng nhập', exact=True).fill('demo-employee')
             page.get_by_role('textbox', name='Mật khẩu', exact=True).fill(secret)
             page.get_by_role('button', name='Đăng nhập', exact=True).click()
-            expect(page.get_by_text('Hồ sơ của tôi', exact=True)).to_be_visible()
+            expect(page.get_by_role('heading', name='Trang chủ', exact=True)).to_be_visible()
+        def profile():
+            page.get_by_text('Tôi', exact=True).last.click()
+            expect(page.get_by_role('heading', name='Hồ sơ của tôi', exact=True)).to_be_visible()
+            page.wait_for_timeout(750)
         def settings():
+            if page.get_by_role('heading', name='Hồ sơ của tôi', exact=True).count() == 0:
+                profile()
             page.get_by_role('button', name='Cài đặt', exact=True).click()
             expect(page.get_by_role('radio', name='Theo điện thoại', exact=True)).to_be_visible()
         login(password)
+        expect(page.get_by_text('Thông báo chưa đọc', exact=True)).to_be_visible()
+        expect(page.get_by_text('Chấm công gần nhất', exact=True)).to_be_visible()
+        page.screenshot(path=str(args.output/'home-dashboard.png'), full_page=True)
+        checks.append('Home shows account-specific summary metrics and latest attendance hours/date')
+        page.get_by_role('button', name='Nghiệp vụ', exact=True).click()
+        expect(page.get_by_role('heading', name='Nghiệp vụ', exact=True)).to_be_visible()
+        groups = page.locator('[role="button"][aria-label$="mục"]')
+        expect(groups.first).to_be_visible()
+        assert groups.count() > 0, 'Business menu should show collapsible groups'
+        assert page.locator('text=Trung tâm Báo cáo (Excel)').count() == 0
+        assert page.get_by_role('button', name='Bảng công', exact=True).count() == 0, 'Group links should start collapsed'
+        for index in range(groups.count()):
+            groups.nth(index).click()
+            if page.get_by_role('button', name='Bảng công', exact=True).count():
+                break
+        expect(page.get_by_role('button', name='Bảng công', exact=True)).to_be_visible()
+        page.screenshot(path=str(args.output/'business-groups.png'), full_page=True)
+        checks.append('Business menu uses collapsed, expandable groups, exposes timesheet, and hides Excel report center')
+        page.go_back()
+        profile()
         settings_button = page.get_by_role('button', name='Cài đặt', exact=True)
         services_button = page.get_by_role('button', name='Nghiệp vụ', exact=True)
         settings_box = settings_button.bounding_box(); services_box = services_button.bounding_box()
         assert settings_box and services_box and settings_box['y']+settings_box['height'] <= services_box['y']
         assert services_box['y']+services_box['height'] < 740, 'Profile entry buttons must appear above the bottom tab bar without scrolling'
         checks.append('Settings and business entry buttons are visible near the profile heading before scrolling')
-        services_button.click()
-        expect(page.get_by_role('heading', name='Nghiệp vụ', exact=True)).to_be_visible()
-        expect(page.get_by_role('button', name='Bảng công', exact=True)).to_be_visible()
-        checks.append('Employee business menu exposes authorized timesheet workflow')
-        page.get_by_role('button', name='Quay lại hồ sơ', exact=True).click()
-        expect(page.get_by_text('Hồ sơ của tôi', exact=True)).to_be_visible()
         settings()
         for width in (390, 768, 1280):
             page.set_viewport_size({'width': width, 'height': 900})
@@ -103,6 +123,25 @@ def main():
         checks.append('Password mismatch blocked; successful change logs out and new password logs in')
         # Restore only this synthetic account, keeping the repeatable QA fixture usable.
         user = User.objects.get(username='demo-employee'); user.set_password(password); user.save(update_fields=['password'])
+        finance_page = browser.new_page(viewport={'width': 390, 'height': 844}, color_scheme='light')
+        finance_page.on('pageerror', lambda e: errors.append(str(e)))
+        finance_page.goto(args.url)
+        finance_page.get_by_role('textbox', name='Tên đăng nhập', exact=True).fill('demo-finance')
+        finance_page.get_by_role('textbox', name='Mật khẩu', exact=True).fill(password)
+        finance_page.get_by_role('button', name='Đăng nhập', exact=True).click()
+        expect(finance_page.get_by_role('heading', name='Trang chủ', exact=True)).to_be_visible()
+        finance_page.get_by_role('button', name='Nghiệp vụ', exact=True).click()
+        expect(finance_page.get_by_role('heading', name='Nghiệp vụ', exact=True)).to_be_visible()
+        hidden_mobile = ('Trang Quản Trị (Admin) ADMIN', 'Trung tâm Báo cáo (Excel)', 'Báo cáo',
+            'Chạy lương hàng tháng', 'Lương cơ bản NV', 'Người phụ thuộc', 'Cấu hình Thuế/BH',
+            'Thang bảng lương', 'Quản lý Tài sản', 'Kiểm kê Tài sản', 'Thanh lý Tài sản')
+        for label in hidden_mobile:
+            assert finance_page.get_by_text(label, exact=True).count() == 0, f'Desktop-only entry visible in mobile menu: {label}'
+        finance_page.locator('[role="button"][aria-label^="Cá nhân,"]').click()
+        expect(finance_page.get_by_role('button', name='Phiếu lương', exact=True)).to_be_visible()
+        finance_page.screenshot(path=str(args.output/'finance-mobile-menu.png'), full_page=True)
+        checks.append('Finance role retains payslip view while Admin, reports, payroll setup, and asset admin stay off the mobile menu')
+        finance_page.close()
         assert not errors, errors
         browser.close()
     (args.output/'validation.json').write_text(json.dumps({'checks': checks, 'count': len(checks), 'browser_errors': errors, 'synthetic_only': True}, indent=2), encoding='utf-8')
