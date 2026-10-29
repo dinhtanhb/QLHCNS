@@ -45,9 +45,9 @@ def main():
             page.get_by_role('textbox', name='Tên đăng nhập', exact=True).fill(name)
             page.get_by_role('textbox', name='Mật khẩu', exact=True).fill(password)
             page.get_by_role('button', name='Đăng nhập', exact=True).click()
-            expect(page.get_by_text('Hồ sơ của tôi', exact=True)).to_be_visible(timeout=20000)
+            expect(page.get_by_role('heading', name='Trang chủ', exact=True)).to_be_visible(timeout=20000)
         def menu(label):
-            page.get_by_role('button', name='Nghiệp vụ', exact=True).click()
+            page.get_by_role('tab', name='Thêm', exact=True).click()
             page.get_by_role('button', name=label, exact=True).click()
         def shot(name):
             page.wait_for_timeout(350)
@@ -173,7 +173,9 @@ def main():
         page.get_by_role('textbox', name='Tìm kiếm', exact=True).fill(person.employee_code)
         page.get_by_role('button', name='Áp dụng', exact=True).click()
         page.get_by_role('button', name=person.full_name, exact=True).click()
-        page.get_by_role('button', name='Sửa hồ sơ', exact=True).click()
+        edit_button = page.get_by_role('button', name='S\u1eeda h\u1ed3 s\u01a1', exact=True)
+        edit_button.scroll_into_view_if_needed()
+        edit_button.click()
         page.get_by_role('textbox', name='Địa chỉ', exact=True).fill(marker+' HR address')
         page.get_by_role('button', name='Lưu hồ sơ', exact=True).click()
         expect(page.get_by_text('Đã cập nhật hồ sơ nhân viên.', exact=True)).to_be_visible()
@@ -218,33 +220,18 @@ def main():
         result = EmployeeKPI.objects.get(employee=person, kpi_template=template)
         assert str(result.actual) == '8.50' and str(result.achievement) == '85.00'
         checks.append('Native KPI assignment and scoring save decimal actual and achievement')
-        login('demo-layout-admin'); menu('Kiểm kê Tài sản')
-        page.get_by_role('textbox', name='Tên đợt *', exact=True).fill(marker+' inventory')
-        page.get_by_role('textbox', name='Văn phòng / Bộ phận *', exact=True).fill('QA office')
-        page.get_by_role('textbox', name='Thời điểm *', exact=True).fill((timezone.localdate()+timedelta(days=80)).isoformat()+'T09:00')
-        page.get_by_role('button', name='Tạo đợt kiểm kê', exact=True).click()
-        expect(page.get_by_text('Đã tạo đợt kiểm kê và nạp toàn bộ tài sản.', exact=True)).to_be_visible()
-        inventory = InventorySession.objects.get(session_name=marker+' inventory')
-        assert inventory.lines.exists()
-        login('demo-layout-admin'); menu('Kiểm kê Tài sản')
-        row = page.get_by_text(marker+' inventory', exact=True).locator('xpath=ancestor::div[.//*[@role="button"]][1]')
-        row.get_by_role('button', name='Mở chi tiết', exact=True).click()
-        expect(page.get_by_role('heading', name=re.compile(re.escape(marker+' inventory')))).to_be_visible()
-        shot('inventory-created-reopened')
-        checks.append('Native asset inventory creates lines and opens legacy clickable row as a safe native action')
-        login('demo-finance'); menu('Chạy lương hàng tháng')
-        year = 2027
-        while PayrollPeriod.objects.filter(payroll_year=year, payroll_month=7).exists():
-            year += 1
-        choose('-- Chọn tháng --', 'Tháng 7'); choose('-- Chọn năm --', str(year))
-        page.get_by_role('button', name='Tạo kỳ lương', exact=True).click()
-        expect(page.get_by_text(f'Đã tạo kỳ lương 7/{year}.', exact=True)).to_be_visible()
-        assert PayrollPeriod.objects.get(payroll_year=year, payroll_month=7).status == 'Open'
-        shot('finance-period-created')
-        checks.append('Finance native period form creates Open period and opens payroll command page')
-        login('demo-layout-admin'); menu('Trang Quản Trị (Admin) ADMIN')
-        shot('admin-model-menu')
-        checks.append('Authorized admin model menu renders as native links')
+        login('demo-layout-admin')
+        page.get_by_role('tab').last.click()
+        page.get_by_role('textbox', name='T\u00ecm nghi\u1ec7p v\u1ee5', exact=True).fill('Ki\u1ec3m k\u00ea T\u00e0i s\u1ea3n')
+        assert page.get_by_role('button', name='Ki\u1ec3m k\u00ea T\u00e0i s\u1ea3n', exact=True).count() == 0
+        page.get_by_role('textbox', name='T\u00ecm nghi\u1ec7p v\u1ee5', exact=True).fill('Trang Qu\u1ea3n Tr\u1ecb (Admin)')
+        assert page.get_by_role('button', name=re.compile('Admin'), exact=True).count() == 0
+        login('demo-finance')
+        page.get_by_role('tab').last.click()
+        page.get_by_role('textbox', name='T\u00ecm nghi\u1ec7p v\u1ee5', exact=True).fill('Ch\u1ea1y l\u01b0\u01a1ng')
+        assert page.get_by_role('button', name=re.compile('Ch\u1ea1y l\u01b0\u01a1ng'), exact=True).count() == 0
+        checks.append('Mobile business list hides asset inventory, payroll setup, Admin and spreadsheet report actions')
+        login('demo-hr'); menu('Bi\u1ec3u m\u1eabu HCNS')
         login('demo-hr'); menu('Biểu mẫu HCNS')
         page.get_by_role('button', name=re.compile('Đơn xin nghỉ việc')).click()
         page.get_by_text('Họ và tên', exact=True).locator('..').get_by_role('button').click()

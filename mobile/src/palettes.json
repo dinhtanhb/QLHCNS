@@ -10,7 +10,13 @@
       "border": "#667085",
       "cardBorder": "#dce4de",
       "danger": "#ce181f",
-      "dangerBg": "#fef3f2"
+      "dangerBg": "#fef3f2",
+      "success": "#067647",
+      "successBg": "#ecfdf3",
+      "warning": "#b54708",
+      "warningBg": "#fffaeb",
+      "info": "#175cd3",
+      "infoBg": "#eff8ff"
     },
     "dark": {
       "bg": "#08120d",
@@ -22,7 +28,13 @@
       "border": "#7c8f82",
       "cardBorder": "#26382c",
       "danger": "#fca5a5",
-      "dangerBg": "#2b1010"
+      "dangerBg": "#2b1010",
+      "success": "#86efac",
+      "successBg": "#0d2a18",
+      "warning": "#fde68a",
+      "warningBg": "#2b2006",
+      "info": "#93c5fd",
+      "infoBg": "#0b1e33"
     }
   },
   "chamdong": {
@@ -36,7 +48,13 @@
       "border": "#667085",
       "cardBorder": "#dfe4ee",
       "danger": "#b42318",
-      "dangerBg": "#fef3f2"
+      "dangerBg": "#fef3f2",
+      "success": "#067647",
+      "successBg": "#ecfdf3",
+      "warning": "#b54708",
+      "warningBg": "#fffaeb",
+      "info": "#175cd3",
+      "infoBg": "#eff8ff"
     },
     "dark": {
       "bg": "#080c18",
@@ -48,7 +66,13 @@
       "border": "#7d8ab0",
       "cardBorder": "#2a3552",
       "danger": "#fca5a5",
-      "dangerBg": "#2b1010"
+      "dangerBg": "#2b1010",
+      "success": "#86efac",
+      "successBg": "#0d2a18",
+      "warning": "#fde68a",
+      "warningBg": "#2b2006",
+      "info": "#93c5fd",
+      "infoBg": "#0b1e33"
     }
   },
   "thanam": {
@@ -62,7 +86,13 @@
       "border": "#78716c",
       "cardBorder": "#e5dfd6",
       "danger": "#b42318",
-      "dangerBg": "#fef2f2"
+      "dangerBg": "#fef2f2",
+      "success": "#4d7c0f",
+      "successBg": "#f7fee7",
+      "warning": "#a16207",
+      "warningBg": "#fefce8",
+      "info": "#1e5a8a",
+      "infoBg": "#eff6fb"
     },
     "dark": {
       "bg": "#0e0c0a",
@@ -74,7 +104,13 @@
       "border": "#8c837a",
       "cardBorder": "#332e2a",
       "danger": "#fca5a5",
-      "dangerBg": "#2b1010"
+      "dangerBg": "#2b1010",
+      "success": "#86efac",
+      "successBg": "#0d2a18",
+      "warning": "#fde68a",
+      "warningBg": "#2b2006",
+      "info": "#93c5fd",
+      "infoBg": "#0b1e33"
     }
   }
 }

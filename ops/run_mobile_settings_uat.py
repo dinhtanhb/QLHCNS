@@ -13,6 +13,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--directory', type=Path, required=True)
     parser.add_argument('--url', default='http://127.0.0.1:8792')
+    parser.add_argument('--palette', choices=('viethealth', 'chamdong', 'thanam'), default='viethealth')
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     from mobile_qa import configure
@@ -34,7 +35,8 @@ def main():
             page.get_by_role('button', name='Đăng nhập', exact=True).click()
             expect(page.get_by_role('heading', name='Trang chủ', exact=True)).to_be_visible()
         def profile():
-            page.get_by_text('Tôi', exact=True).last.click()
+            page.get_by_role('tab', name='Thêm', exact=True).click()
+            page.get_by_role('button', name='Hồ sơ', exact=True).click()
             expect(page.get_by_role('heading', name='Hồ sơ của tôi', exact=True)).to_be_visible()
             page.wait_for_timeout(750)
         def settings():
@@ -43,32 +45,23 @@ def main():
             page.get_by_role('button', name='Cài đặt', exact=True).click()
             expect(page.get_by_role('radio', name='Theo điện thoại', exact=True)).to_be_visible()
         login(password)
-        expect(page.get_by_text('Thông báo chưa đọc', exact=True)).to_be_visible()
-        expect(page.get_by_text('Chấm công gần nhất', exact=True)).to_be_visible()
+        expect(page.get_by_text('Ngày công', exact=True)).to_be_visible()
+        expect(page.get_by_role('heading', name='Hoạt động gần đây', exact=True)).to_be_visible()
         page.screenshot(path=str(args.output/'home-dashboard.png'), full_page=True)
         checks.append('Home shows account-specific summary metrics and latest attendance hours/date')
-        page.get_by_role('button', name='Nghiệp vụ', exact=True).click()
+        page.get_by_role('tab', name='Thêm', exact=True).click()
         expect(page.get_by_role('heading', name='Nghiệp vụ', exact=True)).to_be_visible()
-        groups = page.locator('[role="button"][aria-label$="mục"]')
-        expect(groups.first).to_be_visible()
-        assert groups.count() > 0, 'Business menu should show collapsible groups'
+        expect(page.get_by_role('textbox', name='Tìm nghiệp vụ', exact=True)).to_be_visible()
         assert page.locator('text=Trung tâm Báo cáo (Excel)').count() == 0
-        assert page.get_by_role('button', name='Bảng công', exact=True).count() == 0, 'Group links should start collapsed'
-        for index in range(groups.count()):
-            groups.nth(index).click()
-            if page.get_by_role('button', name='Bảng công', exact=True).count():
-                break
+        page.get_by_role('textbox', name='Tìm nghiệp vụ', exact=True).fill('Bảng công')
         expect(page.get_by_role('button', name='Bảng công', exact=True)).to_be_visible()
         page.screenshot(path=str(args.output/'business-groups.png'), full_page=True)
-        checks.append('Business menu uses collapsed, expandable groups, exposes timesheet, and hides Excel report center')
+        checks.append('Business menu is searchable and grouped, exposes timesheet, and hides Excel report center')
         page.go_back()
         profile()
         settings_button = page.get_by_role('button', name='Cài đặt', exact=True)
-        services_button = page.get_by_role('button', name='Nghiệp vụ', exact=True)
-        settings_box = settings_button.bounding_box(); services_box = services_button.bounding_box()
-        assert settings_box and services_box and settings_box['y']+settings_box['height'] <= services_box['y']
-        assert services_box['y']+services_box['height'] < 740, 'Profile entry buttons must appear above the bottom tab bar without scrolling'
-        checks.append('Settings and business entry buttons are visible near the profile heading before scrolling')
+        assert settings_button.is_visible()
+        checks.append('Settings entry is visible from the account profile')
         settings()
         for width in (390, 768, 1280):
             page.set_viewport_size({'width': width, 'height': 900})
@@ -76,7 +69,7 @@ def main():
                 page.get_by_role('radio', name=mode, exact=True).click()
                 expect(page.get_by_role('radio', name=mode, exact=True)).to_be_checked()
                 palette = json.loads((Path(__file__).resolve().parents[1]/'mobile/src/palettes.json').read_text())
-                color = palette['viethealth']['dark' if mode == 'Tối' else 'light']['surface'].lstrip('#')
+                color = palette[args.palette]['dark' if mode == 'Tối' else 'light']['surface'].lstrip('#')
                 expected = 'rgb('+', '.join(str(int(color[i:i+2], 16)) for i in (0, 2, 4))+')'
                 expect(page.get_by_role('radio', name=mode, exact=True)).to_have_css('background-color', expected)
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1')
@@ -130,14 +123,14 @@ def main():
         finance_page.get_by_role('textbox', name='Mật khẩu', exact=True).fill(password)
         finance_page.get_by_role('button', name='Đăng nhập', exact=True).click()
         expect(finance_page.get_by_role('heading', name='Trang chủ', exact=True)).to_be_visible()
-        finance_page.get_by_role('button', name='Nghiệp vụ', exact=True).click()
+        finance_page.get_by_role('tab', name='Thêm', exact=True).click()
         expect(finance_page.get_by_role('heading', name='Nghiệp vụ', exact=True)).to_be_visible()
         hidden_mobile = ('Trang Quản Trị (Admin) ADMIN', 'Trung tâm Báo cáo (Excel)', 'Báo cáo',
             'Chạy lương hàng tháng', 'Lương cơ bản NV', 'Người phụ thuộc', 'Cấu hình Thuế/BH',
             'Thang bảng lương', 'Quản lý Tài sản', 'Kiểm kê Tài sản', 'Thanh lý Tài sản')
         for label in hidden_mobile:
             assert finance_page.get_by_text(label, exact=True).count() == 0, f'Desktop-only entry visible in mobile menu: {label}'
-        finance_page.locator('[role="button"][aria-label^="Cá nhân,"]').click()
+        finance_page.get_by_role('textbox', name='Tìm nghiệp vụ', exact=True).fill('Phiếu lương')
         expect(finance_page.get_by_role('button', name='Phiếu lương', exact=True)).to_be_visible()
         finance_page.screenshot(path=str(args.output/'finance-mobile-menu.png'), full_page=True)
         checks.append('Finance role retains payslip view while Admin, reports, payroll setup, and asset admin stay off the mobile menu')

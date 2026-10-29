@@ -10,7 +10,10 @@ DEST = ROOT / 'mobile/src/palettes.json'
 ROLES = {'bg': '--ui-bg', 'surface': '--ui-surface', 'text': '--ui-text',
     'muted': '--ui-text-muted', 'brand': '--ui-brand', 'onBrand': '--ui-on-brand',
     'border': '--ui-border', 'cardBorder': '--ui-card-border',
-    'danger': '--ui-danger-text', 'dangerBg': '--ui-danger-bg'}
+    'danger': '--ui-danger-text', 'dangerBg': '--ui-danger-bg',
+    'success': '--ui-success-text', 'successBg': '--ui-success-bg',
+    'warning': '--ui-warning-text', 'warningBg': '--ui-warning-bg',
+    'info': '--ui-info-text', 'infoBg': '--ui-info-bg'}
 
 
 def main():
@@ -24,7 +27,9 @@ def main():
     for modes in data.values():
         for t in modes.values():
             for fg, bg in [('text', 'bg'), ('text', 'surface'), ('muted', 'surface'),
-                           ('muted', 'bg'), ('brand', 'surface'), ('onBrand', 'brand'), ('danger', 'dangerBg')]:
+                           ('muted', 'bg'), ('brand', 'surface'), ('onBrand', 'brand'),
+                           ('danger', 'dangerBg'), ('success', 'successBg'),
+                           ('warning', 'warningBg'), ('info', 'infoBg')]:
                 assert ratio(t[fg], t[bg]) >= 4.5, (fg, bg, t)
                 pairs += 1
             assert ratio(t['border'], t['surface']) >= 3

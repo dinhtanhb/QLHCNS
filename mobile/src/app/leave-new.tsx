@@ -31,7 +31,7 @@ export default function NewLeave() {
       if (toDate < fromDate) throw new Error('Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.');
       setBusy(true);
       await request('leaves/', { leave_type: kind, from_date: fromDate, to_date: toDate, reason: reason.trim() });
-      router.replace({ pathname: '/(tabs)/leaves', params: { submitted: String(Date.now()) } });
+      router.replace({ pathname: '/(tabs)/my-work', params: { section: 'leave', submitted: String(Date.now()) } });
     } catch (err) { setError(err instanceof Error ? err.message : 'Không thể gửi đơn.'); }
     finally { setBusy(false); }
   };
@@ -48,7 +48,7 @@ export default function NewLeave() {
             <Field label="Lý do nghỉ" value={reason} onChangeText={setReason} multiline maxLength={500} editable={!busy} style={{ minHeight: 96, textAlignVertical: 'top' }} />
             <Copy muted>{reason.length}/500 ký tự</Copy><Button label="Gửi đơn nghỉ phép" busy={busy} onPress={() => void submit()} disabled={!kind || !from || !to} />
           </Card>}
-      <Button label="Quay lại danh sách" secondary disabled={busy} onPress={() => router.replace('/(tabs)/leaves')} />
+    <Button label="Quay lại danh sách" secondary disabled={busy} onPress={() => router.replace('/(tabs)/my-work?section=leave')} />
     </Screen>
   </KeyboardAvoidingView>;
 }
