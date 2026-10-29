@@ -7,7 +7,7 @@
 - **Ki?m tra Android:** APK build c?c b? b?ng `build-final.ps1`; kh?ng t?i source l?n cloud. Emulator Android API 35, t?i kho?n v? DB QA t?ng h?p ri?ng t?i `Mobile_Demo10_20261028/qa`, backend `http://192.168.1.12:8790`: **11/11 ki?m tra, 0 l?i runtime**, g?m c?i APK, dashboard, l?ch/ch?m c?ng, danh m?c, c?i ??t, ??ng nh?p kh?i ph?c, g?i ??n ngh?, HR duy?t v? th?ng b?o hai ph?a. X?c minh 36 t?p source mobile c?a build kh?p ngu?n. Ch?a ki?m ?i?n tho?i v?t l?; push tr?n thi?t b? th?t c?a APK n?y ch?a ???c x?c nh?n.
 - **APK QA:** `D:/IHRMS_Review_Exports/Mobile_ActCode_QA_20261029/apk/IHRMS-QA.apk`, 54,128,017 byte, SHA-256 `b40f8f103226e5f87ed251ac35933d217a9601cd90968fd55003a5e20a12b3a4`. Package `vn.ihrms.internal.qa`; ch?ng th? k? QA SHA-256 `fac61745dc0903786fb9ede62a962b399f7348f0bb6f899b8332667591033b9c` kh?p b?n tr??c n?n c?i c?p nh?t ?? ???c; Firebase QA kh?p `ihrms-qa`; kh?ng c? private key trong APK. File APK v? QA backend kh?ng n?m trong repository.
 - **B?n sao review:** sau commit/push t?o ngo?i repository t?i `D:/IHRMS_Review_Exports/Mobile_ActCode_QA_20261029/IHRMS_source_review.zip`; manifest ghi tree v? SHA-256 t?ng t?p, m? l?i ??i chi?u; lo?i secrets, DB/media, runtime v? `.codex/`.
-- **Nh?nh/commit/push:** `main`; s? ghi SHA commit v? x?c nh?n remote trong m?c n?y sau khi commit/push.
+- **Nh?nh/commit/push:** thay ??i ?ng d?ng v? t?i li?u ? commit `604b730` tr?n `main`; m?c nh?t k? n?y ???c ho?n t?t ngay sau ??, tr??c khi push. X?c minh remote ???c ghi sau khi push.
 - **Vi?c c?n l?i:** ch? d? ?n c?i/c?p nh?t APK ? ?i?n tho?i QA v? ki?m l?i giao di?n, quy?n th?ng b?o/push c?ng m?ng QA; ch?a c? iOS UAT. Kh?ng s?a ho?c tri?n khai backend v?n h?nh.
 
 # Nhật ký công việc IHRMS
