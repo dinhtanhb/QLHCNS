@@ -281,31 +281,12 @@ def profile_change_request_decide(request, pk):
     status = {"approve": "Approved", "reject": "Rejected", "more_info": "NeedsMoreInfo"}.get(decision)
     if not status:
         return HttpResponseForbidden("Quyết định không hợp lệ.")
-    with transaction.atomic():
-        try:
-            item = EmployeeProfileChangeRequest.objects.select_for_update().select_related("employee").get(
-                pk=pk, status="Pending"
-            )
-        except EmployeeProfileChangeRequest.DoesNotExist:
-            raise Http404
-        employee = Employee.objects.select_for_update().get(pk=item.employee_id)
-        if str(getattr(employee, item.field_name) or "") != item.submitted_snapshot:
-            messages.error(request, "Giá trị hồ sơ đã thay đổi sau khi gửi. Không thể duyệt yêu cầu cũ; vui lòng yêu cầu nhân viên gửi lại.")
-            return redirect("portal:profile_change_request_list")
-        if status == "Approved":
-            setattr(employee, item.field_name, item.new_value)
-            employee.modified_by = request.user
-            employee.save(update_fields=[item.field_name, "modified_by", "modified_date"])
-        item.status = status
-        item.decided_by = request.user
-        item.decided_at = timezone.now()
-        item.decision_note = request.POST.get("note", "").strip()[:500]
-        item.modified_by = request.user
-        item.save(update_fields=["status", "decided_by", "decided_at", "decision_note", "modified_by", "modified_date"])
-        labels = {"Approved": "đã được duyệt", "Rejected": "bị từ chối", "NeedsMoreInfo": "cần bổ sung thông tin"}
-        notify(employee, "profile-change", "Yêu cầu cập nhật hồ sơ đã được xử lý",
-               f"Yêu cầu thay đổi hồ sơ của bạn {labels[status]}. Vui lòng xem chi tiết trong IHRMS.",
-               link="/portal/profile/requests/", created_by=request.user)
+    from apps.hrm.services import decide_profile_change
+    try:
+        decide_profile_change(request.user, pk, decision, request.POST.get('note', ''))
+    except ValidationError as exc:
+        messages.error(request, '; '.join(exc.messages))
+        return redirect('portal:profile_change_request_list')
     messages.success(request, "Đã ghi nhận quyết định xử lý yêu cầu.")
     return redirect("portal:profile_change_request_list")
 

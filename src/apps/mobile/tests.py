@@ -93,6 +93,61 @@ class MobileAPITests(TestCase):
         self.assertEqual(self.post('change-password/').status_code, 401)
         self.assertEqual(self.post('profile-requests/').status_code, 401)
 
+    def test_profile_detail_and_history_never_accept_another_employee(self):
+        from apps.hrm.models import EmployeeReward
+        from apps.payroll.models import EmployeeSalary
+        for index in (0, 3):
+            EmployeeSalary.objects.create(employee=self.people[index], current_basic_salary=10000000+index, effective_date=date(2026, 1, 1))
+            EmployeeReward.objects.create(employee=self.people[index], reward_type=f'PRIVATE-{index}', reward_date=date(2026, 1, 1), amount=123)
+        self.login_as()
+        result = self.client.get(BASE+f'my-profile/?employee={self.people[3].pk}').json()
+        self.assertEqual(result['profile']['employee_code'], self.people[0].employee_code)
+        self.assertEqual(result['salary']['basic'], '10000000.00')
+        self.assertNotIn('national_id', result['profile'])
+        history = self.client.get(BASE+f'profile-history/?kind=rewards&employee={self.people[3].pk}').json()
+        self.assertEqual(history['count'], 1)
+        self.assertEqual(history['items'][0]['description'], 'PRIVATE-0')
+        self.assertEqual(history['items'][0]['amount'], '123.00')
+        self.assertEqual(self.client.get(BASE+'profile-history/?kind=invalid').status_code, 400)
+
+    def test_directory_contains_only_active_public_fields(self):
+        self.people[3].employment_status = 'Resigned'; self.people[3].save(update_fields=['employment_status'])
+        self.login_as()
+        result = self.client.get(BASE+'organization/').json()
+        self.assertEqual(result['count'], 3)
+        self.assertEqual(set(result['items'][0]), {'id', 'name', 'employee_code', 'department', 'position', 'manager_id', 'manager'})
+
+    def test_profile_approvals_permissions_repeat_decisions_and_notifications(self):
+        from apps.hrm.models import EmployeeProfileChangeRequest
+        self.login_as()
+        self.post('profile-requests/', {'field_name': 'address', 'new_value': 'QA Approved address'})
+        row = EmployeeProfileChangeRequest.objects.get()
+        self.assertEqual(self.client.get(BASE+'profile-approvals/').status_code, 403)
+        self.assertEqual(self.post(f'profile-requests/{row.pk}/decision/', {'decision': 'approve'}).status_code, 403)
+        self.login_as(2)
+        self.assertTrue(self.client.get(BASE+'me/').json()['can_approve_profile_change'])
+        self.assertEqual(self.client.get(BASE+'profile-approvals/').json()['count'], 1)
+        self.assertEqual(self.post(f'profile-requests/{row.pk}/decision/', {'decision': 'approve', 'note': 'QA'}).status_code, 200)
+        self.assertEqual(self.post(f'profile-requests/{row.pk}/decision/', {'decision': 'reject'}).status_code, 404)
+        self.people[0].refresh_from_db(); self.assertEqual(self.people[0].address, 'QA Approved address')
+        self.assertEqual(Notification.objects.filter(employee=self.people[0], notification_type='profile-change').count(), 1)
+        self.login_as()
+        self.assertEqual(self.client.get(BASE+'notifications/').json()['items'][0]['destination'], 'profile-requests')
+
+    def test_profile_stale_snapshot_and_nonapproval_preserve_employee(self):
+        from apps.hrm.models import EmployeeProfileChangeRequest
+        self.login_as(2)
+        for decision, expected in [('reject', 'Rejected'), ('more_info', 'NeedsMoreInfo')]:
+            row = EmployeeProfileChangeRequest.objects.create(employee=self.people[0], field_name='address',
+                old_value=self.people[0].address or '', submitted_snapshot=self.people[0].address or '', new_value='QA unused')
+            self.assertEqual(self.post(f'profile-requests/{row.pk}/decision/', {'decision': decision}).status_code, 200)
+            row.refresh_from_db(); self.assertEqual(row.status, expected)
+        row = EmployeeProfileChangeRequest.objects.create(employee=self.people[0], field_name='address',
+            old_value='OLD', submitted_snapshot='STALE', new_value='QA unused')
+        self.assertEqual(self.post(f'profile-requests/{row.pk}/decision/', {'decision': 'approve'}).status_code, 400)
+        self.people[0].refresh_from_db(); self.assertNotEqual(self.people[0].address, 'QA unused')
+        row.refresh_from_db(); self.assertEqual(row.status, 'Pending')
+
     def test_login_session_is_separate_and_does_not_set_cookies(self):
         portal = Client()
         portal.force_login(self.users[3])

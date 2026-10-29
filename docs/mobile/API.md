@@ -22,6 +22,12 @@ Thời hạn tuyệt đối dùng `SESSION_COOKIE_AGE` (hiện 8 giờ), không 
 - `POST push-token/`: đăng ký Expo token với phiên hiện tại; trả 503 khi push chưa bật. Đăng ký trên tài khoản mới tháo địa chỉ push khỏi phiên cũ. Đăng xuất thu hồi phiên đồng thời bỏ đăng ký đó.
 - `POST change-password/`: `old_password`, `new_password`, `confirm_password`; kiểm mật khẩu hiện tại qua backend/Axes, kiểm chính sách mật khẩu Django. Thành công thu hồi phiên hiện tại và các phiên khác mất hiệu lực theo hash mật khẩu; app yêu cầu đăng nhập lại.
 - `GET profile-requests/`: phân trang các yêu cầu cập nhật hồ sơ của chính người gọi; `POST` nhận `field_name`, `new_value`, `reason`. Chỉ email cá nhân (`personal_email`), điện thoại (`mobile_phone`), địa chỉ (`address`), phải có hồ sơ và quyền `submit_profile_change_request`. Tạo yêu cầu Pending, giữ nguyên dữ liệu nhân viên đến khi HR duyệt qua quy trình web hiện có. Không nhận employee/status từ client, kiểm kiểu/độ dài/email và ngăn gửi trùng đang chờ duyệt.
+- `GET my-profile/`: chi tiết, lương cơ bản Active và hợp đồng mới nhất của **chính người gọi**, theo truy vấn trang hồ sơ web; không nhận employee id. Không có hồ sơ trả các phần null.
+- `GET profile-history/?kind=transfers|promotions|rewards|disciplines`: lịch sử bản thân, phân trang; tiền là chuỗi thập phân, client định dạng không chuyển qua số dấu phẩy động.
+- `GET organization/`: danh sách Active có tên/mã, phòng ban, vị trí và quản lý Active; không trả liên hệ cá nhân/lương/giấy tờ.
+- `GET profile-approvals/`: yêu cầu Pending cho người có quyền `approve_profile_change_request`. `POST profile-requests/<id>/decision/` nhận `decision=approve|reject|more_info` và `note`, dùng cùng `apps.hrm.services.decide_profile_change` với web. Khóa employee rồi request, kiểm snapshot, ngăn xử lý lặp, lưu audit và thông báo. Mobile chưa tải chứng từ đính kèm: HR xem chứng từ trên web trước khi quyết định.
+
+`me/` bổ sung `can_approve_profile_change`; đây chỉ là capability hiển thị, endpoint quyết định vẫn kiểm quyền độc lập. Thông báo cập nhật hồ sơ có destination `profile-requests`, mở lịch sử của người nhận trong app.
 
 Cài đặt giao diện nằm ở **Tôi → Cài đặt → Giao diện**: Theo điện thoại/Sáng/Tối. Lưu riêng trên thiết bị (SecureStore native, localStorage chỉ chứa lựa chọn giao diện trên web), không gắn vào hồ sơ nhân sự; không thay palette do máy chủ chọn. Cài đặt cũng hiển thị quyền thông báo của hệ điều hành, không coi quyền này là bằng chứng token đã đăng ký hay push đã nhận.
 

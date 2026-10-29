@@ -14,6 +14,7 @@ export default function NotificationsScreen() {
       await request(`notifications/${row.id}/read/`, {});
       if (row.destination === 'leaves') router.push('/(tabs)/leaves');
       else if (row.destination === 'approvals' && me?.can_approve) router.push('/(tabs)/approvals');
+      else if (row.destination === 'profile-requests') router.push('/profile-change');
       else await rows.reload();
     } catch (err) { setError(err instanceof Error ? err.message : 'Không thể mở thông báo.'); }
     finally { setBusy(false); }

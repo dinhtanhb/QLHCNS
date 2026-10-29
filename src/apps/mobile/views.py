@@ -180,7 +180,79 @@ def me(request):
         'can_approve': has_permission(user, 'approve_leave') and employee is not None,
         'can_manage_hr': has_permission(user, 'manage_hr'),
         'can_request_profile_change': employee is not None and has_permission(user, 'submit_profile_change_request'),
+        'can_approve_profile_change': has_permission(user, 'approve_profile_change_request'),
         'palette': settings.UI_PALETTE})
+
+
+@endpoint('GET')
+def my_profile(request):
+    employee = employee_for(request.user)
+    if not employee:
+        return reply({'profile': None, 'salary': None, 'contract': None})
+    salary = employee.salaries.filter(status='Active').order_by('-effective_date').first()
+    contract = employee.contracts.select_related('contract_type').order_by('-start_date').first()
+    return reply({'profile': {
+        'full_name': employee.full_name, 'employee_code': employee.employee_code,
+        'date_of_birth': employee.date_of_birth, 'gender': employee.get_gender_display(),
+        'department': str(employee.department), 'position': str(employee.position),
+        'manager': employee.manager.full_name if employee.manager else '',
+        'company_email': employee.company_email, 'personal_email': employee.personal_email or '',
+        'mobile_phone': employee.mobile_phone, 'address': employee.address or '',
+        'join_date': employee.join_date, 'employment_status': employee.get_employment_status_display()},
+        'salary': {'basic': str(salary.current_basic_salary), 'effective_date': salary.effective_date} if salary else None,
+        'contract': {'number': contract.contract_no, 'type': str(contract.contract_type),
+                     'start_date': contract.start_date, 'end_date': contract.end_date} if contract else None})
+
+
+@endpoint('GET')
+def profile_history(request):
+    employee = employee_for(request.user)
+    if not employee:
+        raise PermissionDenied('Tài khoản chưa có hồ sơ nhân viên.')
+    kind = request.GET.get('kind', 'transfers')
+    sources = {
+        'transfers': (employee.transfers.select_related('from_department', 'to_department'), 'effective_date',
+                      lambda row: f'{row.from_department} → {row.to_department}'),
+        'promotions': (employee.promotions.select_related('old_position', 'new_position'), 'effective_date',
+                       lambda row: f'{row.old_position} → {row.new_position}'),
+        'rewards': (employee.rewards.all(), 'reward_date', lambda row: str(row.reward_type)),
+        'disciplines': (employee.disciplines.all(), 'discipline_date', lambda row: str(row.discipline_type)),
+    }
+    if kind not in sources:
+        raise ValidationError('Loại lịch sử không hợp lệ.')
+    qs, date_field, describe = sources[kind]
+    return page(request, qs.order_by('-'+date_field, '-pk'), lambda row: {
+        'id': row.pk, 'date': getattr(row, date_field), 'description': describe(row),
+        'amount': str(row.amount) if kind == 'rewards' and row.amount is not None else None})
+
+
+@endpoint('GET')
+def organization(request):
+    # Same directory fields and Active scope as the portal organization chart.
+    return page(request, Employee.objects.filter(employment_status='Active').select_related(
+        'department', 'position', 'manager').order_by('full_name', 'pk'), lambda row: {
+            'id': row.pk, 'name': row.full_name, 'employee_code': row.employee_code,
+            'department': str(row.department), 'position': str(row.position),
+            'manager_id': row.manager_id if row.manager and row.manager.employment_status == 'Active' and not row.manager.is_deleted else None,
+            'manager': row.manager.full_name if row.manager and row.manager.employment_status == 'Active' and not row.manager.is_deleted else ''})
+
+
+@endpoint('GET')
+def profile_approvals(request):
+    if not has_permission(request.user, 'approve_profile_change_request'):
+        raise PermissionDenied('Không có quyền duyệt cập nhật hồ sơ.')
+    return page(request, EmployeeProfileChangeRequest.objects.filter(status='Pending').select_related('employee').order_by('created_date', 'pk'),
+        lambda row: {'id': row.pk, 'employee_name': row.employee.full_name, 'field_label': row.get_field_name_display(),
+                     'old_value': row.old_value, 'new_value': row.new_value, 'reason': row.reason or '',
+                     'has_attachment': bool(row.attachment)})
+
+
+@endpoint('POST')
+def profile_decision(request, pk):
+    from apps.hrm.services import decide_profile_change
+    decide_profile_change(request.user, pk,
+        text(request.mobile_data, 'decision', limit=20, required=True), text(request.mobile_data, 'note', limit=500))
+    return reply({'ok': True})
 
 
 @endpoint('GET')
@@ -242,7 +314,8 @@ def notifications(request):
         'id': row.pk, 'title': row.title, 'message': row.message,
         'is_read': row.is_read, 'created_at': row.created_date,
         'destination': 'approvals' if row.link == '/portal/leave/approvals/' else
-                       'leaves' if row.link == '/portal/leave/' else None})
+                       'leaves' if row.link == '/portal/leave/' else
+                       'profile-requests' if row.link == '/portal/profile/requests/' else None})
 
 
 @endpoint('POST')

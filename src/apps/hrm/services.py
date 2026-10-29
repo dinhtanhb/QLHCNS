@@ -2,6 +2,42 @@ from django.db import transaction
 from django.utils import timezone
 
 from apps.hrm.models import Employee, EmployeePromotion, EmployeeTransfer
+from apps.hrm.models import EmployeeProfileChangeRequest
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.shortcuts import get_object_or_404
+from apps.security.permissions import has_permission
+from apps.notification.services import notify
+
+
+@transaction.atomic
+def decide_profile_change(actor, pk, decision, note=''):
+    """One decision command shared by the portal and the mobile transport."""
+    if not has_permission(actor, 'approve_profile_change_request'):
+        raise PermissionDenied('Không có quyền duyệt cập nhật hồ sơ.')
+    status = {'approve': 'Approved', 'reject': 'Rejected', 'more_info': 'NeedsMoreInfo'}.get(decision)
+    if not status:
+        raise ValidationError('Quyết định không hợp lệ.')
+    # Match submission's lock order: employee first, request second.
+    target = get_object_or_404(EmployeeProfileChangeRequest.objects.only('employee_id'), pk=pk, status='Pending')
+    employee = Employee.objects.select_for_update().get(pk=target.employee_id)
+    item = get_object_or_404(EmployeeProfileChangeRequest.objects.select_for_update(), pk=pk, employee_id=employee.pk, status='Pending')
+    if str(getattr(employee, item.field_name) or '') != item.submitted_snapshot:
+        raise ValidationError('Giá trị hồ sơ đã thay đổi sau khi gửi. Không thể duyệt yêu cầu cũ; vui lòng yêu cầu nhân viên gửi lại.')
+    if status == 'Approved':
+        setattr(employee, item.field_name, item.new_value)
+        employee.modified_by = actor
+        employee.save(update_fields=[item.field_name, 'modified_by', 'modified_date'])
+    item.status = status
+    item.decided_by = actor
+    item.decided_at = timezone.now()
+    item.decision_note = note.strip()[:500]
+    item.modified_by = actor
+    item.save(update_fields=['status', 'decided_by', 'decided_at', 'decision_note', 'modified_by', 'modified_date'])
+    labels = {'Approved': 'đã được duyệt', 'Rejected': 'bị từ chối', 'NeedsMoreInfo': 'cần bổ sung thông tin'}
+    notify(employee, 'profile-change', 'Yêu cầu cập nhật hồ sơ đã được xử lý',
+           f'Yêu cầu thay đổi hồ sơ của bạn {labels[status]}. Vui lòng xem chi tiết trong IHRMS.',
+           link='/portal/profile/requests/', created_by=actor)
+    return item
 
 
 @transaction.atomic

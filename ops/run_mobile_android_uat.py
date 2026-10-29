@@ -22,6 +22,7 @@ def main():
     parser.add_argument('--fixed-api', action='store_true', help='APK bundles its backend URL and has no server input')
     parser.add_argument('--business', action='store_true', help='Also submit and approve leave through native controls and verify synthetic DB')
     parser.add_argument('--settings', action='store_true', help='Verify appearance choices persist across native process termination')
+    parser.add_argument('--employee', action='store_true', help='Exercise the employee services menu, detailed profile and organization directory')
     args = parser.parse_args()
     if not args.serial.startswith('emulator-'):
         parser.error('Only an isolated emulator may be used; this clears its QA app data')
@@ -123,6 +124,18 @@ def main():
     run('shell', 'monkey', '-p', package, '1')
     wait_text('Hồ sơ của tôi')
     checks.append('SecureStore restores login after process termination without credentials')
+    if args.employee:
+        tap('Nghiệp vụ'); wait_text('Hồ sơ chi tiết')
+        tap('Hồ sơ chi tiết'); wait_text('Thông tin cá nhân và quá trình công tác của bạn')
+        screenshot('native-personal-profile')
+        run('shell', 'input', 'keyevent', '4'); wait_text('Hồ sơ chi tiết')
+        tap('Sơ đồ tổ chức'); wait_text('Nhân viên đang làm việc và quan hệ quản lý')
+        screenshot('native-organization')
+        run('shell', 'input', 'keyevent', '4'); wait_text('Hồ sơ chi tiết')
+        run('shell', 'input', 'keyevent', '4')
+        run('shell', 'input', 'swipe', '540', '400', '540', '1800', '350')
+        wait_text('Hồ sơ của tôi')
+        checks.append('Native employee profile and organization directory load and Back returns to profile')
     if args.settings:
         tap('Cài đặt'); wait_text('Theo điện thoại'); tap('Tối')
         assert find('Tối').get('checked') == 'true'
@@ -141,7 +154,9 @@ def main():
         screenshot('native-settings-light')
         tap('Theo điện thoại'); assert find('Theo điện thoại').get('checked') == 'true'
         checks.append('Native light and system preferences selectable')
-        run('shell', 'input', 'keyevent', '4'); wait_text('Hồ sơ của tôi')
+        run('shell', 'input', 'keyevent', '4')
+        run('shell', 'input', 'swipe', '540', '400', '540', '1800', '350')
+        wait_text('Hồ sơ của tôi')
     screenshot('native-profile-light')
     tap('Chấm công'); wait_text('8.00 giờ làm việc')
     checks.append('Native attendance displays server record')

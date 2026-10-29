@@ -1,5 +1,5 @@
-import { PropsWithChildren, useCallback, useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
+import { PropsWithChildren, useCallback, useRef, useState } from 'react';
+import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from './theme';
@@ -57,15 +57,16 @@ export function ErrorNote({ message }: { message: string }) {
     <Text style={[s.body, { color: t.danger }]}>{message}</Text></View> : null;
 }
 export function Loading() { const t = useTheme(); return <ActivityIndicator color={t.brand} accessibilityLabel="Đang tải" />; }
-export function Confirm({ title, detail, onConfirm, onCancel, busy }: {
+export function Confirm({ title, detail, onConfirm, onCancel, busy, children }: PropsWithChildren<{
   title: string; detail: string; onConfirm: () => void; onCancel: () => void; busy: boolean;
-}) {
+}>) {
   const t = useTheme();
   return <Modal transparent animationType="fade" onRequestClose={() => { if (!busy) onCancel(); }}>
-    <View style={[s.overlay, { backgroundColor: t.bg }]}><View style={{ width: '100%', maxWidth: 512, alignSelf: 'center' }}>
-      <Card><Text accessibilityRole="header" style={[s.title, { color: t.text }]}>{title}</Text><Copy>{detail}</Copy>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[s.overlay, { backgroundColor: t.bg }]}>
+      <ScrollView keyboardShouldPersistTaps="handled" style={{ flexGrow: 0, width: '100%', maxWidth: 512, alignSelf: 'center' }}>
+      <Card><Text accessibilityRole="header" style={[s.title, { color: t.text }]}>{title}</Text><Copy>{detail}</Copy>{children}
         <Button label="Xác nhận" onPress={onConfirm} busy={busy} /><Button label="Quay lại" onPress={onCancel} secondary disabled={busy} />
-      </Card></View></View>
+      </Card></ScrollView></KeyboardAvoidingView>
   </Modal>;
 }
 export function dateLabel(value: string) {
@@ -73,18 +74,30 @@ export function dateLabel(value: string) {
   return match ? `${match[3]}/${match[2]}/${match[1]}` : value;
 }
 
+export function moneyLabel(value: string) {
+  const match = /^(-?)(\d+)(?:\.(\d+))?$/.exec(value);
+  if (!match) return value;
+  const fraction = (match[3] || '').replace(/0+$/, '');
+  return match[1] + match[2].replace(/\B(?=(\d{3})+(?!\d))/g, '.') + (fraction ? ',' + fraction : '');
+}
+
 export function useRows<T>(path: string) {
   const { request } = useSession();
+  const sequence = useRef(0);
   const [data, setData] = useState<Page<T> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const load = useCallback(async (page = 1) => {
+    const current = ++sequence.current;
     setLoading(true); setError(''); setData(null);
-    try { setData(await request<Page<T>>(`${path}?page=${page}`)); }
-    catch (err) { setError(err instanceof Error ? err.message : 'Không thể tải dữ liệu.'); }
-    finally { setLoading(false); }
+    try {
+      const value = await request<Page<T>>(`${path}${path.includes('?') ? '&' : '?'}page=${page}`);
+      if (current === sequence.current) setData(value);
+    }
+    catch (err) { if (current === sequence.current) setError(err instanceof Error ? err.message : 'Không thể tải dữ liệu.'); }
+    finally { if (current === sequence.current) setLoading(false); }
   }, [path, request]);
-  useFocusEffect(useCallback(() => { void load(); }, [load]));
+  useFocusEffect(useCallback(() => { void load(); return () => { sequence.current += 1; }; }, [load]));
   return { data, loading, error, reload: () => load(),
     controls: <View style={s.stack}><ErrorNote message={error} />{loading ? <Loading /> :
       <View style={s.row}><Button label="Tải lại" onPress={() => void load(data?.page || 1)} secondary />
