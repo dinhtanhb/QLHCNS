@@ -36,7 +36,20 @@ def main():
         def settings():
             page.get_by_role('button', name='Cài đặt', exact=True).click()
             expect(page.get_by_role('radio', name='Theo điện thoại', exact=True)).to_be_visible()
-        login(password); settings()
+        login(password)
+        settings_button = page.get_by_role('button', name='Cài đặt', exact=True)
+        services_button = page.get_by_role('button', name='Nghiệp vụ', exact=True)
+        settings_box = settings_button.bounding_box(); services_box = services_button.bounding_box()
+        assert settings_box and services_box and settings_box['y']+settings_box['height'] <= services_box['y']
+        assert services_box['y']+services_box['height'] < 740, 'Profile entry buttons must appear above the bottom tab bar without scrolling'
+        checks.append('Settings and business entry buttons are visible near the profile heading before scrolling')
+        services_button.click()
+        expect(page.get_by_role('heading', name='Nghiệp vụ', exact=True)).to_be_visible()
+        expect(page.get_by_role('button', name='Bảng công', exact=True)).to_be_visible()
+        checks.append('Employee business menu exposes authorized timesheet workflow')
+        page.get_by_role('button', name='Quay lại hồ sơ', exact=True).click()
+        expect(page.get_by_text('Hồ sơ của tôi', exact=True)).to_be_visible()
+        settings()
         for width in (390, 768, 1280):
             page.set_viewport_size({'width': width, 'height': 900})
             for mode in ('Tối', 'Sáng'):

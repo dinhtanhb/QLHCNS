@@ -16,6 +16,8 @@ export default function Profile() {
   }, [request]));
   return <Screen title="Hồ sơ của tôi" description="Thông tin cá nhân và quỹ nghỉ phép">
     <ErrorNote message={error || loadError} />
+    <Button label="Cài đặt" onPress={() => router.push('/settings')} secondary />
+    <Button label="Nghiệp vụ" onPress={() => router.push('/services')} secondary />
     {me?.profile ? <Card><Copy title>{me.profile.full_name}</Copy><Copy muted>{me.profile.employee_code} · {me.profile.position}</Copy>
       <Copy>{me.profile.department}</Copy><Copy>{me.profile.company_email || 'Chưa có email công ty'}</Copy></Card>
       : <Card><Copy>Tài khoản chưa được gắn hồ sơ nhân viên. Vui lòng liên hệ Nhân sự.</Copy></Card>}
@@ -23,8 +25,6 @@ export default function Profile() {
       <Copy muted>Đã tính các đơn đang chờ duyệt.</Copy></Card> : null}
     {me?.can_manage_hr ? <Card><Copy title>Dành cho Nhân sự</Copy><Copy>Đợt đầu hỗ trợ theo dõi và duyệt nghỉ phép theo quyền. Quản trị hồ sơ, hạn mức và cấu hình tiếp tục thực hiện trên cổng web.</Copy></Card> : null}
     <Copy muted>Tài khoản: {me?.username}</Copy>
-    <Button label="Cài đặt" onPress={() => router.push('/settings')} secondary />
-    <Button label="Nghiệp vụ" onPress={() => router.push('/services')} secondary />
     <Button label="Đăng xuất" onPress={() => setConfirm(true)} secondary busy={busy} />
     {pushConfigured ? <Card><Copy title>Thông báo trên điện thoại</Copy><Copy muted>Sau khi cấp quyền, ứng dụng tự đăng ký lại khi mở hoặc trở về. Lời nhắc chỉ hiển thị chung; mở ứng dụng để xem nội dung.</Copy>
       <Button label="Bật thông báo trên điện thoại" secondary busy={pushBusy} onPress={() => {
