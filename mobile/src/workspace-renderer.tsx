@@ -22,11 +22,16 @@ function Form({ form, actions }: { form: WorkspaceForm; actions: WorkspaceAction
   const [files, setFiles] = useState<Record<string, DocumentPicker.DocumentPickerAsset[]>>({});
   const [confirm, setConfirm] = useState<WorkspaceAction | null>(null); const [error, setError] = useState('');
   const [repeatCount, setRepeatCount] = useState(1);
+  const taskCode = fields.find(field => field.name === 'act_code' && field.reference === 'task_codes');
+  const otherTask = taskCode && (values[taskCode.id] ?? taskCode.value) === '__OTHER__';
+  const currentField = (field: WorkspaceField) => taskCode && field.name === 'task_name'
+    ? { ...field, readonly: !otherTask, required: !!otherTask } : field;
   const submit = async (action: WorkspaceAction) => {
     setError('');
     try {
       const pairs: string[][] = []; const uploads: PickedUpload[] = [];
-      for (const field of fields) {
+      for (const sourceField of fields) {
+        const field = currentField(sourceField);
         if (field.disabled) continue;
         if (['checkbox', 'radio'].includes(field.type)) {
           if (field.required && !fields.some(other => other.name === field.name && checks[other.id])) throw new Error('Vui lòng chọn '+field.label+'.');
@@ -85,11 +90,12 @@ function Form({ form, actions }: { form: WorkspaceForm; actions: WorkspaceAction
   return <View testID={'workspace-form-'+form.id}><Card>
     <Blocks blocks={form.blocks} actions={actions} />
     {fields.map(field => {
+      const resolved = currentField(field);
       const row = field.name.match(/-(\d+)-[^-]+$/);
       const sameName = fields.filter(other => other.name === field.name && other.type !== 'hidden');
       const repeated = sameName.length > 1 && !['radio', 'checkbox', 'hidden'].includes(field.type);
-      const display = row && field.type !== 'hidden' ? { ...field, label: `Dòng ${Number(row[1])+1} · ${field.label}` }
-        : repeated ? { ...field, label: `Dòng ${sameName.indexOf(field)+1} · ${field.label}` } : field;
+      const display = row && field.type !== 'hidden' ? { ...resolved, label: `Dòng ${Number(row[1])+1} · ${field.label}` }
+        : repeated ? { ...resolved, label: `Dòng ${sameName.indexOf(field)+1} · ${field.label}` } : resolved;
       const prefix = Object.keys(form.templates).find(prefix => field.name.startsWith(prefix+'-'));
       const last = prefix && row && !fields.slice(fields.indexOf(field)+1).some(other => other.name.startsWith(`${prefix}-${row[1]}-`) && other.type !== 'hidden');
       return <View key={field.id} style={s.stack}><NativeControl field={display}

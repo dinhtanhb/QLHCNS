@@ -29,6 +29,9 @@ def main():
     from apps.kpi.models import EmployeeKPI, KPIPeriod, KPITemplate
     from apps.asset.models import InventorySession
     from apps.payroll.models import PayrollPeriod
+    from apps.activity.activity_codes import ACTIVITY_CODE_NAMES
+    from apps.activity.models import Activity
+    from apps.project.models import Project
     password = next(line.split(': ', 1)[1] for line in (args.directory/'DEMO_ACCOUNTS.txt').read_text(encoding='utf-8').splitlines() if 'Mật khẩu chung' in line)
     args.output.mkdir(parents=True, exist_ok=True)
     marker = 'QA-NATIVE-'+uuid.uuid4().hex[:8]
@@ -50,8 +53,9 @@ def main():
             page.wait_for_timeout(350)
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth+1')
             page.screenshot(path=str(args.output/(name+'.png')), full_page=True)
-        def choose(label, option):
-            page.get_by_role('button', name=label, exact=True).click()
+        def choose(label, option, occurrence=None):
+            current = page.get_by_role('button', name=label, exact=True)
+            (current.nth(occurrence) if occurrence is not None else current).click()
             page.get_by_role('button', name=option, exact=True).last.click()
         login('demo-employee'); menu('Bảng công')
         expect(page.get_by_role('textbox', name='Ngày làm việc *', exact=True)).to_be_visible()
@@ -77,15 +81,28 @@ def main():
         checks.append('Workspace renders without horizontal overflow in light/dark at 390 and 1280px')
         login('demo-hr'); menu('Giao việc & hoàn tất')
         page.get_by_role('button', name='+ Giao việc mới', exact=True).click()
-        expect(page.get_by_role('textbox', name='Tên công việc', exact=False).first).to_be_visible()
+        expect(page.get_by_role('textbox', name='Tên công việc', exact=True).first).to_be_visible()
         shot('task-create-contract')
-        choose('-- Chọn mã ActCode --', 'Khác (công việc hành chính)')
+        known_code = next(iter(ACTIVITY_CODE_NAMES))
+        known_option = known_code+' — '+ACTIVITY_CODE_NAMES[known_code]
+        choose('-- Chọn mã ActCode --', known_option)
+        expect(page.get_by_role('textbox', name='Tên công việc', exact=True)).to_have_value(
+            ACTIVITY_CODE_NAMES[known_code])
+        choose(known_option, 'Khác (công việc hành chính)')
+        task_name = page.get_by_role('textbox', name='Tên công việc *', exact=True)
+        task_name.fill(marker+' restored custom task')
+        choose('Khác (công việc hành chính)', known_option)
+        expect(page.get_by_role('textbox', name='Tên công việc', exact=True)).to_have_value(
+            ACTIVITY_CODE_NAMES[known_code])
+        choose(known_option, 'Khác (công việc hành chính)')
+        expect(page.get_by_role('textbox', name='Tên công việc *', exact=True)).to_have_value(marker+' restored custom task')
+        checks.append('ActCode selection fills canonical task name and restores custom name after switching back')
         person = User.objects.get(username='demo-employee').employee
         # Assignee selects initially show the first allowed employee.
         candidates = page.get_by_role('button').all_text_contents()
         assignee = next(text for text in candidates if ' - ' in text and not text.startswith('✓'))
         choose(assignee, person.employee_code+' - '+person.full_name)
-        page.get_by_role('textbox', name='Tên công việc', exact=True).fill(marker+' task')
+        page.get_by_role('textbox', name='Tên công việc *', exact=True).fill(marker+' task')
         page.get_by_role('button', name='Giao việc', exact=True).click()
         expect(page.get_by_text('Đã giao việc thành công.', exact=False)).to_be_visible()
         task = Task.objects.get(task_name=marker+' task')
@@ -112,6 +129,26 @@ def main():
         assert TaskComment.objects.filter(task=task, comment_text=marker+' comment').exists()
         assert Notification.objects.filter(employee=task.assigned_by_employee, notification_type='task').exists()
         checks.append('Native status/comment save once and notify task assigner')
+        login('demo-project-manager'); menu('Theo dõi hoạt động')
+        page.get_by_role('button', name=re.compile('Tạo hoạt động')).click()
+        code = next(code for code in ACTIVITY_CODE_NAMES if not Activity.objects.filter(activity_code=code).exists())
+        choose('---------', code, 0)
+        expect(page.get_by_role('textbox', name='Tên hoạt động *', exact=True)).to_have_value(ACTIVITY_CODE_NAMES[code])
+        project = Project.objects.filter(is_active=True).order_by('project_name').first()
+        lead = User.objects.get(username='demo-cbda').employee
+        coordinator = person
+        choose('---------', str(project), 0)
+        page.get_by_role('textbox', name='Địa điểm thực hiện').fill(marker+' location')
+        start = timezone.localdate()+timedelta(days=90)
+        page.get_by_role('textbox', name='Ngày bắt đầu *', exact=True).fill(start.isoformat())
+        page.get_by_role('textbox', name='Ngày kết thúc *', exact=True).fill((start+timedelta(days=1)).isoformat())
+        choose('---------', str(lead), 0)
+        choose('---------', str(coordinator), 0)
+        page.get_by_role('button', name='Tạo hoạt động', exact=True).click()
+        expect(page.get_by_text('Đã tạo hoạt động dự án.', exact=True)).to_be_visible()
+        created = Activity.objects.get(activity_code=code)
+        assert created.activity_name == ACTIVITY_CODE_NAMES[code] and created.location == marker+' location'
+        checks.append('Native project activity form autofills required ActCode name and creates scoped activity')
         login('demo-employee'); menu('Phiếu lương')
         expect(page.get_by_role('heading', name='Phiếu lương — IHRMS', exact=True)).to_be_visible()
         shot('payslip-issued')

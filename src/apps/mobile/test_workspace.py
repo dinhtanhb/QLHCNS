@@ -209,6 +209,13 @@ class WorkspaceTests(TestCase):
 
 
 class NativeSchemaTests(TestCase):
+    def test_activity_code_metadata_supplies_readonly_required_name(self):
+        html = '''<main id="main-content"><form method="post"><select name="activity_code"><option value="A1">A1</option></select>
+        <input name="activity_name" readonly required></form><script id="activity-code-names" type="application/json">{"A1":"Tên hoạt động QA"}</script></main>'''
+        form = NativeSchema(html, '/portal/activities/new/', lambda _: True).result()['blocks'][0]
+        self.assertEqual(form['fields'][0]['reference'], 'activity_codes')
+        self.assertEqual(form['references']['activity_codes']['A1']['activity_name'], 'Tên hoạt động QA')
+
     def test_related_admin_link_uses_regular_navigation_instead_of_script_only_popup(self):
         html = '<main id="main-content"><a href="/admin/organization/department/add/?_to_field=id&amp;_popup=1">Thêm</a></main>'
         link = NativeSchema(html, '/admin/', lambda _: True).result()['blocks'][0]

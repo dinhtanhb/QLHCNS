@@ -76,6 +76,15 @@ class NativeSchema:
                     self.references = data
             except ValueError:
                 pass
+        for script_id, pool, target in [('task-code-names', 'task_codes', 'task_name'), ('activity-code-names', 'activity_codes', 'activity_name')]:
+            node = next((n for n in self.document.descendants('script') if n.attrs.get('id') == script_id), None)
+            if node:
+                try:
+                    names = json.loads(''.join(c for c in node.children if isinstance(c, str)))
+                    if isinstance(names, dict):
+                        self.references[pool] = {str(code): {target: name} for code, name in names.items() if isinstance(name, str)}
+                except ValueError:
+                    pass
 
     def href(self, value):
         if not isinstance(value, str) or not value or value.startswith('#'):
@@ -135,7 +144,8 @@ class NativeSchema:
                 'required': 'required' in attrs, 'multiple': 'multiple' in attrs,
                 'placeholder': attrs.get('placeholder', ''),
                 'remote': remote,
-                'reference': attrs.get('data-reference'), 'referenceKey': attrs.get('data-reference-key'),
+                'reference': attrs.get('data-reference') or ('task_codes' if name == 'act_code' and 'task_codes' in self.references else 'activity_codes' if name == 'activity_code' and 'activity_codes' in self.references else None),
+                'referenceKey': attrs.get('data-reference-key') or ('code' if name in {'act_code', 'activity_code'} else None),
                 'numericLocale': kind == 'number' and attrs.get('data-ui-number') != 'plain' and not re.search(r'(?:^|[_-])(?:year|month|day)(?:$|[_-])', name),
                 'maxLength': int(attrs['maxlength']) if str(attrs.get('maxlength', '')).isdigit() else None,
                 'min': attrs.get('min'), 'max': attrs.get('max'), 'step': attrs.get('step'),

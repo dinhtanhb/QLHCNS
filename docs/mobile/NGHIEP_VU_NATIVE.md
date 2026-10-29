@@ -4,7 +4,7 @@ Vào **Tôi → Nghiệp vụ**. Danh mục hiển thị theo quyền của tài
 
 ## Cài bản QA và thử nhanh
 
-1. Lấy `D:\IHRMS_Review_Exports\Mobile_All_QA_20261029\apk\IHRMS-QA.apk` trên máy tính, gửi sang điện thoại bằng cáp hoặc cách chia sẻ tệp nội bộ.
+1. Lấy APK QA mới nhất tại `D:\IHRMS_Review_Exports\Mobile_ActCode_QA_20261029\apk\IHRMS-QA.apk` trên máy tính, gửi sang điện thoại bằng cáp hoặc cách chia sẻ tệp nội bộ.
 2. Mở tệp trên điện thoại và chọn **Cập nhật/Cài đặt**. Bản QA giữ cùng khóa ký; không cần gỡ bản đang dùng. Nếu Android hỏi quyền cài từ ứng dụng quản lý tệp, cấp cho đúng ứng dụng đó.
 3. Điện thoại và máy tính cùng mạng. Bản APK này dùng cố định `http://192.168.1.12:8790`; đây là backend với dữ liệu giả, không phải hệ thống vận hành. Dùng tài khoản trong `D:\IHRMS_Review_Exports\Mobile_Demo10_20261028\qa\DEMO_ACCOUNTS.txt` trên máy tính; không đưa tệp tài khoản vào Git hoặc gửi chung APK.
 4. Đăng nhập nhân viên, vào **Tôi → Nghiệp vụ → Bảng công**, tạo một dòng thử với `2,5` giờ. Kiểm tra thông báo thành công và dữ liệu trong đúng tháng.

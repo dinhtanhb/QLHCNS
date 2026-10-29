@@ -3,8 +3,16 @@ import { moneyLabel } from './ui';
 
 export function changeWorkspaceValue(form: WorkspaceForm, fields: WorkspaceField[], previous: Record<string, string | string[]>, field: WorkspaceField, value: string | string[]) {
   const result = { ...previous, [field.id]: value };
+  if (field.name === 'task_name') result.__administrative_name = value;
   if (!field.reference || !field.referenceKey || typeof value !== 'string') return result;
   const data = form.references?.[field.reference]?.[value] || {};
+  if (field.reference === 'task_codes' || field.reference === 'activity_codes') {
+    const name = field.reference === 'task_codes' ? 'task_name' : 'activity_name';
+    const target = fields.find(other => other.name === name);
+    if (target) result[target.id] = field.reference === 'task_codes' && value === '__OTHER__'
+      ? previous.__administrative_name || '' : String(data[name] ?? (value ? previous[target.id] || '' : ''));
+    return result;
+  }
   const row = field.name.match(/^(.*-\d+-)[^-]+$/)?.[1] || '';
   let slots: string[] = [];
   let clear: string[] = [];
