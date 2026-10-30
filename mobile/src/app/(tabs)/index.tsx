@@ -10,6 +10,9 @@ import { useApprovalInbox } from '../../approval-inbox';
 
 type Resource = 'attendance' | 'leaves' | 'approvals' | 'notices';
 const resourceNames: Record<Resource, string> = { attendance: 'Chấm công', leaves: 'Nghỉ phép', approvals: 'Duyệt đơn', notices: 'Thông báo' };
+// Copy only: keep this limit in sync with page() in src/apps/mobile/views.py
+// (Paginator(queryset, 30)). When pagination changes, update these labels and Home UAT.
+const RECENT_KPI_LIMIT = 30;
 
 export default function Home() {
   const { me, request } = useSession(); const t = useTheme(); const canApprove = Boolean(me?.can_approve);
@@ -51,10 +54,10 @@ export default function Home() {
   const hours = attendance?.items.reduce((sum, row) => sum + (Number(row.hours) || 0), 0) || 0;
   const metrics = [
     { label: 'Bản ghi chấm công', value: String(attendance?.count ?? '—'), icon: 'calendar-outline' as const },
-    { label: 'Giờ trong danh sách gần nhất', value: attendance ? hours.toLocaleString('vi-VN', { maximumFractionDigits: 1 }) : '—', icon: 'time-outline' as const },
-    { label: 'Đơn chờ gần nhất', value: leaves ? String(pendingMine) : '—', icon: 'document-text-outline' as const },
+    { label: `Giờ làm (${RECENT_KPI_LIMIT} bản ghi gần nhất)`, value: attendance ? hours.toLocaleString('vi-VN', { maximumFractionDigits: 1 }) : '—', icon: 'time-outline' as const },
+    { label: `Đơn chờ (${RECENT_KPI_LIMIT} đơn gần nhất)`, value: leaves ? String(pendingMine) : '—', icon: 'document-text-outline' as const },
     ...(me?.can_approve ? [{ label: 'Cần duyệt', value: String(approvalCount ?? '—'), icon: 'checkmark-done-outline' as const }]
-      : [{ label: 'Chưa đọc gần nhất', value: String(notices?.items.filter(row => !row.is_read).length ?? '—'), icon: 'notifications-outline' as const }]),
+      : [{ label: `Chưa đọc (${RECENT_KPI_LIMIT} thông báo gần nhất)`, value: String(notices?.items.filter(row => !row.is_read).length ?? '—'), icon: 'notifications-outline' as const }]),
   ];
   return <Screen title="Trang chủ" compact scrollable={false}>
     <ScrollView contentContainerStyle={{ padding: 16, gap: 18 }} refreshControl={<RefreshControl refreshing={loading} onRefresh={() => void load()} />}>
@@ -77,7 +80,7 @@ export default function Home() {
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}><Ionicons name={metric.icon} size={18} color={t.brand} /><View style={{ flex: 1 }}><Copy muted>{metric.label}</Copy></View></View>
           <Text allowFontScaling style={{ color: t.text, fontSize: 24, lineHeight: 30, fontWeight: '700' }}>{metric.value}</Text>
         </Card></View>)}</View>
-      <Copy muted style={s.small}>Bản ghi chấm công tính trên tất cả thời gian. Số liệu “gần nhất” chỉ tính trang đầu danh sách đã tải.</Copy>
+      <Copy muted style={s.small}>{`Bản ghi chấm công${canApprove ? ' và Cần duyệt' : ''} tính trên toàn bộ dữ liệu. Các số ghi “gần nhất” chỉ tính trên ${RECENT_KPI_LIMIT} bản ghi mới nhất.`}</Copy>
       {me?.can_approve ? <View style={s.stack}>
         <SectionHeader title="Việc cần xử lý" action={<Button label="Tất cả" variant="text" onPress={() => router.push('/(tabs)/approvals')} />} />
         {partLoading.approvals && !approvals ? <Skeleton /> : null}
