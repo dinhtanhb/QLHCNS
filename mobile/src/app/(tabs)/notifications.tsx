@@ -13,7 +13,7 @@ export default function NotificationsScreen() {
     setBusy(true); setError('');
     try {
       await request(`notifications/${row.id}/read/`, {});
-      if (row.destination === 'leaves') router.push('/(tabs)/my-work');
+      if (row.destination === 'leaves') router.push('/(tabs)/my-work?section=leave');
       else if (row.destination === 'approvals' && me?.can_approve) router.push('/(tabs)/approvals');
       else if (row.destination === 'profile-requests') router.push('/profile-change');
       else if (row.destination === 'workspace' && row.path) router.push({ pathname: '/workspace', params: { path: row.path } });
@@ -22,11 +22,14 @@ export default function NotificationsScreen() {
     finally { setBusy(false); }
   };
   return <Screen title="Thông báo" compact scrollable={false}>
-    <ErrorNote message={error || rows.error} />
+    {error || rows.error ? <View style={{ paddingHorizontal: 16, gap: 8 }}>
+      <ErrorNote message={error || rows.error} />
+      {rows.error ? <Button label="Thử tải lại" variant="secondary" onPress={() => void rows.reload()} /> : null}
+    </View> : null}
     <FlatList data={rows.data?.items || []} keyExtractor={row => String(row.id)} contentContainerStyle={{ padding: 16, gap: 10, flexGrow: 1 }}
       refreshControl={<RefreshControl refreshing={rows.loading} onRefresh={() => void rows.reload()} />}
       onEndReached={rows.loadMore} onEndReachedThreshold={0.4}
-      ListEmptyComponent={rows.loading ? <Skeleton /> : <EmptyState icon="notifications-outline" title="Chưa có thông báo" description="Thông tin mới sẽ xuất hiện tại đây." />}
+      ListEmptyComponent={rows.loading ? <Skeleton /> : rows.error ? undefined : <EmptyState icon="notifications-outline" title="Chưa có thông báo" description="Thông tin mới sẽ xuất hiện tại đây." />}
       ListFooterComponent={rows.loadingMore ? <Copy muted>Đang tải thêm…</Copy> : undefined}
       renderItem={({ item }) => <Card>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, flexWrap: 'wrap' }}>

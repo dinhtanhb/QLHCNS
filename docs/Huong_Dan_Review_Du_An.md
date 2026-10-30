@@ -5,6 +5,13 @@ Tài liệu này chứa quy trình/checklist/lệnh review; skill và agent củ
 client chỉ định tuyến tới đây. Khi xung đột, áp dụng yêu cầu hiện hành của
 chủ dự án và AGENTS.md.
 
+Khi sửa nhật ký tiếng Việt, dùng Python đọc/ghi UTF-8 rõ ràng hoặc .NET
+`UTF8Encoding(false)`; không truyền nội dung có dấu qua pipe PowerShell có
+code page mặc định và không dùng `Set-Content`/`Out-File` thiếu encoding.
+Chỉ thay vùng cần sửa, giữ nguyên byte và kiểu xuống dòng của lịch sử còn lại.
+Chạy `venv\Scripts\python.exe ops\check_work_log_encoding.py` trước commit;
+nếu nguồn lịch sử đã hỏng thì ghi giới hạn, không đoán lại nguyên văn.
+
 ## Chọn cách review
 
 Skill [`ihrms-review`](../.agents/skills/ihrms-review/SKILL.md) dành cho IHRMS, hỗ trợ hai phạm vi:

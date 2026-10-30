@@ -40,8 +40,8 @@ export function IconButton({ label, icon, onPress, disabled = false, size = 20 }
 
 export function AppBar({ title, onBack, backLabel = 'Quay lại', action, actionLabel }: { title: string; onBack?: () => void; backLabel?: string; action?: ReactNode; actionLabel?: string }) {
   const t = useTheme();
-  return <View style={{ minHeight: 56, paddingHorizontal: space.x2, flexDirection: 'row', alignItems: 'center', gap: space.x2, backgroundColor: t.bg }}>
-    {onBack ? <IconButton label={backLabel} icon="arrow-back" onPress={onBack} /> : <View style={{ width: space.x2 }} />}
+  return <View style={{ minHeight: 56, paddingHorizontal: onBack ? space.x2 : space.x4, flexDirection: 'row', alignItems: 'center', gap: space.x2, backgroundColor: t.bg }}>
+    {onBack ? <IconButton label={backLabel} icon="arrow-back" onPress={onBack} /> : null}
     <Text accessibilityRole="header" numberOfLines={2} style={{ flex: 1, flexShrink: 1, color: t.text, fontSize: type.title, lineHeight: 24, fontWeight: '600' }}>{title}</Text>
     {action ? <View accessibilityLabel={actionLabel} style={{ minWidth: 44, alignItems: 'center' }}>{action}</View> : null}
   </View>;
@@ -59,7 +59,7 @@ export function Screen({ title, description, children, compact = false, scrollab
   return <SafeAreaView edges={['top', 'left', 'right']} style={[s.page, { backgroundColor: t.bg }]}>
     {compact ? <AppBar title={title} onBack={onBack} backLabel={backLabel} action={action} /> : null}
     {scrollable ? <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={s.content}>{content}</ScrollView>
-      : <View style={[s.content, { flex: 1, minHeight: 0 }]}>{content}</View>}
+      : <View style={[compact ? { width: '100%', maxWidth: 768, alignSelf: 'center' } : s.content, { flex: 1, minHeight: 0 }]}>{content}</View>}
   </SafeAreaView>;
 }
 
@@ -252,21 +252,25 @@ export function moneyLabel(value: string) {
 export function useRows<T>(path: string) {
   const { request } = useSession();
   const sequence = useRef(0);
-  const [data, setData] = useState<Page<T> | null>(null);
-  const [loading, setLoading] = useState(false); const [loadingMore, setLoadingMore] = useState(false);
-  const [error, setError] = useState('');
+  type State = { path: string; data: Page<T> | null; loading: boolean; loadingMore: boolean; error: string };
+  const initial: State = { path, data: null, loading: true, loadingMore: false, error: '' };
+  const [state, setState] = useState<State>(initial);
+  // Derive the new path's initial state immediately; never paint the old list
+  // or an empty state while waiting for the focus effect to start its request.
+  const { data, loading, loadingMore, error } = state.path === path ? state : initial;
   const load = useCallback(async (page = 1, append = false) => {
     const current = ++sequence.current;
-    setLoading(!append); setLoadingMore(append); setError(''); if (!append) setData(null);
+    setState(previous => ({ ...(previous.path === path ? previous : { path, data: null }), loading: !append, loadingMore: append, error: '' }));
     try {
       const value = await request<Page<T>>(`${path}${path.includes('?') ? '&' : '?'}page=${page}`);
-      if (current === sequence.current) setData(previous => append && previous ? { ...value, items: [...previous.items, ...value.items] } : value);
+      if (current === sequence.current) setState(previous => ({ path, data: append && previous.path === path && previous.data
+        ? { ...value, items: [...previous.data.items, ...value.items] } : value, loading: false, loadingMore: false, error: '' }));
     }
-    catch (err) { if (current === sequence.current) setError(err instanceof Error ? err.message : 'Không thể tải dữ liệu.'); }
-    finally { if (current === sequence.current) { setLoading(false); setLoadingMore(false); } }
+    catch (err) { if (current === sequence.current) setState(previous => ({ ...(previous.path === path ? previous : { path, data: null }),
+      loading: false, loadingMore: false, error: err instanceof Error ? err.message : 'Không thể tải dữ liệu.' })); }
   }, [path, request]);
   useFocusEffect(useCallback(() => { void load(); return () => { sequence.current += 1; }; }, [load]));
-  const loadMore = useCallback(() => { if (!loading && !loadingMore && data?.has_next) void load(data.page+1, true); }, [data, load, loading, loadingMore]);
+  const loadMore = useCallback(() => { if (!loading && !loadingMore && !error && data?.has_next) void load(data.page+1, true); }, [data, error, load, loading, loadingMore]);
   return { data, loading, loadingMore, error, reload: () => load(), loadMore,
     controls: <View style={s.stack}><ErrorNote message={error} />{loading ? <Loading /> :
       <View style={s.row}><Button label="Tải lại" variant="secondary" onPress={() => void load(data?.page || 1)} />

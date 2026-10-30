@@ -1,40 +1,35 @@
-# Nh?t k? c?ng vi?c IHRMS
-
-## 2026-10-29 ? P0: baseline thi?t k? mobile
-- Ph?m vi: ki?m k? m?n h?nh mobile ? 360/390/412px, s?ng/t?i, ba palette, vai nh?n vi?n/tr??ng ph?ng; d?ng Expo Web v? d? li?u QA t?ng h?p c? l?p.
-- ?? ch?p 342 ?nh b?ng Edge headless; 0 l?i JavaScript; kh?ng d?ng h? s?/ng??i d?ng th?t.
-- B?ng l?i v? ?nh baseline: `docs/mobile/GIAO_DIEN_NATIVE.md`, ?nh ngo?i repo t?i `D:/IHRMS_Review_Exports/Mobile_Design_P0_20261029/`.
-- Gi?i h?n: baseline l? b?n web responsive, kh?ng ??i di?n ki?m th? Android/iOS native.
-
-## 2026-10-29 ? P1: token v? b? th?nh ph?n native
-- B? sung token kho?ng c?ch/ch?/bo g?c v? semantic colors cho ba palette s?ng/t?i; ??ng b? `mobile/src/palettes.json`.
-- B? sung AppBar, ListItem, StatusChip, SectionHeader, EmptyState, Skeleton, Chip/SegmentedControl, SelectSheet, DateTimeInput, IconButton v? Button ba c?p; gi? scaling/accessibility.
-- T?i li?u d?ng ??ng/sai t?i `docs/mobile/GIAO_DIEN_NATIVE.md`, li?n k?t t? README mobile.
-- Kh?ng ??i API, quy?n, nghi?p v? ho?c d? li?u.
-
-## 2026-10-29 ? P2: ?i?u h??ng, trang ch?nh v? danh m?c nghi?p v?
-- Tab bar theo vai tr?: Trang ch?, Vi?c c?a t?i, Duy?t (khi c? quy?n, k?m s?), Th?ng b?o, Th?m; b? ? tab ?n g?y kho?ng tr?ng.
-- Trang ch? c? l?i ch?o, th?ng tin t?i kho?n, thao t?c nhanh, KPI ??ng c?, vi?c ch? duy?t v? ho?t ??ng; Vi?c c?a t?i g?p ngh? ph?p/ch?m c?ng.
-- Danh m?c Th?m c? nh?m/icon/t?m ki?m; danh s?ch duy?t/th?ng b?o c? pull-to-refresh, t?i th?m khi cu?n, chip tr?ng th?i; ?n c?c t?c v? m?y t?nh/admin.
-- C?p nh?t b?n browser UAT runners; typecheck/lint/export web, 48 test SQLite v? ki?m tra token/contrast ?? ??t; browser UAT 38+9+6+16 ki?m tra, 0 l?i trang.
-- 198 ?nh P2 ? `D:/IHRMS_Review_Exports/Mobile_Design_P2_20261029/screens/`; browser web, 0 overflow/JS errors; P0 c? 342 ?nh. Sau ch?p ch? ??i c?u ch?o th?nh b?n chung. L?n ch?p b? b? d?ng do selector ??ng nh?p t?ng qu?t g?y l?i ??ng nh?p QA; x?c minh tr?ng th?i t?i kho?n demo tr??c UAT ti?p theo.
-- Android emulator/device kh?ng ch?y ???c: m?y hi?n kh?ng c? JDK/Android SDK/adb; ch?a build APK, ch?a nghi?m thu native. Backend browser UAT d?ng d? li?u QA c? l?p.
-- P3 ch?a b?t ??u; ch? ch? d? ?n duy?t P2. B?n ngu?n review ngo?i repo: `D:/IHRMS_Review_Exports/Mobile_UI_Redesign_P2_20261029/IHRMS_mobile_ui_P2_source_review.zip`, manifest/hash ?? x?c minh.
-- M? P2 commit `65e65b5` tr?n `main`, ?? push; b?n c?p nh?t nh?t k? gi?i h?n QA ???c ghi ? commit k? ti?p.
-
-## 2026-10-29 ? C?i thi?n dashboard, l?ch v? danh m?c nghi?p v? mobile
-
-- **M?c ti?u/ph?m vi:** theo ph?n h?i ki?m APK QA: tr?c quan h?a Trang ch?; c? l?ch ch?n ng?y; th?m bi?u t??ng nghi?p v?; gom danh m?c theo nh?m; ?n Admin, Excel v? t?c v? d?nh cho m?y t?nh. Gi? IHRMS web/backend l?m ngu?n nghi?p v?, ?u ti?n xem nhanh v? x? l? nhanh tr?n ?i?n tho?i. ??u l??t l?m tr?n `main`, `HEAD=origin/main=2f9b53ebd3929885edca4b3ce097d3839a9ed209`, fetch th?nh c?ng, ahead/behind `0/0`; `.codex/` l? th? m?c c?c b? ch?a theo d?i, ???c gi? nguy?n.
-- **Thay ??i:** Trang ch? c? KPI thao t?c nhanh, t?m t?t ch?m c?ng g?n nh?t ho?c bi?u ?? gi? l?m theo t?i ?a 7 b?n ghi khi ?? d? li?u; th?m tab T?i ri?ng. C?c b? l?c/ng?y trong bi?u m?u native d?ng l?ch th?ng c? th? ch?n ng?y; tr??ng ng?y gi? v?n gi? l?a ch?n gi?. Danh m?c Nghi?p v? gom nh?m thu g?n, c? bi?u t??ng theo nh?m/ch?c n?ng; ?n c?c route Admin, b?o c?o/Excel v? c?c t?c v? qu?n tr? n?ng, gi? phi?u l??ng v? thao t?c nhanh ph? h?p. Tab Duy?t ??n ???c ?n kh?i thanh tab nh?ng ???ng d?n t? KPI Trang ch? ho?t ??ng; native UAT x?c nh?n nh?n vi?n g?i ??n v? HR duy?t. Kh?ng ??i quy?n/API/backend ho?c database v?n h?nh.
-- **T?p:** `mobile/src/app/(tabs)/index.tsx`, `profile.tsx`, `_layout.tsx`, `mobile/src/app/services.tsx`, `mobile/src/workspace-controls.tsx`; runner `ops/run_mobile_android_uat.py`, `ops/run_mobile_settings_uat.py`; h??ng d?n `docs/mobile/HUONG_DAN_CAI_VA_DUNG_THU.md`, `NGHIEP_VU_NATIVE.md`, `NGHIEP_VU_WEB_MOBILE.md`.
-- **Ki?m tra ngu?n v? tr?nh duy?t:** trong `mobile/`, `npm run typecheck`, `npm run lint`, `npx expo export --platform web` ??t. Browser UAT tr?n DB/media t?ng h?p c? l?p `Mobile_All_QA_20261029/qa`, backend `http://127.0.0.1:8794`: **9/9 nh?m, 0 browser errors**, g?m dashboard, nh?m nghi?p v?, l?c menu t?i ch?nh, c?i ??t/ch? ?? v? l?u c?i ??t.
-- **Ki?m tra Android:** APK build c?c b? b?ng `build-final.ps1`; kh?ng t?i source l?n cloud. Emulator Android API 35, t?i kho?n v? DB QA t?ng h?p ri?ng t?i `Mobile_Demo10_20261028/qa`, backend `http://192.168.1.12:8790`: **11/11 ki?m tra, 0 l?i runtime**, g?m c?i APK, dashboard, l?ch/ch?m c?ng, danh m?c, c?i ??t, ??ng nh?p kh?i ph?c, g?i ??n ngh?, HR duy?t v? th?ng b?o hai ph?a. X?c minh 36 t?p source mobile c?a build kh?p ngu?n. Ch?a ki?m ?i?n tho?i v?t l?; push tr?n thi?t b? th?t c?a APK n?y ch?a ???c x?c nh?n.
-- **APK QA:** `D:/IHRMS_Review_Exports/Mobile_ActCode_QA_20261029/apk/IHRMS-QA.apk`, 54,128,017 byte, SHA-256 `b40f8f103226e5f87ed251ac35933d217a9601cd90968fd55003a5e20a12b3a4`. Package `vn.ihrms.internal.qa`; ch?ng th? k? QA SHA-256 `fac61745dc0903786fb9ede62a962b399f7348f0bb6f899b8332667591033b9c` kh?p b?n tr??c n?n c?i c?p nh?t ?? ???c; Firebase QA kh?p `ihrms-qa`; kh?ng c? private key trong APK. File APK v? QA backend kh?ng n?m trong repository.
-- **B?n sao review:** sau commit/push t?o ngo?i repository t?i `D:/IHRMS_Review_Exports/Mobile_ActCode_QA_20261029/IHRMS_source_review.zip`; manifest ghi tree v? SHA-256 t?ng t?p, m? l?i ??i chi?u; lo?i secrets, DB/media, runtime v? `.codex/`.
-- **Nh?nh/commit/push:** m? ?ng d?ng ? commit `604b730` tr?n `main`; c?p nh?t nh?t k? ???c commit ti?p theo v? push th?nh c?ng c?ng nh?nh. ?? ki?m tra sau push, `HEAD=origin/main`, ahead/behind `0/0`; kh?ng force-push ho?c deploy.
-- **Vi?c c?n l?i:** ch? d? ?n c?i/c?p nh?t APK ? ?i?n tho?i QA v? ki?m l?i giao di?n, quy?n th?ng b?o/push c?ng m?ng QA; ch?a c? iOS UAT. Kh?ng s?a ho?c tri?n khai backend v?n h?nh.
-
 # Nhật ký công việc IHRMS
+
+## 2026-10-30 — FIX review mobile P2: M-01 đến M-05
+- Phạm vi/nguồn: main tại ff10772, fetch origin main và ahead/behind 0/0; sửa ui.tsx, approval-inbox.tsx, năm màn tab, hai UAT runners, thêm runner finding/kiểm mã hóa và đoạn hướng dẫn UTF-8. Giữ .codex/; không đổi API/quyền/backend/schema/P3; chỉ commit cục bộ, không push/deploy theo yêu cầu.
+- M-01: tái hiện 641 dấu hỏi, hai H1 (assertion exit 1); sửa đầu tệp bằng splice byte UTF-8, giữ LF, một H1, không U+FFFD/tiêu đề hỏng; đuôi lịch sử 1,1 MB khớp SHA-256 trước/sau. Mục 604b730 đã hỏng ngay trong commit đầu; git log --all -S không có nguyên văn đúng, nên phần khôi phục nguyên văn còn mở; lưu bản byte gốc ngoài repo, không đoán nội dung.
+- M-02/M-03: phân đoạn lấy từ params; thông báo nghỉ phép chọn section=leave; banner mất sau rời màn hoặc 6 giây; count dùng chung, cập nhật khi focus/duyệt. Baseline có 14 assertion lỗi; đã kiểm 2→1→ẩn và KPI Trang chủ khớp. Hai triệu chứng riêng (flash rỗng khung đầu, gửi xong vẫn ở Chấm công) không tái hiện trong baseline, không kết luận chúng là lỗi đã xác nhận.
+- M-04/M-05: màn compact dùng một lớp lề 16px, tiêu đề thẳng hàng ở màn hẹp; useRows giữ dữ liệu khi refresh, xóa theo path, lỗi có thử lại và không báo rỗng; Home tải độc lập bằng Promise.allSettled. Runner cuối đạt 23 assertion, 0 lỗi trang; 198 ảnh 360/390/412×sáng/tối×3 palette×hai vai, 0 overflow/vùng cuộn che tab. Palette là fixture me.palette trong Playwright, có đối chiếu màu token; đây là Expo Web/Edge, không phải native.
+- Gate đã chạy: npm run typecheck, npm run lint, EXPO_PUBLIC_ALLOW_HTTP=true npx expo export --platform web (đều exit 0); venv/Scripts/python.exe ops/sync_mobile_tokens.py --check (66), ops/check_ui_contrast.py (660), ops/check_work_log_encoding.py, git diff --check (đều exit 0); ops/run_tests.py --backend sqlite apps.mobile 48/48, exit 0. Bốn run_mobile_*_uat.py đạt 41/6/9/16, exit 0; lệnh/params/kết quả mới ở commands.json, không dùng số cũ.
+- QA: D:/IHRMS_Review_Exports/Mobile_Design_P2b_20261030/qa, loopback 8808, push tắt; serve_qa_immediate.py chỉ đặt SQLite transaction_mode=IMMEDIATE ngoài repo. Lượt QA mặc định từng mất phiên, một luồng từng timeout; chưa kết luận lỗi backend và không sửa backend trong đợt này. C: finally khôi phục hash mật khẩu gốc, tiêm lỗi sau đổi mật khẩu exit 1 có chủ đích vẫn restored=true; mật khẩu demo-employee ở QA cũ khớp manifest khi kiểm chỉ đọc. Có JDK/SDK/adb ngoài PATH nhưng adb không có thiết bị; chưa build APK/kiểm Android/iOS.
+- M-06 chờ chủ dự án chọn: đổi nhãn đúng phạm vi hiện có, hiện N+ khi còn trang sau, hay giao API tổng hợp riêng? Chưa đổi định nghĩa KPI; các mục C khác để lại. Cần bản gốc/backup của mục 604b730, duyệt ảnh mới và quyết định push. Bằng chứng/contact sheet/ZIP nguồn đầy đủ cùng thư mục Mobile_Design_P2b_20261030; REVIEW_MANIFEST.json ghi tree/hash từng tệp, delivery.json ghi SHA commit cục bộ sau commit.
+
+## 2026-10-29 — P0: baseline thiết kế mobile
+- Phạm vi lịch sử: kiểm kê màn hình Expo Web ở 360/390/412px, sáng/tối, ba palette, hai vai nhân viên/trưởng phòng trên dữ liệu QA tổng hợp cô lập.
+- Báo cáo P0 cũ ghi 342 ảnh và 0 lỗi JavaScript tại D:/IHRMS_Review_Exports/Mobile_Design_P0_20261029/; đây là kết quả đợt trước, không phải kiểm tra mới ngày 30/10.
+- Bảng kiểm kê và giới hạn tại docs/mobile/GIAO_DIEN_NATIVE.md; baseline web không chứng nhận Android/iOS native.
+
+## 2026-10-29 — P1: token và bộ thành phần native
+- Bổ sung mobile/src/tokens.ts, semantic colors/palettes.json và các thành phần AppBar, ListItem, StatusChip, SectionHeader, EmptyState, Skeleton, Chip/SegmentedControl, SelectSheet, DateTimeInput, IconButton; Button có ba cấp.
+- Tài liệu dùng đúng/sai tại docs/mobile/GIAO_DIEN_NATIVE.md. Phạm vi mã được đối chiếu từ commit 65e65b5; không đổi API/backend/quyền.
+- Những kết quả kiểm tra ghi ở đợt P2 là bằng chứng lịch sử; kiểm tra lại ngày 30/10 được ghi ở mục FIX phía trên.
+
+## 2026-10-29 — P2: điều hướng, trang chính và danh mục nghiệp vụ
+- Commit tính năng 65e65b5, nhật ký ff10772 trên main: thanh tab theo quyền, Trang chủ, Việc của tôi, Duyệt, Thông báo và danh mục Thêm có nhóm/icon/tìm kiếm.
+- Bốn browser UAT runners được sửa trong commit; ma trận P2 cũ ghi 198 ảnh, 0 overflow/JavaScript errors, lưu tại Mobile_Design_P2_20261029/screens/. Độ khớp toàn bộ ảnh với nguồn cuối chưa được xác nhận lại.
+- Sau lần chụp ma trận đã đổi câu chào Trang chủ thành “Xin chào”; lần chụp bổ sung bị dừng sau lỗi đăng nhập QA do dùng selector trường nhập không phù hợp. Không có bằng chứng đủ để kết luận đã khôi phục tài khoản ở đợt đó.
+- Nguồn P2 đã export web/kiểm tra theo báo cáo đợt trước; không dùng lại các con số đó làm kết quả kiểm thử ngày 30/10. P3 chưa được triển khai hoặc duyệt trong đợt P2.
+- Bản nguồn review cũ tại D:/IHRMS_Review_Exports/Mobile_UI_Redesign_P2_20261029/. Android/iOS native của P2 chưa được kiểm chứng; nhận định cũ về thiếu SDK cần kiểm tra lại đường dẫn công cụ ngoài PATH.
+
+## 2026-10-29 — Dashboard, lịch và danh mục nghiệp vụ mobile (nguyên văn chưa khôi phục)
+- Mục lịch sử này đã hỏng mã hóa ngay trong commit đầu tiên 604b730; các bản 6a1431d và 41a41d5 cũng chỉ còn bản hỏng. Tìm toàn bộ lịch sử Git theo tiêu đề tiếng Việt đúng không tìm được nguyên văn.
+- Bản byte gốc của mục tại 604b730 lưu ở D:/IHRMS_Review_Exports/Mobile_Design_P2b_20261030/604b730-original-corrupt-entry.txt; giữ để đối chiếu nếu chủ dự án cung cấp bản gốc.
+- Chưa xác nhận lại đầy đủ nội dung nghiệp vụ, kết quả kiểm thử và APK từ mục hỏng; không viết lại theo suy đoán. Commit mã nguồn tham chiếu: 604b730.
 ## 2026-10-29 — Đưa Cài đặt và Nghiệp vụ lên đầu hồ sơ mobile
 
 - **Yêu cầu/chẩn đoán:** chủ dự án báo APK mới không thấy các nghiệp vụ khác và Cài đặt. Đầu lượt `main`, `HEAD=origin/main=63304a9bc79c117edd58da29b8a97909ae408452`, fetch thành công, `0/0`; working tree chỉ có `.codex/` cục bộ được yêu cầu giữ. Ảnh emulator APK trước cho thấy hai lối vào nằm sau thẻ hồ sơ/quỹ phép, Nghiệp vụ ở dưới vùng tab; mã vẫn có cả hai và Cài đặt chạy được. Danh sách nghiệp vụ tiếp tục lọc theo quyền tài khoản. Xếp hạng nguyên nhân: nút bị khuất (được ảnh và vị trí source xác nhận), cài nhầm APK khác SHA, hoặc đăng nhập vai trò chỉ có quyền nhân viên.

@@ -1,29 +1,35 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 import { Redirect } from 'expo-router';
 import { Button, Card, Confirm, Copy, EmptyState, ErrorNote, Screen, Skeleton, StatusChip, dateLabel, useRows } from '../../ui';
 import type { Leave } from '../../types';
 import { useSession } from '../../session';
+import { useApprovalInbox } from '../../approval-inbox';
 
 export default function ApprovalsScreen() {
   const { me, request } = useSession(); const rows = useRows<Leave>('approvals/');
+  const { updateCount, refreshCount } = useApprovalInbox();
+  useEffect(() => { if (rows.data) updateCount(rows.data.count); }, [rows.data, updateCount]);
   const [choice, setChoice] = useState<{ row: Leave; decision: string } | null>(null);
   const [busy, setBusy] = useState(false); const [error, setError] = useState(''); const [message, setMessage] = useState('');
   if (!me?.can_approve) return <Redirect href="/(tabs)" />;
   const decide = async () => {
     if (!choice || busy) return;
     setBusy(true); setError(''); setMessage('');
-    try { await request(`leaves/${choice.row.id}/decision/`, { decision: choice.decision }); setChoice(null); setMessage('Đã xử lý đơn nghỉ phép.'); await rows.reload(); }
+    try { await request(`leaves/${choice.row.id}/decision/`, { decision: choice.decision }); setChoice(null); setMessage('Đã xử lý đơn nghỉ phép.'); await Promise.allSettled([rows.reload(), refreshCount()]); }
     catch (err) { setChoice(null); setError(err instanceof Error ? err.message : 'Không thể xử lý đơn.'); await rows.reload(); }
     finally { setBusy(false); }
   };
   return <Screen title="Duyệt" compact scrollable={false}>
-    <ErrorNote message={error || rows.error} />
-    {message ? <Copy>{message}</Copy> : null}
+    {error || rows.error || message ? <View style={{ paddingHorizontal: 16, gap: 8 }}>
+      <ErrorNote message={error || rows.error} />
+      {rows.error ? <Button label="Thử tải lại" variant="secondary" onPress={() => void rows.reload()} /> : null}
+      {message ? <Copy>{message}</Copy> : null}
+    </View> : null}
     <FlatList data={rows.data?.items || []} keyExtractor={row => String(row.id)} contentContainerStyle={{ padding: 16, gap: 10, flexGrow: 1 }}
       refreshControl={<RefreshControl refreshing={rows.loading} onRefresh={() => void rows.reload()} />}
       onEndReached={rows.loadMore} onEndReachedThreshold={0.4}
-      ListEmptyComponent={rows.loading ? <Skeleton /> : <EmptyState icon="checkmark-done-outline" title="Không có đơn cần duyệt" description="Đơn trong phạm vi bạn phụ trách sẽ hiện ở đây." />}
+      ListEmptyComponent={rows.loading ? <Skeleton /> : rows.error ? undefined : <EmptyState icon="checkmark-done-outline" title="Không có đơn cần duyệt" description="Đơn trong phạm vi bạn phụ trách sẽ hiện ở đây." />}
       ListFooterComponent={rows.loadingMore ? <Copy muted>Đang tải thêm…</Copy> : undefined}
       renderItem={({ item }) => <Card>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}><Copy title>{item.employee_name}</Copy><StatusChip label="Chờ duyệt" tone="warning" /></View>
