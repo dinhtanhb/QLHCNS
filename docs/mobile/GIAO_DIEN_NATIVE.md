@@ -55,8 +55,33 @@ P1 xây token và thành phần dùng chung. P2 áp dụng cho điều hướng,
 ## Ý nghĩa số liệu Trang chủ — M-06 phương án A
 
 - **Bản ghi chấm công:** tổng số bản ghi của tài khoản, trên tất cả thời gian; không phải số ngày công trong tháng.
-- **Giờ trong danh sách gần nhất:** tổng giờ trong trang đầu danh sách chấm công đã tải.
-- **Đơn chờ gần nhất / Chưa đọc gần nhất:** chỉ đếm trong trang đầu danh sách nghỉ phép / thông báo đã tải; có thể chưa bao gồm toàn bộ dữ liệu.
+- **Giờ làm (30 bản ghi gần nhất):** tổng giờ trong cửa sổ 30 bản ghi chấm công mới nhất.
+- **Đơn chờ (30 đơn gần nhất):** đếm đơn chờ trong cửa sổ 30 đơn nghỉ phép mới nhất.
+- **Chưa đọc (30 thông báo gần nhất):** đếm thông báo chưa đọc trong cửa sổ 30 thông báo mới nhất; có thể chưa bao gồm toàn bộ thông báo chưa đọc.
 - **Cần duyệt:** tổng đơn đang chờ trong quyền duyệt của tài khoản, dùng số đếm chung với huy hiệu tab.
 
 Phương án A chỉ làm rõ nhãn và phạm vi số liệu. Không thêm dấu “+”, bộ lọc tháng hoặc API tổng hợp. Các thẻ được phép xuống dòng và tăng chiều cao theo cỡ chữ hệ thống.
+
+Chú thích nhân viên: `Bản ghi chấm công tính trên toàn bộ dữ liệu. Các số ghi “gần nhất” chỉ tính trên 30 bản ghi mới nhất.` Người duyệt thấy `Bản ghi chấm công và Cần duyệt tính trên toàn bộ dữ liệu. Các số ghi “gần nhất” chỉ tính trên 30 bản ghi mới nhất.`
+
+### Chạy lại kiểm tra KPI
+
+`ops/check_mobile_kpi_limit.py` dùng thư viện chuẩn Python, đọc hằng số `RECENT_KPI_LIMIT` và AST của `page()`/`Paginator`; không import Django hoặc kết nối database. Lệnh trả exit 1 nếu không đọc được giới hạn hoặc hai số lệch nhau:
+
+```powershell
+python ops/check_mobile_kpi_limit.py
+```
+
+`ops/run_mobile_home_uat.py` chạy 36 trường hợp trên bản Expo Web đang phục vụ cùng backend QA. Runner kiểm nhãn, chú thích đúng/sai vai, giá trị cửa sổ phân trang, màu palette, cắt chữ và overflow. Đăng nhập/quyền dùng hai tài khoản demo trên QA; API đọc được thay bằng fixture có trang sau. Không kiểm chứng tổng hợp backend hoặc Android/iOS native. Mật khẩu được đọc từ tệp tài khoản của QA, không ghi trong mã.
+
+Chuẩn bị QA theo hướng dẫn mobile hiện có, export web với `EXPO_PUBLIC_ALLOW_HTTP=true` khi dùng HTTP loopback và chạy `ops/mobile_qa.py serve`. Truyền thư mục QA có marker `synthetic_only`, origin loopback và thư mục ảnh ngoài repo; ví dụ với QA hiện có:
+
+```powershell
+# Cửa sổ 1: phục vụ backend QA và bản web export đã chuẩn bị.
+venv/Scripts/python.exe ops/mobile_qa.py serve --directory D:/IHRMS_Review_Exports/Mobile_Design_P2b_20261030/qa --port 8808
+
+# Cửa sổ 2: chạy ma trận Trang chủ, giữ server QA đang mở.
+venv/Scripts/python.exe ops/run_mobile_home_uat.py --directory D:/IHRMS_Review_Exports/Mobile_Design_P2b_20261030/qa --url http://127.0.0.1:8808 --output D:/IHRMS_Review_Exports/Mobile_M06_Final_20261030
+```
+
+Mặc định runner dùng Microsoft Edge (`--channel msedge`). Có thể chỉ định channel trình duyệt đã cài khác. Tất cả đường dẫn QA/output là tham số; runner từ chối thư mục trong repo và origin ngoài loopback.
