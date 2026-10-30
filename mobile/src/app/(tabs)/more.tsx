@@ -6,6 +6,7 @@ import { useSession } from '../../session';
 import { useTheme } from '../../theme';
 import { Copy, EmptyState, ErrorNote, Field, ListItem, Loading, Screen, SectionHeader } from '../../ui';
 import type { WorkspacePage } from '../../workspace-types';
+import { normalizeSearch } from '../../input-utils';
 
 export default function Services() {
   const { me, request } = useSession(); const t = useTheme();
@@ -23,7 +24,7 @@ export default function Services() {
       || /trung tâm báo cáo|báo cáo.*excel|excel|chạy lương|lương cơ bản nv|người phụ thuộc|cấu hình thuế|thang bảng lương|quản lý tài sản|kiểm kê tài sản|thanh lý tài sản|nhập dữ liệu hàng loạt|xuất dữ liệu hàng loạt/i.test(label);
     const links = (menu?.navigation || []).filter(link => !hidden(link.path, link.label)
       && !['/portal/', '/portal/profile/', '/portal/organization-chart/', '/portal/profile/requests/'].includes(link.path)
-      && link.label.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
+      && normalizeSearch(link.label).includes(normalizeSearch(query)));
     return [...new Set(links.map(link => link.group || 'Nghiệp vụ'))].map(name => ({ name, links: links.filter(link => (link.group || 'Nghiệp vụ') === name) }));
   }, [menu, query]);
   const iconForGroup = (group: string): React.ComponentProps<typeof Ionicons>['name'] => {

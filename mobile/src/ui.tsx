@@ -1,5 +1,5 @@
 import { PropsWithChildren, ReactNode, useCallback, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleProp, StyleSheet, Text, TextInput, TextInputProps, TextStyle, View, ViewStyle } from 'react-native';
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleProp, StyleSheet, Text, TextInput, TextInputProps, TextProps, TextStyle, View, ViewStyle } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useFocusEffect } from 'expo-router';
@@ -8,6 +8,7 @@ import { useTheme } from './theme';
 import { useSession } from './session';
 import { radius, space, type } from './tokens';
 import type { Page } from './types';
+import { parseTime, timeLabel } from './input-utils';
 
 export const s = StyleSheet.create({
   page: { flex: 1 }, content: { padding: space.x4, gap: space.x6, width: '100%', maxWidth: 768, alignSelf: 'center', paddingBottom: space.x8 },
@@ -24,9 +25,9 @@ export const s = StyleSheet.create({
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
-export function Copy({ children, muted = false, title = false, style }: PropsWithChildren<{ muted?: boolean; title?: boolean; style?: StyleProp<TextStyle> }>) {
+export function Copy({ children, muted = false, title = false, style, ...props }: PropsWithChildren<TextProps & { muted?: boolean; title?: boolean; style?: StyleProp<TextStyle> }>) {
   const t = useTheme();
-  return <Text style={[title ? s.title : s.body, { color: muted ? t.muted : t.text }, style]}>{children}</Text>;
+  return <Text {...props} style={[title ? s.title : s.body, { color: muted ? t.muted : t.text }, style]}>{children}</Text>;
 }
 
 export function IconButton({ label, icon, onPress, disabled = false, size = 20 }: { label: string; icon: IconName; onPress: () => void; disabled?: boolean; size?: number }) {
@@ -167,7 +168,7 @@ export function SelectSheet({ label, value, options, onChange, disabled = false 
       <Text allowFontScaling numberOfLines={2} style={{ flex: 1, color: t.text, fontSize: type.body }}>{selected || 'Chọn'}</Text><Ionicons name="chevron-down" size={18} color={t.muted} />
     </Pressable></View>
     <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
-      <View style={[s.overlay, { justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.35)' }]}>
+      <View style={[s.overlay, { justifyContent: 'flex-end', backgroundColor: t.overlay }]}>
         <View style={{ maxHeight: '85%', padding: space.x4, borderTopLeftRadius: radius.panel, borderTopRightRadius: radius.panel, backgroundColor: t.bg, gap: space.x3 }}>
           <SectionHeader title={label} action={<IconButton label="Đóng danh sách" icon="close" onPress={() => setOpen(false)} />} />
           <Field label={`Tìm ${label}`} value={search} onChangeText={setSearch} autoCapitalize="none" />
@@ -184,12 +185,13 @@ export function DateTimeInput({ label, value, onChange, mode = 'date', disabled 
   label: string; value: string; onChange: (value: string) => void; mode?: 'date' | 'time' | 'datetime'; disabled?: boolean; minimumDate?: Date; maximumDate?: Date;
 }) {
   const t = useTheme(); const [open, setOpen] = useState(false); const [selected, setSelected] = useState<Date | null>(null);
-  const initial = new Date(value || '2000-01-01T12:00:00'); const valid = Number.isFinite(initial.getTime()) ? initial : new Date('2000-01-01T12:00:00');
+  const initial = mode === 'time' ? parseTime(value) : new Date(value || '2000-01-01T12:00:00');
+  const valid = initial && Number.isFinite(initial.getTime()) ? initial : new Date('2000-01-01T12:00:00');
   const pad = (n: number) => String(n).padStart(2, '0');
   const encode = (date: Date) => mode === 'time' ? `${pad(date.getHours())}:${pad(date.getMinutes())}` : mode === 'datetime'
     ? `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
     : `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;
-  const shown = mode === 'time' ? value : value ? new Date(value.length === 10 ? `${value}T12:00:00` : value).toLocaleString('vi-VN', mode === 'date' ? { dateStyle: 'medium' } : { dateStyle: 'medium', timeStyle: 'short' }) : 'Chọn ngày';
+  const shown = mode === 'time' ? timeLabel(value) : value ? new Date(value.length === 10 ? `${value}T12:00:00` : value).toLocaleString('vi-VN', mode === 'date' ? { dateStyle: 'medium' } : { dateStyle: 'medium', timeStyle: 'short' }) : 'Chọn ngày';
   const pick = () => {
     if (disabled) return;
     const start = value ? valid : new Date(); setSelected(start);
@@ -206,7 +208,7 @@ export function DateTimeInput({ label, value, onChange, mode = 'date', disabled 
       <Ionicons name={mode === 'time' ? 'time-outline' : 'calendar-outline'} size={18} color={t.brand} /><Text allowFontScaling style={{ color: t.text, fontSize: type.body }}>{shown}</Text>
     </Pressable></View>
     {Platform.OS !== 'android' ? <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
-      <View style={[s.overlay, { justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.35)' }]}><View style={{ padding: space.x4, borderTopLeftRadius: radius.panel, borderTopRightRadius: radius.panel, backgroundColor: t.bg }}>
+      <View style={[s.overlay, { justifyContent: 'flex-end', backgroundColor: t.overlay }]}><View style={{ padding: space.x4, borderTopLeftRadius: radius.panel, borderTopRightRadius: radius.panel, backgroundColor: t.bg }}>
         {Platform.OS === 'web' ? <Field label={label} value={value} onChangeText={onChange} /> : <DateTimePicker value={selected || valid} mode={mode === 'datetime' ? 'datetime' : mode} display="spinner" minimumDate={minimumDate} maximumDate={maximumDate} onChange={(_, date) => { if (date) onChange(encode(date)); }} />}
         <Button label="Xong" onPress={() => setOpen(false)} />
       </View></View>
@@ -227,7 +229,7 @@ export function Confirm({ title, detail, onConfirm, onCancel, busy, children }: 
 }>) {
   const t = useTheme();
   return <Modal transparent animationType="slide" onRequestClose={() => { if (!busy) onCancel(); }}>
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[s.overlay, { justifyContent: 'flex-end', padding: 0, backgroundColor: 'rgba(0,0,0,0.35)' }]}>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[s.overlay, { justifyContent: 'flex-end', padding: 0, backgroundColor: t.overlay }]}>
       <ScrollView keyboardShouldPersistTaps="handled" style={{ flexGrow: 0, width: '100%', maxHeight: '90%', maxWidth: 512, alignSelf: 'center', borderTopLeftRadius: radius.panel, borderTopRightRadius: radius.panel, backgroundColor: t.bg }} contentContainerStyle={{ padding: space.x4 }}>
         <Card><SectionHeader title={title} /><Copy>{detail}</Copy>{children}
           <Button label="Xác nhận" onPress={onConfirm} busy={busy} /><Button label="Quay lại" onPress={onCancel} variant="text" disabled={busy} />

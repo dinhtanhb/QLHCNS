@@ -16,7 +16,8 @@
       "warning": "#b54708",
       "warningBg": "#fffaeb",
       "info": "#175cd3",
-      "infoBg": "#eff8ff"
+      "infoBg": "#eff8ff",
+      "overlay": "rgba(0,0,0,0.35)"
     },
     "dark": {
       "bg": "#08120d",
@@ -34,7 +35,8 @@
       "warning": "#fde68a",
       "warningBg": "#2b2006",
       "info": "#93c5fd",
-      "infoBg": "#0b1e33"
+      "infoBg": "#0b1e33",
+      "overlay": "rgba(0,0,0,0.35)"
     }
   },
   "chamdong": {
@@ -54,7 +56,8 @@
       "warning": "#b54708",
       "warningBg": "#fffaeb",
       "info": "#175cd3",
-      "infoBg": "#eff8ff"
+      "infoBg": "#eff8ff",
+      "overlay": "rgba(0,0,0,0.35)"
     },
     "dark": {
       "bg": "#080c18",
@@ -72,7 +75,8 @@
       "warning": "#fde68a",
       "warningBg": "#2b2006",
       "info": "#93c5fd",
-      "infoBg": "#0b1e33"
+      "infoBg": "#0b1e33",
+      "overlay": "rgba(0,0,0,0.35)"
     }
   },
   "thanam": {
@@ -92,7 +96,8 @@
       "warning": "#a16207",
       "warningBg": "#fefce8",
       "info": "#1e5a8a",
-      "infoBg": "#eff6fb"
+      "infoBg": "#eff6fb",
+      "overlay": "rgba(0,0,0,0.35)"
     },
     "dark": {
       "bg": "#0e0c0a",
@@ -110,7 +115,8 @@
       "warning": "#fde68a",
       "warningBg": "#2b2006",
       "info": "#93c5fd",
-      "infoBg": "#0b1e33"
+      "infoBg": "#0b1e33",
+      "overlay": "rgba(0,0,0,0.35)"
     }
   }
 }

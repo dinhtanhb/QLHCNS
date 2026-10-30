@@ -8,6 +8,19 @@
 - Surface phẳng, viền theo token; không dùng gradient, glow hoặc bóng để thay cho thứ bậc. Nút chính dùng một màu thương hiệu; nút phụ dùng bề mặt; thao tác nhẹ dùng kiểu chữ/link.
 - Vùng chạm tối thiểu 44px. Giữ `allowFontScaling`; khi chữ phóng lớn, nhãn được xuống dòng, thẻ được cao thêm, danh sách vẫn cuộn dọc.
 - Trạng thái luôn có chữ và biểu tượng cùng chip màu ngữ nghĩa. Không truyền đạt chỉ bằng màu. Trạng thái tải dùng skeleton ngắn, không chạy hiệu ứng liên tục.
+- Nhãn tab dùng `type.caption` (12px), giữ nhãn đầy đủ và vùng chạm tối thiểu 44px.
+- Thẻ Duyệt thu gọn tên tối đa hai dòng, lý do tối đa ba dòng với dấu ba chấm; nút **Xem thêm** mở sheet cuộn được chứa toàn bộ tên/lý do, có nút đóng cố định. Không thay luồng xác nhận Duyệt/Từ chối.
+- Tìm Nghiệp vụ chuẩn hóa NFD, bỏ dấu kết hợp và đổi đ/Đ thành d trước khi so khớp; nhãn hiển thị và quyền vẫn giữ nguyên.
+- `overlay` là role riêng của mobile trong `palettes.json` cho từng sáng/tối; `ops/sync_mobile_tokens.py` giữ role này khi đồng bộ các màu đặc từ web. `tokens.ts` xuất nguồn palette cho `useTheme()`. Độ mờ lớp phủ giữ nguyên; kiểm tương phản màu đặc không chứng nhận lớp alpha.
+- `DateTimeInput` time dùng hàm thuần `parseTime()` đọc HH:MM theo giờ địa phương, không dùng `Date.parse()` cho chuỗi chỉ có giờ; trống/sai định dạng hiện “Chọn giờ”. Kiểm logic: `node mobile/scripts/check-input-logic.cjs` từ gốc repo; không thay cho kiểm picker native.
+
+Hồi quy nhóm C (sau khi export web và khởi động QA tổng hợp, từ gốc repo):
+`venv\Scripts\python.exe ops\run_mobile_c_uat.py --directory <QA-ngoài-repo> --url http://127.0.0.1:8810 --output <ảnh-ngoài-repo>`.
+Runner chạy 18 cấu hình ba độ rộng × sáng/tối × ba palette trên tài khoản QA
+trưởng phòng: thẻ dài/chi tiết cuộn, bốn truy vấn tìm kiếm, năm tab 12px,
+badge, vùng chạm và lớp phủ xác nhận. Phản hồi đọc là fixture tổng hợp;
+không gửi quyết định từ runner này. `--single` chỉ là probe, không thay ma trận.
+`--phase before` chỉ dùng trên export baseline còn lỗi để xác nhận tái hiện.
 
 ## Nên / tránh
 

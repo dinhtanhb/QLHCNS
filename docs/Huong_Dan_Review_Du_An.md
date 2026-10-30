@@ -189,6 +189,12 @@ venv\Scripts\python.exe ops\run_tests.py --backend sqlite apps.office.tests
 
 Runner tạo SQLite memory hoặc SQL Server `test_ihrms_<UUID>`, media tạm, email memory và tắt M365. SQL Server cần cấu hình backend SQL, ODBC và quyền tạo/xóa **DB test**. Nếu không đủ quyền, ghi chưa chạy SQL; không chuyển sang ghi DB thật. Runner và wrapper `ops/Run-Tests.ps1 -Backend sqlite|sqlserver` bắt buộc chỉ định backend. `configured` chỉ còn là lựa chọn tương thích khi gọi rõ; không dùng trong review để tránh chọn backend ngoài dự kiến.
 
+`ops/run_tests.py` chạy `check_mobile_kpi_limit.check_limits()` trước khi nạp
+Django hoặc tạo DB test, kể cả khi truyền nhãn test hẹp. Giới hạn phạm vi KPI
+mobile phải khớp `page()`/`Paginator`; lệch nhau làm đường kiểm tra chung này
+trả exit 1. Wrapper PowerShell và CI gọi cùng runner, không có gate song song.
+Khi chỉ cần kiểm nhanh không truy cập DB: `python ops/check_mobile_kpi_limit.py`.
+
 ### Gate giao diện, hợp đồng form, bản in và cache
 
 Chọn gate theo thay đổi và quy tắc bắt buộc trong mục “Kiểm thử luồng nghiệp vụ

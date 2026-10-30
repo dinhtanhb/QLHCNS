@@ -2,6 +2,7 @@
 import argparse
 import json
 from pathlib import Path
+import re
 
 from check_ui_contrast import palette_blocks, resolve, ratio
 
@@ -20,6 +21,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', action='store_true')
     args = parser.parse_args()
+    # Overlay is a mobile-only semantic role. Its source is palettes.json,
+    # unlike the opaque color roles synchronized from the web token source.
+    mobile = json.loads(DEST.read_text(encoding='utf-8'))
     data = {palette: {mode: {name: resolve(values, token) for name, token in ROLES.items()}
             for mode, values in modes.items() if mode in ('light', 'dark')}
             for palette, modes in palette_blocks().items()}
@@ -34,13 +38,18 @@ def main():
                 pairs += 1
             assert ratio(t['border'], t['surface']) >= 3
             pairs += 1
+    for palette, modes in data.items():
+        for mode, tokens in modes.items():
+            overlay = mobile[palette][mode]['overlay']
+            assert re.fullmatch(r'rgba\(0,\s*0,\s*0,\s*0\.35\)', overlay), 'Unexpected mobile overlay; review alpha layers explicitly'
+            tokens['overlay'] = overlay
     expected = json.dumps(data, ensure_ascii=False, indent=2)+'\n'
     if args.check:
         assert DEST.read_text(encoding='utf-8') == expected, 'Mobile tokens differ; run ops/sync_mobile_tokens.py'
     else:
         DEST.parent.mkdir(parents=True, exist_ok=True)
         DEST.write_text(expected, encoding='utf-8')
-    print(f'3 palettes x 2 modes; {pairs} contrast checks OK; mobile tokens match web')
+    print(f'3 palettes x 2 modes; {pairs} contrast checks OK; opaque roles match web; mobile overlay preserved (alpha contrast not certified)')
 
 
 if __name__ == '__main__':

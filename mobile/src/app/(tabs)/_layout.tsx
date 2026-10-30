@@ -1,11 +1,13 @@
 import { Redirect, Tabs } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Text } from 'react-native';
 import { useSession } from '../../session';
 import { useTheme } from '../../theme';
 import { Loading, Screen } from '../../ui';
 import { ConfiguredPushNavigation } from '../../PushNavigation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ApprovalInboxProvider, useApprovalInbox } from '../../approval-inbox';
+import { space, type } from '../../tokens';
 
 export default function TabsLayout() {
   const { me, ready } = useSession();
@@ -28,7 +30,10 @@ function TabNavigator() {
   return <><ConfiguredPushNavigation /><Tabs screenListeners={{ focus: () => { void refreshCount(); } }} screenOptions={({ route }) => ({ headerShown: false, tabBarActiveTintColor: t.brand,
     tabBarInactiveTintColor: t.muted, tabBarStyle: { backgroundColor: t.surface, borderTopColor: t.cardBorder,
       height: 68 + insets.bottom, paddingBottom: Math.max(insets.bottom, 6), paddingTop: 5 },
-    tabBarLabelStyle: { fontSize: 11, fontWeight: '600' }, tabBarItemStyle: { minHeight: 58 },
+    // The default navigator Label clamps to the padded 62px inner width at 360px.
+    // Plain Text can use the inset for a complete caption and wrap as text grows.
+    tabBarLabel: ({ color, children }) => <Text allowFontScaling style={{ fontSize: type.caption, lineHeight: 16, fontWeight: '600', color, textAlign: 'center', marginHorizontal: -space.x1 }}>{children}</Text>,
+    tabBarItemStyle: { minHeight: 58 },
     tabBarIcon: ({ color, size }) => <Ionicons name={icons[route.name] || 'ellipse-outline'} size={size} color={typeof color === 'string' ? color : t.text} />,
   })}>
     {tabs.map(([name, title]) => <Tabs.Screen key={name} name={name} options={{ title, tabBarAccessibilityLabel: title,

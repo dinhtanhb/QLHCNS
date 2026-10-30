@@ -19,6 +19,15 @@ def main():
     sys.stdout.reconfigure(encoding='utf-8')
     sys.stderr.reconfigure(encoding='utf-8')
     root = Path(__file__).resolve().parent.parent
+    # Run before importing Django or touching a test database. Both CI and
+    # Run-Tests.ps1 use this entry point, including focused test labels.
+    from check_mobile_kpi_limit import check_limits
+    try:
+        frontend, backend = check_limits(root)
+    except (OSError, UnicodeError, SyntaxError, ValueError) as error:
+        print(f'Mobile KPI preflight failed: {error}', file=sys.stderr)
+        return 1
+    print(f'Mobile KPI preflight OK: frontend={frontend}, backend={backend}', flush=True)
     os.chdir(root / 'src')
     sys.path.insert(0, str(root / 'src'))
     os.environ.update(

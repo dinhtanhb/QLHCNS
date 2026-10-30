@@ -1,6 +1,6 @@
 import { useAppearance } from './appearance';
 import { useSession } from './session';
-import palettes from './palettes.json';
+import { palettes } from './tokens';
 
 export function useTheme() {
   const { me } = useSession();
