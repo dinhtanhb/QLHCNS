@@ -50,11 +50,11 @@ export default function Home() {
   const pendingApprovals = approvals?.items.filter(row => /pending|chờ/i.test(row.status)).length || 0;
   const hours = attendance?.items.reduce((sum, row) => sum + (Number(row.hours) || 0), 0) || 0;
   const metrics = [
-    { label: 'Ngày công', value: String(attendance?.count ?? '—'), icon: 'calendar-outline' as const },
-    { label: 'Giờ gần đây', value: attendance ? hours.toLocaleString('vi-VN', { maximumFractionDigits: 1 }) : '—', icon: 'time-outline' as const },
-    { label: 'Đơn chờ', value: leaves ? String(pendingMine) : '—', icon: 'document-text-outline' as const },
+    { label: 'Bản ghi chấm công', value: String(attendance?.count ?? '—'), icon: 'calendar-outline' as const },
+    { label: 'Giờ trong danh sách gần nhất', value: attendance ? hours.toLocaleString('vi-VN', { maximumFractionDigits: 1 }) : '—', icon: 'time-outline' as const },
+    { label: 'Đơn chờ gần nhất', value: leaves ? String(pendingMine) : '—', icon: 'document-text-outline' as const },
     ...(me?.can_approve ? [{ label: 'Cần duyệt', value: String(approvalCount ?? '—'), icon: 'checkmark-done-outline' as const }]
-      : [{ label: 'Chưa đọc', value: String(notices?.items.filter(row => !row.is_read).length ?? '—'), icon: 'notifications-outline' as const }]),
+      : [{ label: 'Chưa đọc gần nhất', value: String(notices?.items.filter(row => !row.is_read).length ?? '—'), icon: 'notifications-outline' as const }]),
   ];
   return <Screen title="Trang chủ" compact scrollable={false}>
     <ScrollView contentContainerStyle={{ padding: 16, gap: 18 }} refreshControl={<RefreshControl refreshing={loading} onRefresh={() => void load()} />}>
@@ -73,10 +73,11 @@ export default function Home() {
         <View style={{ flex: 1, minWidth: 150 }}><Button label="Xem chấm công" icon="time-outline" variant="secondary" onPress={() => router.push('/(tabs)/my-work?section=attendance')} /></View>
       </View>
       <View style={[s.row, { alignItems: 'stretch', gap: 10 }]}>{metrics.map(metric => <View key={metric.label} style={{ width: '47%', flexGrow: 1 }}>
-        <Card style={{ minHeight: 112, justifyContent: 'space-between' }}>
+        <Card style={{ flex: 1, minHeight: 152, justifyContent: 'space-between' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}><Ionicons name={metric.icon} size={18} color={t.brand} /><View style={{ flex: 1 }}><Copy muted>{metric.label}</Copy></View></View>
           <Text allowFontScaling style={{ color: t.text, fontSize: 24, lineHeight: 30, fontWeight: '700' }}>{metric.value}</Text>
         </Card></View>)}</View>
+      <Copy muted style={s.small}>Bản ghi chấm công tính trên tất cả thời gian. Số liệu “gần nhất” chỉ tính trang đầu danh sách đã tải.</Copy>
       {me?.can_approve ? <View style={s.stack}>
         <SectionHeader title="Việc cần xử lý" action={<Button label="Tất cả" variant="text" onPress={() => router.push('/(tabs)/approvals')} />} />
         {partLoading.approvals && !approvals ? <Skeleton /> : null}

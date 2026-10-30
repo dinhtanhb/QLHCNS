@@ -51,3 +51,12 @@ Ví dụ dùng:
 ## Phạm vi pha
 
 P1 xây token và thành phần dùng chung. P2 áp dụng cho điều hướng, Trang chủ, Việc của tôi, Duyệt, Thông báo và lưới Nghiệp vụ. Workspace và các màn hồ sơ/cài đặt/đổi mật khẩu/tạo đơn chỉ làm sau khi chủ dự án duyệt P2.
+
+## Ý nghĩa số liệu Trang chủ — M-06 phương án A
+
+- **Bản ghi chấm công:** tổng số bản ghi của tài khoản, trên tất cả thời gian; không phải số ngày công trong tháng.
+- **Giờ trong danh sách gần nhất:** tổng giờ trong trang đầu danh sách chấm công đã tải.
+- **Đơn chờ gần nhất / Chưa đọc gần nhất:** chỉ đếm trong trang đầu danh sách nghỉ phép / thông báo đã tải; có thể chưa bao gồm toàn bộ dữ liệu.
+- **Cần duyệt:** tổng đơn đang chờ trong quyền duyệt của tài khoản, dùng số đếm chung với huy hiệu tab.
+
+Phương án A chỉ làm rõ nhãn và phạm vi số liệu. Không thêm dấu “+”, bộ lọc tháng hoặc API tổng hợp. Các thẻ được phép xuống dòng và tăng chiều cao theo cỡ chữ hệ thống.
