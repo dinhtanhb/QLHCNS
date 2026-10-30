@@ -61,7 +61,7 @@ def main():
         page.get_by_role('radio', name='Nghỉ phép').click()
         page.get_by_role('tab', name='Trang chủ', exact=True).click()
         expect(page.get_by_role('heading', name='Trang chủ', exact=True)).to_be_visible()
-        page.get_by_role('button', name='Xem chấm công', exact=True).click()
+        page.get_by_role('button', name='Chấm công', exact=True).click()
         expect(page.get_by_role('radio', name='Chấm công', exact=True)).to_be_checked()
         check('Home attendance action selects attendance on the mounted My Work tab')
         expect(page.get_by_text('8.00 giờ làm việc', exact=True)).to_be_visible()

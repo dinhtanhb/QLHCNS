@@ -81,7 +81,7 @@ Trang chủ có các ô số liệu; chạm từng ô để mở danh sách tư�
 
 Admin, Trung tâm Báo cáo Excel và các màn hình cần thao tác máy tính không hiện trong menu mobile. Dùng bản web cho những việc đó.
 
-### B. Xem chấm công
+### B. Chấm công
 
 Chạm **Chấm công**, xem ngày, trạng thái, giờ vào/ra và số giờ nếu có. Chạm **Tải lại**.
 

@@ -98,7 +98,7 @@ def main():
         select_tab(page, 'Việc của tôi')
         page.get_by_role('radio', name='Nghỉ phép', exact=True).click()
         select_tab(page, 'Trang chủ')
-        page.get_by_role('button', name='Xem chấm công', exact=True).click()
+        page.get_by_role('button', name='Chấm công', exact=True).click()
         check('M-02 home action selects attendance on an already mounted tab', lambda: expect(page.get_by_role('radio', name='Chấm công', exact=True)).to_be_checked(timeout=1500))
         page.get_by_role('radio', name='Chấm công', exact=True).click()
         select_tab(page, 'Trang chủ')

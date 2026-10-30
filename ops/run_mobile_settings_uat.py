@@ -7,6 +7,8 @@ import secrets
 import uuid
 
 from playwright.sync_api import sync_playwright, expect
+from check_mobile_kpi_limit import check_limits
+from run_mobile_home_uat import assert_home_summary
 
 
 def main():
@@ -50,14 +52,23 @@ def main():
                 page.get_by_role('button', name='Cài đặt', exact=True).click()
                 expect(page.get_by_role('radio', name='Theo điện thoại', exact=True)).to_be_visible()
             login(password)
-            expect(page.get_by_text('Bản ghi chấm công', exact=True)).to_be_visible()
-            expect(page.get_by_text('Giờ làm (30 bản ghi gần nhất)', exact=True)).to_be_visible()
-            expect(page.get_by_text('Đơn chờ (30 đơn gần nhất)', exact=True)).to_be_visible()
-            expect(page.get_by_text('Chưa đọc (30 thông báo gần nhất)', exact=True)).to_be_visible()
-            expect(page.get_by_text('Bản ghi chấm công tính trên toàn bộ dữ liệu. Các số ghi “gần nhất” chỉ tính trên 30 bản ghi mới nhất.', exact=True)).to_have_count(1)
+            limit, _ = check_limits()
+            assert_home_summary(page, 'employee', limit)
             expect(page.get_by_role('heading', name='Hoạt động gần đây', exact=True)).to_be_visible()
             page.screenshot(path=str(args.output/'home-dashboard.png'), full_page=True)
-            checks.append('Home shows account-specific summary metrics and latest attendance hours/date')
+            manager_page = browser.new_page(viewport={'width': 360, 'height': 800}, color_scheme='light')
+            manager_page.on('pageerror', lambda e: errors.append(str(e)))
+            try:
+                manager_page.goto(args.url)
+                manager_page.get_by_role('textbox', name='Tên đăng nhập', exact=True).fill('demo-manager')
+                manager_page.get_by_role('textbox', name='Mật khẩu', exact=True).fill(password)
+                manager_page.get_by_role('button', name='Đăng nhập', exact=True).click()
+                expect(manager_page.get_by_role('heading', name='Trang chủ', exact=True)).to_be_visible()
+                assert_home_summary(manager_page, 'manager', limit)
+                manager_page.screenshot(path=str(args.output/'manager-home-dashboard.png'), full_page=True)
+            finally:
+                manager_page.close()
+            checks.append('Both roles show short KPI labels, per-card scope, accessible names and one-line Home actions')
             page.get_by_role('tab', name='Thêm', exact=True).click()
             expect(page.get_by_role('heading', name='Nghiệp vụ', exact=True)).to_be_visible()
             expect(page.get_by_role('textbox', name='Tìm nghiệp vụ', exact=True)).to_be_visible()

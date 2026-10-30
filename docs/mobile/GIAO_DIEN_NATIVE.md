@@ -54,15 +54,15 @@ P1 xây token và thành phần dùng chung. P2 áp dụng cho điều hướng,
 
 ## Ý nghĩa số liệu Trang chủ — M-06 phương án A
 
-- **Bản ghi chấm công:** tổng số bản ghi của tài khoản, trên tất cả thời gian; không phải số ngày công trong tháng.
-- **Giờ làm (30 bản ghi gần nhất):** tổng giờ trong cửa sổ 30 bản ghi chấm công mới nhất.
-- **Đơn chờ (30 đơn gần nhất):** đếm đơn chờ trong cửa sổ 30 đơn nghỉ phép mới nhất.
-- **Chưa đọc (30 thông báo gần nhất):** đếm thông báo chưa đọc trong cửa sổ 30 thông báo mới nhất; có thể chưa bao gồm toàn bộ thông báo chưa đọc.
-- **Cần duyệt:** tổng đơn đang chờ trong quyền duyệt của tài khoản, dùng số đếm chung với huy hiệu tab.
+- **Bản ghi chấm công** — dòng phụ **Toàn bộ dữ liệu**: tổng số bản ghi của tài khoản, không phải số ngày công trong tháng.
+- **Giờ làm** — dòng phụ **30 bản ghi gần nhất**: tổng giờ trong cửa sổ bản ghi chấm công mới nhất.
+- **Đơn chờ** — dòng phụ **30 đơn gần nhất**: đếm đơn chờ trong cửa sổ đơn nghỉ phép mới nhất.
+- **Chưa đọc** (nhân viên) — dòng phụ **30 thông báo gần nhất**: đếm chưa đọc trong cửa sổ thông báo mới nhất, có thể chưa bao gồm toàn bộ thông báo chưa đọc.
+- **Cần duyệt** (người duyệt) — dòng phụ **Toàn bộ dữ liệu**: tổng đơn đang chờ thuộc quyền duyệt, dùng chung số đếm với huy hiệu tab.
 
-Phương án A chỉ làm rõ nhãn và phạm vi số liệu. Không thêm dấu “+”, bộ lọc tháng hoặc API tổng hợp. Các thẻ được phép xuống dòng và tăng chiều cao theo cỡ chữ hệ thống.
+Phạm vi được đặt ngay dưới nhãn, trước con số; không lặp lại bằng đoạn chú thích dưới lưới. Nhãn dùng token `type.label` (14px), dòng phụ dùng `type.caption` (12px), màu `muted` từ theme. Nhãn một dòng ở cỡ chữ chuẩn/360px; khi tăng cỡ chữ, nhãn và dòng phụ được xuống dòng, không giới hạn số dòng hoặc cắt chữ. Thẻ có chiều cao tối thiểu 136px, dùng chung chiều cao nội dung lớn nhất đo được để giữ đồng đều khi chữ tăng; icon ở hàng con số để nhãn có đủ chiều rộng.
 
-Chú thích nhân viên: `Bản ghi chấm công tính trên toàn bộ dữ liệu. Các số ghi “gần nhất” chỉ tính trên 30 bản ghi mới nhất.` Người duyệt thấy `Bản ghi chấm công và Cần duyệt tính trên toàn bộ dữ liệu. Các số ghi “gần nhất” chỉ tính trên 30 bản ghi mới nhất.`
+Nhãn truy cập gộp cả ba phần, ví dụ `Giờ làm, 30 bản ghi gần nhất, 234`. `RECENT_KPI_LIMIT` là nguồn duy nhất của số giới hạn trong mã hiển thị. Hai hành động Trang chủ là **Tạo đơn nghỉ** và **Chấm công** (giữ icon đồng hồ); ở 360px/cỡ chữ chuẩn, hai nút cùng hàng và chữ trên mỗi nút một dòng. Không đổi cách tính, thêm bộ lọc tháng hoặc API tổng hợp.
 
 ### Chạy lại kiểm tra KPI
 
@@ -72,16 +72,16 @@ Chú thích nhân viên: `Bản ghi chấm công tính trên toàn bộ dữ li�
 python ops/check_mobile_kpi_limit.py
 ```
 
-`ops/run_mobile_home_uat.py` chạy 36 trường hợp trên bản Expo Web đang phục vụ cùng backend QA. Runner kiểm nhãn, chú thích đúng/sai vai, giá trị cửa sổ phân trang, màu palette, cắt chữ và overflow. Đăng nhập/quyền dùng hai tài khoản demo trên QA; API đọc được thay bằng fixture có trang sau. Không kiểm chứng tổng hợp backend hoặc Android/iOS native. Mật khẩu được đọc từ tệp tài khoản của QA, không ghi trong mã.
+`ops/run_mobile_home_uat.py` chạy 36 trường hợp trên bản Expo Web đang phục vụ cùng backend QA. Runner kiểm nhãn/dòng phụ theo vai, giá trị phân trang, tên truy cập đủ phạm vi và con số, màu/cỡ chữ, thẻ đồng chiều cao, cắt chữ/overflow và hai nút cùng hàng/một dòng. Có thêm 12 mô phỏng phóng chữ KPI 200% bằng CSS ở 360px và kiểm Tab giữa hai nút cho hai vai. Hàm assertion dùng chung cũng được `ops/run_mobile_settings_uat.py` chạy cho cả hai vai trên dữ liệu QA không giả lập. Ma trận dùng fixture các API đọc có trang sau; đăng nhập/quyền lấy từ tài khoản demo. Mô phỏng CSS không chứng nhận font scale, trình đọc màn hình trên thiết bị hoặc Android/iOS native. Mật khẩu đọc từ tệp QA, không ghi trong mã.
 
 Chuẩn bị QA theo hướng dẫn mobile hiện có, export web với `EXPO_PUBLIC_ALLOW_HTTP=true` khi dùng HTTP loopback và chạy `ops/mobile_qa.py serve`. Truyền thư mục QA có marker `synthetic_only`, origin loopback và thư mục ảnh ngoài repo; ví dụ với QA hiện có:
 
 ```powershell
 # Cửa sổ 1: phục vụ backend QA và bản web export đã chuẩn bị.
-venv/Scripts/python.exe ops/mobile_qa.py serve --directory D:/IHRMS_Review_Exports/Mobile_Design_P2b_20261030/qa --port 8808
+venv/Scripts/python.exe ops/mobile_qa.py serve --directory D:/IHRMS_Review_Exports/Mobile_Design_P2b_20261030/qa --port 8810
 
 # Cửa sổ 2: chạy ma trận Trang chủ, giữ server QA đang mở.
-venv/Scripts/python.exe ops/run_mobile_home_uat.py --directory D:/IHRMS_Review_Exports/Mobile_Design_P2b_20261030/qa --url http://127.0.0.1:8808 --output D:/IHRMS_Review_Exports/Mobile_M06_Final_20261030
+venv/Scripts/python.exe ops/run_mobile_home_uat.py --directory D:/IHRMS_Review_Exports/Mobile_Design_P2b_20261030/qa --url http://127.0.0.1:8810 --output D:/IHRMS_Review_Exports/Mobile_M06_Polish_20261030
 ```
 
 Mặc định runner dùng Microsoft Edge (`--channel msedge`). Có thể chỉ định channel trình duyệt đã cài khác. Tất cả đường dẫn QA/output là tham số; runner từ chối thư mục trong repo và origin ngoài loopback.
