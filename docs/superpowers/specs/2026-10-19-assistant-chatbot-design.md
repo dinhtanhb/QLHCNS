@@ -64,6 +64,25 @@ tháng hiện tại, “tuần này” từ thứ Hai đến Chủ nhật, “h�
 “tuần trước” giữ hành vi hiện có từ hôm nay trừ 7 ngày đến hôm nay (hai đầu
 đều được tính), không phải tuần lịch trước.
 
+Câu hỏi được chuẩn hóa NFC một lần ở đầu `parse`. Nếu có nhiều cụm thời
+gian, **cụm xuất hiện đầu tiên trong câu thắng**; bỏ tất cả cụm thời gian đã
+nhận diện khỏi từ khóa. Ngày đầy đủ/dải ngày bao trọn các thành phần
+tháng/năm bên trong, không coi chúng là các cụm độc lập. Câu một cụm giữ
+cách phân tích cũ, kể cả xử lý ngày không hợp lệ.
+
+SharePoint nhóm các loại có cùng tập root được phép và cùng cách đọc ngày
+(quyết định dùng ngày trong tên/thư mục). Tối đa `MAX_SHAREPOINT_PASSES = 3`
+nhóm cần tìm SharePoint mỗi câu, theo thứ tự `doc_types` đã phân tích; nhóm
+không có root được phép không chiếm lượt. Các loại vượt trần bị bỏ qua và
+ghi mã loại trong warning `SharePoint pass limit: skipped document types`;
+không ghi câu hỏi, tài khoản hoặc tên tệp. Ví dụ `Incoming`, `Outgoing`,
+`activity_report`, `candidate` trỏ bốn root khác nhau thì bỏ `candidate`.
+Không thêm trường/trạng thái API: các trạng thái hiện có mô tả các nguồn đã
+thử, không tự đổi sang lỗi mạng khi chạm trần. Đây là giới hạn tìm kiếm cần
+biết; nên hỏi lại với ít loại hơn nếu warning cho thấy loại mong muốn bị bỏ.
+Một lượt tìm có thể cần nhiều lệnh metadata/listing hoặc phân trang Graph
+theo đường lùi cũ; trần này không phải trần tổng số HTTP request.
+
 ### 3.2 `apps/assistant/search/db_search.py`
 
 - Tìm trên 3 model chính (trường đích chốt khi implement sau khi đọc model hiện hữu):

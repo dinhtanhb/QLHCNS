@@ -10,6 +10,7 @@ from __future__ import annotations
 from calendar import monthrange
 from datetime import date, datetime
 from dataclasses import replace
+import logging
 import re
 from urllib.parse import unquote, urlsplit
 
@@ -22,6 +23,8 @@ from apps.security.permissions import get_role_code, has_permission
 from .nlp import ParsedQuery, normalize
 
 MAX_RESULTS = 20
+MAX_SHAREPOINT_PASSES = 3
+logger = logging.getLogger(__name__)
 # Graph trả lỗi 400 khi query quá dài hoặc cú pháp search không chấp nhận.
 MAX_QUERY_LENGTH = 200
 SCORE_NUMBER = 100
@@ -334,18 +337,67 @@ def search_sharepoint(parsed: ParsedQuery, user) -> SharePointSearchResult:
     results = {}
     notes = []
     undated = 0
+    seen_groups = set()
+    passes = 0
+    skipped = []
+    skipped_groups = set()
     for kind in parsed.doc_types:
-        part = _search_sharepoint_single(replace(parsed, doc_type=kind, doc_types=[]), user)
+        query = replace(parsed, doc_type=kind, doc_types=[])
+        folders = _selected_folders(kind, user) if can_query_sharepoint(user) and settings.M365_STORAGE_ENABLED else []
+        # Quyết định dùng ngày trong tên/thư mục thay vì ngày cập nhật.
+        # Hai loại chỉ dùng chung kết quả nếu cả root và cách đọc ngày khớp.
+        group = (tuple(sorted(set(folders))), kind == "personnel_decision")
+        if group in seen_groups:
+            if group in skipped_groups:
+                skipped.append(kind)
+            continue
+        seen_groups.add(group)
+        # Loại không có root được phép vẫn trả đúng restricted/not_configured,
+        # nhưng không chiếm suất của loại được phép và không gọi Graph.
+        if folders and passes >= MAX_SHAREPOINT_PASSES:
+            skipped.append(kind)
+            skipped_groups.add(group)
+            continue
+        part = _search_sharepoint_single(query, user)
+        if folders:
+            passes += 1
         notes.append(part.error_note)
         undated += part.undated_count
         for row in part.results:
             results.setdefault(row["url"], row)
+    if skipped:
+        # Chỉ ghi mã loại, không ghi câu hỏi, tên tệp hoặc thông tin tài khoản.
+        logger.warning("SharePoint pass limit: skipped document types %s", ",".join(skipped))
     # Một nguồn bị chặn không được che trạng thái của nguồn vẫn được phép.
     note = next((status for status in ("unavailable", "search_fallback") if status in notes), None)
     if note is None and None not in notes:
         note = "not_configured" if "not_configured" in notes else RESTRICTED_NOTE
     rows = sorted(results.values(), key=lambda row: -row["score"])[:MAX_RESULTS]
     return SharePointSearchResult(rows, note, undated_count=undated)
+
+
+def _selected_folders(kind, user):
+    """Giữ nguyên phép giao root theo loại với các root người dùng được đọc."""
+    folder_map = dict(getattr(settings, "M365_FOLDER_MAP", {}) or {})
+    if "personnel_decisions" not in folder_map or not folder_map["personnel_decisions"]:
+        folder_map["personnel_decisions"] = "QuyetDinh"
+    kinds = {
+        "Incoming": ("incoming_docs",), "Outgoing": ("outgoing_docs",),
+        "dispatch": ("incoming_docs", "outgoing_docs"),
+        "activity_report": ("activity_reports",), "candidate": ("recruitment_cv",),
+        "leave": (), "asset": (), "personnel_decision": ("personnel_decisions",),
+        "InternalDirective": (), "document": (),
+    }
+    selected = kinds.get(kind, ("incoming_docs", "outgoing_docs", "activity_reports"))
+    allowed = allowed_file_folders(user)
+    folders = [folder_map[key].strip("/") for key in selected if folder_map.get(key)
+               and folder_map[key].strip("/") in allowed]
+    # CongVan also contains internal directives. Keep its previous narrow gate;
+    # raw Graph results cannot distinguish legacy incoming files from directives.
+    if (kind in (None, "dispatch") and folder_map.get("dispatches")
+            and folder_map["dispatches"].strip("/") in allowed):
+        folders.append(folder_map["dispatches"].strip("/"))
+    return folders
 
 
 def _search_sharepoint_single(parsed: ParsedQuery, user) -> SharePointSearchResult:
@@ -363,25 +415,7 @@ def _search_sharepoint_single(parsed: ParsedQuery, user) -> SharePointSearchResu
         return SharePointSearchResult([], "not_configured")
     if not can_query_sharepoint(user):
         return SharePointSearchResult([], RESTRICTED_NOTE)
-    folder_map = dict(getattr(settings, "M365_FOLDER_MAP", {}) or {})
-    if "personnel_decisions" not in folder_map or not folder_map["personnel_decisions"]:
-        folder_map["personnel_decisions"] = "QuyetDinh"
-    kinds = {
-        "Incoming": ("incoming_docs",), "Outgoing": ("outgoing_docs",),
-        "dispatch": ("incoming_docs", "outgoing_docs"),
-        "activity_report": ("activity_reports",), "candidate": ("recruitment_cv",),
-        "leave": (), "asset": (), "personnel_decision": ("personnel_decisions",),
-        "InternalDirective": (), "document": (),
-    }
-    selected = kinds.get(parsed.doc_type, ("incoming_docs", "outgoing_docs", "activity_reports"))
-    allowed = allowed_file_folders(user)
-    folders = [folder_map[key].strip("/") for key in selected if folder_map.get(key)
-               and folder_map[key].strip("/") in allowed]
-    # CongVan also contains internal directives. Keep its previous narrow gate;
-    # raw Graph results cannot distinguish legacy incoming files from directives.
-    if (parsed.doc_type in (None, "dispatch") and folder_map.get("dispatches")
-            and folder_map["dispatches"].strip("/") in allowed):
-        folders.append(folder_map["dispatches"].strip("/"))
+    folders = _selected_folders(parsed.doc_type, user)
     if not folders:
         return SharePointSearchResult([], RESTRICTED_NOTE if _fallback_folders() else "not_configured")
     client = get_graph_client()

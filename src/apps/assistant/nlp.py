@@ -128,6 +128,32 @@ def _date_span(first: str, second: str) -> tuple[date, date]:
 
 
 def _extract_dates(text: str, today: date) -> tuple[str, date | None, date | None]:
+    # Cụm đầu câu thắng; một cụm dài (ngày đầy đủ/dải ngày) bao trọn các
+    # mốc tháng/năm bên trong, không được tính thành nhiều bộ lọc.
+    relative = re.compile(r"\b(?:tháng này|tuần này|hôm nay|tuần trước|tháng trước|năm ngoái)\b", re.IGNORECASE)
+    patterns = (FROM_TO_RE, FULL_DMY_RE, SINGLE_DATE_RE, QUARTER_RE, MONTH_RE, YEAR_RE, relative)
+    matches = sorted((match for pattern in patterns for match in pattern.finditer(text)),
+                     key=lambda match: (match.start(), -(match.end() - match.start())))
+    spans = []
+    for match in matches:
+        if not spans or match.start() >= spans[-1].end():
+            spans.append(match)
+    if len(spans) <= 1:
+        return _extract_one_date(text, today)
+    try:
+        _, start, end = _extract_one_date(spans[0].group(), today)
+    except ValueError:
+        start = end = None
+    pieces = []
+    previous = 0
+    for match in spans:
+        pieces.append(text[previous:match.start()])
+        previous = match.end()
+    pieces.append(text[previous:])
+    return " ".join(pieces), start, end
+
+
+def _extract_one_date(text: str, today: date) -> tuple[str, date | None, date | None]:
     match = FROM_TO_RE.search(text)
     if match:
         rest = text[: match.start()] + " " + text[match.end():]
@@ -216,7 +242,7 @@ def _extract_dates(text: str, today: date) -> tuple[str, date | None, date | Non
 
 def parse(question: str, today: date | None = None) -> ParsedQuery:
     today = today or date.today()
-    text = " ".join(question.split())[:500]
+    text = " ".join(unicodedata.normalize("NFC", question).split())[:500]
     parsed = ParsedQuery()
 
     if QUOTED_RE.search(text):
