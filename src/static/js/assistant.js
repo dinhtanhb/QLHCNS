@@ -92,7 +92,7 @@
     }
     const results = (payload && Array.isArray(payload.results)) ? payload.results : [];
     if (!results.length) {
-      panel.appendChild(el('div', 'assistant-msg assistant-msg-bot', MESSAGES.empty));
+      panel.appendChild(el('div', 'assistant-msg assistant-msg-bot', (payload && payload.empty_notice) || MESSAGES.empty));
       return;
     }
     const list = el('div', 'assistant-results');

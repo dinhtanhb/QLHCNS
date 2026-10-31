@@ -18,7 +18,7 @@ Nguồn yêu cầu: chủ dự án — "tạo chatbot phục vụ dự án IHRMS
 
 ### Ngoài phạm vi (đã thống nhất)
 
-- Không dùng LLM/API AI bên ngoài; dữ liệu không rồi khỏi hệ thống.
+- Không dùng LLM/API AI bên ngoài; dữ liệu không rời khỏi hệ thống.
 - OneDrive: giai đoạn 2 (cần Graph consent riêng từ IT).
 - Không tìm trong email Outlook.
 - Server không tự gửi email; giữ cơ chế mở nháp Outlook, chờ IT chốt kênh gửi (theo HRMS_Next_Features_Plan).
@@ -49,12 +49,20 @@ Parser quy tắc, deterministic, không học máy:
 | Nhận diện | Mẫu | Đầu ra |
 |---|---|---|
 | Số hiệu văn bản | `1234/QĐ-VH`, `CV 12/2026` | `doc_number` |
-| Khoảng thừơng gian | "tháng 6", "quý 2", "năm 2025", "từ ... đến ...", "tuần trước" | `date_from`, `date_to` |
-| Loại văn bản | công văn đi/đến, quyết định, hợp đồng, đơn nghỉ phép, biên bản, tờ trình | `doc_type` |
+| Khoảng thời gian | "tháng 6", "quý 2", "năm 2025", "từ ... đến ...", "tuần trước", "tháng này", "tuần này", "hôm nay" | `date_from`, `date_to` |
+| Loại văn bản | các cụm được khai báo trong `DOC_TYPE_KEYWORDS`, ví dụ công văn đi/đến, quyết định, tài sản, đơn nghỉ phép | `doc_types[]`, `doc_type` là loại đầu tiên để tương thích |
 | Cụm trích yếu | ngoặc kép `"nghỉ phép không lương"` | `phrases[]` |
 | Từ khóa còn lại | sau loại bỏ stopword tiếng Việt | `keywords[]` |
 
 Quy tắc ưu tiên: số hiệu > cụm trích yếu > từ khóa. Không parse được gì → toàn bộ câu làm `keywords` (fallback tìm tự do).
+
+Các cụm loại dài được nhận diện trước, không chồng token; bỏ mọi cụm đã nhận
+khỏi từ khóa và tìm/gộp từng loại qua bộ lọc quyền hiện có. Thứ tự ưu tiên loại
+giữ theo bảng từ khóa cũ. “Tuyển dụng” vẫn là từ khóa bổ nghĩa trong câu
+“quyết định tuyển dụng”, không tự suy ra loại ứng viên. “Tháng này” là toàn
+tháng hiện tại, “tuần này” từ thứ Hai đến Chủ nhật, “hôm nay” đúng một ngày;
+“tuần trước” giữ hành vi hiện có từ hôm nay trừ 7 ngày đến hôm nay (hai đầu
+đều được tính), không phải tuần lịch trước.
 
 ### 3.2 `apps/assistant/search/db_search.py`
 
@@ -63,7 +71,7 @@ Quy tắc ưu tiên: số hiệu > cụm trích yếu > từ khóa. Không parse
   - `Document`: tiêu đề, danh mục, ghi chú.
   - `PersonnelDecision`: số quyết định, loại, ngày hiệu lực.
 - Truy vấn ORM (`icontains`, `range`), không raw SQL; mỗi kết quả gắn `url` tới trang chi tiết hiện có.
-- **Phân quyền:** áp dụng đúng bộ lọc quyền của view danh sách tương ứng (đọc kỹ view hiện hữu trước khi code; trích hàm chung nếu chưa có). Ngưởi dùng không thấy tài liệu ngoài quyền kể cả khi hỏi trúng từ khóa.
+- **Phân quyền:** áp dụng đúng bộ lọc quyền của view danh sách tương ứng (đọc kỹ view hiện hữu trước khi code; trích hàm chung nếu chưa có). Người dùng không thấy tài liệu ngoài quyền kể cả khi hỏi trúng từ khóa.
 
 ### 3.3 `apps/m365/graph_client.py` — bổ sung
 
@@ -90,24 +98,24 @@ class SearchQueryLog(BaseAuditModel):
     error_note      # CharField, nullable
 ```
 
-Không lưu kết quả/nội dung tài liệu. Admin chỉ đọc.
+SearchQueryLog không lưu kết quả/nội dung tài liệu. Admin chỉ đọc log. Riêng session đăng nhập lưu câu hỏi và kết quả đầy đủ của tối đa 20 lượt đến hết phiên; tiêu đề kết quả có thể chứa tên nhân viên. Lịch sử được xóa khi quyền, vai trò, tuyến quản lý hoặc phiên bản chính sách thay đổi.
 
 ### 3.6 Views, URLs, UI
 
 - `GET /assistant/` — trang chat (login required).
 - `POST /assistant/api/search/` — JSON `{question}` → `{results[], parsed, took_ms, partial}`; rate limit 30 req/phút/user (cache đếm đơn giản); validate độ dài câu hỏi ≤ 500 ký tự.
-- Nút chat nổi chèn qua `base.html`; panel chat lazy-load JS khi ngưởi dùng mở lần đầu.
+- Nút chat nổi chèn qua `base.html`; panel chat lazy-load JS khi người dùng mở lần đầu.
 - UI theo design system hiện hữu (docs/UI_DESIGN_SYSTEM.md): gợi ý nhanh "Công văn gần đây", "Quyết định tháng này"; thẻ kết quả có icon nguồn (IHRMS/SharePoint), tiêu đề, dòng metadata, link; hỗ trợ bàn phím (Enter gửi, Esc đóng); trạng thái loading/empty/error.
 
 ### 3.7 Thông báo/email (rà soát, không xây mới)
 
-- Đối chiếu từng luồng duyệt: nghỉ phép, kỳ lương, công văn (`document/hcns`), activity → xác nhận đã gọi `notify`/`notify_with_email_draft`, đúng ngưởi nhận, đúng idempotency.
+- Đối chiếu từng luồng duyệt: nghỉ phép, kỳ lương, công văn (`document/hcns`), activity → xác nhận đã gọi `notify`/`notify_with_email_draft`, đúng người nhận, đúng idempotency.
 - Phát hiện lỗ hổng → vá trong phạm vi nhỏ, test tương ứng. Không đổi cơ chế gửi thư; không bật server send.
 
 ## 4. Phân quyền và bảo mật
 
 - Toàn bộ endpoint yêu cầu đăng nhập; kết quả DB lọc theo RBAC hiện có (kiểm server-side, không tin client).
-- Kết quả SharePoint chỉ tên + `webUrl`; ngưởi dùng mở file bằng quyền M365 của chính mình.
+- Kết quả SharePoint chỉ tên + `webUrl`; người dùng mở file bằng quyền M365 của chính mình.
 - Không gọi API ngoài trừ Graph đã cấu hình; không đưa dữ liệu nhân sự ra ngoài.
 - ORM chống injection; chuỗi gửi Graph giới hạn độ dài, escape theo chuẩn JSON.
 - `SearchQueryLog` chỉ admin/HR quản trị xem được; có cơ chế dọn log cũ (management command đơn giản, chạy thủ công).
@@ -144,4 +152,4 @@ Không lưu kết quả/nội dung tài liệu. Admin chỉ đọc.
 
 ## 9. Quy trình làm việc
 
-Theo AGENTS.md: một lượt ghi duy nhất, xác minh Git đầu lượt, work log một nơi, commit riêng cho migration, không đưa `.env`/dữ liệu thật vào Git, kiểm thử browser bằng tài khoản QA trên DB/media cô lập, không mượn danh tính ngưởi dùng thật.
+Theo AGENTS.md: một lượt ghi duy nhất, xác minh Git đầu lượt, work log một nơi, commit riêng cho migration, không đưa `.env`/dữ liệu thật vào Git, kiểm thử browser bằng tài khoản QA trên DB/media cô lập, không mượn danh tính người dùng thật.

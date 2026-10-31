@@ -10,6 +10,7 @@ Không có `@csrf_exempt`: `assistant.js` gửi kèm `X-CSRFToken` lấy từ co
 from __future__ import annotations
 
 import json
+import hashlib
 import io
 import mimetypes
 from urllib.parse import unquote, urlsplit
@@ -78,7 +79,7 @@ def api_search(request):
     question = _question_from(request)
     if question is None:
         return JsonResponse({"error": "invalid_json"}, status=400)
-    # Kiểm tra định dạng trước when kiểm tra hạn mức: script gửi body sai cú pháp
+    # Kiểm tra định dạng trước khi kiểm tra hạn mức: script gửi body sai cú pháp
     # hàng loạt không được chiếm hết suất của người dùng thật.
     if len(question) < MIN_QUESTION_LENGTH:
         return JsonResponse({"error": "question_too_short"}, status=400)
@@ -94,13 +95,19 @@ def api_search(request):
 
 
 HISTORY_LIMIT = 20
+HISTORY_POLICY_VERSION = "document-policy-20261020"
 
 
 def _history(request):
-    # History belongs to this login, and is discarded if account privileges change.
+    """Session giữ kết quả tối đa 20 lượt đến hết phiên, kể cả tên trong tiêu đề.
+
+    Tính lại scope để đổi quyền/tuyến quản lý xóa lịch sử; chỉ lưu mã băm có
+    kích thước cố định, không lưu toàn bộ cây cấp dưới vào session.
+    """
     from apps.security.data_access import employee_and_subordinate_ids
-    scope = ["document-policy-20261020", request.user.pk, request.user.is_active, request.user.is_superuser,
+    policy = [HISTORY_POLICY_VERSION, request.user.pk, request.user.is_active, request.user.is_superuser,
              getattr(request.user, "role_id", None), sorted(employee_and_subordinate_ids(request.user))]
+    scope = hashlib.sha256(json.dumps(policy, separators=(",", ":")).encode("utf-8")).hexdigest()
     if request.session.get("assistant_history_scope") != scope:
         request.session["assistant_history_scope"] = scope
         request.session["assistant_history"] = []

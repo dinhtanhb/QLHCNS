@@ -76,6 +76,7 @@ class ParsedQuery:
     date_from: date | None = None
     date_to: date | None = None
     doc_type: str | None = None
+    doc_types: list[str] = field(default_factory=list)
 
     def has_constraints(self) -> bool:
         return bool(
@@ -140,6 +141,14 @@ def _extract_dates(text: str, today: date) -> tuple[str, date | None, date | Non
         return rest, start, end
 
     lowered = text.casefold()
+    if "tháng này" in lowered:
+        return (_strip_phrase(text, "tháng này"), today.replace(day=1),
+                _last_day_of_month(today.year, today.month))
+    if "tuần này" in lowered:
+        start = today - timedelta(days=today.weekday())
+        return (_strip_phrase(text, "tuần này"), start, start + timedelta(days=6))
+    if "hôm nay" in lowered:
+        return (_strip_phrase(text, "hôm nay"), today, today)
     if "tuần trước" in lowered:
         return (_strip_phrase(text, "tuần trước"), today - timedelta(days=7), today)
     if "tháng trước" in lowered:
@@ -231,18 +240,25 @@ def parse(question: str, today: date | None = None) -> ParsedQuery:
         parsed.doc_number = re.sub(r"\s+", "", match.group(1))
         text = DOC_NUMBER_RE.sub(" ", text, count=1)
 
-    padded = " " + normalize(text) + " "
-    for label, code in DOC_TYPE_KEYWORDS:
-        if f" {normalize(label)} " in padded:
-            parsed.doc_type = code
-            tokens = text.split()
-            label_tokens = normalize(label).split()
-            for index in range(len(tokens) - len(label_tokens) + 1):
-                if [normalize(token) for token in tokens[index:index + len(label_tokens)]] == label_tokens:
-                    del tokens[index:index + len(label_tokens)]
-                    break
-            text = " ".join(tokens)
-            break
+    tokens = normalize(text).split()
+    consumed = set()
+    matched = set()
+    # Cụm dài chiếm token trước, tránh "công văn đến" khớp thêm "công văn".
+    # Giữ thứ tự bảng cũ cho doc_type để tương thích các caller một loại.
+    labels = [(index, normalize(label).split(), code)
+              for index, (label, code) in enumerate(DOC_TYPE_KEYWORDS)]
+    for priority, words, code in sorted(labels, key=lambda item: -len(item[1])):
+        for index in range(len(tokens) - len(words) + 1):
+            span = set(range(index, index + len(words)))
+            if not consumed.intersection(span) and tokens[index:index + len(words)] == words:
+                consumed.update(span)
+                matched.add(priority)
+    for index in sorted(matched):
+        code = DOC_TYPE_KEYWORDS[index][1]
+        if code not in parsed.doc_types:
+            parsed.doc_types.append(code)
+    parsed.doc_type = parsed.doc_types[0] if parsed.doc_types else None
+    text = " ".join(token for index, token in enumerate(tokens) if index not in consumed)
 
     keywords: list[str] = []
     for token in text.split():

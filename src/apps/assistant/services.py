@@ -1,12 +1,12 @@
 """Ghép hai nguồn tài liệu, xếp hạng và ghi nhật ký cho một câu hỏi chatbot.
 
 `ask` là chỗ duy nhất biết cả `db_search` lẫn `m365_search`, nên view (T7) chỉ
-việc gọi nó. Quy tắc chết người ở đây là gì chết được cái gì:
+việc gọi nó. Quy tắc xử lý lỗi của hai nguồn:
 
 - DB là nguồn chính và là nguồn có RBAC. Lỗi ORM ở đây là lỗi server thật, phải
   leo lên view để thành 500 + log, tuyệt đối không được hóa thành "0 kết quả" -
   người dùng sẽ tưởng mình không có quyền trong khi hệ thống đang hỏng.
-- SharePoint là nguồn phụ, chạy qua mạng. MọiExceptions từ nó (kể cả lỗi dựng
+- SharePoint là nguồn phụ, chạy qua mạng. Mọi exception từ nó (kể cả lỗi dựng
   dict từ một DriveItem kỳ dị) bị nuốt và báo bằng `error_note`, để câu hỏi vẫn
   còn câu trả lời DB.
 - Nhật ký chỉ chứa câu hỏi, bộ lọc và số lượng; không chứa tiêu đề/URL kết quả.
@@ -114,4 +114,8 @@ def ask(question: str, user) -> dict:
     if sp_undated > 0:
         response["undated_count"] = sp_undated
         response["undated_notice"] = f"còn {sp_undated} tệp trong thư mục chưa xác định được ngày"
+    if not merged and parsed.doc_types == ["activity_report"] and sp_note is not None:
+        response["empty_notice"] = (
+            "Báo cáo hoạt động lưu trên SharePoint; nguồn này hiện chưa bật hoặc không phản hồi."
+        )
     return response

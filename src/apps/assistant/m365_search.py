@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from calendar import monthrange
 from datetime import date, datetime
+from dataclasses import replace
 import re
 from urllib.parse import unquote, urlsplit
 
@@ -327,6 +328,27 @@ def allowed_file_folders(user):
 
 
 def search_sharepoint(parsed: ParsedQuery, user) -> SharePointSearchResult:
+    """Gộp từng loại qua cùng bộ lọc root/quyền, giữ caller một loại tương thích."""
+    if len(parsed.doc_types) <= 1:
+        return _search_sharepoint_single(parsed, user)
+    results = {}
+    notes = []
+    undated = 0
+    for kind in parsed.doc_types:
+        part = _search_sharepoint_single(replace(parsed, doc_type=kind, doc_types=[]), user)
+        notes.append(part.error_note)
+        undated += part.undated_count
+        for row in part.results:
+            results.setdefault(row["url"], row)
+    # Một nguồn bị chặn không được che trạng thái của nguồn vẫn được phép.
+    note = next((status for status in ("unavailable", "search_fallback") if status in notes), None)
+    if note is None and None not in notes:
+        note = "not_configured" if "not_configured" in notes else RESTRICTED_NOTE
+    rows = sorted(results.values(), key=lambda row: -row["score"])[:MAX_RESULTS]
+    return SharePointSearchResult(rows, note, undated_count=undated)
+
+
+def _search_sharepoint_single(parsed: ParsedQuery, user) -> SharePointSearchResult:
     """Trả `SharePointSearchResult(results, error_note, undated_count)`; `error_note=None` nghĩa là nguồn này OK.
 
     - `not_configured` : thiếu M365 (cờ bật/tắt, credentials hoặc site) - caller

@@ -337,6 +337,36 @@ Thay `<RUN_ID>` bằng ID thật. Nếu CLI lỗi 401 hoặc thiếu quyền, d�
 
 ## Điều kiện kết thúc và báo cáo
 
+### Vận hành trợ lý tài liệu
+
+Giới hạn 30 câu/phút/người dùng hiện dùng `caches["default"]`. Settings chưa
+khai báo `CACHES`, nên Django dùng bộ nhớ riêng từng tiến trình. Với nhiều
+worker, tổng hạn mức có thể nhân theo số worker; cần cache dùng chung trước
+khi dựa vào hạn mức này ở cấu hình nhiều worker. Đợt sửa chatbot 31/10/2026
+chỉ ghi nhận, không thay cấu hình cache hay giới hạn hiện tại.
+
+`SearchQueryLog` chứa câu hỏi tự do và có thể chứa dữ liệu cá nhân. Lệnh
+`venv\Scripts\python.exe src\manage.py purge_search_logs --days 180` chỉ đếm;
+thêm `--apply` mới xóa cứng. Khuyến nghị chạy thống kê định kỳ, đối chiếu chính
+sách lưu trữ rồi mới phê duyệt xóa. Chủ dự án quyết định số ngày giữ và chu kỳ
+(ví dụ kiểm tra hàng tháng); không tự chạy `--apply` trên dữ liệu vận hành.
+Log không lưu kết quả, nhưng session đăng nhập giữ kết quả đầy đủ tối đa 20
+lượt đến hết phiên, có thể chứa tên trong tiêu đề; đổi quyền/tuyến quản lý
+hoặc phiên bản chính sách sẽ xóa lịch sử ở lần truy cập tiếp theo.
+
+Mỗi câu hỏi có thể quét tới `SCAN_LIMIT = 5000` dòng mỗi nhóm, so khớp bằng
+Python sau khi lọc quyền. Khi đánh giá hiệu năng, dùng SQLite giả ngoài repo,
+ít nhất 5000 dòng mỗi nhóm tài liệu/công văn/quyết định, đo trực tiếp
+`services.ask` nhiều lượt, ghi số dòng thực quét và thời gian từng lượt vào
+nhật ký. Phép đo này không đại diện SQL Server hoặc thời gian Graph qua mạng;
+không tối ưu hay tăng giới hạn chỉ dựa vào kết quả SQLite.
+
+Tài liệu, đơn nghỉ và tài sản hiện mở danh sách chung, chưa có bộ lọc GET
+để trỏ đúng bản ghi. Trợ lý ghi rõ “mở danh sách”; đây là giới hạn đã biết
+cần giao việc riêng nếu muốn tìm hoặc mở bản ghi trực tiếp. Báo cáo hoạt động
+hiện chỉ có nguồn SharePoint, không có model báo cáo DB với selector quyền
+sẵn để thay thế khi nguồn này tắt hoặc không phản hồi.
+
 Báo phạm vi đã đọc, finding xác nhận, các sửa đổi nếu có, lệnh/exit code, số test và lý do skip; tách HTTP tự động, browser thật, local, CI và production. “Tất cả gate đã chạy đạt” không đồng nghĩa “không còn lỗi” hay “coverage 100%”. Không thêm skip hoặc giảm gate để đạt số đẹp.
 
 Với FIX, ghi một mục của đợt trong [PROJECT_WORK_LOG.md](PROJECT_WORK_LOG.md), stage đúng tệp được giao, kiểm tra staged diff rồi mới commit nếu được phép. Báo commit/push thực tế và phần còn mở. Với REVIEW chỉ đọc, trả báo cáo trong chat; chỉ ghi báo cáo/nhật ký khi nhiệm vụ cho phép.

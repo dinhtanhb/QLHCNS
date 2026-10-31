@@ -15,6 +15,7 @@ nhưng không khớp trên SQLite, tức là toàn bộ test chạy khác produc
 from __future__ import annotations
 
 import re
+from dataclasses import replace
 
 from django.db.models import F, Q
 from django.urls import reverse
@@ -169,7 +170,7 @@ def _document_result(row, score: int) -> dict:
     return _result(
         type_name="document",
         title=f"{document_no} - {document_name}",
-        meta=f"Tài liệu · {document_no} · {category_name}",
+        meta=f"Tài liệu · {document_no} · {category_name} · mở danh sách",
         url=reverse("portal:document_list"),
         date=effective_date,
         score=score,
@@ -267,6 +268,23 @@ def _search_decisions(parsed: ParsedQuery, user) -> list[dict]:
 
 def search_database(parsed: ParsedQuery, user) -> list[dict]:
     """Trả về kết quả DB mà `user` được phép nhìn thấy, kèm điểm xếp hạng."""
+    if len(parsed.doc_types) <= 1:
+        return _search_database_single(parsed, user)
+    results = []
+    seen = set()
+    for kind in parsed.doc_types:
+        for row in _search_database_single(replace(parsed, doc_type=kind, doc_types=[]), user):
+            # Chỉ công văn có thể lặp giữa loại chung và loại đến/đi.
+            # Không gộp đơn nghỉ/tài liệu/tài sản theo URL hoặc tiêu đề:
+            # chúng mở danh sách chung, và hai bản ghi có thể trùng tên.
+            key = (row["type"], row["url"])
+            if row["type"] != "official_dispatch" or key not in seen:
+                results.append(row)
+                seen.add(key)
+    return results
+
+
+def _search_database_single(parsed: ParsedQuery, user) -> list[dict]:
     return (
         _search_dispatches(parsed, user)
         + _search_documents(parsed, user)
@@ -309,6 +327,7 @@ def _search_business_records(parsed, user):
     candidates = []
     for obj in qs.order_by("-pk")[:SCAN_LIMIT]:
         title, day, url, extra = record(obj)
-        row = _result(type_name=kind, title=title, meta=kind, url=url, date=day, score=0)
+        meta = kind + " · mở danh sách" if kind in ("leave", "asset") else kind
+        row = _result(type_name=kind, title=title, meta=meta, url=url, date=day, score=0)
         candidates.append((row, normalize(title), normalize(title), (normalize(extra),), day))
     return [{**row, "score": score} for row, score in _rank(candidates, parsed)]
