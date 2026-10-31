@@ -4,6 +4,7 @@ from datetime import timedelta
 import json
 import os
 from pathlib import Path
+import time
 import uuid
 
 from playwright.sync_api import sync_playwright, expect
@@ -43,8 +44,33 @@ def main():
         page.get_by_role('textbox', name='Mật khẩu', exact=True).fill(password)
         page.get_by_role('button', name='Đăng nhập', exact=True).click()
         expect(page.get_by_role('heading', name='Trang chủ', exact=True)).to_be_visible(timeout=20000)
+    def reach_in_native_list(page, locator):
+        # Do not assume an inbox fits in the first page; exercise infinite scroll.
+        deadline = time.monotonic()+120
+        rounds = 0
+        while time.monotonic() < deadline:
+            if locator.count():
+                locator.first.scroll_into_view_if_needed()
+                expect(locator.first).to_be_visible()
+                return rounds
+            page.evaluate("""()=>document.querySelectorAll('div').forEach(el=>{
+                const r=el.getBoundingClientRect();
+                if(r.width&&r.height&&/auto|scroll/.test(getComputedStyle(el).overflowY)
+                   &&el.scrollHeight>el.clientHeight) el.scrollTop=el.scrollHeight;
+            })""")
+            page.wait_for_timeout(300)
+            rounds += 1
+        raise AssertionError('QA row was not reachable through native infinite scroll within 120s')
     reason = ('QA-MOBILE-'+uuid.uuid4().hex[:10]+' · '+'Kiểm thử nội dung dài trên màn hình hẹp. '*20)[:500].rstrip()
     day = timezone.localdate()+timedelta(days=45)
+    own = LeaveRequest.objects.filter(employee__user_account__username='demo-employee')
+    existing_count = own.count()
+    latest = own.order_by('-to_date').values_list('to_date', flat=True).first()
+    # Own leaves are sorted by -from_date, not creation time. Put this fixture
+    # after existing QA dates so submission/notice checks need no empty DB or
+    # fixed page size. Manager inboxes can still require scrolling (above).
+    if latest:
+        day = max(day, latest+timedelta(days=7))
     while day.weekday() >= 5:
         day += timedelta(days=1)
     while LeaveRequest.objects.filter(employee__user_account__username='demo-employee',
@@ -97,7 +123,9 @@ def main():
         check('Fresh browser session returns to login')
         login(page, 'demo-manager')
         page.get_by_role('tab', name='Duyệt', exact=True).click()
-        page.get_by_role('button', name=f'Duyệt đơn của {leave.employee.full_name} {leave.from_date.strftime("%d/%m/%Y")}', exact=True).click()
+        decision_button = page.get_by_role('button', name=f'Duyệt đơn của {leave.employee.full_name} {leave.from_date.strftime("%d/%m/%Y")}', exact=True)
+        approval_scroll_rounds = reach_in_native_list(page, decision_button)
+        decision_button.click()
         expect(page.get_by_text('Duyệt đơn nghỉ phép?', exact=True)).to_be_visible()
         page.get_by_role('button', name='Xác nhận', exact=True).click()
         expect(page.get_by_text('\u0110\u00e3 x\u1eed l\u00fd \u0111\u01a1n ngh\u1ec9 ph\u00e9p.', exact=True)).to_be_visible(timeout=15000)
@@ -162,7 +190,10 @@ def main():
         check('Related Dashboard renders after shared workflow')
         browser.close()
     result = {'synthetic_only': True, 'checks': checks, 'count': len(checks), 'screenshots': screenshots,
-        'browser_errors': browser_errors, 'backend': 'sqlite', 'ui': 'React Native web export in Edge; not Android/iOS device certification'}
+        'browser_errors': browser_errors, 'backend': 'sqlite', 'qa_existing_own_leaves': existing_count,
+        'fixture_date': str(day), 'fixture_strategy': 'after latest existing QA leave; manager inbox uses infinite scroll',
+        'approval_scroll_rounds': approval_scroll_rounds,
+        'ui': 'React Native web export in Edge; not Android/iOS device certification'}
     (args.output/'validation.json').write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
     print(json.dumps({'checks':len(checks), 'screenshots':len(screenshots), 'errors':len(browser_errors)}))
 

@@ -9,7 +9,7 @@
 - Vùng chạm tối thiểu 44px. Giữ `allowFontScaling`; khi chữ phóng lớn, nhãn được xuống dòng, thẻ được cao thêm, danh sách vẫn cuộn dọc.
 - Trạng thái luôn có chữ và biểu tượng cùng chip màu ngữ nghĩa. Không truyền đạt chỉ bằng màu. Trạng thái tải dùng skeleton ngắn, không chạy hiệu ứng liên tục.
 - Nhãn tab dùng `type.caption` (12px), giữ nhãn đầy đủ và vùng chạm tối thiểu 44px.
-- Thẻ Duyệt thu gọn tên tối đa hai dòng, lý do tối đa ba dòng với dấu ba chấm; nút **Xem thêm** mở sheet cuộn được chứa toàn bộ tên/lý do, có nút đóng cố định. Không thay luồng xác nhận Duyệt/Từ chối.
+- Thẻ Duyệt thu gọn tên tối đa hai dòng, lý do tối đa ba dòng với dấu ba chấm. **Xem thêm** dùng ngưỡng bảo thủ tên >28/lý do >80 ký tự, giảm theo fontScale, hoặc nội dung có quá 2/3 dòng ngắt rõ ràng; RN Web chưa triển khai onTextLayout nên đây là heuristic dùng chung web/native, không phải phép đo cắt chữ chính xác. Thẻ ngắn không thêm hàng nút. Sheet cuộn chứa toàn bộ tên/lý do, nút đóng cố định; giữ luồng xác nhận quyết định.
 - Tìm Nghiệp vụ chuẩn hóa NFD, bỏ dấu kết hợp và đổi đ/Đ thành d trước khi so khớp; nhãn hiển thị và quyền vẫn giữ nguyên.
 - `overlay` là role riêng của mobile trong `palettes.json` cho từng sáng/tối; `ops/sync_mobile_tokens.py` giữ role này khi đồng bộ các màu đặc từ web. `tokens.ts` xuất nguồn palette cho `useTheme()`. Độ mờ lớp phủ giữ nguyên; kiểm tương phản màu đặc không chứng nhận lớp alpha.
 - `DateTimeInput` time dùng hàm thuần `parseTime()` đọc HH:MM theo giờ địa phương, không dùng `Date.parse()` cho chuỗi chỉ có giờ; trống/sai định dạng hiện “Chọn giờ”. Kiểm logic: `node mobile/scripts/check-input-logic.cjs` từ gốc repo; không thay cho kiểm picker native.

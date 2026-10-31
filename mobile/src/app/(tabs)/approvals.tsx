@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FlatList, Modal, RefreshControl, ScrollView, View } from 'react-native';
+import { FlatList, Modal, RefreshControl, ScrollView, View, useWindowDimensions } from 'react-native';
 import { Redirect } from 'expo-router';
 import { AppBar, Button, Card, Confirm, Copy, EmptyState, ErrorNote, Screen, Skeleton, StatusChip, dateLabel, s, useRows } from '../../ui';
 import type { Leave } from '../../types';
@@ -7,10 +7,12 @@ import { useSession } from '../../session';
 import { useApprovalInbox } from '../../approval-inbox';
 import { useTheme } from '../../theme';
 import { radius, space } from '../../tokens';
+import { approvalNeedsDetails } from '../../input-utils';
 
 export default function ApprovalsScreen() {
   const { me, request } = useSession(); const rows = useRows<Leave>('approvals/');
   const t = useTheme(); const [details, setDetails] = useState<Leave | null>(null);
+  const { fontScale } = useWindowDimensions();
   const { updateCount, refreshCount } = useApprovalInbox();
   useEffect(() => { if (rows.data) updateCount(rows.data.count); }, [rows.data, updateCount]);
   const [choice, setChoice] = useState<{ row: Leave; decision: string } | null>(null);
@@ -20,7 +22,7 @@ export default function ApprovalsScreen() {
     if (!choice || busy) return;
     setBusy(true); setError(''); setMessage('');
     try { await request(`leaves/${choice.row.id}/decision/`, { decision: choice.decision }); setChoice(null); setMessage('Đã xử lý đơn nghỉ phép.'); await Promise.allSettled([rows.reload(), refreshCount()]); }
-    catch (err) { setChoice(null); setError(err instanceof Error ? err.message : 'Không thể xử lý đơn.'); await rows.reload(); }
+    catch (err) { setChoice(null); setError(err instanceof Error ? err.message : 'Không thể xử lý đơn.'); await Promise.allSettled([rows.reload(), refreshCount()]); }
     finally { setBusy(false); }
   };
   return <Screen title="Duyệt" compact scrollable={false}>
@@ -38,7 +40,7 @@ export default function ApprovalsScreen() {
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 8 }}><Copy title numberOfLines={2} ellipsizeMode="tail" style={{ flex: 1 }}>{item.employee_name}</Copy><StatusChip label="Chờ duyệt" tone="warning" /></View>
         <Copy>{item.leave_type} · {item.total_days} ngày</Copy><Copy muted>{dateLabel(item.from_date)} – {dateLabel(item.to_date)}</Copy>
         {item.reason ? <Copy numberOfLines={3} ellipsizeMode="tail">{item.reason}</Copy> : null}
-        <Button label="Xem thêm" accessibilityLabel="Xem đầy đủ đơn nghỉ phép" variant="text" onPress={() => setDetails(item)} />
+        {approvalNeedsDetails(item.employee_name, item.reason, fontScale) ? <Button label="Xem thêm" accessibilityLabel="Xem đầy đủ đơn nghỉ phép" variant="text" onPress={() => setDetails(item)} /> : null}
         <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
           <View style={{ flex: 1, minWidth: 130 }}><Button label="Duyệt" accessibilityLabel={`Duyệt đơn của ${item.employee_name} ${dateLabel(item.from_date)}`} icon="checkmark" onPress={() => setChoice({ row: item, decision: 'Approved' })} disabled={busy} /></View>
           <View style={{ flex: 1, minWidth: 130 }}><Button label="Từ chối" accessibilityLabel={`Từ chối đơn của ${item.employee_name} ${dateLabel(item.from_date)}`} icon="close" variant="secondary" onPress={() => setChoice({ row: item, decision: 'Rejected' })} disabled={busy} /></View>

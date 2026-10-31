@@ -14,3 +14,14 @@ export function parseTime(value: string): Date | null {
 export function timeLabel(value: string): string {
   return parseTime(value) ? value : 'Chọn giờ';
 }
+
+/** Conservative preview limits at 360px. RN Web does not implement onTextLayout.
+ * Keep the full sheet available for >28 name / >80 reason characters, explicit
+ * extra lines, or scaled text. This is a cross-platform length heuristic,
+ * not an exact measurement of rendered truncation.
+ */
+export function approvalNeedsDetails(name: string, reason: string, fontScale = 1): boolean {
+  const scale = Math.max(1, fontScale);
+  return name.length > Math.floor(28 / scale) || reason.length > Math.floor(80 / scale)
+    || name.split('\n').length > 2 || reason.split('\n').length > 3;
+}

@@ -128,6 +128,7 @@ git fetch origin main
 git rev-list --left-right --count HEAD...origin/main
 git diff --check
 $env:PYTHONIOENCODING = 'utf-8'
+$env:PYTHONUTF8 = '1'
 venv\Scripts\python.exe -m pip check
 ```
 
@@ -180,6 +181,11 @@ thay backup, restore thử, migrate bản sao hoặc UAT. Không áp migration k
 
 ### Regression cô lập
 
+Trên Windows, giữ `PYTHONUTF8=1` và `PYTHONIOENCODING=utf-8` từ khối môi trường
+ở trên khi chạy Python. Chế độ UTF-8 cần áp dụng ngay lúc khởi động interpreter
+để `Path.read_text()` và giải mã `subprocess(..., text=True)` không dùng CP1252;
+chỉ đổi encoding của stdout bên trong runner không đủ.
+
 ```powershell
 venv\Scripts\python.exe ops\run_tests.py --backend sqlite
 venv\Scripts\python.exe ops\run_tests.py --backend sqlserver
@@ -194,6 +200,36 @@ Django hoặc tạo DB test, kể cả khi truyền nhãn test hẹp. Giới h�
 mobile phải khớp `page()`/`Paginator`; lệch nhau làm đường kiểm tra chung này
 trả exit 1. Wrapper PowerShell và CI gọi cùng runner, không có gate song song.
 Khi chỉ cần kiểm nhanh không truy cập DB: `python ops/check_mobile_kpi_limit.py`.
+
+### Kiểm tra mobile
+
+Trước khi commit thay đổi mobile, chạy trong `mobile/`: `npm run typecheck`,
+`npm run lint`, `npm run check:input`; cả ba phải exit 0. `check:input` kiểm
+helper nhập liệu/tìm kiếm và điều kiện xem đầy đủ thẻ duyệt bằng Node/TypeScript.
+CI mobile hiện có chạy `npm run check:input` sau typecheck/lint bằng Node 24.
+Không nối Node vào `ops/run_tests.py`: runner Python/CI backend phải chạy được
+trên máy chỉ có Python. Gate KPI thuần Python trong runner chung vẫn giữ nguyên.
+
+UAT trình duyệt chạy thủ công sau `npx expo export --platform web` (QA HTTP cần
+`EXPO_PUBLIC_ALLOW_HTTP=true`), có Edge/Playwright và server QA đang chạy. Dùng
+DB/media/tài khoản demo tổng hợp đã đánh dấu, QA và ảnh đều ngoài repository:
+
+```powershell
+# Terminal QA riêng, sau khi đã tạo runtime tổng hợp bằng mobile_qa.py create:
+venv\Scripts\python.exe ops\mobile_qa.py serve --directory <QA-ngoài-repo> --port 8810
+# Terminal kiểm thử, cùng QA và bản export nguồn cuối:
+venv\Scripts\python.exe ops\run_mobile_c_uat.py --directory <QA-ngoài-repo> --url http://127.0.0.1:8810 --output <ảnh-nhóm-C-ngoài-repo>
+venv\Scripts\python.exe ops\run_mobile_c2_uat.py --directory <QA-ngoài-repo> --url http://127.0.0.1:8810 --output <ảnh-C2-ngoài-repo>
+```
+
+Không tự nối hai UAT này vào runner Python vì cần trình duyệt và server QA.
+Khi sửa mobile, chạy các runner Home/Settings/nghiệp vụ bị ảnh hưởng, ghi lệnh,
+exit code, backend và ảnh. `run_mobile_uat.py` tạo đơn sau ngày nghỉ cuối cùng
+của nhân viên QA để phù hợp thứ tự `-from_date`; cuộn tải thêm khi tìm đơn trong
+hộp duyệt. Runner không yêu cầu DB rỗng hoặc ít hơn một trang dữ liệu. Lỗi trước
+đây do bộ thử mặc định đơn vừa tạo nằm ở trang đầu, không phải dữ liệu QA hỏng.
+Runner P2 dùng cùng cách chọn ngày sau dữ liệu QA đã có để các ca làm mới danh
+sách không phụ thuộc số lượng đơn cũ.
 
 ### Gate giao diện, hợp đồng form, bản in và cache
 

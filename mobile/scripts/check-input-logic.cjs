@@ -10,7 +10,7 @@ const code = ts.transpileModule(fs.readFileSync(file, 'utf8'), {
 }).outputText;
 const helperExports = {};
 vm.runInNewContext(code, { exports: helperExports, Date });
-const { normalizeSearch, parseTime, timeLabel } = helperExports;
+const { normalizeSearch, parseTime, timeLabel, approvalNeedsDetails } = helperExports;
 let count = 0;
 for (const [query, label] of [['cham cong', 'Chấm công'], ['dang ky', 'Đăng ký'],
   ['bang cong', 'Bảng công'], ['ChẤm CÔng', 'Chấm công'], ['  ĐĂNG KÝ  ', 'đăng ký']]) {
@@ -30,6 +30,16 @@ for (const value of ['00:00', '09:30', '12:00', '23:59']) {
 for (const value of ['', '24:00', '09:60', '9:30', '09:3', 'abc', '2026-10-30', '-1:00']) {
   assert.equal(parseTime(value), null);
   assert.equal(timeLabel(value), 'Chọn giờ');
+  count++;
+}
+for (const [name, reason, scale, expected] of [
+  ['QA An', 'Việc gia đình.', 1, false],
+  ['Tên dài '.repeat(10), '', 1, true],
+  ['QA An', 'Lý do dài '.repeat(20), 1, true],
+  ['QA An', 'a\nb\nc\nd', 1, true],
+  ['QA An', 'a'.repeat(50), 2, true],
+]) {
+  assert.equal(approvalNeedsDetails(name, reason, scale), expected);
   count++;
 }
 console.log(`${count} production helper cases passed; no native picker exercised`);

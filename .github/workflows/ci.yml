@@ -79,6 +79,7 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint
+      - run: npm run check:input
       - name: Verify mobile tokens against approved web source
         run: python ../ops/sync_mobile_tokens.py --check
       - name: Bundle shared screens for Android, iOS and browser QA

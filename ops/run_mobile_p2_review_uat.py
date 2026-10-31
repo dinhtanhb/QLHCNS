@@ -35,6 +35,13 @@ def main():
     approvable_leave_requests(manager).update(status='Rejected')
     marker = 'QA-P2b-'+uuid.uuid4().hex[:8]
     day = timezone.localdate()+timedelta(days=180)
+    # Employee leave lists sort by date, not creation time. Keep these fixtures
+    # visible even when a reused synthetic QA contains many later-dated rows.
+    existing_own = LeaveRequest.objects.filter(employee=employee)
+    existing_count = existing_own.count()
+    latest = existing_own.order_by('-to_date').values_list('to_date', flat=True).first()
+    if latest:
+        day = max(day, latest+timedelta(days=7))
     while day.weekday() >= 5:
         day += timedelta(days=1)
     kind = LeaveType.objects.get(leave_type_code='DEMO')
@@ -220,7 +227,9 @@ def main():
         if args.matrix:
             capture_matrix(browser, login, args.output, checks)
         browser.close()
-    result = {'synthetic_only': True, 'ui': 'Expo web export in Edge; native not certified', 'checks': checks, 'failures': failures, 'page_errors': errors}
+    result = {'synthetic_only': True, 'qa_existing_own_leaves': existing_count,
+              'fixture_date': str(day), 'ui': 'Expo web export in Edge; native not certified',
+              'checks': checks, 'failures': failures, 'page_errors': errors}
     (args.output/'validation.json').write_text(json.dumps(result, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
     print(json.dumps({'passed': len(checks), 'failed': [x['check'] for x in failures], 'page_errors': errors}, ensure_ascii=True))
     raise SystemExit(1 if failures or errors else 0)
