@@ -58,12 +58,15 @@ class SharePointSearchResult(tuple):
     results: list[dict]
     error_note: str | None
     undated_count: int
+    skipped_types: list[str]
 
-    def __new__(cls, results: list[dict], error_note: str | None, undated_count: int = 0):
+    def __new__(cls, results: list[dict], error_note: str | None, undated_count: int = 0,
+                skipped_types: list[str] | None = None):
         obj = super().__new__(cls, (results, error_note))
         obj.results = results
         obj.error_note = error_note
         obj.undated_count = undated_count
+        obj.skipped_types = list(dict.fromkeys(skipped_types or []))
         return obj
 
 
@@ -365,6 +368,7 @@ def search_sharepoint(parsed: ParsedQuery, user) -> SharePointSearchResult:
         undated += part.undated_count
         for row in part.results:
             results.setdefault(row["url"], row)
+    skipped = list(dict.fromkeys(skipped))
     if skipped:
         # Chỉ ghi mã loại, không ghi câu hỏi, tên tệp hoặc thông tin tài khoản.
         logger.warning("SharePoint pass limit: skipped document types %s", ",".join(skipped))
@@ -373,7 +377,7 @@ def search_sharepoint(parsed: ParsedQuery, user) -> SharePointSearchResult:
     if note is None and None not in notes:
         note = "not_configured" if "not_configured" in notes else RESTRICTED_NOTE
     rows = sorted(results.values(), key=lambda row: -row["score"])[:MAX_RESULTS]
-    return SharePointSearchResult(rows, note, undated_count=undated)
+    return SharePointSearchResult(rows, note, undated_count=undated, skipped_types=skipped)
 
 
 def _selected_folders(kind, user):

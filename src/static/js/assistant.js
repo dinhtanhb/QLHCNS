@@ -93,19 +93,22 @@
     const results = (payload && Array.isArray(payload.results)) ? payload.results : [];
     if (!results.length) {
       panel.appendChild(el('div', 'assistant-msg assistant-msg-bot', (payload && payload.empty_notice) || MESSAGES.empty));
-      return;
+    } else {
+      const list = el('div', 'assistant-results');
+      results.forEach(function (row) {
+        list.appendChild(renderResult(row));
+        const download = safeUrl(row.download_url);
+        if (download) {
+          const link = el('a', 'ui-button ui-button--secondary', 'Tải tài liệu');
+          link.href = download;
+          list.appendChild(link);
+        }
+      });
+      panel.appendChild(list);
     }
-    const list = el('div', 'assistant-results');
-    results.forEach(function (row) {
-      list.appendChild(renderResult(row));
-      const download = safeUrl(row.download_url);
-      if (download) {
-        const link = el('a', 'ui-button ui-button--secondary', 'Tải tài liệu');
-        link.href = download;
-        list.appendChild(link);
-      }
-    });
-    panel.appendChild(list);
+    if (payload && payload.limit_notice) {
+      panel.appendChild(el('div', 'assistant-warning', payload.limit_notice));
+    }
   }
 
   function failureMessage(code, status) {

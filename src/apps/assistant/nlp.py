@@ -18,8 +18,11 @@ DOC_NUMBER_RE = re.compile(
     re.IGNORECASE,
 )
 QUOTED_RE = re.compile(r'"([^"]+)"')
-MONTH_RE = re.compile(r"tháng\s+(\d{1,2})(?:\s*(?:năm|/)\s*(\d{4}))?", re.IGNORECASE)
-QUARTER_RE = re.compile(r"quý\s+([1-4])(?:\s*năm\s*(\d{4}))?", re.IGNORECASE)
+# Giữ năm có dấu / hoặc chữ năm như cũ; năm không có tiền tố chỉ nhận
+# 19xx/20xx đứng riêng. Không ăn nhầm 1234 hoặc phần đầu của 20255.
+PERIOD_YEAR = r"(?:\s*(?:năm|/)\s*|\s*,\s*(?=(?:19|20)\d{2}\b)|\s+(?=(?:19|20)\d{2}\b))(\d{4})"
+MONTH_RE = re.compile(r"tháng\s+(\d{1,2})(?:" + PERIOD_YEAR + r")?", re.IGNORECASE)
+QUARTER_RE = re.compile(r"quý\s+([1-4])(?:" + PERIOD_YEAR + r")?", re.IGNORECASE)
 YEAR_RE = re.compile(r"\bnăm\s+(\d{4})\b", re.IGNORECASE)
 # Ngày ghi thuận (năm trước) cũng hay xuất hiện khi sao chép từ hệ thống khác,
 # nên cả hai vế nhận 1-4 số và định dạng được phân giải ở _parse_date.
@@ -140,8 +143,26 @@ def _extract_dates(text: str, today: date) -> tuple[str, date | None, date | Non
             spans.append(match)
     if len(spans) <= 1:
         return _extract_one_date(text, today)
+    standalone_years = [match for match in spans if match.re is YEAR_RE]
+    periods = [match for match in spans if match.re in (MONTH_RE, QUARTER_RE)]
+    # Chỉ ghép một năm đứng riêng với một tháng/quý chưa có năm riêng.
+    # Nếu mốc đã có năm, giữ cụm đầu thắng; không ghi đè năm đã ghi rõ.
+    combined = None
+    pair = []
+    if len(standalone_years) == len(periods) == 1 and periods[0].group(2) is None:
+        pair = [standalone_years[0], periods[0]]
+        if spans[0] in pair:
+            try:
+                _, start, end = _extract_one_date(
+                    periods[0].group() + " năm " + standalone_years[0].group(1), today)
+                combined = (start, end)
+            except ValueError:
+                combined = (None, None)
     try:
-        _, start, end = _extract_one_date(spans[0].group(), today)
+        if combined is not None:
+            start, end = combined
+        else:
+            _, start, end = _extract_one_date(spans[0].group(), today)
     except ValueError:
         start = end = None
     pieces = []

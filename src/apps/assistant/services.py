@@ -53,7 +53,8 @@ def _search_sharepoint(parsed: nlp.ParsedQuery, user) -> m365_search.SharePointS
     if isinstance(res, m365_search.SharePointSearchResult):
         return res
     results, note = res
-    return m365_search.SharePointSearchResult(results, note, undated_count=getattr(res, "undated_count", 0))
+    return m365_search.SharePointSearchResult(results, note, undated_count=getattr(res, "undated_count", 0),
+                                            skipped_types=getattr(res, "skipped_types", []))
 
 
 def _public_result(row: dict) -> dict:
@@ -117,5 +118,14 @@ def ask(question: str, user) -> dict:
     if not merged and parsed.doc_types == ["activity_report"] and sp_note is not None:
         response["empty_notice"] = (
             "Báo cáo hoạt động lưu trên SharePoint; nguồn này hiện chưa bật hoặc không phản hồi."
+        )
+    if sp_res.skipped_types:
+        labels = {}
+        for label, code in nlp.DOC_TYPE_KEYWORDS:
+            labels.setdefault(code, label)
+        names = list(dict.fromkeys(labels.get(kind, "loại tài liệu khác") for kind in sp_res.skipped_types))
+        response["limit_notice"] = (
+            "Đã tìm SharePoint cho một số loại tài liệu; chưa tìm: "
+            + ", ".join(names) + ". Hãy hỏi riêng từng loại."
         )
     return response

@@ -70,6 +70,19 @@ nhận diện khỏi từ khóa. Ngày đầy đủ/dải ngày bao trọn các 
 tháng/năm bên trong, không coi chúng là các cụm độc lập. Câu một cụm giữ
 cách phân tích cũ, kể cả xử lý ngày không hợp lệ.
 
+Tháng/quý nhận thêm năm dạng `/2025`, ` 2025`, `, 2025` (dấu `/` sau tháng
+đã có từ trước). Năm không có chữ “năm” hoặc dấu `/` chỉ nhận `19xx`/`20xx`
+đứng riêng theo ranh giới từ, không ăn nhầm `1234` hay `20255`. Các dạng cũ
+giữ nguyên; số hiệu `12/2026`, `123/2025` không thành mốc tháng/năm.
+
+Ngoại lệ cho quy tắc cụm đầu: một “năm 2025” đứng riêng được ghép với một
+tháng/quý chưa ghi năm, dù năm đứng trước hay sau, nếu cặp đó chứa mốc thời
+gian đầu tiên. Ví dụ “năm 2025 quý 2”, “quý 2 về năm 2025” đều là Q2/2025;
+“năm 2025 tháng 9” là tháng 9/2025. Nếu tháng/quý đã có năm riêng, không
+ghép/ghi đè năm của nó; các mốc khác vẫn theo cụm đầu thắng: “năm 2024
+tháng 9 năm 2025” là cả năm 2024, còn “tháng 9 năm 2025 năm 2024” là tháng
+9/2025. Cả hai cụm đã nhận diện đều bị bỏ khỏi từ khóa.
+
 SharePoint nhóm các loại có cùng tập root được phép và cùng cách đọc ngày
 (quyết định dùng ngày trong tên/thư mục). Tối đa `MAX_SHAREPOINT_PASSES = 3`
 nhóm cần tìm SharePoint mỗi câu, theo thứ tự `doc_types` đã phân tích; nhóm
@@ -77,9 +90,13 @@ không có root được phép không chiếm lượt. Các loại vượt trầ
 ghi mã loại trong warning `SharePoint pass limit: skipped document types`;
 không ghi câu hỏi, tài khoản hoặc tên tệp. Ví dụ `Incoming`, `Outgoing`,
 `activity_report`, `candidate` trỏ bốn root khác nhau thì bỏ `candidate`.
-Không thêm trường/trạng thái API: các trạng thái hiện có mô tả các nguồn đã
-thử, không tự đổi sang lỗi mạng khi chạm trần. Đây là giới hạn tìm kiếm cần
-biết; nên hỏi lại với ít loại hơn nếu warning cho thấy loại mong muốn bị bỏ.
+`SharePointSearchResult` giữ tuple hai phần cũ, thêm thuộc tính tùy chọn
+`skipped_types` mặc định rỗng, không trùng và giữ thứ tự. API chỉ thêm
+`limit_notice` khi có loại bị bỏ qua, dùng nhãn tiếng Việt; không ghi thông
+báo này vào SearchQueryLog. Giao diện đặt thông báo dưới danh sách hoặc dưới
+trạng thái rỗng bằng `textContent`. Giữ nguyên `partial`, `sharepoint_status`
+và các thông báo cũ; không tự đổi sang lỗi mạng khi chạm trần. Người dùng
+được nhắc hỏi riêng từng loại để tìm các nguồn chưa được thử.
 Một lượt tìm có thể cần nhiều lệnh metadata/listing hoặc phân trang Graph
 theo đường lùi cũ; trần này không phải trần tổng số HTTP request.
 
