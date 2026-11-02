@@ -1,4 +1,11 @@
 {% load ui_components l10n %}
+{% if form.is_bound %}
+{% for key, bound in employee_bound_fields %}{% if key == widget_key %}
+<label for="{{ bound.id_for_label }}" class="ui-field-label">{{ bound.label }}</label>
+{{ bound|ui_bound_field }}
+{% if bound.errors %}<div class="ui-field-error" id="{{ bound.auto_id }}-error">{{ bound.errors }}</div>{% endif %}
+{% endif %}{% endfor %}
+{% else %}
 {% if widget_key == "f0" %}
 <label for="hr-hr_employee_form-employee_code" class="ui-field-label">Mã nhân viên</label>
                 <input id="hr-hr_employee_form-employee_code" type="text" name="employee_code" aria-describedby="employee-code-hint" value="{{ employee.employee_code|default:initial.employee_code }}" required >
@@ -79,4 +86,5 @@
                     <option value="OnLeave" {% if employee.employment_status == "OnLeave" %}selected{% endif %}>Đang nghỉ dài hạn</option>
                     <option value="Resigned" {% if employee.employment_status == "Resigned" %}selected{% endif %}>Đã nghỉ việc</option>
                 </select>
+{% endif %}
 {% endif %}

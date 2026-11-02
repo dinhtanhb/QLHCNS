@@ -174,15 +174,24 @@ def hr_employee_create(request):
 
 @login_required
 def hr_employee_edit(request, pk):
+    import copy
+    from apps.portal.employee_forms import EmployeeEditForm
     if not _can_manage_hr(request):
         messages.error(request, "Anh/chị không có quyền quản lý hồ sơ nhân viên.")
         return redirect("portal:hr_employee_list")
 
     employee = get_object_or_404(Employee, pk=pk)
+    form = None
     if request.method == "POST":
+        candidate = copy.copy(employee)
+        candidate._state = copy.copy(employee._state)
+        candidate._state.fields_cache = employee._state.fields_cache.copy()
+        form = EmployeeEditForm(request.POST, instance=candidate, auto_id='hr-hr_employee_form-%s')
         try:
-            employee.modified_by = request.user
-            _save_employee_form(request, employee)
+            if not form.is_valid():
+                raise ValidationError(form.errors.as_text())
+            candidate.modified_by = request.user
+            _save_employee_form(request, candidate)
             messages.success(request, "Đã cập nhật hồ sơ nhân viên.")
             return redirect("portal:hr_employee_detail", pk=employee.pk)
         except Exception as e:
@@ -196,6 +205,8 @@ def hr_employee_edit(request, pk):
     }
     return render(request, "portal/hr_employee_form.html", {
         "employee": employee, "initial": initial,
+        "form": form,
+        "employee_bound_fields": [(f'f{i}', field) for i, field in enumerate(form)] if form else [],
         "departments": Department.objects.filter(
             Q(is_active=True) | Q(pk=employee.department_id)
         ),
