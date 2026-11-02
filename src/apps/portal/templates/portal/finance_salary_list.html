@@ -5,7 +5,7 @@
 {% include "ui/page_header.html" with title="Lương cơ bản nhân viên" description="Mức lương đang áp dụng và ngày hiệu lực của từng nhân viên." actions_template="portal/_finance_salary_actions.html" %}
 <section class="ui-card" aria-labelledby="salary-list-title">
 <h2 id="salary-list-title" class="ui-card-title">Mức lương hiện hành</h2>
-<p class="ui-results-count">{{ salaries|length|ui_number }} mức lương</p>
+<p class="ui-results-count">{{ page_obj.paginator.count|ui_number }} mức lương</p>
     <div class="ui-scroll mobile-table-scroll" tabindex="0" role="region" aria-label="Bảng Lương cơ bản nhân viên; cuộn ngang để xem đầy đủ">
         <table class="ui-table ui-finance-table"><caption class="ui-sr-only">Lương cơ bản nhân viên</caption>
         <thead><tr><th scope="col">Nhân viên</th><th scope="col">Phòng ban</th><th scope="col" class="ui-number">Lương cơ bản hiện tại</th><th scope="col">Áp dụng từ</th></tr></thead>
@@ -22,4 +22,5 @@
     </table>
     </div>
 </section>
+{% include "portal/_pagination.html" with standard=True %}
 {% endblock %}

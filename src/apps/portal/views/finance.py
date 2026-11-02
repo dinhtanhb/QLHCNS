@@ -410,8 +410,9 @@ def finance_salary_list(request):
         return redirect("portal:dashboard")
     from apps.payroll.selectors import current_salaries
     from django.utils import timezone
-    salaries = current_salaries(timezone.localdate()).select_related("employee").order_by("employee__full_name", "pk")
-    return render(request, "portal/finance_salary_list.html", {"salaries": salaries})
+    from .common import _paginated_context
+    salaries = current_salaries(timezone.localdate()).select_related("employee__department").order_by("employee__full_name", "pk")
+    return render(request, "portal/finance_salary_list.html", _paginated_context(request, salaries, 'salaries'))
 
 
 @login_required
