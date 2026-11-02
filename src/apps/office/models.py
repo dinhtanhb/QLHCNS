@@ -165,6 +165,8 @@ class RoomBooking(ResourceBookingSaveMixin, BaseAuditModel):
         ordering = ["start_time"]
 
     def clean(self):
+        if self.start_time is None or self.end_time is None or self.room_id is None:
+            return  # ModelForm/full_clean reports required fields before overlap is meaningful.
         if self.end_time <= self.start_time:
             raise ValidationError("Giờ kết thúc phải sau giờ bắt đầu.")
         conflict = RoomBooking.objects.filter(
@@ -199,6 +201,8 @@ class VehicleBooking(ResourceBookingSaveMixin, BaseAuditModel):
         ordering = ["start_time"]
 
     def clean(self):
+        if self.start_time is None or self.end_time is None or self.vehicle_id is None:
+            return  # Keep invalid Admin input in the form instead of raising TypeError.
         if self.end_time <= self.start_time:
             raise ValidationError("Giờ kết thúc phải sau giờ bắt đầu.")
         conflict = VehicleBooking.objects.filter(
