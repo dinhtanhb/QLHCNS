@@ -80,6 +80,7 @@ class ParsedQuery:
     date_to: date | None = None
     doc_type: str | None = None
     doc_types: list[str] = field(default_factory=list)
+    ignored_date_phrases: list[str] = field(default_factory=list)
 
     def has_constraints(self) -> bool:
         return bool(
@@ -130,7 +131,7 @@ def _date_span(first: str, second: str) -> tuple[date, date]:
     return (start, end) if start <= end else (end, start)
 
 
-def _extract_dates(text: str, today: date) -> tuple[str, date | None, date | None]:
+def _extract_dates(text: str, today: date, ignored_date_phrases: list[str] | None = None) -> tuple[str, date | None, date | None]:
     # Cụm đầu câu thắng; một cụm dài (ngày đầy đủ/dải ngày) bao trọn các
     # mốc tháng/năm bên trong, không được tính thành nhiều bộ lọc.
     relative = re.compile(r"\b(?:tháng này|tuần này|hôm nay|tuần trước|tháng trước|năm ngoái)\b", re.IGNORECASE)
@@ -165,6 +166,9 @@ def _extract_dates(text: str, today: date) -> tuple[str, date | None, date | Non
             _, start, end = _extract_one_date(spans[0].group(), today)
     except ValueError:
         start = end = None
+    if ignored_date_phrases is not None:
+        applied = pair if combined is not None else [spans[0]]
+        ignored_date_phrases.extend(match.group() for match in spans if match not in applied)
     pieces = []
     previous = 0
     for match in spans:
@@ -275,7 +279,7 @@ def parse(question: str, today: date | None = None) -> ParsedQuery:
     # Mốc thời gian trích trước số hiệu: DOC_NUMBER_RE cũng khớp dạng
     # "2026/06" và nếu chạy trước sẽ ăn mất nửa đầu của dải ngày.
     try:
-        text, parsed.date_from, parsed.date_to = _extract_dates(text, today)
+        text, parsed.date_from, parsed.date_to = _extract_dates(text, today, parsed.ignored_date_phrases)
     except ValueError:
         # "quý 1 năm 0000" dựng `date()` trực tiếp từ số trong câu và cũng nổ như
         # dải ngày sai lịch. Mất bộ lọc thời gian vẫn tốt hơn 500: `text` chưa

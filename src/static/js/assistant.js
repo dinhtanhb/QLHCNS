@@ -109,6 +109,9 @@
     if (payload && payload.limit_notice) {
       panel.appendChild(el('div', 'assistant-warning', payload.limit_notice));
     }
+    if (payload && payload.time_notice) {
+      panel.appendChild(el('div', 'assistant-warning', payload.time_notice));
+    }
   }
 
   function failureMessage(code, status) {

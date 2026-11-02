@@ -83,6 +83,15 @@ ghép/ghi đè năm của nó; các mốc khác vẫn theo cụm đầu thắng:
 tháng 9 năm 2025” là cả năm 2024, còn “tháng 9 năm 2025 năm 2024” là tháng
 9/2025. Cả hai cụm đã nhận diện đều bị bỏ khỏi từ khóa.
 
+Parser giữ nội bộ `ignored_date_phrases` cho các cụm thời gian ngoài không
+được chọn, theo thứ tự xuất hiện. Không tính thành phần nằm trong ngày/dải
+ngày dài hơn hoặc các cụm đã ghép C3. Chỉ khi danh sách không rỗng, API thêm
+`time_notice` nêu khoảng ngày thực sự áp dụng và các cụm bị bỏ; nếu mốc đầu
+không hợp lệ thì nói rõ không áp dụng được. Không thêm metadata này vào
+`parsed`/`parsed_filters`, không lưu `time_notice` trong SearchQueryLog.
+Giao diện hiển thị bằng `textContent`, class warning cũ, dưới kết quả hoặc
+trạng thái rỗng, cùng các thông báo khác. Câu một mốc/câu ghép không cảnh báo.
+
 SharePoint nhóm các loại có cùng tập root được phép và cùng cách đọc ngày
 (quyết định dùng ngày trong tên/thư mục). Tối đa `MAX_SHAREPOINT_PASSES = 3`
 nhóm cần tìm SharePoint mỗi câu, theo thứ tự `doc_types` đã phân tích; nhóm

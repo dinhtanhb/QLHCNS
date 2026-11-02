@@ -38,6 +38,8 @@ def _day_key(value) -> int:
 
 def _parsed_dict(parsed: nlp.ParsedQuery) -> dict:
     data = asdict(parsed)
+    # Metadata giải thích chỉ dùng tạo time_notice, giữ schema parsed/log cũ.
+    data.pop("ignored_date_phrases", None)
     data["date_from"] = _iso_date(parsed.date_from)
     data["date_to"] = _iso_date(parsed.date_to)
     return data
@@ -128,4 +130,11 @@ def ask(question: str, user) -> dict:
             "Đã tìm SharePoint cho một số loại tài liệu; chưa tìm: "
             + ", ".join(names) + ". Hãy hỏi riêng từng loại."
         )
+    if parsed.ignored_date_phrases:
+        if parsed.date_from and parsed.date_to:
+            applied = f"Đã áp dụng khoảng ngày {parsed.date_from:%d/%m/%Y} đến {parsed.date_to:%d/%m/%Y}"
+        else:
+            applied = "Không áp dụng được mốc thời gian đầu tiên"
+        ignored = ", ".join(f"“{phrase}”" for phrase in parsed.ignored_date_phrases)
+        response["time_notice"] = applied + "; bỏ qua: " + ignored + "."
     return response
