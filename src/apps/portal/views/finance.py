@@ -306,7 +306,13 @@ def finance_payroll_lock(request, pk):
             configuration = Payroll.load_calculation_configuration(period.start_date)
             for payroll in payrolls:
                 payroll.payroll_period = period
-                payroll.validate_calculated(configuration=configuration)
+                try:
+                    payroll.validate_calculated(configuration=configuration)
+                except ValidationError as error:
+                    raise ValidationError(
+                        f"Dòng lương {payroll.pk} — {payroll.employee.employee_code}: "
+                        + "; ".join(error.messages)
+                    ) from error
         except ValidationError as error:
             _friendly_error(request, error, "Không thể khóa kỳ lương.")
             return redirect("portal:finance_payroll_run", pk=pk)
@@ -425,64 +431,29 @@ def finance_tax_config(request):
         return redirect("portal:dashboard")
 
     if request.method == "POST":
+        from apps.payroll.services import add_configuration
         form_type = request.POST.get("form_type")
+        models_and_fields = {
+            "insurance": (InsuranceRateConfig, InsuranceRateConfig.RATE_FIELDS),
+            "deduction": (TaxDeductionConfig, ("self_deduction_monthly", "dependent_deduction_monthly")),
+            "bracket": (PersonalIncomeTaxBracket, ("bracket_no", "income_from_monthly", "income_to_monthly", "tax_rate")),
+        }
         try:
+            if form_type not in models_and_fields:
+                raise ValidationError("Loại cấu hình không hợp lệ.")
+            model, fields = models_and_fields[form_type]
+            values = {name: request.POST.get(name) for name in fields}
+            if form_type == "bracket":
+                values["income_to_monthly"] = values["income_to_monthly"] or None
             if form_type == "insurance":
-                effective_from = request.POST.get("effective_from")
-                with transaction.atomic():
-                    # Đóng effective_to của các thế hệ cũ còn bỏ ngỏ (C1: nếu không đóng,
-                    # calculate() có thể vẫn chỉ lấy .first() theo effective_from mới nhất nên ít rủi ro
-                    # hơn bracket, nhưng đóng lại cho rõ ràng, tránh nhầm lẫn khi tra cứu).
-                    InsuranceRateConfig.objects.filter(effective_to__isnull=True).exclude(
-                        effective_from__gte=effective_from
-                    ).update(effective_to=_day_before(effective_from))
-                    InsuranceRateConfig.objects.create(
-                        effective_from=effective_from,
-                        employee_social_insurance_rate=request.POST.get("employee_social_insurance_rate"),
-                        employee_health_insurance_rate=request.POST.get("employee_health_insurance_rate"),
-                        employee_unemployment_insurance_rate=request.POST.get("employee_unemployment_insurance_rate"),
-                        employer_social_insurance_rate=request.POST.get("employer_social_insurance_rate"),
-                        employer_health_insurance_rate=request.POST.get("employer_health_insurance_rate"),
-                        employer_unemployment_insurance_rate=request.POST.get("employer_unemployment_insurance_rate"),
-                        legal_reference=request.POST.get("legal_reference", ""),
-                        created_by=request.user,
-                    )
-                messages.success(request, "Đã thêm cấu hình tỷ lệ Bảo hiểm.")
-            elif form_type == "deduction":
-                effective_from = request.POST.get("effective_from")
-                with transaction.atomic():
-                    TaxDeductionConfig.objects.filter(effective_to__isnull=True).exclude(
-                        effective_from__gte=effective_from
-                    ).update(effective_to=_day_before(effective_from))
-                    TaxDeductionConfig.objects.create(
-                        effective_from=effective_from,
-                        self_deduction_monthly=request.POST.get("self_deduction_monthly"),
-                        dependent_deduction_monthly=request.POST.get("dependent_deduction_monthly"),
-                        created_by=request.user,
-                    )
-                messages.success(request, "Đã thêm cấu hình giảm trừ thuế.")
-            elif form_type == "bracket":
-                # C1 (sửa): tự đóng effective_to của TOÀN BỘ thế hệ bậc thuế cũ (mọi bracket_no
-                # cùng effective_from cũ, chưa có effective_to) trước khi thêm bậc của thế hệ mới —
-                # để calculate() (và bất kỳ báo cáo nào lọc theo effective_to) không bao giờ thấy
-                # 2 thế hệ cùng "đang hiệu lực" một lúc, kể cả khi người dùng không khai đủ tất cả
-                # các bậc trong cùng 1 lần submit.
-                effective_from = request.POST.get("effective_from")
-                with transaction.atomic():
-                    PersonalIncomeTaxBracket.objects.filter(effective_to__isnull=True).exclude(
-                        effective_from__gte=effective_from
-                    ).update(effective_to=_day_before(effective_from))
-                    PersonalIncomeTaxBracket.objects.create(
-                        effective_from=effective_from,
-                        bracket_no=request.POST.get("bracket_no"),
-                        income_from_monthly=request.POST.get("income_from_monthly"),
-                        income_to_monthly=request.POST.get("income_to_monthly") or None,
-                        tax_rate=request.POST.get("tax_rate"),
-                        created_by=request.user,
-                    )
-                messages.success(request, "Đã thêm bậc thuế TNCN.")
-        except Exception as e:
-            _friendly_error(request, e, "Không thể lưu.")
+                values["legal_reference"] = request.POST.get("legal_reference", "")
+            add_configuration(model(effective_from=request.POST.get("effective_from"),
+                                    created_by=request.user, **values))
+            messages.success(request, "Đã thêm cấu hình lương.")
+        except ValidationError as error:
+            _friendly_error(request, error, "Không thể lưu cấu hình lương.")
+        except Exception as error:
+            _friendly_error(request, error, "Không thể lưu.")
         return redirect("portal:finance_tax_config")
 
     return render(request, "portal/finance_tax_config.html", {

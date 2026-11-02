@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.db import models
 from apps.common.models import BaseAuditModel
+from .validation import validate_numbers
 
 
 # ============================================================
@@ -53,9 +54,7 @@ class EmployeeSalary(BaseAuditModel):
         return f"{self.employee} - {vi_number(self.current_basic_salary, 0)}đ (từ {self.effective_date})"
 
     def clean(self):
-        salary = _decimal_amount(self.current_basic_salary)
-        if salary is not None and salary < 0:
-            raise ValidationError({"current_basic_salary": "Lương cơ bản không được âm."})
+        validate_numbers(self, ('current_basic_salary',))
         if self.end_date and self.effective_date and self.end_date < self.effective_date:
             raise ValidationError("Ngày kết thúc phải sau hoặc bằng ngày hiệu lực.")
         self._validate_no_overlap()
@@ -86,6 +85,12 @@ class EmployeeSalary(BaseAuditModel):
 # ============================================================
 
 class InsuranceRateConfig(BaseAuditModel):
+    RATE_FIELDS = (
+        'employee_social_insurance_rate', 'employee_health_insurance_rate',
+        'employee_unemployment_insurance_rate', 'employer_social_insurance_rate',
+        'employer_health_insurance_rate', 'employer_unemployment_insurance_rate',
+    )
+    MONEY_FIELDS = ('base_salary_reference', 'regional_minimum_wage')
     effective_from = models.DateField("Hiệu lực từ", db_column="EffectiveFrom")
     effective_to = models.DateField("Hiệu lực đến", null=True, blank=True, db_column="EffectiveTo")
     employee_social_insurance_rate = models.DecimalField(
@@ -128,6 +133,10 @@ class InsuranceRateConfig(BaseAuditModel):
     def __str__(self):
         return f"Tỷ lệ BH từ {self.effective_from}"
 
+    def clean(self):
+        super().clean()
+        validate_numbers(self, self.RATE_FIELDS + self.MONEY_FIELDS, percentages=self.RATE_FIELDS)
+
     @property
     def total_employee_rate(self):
         return (
@@ -169,6 +178,13 @@ class PersonalIncomeTaxBracket(BaseAuditModel):
         to_text = vi_number(self.income_to_monthly, 0) if self.income_to_monthly else "trở lên"
         return f"Bậc {self.bracket_no}: {vi_number(self.income_from_monthly, 0)} - {to_text} ({vi_number(self.tax_rate)}%)"
 
+    def clean(self):
+        super().clean()
+        validate_numbers(self, ('bracket_no', 'income_from_monthly', 'income_to_monthly', 'tax_rate'),
+                         percentages=('tax_rate',), positive=('bracket_no',))
+        if self.income_to_monthly is not None and Decimal(str(self.income_to_monthly)) <= Decimal(str(self.income_from_monthly)):
+            raise ValidationError({'income_to_monthly': 'Cận trên phải lớn hơn cận dưới hoặc để trống.'})
+
 
 class TaxDeductionConfig(BaseAuditModel):
     effective_from = models.DateField("Hiệu lực từ", db_column="EffectiveFrom")
@@ -188,6 +204,10 @@ class TaxDeductionConfig(BaseAuditModel):
 
     def __str__(self):
         return f"Giảm trừ từ {self.effective_from}"
+
+    def clean(self):
+        super().clean()
+        validate_numbers(self, ('self_deduction_monthly', 'dependent_deduction_monthly'))
 
 
 class EmployeeDependent(BaseAuditModel):
@@ -333,6 +353,15 @@ class Payroll(BaseAuditModel):
         return hashlib.sha256("|".join(values).encode()).hexdigest()
 
     def validate_calculated(self, *, configuration=None):
+        self.validate_input_amounts()
+        validate_numbers(self, tuple(name for name in self.RESULT_FIELDS if name != 'net_income'))
+        # Net may be negative when deductions exceed income; keep that policy.
+        net = _decimal_amount(self.net_income)
+        if net is None:
+            raise ValidationError('Thực lãnh phải là số hữu hạn.')
+        self._meta.get_field('net_income').clean(self.net_income, self)
+        if net > self.gross_income or self.actual_working_days > self.standard_working_days:
+            raise ValidationError('Kết quả lương không hợp lệ: thực lãnh vượt tổng thu nhập hoặc ngày công vượt ngày chuẩn.')
         if not self.calculated_at or self.calculation_signature != self.input_signature():
             raise ValidationError("Có dòng lương chưa tính hoặc đã đổi đầu vào; hãy tính lương lại trước khi khóa.")
         fresh = copy.copy(self)
@@ -357,13 +386,7 @@ class Payroll(BaseAuditModel):
             raise ValidationError("Kỳ lương đã khóa — không được thêm/sửa bảng lương.")
 
     def validate_input_amounts(self):
-        amounts = {name: _decimal_amount(getattr(self, name)) for name in self.INPUT_FIELDS}
-        errors = {
-            name: "Số tiền không được âm."
-            for name, amount in amounts.items() if amount is not None and amount < 0
-        }
-        if errors:
-            raise ValidationError(errors)
+        validate_numbers(self, self.INPUT_FIELDS)
 
     def __str__(self):
         return f"{self.employee} - {self.payroll_period}"
@@ -423,6 +446,10 @@ class Payroll(BaseAuditModel):
                 "Chưa có cấu hình Tỷ lệ Bảo hiểm / Giảm trừ thuế / Bậc thuế cho kỳ lương này. "
                 "Vào mục Payroll → khai báo các cấu hình trước."
             )
+        insurance_cfg.clean()
+        deduction_cfg.clean()
+        for bracket in tax_brackets:
+            bracket.clean()
         self.standard_working_days = _standard_working_days(period.start_date, period.end_date)
 
         # Khoảng ngày nhân viên thực sự có mặt trong kỳ, giới hạn bởi ngày vào làm / ngày nghỉ việc.
@@ -442,6 +469,8 @@ class Payroll(BaseAuditModel):
             status=MonthlyAttendanceSummary.STATUS_APPROVED,
         ).first()
         unpaid_days = summary.unpaid_leave_days if summary else Decimal("0")
+        if _decimal_amount(unpaid_days) is None or unpaid_days < 0:
+            raise ValidationError('Số ngày nghỉ không lương phải hữu hạn và không âm.')
 
         self.actual_working_days = max(present_standard_days - unpaid_days, Decimal("0"))
 
