@@ -63,7 +63,7 @@ def _metric(label, value, *, unit="", tone="blue"):
     return {"label": label, "value": value, "display": display, "unit": unit, "tone": tone}
 
 
-def build_report_snapshot(from_date, to_date):
+def build_report_snapshot(from_date, to_date, *, user=None):
     """Build one aggregate-only snapshot used by HTML and all export formats."""
     today = timezone.localdate()
     report_from = timezone.make_aware(datetime.combine(from_date, time.min))
@@ -106,8 +106,10 @@ def build_report_snapshot(from_date, to_date):
     pending_leave = LeaveRequest.objects.filter(status="Pending").count()
     leave_in_period = LeaveRequest.objects.filter(status="Approved", from_date__lte=to_date, to_date__gte=from_date).count()
 
-    pending_dispatches = OfficialDispatch.objects.filter(status__in=("Pending", "Processing")).count()
-    overdue_dispatches = OfficialDispatch.objects.filter(status__in=("Pending", "Processing"), due_date__lt=today).count()
+    from apps.security.data_access import visible_dispatches_for
+    dispatches = visible_dispatches_for(user) if user is not None else OfficialDispatch.objects.none()
+    pending_dispatches = dispatches.filter(status__in=("Pending", "Processing")).count()
+    overdue_dispatches = dispatches.filter(status__in=("Pending", "Processing"), due_date__lt=today).count()
     pending_rooms = RoomBooking.objects.filter(status="Pending").count()
     pending_vehicles = VehicleBooking.objects.filter(status="Pending").count()
     pending_supplies = SupplyRequest.objects.filter(status="Pending").count()

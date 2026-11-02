@@ -48,9 +48,10 @@ def report_dashboard(request):
     ).count()
 
     # Thống kê công văn
-    pending_dispatches = OfficialDispatch.objects.filter(status="Pending").count()
-    processing_dispatches = OfficialDispatch.objects.filter(status="Processing").count()
-    overdue_dispatches = OfficialDispatch.objects.filter(
+    dispatches = visible_dispatches_for(request.user)
+    pending_dispatches = dispatches.filter(status="Pending").count()
+    processing_dispatches = dispatches.filter(status="Processing").count()
+    overdue_dispatches = dispatches.filter(
         status__in=["Pending", "Processing"], due_date__lt=today
     ).count()
 

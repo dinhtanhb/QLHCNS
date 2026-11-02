@@ -56,7 +56,7 @@ def report_hub(request):
     except ValueError:
         messages.error(request, "Khoảng ngày không hợp lệ; đã dùng từ đầu năm đến hôm nay.")
         from_date, to_date = default_from, today
-    return render(request, "portal/report_hub.html", build_report_snapshot(from_date, to_date))
+    return render(request, "portal/report_hub.html", build_report_snapshot(from_date, to_date, user=request.user))
 
 
 @login_required
@@ -80,7 +80,7 @@ def report_hub_export(request, export_format):
     if export_format not in exporters:
         return HttpResponse("Định dạng xuất không được hỗ trợ.", status=404)
     exporter, content_type, audit_label = exporters[export_format]
-    response = HttpResponse(exporter(build_report_snapshot(from_date, to_date)), content_type=content_type)
+    response = HttpResponse(exporter(build_report_snapshot(from_date, to_date, user=request.user)), content_type=content_type)
     filename = export_name("BaoCao_DieuHanh_IHRMS", f"{from_date:%Y%m%d}-{to_date:%Y%m%d}", today, export_format)
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
     SecurityEvent.objects.create(user=request.user, action="data_export", resource=f"report_hub_{audit_label}")
