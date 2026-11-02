@@ -10,6 +10,7 @@ from openpyxl import Workbook
 from openpyxl.chart import BarChart, LineChart, Reference
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
+from apps.common.spreadsheet_text import write_excel_value
 
 from apps.activity.models import Activity, ActivityProposal
 from apps.asset.models import Asset, AssetDisposalRequest, AssetMaintenance, InventorySession
@@ -233,12 +234,6 @@ def build_report_snapshot(from_date, to_date):
     }
 
 
-def _safe_excel_text(value):
-    if isinstance(value, str) and value[:1] in ("=", "+", "-", "@"):
-        return "'" + value
-    return value
-
-
 def export_snapshot_xlsx(snapshot):
     wb = Workbook()
     ws = wb.active
@@ -262,8 +257,8 @@ def export_snapshot_xlsx(snapshot):
         cell.fill = PatternFill("solid", fgColor=BLUE)
         row += 1
         for metric in section["metrics"]:
-            ws.cell(row, 1, _safe_excel_text(metric["label"]))
-            ws.cell(row, 2, _safe_excel_text(metric["display"]))
+            write_excel_value(ws.cell(row, 1), metric["label"])
+            write_excel_value(ws.cell(row, 2), metric["display"])
             ws.merge_cells(start_row=row, start_column=2, end_row=row, end_column=4)
             for col in range(1, 5):
                 ws.cell(row, col).border = Border(left=thin, right=thin, top=thin, bottom=thin)
@@ -313,6 +308,12 @@ def export_snapshot_xlsx(snapshot):
     recruitment.column_dimensions["A"].width = 32
     recruitment.column_dimensions["B"].width = 14
 
+    # All text in these three sheets is data/labels, not generated formulas.
+    for sheet in wb:
+        for cells in sheet:
+            for cell in cells:
+                if isinstance(cell.value, str):
+                    write_excel_value(cell, cell.value)
     output = io.BytesIO()
     wb.save(output)
     return output.getvalue()

@@ -235,6 +235,7 @@ def inventory_session_export_excel(request, pk):
     lines = session.lines.select_related("asset", "asset__asset_type").order_by("asset__asset_type__asset_group", "asset__asset_code")
 
     import openpyxl
+    from apps.common.spreadsheet_text import write_excel_value
     from openpyxl.styles import Font, Alignment
 
     wb = openpyxl.Workbook()
@@ -294,6 +295,11 @@ def inventory_session_export_excel(request, pk):
     from django.utils import timezone
     filename = export_name("BB_KiemKeTaiSan", session.session_name, timezone.localtime(session.inventory_datetime).date(), "xlsx")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    # This export contains labels and user data only; it creates no formulas.
+    for cells in ws:
+        for cell in cells:
+            if isinstance(cell.value, str):
+                write_excel_value(cell, cell.value)
     wb.save(response)
     return response
 

@@ -9,6 +9,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.workbook.properties import CalcProperties
+from apps.common.spreadsheet_text import write_excel_value
 
 from .rendering import INTERVIEW_KEYS, TEST_KEYS, display
 
@@ -265,10 +266,7 @@ def _cell(ws, row, column, value, *, header=False, formula=False):
         cell.value = value
         cell.number_format = "#,##0.####"
     else:
-        cell.value = display(value, placeholder=False)
-        # Prevent Excel formula injection without changing visible text.
-        if not formula:
-            cell.data_type = "s"
+        write_excel_value(cell, display(value, placeholder=False), formula=formula)
     cell.font = Font(name="Arial", size=10, bold=header)
     cell.alignment = Alignment(vertical="top", wrap_text=True)
     if header:

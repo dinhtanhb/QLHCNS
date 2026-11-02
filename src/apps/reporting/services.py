@@ -9,6 +9,7 @@ from django.utils import timezone
 from apps.hrm.models import Employee
 from apps.contract.models import Contract
 from apps.document.models import OfficialDispatch
+from apps.common.spreadsheet_text import write_excel_value
 
 
 class ComplianceReportNotConfigured(NotImplementedError):
@@ -116,7 +117,7 @@ def generate_employee_list_excel():
     for row in ws.iter_rows():
         for cell in row:
             if isinstance(cell.value, str):
-                cell.data_type = "s"
+                write_excel_value(cell, cell.value)
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
@@ -178,7 +179,7 @@ def generate_expiring_contracts_excel(days_threshold=60):
     for row in ws.iter_rows():
         for cell in row:
             if isinstance(cell.value, str):
-                cell.data_type = "s"
+                write_excel_value(cell, cell.value)
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
@@ -253,7 +254,7 @@ def generate_dispatch_book_excel(dispatch_type="Incoming", year=None, queryset=N
     for row in ws.iter_rows():
         for cell in row:
             if isinstance(cell.value, str):
-                cell.data_type = "s"
+                write_excel_value(cell, cell.value)
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
