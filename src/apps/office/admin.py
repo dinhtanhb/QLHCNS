@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.core.exceptions import ValidationError, PermissionDenied
 from .services import issue_supply_request
 from apps.common.admin import BaseAuditAdmin
+from apps.security.approval_rules import IndependentApprovalAdminMixin
 from .models import (
     IncomingDocument, OutgoingDocument, MeetingRoom, Vehicle,
     RoomBooking, VehicleBooking, SupplyItem, SupplyRequest, SupplyRequestItem, SealUsageLog,
@@ -37,14 +38,14 @@ admin.site.register(Vehicle, ResourceAdmin)
 
 
 @admin.register(RoomBooking)
-class RoomBookingAdmin(BaseAuditAdmin):
+class RoomBookingAdmin(IndependentApprovalAdminMixin, BaseAuditAdmin):
     list_display = ("room", "employee", "start_time", "end_time", "status")
     view_roles = OFFICE_ROLES
     edit_roles = OFFICE_ROLES  # nhân viên tự đặt qua Portal, Admin chỉ để HR sửa khi cần
 
 
 @admin.register(VehicleBooking)
-class VehicleBookingAdmin(BaseAuditAdmin):
+class VehicleBookingAdmin(IndependentApprovalAdminMixin, BaseAuditAdmin):
     list_display = ("vehicle", "employee", "start_time", "end_time", "status")
     view_roles = OFFICE_ROLES
     edit_roles = OFFICE_ROLES
@@ -64,7 +65,7 @@ class SupplyRequestItemInline(admin.TabularInline):
 
 
 @admin.register(SupplyRequest)
-class SupplyRequestAdmin(BaseAuditAdmin):
+class SupplyRequestAdmin(IndependentApprovalAdminMixin, BaseAuditAdmin):
     list_display = ("request_no", "employee", "request_date", "status")
     list_filter = ("status",)
     inlines = [SupplyRequestItemInline]

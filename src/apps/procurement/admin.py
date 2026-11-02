@@ -1,5 +1,6 @@
 from django.contrib import admin
 from apps.common.admin import BaseAuditAdmin
+from apps.security.approval_rules import IndependentApprovalAdminMixin
 from .models import ProcurementRequest, ProcurementItem, ProcurementApproval
 
 
@@ -10,7 +11,7 @@ class ProcurementItemInline(admin.TabularInline):
 
 
 @admin.register(ProcurementRequest)
-class ProcurementRequestAdmin(BaseAuditAdmin):
+class ProcurementRequestAdmin(IndependentApprovalAdminMixin, BaseAuditAdmin):
     list_display = ("request_no", "department", "requested_by", "request_date", "status")
     list_filter = ("status", "department")
     inlines = [ProcurementItemInline]

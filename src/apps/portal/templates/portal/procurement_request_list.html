@@ -74,7 +74,9 @@
                         </td>
                         {% if can_approve %}
                         <td>
-                            {% if r.status == "Pending" %}
+                            {% if r.status == "Pending" and r|ui_request_made_by:request.user %}
+                            <span>Đề nghị của bạn cần người duyệt khác cùng quyền.</span>
+                            {% elif r.status == "Pending" %}
                             <div class="ui-admin-inline">
                                 <form method="post" action="{% url 'portal:procurement_request_approve' r.pk %}" data-ui-form>{% include "ui/error_summary.html" %}
                                     {% csrf_token %}<input type="hidden" name="decision" value="Approved">

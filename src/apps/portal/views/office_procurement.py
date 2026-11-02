@@ -4,6 +4,7 @@ from django import forms
 from django.db import transaction
 from django.views.decorators.http import require_POST
 from apps.security.permissions import has_permission
+from apps.security.approval_rules import require_independent_approver
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
@@ -61,7 +62,7 @@ def room_booking_create(request):
         )
         booking.full_clean()
         booking.save()
-        for approver in _office_request_approvers():
+        for approver in _office_request_approvers().exclude(pk=employee.pk):
             notify(
                 approver, "office", "Có yêu cầu đặt phòng họp chờ duyệt",
                 f"{employee.full_name} đề nghị đặt {booking.room} "
@@ -120,6 +121,7 @@ def room_booking_approve(request, pk):
                 # Phòng bị đổi giữa hai lần đọc: khóa đang giữ không bảo vệ đúng
                 # tài nguyên, phải tải lại thay vì duyệt nhầm.
                 raise ValidationError("Phòng họp đã thay đổi. Tải lại yêu cầu trước khi duyệt.")
+            require_independent_approver(booking, request.user)
             booking.status = decision
             booking.modified_by = request.user
             # ResourceBookingSaveMixin khóa lại tài nguyên và chạy full_clean()
@@ -166,7 +168,7 @@ def vehicle_booking_create(request):
         )
         booking.full_clean()
         booking.save()
-        for approver in _office_request_approvers():
+        for approver in _office_request_approvers().exclude(pk=employee.pk):
             notify(
                 approver, "office", "Có yêu cầu đặt xe chờ duyệt",
                 f"{employee.full_name} đề nghị đặt xe đi {booking.destination} "
@@ -221,6 +223,7 @@ def vehicle_booking_approve(request, pk):
                 # Xe bị đổi giữa hai lần đọc: khóa đang giữ không bảo vệ đúng
                 # tài nguyên, phải tải lại thay vì duyệt nhầm.
                 raise ValidationError("Xe đã thay đổi. Tải lại yêu cầu trước khi duyệt.")
+            require_independent_approver(booking, request.user)
             booking.status = decision
             booking.modified_by = request.user
             # ResourceBookingSaveMixin khóa lại tài nguyên và chạy full_clean()
@@ -286,7 +289,7 @@ def supply_request_create(request):
                 SupplyRequestItem.objects.create(
                     supply_request=supply_request, item_id=item_id, quantity_requested=qty, created_by=request.user,
                 )
-        for approver in _office_request_approvers():
+        for approver in _office_request_approvers().exclude(pk=employee.pk):
             notify(
                 approver, "office", "Có đề nghị cấp VPP chờ duyệt",
                 f"{employee.full_name} gửi đề nghị {supply_request.request_no}.",
@@ -325,6 +328,7 @@ def supply_request_approve(request, pk):
             supply_request = get_object_or_404(
                 SupplyRequest.objects.select_for_update(), pk=pk, status="Pending"
             )
+            require_independent_approver(supply_request, request.user)
             supply_request.status = decision
             supply_request.modified_by = request.user
             supply_request.save(update_fields=["status", "modified_by"])
@@ -444,7 +448,7 @@ def procurement_request_create(request):
                     procurement_request=proc_request, item_name=name, quantity=qty,
                     estimated_cost=cost or None, created_by=request.user,
                 )
-        for approver in _employees_with_permission("approve_procurement"):
+        for approver in _employees_with_permission("approve_procurement").exclude(pk=employee.pk):
             notify(
                 approver, "procurement", "Có đề nghị mua sắm chờ duyệt",
                 f"{employee.full_name} ({proc_request.department}) gửi đề nghị {proc_request.request_no}.",
@@ -476,6 +480,7 @@ def procurement_request_approve(request, pk):
             proc_request = get_object_or_404(
                 ProcurementRequest.objects.select_for_update(), pk=pk, status="Pending"
             )
+            require_independent_approver(proc_request, request.user)
             proc_request.status = decision
             proc_request.modified_by = request.user
             proc_request.save(update_fields=["status", "modified_by"])
@@ -512,4 +517,3 @@ def procurement_request_mark_purchased(request, pk):
     except Exception as e:
         _friendly_error(request, e, "Không thể cập nhật đề nghị mua sắm.")
     return redirect("portal:procurement_request_list")
-

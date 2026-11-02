@@ -10,6 +10,12 @@ from django.templatetags.static import static
 
 register = template.Library()
 
+
+@register.filter
+def ui_request_made_by(obj, user):
+    from apps.security.approval_rules import request_made_by
+    return request_made_by(obj, user)
+
 @register.simple_tag
 def asset(path):
     """Return static URL with content-based ?v=<sha1-hash>."""

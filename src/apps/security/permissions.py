@@ -26,6 +26,8 @@ CBDA = "CBDA"
 # AI ĐƯỢC LÀM GÌ — bảng duy nhất, sửa ở đây là áp dụng toàn hệ thống
 # ------------------------------------------------------------------
 PERMISSION_MATRIX = {
+    # FIX-C 2026-11-02: office/procurement maker-checker is enforced separately
+    # by approval_rules, including superusers; leave HR_MANAGER/DIRECTOR unchanged.
     # Pending leave cancellation is owner-only in leave.services (no role escalation).
     # Nghỉ phép
     "approve_leave": (HR_MANAGER, DEPT_MANAGER, DIRECTOR),
@@ -137,7 +139,7 @@ def get_role_name(user):
 
 
 def has_permission(user, permission):
-    """Tài khoản có quyền này không. Superuser luôn có mọi quyền."""
+    """Role grant only; object/workflow rules (e.g. maker-checker) still apply."""
     if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
         return False
     if getattr(user, "is_superuser", False):

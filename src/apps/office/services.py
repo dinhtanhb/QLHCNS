@@ -12,6 +12,9 @@ def issue_supply_request(pk, *, actor, approve_first=False):
     if not actor.is_active or not has_permission(actor, "approve_office_request"):
         raise PermissionDenied
     request = SupplyRequest.objects.select_for_update().get(pk=pk)
+    if approve_first:
+        from apps.security.approval_rules import require_independent_approver
+        require_independent_approver(request, actor)
     expected = "Pending" if approve_first else "Approved"
     if request.status != expected:
         raise ValidationError("Đề nghị không còn ở trạng thái được phép cấp phát.")

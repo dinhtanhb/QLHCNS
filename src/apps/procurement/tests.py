@@ -104,7 +104,15 @@ class ProcurementViewPermissionTests(ProcurementTestBase):
             procurement_request=request, item_name="Máy tính", quantity=1,
             estimated_cost=Decimal("15000000"),
         )
-        self.client.force_login(self.make_user("FINANCE_OFFICER", "pro-approver"))
+        approver = self.make_user("FINANCE_OFFICER", "pro-approver")
+        other_employee = Employee.objects.get(pk=self.employee.pk)
+        other_employee.pk = None
+        other_employee.employee_code = other_employee.national_id = "PRO-CHECKER"
+        other_employee.company_email = "pro-checker@example.test"
+        other_employee.save()
+        approver.employee = other_employee
+        approver.save(update_fields=["employee"])
+        self.client.force_login(approver)
 
         response = self.client.get(reverse("portal:procurement_request_list"))
 
