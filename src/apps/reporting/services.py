@@ -67,7 +67,7 @@ def _auto_fit_columns(ws):
         ws.column_dimensions[col_letter].width = min(max(max_len + 4, 12), 45)
 
 
-def generate_employee_list_excel():
+def generate_employee_list_excel(*, user=None):
     """Xuất danh sách nhân sự toàn Trung tâm sang Excel."""
     wb = Workbook()
     ws = wb.active
@@ -103,7 +103,8 @@ def generate_employee_list_excel():
         ws.cell(row=current_row, column=3, value=emp.full_name)
         ws.cell(row=current_row, column=4, value=emp.get_gender_display()).alignment = Alignment(horizontal="center")
         ws.cell(row=current_row, column=5, value=emp.date_of_birth.strftime("%d/%m/%Y") if emp.date_of_birth else "").alignment = Alignment(horizontal="center")
-        ws.cell(row=current_row, column=6, value=emp.national_id).alignment = Alignment(horizontal="center")
+        from apps.common.identity_export import spreadsheet_national_id
+        ws.cell(row=current_row, column=6, value=spreadsheet_national_id(emp.national_id, user)).alignment = Alignment(horizontal="center")
         ws.cell(row=current_row, column=7, value=emp.department.department_name if emp.department else "")
         ws.cell(row=current_row, column=8, value=emp.position.position_name if emp.position else "")
         ws.cell(row=current_row, column=9, value=emp.join_date.strftime("%d/%m/%Y") if emp.join_date else "").alignment = Alignment(horizontal="center")
@@ -259,4 +260,3 @@ def generate_dispatch_book_excel(dispatch_type="Incoming", year=None, queryset=N
     wb.save(output)
     output.seek(0)
     return output
-

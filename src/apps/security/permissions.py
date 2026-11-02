@@ -72,6 +72,9 @@ PERMISSION_MATRIX = {
     "manage_hr": (HR_MANAGER, HR_OFFICER),
     "view_all_employees": (HR_MANAGER, HR_OFFICER, DIRECTOR),
     "export_employee_data": (HR_MANAGER, HR_OFFICER, DIRECTOR, FINANCE_OFFICER),
+    # Owner decision 2026-11-02 (F-05): full CCCD in spreadsheets is a
+    # separate explicit grant. Superuser retains the central override below.
+    "export_full_national_id": (HR_MANAGER,),
     "view_employee_compensation": (HR_MANAGER, HR_OFFICER, DIRECTOR),
     "submit_profile_change_request": (
         EMPLOYEE, DEPT_MANAGER, HR_OFFICER, HR_MANAGER, DIRECTOR, FINANCE_OFFICER,

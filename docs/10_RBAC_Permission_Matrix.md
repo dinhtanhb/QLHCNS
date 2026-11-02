@@ -6,6 +6,7 @@
 - Payroll và tạo đơn nghỉ dùng `EMPLOYED_STATUSES`: Active, Probation, OnLeave. Resigned và trạng thái không thuộc tập này không đủ điều kiện; chủ dự án xác nhận bỏ cả ngoại lệ tạo lương kỳ cuối cho Resigned. Không thay EmployeeSalary hoặc hệ số; OnLeave dùng ngày không lương từ tổng hợp chấm công Approved theo công thức hiện hành. Kế toán cần xác nhận dữ liệu tổng hợp trước khóa kỳ.
 - Mua sắm, VPP, đặt phòng và đặt xe: giữ nguyên vai trò có quyền, nhưng người tạo hoặc nhân viên chủ đề nghị không được tự duyệt/từ chối, kể cả superuser. Người khác cùng quyền vẫn xử lý được. Nếu chỉ có một người có quyền, phải phân công người thứ hai qua quy trình quản trị, không tự cấp ngoại lệ. Không đổi tự duyệt nghỉ phép của HR_MANAGER/DIRECTOR.
 - Chủ đơn được hủy đơn nghỉ Pending bằng POST có CSRF trên web; API dùng bearer theo khuôn hiện có. Khóa đơn và kiểm trạng thái trong transaction; người khác hoặc đơn Approved/Rejected/Cancelled không được hủy. Quỹ phép tính giữ chỗ từ Pending nên Cancelled giải phóng giữ chỗ, không cộng quỹ thủ công. Ghi SecurityEvent chỉ metadata.
+- Xuất Excel có CCCD: mặc định che chỉ giữ bốn ký tự cuối (`********1234`), giá trị ngắn hơn bốn che toàn bộ. Quyền riêng `export_full_national_id` chỉ HR_MANAGER trong ma trận hiện tại; superuser giữ override trung tâm. HR_OFFICER, DIRECTOR, FINANCE_OFFICER xuất được theo quyền cũ nhưng CCCD bị che. Không thay màn hình/nhập liệu/lưu trữ, chưa mã hóa cấp trường.
 
 ## Chính sách đọc tài liệu được chủ dự án duyệt ngày 20/10/2026
 

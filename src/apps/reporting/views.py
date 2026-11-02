@@ -72,7 +72,7 @@ def report_dashboard(request):
 def export_employees(request):
     if not has_permission(request.user, 'export_employee_data'):
         return HttpResponseForbidden("Không có quyền xuất dữ liệu.")
-    excel_stream = generate_employee_list_excel()
+    excel_stream = generate_employee_list_excel(user=request.user)
     response = HttpResponse(
         excel_stream.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
