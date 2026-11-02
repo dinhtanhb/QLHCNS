@@ -1,6 +1,10 @@
 # ROLE BASED ACCESS CONTROL (RBAC)
 # PERMISSION MATRIX DOCUMENT
 
+## Quyết định FIX-C ngày 02/11/2026
+
+- Payroll và tạo đơn nghỉ dùng `EMPLOYED_STATUSES`: Active, Probation, OnLeave. Resigned và trạng thái không thuộc tập này không đủ điều kiện; chủ dự án xác nhận bỏ cả ngoại lệ tạo lương kỳ cuối cho Resigned. Không thay EmployeeSalary hoặc hệ số; OnLeave dùng ngày không lương từ tổng hợp chấm công Approved theo công thức hiện hành. Kế toán cần xác nhận dữ liệu tổng hợp trước khóa kỳ.
+
 ## Chính sách đọc tài liệu được chủ dự án duyệt ngày 20/10/2026
 
 Chính sách này ưu tiên hơn các bảng lịch sử bên dưới cho **tìm, xem và tải**; không tự cấp quyền tạo/sửa/duyệt:

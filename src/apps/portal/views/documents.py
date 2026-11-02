@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from apps.notification.services import notify, notify_many, notify_with_email_draft
 from apps.organization.models import Department
-from apps.hrm.models import Employee
+from apps.hrm.models import Employee, EMPLOYED_STATUSES
 from apps.document.models import Document, DocumentApproval
 from apps.reporting.views import _can_view_reports
 from .common import _friendly_error, _get_employee, _role_code, _paginated_context, _status_tabs
@@ -87,7 +87,7 @@ def document_approve(request, pk):
             )
 
     if document.status == "Approved":
-        notify_many(Employee.objects.filter(employment_status="Active"), "document",
+        notify_many(Employee.objects.filter(employment_status__in=EMPLOYED_STATUSES), "document",
                     "Tài liệu mới ban hành", document.document_name, link="/portal/documents/")
 
     label = "Đã ban hành" if decision == "Approved" else "Đã từ chối"

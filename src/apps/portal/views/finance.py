@@ -21,7 +21,7 @@ from apps.payroll.models import (
     TaxDeductionConfig,
 )
 from apps.common.params import parse_int
-from apps.hrm.models import Employee
+from apps.hrm.models import Employee, EMPLOYED_STATUSES
 import logging
 logger = logging.getLogger(__name__)
 from .common import _friendly_error, _get_employee
@@ -122,11 +122,8 @@ def finance_period_create(request):
 
 
 def _employees_payable_for_period(period):
-    """Return active employees and inactive employees whose last day falls in this period."""
-    return Employee.objects.filter(join_date__lte=period.end_date).filter(
-        models.Q(employment_status="Active")
-        | models.Q(leave_date__gte=period.start_date, leave_date__lte=period.end_date)
-    )
+    """Employed only; owner explicitly removed the resigned final-period exception."""
+    return Employee.objects.filter(join_date__lte=period.end_date, employment_status__in=EMPLOYED_STATUSES)
 
 
 def _effective_salary_map(employees, period):
@@ -314,7 +311,7 @@ def finance_payroll_lock(request, pk):
             Payslip(payroll=payroll, created_by=request.user) for payroll in to_issue
         ])
         period_managers = Employee.objects.filter(
-            employment_status="Active",
+            employment_status__in=EMPLOYED_STATUSES,
             user_account__role__role_code__in=("DIRECTOR", "FINANCE_OFFICER"),
         ).select_related("user_account", "user_account__role").distinct()
         for recipient in period_managers:
@@ -476,5 +473,5 @@ def finance_dependent_list(request):
         return redirect("portal:finance_dependent_list")
     return render(request, "portal/finance_dependent_list.html", {
         "dependents": EmployeeDependent.objects.filter(is_active=True).select_related("employee"),
-        "employees": Employee.objects.filter(employment_status="Active"),
+        "employees": Employee.objects.filter(employment_status__in=EMPLOYED_STATUSES),
     })

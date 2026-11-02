@@ -18,7 +18,7 @@ from apps.asset.models import (
     InventoryMember,
     InventorySession,
 )
-from apps.hrm.models import Employee
+from apps.hrm.models import Employee, EMPLOYED_STATUSES
 from apps.asset.models import AssetAllocation
 from .common import _director_employees, _friendly_error, _get_employee
 @login_required
@@ -159,7 +159,7 @@ def inventory_session_detail(request, pk):
         "uncounted_lines": lines.filter(is_counted=False).count(),
         "line_count": lines.count(),
         "members": session.members.select_related("employee"),
-        "employees": Employee.objects.filter(employment_status="Active") if can_manage_asset else Employee.objects.none(),
+        "employees": Employee.objects.filter(employment_status__in=EMPLOYED_STATUSES) if can_manage_asset else Employee.objects.none(),
         "can_manage_asset": can_manage_asset,
     })
 
@@ -375,7 +375,7 @@ def disposal_request_detail(request, pk):
     return render(request, "portal/disposal_request_detail.html", {
         "req": disposal_request, "members": disposal_request.members.select_related("employee"),
         "items": disposal_request.items.select_related("asset"),
-        "employees": Employee.objects.filter(employment_status="Active") if can_manage_asset else Employee.objects.none(),
+        "employees": Employee.objects.filter(employment_status__in=EMPLOYED_STATUSES) if can_manage_asset else Employee.objects.none(),
         "assets": Asset.objects.exclude(status="Disposed") if can_manage_asset else Asset.objects.none(),
         "directors": _director_employees() if can_manage_asset else Employee.objects.none(),
         "can_approve": _can_approve_disposal(request),

@@ -287,8 +287,8 @@ class PortalSensitiveWorkflowTests(TestCase):
         self.assertTrue(Payslip.objects.filter(payroll=payroll).exists())
         self.assertContains(self.client.get(reverse("portal:payslip_list")), "10/2026")
 
-    def test_payroll_generation_includes_employee_leaving_during_the_period(self):
-        """I6: người nghỉ giữa kỳ vẫn cần có dòng lương để chốt phần thời gian đã làm."""
+    def test_payroll_generation_excludes_resigned_employee_even_in_final_period(self):
+        """FIX-C owner decision: remove the former I6 final-period exception."""
         leaver = self.make_employee("PORTAL-PAYROLL-LEAVER")
         leaver.join_date = date(2020, 1, 1)
         leaver.leave_date = date(2025, 10, 15)
@@ -307,13 +307,13 @@ class PortalSensitiveWorkflowTests(TestCase):
 
         preview = self.client.get(reverse("portal:finance_payroll_run", args=(period.pk,)))
         missing_ids = set(preview.context["missing_employees"].values_list("pk", flat=True))
-        self.assertIn(leaver.pk, missing_ids)
+        self.assertNotIn(leaver.pk, missing_ids)
 
         self.client.post(reverse("portal:finance_payroll_generate", args=(period.pk,)))
 
-        self.assertTrue(
+        self.assertFalse(
             Payroll.objects.filter(payroll_period=period, employee=leaver).exists(),
-            "Nhân viên có ngày nghỉ việc trong kỳ không được bỏ khỏi kỳ lương giữa tháng.",
+            "FIX-C: Resigned is excluded even when the last working day is in this period.",
         )
         completed_preview = self.client.get(reverse("portal:finance_payroll_run", args=(period.pk,)))
         completed_missing_ids = set(
@@ -321,9 +321,9 @@ class PortalSensitiveWorkflowTests(TestCase):
         )
         self.assertNotIn(leaver.pk, completed_missing_ids)
         self.client.post(reverse("portal:finance_payroll_generate", args=(period.pk,)))
-        self.assertEqual(Payroll.objects.filter(payroll_period=period, employee=leaver).count(), 1)
+        self.assertEqual(Payroll.objects.filter(payroll_period=period, employee=leaver).count(), 0)
 
-    def test_payroll_generation_includes_employees_leaving_on_period_boundaries(self):
+    def test_payroll_generation_excludes_resigned_employees_on_period_boundaries(self):
         period = PayrollPeriod.objects.create(
             payroll_month=10, payroll_year=2025,
             start_date=date(2025, 10, 1), end_date=date(2025, 10, 31), status="Open",
@@ -355,7 +355,7 @@ class PortalSensitiveWorkflowTests(TestCase):
 
         for employee in (first_day_leaver, last_day_leaver):
             with self.subTest(leave_date=employee.leave_date):
-                self.assertTrue(Payroll.objects.filter(payroll_period=period, employee=employee).exists())
+                self.assertFalse(Payroll.objects.filter(payroll_period=period, employee=employee).exists())
 
     def test_payroll_generation_excludes_employee_who_left_before_period(self):
         period = PayrollPeriod.objects.create(

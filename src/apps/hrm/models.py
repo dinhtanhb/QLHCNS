@@ -8,6 +8,10 @@ def upload_to_profile_change(instance, filename):
     return build_upload_path("profile-change-requests", filename)
 
 
+# Owner decision 2026-11-02: employed for payroll and leave eligibility.
+EMPLOYED_STATUSES = ("Active", "Probation", "OnLeave")
+
+
 class Employee(BaseAuditModel):
     GENDER_CHOICES = [("Male", "Nam"), ("Female", "Nữ"), ("Other", "Khác")]
     EMPLOYMENT_STATUS_CHOICES = [
