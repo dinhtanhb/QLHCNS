@@ -73,7 +73,7 @@ Chạy full SQLite và SQL Server cô lập, audit dependency, framework/migrati
 frontend build và 6 ca backup mô phỏng. Sửa UI thì thử trình duyệt cô lập.
 Cập nhật docs/PROJECT_WORK_LOG.md trong một mục của đợt.
 Được commit/push các tệp thuộc nhiệm vụ lên main, rồi xác nhận GitHub Actions
-của đúng SHA cuối: cả backend, frontend, backup-command-tests đều success.
+của đúng SHA cuối: cả backend, frontend, mobile, backup-command-tests đều success.
 Không deploy production hay migrate DB đang dùng trong nhiệm vụ này.
 Báo tệp đã sửa, bằng chứng kiểm thử, SHA/link CI, phần chưa kiểm tra và blocker.
 ```
@@ -104,7 +104,7 @@ Kiểm kê `src/apps` mỗi lần; danh sách dưới là điểm xuất phát, 
 - **Office/asset/procurement/project/activity/planning/task/KPI**: tạo-duyệt-từ chối-hủy, gửi trùng/gửi lại, chủ thể có quyền và trạng thái không hợp lệ.
 - **Portal/security/document/notification/reporting**: Axes và login, RBAC ở máy chủ, truy cập đối tượng bằng URL/ID trực tiếp, CSRF, upload/download, lọc báo cáo và N+1.
 - **Common/config/migrations**: bảng/migration thiếu, FK/unique/null, dữ liệu cũ, tương thích SQLite/SQL Server, cấu hình production và tích hợp M365.
-- **Template/frontend/static/ops/CI**: số theo locale, CSS build, responsive, backup/restore và đúng ba job CI hiện có.
+- **Template/frontend/static/ops/CI**: số theo locale, CSS build, responsive, backup/restore và đúng bốn job CI hiện có (backend, frontend, mobile, backup-command-tests).
 
 Theo URL/view qua form/service/model đến template/test; đọc caller và guard.
 Mỗi finding có path:line hiện tại, trigger, tác động, guard đã kiểm và cách tái
@@ -333,7 +333,7 @@ gh run view <RUN_ID> --json headSha,status,conclusion,jobs,url
 gh run view <RUN_ID> --log-failed
 ```
 
-Thay `<RUN_ID>` bằng ID thật. Nếu CLI lỗi 401 hoặc thiếu quyền, dùng connector/trang Actions bằng tài khoản có quyền; đối chiếu `headSha` đúng HEAD. Cả ba job phải **completed/success**, không chỉ một job xanh. CI hiện dùng SQLite, không chứng minh SQL Server/Windows/IIS/M365 đã đạt. Không có run, bị cancel, queued hoặc in_progress phải ghi chưa đạt/chưa xác nhận đúng trạng thái.
+Thay `<RUN_ID>` bằng ID thật. Nếu CLI lỗi 401 hoặc thiếu quyền, dùng connector/trang Actions bằng tài khoản có quyền; đối chiếu `headSha` đúng HEAD. Cả bốn job (backend, frontend, mobile, backup-command-tests) phải **completed/success**, không chỉ một job xanh. CI hiện dùng SQLite, không chứng minh SQL Server/Windows/IIS/M365 đã đạt. Không có run, bị cancel, queued hoặc in_progress phải ghi chưa đạt/chưa xác nhận đúng trạng thái.
 
 ## Điều kiện kết thúc và báo cáo
 

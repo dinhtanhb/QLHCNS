@@ -22,6 +22,8 @@ __pycache__/
 # --- Cơ sở dữ liệu ---
 db.sqlite3
 db.sqlite3-journal
+*.sqlite3
+*.sqlite3-journal
 *.db
 *.bak
 # Artifact SQLite khi chạy test với tên DB 'qlhcns' (tên DB SQL Server thật) — sinh nhầm file rỗng trong src/.
@@ -55,6 +57,9 @@ graphify-out/
 *.swp
 node_modules/
 /mobile/.cxx/
+*.apk
+*.jks
+*.keystore
 # Cấu hình và checkpoint riêng của công cụ; không phải tài liệu dự án.
 /.qoder/settings.local.json
 /.qoder/repowiki/en/meta/repowiki-metadata.json
