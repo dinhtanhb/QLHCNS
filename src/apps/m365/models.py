@@ -18,6 +18,9 @@ class CompanyMedia(BaseAuditModel):
         ("Video", "Video"),
     ]
 
+    STATUS_CHOICES = [("Draft", "Nháp"), ("Published", "Đã xuất bản")]
+    status = models.CharField("Trạng thái", max_length=9, choices=STATUS_CHOICES, default="Draft", db_column="Status")
+
     title = models.CharField("Tiêu đề", max_length=300, db_column="Title")
     description = models.CharField(
         "Mô tả", max_length=1000, null=True, blank=True, db_column="Description"

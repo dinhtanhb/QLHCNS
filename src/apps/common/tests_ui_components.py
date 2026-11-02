@@ -19,7 +19,7 @@ class SharedComponentTests(SimpleTestCase):
                     family=model._meta.label_lower+":"+field.name
                     self.assertEqual({k:v["label"] for k,v in STATUS_BADGES[family].items()},dict(field.flatchoices))
                     covered+=1
-        self.assertEqual(covered,32)
+        self.assertEqual(covered,33)  # CompanyMedia publication status (FIX-C).
 
     def test_badges_include_text_icon_and_safe_unknown_fallback(self):
         for family,states in STATUS_BADGES.items():

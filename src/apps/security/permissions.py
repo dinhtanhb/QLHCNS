@@ -70,6 +70,8 @@ PERMISSION_MATRIX = {
     "view_reports": (HR_MANAGER, DIRECTOR),
     # Nhân sự
     "manage_hr": (HR_MANAGER, HR_OFFICER),
+    # F-14 (2026-11-02): existing media editors may also read unpublished drafts.
+    "manage_company_media": (SUPER_ADMIN, HR_MANAGER, HR_OFFICER),
     "view_all_employees": (HR_MANAGER, HR_OFFICER, DIRECTOR),
     "export_employee_data": (HR_MANAGER, HR_OFFICER, DIRECTOR, FINANCE_OFFICER),
     # Owner decision 2026-11-02 (F-05): full CCCD in spreadsheets is a

@@ -208,6 +208,12 @@ STATUS_BADGES["dashboard.contract:expiry"] = {
     "overdue": {"label": "Quá hạn; cần rà soát", "tone": "danger", "icon": "danger"},
 }
 
+STATUS_BADGES["m365.companymedia:status"] = {
+    "Draft": {"label": "Nháp", "tone": "neutral", "icon": "info"},
+    "Published": {"label": "Đã xuất bản", "tone": "success", "icon": "success"},
+}
+
+
 def status_badge(family, code, fallback=""):
     known = STATUS_BADGES.get(family, {}).get(str(code))
     if known:

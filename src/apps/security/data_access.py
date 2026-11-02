@@ -118,6 +118,14 @@ def visible_dispatches_for(user, queryset=None):
     return shared | qs
 
 
+def visible_company_media_for(user, queryset=None):
+    from apps.m365.models import CompanyMedia
+    qs = queryset if queryset is not None else CompanyMedia.objects.all()
+    if not getattr(user, 'is_authenticated', False) or not user.is_active:
+        return qs.none()
+    return qs if has_permission(user, 'manage_company_media') else qs.filter(status='Published')
+
+
 def can_read_file(user, obj):
     if not user.is_authenticated or not user.is_active or obj.is_deleted:
         return False
@@ -149,7 +157,7 @@ def can_read_file(user, obj):
             return has_permission(user, 'approve_profile_change_request')
         return visible_leave_requests_for(user).filter(pk=obj.pk).exists()
     if label == 'm365.companymedia':
-        return True  # Published internal company media, after authentication.
+        return visible_company_media_for(user).filter(pk=obj.pk).exists()
     if label in ('activity.activityproposal', 'task.task'):
         from apps.activity.permissions import can_view_activity
         if obj.activity_id and obj.activity.is_deleted:
