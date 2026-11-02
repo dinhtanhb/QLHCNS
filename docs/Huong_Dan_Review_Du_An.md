@@ -347,9 +347,9 @@ chỉ ghi nhận, không thay cấu hình cache hay giới hạn hiện tại.
 
 `SearchQueryLog` chứa câu hỏi tự do và có thể chứa dữ liệu cá nhân. Lệnh
 `venv\Scripts\python.exe src\manage.py purge_search_logs --days 180` chỉ đếm;
-thêm `--apply` mới xóa cứng. Khuyến nghị chạy thống kê định kỳ, đối chiếu chính
-sách lưu trữ rồi mới phê duyệt xóa. Chủ dự án quyết định số ngày giữ và chu kỳ
-(ví dụ kiểm tra hàng tháng); không tự chạy `--apply` trên dữ liệu vận hành.
+thêm `--apply` mới xóa cứng. Theo quyết định chủ dự án02/11/2026, giữ180 ngày,
+chạy thống kê thủ công hằng tháng rồi trình chủ dự án duyệt từng lượt trước
+khi xóa. Không tự chạy `--apply` trên dữ liệu vận hành; không tự lập lịch xóa.
 Log không lưu kết quả, nhưng session đăng nhập giữ kết quả đầy đủ tối đa 20
 lượt đến hết phiên, có thể chứa tên trong tiêu đề; đổi quyền/tuyến quản lý
 hoặc phiên bản chính sách sẽ xóa lịch sử ở lần truy cập tiếp theo.

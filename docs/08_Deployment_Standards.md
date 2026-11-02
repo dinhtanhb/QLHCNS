@@ -1,5 +1,15 @@
 # DEPLOYMENT & OPERATION STANDARDS
 
+## Quyết định vận hành 02/11/2026
+
+SQLite chỉ dùng phát triển/QA; sản xuất dùng SQL Server. Kiểm nguồn FIX-C xác nhận settings có chốt môi trường production về HTTPS/DEBUG/secret/host nhưng **chưa chặn engine SQLite riêng**. Đây là tiêu chuẩn cần kiểm thủ công trước phát hành; đợt này không thêm chốt cấu hình hoặc xác nhận engine máy chủ đang dùng.
+
+CompanyMedia cần áp migration `m365.0004_companymedia_publication` khi triển khai được duyệt. Migration thêm Draft/Published, mặc định Draft cho bản mới và đánh Published cho mọi bản cũ, kể cả soft-deleted để giữ lịch sử. Chỉ đã áp trên DB thử. Trước deploy: xác nhận đúng đích SQL Server, backup và restore thử, duyệt SQL/kế hoạch; không chạy migrate theo báo cáo này. Hoàn tác schema về0003 làm mất trường trạng thái và mã cũ có thể hiển thị cả nội dung từng là nháp; cần phương án hạn chế truy cập nháp hoặc khôi phục backup đã xác minh trước khi quay lại, không tự rollback dữ liệu.
+
+Chatbot giữ SearchQueryLog 180 ngày. Người phụ trách vận hành chạy thống kê `venv\Scripts\python.exe src\manage.py purge_search_logs --days 180` hằng tháng trên đúng đích được phép; lệnh mặc định chỉ đếm. Trình số lượng và mốc thời gian cho chủ dự án duyệt từng lượt trước khi thêm `--apply` (xóa cứng). FIX-C không chạy --apply và không tạo lịch tự động.
+
+Hạn mức chatbot30 câu/phút/người dùng hiện theo từng tiến trình (cache mặc định). Một worker có thể giữ cache hiện tại; nếu chạy nhiều worker, phải dùng cache chung để hạn mức nhất quán. Chỉ triển khai cache chung khi cấu hình nhiều worker đã được xác nhận; đợt này không đổi settings/cache.
+
 > Áp dụng hiện tại (28/10/2026): chỉ dùng `main` theo [AGENTS.md](../AGENTS.md). SIT Windows dùng Waitress sau reverse proxy HTTPS theo [runbook](Server_Trial_Readiness_2026-09-27.md); không dùng `runserver` làm máy chủ. JWT/Entra SSO/Teams ở phần thiết kế/checklist cũ chưa được triển khai. Không coi dấu tick mẫu là kết quả kiểm tra thật; bằng chứng và giới hạn ở [PROJECT_WORK_LOG.md](PROJECT_WORK_LOG.md). Mỗi DB/môi trường phải có cấu hình và secrets riêng, xác nhận đích và backup/restore trước migration.
 
 ## Project
