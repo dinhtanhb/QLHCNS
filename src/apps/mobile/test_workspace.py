@@ -39,12 +39,12 @@ class WorkspaceTests(TestCase):
         self.assertEqual(self.run_workspace('/admin/').status_code, 403)
         self.assertEqual(self.run_workspace('/portal/tasks/', 'DELETE').status_code, 400)
 
-    def test_expired_during_request_does_not_raise_session_update_error(self):
+    def test_unknown_session_write_failure_does_not_claim_expired_session(self):
         from unittest.mock import patch
         from django.contrib.sessions.backends.base import UpdateError
         self.login_as()
         with patch('django.contrib.sessions.backends.db.SessionStore.save', side_effect=UpdateError):
-            self.assertEqual(self.run_workspace('/portal/tasks/').status_code, 401)
+            self.assertEqual(self.run_workspace('/portal/tasks/').status_code, 503)
 
     def test_page_contract_preserves_forms_and_drops_csrf_and_executable_content(self):
         self.login_as(2)
