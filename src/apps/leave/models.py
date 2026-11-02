@@ -89,6 +89,15 @@ class LeaveRequest(BaseAuditModel):
         return standard_working_days(self.from_date, self.to_date)
 
     def clean(self):
+        from apps.hrm.models import EMPLOYED_STATUSES
+        if self._state.adding and self.employee_id:
+            from django.core.exceptions import ObjectDoesNotExist
+            try:
+                employee = self.employee
+            except (ObjectDoesNotExist, ValueError, TypeError):
+                return  # Field validation reports a missing/invalid employee relation.
+            if employee.employment_status not in EMPLOYED_STATUSES:
+                raise ValidationError('Nhân viên đã nghỉ việc hoặc không còn trạng thái đang làm việc, không thể tạo đơn nghỉ.')
         if not (self.from_date and self.to_date):
             return
 

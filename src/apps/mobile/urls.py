@@ -19,6 +19,7 @@ urlpatterns = [
     path('attendance/', views.attendance, name='attendance'),
     path('leaves/', views.leaves, name='leaves'),
     path('leave-options/', views.leave_options, name='leave_options'),
+    path('leaves/<int:pk>/cancel/', views.leave_cancel, name='leave_cancel'),
     path('approvals/', views.approvals, name='approvals'),
     path('leaves/<int:pk>/decision/', views.decision, name='decision'),
     path('notifications/', views.notifications, name='notifications'),

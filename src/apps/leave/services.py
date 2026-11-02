@@ -3,7 +3,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import models, transaction
 from django.shortcuts import get_object_or_404
 
-from apps.hrm.models import Employee
+from apps.hrm.models import Employee, EMPLOYED_STATUSES
 from apps.notification.services import notify, notify_with_email_draft
 from apps.security.permissions import get_role_code, has_permission
 from .models import LeaveApproval, LeaveRequest
@@ -33,6 +33,8 @@ def submit_leave(user, *, leave_type, from_date, to_date, reason=''):
     if not employee:
         raise PermissionDenied('Tài khoản chưa gắn hồ sơ nhân viên, không thể tạo đơn.')
     employee = Employee.objects.select_for_update().get(pk=employee.pk)
+    if employee.employment_status not in EMPLOYED_STATUSES:
+        raise ValidationError('Nhân viên đã nghỉ việc hoặc không còn trạng thái đang làm việc, không thể tạo đơn nghỉ.')
     leave = LeaveRequest(employee=employee, leave_type_id=leave_type,
         from_date=from_date, to_date=to_date, reason=reason, created_by=user)
     leave.full_clean()
@@ -41,6 +43,23 @@ def submit_leave(user, *, leave_type, from_date, to_date, reason=''):
         notify(approver, 'leave', 'Có đơn nghỉ phép chờ duyệt',
             f'{employee.full_name} xin nghỉ {leave.from_date} - {leave.to_date}.',
             link='/portal/leave/approvals/', created_by=user)
+    return leave
+
+
+@transaction.atomic
+def cancel_leave(user, pk):
+    employee = employee_for(user)
+    leave = get_object_or_404(LeaveRequest.objects.select_for_update(), pk=pk)
+    if not employee or leave.employee_id != employee.pk:
+        raise PermissionDenied('Anh/chị chỉ được hủy đơn nghỉ của chính mình.')
+    if leave.status != 'Pending':
+        raise ValidationError('Chỉ được hủy đơn đang chờ duyệt.')
+    leave.status = 'Cancelled'
+    leave.modified_by = user
+    leave.save(update_fields=['status', 'modified_by', 'modified_date'])
+    # Reservations are derived from Pending rows; never increment the balance manually.
+    from apps.security.models import SecurityEvent
+    SecurityEvent.objects.create(user=user, action='leave_cancel', resource='leave.LeaveRequest', record_id=str(leave.pk))
     return leave
 
 

@@ -266,6 +266,13 @@ def attendance(request):
         'status_label': row.get_status_display()})
 
 
+@endpoint('POST')
+def leave_cancel(request, pk):
+    from apps.leave.services import cancel_leave
+    cancel_leave(request.user, pk)
+    return reply({'ok': True})
+
+
 @endpoint('GET')
 def leave_options(request):
     employee = employee_for(request.user)

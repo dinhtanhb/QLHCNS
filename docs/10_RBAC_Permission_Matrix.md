@@ -4,6 +4,7 @@
 ## Quyết định FIX-C ngày 02/11/2026
 
 - Payroll và tạo đơn nghỉ dùng `EMPLOYED_STATUSES`: Active, Probation, OnLeave. Resigned và trạng thái không thuộc tập này không đủ điều kiện; chủ dự án xác nhận bỏ cả ngoại lệ tạo lương kỳ cuối cho Resigned. Không thay EmployeeSalary hoặc hệ số; OnLeave dùng ngày không lương từ tổng hợp chấm công Approved theo công thức hiện hành. Kế toán cần xác nhận dữ liệu tổng hợp trước khóa kỳ.
+- Chủ đơn được hủy đơn nghỉ Pending bằng POST có CSRF trên web; API dùng bearer theo khuôn hiện có. Khóa đơn và kiểm trạng thái trong transaction; người khác hoặc đơn Approved/Rejected/Cancelled không được hủy. Quỹ phép tính giữ chỗ từ Pending nên Cancelled giải phóng giữ chỗ, không cộng quỹ thủ công. Ghi SecurityEvent chỉ metadata.
 
 ## Chính sách đọc tài liệu được chủ dự án duyệt ngày 20/10/2026
 

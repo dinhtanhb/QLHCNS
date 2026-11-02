@@ -39,6 +39,7 @@ urlpatterns = [
     path("leave/", views.leave_list, name="leave_list"),
     path("leave/create/", views.leave_create, name="leave_create"),
     path("leave/approvals/", views.leave_approval_list, name="leave_approval_list"),
+    path("leave/<int:pk>/cancel/", views.leave_cancel, name="leave_cancel"),
     path("leave/approvals/<int:pk>/", views.leave_approve, name="leave_approve"),
     path("payslip/", views.payslip_list, name="payslip_list"),
     path("payslip/<int:pk>/pdf/", views.payslip_pdf, name="payslip_pdf"),

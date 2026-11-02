@@ -26,6 +26,7 @@ CBDA = "CBDA"
 # AI ĐƯỢC LÀM GÌ — bảng duy nhất, sửa ở đây là áp dụng toàn hệ thống
 # ------------------------------------------------------------------
 PERMISSION_MATRIX = {
+    # Pending leave cancellation is owner-only in leave.services (no role escalation).
     # Nghỉ phép
     "approve_leave": (HR_MANAGER, DEPT_MANAGER, DIRECTOR),
     # Duyệt đơn của MỌI phòng ban (vai trò khác chỉ duyệt trong phòng mình quản lý)

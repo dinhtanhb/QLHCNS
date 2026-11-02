@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from apps.attendance.models import Attendance
 from apps.leave.models import LeaveRequest, LeaveType
-from apps.leave.services import decide_leave, leave_approvers_for, submit_leave
+from apps.leave.services import cancel_leave, decide_leave, leave_approvers_for, submit_leave
 from apps.notification.services import notify, notify_with_email_draft
 from decimal import Decimal
 import calendar as calendar_module
@@ -118,6 +118,19 @@ def leave_approval_list(request):
     qs = _approvable_leave_requests(request)
 
     return render(request, "portal/leave_approval_list.html", {"requests": qs.order_by("from_date")})
+
+
+@login_required
+@require_POST
+def leave_cancel(request, pk):
+    try:
+        cancel_leave(request.user, pk)
+        messages.success(request, 'Đã hủy đơn nghỉ đang chờ duyệt.')
+    except PermissionDenied as error:
+        messages.error(request, str(error))
+    except ValidationError as error:
+        _friendly_error(request, error, 'Không thể hủy đơn.')
+    return redirect('portal:leave_list')
 
 
 @login_required

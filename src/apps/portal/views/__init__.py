@@ -35,6 +35,7 @@ from .attendance import (
     _leave_balance,
     leave_list,
     leave_create,
+    leave_cancel,
     leave_approval_list,
     leave_approve,
     _leave_days_in_month,
