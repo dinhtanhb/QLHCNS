@@ -189,7 +189,8 @@ def my_profile(request):
     employee = employee_for(request.user)
     if not employee:
         return reply({'profile': None, 'salary': None, 'contract': None})
-    salary = employee.salaries.filter(status='Active').order_by('-effective_date').first()
+    from apps.payroll.selectors import salary_for
+    salary = salary_for(employee, timezone.localdate())
     contract = employee.contracts.select_related('contract_type').order_by('-start_date').first()
     return reply({'profile': {
         'full_name': employee.full_name, 'employee_code': employee.employee_code,

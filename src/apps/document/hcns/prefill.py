@@ -54,12 +54,11 @@ def _employee_template_data(user, spec, employee):
         values["_manager_pk"] = employee.manager_id
         values["_manager_position_pk"] = employee.manager.position_id
     if keys & {"salary", "salary_note"} and has_permission(user, "view_employee_compensation"):
-        from apps.payroll.models import EmployeeSalary
+        from apps.payroll.selectors import salaries_on
         today = timezone.localdate()
         # A scheduled raise closes the prior interval immediately. Its previous
         # salary still applies today until that interval's recorded end date.
-        salaries = list(EmployeeSalary.objects.filter(employee=employee, status__in=("Active", "Ended"), effective_date__lte=today)
-            .filter(Q(end_date__isnull=True) | Q(end_date__gte=today)).order_by("-effective_date", "-pk")[:2])
+        salaries = list(salaries_on(today, employee.salaries.all()).order_by("-effective_date", "-pk")[:2])
         if len(salaries) == 1:
             amount = salaries[0].current_basic_salary
             values["salary"] = amount.to_integral_value() if amount == amount.to_integral_value() else amount

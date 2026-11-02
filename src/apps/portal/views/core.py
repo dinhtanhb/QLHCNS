@@ -169,6 +169,7 @@ def dashboard(request):
 
 @login_required
 def profile(request):
+    from apps.payroll.selectors import salary_for
     employee = _get_employee(request)
     context = {"employee": employee}
     if employee:
@@ -177,7 +178,7 @@ def profile(request):
             "promotions": employee.promotions.select_related("old_position", "new_position"),
             "rewards": employee.rewards.all(),
             "disciplines": employee.disciplines.all(),
-            "current_salary": employee.salaries.filter(status="Active").order_by("-effective_date").first(),
+            "current_salary": salary_for(employee, timezone.localdate()),
             "current_contract": employee.contracts.order_by("-start_date").first(),
         })
     return render(request, "portal/profile.html", context)
@@ -304,4 +305,3 @@ def profile_change_request_attachment(request, pk):
         raise Http404
     from apps.security.files import protected_file_response
     return protected_file_response(request, item.attachment, obj=item)
-

@@ -131,21 +131,9 @@ def _employees_payable_for_period(period):
 
 def _effective_salary_map(employees, period):
     """Use period-start salary, or joining-date salary for a new mid-period hire."""
-    employee_ids = [employee.pk for employee in employees]
+    from apps.payroll.selectors import salary_amounts_for_dates
     effective_dates = {employee.pk: max(period.start_date, employee.join_date) for employee in employees}
-    salary_map = {}
-    for salary in (
-        EmployeeSalary.objects.filter(
-            employee_id__in=employee_ids,
-            effective_date__lte=period.end_date,
-        )
-        .filter(models.Q(end_date__isnull=True) | models.Q(end_date__gte=period.start_date))
-        .order_by("effective_date", "pk")
-    ):
-        effective_date = effective_dates[salary.employee_id]
-        if salary.effective_date <= effective_date and (salary.end_date is None or salary.end_date >= effective_date):
-            salary_map[salary.employee_id] = salary.current_basic_salary
-    return salary_map
+    return salary_amounts_for_dates(effective_dates)
 
 
 @login_required
@@ -420,7 +408,9 @@ def finance_salary_list(request):
     if not _can_manage_finance(request):
         messages.error(request, "Anh/chị không có quyền.")
         return redirect("portal:dashboard")
-    salaries = EmployeeSalary.objects.filter(status="Active").select_related("employee").order_by("employee__full_name")
+    from apps.payroll.selectors import current_salaries
+    from django.utils import timezone
+    salaries = current_salaries(timezone.localdate()).select_related("employee").order_by("employee__full_name", "pk")
     return render(request, "portal/finance_salary_list.html", {"salaries": salaries})
 
 
@@ -487,4 +477,3 @@ def finance_dependent_list(request):
         "dependents": EmployeeDependent.objects.filter(is_active=True).select_related("employee"),
         "employees": Employee.objects.filter(employment_status="Active"),
     })
-

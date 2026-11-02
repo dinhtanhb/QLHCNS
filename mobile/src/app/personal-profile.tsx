@@ -31,7 +31,7 @@ export default function PersonalProfile() {
       <Copy>Quản lý trực tiếp: {p.manager || 'Chưa có'}</Copy><Copy>Email công ty: {p.company_email || 'Chưa có'}</Copy>
       <Copy>Email cá nhân: {p.personal_email || 'Chưa có'}</Copy><Copy>Điện thoại: {p.mobile_phone || 'Chưa có'}</Copy>
       <Copy>Địa chỉ: {p.address || 'Chưa có'}</Copy><Copy>Ngày vào làm: {dateLabel(p.join_date)}</Copy><Copy>{p.employment_status}</Copy></Card> : details ? <Card><Copy>Tài khoản chưa gắn hồ sơ nhân viên.</Copy></Card> : null}
-    {details?.salary ? <Card><Copy title>Lương cơ bản hiện tại</Copy><Copy>{moneyLabel(details.salary.basic)} đồng</Copy><Copy muted>Áp dụng từ {dateLabel(details.salary.effective_date)}</Copy></Card> : null}
+    {details?.salary ? <Card><Copy title>Lương cơ bản hiện tại</Copy><Copy>{moneyLabel(details.salary.basic)} đồng</Copy><Copy muted>Áp dụng từ {dateLabel(details.salary.effective_date)}</Copy></Card> : p ? <Card><Copy title>Lương cơ bản hiện tại</Copy><Copy muted>Chưa có mức lương có hiệu lực.</Copy></Card> : null}
     {details?.contract ? <Card><Copy title>Hợp đồng hiện tại</Copy><Copy>{details.contract.number} · {details.contract.type}</Copy>
       <Copy>Từ {dateLabel(details.contract.start_date)}</Copy><Copy>Đến {details.contract.end_date ? dateLabel(details.contract.end_date) : 'Không xác định thời hạn'}</Copy></Card> : null}
     {p ? <><Copy title>Quá trình công tác</Copy>{kinds.map(item => <Button key={item.key} label={`${kind === item.key ? '✓ ' : ''}${item.label}`} secondary onPress={() => setKind(item.key)} />)}
