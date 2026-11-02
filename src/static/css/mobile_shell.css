@@ -34,6 +34,7 @@
 
 /* Chỉ hiện trên mobile — ẩn hoàn toàn ở desktop */
 .ui-mobile-only { display: none; }
+.ui-tabbar { display: none; }
 
 @media screen and (max-width: 1023px) {
 
