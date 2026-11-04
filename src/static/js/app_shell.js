@@ -48,7 +48,9 @@
         if (tooltipOwner) tooltipOwner.removeAttribute('aria-describedby');
         tooltipOwner = null;
     }
-    function state() {
+    function state(animate = false) {
+        // Animate deliberate desktop changes only, never initial load or a breakpoint change.
+        body.toggleAttribute('data-sidebar-motion', animate && desktop.matches);
         body.dataset.sidebarCollapsed = String(collapsed);
         if (!toggle) return;
         toggle.setAttribute('aria-expanded', String(desktop.matches ? !collapsed : drawerOpen));
@@ -117,7 +119,7 @@
                     try { localStorage.setItem('ihrms-sidebar-collapsed', 'false'); } catch (_) { /* Optional storage. */ }
                     panel.hidden = false;
                     button.setAttribute('aria-expanded', 'true');
-                    hideTooltip(); state();
+                    hideTooltip(); state(true);
                     return;
                 }
                 panel.hidden = !panel.hidden;
@@ -170,7 +172,7 @@
             if (desktop.matches) {
                 collapsed = !collapsed;
                 try { localStorage.setItem('ihrms-sidebar-collapsed', String(collapsed)); } catch (_) { /* UI remains functional. */ }
-                hideTooltip(); state();
+                hideTooltip(); state(true);
             } else drawer(!drawerOpen);
         });
         close.addEventListener('click', () => drawer(false));

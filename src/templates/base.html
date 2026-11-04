@@ -30,7 +30,7 @@
     <a class="ui-skip-link" href="#main-content">Bỏ qua đến nội dung chính</a>
     <header class="ui-topbar" id="ui-topbar">
         <div class="ui-topbar-row">
-            {% if user.is_authenticated %}<button id="mobileNavToggle" class="ui-control" type="button" aria-label="Mở điều hướng" aria-controls="portalSidebar" aria-expanded="false">{% include '_shell_icon.html' with name='menu' %}</button>{% endif %}
+            {% if user.is_authenticated %}<button id="mobileNavToggle" class="ui-control" type="button" aria-label="Mở điều hướng" aria-controls="portalSidebar" aria-expanded="false"><span class="ui-sidebar-toggle-menu" aria-hidden="true">{% include '_shell_icon.html' with name='menu' %}</span><span class="ui-sidebar-toggle-arrow" aria-hidden="true">{% include '_shell_icon.html' with name='chevron' %}</span></button>{% endif %}
             <a class="ui-brand" href="{% url 'portal:dashboard' %}"><span class="ui-brand-short">IHRMS</span><span class="ui-brand-full">IHRMS — Cổng thông tin nhân viên</span></a>
             {% if user.is_authenticated %}
             <form class="ui-global-search" role="search" method="get" action="{% url 'portal:global_search' %}">

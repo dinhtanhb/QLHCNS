@@ -1,3 +1,4 @@
+/* Lucian UX/UI Prompt #040 · MIT License (c) 2026 Seokwoooo · https://lucianlabs.dev/uxui-prompt/#040 */
 /* App shell only; loaded after page CSS. No print-paper recoloring. */
 @layer layouts {
 @media screen {
@@ -139,6 +140,25 @@
         .portal-app[data-sidebar-collapsed="true"] :is(.ui-nav-label,.ui-nav-chevron,.ui-nav-section-label) { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
         .portal-app[data-sidebar-collapsed="true"] .ui-nav-panel { display:none; }
         .ui-main .home-overview-kpis { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    }
+    /* Adapt the expanding rail to the existing portal tokens and navigation tree. */
+    .portal-app .ui-sidebar-toggle-menu { display:flex; }
+    .portal-app .ui-sidebar-toggle-arrow { display:none; }
+    @media (min-width:1024px) {
+        .portal-app .ui-sidebar-toggle-menu { display:none; }
+        .portal-app .ui-sidebar-toggle-arrow { display:flex; transform:rotate(90deg); }
+        .portal-app[data-sidebar-collapsed="true"] .ui-sidebar-toggle-arrow { transform:rotate(-90deg); }
+        .portal-app[data-sidebar-motion] .ui-sidebar { transition:width var(--ui-motion-panel) var(--ui-motion-easing); }
+        .portal-app[data-sidebar-motion] .ui-main-wrap.has-sidebar { transition:padding-left var(--ui-motion-panel) var(--ui-motion-easing); }
+        .portal-app[data-sidebar-motion] .ui-sidebar-toggle-arrow,
+        .portal-app .ui-sidebar .ui-nav-chevron { transition:transform var(--ui-motion-panel) var(--ui-motion-easing); }
+        .portal-app[data-sidebar-motion][data-sidebar-collapsed="false"] .ui-sidebar .ui-nav-label {
+            animation:ui-sidebar-label-enter var(--ui-motion-panel) var(--ui-motion-easing) both;
+        }
+    }
+    @keyframes ui-sidebar-label-enter {
+        from { opacity:0; transform:translateX(calc(-1 * var(--ui-space-1))); }
+        to { opacity:1; transform:translateX(0); }
     }
     @media (min-width:1440px) {
         .ui-topbar-row { padding-inline:var(--ui-space-6); }
