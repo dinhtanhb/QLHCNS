@@ -1,5 +1,7 @@
 # Tạo tài khoản và phát hành IHRMS nội bộ
 
+**Trạng thái mới nhất — 04/11/2026:** chủ dự án đã bỏ kế hoạch lên cửa hàng và chọn build APK Android để dùng nội bộ. Không thực hiện đăng ký/nộp store theo các bước dưới đây. Giữ tài liệu này làm phương án tham khảo; luồng đang dùng ở [kiểm thử và build APK](TEST_LOCAL_APK.md). Đổi kênh phân phối không thay các yêu cầu HTTPS, bảo vệ khóa ký, kiểm thử thiết bị và kiểm quyền backend.
+
 Đối chiếu nguồn chính thức ngày 04/11/2026. Chủ dự án xác nhận chỉ phân phối nội bộ và chưa có tài khoản phân phối. Điện thoại cá nhân, nhóm pilot gồm nhân viên/người duyệt/Nhân sự. Chưa nộp hoặc phát hành lên cửa hàng. Không đưa dữ liệu nhân sự thật vào tài khoản xét duyệt.
 
 ## Thứ tự thực hiện cho đợt phát hành đầu

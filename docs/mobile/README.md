@@ -1,5 +1,7 @@
 # IHRMS Mobile nội bộ
 
+Theo quyết định ngày 04/11/2026, kênh sử dụng hiện tại là **APK Android phân phối nội bộ**; bỏ kế hoạch nộp Google Play/App Store. Không cần tạo tài khoản cửa hàng cho kênh APK. Hướng dẫn store bên dưới chỉ còn để tham khảo nếu sau này đổi quyết định. Kết quả review và điều kiện diễn tập xem [nhật ký dự án](../PROJECT_WORK_LOG.md).
+
 Mã app ở `mobile/`, React Native + Expo SDK 58 + TypeScript, dùng chung backend và dữ liệu IHRMS. Android/iOS dùng cùng các màn hình native; bản web export chỉ phục vụ QA cục bộ. App không dùng WebView, không kết nối trực tiếp cơ sở dữ liệu.
 
 Phạm vi đã duyệt: nhân viên, người duyệt và Nhân sự; hồ sơ cá nhân, xem chấm công, tạo/theo dõi nghỉ phép, duyệt/từ chối và thông báo. Nhân sự dùng quyền hiện có, không được đọc đơn ngoài cây quản lý. Quản trị hồ sơ/hạn mức và nghiệp vụ ngoài MVP vẫn thực hiện trên web. Bản đầu cần mạng; không lưu hồ sơ/chấm công/đơn nghỉ vào bộ nhớ bền vững của thiết bị, không tự gửi lại POST.
