@@ -31,7 +31,7 @@ npx expo-doctor
 
 Màu app sinh từ `src/static/css/ui_tokens.css` bằng `venv/Scripts/python.exe ops/sync_mobile_tokens.py`. Ba palette sáng/tối theo cấu hình máy chủ, chế độ sáng/tối theo thiết bị; không có bộ chọn palette cá nhân. Kiểm đồng bộ bằng `--check`.
 
-`npm audit` hiện ghi nhận 8 mục (3 high, 5 low), liên quan các dependency CLI/config/lint trong cây Expo hiện tại (`zod`, `deepmerge` và gói phụ thuộc). Chưa dùng `audit fix --force` vì đề xuất đó hạ Expo về SDK khác và phá bộ phiên bản. Đây là giới hạn còn mở trước phát hành production; kết quả và phiên bản được ghi tại nhật ký, không coi APK QA là đã vượt cổng bảo mật phát hành.
+`npm audit --json` ngày 04/11/2026 ghi nhận 24 mục (2 high, 21 moderate, 1 low) trên cây dependency hiện có. Không đồng nhất số mục với số lỗ hổng gốc hoặc khả năng khai thác trên thiết bị. Chưa dùng `audit fix --force` vì đề xuất đó hạ Expo về SDK khác và phá bộ phiên bản. Đây là giới hạn còn mở trước phát hành production; kết quả được ghi tại nhật ký, không coi APK QA là đã vượt cổng bảo mật phát hành.
 
 Đối chiếu nguồn chính thức ngày 28/10/2026: [Zod advisory](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5) liệt kê bản vá từ 4.6.6, trong khi CLI/lint đang yêu cầu Zod 3; [deepmerge advisory](https://github.com/advisories/GHSA-gcqx-w48m-w2h4) chưa liệt kê bản vá. Registry vẫn trả Expo 58.0.20 và deepmerge 4.3.1 là latest khi kiểm. Không ép đổi major hoặc bỏ advisory khỏi kết quả. Người bảo trì chạy `npm audit --json` trong `mobile/`, theo dõi bản vá của Expo/upstream, kiểm lại build và UAT sau khi thay lockfile. Không kết luận cảnh báo vô hại chỉ vì nằm ở bộ công cụ.
 
