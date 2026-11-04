@@ -4,29 +4,33 @@ import { ScrollView, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useSession } from '../../session';
 import { useTheme } from '../../theme';
-import { Copy, EmptyState, ErrorNote, Field, ListItem, Loading, Screen, SectionHeader } from '../../ui';
+import { Button, Copy, EmptyState, ErrorNote, Field, ListItem, Loading, Screen, SectionHeader } from '../../ui';
+import { NavigationDrawer } from '../../NavigationDrawer';
 import type { WorkspacePage } from '../../workspace-types';
 import { normalizeSearch } from '../../input-utils';
 
 export default function Services() {
   const { me, request } = useSession(); const t = useTheme();
   const [menu, setMenu] = useState<WorkspacePage | null>(null); const [error, setError] = useState(''); const [query, setQuery] = useState('');
+  const [drawer, setDrawer] = useState(false);
   useFocusEffect(useCallback(() => {
     let active = true; setError('');
     void request<WorkspacePage>('workspace/', { path: '/portal/', method: 'GET', menu_only: true }).then(value => { if (active) setMenu(value); })
       .catch(e => { if (active) setError(e.message); });
     return () => { active = false; };
   }, [request]));
-  const groups = useMemo(() => {
+  const navigation = useMemo(() => {
     const hidden = (path: string, label: string) => path.startsWith('/admin') || path.startsWith('/reports/') || path.startsWith('/portal/reports/')
       || ['/portal/finance/periods/', '/portal/finance/salaries/', '/portal/finance/dependents/', '/portal/finance/tax-config/',
         '/portal/hcns-forms/salary-scale/', '/portal/assets-admin/', '/portal/inventory/', '/portal/disposal/'].some(prefix => path.startsWith(prefix))
       || /trung tâm báo cáo|báo cáo.*excel|excel|chạy lương|lương cơ bản nv|người phụ thuộc|cấu hình thuế|thang bảng lương|quản lý tài sản|kiểm kê tài sản|thanh lý tài sản|nhập dữ liệu hàng loạt|xuất dữ liệu hàng loạt/i.test(label);
-    const links = (menu?.navigation || []).filter(link => !hidden(link.path, link.label)
-      && !['/portal/', '/portal/profile/', '/portal/organization-chart/', '/portal/profile/requests/'].includes(link.path)
-      && normalizeSearch(link.label).includes(normalizeSearch(query)));
+    return (menu?.navigation || []).filter(link => !hidden(link.path, link.label)
+      && !['/portal/', '/portal/profile/', '/portal/organization-chart/', '/portal/profile/requests/'].includes(link.path));
+  }, [menu]);
+  const groups = useMemo(() => {
+    const links = navigation.filter(link => normalizeSearch(link.label).includes(normalizeSearch(query)));
     return [...new Set(links.map(link => link.group || 'Nghiệp vụ'))].map(name => ({ name, links: links.filter(link => (link.group || 'Nghiệp vụ') === name) }));
-  }, [menu, query]);
+  }, [navigation, query]);
   const iconForGroup = (group: string): React.ComponentProps<typeof Ionicons>['name'] => {
     if (/cá nhân|nhân viên/i.test(group)) return 'person-outline'; if (/nhân sự|hr/i.test(group)) return 'people-outline';
     if (/hành chính|tài sản|mua sắm/i.test(group)) return 'briefcase-outline'; if (/tài chính|lương/i.test(group)) return 'wallet-outline';
@@ -39,7 +43,7 @@ export default function Services() {
     if (/đào tạo|tuyển dụng/i.test(label)) return 'school-outline'; return 'document-text-outline';
   };
   if (!me) return <Redirect href="/login" />;
-  return <Screen title="Nghiệp vụ" compact scrollable={false}>
+  return <Screen title="Nghiệp vụ" compact scrollable={false} action={<Button label="Danh mục" icon="menu-outline" secondary disabled={!menu} onPress={() => setDrawer(true)} />}>
     <ScrollView contentContainerStyle={{ padding: 16, gap: 14 }} keyboardShouldPersistTaps="handled">
       <Field label="Tìm nghiệp vụ" placeholder="Ví dụ: chấm công, nghỉ phép" value={query} onChangeText={setQuery} autoCapitalize="none" />
       <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
@@ -64,5 +68,7 @@ export default function Services() {
       {menu && groups.length === 0 ? <EmptyState icon="search-outline" title="Không tìm thấy nghiệp vụ" description="Thử từ khóa khác hoặc xóa nội dung tìm kiếm." /> : null}
       <Copy muted>Danh mục thay đổi theo quyền của tài khoản.</Copy>
     </ScrollView>
+    <NavigationDrawer open={drawer} onClose={() => setDrawer(false)} items={navigation}
+      onNavigate={link => router.push({ pathname: '/workspace', params: { path: link.path } })} />
   </Screen>;
 }

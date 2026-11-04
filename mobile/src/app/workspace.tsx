@@ -1,16 +1,16 @@
 import { useCallback, useRef, useState } from 'react';
-import { Alert, Linking, Modal, Platform, ScrollView, View } from 'react-native';
+import { Alert, Linking, Platform, View } from 'react-native';
 import { Redirect, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSession } from '../session';
 import { Button, Card, Copy, ErrorNote, Loading, Screen, s } from '../ui';
-import { useTheme } from '../theme';
+import { NavigationDrawer } from '../NavigationDrawer';
 import { Blocks, JSONResults, type PickedUpload } from '../workspace-renderer';
 import type { WorkspaceJSON, WorkspacePage, WorkspacePayload } from '../workspace-types';
 import type { NativeDocument } from '../api';
 import { discardWorkspaceFile, openDocument, receiveDocument } from '../workspace-files';
 
 export default function Workspace() {
-  const { me, request, refreshMe } = useSession(); const t = useTheme();
+  const { me, request, refreshMe } = useSession();
   const params = useLocalSearchParams<{ path?: string }>();
   const path = typeof params.path === 'string' ? params.path : '/portal/';
   const [page, setPage] = useState<WorkspacePage | WorkspaceJSON | null>(null);
@@ -72,18 +72,17 @@ export default function Workspace() {
   };
   if (!me) return <Redirect href="/login" />;
   const actions = { busy, navigate, submit };
-  return <Screen title={page?.kind === 'page' ? page.title : 'Nghiệp vụ IHRMS'}>
+  return <Screen title={page?.kind === 'page' ? page.title : 'Nghiệp vụ IHRMS'} compact
+    action={page?.kind === 'page' && page.navigation.length ? <Button label="Danh mục" accessibilityLabel="Danh mục nghiệp vụ" icon="menu-outline" secondary onPress={() => setMenu(true)} /> : undefined}>
     <View style={s.row}><Button label="Quay lại" secondary onPress={() => router.canGoBack() ? router.back() : router.replace('/services')} disabled={busy} />
       <Button label="Tải lại" secondary busy={busy} onPress={() => { void submit({ path: page?.path || path, method: 'GET' }).catch(() => undefined); }} />
-      {page?.kind === 'page' && page.navigation.length ? <Button label="Danh mục nghiệp vụ" secondary onPress={() => setMenu(true)} /> : null}</View>
+    </View>
     <ErrorNote message={error} />{notice ? <Copy>{notice}</Copy> : null}{busy ? <Loading /> : null}
     {document ? <Card><Copy>{document.name}</Copy><Copy muted>Tệp lưu tạm trong ứng dụng và được dọn khi đăng xuất hoặc mở lại app.</Copy>
       <Button label="Mở hoặc lưu tệp" secondary onPress={() => { void openDocument(document.uri, document.contentType).catch(() => setError('Chưa mở được tệp. Vui lòng thử lại.')); }} /></Card> : null}
     {page?.messages.map((message, index) => message.level >= 40 ? <ErrorNote key={index} message={message.text} /> : <Copy key={index}>{message.text}</Copy>)}
     {page?.kind === 'page' ? <Blocks key={version} blocks={page.blocks} actions={actions} /> : page?.kind === 'json' ? <JSONResults data={page.data} actions={actions} /> : null}
-    <Modal visible={menu} transparent onRequestClose={() => setMenu(false)}><View style={[s.overlay, { backgroundColor: t.bg }]}>
-      <Button label="Đóng danh mục" secondary onPress={() => setMenu(false)} /><ScrollView contentContainerStyle={s.stack}>
-        {page?.kind === 'page' ? page.navigation.map((item, index) => <Button key={index} label={item.label} secondary onPress={() => navigate(item.path, item.external)} />) : null}
-      </ScrollView></View></Modal>
+    <NavigationDrawer open={menu} onClose={() => setMenu(false)} items={page?.kind === 'page' ? page.navigation : []}
+      currentPath={page?.kind === 'page' ? page.path : path} onNavigate={item => navigate(item.path, item.external)} />
   </Screen>;
 }

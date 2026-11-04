@@ -15,6 +15,9 @@
     const userPanel = document.getElementById('userDropdown');
     const userContainer = document.getElementById('userMenuContainer');
     let drawerOpen = false;
+    let drawerClosing = false;
+    let drawerRevision = 0;
+    let drawerAnimations = [];
     let previousFocus = null;
     let priorInert = [];
     let tooltipOwner = null;
@@ -61,34 +64,71 @@
     }
     function drawer(open, restore = true) {
         if (!sidebar || !toggle || (open && desktop.matches)) return;
-        if (drawerOpen === open) return;
-        drawerOpen = open;
-        sidebar.classList.toggle('is-drawer-open', open);
-        overlay.hidden = !open;
-        document.documentElement.classList.toggle('ui-drawer-lock', open);
+        if (drawerClosing && !open && !desktop.matches) return;
+        if (drawerOpen === open && !drawerClosing) return;
+        const wasOpen = drawerOpen;
+        const revision = ++drawerRevision;
+        const from = drawerOpen ? getComputedStyle(sidebar).transform : 'translateX(-100%)';
+        const opacity = drawerOpen ? getComputedStyle(overlay).opacity : '0';
+        drawerAnimations.forEach(animation => animation.cancel());
+        drawerAnimations = [];
         hideTooltip();
         if (open) {
+            drawerOpen = true;
+            drawerClosing = false;
+            sidebar.classList.add('is-drawer-open');
+            overlay.hidden = false;
+            document.documentElement.classList.add('ui-drawer-lock');
             userOpen(false);
             // Tab "Thêm" cũng mở drawer: trả tiêu điểm về đúng nút đã bấm, không
             // phải nút hamburger ở đầu trang. body không nhận tiêu điểm nên bỏ qua.
-            const opener = document.activeElement;
-            previousFocus = opener && opener !== document.body ? opener : toggle;
-            priorInert = [header, main, skipLink].map(el => [el, el.inert]);
-            priorInert.forEach(([el]) => { el.inert = true; });
+            if (!wasOpen) {
+                const opener = document.activeElement;
+                previousFocus = opener && opener !== document.body ? opener : toggle;
+                priorInert = [header, main, skipLink, document.querySelector('.ui-tabbar')].filter(Boolean).map(el => [el, el.inert]);
+                priorInert.forEach(([el]) => { el.inert = true; });
+            }
             sidebar.setAttribute('role', 'dialog');
             sidebar.setAttribute('aria-modal', 'true');
             sidebar.setAttribute('aria-labelledby', 'drawerTitle');
             close.focus();
-        } else {
+        } else drawerClosing = true;
+        const complete = () => {
+            if (revision !== drawerRevision) return;
+            drawerAnimations = [];
+            if (open) return;
+            drawerOpen = false;
+            drawerClosing = false;
+            sidebar.classList.remove('is-drawer-open');
+            overlay.hidden = true;
+            document.documentElement.classList.remove('ui-drawer-lock');
             priorInert.forEach(([el, inert]) => { el.inert = inert; });
             priorInert = [];
             sidebar.removeAttribute('role');
             sidebar.removeAttribute('aria-modal');
             sidebar.removeAttribute('aria-labelledby');
-            if (restore && previousFocus && previousFocus.isConnected) previousFocus.focus();
-        }
+            if (restore) {
+                const opener = previousFocus && previousFocus.isConnected && previousFocus.getClientRects().length ? previousFocus : toggle;
+                opener.focus();
+            }
+            state();
+        };
+        const style = getComputedStyle(body);
+        const duration = desktop.matches ? 0 : parseFloat(style.getPropertyValue('--ui-motion-panel')) || 0;
+        if (duration && typeof sidebar.animate === 'function') {
+            const timing = { duration, easing: style.getPropertyValue('--ui-motion-easing').trim() || 'ease-out' };
+            drawerAnimations = [
+                sidebar.animate([{ transform: from }, { transform: open ? 'translateX(0)' : 'translateX(-100%)' }], timing),
+                overlay.animate([{ opacity }, { opacity: open ? '1' : '0' }], timing),
+            ];
+            // Retain the modal/focus trap until the closing panel has left the screen.
+            Promise.all(drawerAnimations.map(animation => animation.finished)).then(complete).catch(() => {});
+        } else complete();
         state();
     }
+    window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', event => {
+        if (event.matches) drawerAnimations.forEach(animation => animation.finish());
+    });
     if (header) {
         const banner = document.querySelector('.ui-demo-banner');
         const sizeShell = () => {
